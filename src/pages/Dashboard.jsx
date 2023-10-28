@@ -13,9 +13,11 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast } from "react-toastify";
-import React from "react";
+import PerformanceChart from "./PerformanceChart";
 
 export default function Dashboard() {
+  const timeData = ["Jan", "Feb", "Mar", "Apr", "May"];
+  const rankData = [1, 2, 4, 3, 5];
   const auth = getAuth();
   const user = auth.currentUser;
   const navigate = useNavigate();
@@ -106,6 +108,11 @@ export default function Dashboard() {
               </p>
             </div>
           </form>
+        </div>
+
+        <div className="App">
+          <h1>Student Performance Chart</h1>
+          <PerformanceChart timeData={timeData} rankData={rankData} />
         </div>
       </section>
     </>

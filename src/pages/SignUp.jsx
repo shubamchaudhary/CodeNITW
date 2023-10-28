@@ -62,7 +62,7 @@ export default function SignUp() {
       //pushing data to database(db)
       await setDoc(doc(db, "users", user.uid), formDataCopy);
       toast.success("Your id is created!!");
-      navigate("/");
+      navigate("/Dashboard");
     } catch (error) {
       console.log(formData);
       toast.error("Password too short or not filled all options");
