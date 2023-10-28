@@ -70,17 +70,6 @@ export default function Header() {
             </li>
 
             <li
-              onClick={() => navigate("/leaderboard")}
-              className={`cursor-pointer py-4 text-md font-semibold border-b-[3px] ${
-                isPath("/leaderboard")
-                  ? "text-black border-b-red-500"
-                  : " text-gray-400 border-b-transparent"
-              }`}
-            >
-              Leaderboard
-            </li>
-
-            <li
               onClick={() => navigate(pageState)}
               className={`cursor-pointer py-4 text-md font-semibold border-b-[3px]  ${
                 isPath("/sign-in") || isPath("/Dashboard")
