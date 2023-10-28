@@ -6,16 +6,6 @@ import ContestImg from "../images/contest.png";
 
 export default function ListingItem({ listing, id, onDelete, onEdit }) {
   return (
-<<<<<<< HEAD
-    <li className=" relative bg-white   items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
-      <Link className="contents" to={`/category/${listing.type}/${id}`}>
-        <div className="w-full p-[10px]">
-          <div className="flex items-center space-x-1">
-            <p className="font-semibold text-sm mb-[2px] text-gray-600 truncate">
-              {listing.name}
-            </p>
-          </div>
-=======
     <li className=" relative bg-white w-[90%] my-10 items-center shadow-lg hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
       <div className="mx-4 grid grid-cols-4 space-x-4 ">
         <div>
@@ -24,7 +14,6 @@ export default function ListingItem({ listing, id, onDelete, onEdit }) {
             src={ContestImg}
             alt="contest image"
           ></img>
->>>>>>> 15c376a01359c3319218791940c532db5da0fc86
         </div>
 
         <h1 className="text-3xl ml-[20%] font-bold text-red-900 ">
