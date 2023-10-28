@@ -19,11 +19,12 @@ export default function AddContest() {
   const auth = getAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    startingTime: "",
+    name: "Starter 1",
+    startingTime: "23rd January 2024, Wednesday, 5pm",
     duration: 90,
+    link: "",
   });
-  const { name, startingTime, duration } = formData;
+  const { name, startingTime, duration, link } = formData;
 
   function onChange(e) {
     setFormData((prevState) => ({
@@ -34,7 +35,7 @@ export default function AddContest() {
 
   async function onSubmit(e) {
     e.preventDefault();
-    //setLoading(true);
+    setLoading(true);
     const formDataCopy = {
       ...formData,
       timestamp: serverTimestamp(),
@@ -45,7 +46,7 @@ export default function AddContest() {
     const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
     toast.success("contest added");
-    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+    navigate(`/`);
   }
 
   if (loading) {
@@ -73,9 +74,9 @@ export default function AddContest() {
           id="name"
           value={name}
           onChange={onChange}
-          placeholder="Name"
+          placeholder="Contest Name"
           required
-          className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  mb-6"
+          className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  text-center"
         />
 
         <p className="text-lg font-semibold">Starting time</p>
@@ -84,6 +85,7 @@ export default function AddContest() {
           id="startingTime"
           value={startingTime}
           onChange={onChange}
+          placeholder="23rd January 2024, Wednesday, 5pm"
           required
           className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  text-center"
         />
@@ -95,6 +97,16 @@ export default function AddContest() {
           onChange={onChange}
           required
           className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300  text-center"
+        />
+        <p className="text-lg font-semibold">Contest Link</p>
+        <input
+          type="text"
+          id="link"
+          value={link}
+          onChange={onChange}
+          placeholder="Contest Link"
+          required
+          className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  mb-6 text-center"
         />
         <button
           type="submit"
