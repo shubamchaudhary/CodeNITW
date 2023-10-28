@@ -1,6 +1,7 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useAuthStatus } from "../hooks/useAuthStatus";
 import { Dna } from "react-loader-spinner";
+
 //import Spinner from "./Spinner";
 export default function PrivateRoute() {
   const { loggedIn, checkingStatus } = useAuthStatus();

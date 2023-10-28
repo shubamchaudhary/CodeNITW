@@ -3,7 +3,7 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import OAuth from "../components/OAuth";
 import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import computer from "../images/computer.png";
 
 export default function SignIn() {
@@ -20,9 +20,10 @@ export default function SignIn() {
     // console.log(formData.email);
     // console.log(formData.password);
   }
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
   async function onSubmit(e) {
     e.preventDefault();
+
     try {
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(
@@ -32,7 +33,7 @@ export default function SignIn() {
       );
       if (userCredential.user) {
         toast.success("welcome again!!!");
-        // navigate("/home");
+        navigate("/Dashboard");
       }
     } catch (error) {
       toast.error("Email and Password didn't match");
