@@ -11,6 +11,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "chart.js": "^4.4.0",
+    "crypto-js": "^4.2.0",
+    "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
     "firebase": "^10.5.2",
     "flywheel-leaderboard": "^0.0.3",
