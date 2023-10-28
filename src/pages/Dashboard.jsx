@@ -65,54 +65,16 @@ export default function Dashboard() {
 
   return (
     <>
-      <section className="max-w-6xl mx-auto flex justify-center items-center flex-col mt-[100px]">
-        <h1 className="text-3xl text-center  cursive">My Dashboard</h1>
-        <div className="w-full md:w-[50%]  px-3 mt-[60px]">
-          <form>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              disabled={!changeDetail}
-              onChange={onChange}
-              className={`mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out ${
-                changeDetail && "bg-red-200 focus:bg-red-200"
-              }`}
-            ></input>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              disabled={changeDetail}
-              className="mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out"
-            />
-            <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg mb-6">
-              <p className="flex items-center ">
-                Do you want to change your name?
-                <span
-                  onClick={() => {
-                    //change detail agar true hai, to submit the information.
-                    changeDetail && onSubmit();
-                    setChangeDetail(!changeDetail);
-                  }}
-                  className="text-red-600 hover:text-red-700 transition ease-in-out duration-200 ml-1 cursor-pointer"
-                >
-                  {changeDetail ? "Apply Changes" : "Edit"}
-                </span>
-              </p>
-              <p
-                onClick={onLogout}
-                className="text-blue-600 hover:text-blue-800 transition duration-200 ease-in-out cursor-pointer"
-              >
-                Sign out
-              </p>
-            </div>
-          </form>
-        </div>
-
-        <div className="App">
-          <h1>Student Performance Chart</h1>
-          <PerformanceChart timeData={timeData} rankData={rankData} />
+      <section className="max-w-2xl mx-auto flex justify-center items-center flex-col">
+        <h1 className="text-4xl text-center  cursive">
+          <span className="text-red-800 font-semibold">{name}'s</span> Dashboard
+        </h1>
+        <div className="m-[100px] w-[145%]">
+          <PerformanceChart
+            name={name}
+            timeData={timeData}
+            rankData={rankData}
+          />
         </div>
       </section>
     </>
