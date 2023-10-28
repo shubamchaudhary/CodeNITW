@@ -17,7 +17,7 @@ const PerformanceChart = (props) => {
         labels: props.timeData,
         datasets: [
           {
-            label: `${props.name}'s Ranks in Different Contests`,
+            label: `${props.name}'s Percentile Different Contests`,
             data: props.rankData,
             borderColor: "gray",
             fill: false,

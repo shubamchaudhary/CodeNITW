@@ -16,8 +16,19 @@ import { toast } from "react-toastify";
 import PerformanceChart from "./PerformanceChart";
 
 export default function Dashboard() {
-  const timeData = ["Jan", "Feb", "Mar", "Apr", "May"];
-  const rankData = [1, 2, 4, 3, 5];
+  const timeData = [
+    "St1",
+    "st2",
+    "st3",
+    "st4",
+    "st5",
+    "st6",
+    "st7",
+    "st8",
+    "st9",
+    "st10",
+  ];
+  const rankData = [0, 11, 20, 89, 40, 21, 60, 25, 80, 16, 10];
   const auth = getAuth();
   const user = auth.currentUser;
   const navigate = useNavigate();
