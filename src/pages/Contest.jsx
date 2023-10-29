@@ -63,6 +63,7 @@ export default function Contest() {
               console.log(currentDate);
               if(inputDate >= currentDate){
                 let contestItem = {
+                  imageName : item.site,
                   link : item.url,
                   name : item.name,
                   startingTime : modifiedStartTime,
