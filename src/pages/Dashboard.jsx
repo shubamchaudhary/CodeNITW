@@ -77,9 +77,21 @@ export default function Dashboard() {
   return (
     <>
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col">
-        <h1 className="text-4xl text-center  cursive">
-          <span className="text-red-800 font-semibold">{name}'s</span> Dashboard
-        </h1>
+        <div className="justify-center flex">
+          <h1 className="text-4xl text-center  cursive">
+            <span className="text-red-800 font-semibold">{name}'s</span>{" "}
+            Dashboard
+          </h1>
+          <div>
+            <button
+              className="absolute right-[-40px] hover:right-[-26px] bg-red-800 text-white px-4 py-2 hover:bg-blue-800 rounded-md"
+              onClick={onLogout}
+            >
+              <h1 className="mr-[60px]">Sign Out</h1>
+            </button>
+          </div>
+        </div>
+
         <div className="m-[100px] w-[145%]">
           <PerformanceChart
             name={name}

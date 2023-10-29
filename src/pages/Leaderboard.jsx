@@ -1,277 +1,152 @@
-//
-
 import React, { useState, useEffect } from "react";
-import { classNames } from "primereact/utils";
-import { FilterMatchMode, FilterOperator } from "primereact/api";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import { MultiSelect } from "primereact/multiselect";
-import { Tag } from "primereact/tag";
-import { TriStateCheckbox } from "primereact/tristatecheckbox";
-import { CustomerService } from "./CustomerService";
+import { Leaderboard } from "flywheel-leaderboard";
+import { SHA256, enc } from "crypto-js";
 
-export default function Leaderboard() {
-  const [customers, setCustomers] = useState(null);
-  const [filters, setFilters] = useState({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    "country.name": { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    representative: { value: null, matchMode: FilterMatchMode.IN },
-    status: { value: null, matchMode: FilterMatchMode.EQUALS },
-    verified: { value: null, matchMode: FilterMatchMode.EQUALS },
-  });
-  const [loading, setLoading] = useState(true);
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
-  const [representatives] = useState([
-    { name: "Amy Elsner", image: "amyelsner.png" },
-    { name: "Anna Fali", image: "annafali.png" },
-    { name: "Asiya Javayant", image: "asiyajavayant.png" },
-    { name: "Bernardo Dominic", image: "bernardodominic.png" },
-    { name: "Elwin Sharvill", image: "elwinsharvill.png" },
-    { name: "Ioni Bowcher", image: "ionibowcher.png" },
-    { name: "Ivan Magalhaes", image: "ivanmagalhaes.png" },
-    { name: "Onyama Limba", image: "onyamalimba.png" },
-    { name: "Stephen Shaw", image: "stephenshaw.png" },
-    { name: "XuXue Feng", image: "xuxuefeng.png" },
-  ]);
-  const [statuses] = useState([
-    "unqualified",
-    "qualified",
-    "new",
-    "negotiation",
-    "renewal",
-  ]);
+async function sha512(str) {
+  return crypto.subtle
+    .digest("SHA-512", new TextEncoder("utf-8").encode(str))
+    .then((buf) => {
+      return Array.prototype.map
+        .call(new Uint8Array(buf), (x) => ("00" + x.toString(16)).slice(-2))
+        .join("");
+    });
+}
 
-  const getSeverity = (status) => {
-    switch (status) {
-      case "unqualified":
-        return "danger";
-
-      case "qualified":
-        return "success";
-
-      case "new":
-        return "info";
-
-      case "negotiation":
-        return "warning";
-
-      case "renewal":
-        return null;
-    }
-  };
+export default function LeaderboardList() {
+  const [scoreArray, setScoreArray] = useState([]);
+  const contests = ["480776", "477676"]; // Add more contest IDs as needed
 
   useEffect(() => {
-    CustomerService.getCustomersMedium().then((data) => {
-      setCustomers(getCustomers(data));
-      setLoading(false);
-    });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    async function fetchData() {
+      let updatedScoreArray = [];
 
-  const getCustomers = (data) => {
-    return [...(data || [])].map((d) => {
-      d.date = new Date(d.date);
+      for (const contest_id of contests) {
+        const data = await getStandings(contest_id);
+        updatedScoreArray = getScores(data, contest_id, updatedScoreArray);
+      }
+      setScoreArray(updatedScoreArray);
+    }
 
-      return d;
-    });
-  };
+    fetchData();
+  }, []);
 
-  const onGlobalFilterChange = (e) => {
-    const value = e.target.value;
-    let _filters = { ...filters };
+  async function getStandings(contest_id) {
+    const rand = String(Math.floor(Math.random() * 100000)).padStart(6, "0");
+    const current_time = String(Math.floor(Date.now() / 1000));
+    const api_key = "7bcb2c2a57feab460343d341d164e26b4ae32fd1";
+    const api_secret = "3e67186659f5f9f35c5841127c40a5b0339180b1";
+    const api_sig =
+      rand +
+      "/contest.standings?apiKey=" +
+      api_key +
+      "&contestId=" +
+      contest_id +
+      "&time=" +
+      current_time +
+      "#" +
+      api_secret;
+    const hash = await sha512(api_sig);
+    const hashWithRand = rand + hash;
+    const url = `https://codeforces.com/api/contest.standings?contestId=${contest_id}&apiKey=${api_key}&time=${current_time}&apiSig=${hashWithRand}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    // console.log(data);
+    // data.map((d) => {
+    //   // console.log(d.score);
+    // });
+    return data;
+  }
 
-    _filters["global"].value = value;
+  function getScores(obj, contestId, previousScores) {
+    const updatedScoreArray = [...previousScores];
+    let totalScore = 0;
 
-    setFilters(_filters);
-    setGlobalFilterValue(value);
-  };
+    for (const item of obj.result.problems) {
+      totalScore += item.rating;
+    }
 
-  const renderHeader = () => {
-    return (
-      <div className="flex justify-content-end">
-        <span className="p-input-icon-left">
-          <i className="pi pi-search" />
-          <InputText
-            value={globalFilterValue}
-            onChange={onGlobalFilterChange}
-            placeholder="Keyword Search"
-          />
-        </span>
-      </div>
-    );
-  };
+    for (const row of obj.result.rows) {
+      const points = row.points;
+      const penalty = row.penalty;
+      const handle = row.party.members[0].handle;
+      const rollno = 0;
+      let Score = 100 * points + (1 - penalty / totalScore);
+      Score = Score.toFixed(2);
 
-  const countryBodyTemplate = (rowData) => {
-    return (
-      <div className="flex align-items-center gap-2">
-        <img
-          alt="flag"
-          src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png"
-          className={`flag flag-${rowData.country.code}`}
-          style={{ width: "24px" }}
-        />
-        <span>{rowData.country.name}</span>
-      </div>
-    );
-  };
+      // Check if handle already exists in updatedScoreArray
+      const existingUserIndex = updatedScoreArray.findIndex(
+        (user) => user.handle === handle
+      );
 
-  const representativeBodyTemplate = (rowData) => {
-    const representative = rowData.representative;
+      if (existingUserIndex !== -1) {
+        // Update the existing user's score for the contest
+        updatedScoreArray[existingUserIndex].Score = (
+          parseFloat(updatedScoreArray[existingUserIndex].Score) +
+          parseFloat(Score)
+        ).toFixed(2);
+      } else {
+        // Create a new entry for the user for the given contest
+        updatedScoreArray.push({
+          Score,
+          contestId,
+          handle,
+          rollno,
+        });
+      }
+    }
+    // updatedScoreArray.map((d) => {
+    //   console.log(d.Score);
+    // });
+    console.log(updatedScoreArray);
 
-    return (
-      <div className="flex align-items-center gap-2">
-        <img
-          alt={representative.name}
-          src={`https://primefaces.org/cdn/primereact/images/avatar/${representative.image}`}
-          width="32"
-        />
-        <span>{representative.name}</span>
-      </div>
-    );
-  };
-
-  const representativesItemTemplate = (option) => {
-    return (
-      <div className="flex align-items-center gap-2">
-        <img
-          alt={option.name}
-          src={`https://primefaces.org/cdn/primereact/images/avatar/${option.image}`}
-          width="32"
-        />
-        <span>{option.name}</span>
-      </div>
-    );
-  };
-
-  const statusBodyTemplate = (rowData) => {
-    return (
-      <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
-    );
-  };
-
-  const statusItemTemplate = (option) => {
-    return <Tag value={option} severity={getSeverity(option)} />;
-  };
-
-  const verifiedBodyTemplate = (rowData) => {
-    return (
-      <i
-        className={classNames("pi", {
-          "true-icon pi-check-circle": rowData.verified,
-          "false-icon pi-times-circle": !rowData.verified,
-        })}
-      ></i>
-    );
-  };
-
-  const representativeRowFilterTemplate = (options) => {
-    return (
-      <MultiSelect
-        value={options.value}
-        options={representatives}
-        itemTemplate={representativesItemTemplate}
-        onChange={(e) => options.filterApplyCallback(e.value)}
-        optionLabel="name"
-        placeholder="Any"
-        className="p-column-filter"
-        maxSelectedLabels={1}
-        style={{ minWidth: "14rem" }}
-      />
-    );
-  };
-
-  const statusRowFilterTemplate = (options) => {
-    return (
-      <Dropdown
-        value={options.value}
-        options={statuses}
-        onChange={(e) => options.filterApplyCallback(e.value)}
-        itemTemplate={statusItemTemplate}
-        placeholder="Select One"
-        className="p-column-filter"
-        showClear
-        style={{ minWidth: "12rem" }}
-      />
-    );
-  };
-
-  const verifiedRowFilterTemplate = (options) => {
-    return (
-      <TriStateCheckbox
-        value={options.value}
-        onChange={(e) => options.filterApplyCallback(e.value)}
-      />
-    );
-  };
-
-  const header = renderHeader();
+    return updatedScoreArray;
+  }
 
   return (
-    <div className="card">
-      <DataTable
-        value={customers}
-        paginator
-        rows={10}
-        dataKey="id"
-        filters={filters}
-        filterDisplay="row"
-        loading={loading}
-        globalFilterFields={[
-          "name",
-          "country.name",
-          "representative.name",
-          "status",
-        ]}
-        header={header}
-        emptyMessage="No customers found."
-      >
-        <Column
-          field="name"
-          header="Name"
-          filter
-          filterPlaceholder="Search by name"
-          style={{ minWidth: "12rem" }}
-        />
-        <Column
-          header="Country"
-          filterField="country.name"
-          style={{ minWidth: "12rem" }}
-          body={countryBodyTemplate}
-          filter
-          filterPlaceholder="Search by country"
-        />
-        <Column
-          header="Agent"
-          filterField="representative"
-          showFilterMenu={false}
-          filterMenuStyle={{ width: "14rem" }}
-          style={{ minWidth: "14rem" }}
-          body={representativeBodyTemplate}
-          filter
-          filterElement={representativeRowFilterTemplate}
-        />
-        <Column
-          field="status"
-          header="Status"
-          showFilterMenu={false}
-          filterMenuStyle={{ width: "14rem" }}
-          style={{ minWidth: "12rem" }}
-          body={statusBodyTemplate}
-          filter
-          filterElement={statusRowFilterTemplate}
-        />
-        <Column
-          field="verified"
-          header="Verified"
-          dataType="boolean"
-          style={{ minWidth: "6rem" }}
-          body={verifiedBodyTemplate}
-          filter
-          filterElement={verifiedRowFilterTemplate}
-        />
-      </DataTable>
-    </div>
+    <>
+      <h2 className="text-4xl font-bold text-red-950 flex justify-center mb-4">
+        Leaderboard
+      </h2>
+      <div className="p-4 flex justify-center overflow-x-auto">
+        <div className="flex justify-center w-[70%] ">
+          <table className="min-w-full">
+            <thead>
+              <tr>
+                <th className="text-center text-red-950 font-bold text-2xl">
+                  Rank
+                </th>
+                <th className="text-center text-red-950 font-bold text-2xl">
+                  Handle
+                </th>
+                <th className="text-center text-red-950 font-bold text-2xl">
+                  Score
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="overflow-y-auto max-h-60">
+              {scoreArray.map((student, index) => (
+                <tr
+                  key={student.handle}
+                  className="hover:bg-gray-100 border-b-2  border-gray-200"
+                >
+                  <td className="text-center text-2xl">{index + 1}</td>
+                  <td className="text-center text-blue-900 text-2xl">
+                    <a
+                      target="_blank"
+                      rel="noopener"
+                      href={`https://codeforces.com/profile/${student.handle}`}
+                    >
+                      {student.handle}
+                    </a>
+                  </td>
+                  <td className="text-center text-2xl">{student.Score}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   );
 }
