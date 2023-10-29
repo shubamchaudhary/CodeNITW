@@ -11,7 +11,7 @@ export default function ListingItem({ listing, id, onDelete, onEdit }) {
         <div>
           <img
             className="max-w-[170px] p-2 absolute left-0 top-0"
-            src={ContestImg}
+            src="../images/LeetCode.png"
             alt="contest image"
           ></img>
         </div>

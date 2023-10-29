@@ -10,10 +10,12 @@ import { Dna } from "react-loader-spinner";
 import { getDocs, collection } from "firebase/firestore";
 import { Slide } from "react-toastify";
 import ListingItem from "../components/ListingItem";
-//import Slider from "../components/Slider";
+import { da } from "date-fns/locale";
+
+
 export default function Contest() {
-  //for offers
   const [Listings, setListings] = useState(null);
+  const [OtherListings , setOtherListings] = useState(null);
   useEffect(() => {
     async function fetchListings() {
       try {
@@ -33,44 +35,66 @@ export default function Contest() {
         console.log(error);
       }
     }
+
+    async function getOtherContest() {
+      const apiUrl = 'https://kontests.net/api/v1/all';
+      try {
+        const response = await fetch(apiUrl);
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log(data);
+          const OtherListings = [];
+          for(let item of data){
+            if(item.site == "AtCoder" || item.site == "LeetCode" || item.site == "CodeChef" || item.site == "CodeForces" ){
+              let unix_timestamp = item.duration;
+              var modifiedDuration = unix_timestamp/60;
+              
+              //console.log(modifiedDuration); 
+              const currentDate = new Date();
+              var inputDateStr = item.start_time;
+              if(item.site == "CodeChef"){
+                const tempDate = inputDateStr;
+                const modifiedTemp = tempDate.replace(" UTC", "Z");
+                inputDateStr = modifiedTemp;
+              }
+              const inputDate = new Date(inputDateStr);
+              var modifiedStartTime = inputDate.toDateString();
+              console.log(inputDate);
+              console.log(currentDate);
+              if(inputDate >= currentDate){
+                let contestItem = {
+                  imageName : item.site,
+                  link : item.url,
+                  name : item.name,
+                  startingTime : modifiedStartTime,
+                  duration : modifiedDuration
+                }
+                OtherListings.push(contestItem);
+              }
+            }
+          }
+          console.log(OtherListings);
+          setOtherListings(OtherListings);
+        } else {
+          console.error('Failed to fetch data from the API');
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    }
+    
     fetchListings();
+    getOtherContest();
   }, []);
 
-  //for sale
-  // const [saleListings, setSaleListings] = useState(null);
-  // useEffect(() => {
-  //   async function fetchSaleListings() {
-  //     try {
-  //       const listingRef = collection(db, "listings");
-  //       const q = query(
-  //         listingRef,
-  //         where("type", "==", "sale"),
-  //         orderBy("timestamp", "desc"),
-  //         limit(4)
-  //       );
-  //       const querySnap = await getDocs(q);
-  //       const listings = [];
-  //       querySnap.forEach((doc) => {
-  //         return listings.push({
-  //           id: doc.id,
-  //           data: doc.data(),
-  //         });
-  //       });
-  //       setSaleListings(listings);
-  //       //console.log(listings);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  //   fetchSaleListings();
-  // }, []);
+  
+
   return (
     <div>
-      {/* <Slider /> */}
       <div className="max-w-6xl mx-auto pt-4 space-y-6">
         {Listings && Listings.length > 0 && (
           <div className="m-2 mb-6">
-            <h2 className="px-3 text-2xl mt-6 font-semibold">Contests</h2>
+            <h2 className="px-3 text-2xl mt-6 font-semibold">CCPD Contests</h2>
             <ul>
               {Listings.map((listing) => (
                 <ListingItem
@@ -84,53 +108,21 @@ export default function Contest() {
         )}
       </div>
 
-      {/* <div className="max-w-6xl mx-auto pt-4 space-y-6">
-        {rentListings && rentListings.length > 0 && (
-          <div className="m-2 mb-6">
-            <h2 className="px-3 text-2xl mt-6 font-semibold">
-              Places for Rent
-            </h2>
-            <Link to="/category/rent">
-              <p className="px-3 text-sm text-blue-600 hover:text-blue-800 font-bold">
-                Show More Places
-              </p>
-            </Link>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {rentListings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
       <div className="max-w-6xl mx-auto pt-4 space-y-6">
-        {saleListings && saleListings.length > 0 && (
+        {OtherListings && OtherListings.length > 0 && (
           <div className="m-2 mb-6">
-            <h2 className="px-3 text-2xl mt-6 font-semibold">
-              Places for Sale
-            </h2>
-            <Link to="/category/sale">
-              <p className="px-3 text-sm text-blue-600 hover:text-blue-800 font-bold">
-                Show More Places
-              </p>
-            </Link>
-            <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {saleListings.map((listing) => (
+            <h2 className="px-3 text-2xl mt-6 font-semibold">Other Contests</h2>
+            <ul>
+              {OtherListings.map((contestItem) => (
                 <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
+                  listing={contestItem}
                 />
               ))}
             </ul>
           </div>
-        )}
-      </div> */}
+          )}
+      </div>
+        
     </div>
   );
 }
