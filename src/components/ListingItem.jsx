@@ -2,17 +2,22 @@ import React from "react";
 // import Moment from "react-moment";
 import { Link } from "react-router-dom";
 import { MdLocationOn, MdDelete, MdModeEditOutline } from "react-icons/md";
-import ContestImg from "../images/contest.png";
+import contest from "../images/contest.png";
+// import LeetCode from "../images/LeetCode.png";
+// import CodeForces from "../images/CodeForces.png";
+// import AtCoder from "../images/AtCoder.png";
+// import CodeChef from "../images/CodeChef.png";
 
 export default function ListingItem({ listing, id, onDelete, onEdit }) {
   return (
-    <li className=" relative bg-white w-[90%] my-10 items-center shadow-lg hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
+    <li className=" relative bg-gray-50 w-[90%] my-10 items-center shadow-lg hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
       <div className="mx-4 grid grid-cols-4 space-x-4 ">
         <div>
           <img
             className="max-w-[170px] p-2 absolute left-0 top-0"
-            src="../images/LeetCode.png"
-            alt="contest image"
+            // src={`../images/${listing.name}.png`}
+            src={contest}
+            alt={"contest image"}
           ></img>
         </div>
 

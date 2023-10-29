@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import OAuth from "../components/OAuth";
-import { sendPasswordResetEmail, getAuth } from "firebase/auth";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import computer from "../images/computer.png";
-//import { sendPasswordResetEmail, getAuth } from "firebase/auth";
+import { sendPasswordResetEmail, getAuth } from "firebase/auth";
 
 export default function ForgotPassword() {
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
+    password: "",
   });
   const email = formData.email;
   function onChange(e) {
@@ -19,6 +19,11 @@ export default function ForgotPassword() {
     }));
     // console.log(formData.email);
     // console.log(formData.password);
+  }
+
+  const [showPassword, setShowPassword] = useState(false);
+  function password() {
+    setShowPassword(!showPassword);
   }
 
   const navigate = useNavigate();
@@ -32,24 +37,30 @@ export default function ForgotPassword() {
       toast.error("can not send reset email at moment");
     }
   }
+
   return (
     <section>
-      <div className="flex flex-wrap justify-center items-center px-40  max-w-8xl mx-auto">
+      <h1 className="text-3xl text-center mt-6  cursive">Forgot Password</h1>
+      <div className="flex flex-wrap justify-center items-center px-6 py-[130px] max-w-10xl mx-auto">
         <div className="md:w-[67%] lg:w-[50%] mb-12 md:mb-6">
-          <img className="rounded-xl max-w-[700px]" src={computer} alt="" />
+          <img
+            className="rounded-2xl w-full"
+            src="http://www.technocrazed.com/wp-content/uploads/2015/12/Home-Wallpaper-32.jpg"
+            alt=""
+          />
         </div>
-
         <div className="w-[100%] lg:w-[40%] md:w-[67%] lg:ml-20">
-          {/* <h1 className="flex justify-center text-8xl p-10">Sign In</h1> */}
-          <form onSubmit={onSubmit} className="text-xl">
+          <form onSubmit={onSubmit}>
             <div className="relative mb-6">
               <input
                 onChange={onChange}
                 id="email"
                 placeholder="Email address"
-                className="w-full h-[50px] p-4 text-2xl text-gray-700 bg-gray-100 rounded-lg mb-6"
+                className="w-full text-xl text-gray-700 bg-gray-100 rounded-lg mb-6"
                 type="email"
               ></input>
+
+              {/* <button className='absolute text-xl right-[10px] top-[58px]' onClick={()=>{setShowPassword(!showPassword)}}>{showPassword ? <AiFillEye /> : <AiFillEyeInvisible /> }</button> */}
             </div>
             <div className="flex justify-between text-lg mt-2 mb-8">
               <p>
@@ -63,15 +74,11 @@ export default function ForgotPassword() {
               </a>
             </div>
             <button
-              className="mb-4 mt-4 w-full text-lg bg-blue-900 text-white h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
+              className="mb-4 mt-4 w-full text-lg bg-blue-600 text-white h-14 rounded-md  hover:bg-blue-700 shadow-lg active:bg-blue-800"
               type="submit"
             >
-              Get Reset Mail
+              Send Reset Mail
             </button>
-            {/* <div className="mt-2 mb-2 ">
-              <p className="text-center">OR</p>
-            </div>
-            <OAuth></OAuth> */}
           </form>
         </div>
       </div>
