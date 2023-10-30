@@ -40,14 +40,15 @@ export default function AddContest() {
   // }
 
   const [formData, setFormData] = useState({
-    name: "Starter 1",
-    startingTime: null, // Initialize startingTime as null
+    name: "Starter 1 ",
+    startingTime: "", // Initialize startingTime as null
     duration: 90,
     link: "",
   });
 
   const handleDateTimeChange = (newDateTime) => {
-    setFormData({ ...formData, startingTime: newDateTime });
+    setFormData({ ...formData, startingTime: "" });
+    console.log(formData.startingTime);
   };
 
   const handleInputChange = (event) => {
@@ -57,22 +58,7 @@ export default function AddContest() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      // Convert the startingTime to a Firestore timestamp
-      const timestamp = firebase.firestore.Timestamp.fromDate(
-        formData.startingTime.toDate()
-      );
-      console.log(timestamp);
-      // Create a new Firestore document with the formData
-      await db.collection("listings").add({
-        name: formData.name,
-        startingTime: timestamp, // Store startingTime as a timestamp
-        duration: formData.duration,
-        link: formData.link,
-      });
-
-      // console.log("Form Data Submitted Successfully");
       toast.success("contest added");
       navigate(`/`);
     } catch (error) {
@@ -80,21 +66,21 @@ export default function AddContest() {
     }
   };
 
-  // async function onSubmit(e) {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   const formDataCopy = {
-  //     ...formData,
-  //     timestamp: serverTimestamp(),
-  //     //this is uid of the user
-  //     userRef: auth.currentUser.uid,
-  //   };
-  //   console.log(formDataCopy);
-  //   const docRef = await addDoc(collection(db, "listings"), formDataCopy);
-  //   setLoading(false);
-  //   toast.success("contest added");
-  //   navigate(`/`);
-  // }
+  async function onSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    const formDataCopy = {
+      ...formData,
+      timestamp: serverTimestamp(),
+      //this is uid of the user
+      userRef: auth.currentUser.uid,
+    };
+    console.log(formDataCopy);
+    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    setLoading(false);
+    toast.success("contest added");
+    navigate(`/`);
+  }
 
   if (loading) {
     return (
@@ -114,13 +100,13 @@ export default function AddContest() {
   return (
     <form onSubmit={handleSubmit}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DemoContainer components={["DateTimePicker"]}>
+        {/* <DemoContainer components={["DateTimePicker"]}>
           <DateTimePicker
             label="Starting Time"
             value={formData.startingTime}
             onChange={handleDateTimeChange}
           />
-        </DemoContainer>
+        </DemoContainer> */}
         <div>
           <label htmlFor="name">Name:</label>
           <input
@@ -129,6 +115,16 @@ export default function AddContest() {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="name">Starting Time:</label>
+          <input
+            type="datetime-local"
+            id="startingTime"
+            name="startingTime"
+            value={formData.startingTime}
+            onChange={handleDateTimeChange}
           />
         </div>
         <div>

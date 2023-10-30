@@ -1,106 +1,136 @@
 import React, { useState, useEffect } from "react";
-import { Leaderboard } from "flywheel-leaderboard";
-import { SHA256, enc } from "crypto-js";
+import { db } from "../firebase";
+import {
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  limit,
+  collection,
+} from "firebase/firestore";
 
-async function sha512(str) {
-  return crypto.subtle
-    .digest("SHA-512", new TextEncoder("utf-8").encode(str))
-    .then((buf) => {
-      return Array.prototype.map
-        .call(new Uint8Array(buf), (x) => ("00" + x.toString(16)).slice(-2))
-        .join("");
-    });
-}
+// async function sha512(str) {
+//   return crypto.subtle
+//     .digest("SHA-512", new TextEncoder("utf-8").encode(str))
+//     .then((buf) => {
+//       return Array.prototype.map
+//         .call(new Uint8Array(buf), (x) => ("00" + x.toString(16)).slice(-2))
+//         .join("");
+//     });
+// }
 
 export default function LeaderboardList() {
   const [scoreArray, setScoreArray] = useState([]);
   const contests = ["480776", "477676"]; // Add more contest IDs as needed
 
   useEffect(() => {
-    async function fetchData() {
-      let updatedScoreArray = [];
-
-      for (const contest_id of contests) {
-        const data = await getStandings(contest_id);
-        updatedScoreArray = getScores(data, contest_id, updatedScoreArray);
+    async function fetchLeaderboard() {
+      try {
+        const leaderboardRef = collection(db, "leaderboard");
+        const q = query(leaderboardRef, orderBy("Score", "desc"));
+        const querySnap = await getDocs(q);
+        const listings = [];
+        querySnap.forEach((doc) => {
+          return listings.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        setScoreArray(listings);
+        //console.log(listings);
+      } catch (error) {
+        console.log(error);
       }
-      setScoreArray(updatedScoreArray);
     }
-
-    fetchData();
+    fetchLeaderboard();
+    console.log(scoreArray);
   }, []);
 
-  async function getStandings(contest_id) {
-    const rand = String(Math.floor(Math.random() * 100000)).padStart(6, "0");
-    const current_time = String(Math.floor(Date.now() / 1000));
-    const api_key = "7bcb2c2a57feab460343d341d164e26b4ae32fd1";
-    const api_secret = "3e67186659f5f9f35c5841127c40a5b0339180b1";
-    const api_sig =
-      rand +
-      "/contest.standings?apiKey=" +
-      api_key +
-      "&contestId=" +
-      contest_id +
-      "&time=" +
-      current_time +
-      "#" +
-      api_secret;
-    const hash = await sha512(api_sig);
-    const hashWithRand = rand + hash;
-    const url = `https://codeforces.com/api/contest.standings?contestId=${contest_id}&apiKey=${api_key}&time=${current_time}&apiSig=${hashWithRand}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    // console.log(data);
-    // data.map((d) => {
-    //   // console.log(d.score);
-    // });
-    return data;
-  }
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     let updatedScoreArray = [];
 
-  function getScores(obj, contestId, previousScores) {
-    const updatedScoreArray = [...previousScores];
-    let totalScore = 0;
+  //     for (const contest_id of contests) {
+  //       const data = await getStandings(contest_id);
+  //       updatedScoreArray = getScores(data, contest_id, updatedScoreArray);
+  //     }
+  //     setScoreArray(updatedScoreArray);
+  //   }
 
-    for (const item of obj.result.problems) {
-      totalScore += item.rating;
-    }
+  //   fetchData();
+  // }, []);
 
-    for (const row of obj.result.rows) {
-      const points = row.points;
-      const penalty = row.penalty;
-      const handle = row.party.members[0].handle;
-      const rollno = 0;
-      let Score = 100 * points + (1 - penalty / totalScore);
-      Score = Score.toFixed(2);
+  // async function getStandings(contest_id) {
+  //   const rand = String(Math.floor(Math.random() * 100000)).padStart(6, "0");
+  //   const current_time = String(Math.floor(Date.now() / 1000));
+  //   const api_key = "7bcb2c2a57feab460343d341d164e26b4ae32fd1";
+  //   const api_secret = "3e67186659f5f9f35c5841127c40a5b0339180b1";
+  //   const api_sig =
+  //     rand +
+  //     "/contest.standings?apiKey=" +
+  //     api_key +
+  //     "&contestId=" +
+  //     contest_id +
+  //     "&time=" +
+  //     current_time +
+  //     "#" +
+  //     api_secret;
+  //   const hash = await sha512(api_sig);
+  //   const hashWithRand = rand + hash;
+  //   const url = `https://codeforces.com/api/contest.standings?contestId=${contest_id}&apiKey=${api_key}&time=${current_time}&apiSig=${hashWithRand}`;
+  //   const response = await fetch(url);
+  //   const data = await response.json();
+  //   // console.log(data);
+  //   // data.map((d) => {
+  //   //   // console.log(d.score);
+  //   // });
+  //   return data;
+  // }
 
-      // Check if handle already exists in updatedScoreArray
-      const existingUserIndex = updatedScoreArray.findIndex(
-        (user) => user.handle === handle
-      );
+  // function getScores(obj, contestId, previousScores) {
+  //   const updatedScoreArray = [...previousScores];
+  //   let totalScore = 0;
 
-      if (existingUserIndex !== -1) {
-        // Update the existing user's score for the contest
-        updatedScoreArray[existingUserIndex].Score = (
-          parseFloat(updatedScoreArray[existingUserIndex].Score) +
-          parseFloat(Score)
-        ).toFixed(2);
-      } else {
-        // Create a new entry for the user for the given contest
-        updatedScoreArray.push({
-          Score,
-          contestId,
-          handle,
-          rollno,
-        });
-      }
-    }
-    // updatedScoreArray.map((d) => {
-    //   console.log(d.Score);
-    // });
-    console.log(updatedScoreArray);
+  //   for (const item of obj.result.problems) {
+  //     totalScore += item.rating;
+  //   }
 
-    return updatedScoreArray;
-  }
+  //   for (const row of obj.result.rows) {
+  //     const points = row.points;
+  //     const penalty = row.penalty;
+  //     const handle = row.party.members[0].handle;
+  //     const rollno = 0;
+  //     let Score = 100 * points + (1 - penalty / totalScore);
+  //     Score = Score.toFixed(2);
+
+  //     // Check if handle already exists in updatedScoreArray
+  //     const existingUserIndex = updatedScoreArray.findIndex(
+  //       (user) => user.handle === handle
+  //     );
+
+  //     if (existingUserIndex !== -1) {
+  //       // Update the existing user's score for the contest
+  //       updatedScoreArray[existingUserIndex].Score = (
+  //         parseFloat(updatedScoreArray[existingUserIndex].Score) +
+  //         parseFloat(Score)
+  //       ).toFixed(2);
+  //     } else {
+  //       // Create a new entry for the user for the given contest
+  //       updatedScoreArray.push({
+  //         Score,
+  //         contestId,
+  //         handle,
+  //         rollno,
+  //       });
+  //     }
+  //   }
+  // updatedScoreArray.map((d) => {
+  //   console.log(d.Score);
+  // });
+  //console.log(updatedScoreArray);
+
+  //   return updatedScoreArray;
+  // }
 
   return (
     <>
@@ -135,12 +165,12 @@ export default function LeaderboardList() {
                     <a
                       target="_blank"
                       rel="noopener"
-                      href={`https://codeforces.com/profile/${student.handle}`}
+                      href={`https://codeforces.com/profile/${student.data.handle}`}
                     >
-                      {student.handle}
+                      {student.data.handle}
                     </a>
                   </td>
-                  <td className="text-center text-2xl">{student.Score}</td>
+                  <td className="text-center text-2xl">{student.data.Score}</td>
                 </tr>
               ))}
             </tbody>

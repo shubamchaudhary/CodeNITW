@@ -49,6 +49,26 @@ export default function Header() {
         <div>
           <ul className="flex space-x-20 ">
             <li
+              onClick={() => navigate("/add-resources")}
+              className={`cursor-pointer py-4 text-md font-semibold border-b-[3px] ${
+                isPath("/add-resources")
+                  ? "text-black border-b-red-500"
+                  : " text-gray-400 border-b-transparent"
+              }`}
+            >
+              Add Resources
+            </li>
+            <li
+              onClick={() => navigate("/resources")}
+              className={`cursor-pointer py-4 text-md font-semibold border-b-[3px] ${
+                isPath("/resources")
+                  ? "text-black border-b-red-500"
+                  : " text-gray-400 border-b-transparent"
+              }`}
+            >
+              Resources
+            </li>
+            <li
               onClick={() => navigate("/add-contest")}
               className={`cursor-pointer py-4 text-md font-semibold border-b-[3px] ${
                 isPath("/add-contest")

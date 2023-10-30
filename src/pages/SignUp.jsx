@@ -24,8 +24,16 @@ export default function SignUp() {
     course: "btech",
     year: 1,
     password: "",
+    contests: [
+      {
+        name: "",
+        rank: 0,
+        participants: 0,
+      },
+    ],
   });
-  const { name, email, cfhandle, rollno, course, year, password } = formData;
+  const { name, email, cfhandle, rollno, course, year, password, contests } =
+    formData;
   function onChange(e) {
     setFormData((prevData) => ({
       ...prevData,
