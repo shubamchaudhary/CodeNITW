@@ -50,9 +50,9 @@ export default function Resources() {
               {Listings.map((listing) => (
                 <div>
                   <h1>{listing.data.topic}</h1>
-                  <form onSubmit={onSubmit}>
+                  {/* <form onSubmit={onSubmit}>
                     <input></input>
-                  </form>
+                  </form> */}
                 </div>
               ))}
             </ul>
