@@ -11,9 +11,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Dashboard from "./pages/Dashboard";
 import AddContest from "./pages/AddContest";
 import Contest from "./pages/Contest";
-import LeaderboardList from "./pages/Leaderboard";
-import Resources from "./pages/Resources";
-import AddResources from "./pages/AddResources";
+import LeaderboardList  from "./pages/Leaderboard";
 function App() {
   return (
     <>
@@ -35,12 +33,6 @@ function App() {
           </Route>
           <Route path="/leaderboard" element={<PrivateRoute />}>
             <Route path="/leaderboard" element={<LeaderboardList />}></Route>
-          </Route>
-          <Route path="/resources" element={<PrivateRoute />}>
-            <Route path="/resources" element={<Resources />}></Route>
-          </Route>
-          <Route path="/add-resources" element={<PrivateRoute />}>
-            <Route path="/add-resources" element={<AddResources />}></Route>
           </Route>
         </Routes>
       </Router>

@@ -11,124 +11,193 @@ import { getDocs, collection } from "firebase/firestore";
 import { Slide } from "react-toastify";
 import ListingItem from "../components/ListingItem";
 import { da } from "date-fns/locale";
-import ContestImg from "../images/contest.png";
+
 
 export default function Contest() {
-  const [Listings, setListings] = useState(null);
-  const [OtherListings, setOtherListings] = useState(null);
-  const im = "contest";
+  const [Listings, setListings] = useState({ active: [], upcoming: [], past: [] });
+  const [activeContests, setActiveContests] = useState([]);
+  const [upcomingContests, setUpcomingContests] = useState([]);
   useEffect(() => {
     async function fetchListings() {
       try {
         const listingRef = collection(db, "listings");
         const q = query(listingRef, orderBy("timestamp", "desc"));
         const querySnap = await getDocs(q);
-        const listings = [];
+        const activeListings = [];
+        const upcomingListings = [];
+        const pastListings = [];
+        const currentTime = new Date().getTime();
         querySnap.forEach((doc) => {
-          return listings.push({
+          const listing = {
             id: doc.id,
             data: doc.data(),
-          });
+          };
+          
+          const temp = listing.data.startingTimeAsDate;
+          const listingStartTimeDate = temp.toDate();
+          // Get the time in milliseconds
+          const listingStartTime = listingStartTimeDate.getTime();
+          const listingEndTime = listingStartTime + listing.data.duration * 60 * 1000;
+          if (listingStartTime <= currentTime && currentTime <= listingEndTime) {
+            activeListings.push(listing);
+          } else if (listingStartTime > currentTime) {
+            upcomingListings.push(listing);
+          } else {
+            pastListings.push(listing);
+          }
         });
-        setListings(listings);
-        //console.log(listings);
+        setListings({ active: activeListings, upcoming: upcomingListings, past: pastListings });
       } catch (error) {
         console.log(error);
       }
     }
 
     async function getOtherContest() {
-      const apiUrl = "https://kontests.net/api/v1/all";
+      const apiUrl = 'https://kontests.net/api/v1/all';
       try {
         const response = await fetch(apiUrl);
         if (response.status === 200) {
           const data = await response.json();
           console.log(data);
-          const OtherListings = [];
-          for (let item of data) {
-            if (
-              item.site == "AtCoder" ||
-              item.site == "LeetCode" ||
-              item.site == "CodeChef" ||
-              item.site == "CodeForces"
-            ) {
+          const activeContests = [];
+          const upcomingContests = [];
+          for(let item of data){
+            if(item.site == "AtCoder" || item.site == "LeetCode" || item.site == "CodeChef" || item.site == "CodeForces" ){
               let unix_timestamp = item.duration;
-              var modifiedDuration = unix_timestamp / 60;
-
-              //console.log(modifiedDuration);
+              var modifiedDuration = unix_timestamp/60;
+              
+              //console.log(modifiedDuration); 
               const currentDate = new Date();
               var inputDateStr = item.start_time;
-              if (item.site == "CodeChef") {
+              if(item.site == "CodeChef"){
                 const tempDate = inputDateStr;
                 const modifiedTemp = tempDate.replace(" UTC", "Z");
                 inputDateStr = modifiedTemp;
               }
               const inputDate = new Date(inputDateStr);
-              var modifiedStartTime = inputDate.toDateString();
-              console.log(inputDate);
-              console.log(currentDate);
-              if (inputDate >= currentDate) {
-                let contestItem = {
-                  imageName: item.site,
-                  link: item.url,
-                  name: item.name,
-                  startingTime: modifiedStartTime,
-                  duration: modifiedDuration,
-                };
-                OtherListings.push(contestItem);
+              
+              const options = {
+                year: "numeric",
+                month: "long",
+                day: "2-digit",
+                weekday: "long",
+                hour: "2-digit",
+                minute: "2-digit",
+              };
+              const formattedDate = inputDate.toLocaleString(undefined, options)
+              var modifiedStartTime = formattedDate;
+              let contestItem = {
+                imageName : item.site,
+                link : item.url,
+                name : item.name,
+                startingTime : modifiedStartTime,
+                duration : modifiedDuration
               }
+              const contestEndTime = inputDate.getTime() + modifiedDuration * 60 * 1000;
+              if(currentDate.getTime() < contestEndTime) {
+                if(currentDate.getTime() >= inputDate.getTime()) {
+                  activeContests.push(contestItem);
+                } else {
+                  upcomingContests.push(contestItem);
+                }
+              }
+              
             }
           }
-          console.log(OtherListings);
-          setOtherListings(OtherListings);
+          setActiveContests(activeContests);
+          setUpcomingContests(upcomingContests);
         } else {
-          console.error("Failed to fetch data from the API");
+          console.error('Failed to fetch data from the API');
         }
       } catch (error) {
-        console.error("An error occurred:", error);
+        console.error('An error occurred:', error);
       }
     }
-
+    
     fetchListings();
     getOtherContest();
   }, []);
 
-  return (
-    <div>
-      <div className="max-w-6xl mx-auto pt-4 space-y-6 ">
-        {Listings && Listings.length > 0 && (
-          <div className="m-2 mb-6 ">
-            <h2 className="px-3 text-4xl mb-6 font-bold justify-center flex">
-              CCPD Contests
-            </h2>
-            <ul className="overflow-y-auto  no-scrollbar   sm:h-[300px] md:h-[500px]">
-              {Listings.map((listing) => (
-                <ListingItem
-                  key={listing.id}
-                  listing={listing.data}
-                  id={listing.id}
-                  image="contest"
-                />
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+  
 
-      <div className="max-w-6xl mx-auto pt-4 space-y-6">
-        {OtherListings && OtherListings.length > 0 && (
-          <div className="m-2 mb-6">
-            <h2 className="px-3 text-4xl mt-12 mb-4 font-bold justify-center flex">
-              Other Contests
-            </h2>
-            <ul className="overflow-y-auto sm:h-[300px] md:h-[700px]">
-              {OtherListings.map((contestItem) => (
-                <ListingItem listing={contestItem} image={contestItem.site} />
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+  return (
+    <div className="bg-blue-100 font-serif">
+  <div className="max-w-6xl mx-auto pt-4 space-y-6">
+  <div className="m-2 mb-6 bg-white shadow-lg p-4 rounded-lg">
+  <h1 className="text-4xl font-semibold text-blue-600 mb-4">CCPD Contests</h1>
+
+  {Listings && Listings.active.length > 0 && (
+    <div>
+      <h2 className="text-3xl font-semibold text-green-600 mb-4">Active Contests</h2>
+      <ul>
+        {Listings.active.map((listing) => (
+         <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-105">
+         <ListingItem listing={listing.data} id={listing.id} status="Active" />
+       </li>
+        ))}
+      </ul>
     </div>
+  )}
+
+  {Listings && Listings.upcoming.length > 0 && (
+    <div>
+      <h2 className="text-3xl font-semibold text-blue-600 mb-4">Upcoming Contests</h2>
+      <ul>
+        {Listings.upcoming.map((listing) => (
+          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-105">
+          <ListingItem listing={listing.data} id={listing.id} status="Upcoming" />
+        </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {Listings && Listings.past.length > 0 && (
+    <div>
+      <h2 className="text-3xl font-semibold text-gray-600 mb-4">Past Contests</h2>
+      <ul>
+        {Listings.past.map((listing) => (
+          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-105">
+          <ListingItem listing={listing.data} id={listing.id} status="Past"  />
+        </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+</div>
+<div className="max-w-6xl mx-auto pt-4 space-y-6">
+<div className="m-2 mb-6 bg-white shadow-lg p-4 rounded-lg">
+  <h1 className="text-4xl font-semibold text-blue-600 mb-4">Other Contests</h1>
+
+  {activeContests.length > 0 && (
+    <div>
+      <h2 className="text-3xl font-semibold text-green-600 mb-4">Active Contests</h2>
+      <ul>
+        {activeContests.map((contestItem, index) => (
+          <li key={index} className="transform transition duration-500 ease-in-out hover:scale-105">
+          <ListingItem listing={contestItem} status="Active" />
+        </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {upcomingContests.length > 0 && (
+    <div>
+      <h2 className="text-3xl font-semibold text-blue-600 mb-4">Upcoming Contests</h2>
+      <ul>
+        {upcomingContests.map((contestItem, index) => (
+         <li key={index} className="transform transition duration-500 ease-in-out hover:scale-105">
+         <ListingItem listing={contestItem} status="Upcoming" />
+       </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+</div>
+</div>
+
   );
 }

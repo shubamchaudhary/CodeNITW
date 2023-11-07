@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import OAuth from "../components/OAuth";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import { signOut , signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import computer from "../images/computer.png";
@@ -31,6 +31,13 @@ export default function SignIn() {
         email,
         password
       );
+
+      const user = userCredential.user;
+      if (!user.emailVerified) {
+        toast.error("Please verify your email before signing in.");
+        await signOut(auth);
+        return;
+      }
       if (userCredential.user) {
         toast.success("welcome again!!!");
         navigate("/Dashboard");
@@ -43,7 +50,8 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <section>
+    <div className="bg-blue-100">
+      <section>
       <div className="flex flex-wrap justify-center items-center px-40  max-w-8xl mx-auto">
         <div className="md:w-[67%] lg:w-[50%] mb-12 md:mb-6">
           <img className="rounded-xl max-w-[700px]" src={computer} alt="" />
@@ -93,7 +101,7 @@ export default function SignIn() {
                 </a>
               </p>
               <a className="text-red-600" href="/forgot-password">
-                forgot password?
+                Forgot Password?
               </a>
             </div>
             <button
@@ -110,5 +118,7 @@ export default function SignIn() {
         </div>
       </div>
     </section>
+    </div>
+    
   );
 }
