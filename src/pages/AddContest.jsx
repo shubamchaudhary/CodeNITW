@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useRef } from "react";
 import { Dna } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import {
@@ -7,78 +7,66 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-//import { Timestamp } from "firebase-admin/firestore";
 import { getAuth } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { Timestamp } from "firebase/firestore";
 import ContestImage from "../images/contest.png";
-import firebase from "firebase/compat/app";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 export default function AddContest() {
   const navigate = useNavigate();
   const auth = getAuth();
   const [loading, setLoading] = useState(false);
-  // const [formData, setFormData] = useState({
-  //   name: "Starter 1",
-  //   startingTime: "23rd January 2024, Wednesday, 5pm",
-  //   duration: 90,
-  //   link: "",
-  // });
-  // const { name, startingTime, duration, link } = formData;
-
-  // function onChange(e) {
-  //   setFormData((prevState) => ({
-  //     ...prevState,
-  //     [e.target.id]: e.target.value,
-  //   }));
-  // }
-
   const [formData, setFormData] = useState({
-    name: "Starter 1 ",
-    startingTime: "", // Initialize startingTime as null
+    name: "Starter 1",
+    startingTime: "",
     duration: 90,
     link: "",
+
   });
 
-  const handleDateTimeChange = (newDateTime) => {
-    setFormData({ ...formData, startingTime: "" });
-    console.log(formData.startingTime);
-  };
+  
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  
+  const { name, startingTime, duration, link } = formData;
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      toast.success("contest added");
-      navigate(`/`);
-    } catch (error) {
-      console.error("Error submitting form data:", error);
-    }
-  };
+  let UpdatedStartingTime = "";
+  const inputDate = new Date(startingTime);
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+      weekday: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+  const formattedDate = inputDate.toLocaleString(undefined, options);
+  const startingTimeTimestamp = Timestamp.fromDate(inputDate);
+  UpdatedStartingTime = formattedDate;
+  const updatedFormData = { ...formData, startingTime: UpdatedStartingTime };
+  
+  function onChange(e) {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.id]: e.target.value,
+    }));
+  }
 
   async function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
     const formDataCopy = {
-      ...formData,
+      ...updatedFormData,
       timestamp: serverTimestamp(),
-      //this is uid of the user
+      startingTimeAsDate: startingTimeTimestamp,
       userRef: auth.currentUser.uid,
     };
     console.log(formDataCopy);
     const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
-    toast.success("contest added");
+    toast.success("Contest Added");
     navigate(`/`);
   }
 
@@ -98,115 +86,71 @@ export default function AddContest() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {/* <DemoContainer components={["DateTimePicker"]}>
-          <DateTimePicker
-            label="Starting Time"
-            value={formData.startingTime}
-            onChange={handleDateTimeChange}
-          />
-        </DemoContainer> */}
-        <div>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="name">Starting Time:</label>
-          <input
-            type="datetime-local"
-            id="startingTime"
-            name="startingTime"
-            value={formData.startingTime}
-            onChange={handleDateTimeChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="duration">Duration (minutes):</label>
-          <input
-            type="number"
-            id="duration"
-            name="duration"
-            value={formData.duration}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="link">Link:</label>
-          <input
-            type="text"
-            id="link"
-            name="link"
-            value={formData.link}
-            onChange={handleInputChange}
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </LocalizationProvider>
+    <div className=" bg-blue-100 ">
+      <main className="max-w-[60%] px-4 mx-auto bg-blue-100 text-gray-800 rounded-lg p-6">
+    <h1 className="text-4xl text-center font-cursive text-blue-700">Add New Contest</h1>
+    <form onSubmit={onSubmit} className="mt-6 space-y-4">
+      <div className="flex flex-col space-y-1">
+        <label htmlFor="name" className="text-lg font-semibold text-blue-600">Contest Name</label>
+        <input
+          type="text"
+          id="name"
+          value={name}
+          onChange={onChange}
+          placeholder="Enter Contest Name"
+          required
+          className="w-full px-4 py-2 text-xl text-blue-800 bg-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
+        />
+      </div>
+  
+      <div className="flex flex-col space-y-1">
+        <label htmlFor="startingTime" className="text-lg font-semibold text-blue-600">Starting Time</label>
+        <input
+          type="datetime-local"
+          id="startingTime"
+          value={startingTime}
+          onChange={onChange}
+          required
+          className="w-full px-4 py-2 text-xl text-blue-800 bg-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
+        />
+      </div>
+  
+      <div className="flex flex-col space-y-1">
+        <label htmlFor="duration" className="text-lg font-semibold text-blue-600">Duration (in minutes)</label>
+        <input
+          type="number"
+          id="duration"
+          value={duration}
+          onChange={onChange}
+          required
+          className="w-full px-4 py-2 text-xl text-blue-800 bg-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
+        />
+      </div>
+  
+      <div className="flex flex-col space-y-1">
+        <label htmlFor="link" className="text-lg font-semibold text-blue-600">Contest Link</label>
+        <input
+          type="text"
+          id="link"
+          value={link}
+          onChange={onChange}
+          placeholder="Enter Contest Link"
+          required
+          className="w-full px-4 py-2 text-xl text-blue-800 bg-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
+        />
+      </div>
+  
+      <button
+        type="submit"
+        className="w-full px-7 py-3 text-white bg-blue-500 rounded-lg text-xl font-medium hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-600"
+      >
+        Add Contest
+      </button>
     </form>
-    // <main className="max-w-[800px] px-4 mx-auto mt-[50px]">
-    //   <h1 className="text-3xl text-center mt-6 cursive">Add New Contest</h1>
-    //   <form onSubmit={onSubmit}>
-    //     <p className="text-lg mt-6 font-semibold">Contest Name</p>
-    //     <input
-    //       type="text"
-    //       id="name"
-    //       value={name}
-    //       onChange={onChange}
-    //       placeholder="Contest Name"
-    //       required
-    //       className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  text-center"
-    //     />
-    //     <div className="mb-[20px]">
-    //       <p className="text-lg font-semibold">Starting time</p>
-    //       <LocalizationProvider dateAdapter={AdapterDayjs}>
-    //         <DemoContainer components={["DateTimePicker"]}>
-    //           <DateTimePicker
-    //             label="Pick Time for Contest"
-    //             type="text"
-    //             id="startingTime"
-    //             value={startingTime}
-    //             onChange={onChange}
-    //             placeholder="startingTime"
-    //             required
-    //             className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  text-center"
-    //           />
-    //         </DemoContainer>
-    //       </LocalizationProvider>
-    //     </div>
+  </main>
+  
+    </div>
+    
 
-    //     <p className="text-lg font-semibold">Duration in minutes</p>
-    //     <input
-    //       type="number"
-    //       id="duration"
-    //       value={duration}
-    //       onChange={onChange}
-    //       required
-    //       className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300  text-center"
-    //     />
-    //     <p className="text-lg font-semibold">Contest Link</p>
-    //     <input
-    //       type="text"
-    //       id="link"
-    //       value={link}
-    //       onChange={onChange}
-    //       placeholder="Contest Link"
-    //       required
-    //       className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  mb-6 text-center"
-    //     />
-    //     <button
-    //       type="submit"
-    //       className="mb-6 w-full px-7 py-3 bg-blue-600 text-white font-medium text-sm  rounded shadow-md "
-    //     >
-    //       Add Contest
-    //     </button>
-    //   </form>
-    // </main>
   );
 }

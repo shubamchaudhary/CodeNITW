@@ -18,15 +18,11 @@ export default function AddResources() {
   const auth = getAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    topic: "",
-    questions: [
-      {
-        name: "",
-        link: "",
-      },
-    ],
+    name: "",
+    tag: "",
+    link: "",
   });
-  const { name, topic, link } = formData;
+  const { name, tag, link } = formData;
 
   function onChange(e) {
     setFormData((prevState) => ({
@@ -70,8 +66,7 @@ export default function AddResources() {
     <main className="max-w-[800px] px-4 mx-auto mt-[50px]">
       <h1 className="text-3xl text-center mt-6 cursive">Add Question</h1>
       <form onSubmit={onSubmit}>
-        <p className="text-lg mt-6 font-semibold">Question Name</p>
-        {/* <input
+        <input
           type="text"
           id="name"
           value={name}
@@ -79,13 +74,22 @@ export default function AddResources() {
           placeholder="Problem Name"
           required
           className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  mb-6"
-        /> */}
+        />
         <input
           type="text"
-          id="topic"
-          value={topic}
+          id="tag"
+          value={tag}
           onChange={onChange}
-          placeholder="Topic Name"
+          placeholder="Problem Tag"
+          required
+          className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  mb-6"
+        />
+        <input
+          type="text"
+          id="link"
+          value={link}
+          onChange={onChange}
+          placeholder="Problem Link"
           required
           className="w-full px-4 py-2 text-xl text-gray-700 border-gray-300 rounded  mb-6"
         />

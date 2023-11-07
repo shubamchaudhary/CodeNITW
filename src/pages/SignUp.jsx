@@ -7,6 +7,8 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  sendEmailVerification,
+  signOut
 } from "firebase/auth";
 import { Link } from "react-router-dom";
 import { db } from "../firebase";
@@ -22,18 +24,10 @@ export default function SignUp() {
     cfhandle: "",
     rollno: "",
     course: "btech",
-    year: 1,
+    year: "first",
     password: "",
-    contests: [
-      {
-        name: "",
-        rank: 0,
-        participants: 0,
-      },
-    ],
   });
-  const { name, email, cfhandle, rollno, course, year, password, contests } =
-    formData;
+  const { name, email, cfhandle, rollno, course, year, password } = formData;
   function onChange(e) {
     setFormData((prevData) => ({
       ...prevData,
@@ -42,7 +36,7 @@ export default function SignUp() {
     // console.log(formData);
     // console.log(formData.password);
   }
-
+ 
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
@@ -50,6 +44,11 @@ export default function SignUp() {
   async function onSubmit(e) {
     e.preventDefault();
     try {
+      // Check if email ends with @student.nitw.ac.in
+      if (!email.endsWith("@student.nitw.ac.in")) {
+        toast.error("Email must end with @student.nitw.ac.in");
+        return;
+      }
       const auth = getAuth();
       //console.log(formData);
       const userCredential = await createUserWithEmailAndPassword(
@@ -57,22 +56,23 @@ export default function SignUp() {
         email,
         password
       );
-      console.log(formData);
-      updateProfile(auth.currentUser, {
-        displayName: name,
-      });
       const user = userCredential.user;
-      console.log(user);
+      await updateProfile(user, { displayName: name }); 
+      await signOut(auth);
+      // Send verification email
+      await sendEmailVerification(user);
+      toast.success("Verification email sent. Please check your inbox.");
       const formDataCopy = { ...formData };
-      console.log(formDataCopy);
       delete formDataCopy.password;
       formDataCopy.timestamp = serverTimestamp();
+      console.log(formDataCopy);
       //pushing data to database(db)
       await setDoc(doc(db, "users", user.uid), formDataCopy);
       toast.success("Your id is created!!");
-      navigate("/Dashboard");
+      navigate("/sign-in");
     } catch (error) {
       console.log(formData);
+      console.log(error);
       toast.error("Password too short or not filled all options");
     }
   }
@@ -97,7 +97,7 @@ export default function SignUp() {
               <input
                 onChange={onChange}
                 id="email"
-                placeholder="Email address"
+                placeholder="Student Email"
                 className="w-full h-[50px] p-4 text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 type="email"
               ></input>
@@ -117,6 +117,7 @@ export default function SignUp() {
                   type="text"
                 ></input>
                 <select
+                  id="course"
                   onChange={onChange}
                   className="w-full h-[50px] p-4 mt-4 mb-4 mx-2 text-gray-700 bg-gray-100 rounded-lg"
                 >
@@ -129,8 +130,12 @@ export default function SignUp() {
                   <option id="msc" value="msc">
                     MSC
                   </option>
+                  <option id="mac" value="mac">
+                    MCA
+                  </option>
                 </select>
                 <select
+                  id="year"
                   className="w-full h-[50px] p-4 mt-4 ml-2 mb-4 text-gray-700 bg-gray-100 rounded-lg"
                   onChange={onChange}
                 >
@@ -180,7 +185,7 @@ export default function SignUp() {
                 </a>
               </p>
               <a className="text-red-600" href="/forgot-password">
-                forgot password?
+                Forgot Password?
               </a>
             </div>
             <button
