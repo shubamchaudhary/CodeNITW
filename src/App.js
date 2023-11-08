@@ -12,12 +12,16 @@ import Dashboard from "./pages/Dashboard";
 import AddContest from "./pages/AddContest";
 import Contest from "./pages/Contest";
 import LeaderboardList  from "./pages/Leaderboard";
+import Resources from "./pages/Resources";
 function App() {
   return (
     <>
       <Router>
         <Header />
         <Routes>
+        <Route path="/resources" element={<PrivateRoute />}>
+            <Route path="/resources" element={<Resources />}></Route>
+          </Route>
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/" element={<Contest />}></Route>
           </Route>
