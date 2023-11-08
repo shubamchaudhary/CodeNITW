@@ -49,7 +49,7 @@ const Resources = () => {
 
   return (
     <div className='flex justify-center'>
-    <div className='w-full sm:w-3/4 lg:w-2/3'>
+    <div className='w-full sm:w-3/4 lg:w-2/3  '>
       {topics.map(topic => (
         <TopicCard  
           key={topic.id} 
@@ -74,24 +74,24 @@ const Resources = () => {
 };
 
 export function QuestionCard({ name, link }) {
+  const truncatedName = name.length > 20 ? name.substring(0, 15) + '...' : name;
+
   return (
-    <div 
-    className='relative bg-gray-300 bg-opacity-50 w-full my-5 items-center shadow-md hover:shadow-lg rounded-md overflow-hidden transition-shadow duration-300 m-5 p-2'
-      onClick={e => e.stopPropagation()}
-    >
-      <div className='grid grid-cols-1 sm:grid-cols-4 space-x-4 items-center sm:w-[90%]'>
-        <div className='col-span-1 sm:col-span-3'>
-          <h1 className='text-xl font-bold text-blue-700'>{name}</h1>
-          <div className='mt-2'>
-            <a
-              href={link}
-              target='_blank'
-              rel='noreferrer'
-              className='bg-blue-700 text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium'
-            >
-              Solve Question
-            </a>
-          </div>
+    <div className='justify-center flex bg-gray-300 bg-opacity-50 w-full my-5 items-center shadow-md hover:shadow-lg rounded-md overflow-hidden transition-shadow duration-300 m-4 p-2'>
+      <div className='flex justify-between items-center w-full'>
+        <div>
+          <h1 className='text-xl font-bold text-blue-700'>{truncatedName}</h1>
+          <div className='text-sm text-gray-500'>Difficulty: Medium</div> {/* Replace "Medium" with the actual difficulty value */}
+        </div>
+        <div className='mt-2'>
+          <a
+            href={link}
+            target='_blank'
+            rel='noreferrer'
+            className='bg-blue-700 text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium'
+          >
+            Solve Question
+          </a>
         </div>
       </div>
     </div>
