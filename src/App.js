@@ -22,8 +22,8 @@ function App() {
         <Route path="/resources" element={<PrivateRoute />}>
             <Route path="/resources" element={<Resources />}></Route>
           </Route>
-          <Route path="/" element={<PrivateRoute />}>
-            <Route path="/" element={<Contest />}></Route>
+          <Route path="/contest" element={<PrivateRoute />}>
+            <Route path="/contest" element={<Contest />}></Route>
           </Route>
           {/* <Route path="/" element={<PrivateRoute />}></Route> */}
           <Route path="/sign-in" element={<SignIn />}></Route>
