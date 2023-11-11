@@ -48,7 +48,7 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="bg-white min-h-screen flex flex-col justify-center items-center">
+    <div className="bg-blue-100 min-h-screen flex flex-col justify-center items-center">
       <section className="w-full max-w-8xl mx-auto flex flex-col md:flex-row justify-center items-center px-4 md:px-40">
         <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
           <img className="rounded-xl max-w-[700px]" src={computer} alt="" />
