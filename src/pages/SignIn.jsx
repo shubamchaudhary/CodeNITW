@@ -17,8 +17,6 @@ export default function SignIn() {
       ...prevData,
       [e.target.id]: e.target.value,
     }));
-    // console.log(formData.email);
-    // console.log(formData.password);
   }
   const navigate = useNavigate();
   async function onSubmit(e) {
@@ -50,15 +48,13 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="bg-blue-100">
-      <section>
-      <div className="flex flex-wrap justify-center items-center px-40  max-w-8xl mx-auto">
-        <div className="md:w-[67%] lg:w-[50%] mb-12 md:mb-6">
+    <div className="bg-white min-h-screen flex flex-col justify-center items-center">
+      <section className="w-full max-w-8xl mx-auto flex flex-col md:flex-row justify-center items-center px-4 md:px-40">
+        <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
           <img className="rounded-xl max-w-[700px]" src={computer} alt="" />
         </div>
-
-        <div className="w-[100%] lg:w-[40%] md:w-[67%] lg:ml-20">
-          {/* <h1 className="flex justify-center text-8xl p-10">Sign In</h1> */}
+  
+        <div className="w-full md:w-1/2 lg:w-1/2 lg:ml-20">
           <form onSubmit={onSubmit} className="text-xl">
             <div className="relative mb-6">
               <input
@@ -75,7 +71,6 @@ export default function SignIn() {
                 className="w-full h-[50px] p-4 text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 id="password"
               ></input>
-              {/* <button className='absolute text-xl right-[10px] top-[58px]' onClick={()=>{setShowPassword(!showPassword)}}>{showPassword ? <AiFillEye /> : <AiFillEyeInvisible /> }</button> */}
               {showPassword ? (
                 <AiFillEye
                   onClick={() => {
@@ -110,15 +105,9 @@ export default function SignIn() {
             >
               Sign In
             </button>
-            {/* <div className="mt-2 mb-2 ">
-              <p className="text-center">OR</p>
-            </div>
-            <OAuth></OAuth> */}
           </form>
         </div>
-      </div>
-    </section>
+      </section>
     </div>
-    
   );
 }

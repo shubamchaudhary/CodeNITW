@@ -10,7 +10,7 @@ const Resources = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [newTopic, setNewTopic] = useState("");
-  const [newQuestion, setNewQuestion] = useState({ name: '', link: '',defficulty:'' });
+  const [newQuestion, setNewQuestion] = useState({ name: '', link: '',defficulty:'easy' });
   
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const Resources = () => {
         questions: arrayUnion(newQuestion)
       });
       setTopics(topics.map(topic => topic.id === selectedTopic ? { ...topic, questions: [...topic.questions, newQuestion] } : topic));
-      setNewQuestion({ name: '', link: '',defficulty:'' });
+      setNewQuestion({ name: '', link: '',defficulty:'easy' });
     }
   };
   const auth = getAuth();
