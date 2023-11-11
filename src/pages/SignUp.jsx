@@ -80,7 +80,7 @@ export default function SignUp() {
   return (
     <section>
       {/* <h1 className="text-3xl text-center mt-6  cursive">Sign Up</h1> */}
-      <div className="flex flex-wrap justify-center items-center px-40  max-w-8xl mx-auto">
+      <div className="flex flex-wrap justify-center items-center px-40 bg-blue-100 min-h-screen  max-w-8xl mx-auto">
         <div className="md:w-[67%] lg:w-[50%] mb-12 md:mb-6">
           <img className="rounded-xl max-w-[700px]" src={computer} alt="" />
         </div>
