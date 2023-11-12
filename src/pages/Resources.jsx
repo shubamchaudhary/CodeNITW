@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { addDoc, collection, serverTimestamp, updateDoc, arrayUnion, getDocs, doc } from "firebase/firestore";
+import { getDoc, addDoc, collection, serverTimestamp, updateDoc, arrayUnion, getDocs, doc, query, limit } from "firebase/firestore";
 import { getAuth } from '@firebase/auth';
 import DailyProblem from './DailyProblem.jsx'
-
 
 const Resources = () => {
   const [topics, setTopics] = useState([]);
@@ -11,16 +10,29 @@ const Resources = () => {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [newTopic, setNewTopic] = useState("");
   const [newQuestion, setNewQuestion] = useState({ name: '', link: '',defficulty:'easy' });
-  
+  const [questions, setQuestions] = useState([]);
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     const fetchTopics = async () => {
       const querySnapshot = await getDocs(collection(db, "resources"));
-      setTopics(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setTopics(querySnapshot.docs.map(doc => ({ id: doc.id, topicName: doc.data().topicName })));
     };
 
     fetchTopics();
   }, []);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      if (selectedTopic) {
+        const docRef = doc(db, "resources", selectedTopic);
+        const docSnapshot = await getDoc(docRef);
+        setQuestions(docSnapshot.data().questions);
+      }
+    };
+  
+    fetchQuestions();
+  }, [selectedTopic, page]);
 
   const addTopic = async (e) => {
     e.preventDefault();
@@ -39,10 +51,11 @@ const Resources = () => {
       await updateDoc(docRef, {
         questions: arrayUnion(newQuestion)
       });
-      setTopics(topics.map(topic => topic.id === selectedTopic ? { ...topic, questions: [...topic.questions, newQuestion] } : topic));
+      setQuestions([...questions, newQuestion]);
       setNewQuestion({ name: '', link: '',defficulty:'easy' });
     }
   };
+
   const auth = getAuth();
   const user=auth.currentUser;
   const userEmail = user && user.email;
@@ -57,7 +70,7 @@ const Resources = () => {
           key={topic.id} 
           id={topic.id}
           name={topic.topicName} 
-          questions={topic.questions} 
+          questions={questions} 
           addQuestion={addQuestion} 
           newQuestion={newQuestion} 
           setNewQuestion={setNewQuestion}
@@ -136,12 +149,6 @@ export function QuestionCard({ name, link, defficulty }) {
           >
             {link}
           </a>
-//             {/* <select className="px-2 py-1 rounded bg-blue-500 text-white" style={{ width: '7%' }}
-// //                     value={action}
-// //                   >
-// //                     <option value="Done">Done</option>
-// //                     <option value="Pending">Pending</option>
-// //                   </select> */}
         )}
       </div>
     </div>
@@ -151,9 +158,11 @@ export function QuestionCard({ name, link, defficulty }) {
 
 export function TopicCard({ id, name, questions, addQuestion, newQuestion, setNewQuestion, selectedTopic, setSelectedTopic, isAdmin }) {
   const isOpen = id === selectedTopic;
+  
 
   const handleTopicClick = () => {
     setSelectedTopic(isOpen ? null : id);
+    // Reset page number to 0 when a new topic is selected
   };
   const auth = getAuth();
   const user = auth.currentUser;
@@ -232,7 +241,9 @@ export function TopicCard({ id, name, questions, addQuestion, newQuestion, setNe
         </div>
       )}
     </div>
+
     </>
   );
 }
+
 export default Resources;

@@ -44,9 +44,9 @@ const PerformanceChart = (props) => {
   }, [props.timeData, props.rankData]);
 
   return (
-    <div>
-      <canvas ref={chartRef} width="400" height="200"></canvas>
-    </div>
+    <div className="bg-white rounded-md p-10 h-300px w-400px md:h-500px md:w-900px">
+    <canvas ref={chartRef} className="w-full h-full"></canvas>
+  </div>
   );
 };
 
