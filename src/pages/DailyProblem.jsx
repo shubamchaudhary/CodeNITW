@@ -279,8 +279,8 @@ function updateTimer(postDate) {
   
 
   return (
-    <div className=" w-[80%] container mx-auto p-4 font-serif">
-      <section className="bg-yellow-100 border rounded ">
+    <div className=" w-[70%] container mx-auto p-4 font-serif">
+      <section className="bg-blue-50 rounded-md border-1 border-gray-400 shadow-md hover:shadow-lg">
     {!isEnrolled && (
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col m-[20px]">
         <h2 className="text-2xl text-center cursive">Enroll in Leetcode 75 Hard Challenge</h2>
@@ -300,7 +300,7 @@ function updateTimer(postDate) {
           {isEnrolled  && !solvedToday && problemOfTheDay && (
       <div>
         <section className="max-w-2xl mx-auto flex justify-center items-center flex-col m-4">
-          <h2 className="text-2xl text-center font-cursive">Problem of the Day</h2>
+          <h2 className="text-2xl mt-4 font-semibold text-center font-cursive">Problem of the Day</h2>
           <div className="m-4 w-full">
             <h3 className="text-xl font-semibold">{problemOfTheDay.title}</h3>
             <a href={problemOfTheDay.link} target="_blank" rel="noreferrer" className="text-blue-600">{problemOfTheDay.link}</a>
@@ -311,8 +311,8 @@ function updateTimer(postDate) {
             >
               Verify Solution
             </button>
-            <div className="mt-4">
-              <p className="text-lg font-semibold">Time Left to Verify:</p>
+            <div className="mt-4 flex justify-center">
+              <p className="text-lg font-semibold mr-1">Time Left to Verify : </p>
               <p id = "timeLeft" className="text-lg">{updateTimer(problemOfTheDay.postDate)}</p>
             </div>
           </div>
