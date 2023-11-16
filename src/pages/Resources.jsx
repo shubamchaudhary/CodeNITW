@@ -26,7 +26,7 @@ const Resources = () => {
 
   return (
     <div className='bg-blue-100'>
-      {/* <DailyProblem /> */}
+      <DailyProblem />
       <div className='bg-blue-100 min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
           {topics.map((topic, index) => (
