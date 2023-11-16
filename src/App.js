@@ -13,6 +13,7 @@ import AddContest from "./pages/AddContest";
 import Contest from "./pages/Contest";
 import LeaderboardList  from "./pages/Leaderboard";
 import Resources from "./pages/Resources";
+
 function App() {
   return (
     <>

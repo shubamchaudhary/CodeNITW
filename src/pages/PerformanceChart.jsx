@@ -14,6 +14,7 @@ const PerformanceChart = (props) => {
 
     charInstance.current = new Chart(myChartRef, {
       type: "line",
+      responsive: true,
       data: {
         labels: props.timeData,
         datasets: [
@@ -44,7 +45,7 @@ const PerformanceChart = (props) => {
   }, [props.timeData, props.rankData]);
 
   return (
-    <div className="bg-white rounded-md p-10 h-300px w-400px md:h-500px md:w-900px">
+    <div className="w-full h-full">
     <canvas ref={chartRef} className="w-full h-full"></canvas>
   </div>
   );
