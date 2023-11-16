@@ -59,8 +59,8 @@ const Resources = () => {
 
 export function QuestionCard(props) {
   const { name, link, youtube, onQuestionSolved } = props;
-  const truncatedName = name.length > 20 ? name.substring(0, 20) + '..' : name;
-  const truncatedLink = link.length > 40 ? link.substring(0, 40) + '...' : link;
+  const truncatedName = name.length > 15 ? name.substring(0, 15) + '..' : name;
+  const truncatedLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const [isChecked, setIsChecked] = useState(() => {
@@ -100,7 +100,7 @@ export function QuestionCard(props) {
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
         >
-          {isSmallScreen ? "link" : link}
+          {isSmallScreen ? "link" : truncatedLink}
         </a>
         <a
           href={youtube}
