@@ -89,38 +89,38 @@ export function QuestionCard(props) {
 
   return (
     <div className={`flex items-center border rounded p-4 ${isChecked ? "bg-green-200" : "bg-blue-100"} rounded-lg p-4 shadow-md ml-2 mt-2 mr-2 mb-2`}>
-      <div className="flex-grow flex justify-between">
-        <h3 className={`text-lg font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
-          {isSmallScreen ? truncatedName : name}
-        </h3>
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`text-blue-500 hover:underline ${isSmallScreen ? 'w-full text-center' : 'w-2/5'}`}
-        >
-          {isSmallScreen ? 'Link' : truncatedLink}
-        </a>
-        <a
-          href={youtube}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`ml-auto ${isSmallScreen ? 'mr-2' : ''}`}
-        >
-          <img
-            className="max-w-[50px] p-2 rounded-md hover:underline cursor-pointer"
-            src={Youtube}
-            alt="contest image"
-          /> 
-        </a>
-        <input
-              className="ml-[50px] form-checkbox h-6 w-6 text-green-500"
-              type="checkbox"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
-             />
-      </div>
-    </div>
+  <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
+    <h3 className={`text-lg font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
+      {isSmallScreen ? truncatedName : name}
+    </h3>
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`text-blue-500 hover:underline ${isSmallScreen ? 'w-full text-center' : 'w-2/5'}`}
+    >
+      {isSmallScreen ? 'Link' : truncatedLink}
+    </a>
+    <a
+      href={youtube}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`ml-auto ${isSmallScreen ? 'mt-2 sm:mt-0' : ''}`}
+    >
+      <img
+        className="max-w-[50px] p-2 rounded-md hover:underline cursor-pointer"
+        src={Youtube}
+        alt="contest image"
+      /> 
+    </a>
+    <input
+      className="ml-[50px] form-checkbox h-6 w-6 text-green-500"
+      type="checkbox"
+      checked={isChecked}
+      onChange={handleCheckboxChange}
+    />
+  </div>
+</div>
   );
 }
 
