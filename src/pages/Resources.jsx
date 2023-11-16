@@ -100,7 +100,7 @@ export function QuestionCard(props) {
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
         >
-          {truncatedLink}
+          {isSmallScreen ? "link" : link}
         </a>
         <a
           href={youtube}
