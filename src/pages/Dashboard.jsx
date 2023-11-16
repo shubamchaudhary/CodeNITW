@@ -95,56 +95,16 @@ export default function Dashboard() {
 
   return (
     <>
-    <div className=" font-serif bg-blue-100 min-h-screen ">
-    {/* <h1 className="text-4xl text-center  cursive font-semibold">
-          <span className="text-red-800 font-semibold">{name}'s</span> Dashboard
-    </h1>
-      <section className="max-w-2xl mx-auto flex justify-center items-center flex-col m-[20px]">
-        <h2 className="text-2xl text-center cursive">Personal Details</h2>
-        <div className="m-[20px] w-[100%]">
-          
-        </div>
-      </section> */}
-      <div className="justify-center bg-blue-50 flex">
-      <div className="max-w-md  p-8 sm:flex sm:space-x-6  flex justify-center">
-	<div className="flex flex-col space-y-4 justify-center">
-		<div>
-			<h2 className="text-2xl font-semibold"><strong>Name:</strong> {name}</h2>
-		</div>
-    <div>
-			<h2 className="text-lg font-semibold"><strong>Email:</strong> {email}</h2>
-		</div>
-    <div className="flex justify-center text-gray-700">
-			<h1 className="mx-2 font-semibold text-lg"> {formData.course}</h1>
-      <h1  className="mx-2 font-semibold text-lg"> {formData.year} year</h1>
-      <h1  className="mx-2 font-semibold text-lg">Roll no.: {formData.rollno}</h1>
-		</div>
-		<div className="space-y-1">
-			
-         
-         
-          <p className="text-lg font-semibold text-blue-600" ><strong>Leetcode Handle:</strong> {formData.lchandle}</p>
-          <p className="text-lg font-semibold text-blue-600" ><strong>Codeforces Handle:</strong> {formData.cfhandle}</p>
-			
-			<span className="flex items-center space-x-2">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-label="Phonenumber" className="w-4 h-4">
-					<path fill="currentColor" d="M449.366,89.648l-.685-.428L362.088,46.559,268.625,171.176l43,57.337a88.529,88.529,0,0,1-83.115,83.114l-57.336-43L46.558,362.088l42.306,85.869.356.725.429.684a25.085,25.085,0,0,0,21.393,11.857h22.344A327.836,327.836,0,0,0,461.222,133.386V111.041A25.084,25.084,0,0,0,449.366,89.648Zm-20.144,43.738c0,163.125-132.712,295.837-295.836,295.837h-18.08L87,371.76l84.18-63.135,46.867,35.149h5.333a120.535,120.535,0,0,0,120.4-120.4v-5.333l-35.149-46.866L371.759,87l57.463,28.311Z"></path>
-				</svg>
-				<span className="dark:text-gray-400">+25 381 77 983</span>
-			</span>
-		</div>
-	</div>
+    <div className=" font-serif bg-blue-100 min-h-screen flex justify-center"> 
+      <section className="max-w-2xl mx-auto flex justify-center items-center flex-col ">
+      <h2 className="text-2xl text-center cursive mt-10">{name}'s Performance Chart</h2>
+      <div className="m-[20px] w-full md:min-w-[1200px] md:min-h-[900px] ">
+  <PerformanceChart
+    name={name}
+    timeData={xData}
+    rankData={yData}
+  />
 </div>
-</div>
-      <section className="max-w-2xl mx-auto flex justify-center items-center flex-col m-[20px]">
-      <h2 className="text-2xl text-center cursive">{name}'s Performance Chart</h2>
-        <div className="m-[20px] w-[100%]">
-          <PerformanceChart
-            name={name}
-            timeData={xData}
-            rankData={yData}
-          />
-        </div>
       </section>
     </div>
     
