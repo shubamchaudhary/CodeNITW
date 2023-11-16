@@ -45,6 +45,24 @@ export default function Header() {
       });
   };
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (location.pathname === "/") {
+        if (user) {
+          navigate("/resources");
+        } else {
+          navigate("/sign-in");
+        }
+      }
+      setUser(user);
+    });
+  }, [auth, navigate, location.pathname]);
+
+  const handlePageSelect = (path) => {
+    navigate(path);
+    toggleMenu();
+  };
+
   return (
     <div>
       <header>
@@ -91,19 +109,19 @@ export default function Header() {
               id="mobile-menu-2"
             >
               <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-                <li
-                  onClick={() => navigate("/resources")}
-                 className={`block py-2 pr-4 pl-3  hover:text-gray-600  hover:mt-1  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
-                    isActive("/resources")
-                    ? "text-gray-600 font-extrabold text-lg mt-1"
-                      : "text-gray-500"
-                  }`}
-                >
-                  PROBLEMS
-                </li>
-                {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rr7433446@gmail.com') && (
+              <li
+                   onClick={() => handlePageSelect("/resources")}
+                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  isActive("/resources")
+                      ? "text-gray-600 font-extrabold text-lg mt-1"
+                     : "text-gray-500"
+                       }`}
+                      >
+                   PROBLEMS
+                      </li>
+                 {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rr7433446@gmail.com') && (
                   <li
-                    onClick={() => navigate("/add-contest")}
+                    onClick={() => handlePageSelect("/add-contest")}
                     className={`block py-2 pr-4 pl-3 hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/add-contest")
                     ? "text-gray-600 font-extrabold text-lg mt-1"
@@ -114,8 +132,8 @@ export default function Header() {
                 </li>
                 )}
                 <li
-                  onClick={() => navigate("/contest")}
-                  className={`block py-2 pr-4 pl-3  hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  onClick={() => handlePageSelect("/contest")}
+                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer   border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/contest")
                     ? "text-gray-600 font-extrabold text-lg mt-1"
                     : "text-gray-500"
@@ -124,8 +142,8 @@ export default function Header() {
                   CONTESTS
                 </li>
                 <li
-                  onClick={() => navigate("/leaderboard")}
-                  className={`block py-2 pr-4 pl-3 hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  onClick={() => handlePageSelect("/leaderboard")}
+                  className={`block py-2 pr-4 pl-3 hover:text-gray-600  hover:cursor-pointer  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/leaderboard")
                       ? "text-gray-600 font-extrabold text-lg mt-1"
                       : "text-gray-500"
@@ -134,8 +152,8 @@ export default function Header() {
                   LEADERBOARD
                 </li>
                 <li
-                  onClick={() => navigate(pageState)}
-                  className={`block py-2 pr-4 pl-3  hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  onClick={() => handlePageSelect(pageState)}
+                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer   border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isPath("/Dashboard")
                     ? "text-gray-600 font-extrabold text-lg mt-1"
                     : "text-gray-500"
@@ -146,8 +164,8 @@ export default function Header() {
                 {/* {user && user.email ? ( */}
                   <li
                     onClick={handleLogout}
-                    className={`block py-2 pr-4 pl-3 text-gray-500  hover:text-gray-600  h  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 `} >
-                    {isPath('/sign-in') ? "SIGN IN" : isPath('/sign-up') ? "SIGN UP" : "LOG OUT"}
+                    className={`block py-2 pr-4 pl-3 text-gray-500 hover:cursor-pointer  hover:text-gray-600  h  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 `} >
+                    {isPath('/sign-in') ? "SIGN IN" : isPath('/sign-up') ? "SIGN IN" : isPath('/forgot-password') ? "SIGN IN" : "LOG OUT"}
                   </li>
                 {/* ) : null} */}
               </ul>
