@@ -26,7 +26,7 @@ const Resources = () => {
 
   return (
     <div className='bg-blue-100'>
-      <DailyProblem />
+      {/* <DailyProblem /> */}
       <div className='bg-blue-100 min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
           {topics.map((topic, index) => (
@@ -68,29 +68,29 @@ export function QuestionCard({ name, link, youtube }) {
   return (
     <div className="flex items-center border rounded p-4 bg-blue-100 rounded-lg p-4 shadow-md ml-2 mt-2 mr-2 mb-2">
       <div className="flex-grow flex justify-between">
-        <h3 className="text-lg font-semibold truncate w-3/5">
+        <h3 className={`text-lg font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
           {isSmallScreen ? truncatedName : name}
         </h3>
         <a
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className={`text-blue-500 hover:underline ${`isSmallScreen ? -mr-12 : mr-[200px]`} ${isSmallScreen ? 'w-1/5' : 'w-2/5'}`}
+          className={`text-blue-500 hover:underline ${isSmallScreen ? 'w-full text-center' : 'w-2/5'}`}
         >
           {isSmallScreen ? 'Link' : truncatedLink}
         </a>
         <a
-  href={youtube}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="ml-auto"
->
-  <img
-    className="max-w-[50px] p-2 rounded-md hover:underline cursor-pointer"
-    src={Youtube}
-    alt="contest image"
-  /> 
-</a>
+          href={youtube}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`ml-auto ${isSmallScreen ? 'mr-2' : ''}`}
+        >
+          <img
+            className="max-w-[50px] p-2 rounded-md hover:underline cursor-pointer"
+            src={Youtube}
+            alt="contest image"
+          /> 
+        </a>
       </div>
     </div>
   );
