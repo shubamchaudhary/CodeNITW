@@ -59,8 +59,9 @@ const Resources = () => {
 
 export function QuestionCard(props) {
   const { name, link, youtube, onQuestionSolved } = props;
-  const truncatedName = name.length > 15 ? name.substring(0, 15) + '..' : name;
+  const truncatedName = name.length > 35 ? name.substring(0, 30) + '..' : name;
   const truncatedLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
+  const extratruncatedLink = link.length > 30 ? link.substring(0, 25) + '...' : link;
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const [isChecked, setIsChecked] = useState(() => {
@@ -100,7 +101,7 @@ export function QuestionCard(props) {
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
         >
-          {isSmallScreen ? "link" : truncatedLink}
+          {isSmallScreen ? extratruncatedLink : truncatedLink}
         </a>
         <a
           href={youtube}
@@ -109,17 +110,18 @@ export function QuestionCard(props) {
           className="ml-auto"
         >
           <img
-            className="max-w-[50px] p-2 rounded-md hover:underline cursor-pointer"
+            className="max-w-[50px] p-2  rounded-md hover:underline cursor-pointer"
             src={Youtube}
             alt="contest image"
           /> 
         </a>
         <input
-          className="ml-2 form-checkbox h-6 w-6 text-green-500"
-          type="checkbox"
-          checked={isChecked}
-          onChange={handleCheckboxChange}
-        />
+  className={`ml-2 form-checkbox h-6 w-6 s text-green-500 ${isChecked ? 'ring ring-green-200 bg-green-200' : 'ring-red-500 bg-blue-100'}`}
+  type="checkbox"
+  checked={isChecked}
+  onChange={handleCheckboxChange}
+/>
+        
       </div>
     </div>
   </div>
