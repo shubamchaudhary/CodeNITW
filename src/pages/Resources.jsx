@@ -3,12 +3,16 @@ import AllQuestionsList from '../Data/AllQuestionsList.json';
 import DailyProblem from './DailyProblem.jsx';
 import Youtube from "../images/Youtube.png";
 import { useRef } from 'react';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const Resources = () => {
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [solvedQuestions, setSolvedQuestions] = useState(() => JSON.parse(localStorage.getItem('solvedQuestions')) || {});
+  const [totalProblems, setTotalProblems] = useState(0);
+  const [solvedProblems, setSolvedProblems] = useState(0);
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -18,6 +22,17 @@ const Resources = () => {
 
     fetchTopics();
   }, []);
+
+  useEffect(() => {
+    let total = 0;
+    for (let topic in AllQuestionsList) {
+      total += AllQuestionsList[topic].length;
+    }
+    setTotalProblems(total);
+
+    let solved = Object.values(solvedQuestions).filter(val => val).length;
+    setSolvedProblems(solved);
+  }, [solvedQuestions]);
 
   const selectedTopicRef = useRef(null);
 
@@ -39,19 +54,38 @@ const Resources = () => {
       <DailyProblem />
       <div className='bg-blue-100 min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
-        {topics.map((topic, index) => (
-  <TopicCard  
-    key={index} 
-    id={topic} 
-    name={topic} 
-    questions={AllQuestionsList[topic]} 
-    selectedTopic={selectedTopic}
-    setSelectedTopic={setSelectedTopic}
-    solvedQuestions={solvedQuestions}
-    onQuestionSolved={handleCheckboxChange}
-    ref={topic === selectedTopic ? selectedTopicRef : null}
-  />
-))}
+          <div className='flex justify-between items-center mb-4'>
+            <div className='ml-4'>
+              <h1 className='text-xl font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
+              <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
+            </div>
+            <div className='mr-2'
+             style={{ width: 60, height: 60 }}>
+              <CircularProgressbar 
+                value={solvedProblems} 
+                maxValue={totalProblems} 
+                text={`${Math.round((solvedProblems / totalProblems) * 100)}%`} 
+                styles={buildStyles({
+                  pathColor: 'green',
+                  trailColor: 'lightgray',
+                  textSize: '16px',
+                })} 
+              />
+            </div>
+          </div>
+          {topics.map((topic, index) => (
+            <TopicCard  
+              key={index} 
+              id={topic} 
+              name={topic} 
+              questions={AllQuestionsList[topic]} 
+              selectedTopic={selectedTopic}
+              setSelectedTopic={setSelectedTopic}
+              solvedQuestions={solvedQuestions}
+              onQuestionSolved={handleCheckboxChange}
+              ref={topic === selectedTopic ? selectedTopicRef : null}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -170,8 +204,8 @@ export const TopicCard = React.forwardRef((props, ref) => {
       >
         <div className={` gap-4 items-center sm:w-[90%]`}>
           <div className=''>
-            <h1 className=' flex text-2xl font-semibold text-overflow-ellipsis whitespace-nowrap text-gray-700'>{name}</h1>
-            <p>{solvedQuestionCount} / {questions.length} solved</p>
+            <h1 className=' flex text-lg font-semibold text-overflow-ellipsis whitespace-nowrap text-gray-700'>{name}</h1>
+            <p className='text-sm text-gray-600'>{solvedQuestionCount} / {questions.length} solved</p>
           </div>
         </div>
         {isOpen && (
@@ -194,3 +228,4 @@ export const TopicCard = React.forwardRef((props, ref) => {
   })
 
 export default Resources;
+
