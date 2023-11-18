@@ -281,11 +281,11 @@ function updateTimer(postDate) {
   
 
   return (
-    <div className=" w-[70%] container mx-auto p-4 font-serif">
+    <div className=" w-[70%]  container mx-auto p-4 font-serif">
       <section className="bg-blue-50 rounded-md border-1 border-gray-400 shadow-md hover:shadow-lg">
     {!isEnrolled && (
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col m-[20px]">
-        <h2 className="text-2xl text-center cursive">Enroll in Leetcode 75 Hard Challenge</h2>
+        <h2 className="text-2xl mt-4 text-center cursive">Enroll in Leetcode 75 Hard Challenge</h2>
         <div className="m-[20px] w-[100%]">
           <p className="text-lg font-semibold text-blue-600">
             Are you interested in enrolling in the Leetcode 75 Hard Challenge?
