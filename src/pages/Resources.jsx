@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AllQuestionsList from '../Data/AllQuestionsList.json';
 import DailyProblem from './DailyProblem.jsx';
 import Youtube from "../images/Youtube.png";
+import { useRef } from 'react';
 
 const Resources = () => {
   const [topics, setTopics] = useState([]);
@@ -18,10 +19,11 @@ const Resources = () => {
     fetchTopics();
   }, []);
 
+  const selectedTopicRef = useRef(null);
+
   useEffect(() => {
-    if (selectedTopic) {
-      const fetchedQuestions = AllQuestionsList[selectedTopic];
-      setQuestions(fetchedQuestions);
+    if (selectedTopicRef.current) {
+      selectedTopicRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [selectedTopic]);
 
@@ -34,7 +36,7 @@ const Resources = () => {
 
   return (
     <div className='bg-blue-100'>
-      {/* <DailyProblem /> */}
+      <DailyProblem />
       <div className='bg-blue-100 min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
         {topics.map((topic, index) => (
@@ -47,6 +49,7 @@ const Resources = () => {
     setSelectedTopic={setSelectedTopic}
     solvedQuestions={solvedQuestions}
     onQuestionSolved={handleCheckboxChange}
+    ref={topic === selectedTopic ? selectedTopicRef : null}
   />
 ))}
         </div>
@@ -128,7 +131,7 @@ export function QuestionCard(props) {
   );
 }
 
-export function TopicCard(props) {
+export const TopicCard = React.forwardRef((props, ref) => {
   const { id, name, questions, selectedTopic, setSelectedTopic, solvedQuestions } = props;
   const [solvedQuestionCount, setSolvedQuestionCount] = useState(0);
   const isOpen = id === selectedTopic;
@@ -160,29 +163,34 @@ export function TopicCard(props) {
   }, [questions, selectedTopic, solvedQuestions]);
   
     return (
-      <div className={`relative bg-white bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 p-4 border-2 m-1 border-gray-300 ${isOpen ? 'pb-8' : ''}`} onClick={handleTopicClick}>
+      <div 
+        ref={ref} 
+        className={`relative bg-white bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 p-4 border-2 m-1 border-gray-300 ${isOpen ? 'pb-8' : ''}`} 
+        onClick={handleTopicClick}
+      >
         <div className={` gap-4 items-center sm:w-[90%]`}>
           <div className=''>
             <h1 className=' flex text-2xl font-semibold text-overflow-ellipsis whitespace-nowrap text-gray-700'>{name}</h1>
             <p>{solvedQuestionCount} / {questions.length} solved</p>
           </div>
         </div>
-{isOpen && (
-  <div className='mt-4' onClick={e => e.stopPropagation()}>
-    <div className={` items-center sm:w-[70%] md:w-[80%] lg:w-[90%] mx-auto`}>
-      {questions && questions.map((question, index) => (
-        <QuestionCard 
-          key={index} 
-          name={question.Question} 
-          link={question.Question_link} 
-          youtube={question.Solution_link} 
-          onQuestionSolved={props.onQuestionSolved} // Pass the prop here
-        />
-      ))}
-    </div>
-  </div>
-)}
+        {isOpen && (
+          <div className='mt-4' onClick={e => e.stopPropagation()}>
+            <div className={` items-center sm:w-[70%] md:w-[80%] lg:w-[90%] mx-auto`}>
+              {questions && questions.map((question, index) => (
+                <QuestionCard 
+                  key={index} 
+                  name={question.Question} 
+                  link={question.Question_link} 
+                  youtube={question.Solution_link} 
+                  onQuestionSolved={props.onQuestionSolved} // Pass the prop here
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
-  }
+  })
+
 export default Resources;
