@@ -51,12 +51,12 @@ const Resources = () => {
 
   return (
     <div className='bg-blue-100'>
-      <DailyProblem />
+      {/* <DailyProblem /> */}
       <div className='bg-blue-100 min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
           <div className='flex justify-between items-center mb-4'>
             <div className='ml-4'>
-              <h1 className='text-xl font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
+              <h1 className='text-xl mt-4 font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
               <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
             </div>
             <div className='mr-2'
