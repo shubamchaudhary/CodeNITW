@@ -22,6 +22,7 @@
     "firebase": "^10.5.2",
     "firebase-admin": "^11.11.0",
     "flywheel-leaderboard": "^0.0.3",
+    "framer-motion": "^10.16.5",
     "primereact": "^10.0.7",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",

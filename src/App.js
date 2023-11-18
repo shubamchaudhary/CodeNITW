@@ -13,6 +13,7 @@ import AddContest from "./pages/AddContest";
 import Contest from "./pages/Contest";
 import LeaderboardList  from "./pages/Leaderboard";
 import Resources from "./pages/Resources";
+import Discussion from "./pages/Discussion";
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
       <Router>
         <Header />
         <Routes>
+        <Route path="/discussion" element={<PrivateRoute />}>
+            <Route path="/discussion" element={<Discussion />}></Route>
+          </Route>
         <Route path="/resources" element={<PrivateRoute />}>
             <Route path="/resources" element={<Resources />}></Route>
           </Route>

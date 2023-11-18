@@ -5,6 +5,7 @@ import Youtube from "../images/Youtube.png";
 import { useRef } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Resources = () => {
   const [topics, setTopics] = useState([]);
@@ -59,8 +60,8 @@ const Resources = () => {
               <h1 className='text-xl mt-4 font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
               <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
             </div>
-            <div className='mr-2'
-             style={{ width: 60, height: 60 }}>
+            <div className='mr-2 mt-2'
+             style={{ width: 68, height: 60 }}>
               <CircularProgressbar 
                 value={solvedProblems} 
                 maxValue={totalProblems} 
@@ -73,19 +74,29 @@ const Resources = () => {
               />
             </div>
           </div>
-          {topics.map((topic, index) => (
-            <TopicCard  
-              key={index} 
-              id={topic} 
-              name={topic} 
-              questions={AllQuestionsList[topic]} 
-              selectedTopic={selectedTopic}
-              setSelectedTopic={setSelectedTopic}
-              solvedQuestions={solvedQuestions}
-              onQuestionSolved={handleCheckboxChange}
-              ref={topic === selectedTopic ? selectedTopicRef : null}
-            />
-          ))}
+          <AnimatePresence>
+{topics.map((topic, index) => (
+<motion.div
+key={index}
+initial={{ opacity: 0, y: -100 }} // Initial position and opacity
+animate={{ opacity: 1, y: 0 }} // Animation to apply when entering
+exit={{ opacity: 0, y: -100 }} // Animation to apply when exiting
+transition={{ duration: 0.5, delay: index * 0.1 }} // Animation duration with delay
+>
+<TopicCard
+key={index}
+id={topic}
+name={topic}
+questions={AllQuestionsList[topic]}
+selectedTopic={selectedTopic}
+setSelectedTopic={setSelectedTopic}
+solvedQuestions={solvedQuestions}
+onQuestionSolved={handleCheckboxChange}
+ref={topic === selectedTopic ? selectedTopicRef : null}
+/>
+</motion.div>
+))}
+</AnimatePresence>
         </div>
       </div>
     </div>
@@ -96,7 +107,8 @@ const Resources = () => {
 
 export function QuestionCard(props) {
   const { name, link, youtube, onQuestionSolved } = props;
-  const truncatedName = name.length > 35 ? name.substring(0, 30) + '..' : name;
+  const truncatedName = name.length > 30 ? name.substring(0, 30) + '..' : name;
+  const lesstruncatedName = name.length > 45 ? name.substring(0, 42) + '..' : name;
   const truncatedLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
   const extratruncatedLink = link.length > 30 ? link.substring(0, 25) + '...' : link;
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -129,7 +141,7 @@ export function QuestionCard(props) {
     <div className={`flex items-center border rounded p-4 ${isChecked ? "bg-green-200" : "bg-blue-100"} rounded-lg p-4 shadow-md ml-2 mt-2 mr-2 mb-2`}>
     <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
       <h3 className={`text-lg font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
-        {isSmallScreen ? truncatedName : name}
+        {isSmallScreen ? truncatedName : lesstruncatedName}
       </h3>
       <div className="flex items-center justify-between w-full mt-2 sm:mt-0">
         <a
@@ -211,15 +223,26 @@ export const TopicCard = React.forwardRef((props, ref) => {
         {isOpen && (
           <div className='mt-4' onClick={e => e.stopPropagation()}>
             <div className={` items-center sm:w-[70%] md:w-[80%] lg:w-[90%] mx-auto`}>
-              {questions && questions.map((question, index) => (
-                <QuestionCard 
-                  key={index} 
-                  name={question.Question} 
-                  link={question.Question_link} 
-                  youtube={question.Solution_link} 
-                  onQuestionSolved={props.onQuestionSolved} // Pass the prop here
-                />
+              <AnimatePresence>
+              {questions.map((question, index) => (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0, x: -100 }} // Initial position and opacity
+      animate={{ opacity: 1, x: 0 }} // Animation to apply when entering
+      exit={{ opacity: 0, x: -100 }} // Animation to apply when exiting
+      transition={{ duration: 0.5, delay: index * 0.1 }} // Animation duration with delay
+    >
+      <QuestionCard 
+        key={index} 
+        name={question.Question} 
+        link={question.Question_link} 
+        youtube={question.Solution_link} 
+        onQuestionSolved={props.onQuestionSolved} // Pass the prop here
+      />
+    </motion.div>
+  
               ))}
+              </AnimatePresence>
             </div>
           </div>
         )}
