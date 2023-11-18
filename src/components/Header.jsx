@@ -110,6 +110,16 @@ export default function Header() {
             >
               <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
               <li
+                   onClick={() => handlePageSelect("/discussion")}
+                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  isActive("/discussion")
+                      ? "text-gray-600 font-extrabold text-lg mt-1"
+                     : "text-gray-500"
+                       }`}
+                      >
+                   DISCUSS
+                      </li>
+              <li
                    onClick={() => handlePageSelect("/resources")}
                    className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                   isActive("/resources")
