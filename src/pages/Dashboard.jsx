@@ -16,7 +16,7 @@ import {
 import { db } from "../firebase";
 import { toast } from "react-toastify";
 import PerformanceChart from "./PerformanceChart";
-//import axios from 'axios';
+
 
 
 export default function Dashboard() {
@@ -95,16 +95,18 @@ export default function Dashboard() {
 
   return (
     <>
-    <div className=" font-serif bg-blue-100 min-h-screen flex justify-center"> 
+    <div className="bg-blue-50 min-h-screen font-serif">
+  
+
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col ">
-      <h2 className="text-2xl text-center cursive mt-10">{name}'s Performance Chart</h2>
-      <div className="m-[20px] w-full md:min-w-[1200px] md:min-h-[900px] ">
-  <PerformanceChart
-    name={name}
-    timeData={xData}
-    rankData={yData}
-  />
-</div>
+      <h2 className="text-2xl text-center mt-[50px] cursive">{name}'s Performance Chart</h2>
+        <div className="m-[150px] w-[100%]">
+          <PerformanceChart
+            name={name}
+            timeData={xData}
+            rankData={yData}
+          />
+        </div>
       </section>
     </div>
     

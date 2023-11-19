@@ -159,7 +159,7 @@ export default function SignUp() {
                 className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg "
                 id="password"
               ></input>
-              {showPassword ? (
+              {/* {showPassword ? (
                 <AiFillEye
                   onClick={() => {
                     setShowPassword(!showPassword);
@@ -173,7 +173,7 @@ export default function SignUp() {
                   }}
                   className="absolute text-2xl md:text-3xl right-[5px] md:right-[10px] top-[308px] md:top-[308px]"
                 />
-              )}
+              )} */}
             </div>
             <div className="flex justify-between text-sm md:text-lg mt-2 mb-8">
               <p>
