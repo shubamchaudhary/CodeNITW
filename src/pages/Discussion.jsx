@@ -20,8 +20,9 @@ const Discussion = () => {
     const fetchData = async () => {
       const q = query(collection(db, "posts"), orderBy("timestamp"));
       const querySnapshot = await getDocs(q);
-      setPosts(querySnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })));
+      setPosts(querySnapshot.docs?.map(doc => ({ id: doc.id, data: doc.data() })));
     };
+
 
     fetchData();
   }, []);
@@ -29,7 +30,7 @@ const Discussion = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await addDoc(collection(db, "posts"), {
+    const newPost = {
       type: formType,
       content: content,
       upvotes: 0,
@@ -37,24 +38,35 @@ const Discussion = () => {
       replies: [],
       upvotedBy: [],
       createdBy: user.displayName,
-    });
+    };
 
+    const docRef = await addDoc(collection(db, "posts"), newPost);
+
+    // Update the local state
+    setPosts(prevPosts => [...prevPosts, { id: docRef.id, data: newPost }]);
     setContent('');
   };
 
   const handleReply = async (e) => {
     e.preventDefault();
-
+     
     const postRef = doc(db, "posts", currentQuestion);
+    const newReply = {
+      content: replyContent,
+      upvotes: 0,
+      timestamp: new Date(),
+      upvotedBy: [],
+      createdBy: user.displayName,
+    };
+
     await updateDoc(postRef, {
-      replies: arrayUnion({
-        content: replyContent,
-        upvotes: 0,
-        timestamp: new Date(),
-        upvotedBy: [],
-        createdBy: user.displayName,
-      }),
+      replies: arrayUnion(newReply),
     });
+
+    // Update the local state
+    const postIndex = posts.findIndex(p => p.id === currentQuestion);
+    posts[postIndex].data.replies.push(newReply);
+    setPosts([...posts]);
 
     setReplyContent('');
   };
@@ -63,9 +75,11 @@ const Discussion = () => {
     const postRef = doc(db, "posts", postId);
     const post = await (await getDoc(postRef)).data();
 
+    let newPosts = [...posts]; // Copy the current posts state
+
     if (isReply) {
       const replies = post.replies;
-      if (replies[replyIndex].upvotedBy.includes(userId)) {
+      if (Array.isArray(replies[replyIndex].upvotedBy) && replies[replyIndex].upvotedBy.includes(userId)) {
         replies[replyIndex].upvotes -= 1;
         replies[replyIndex].upvotedBy = replies[replyIndex].upvotedBy.filter(id => id !== userId);
       } else {
@@ -73,22 +87,30 @@ const Discussion = () => {
         replies[replyIndex].upvotedBy.push(userId);
       }
 
-      await updateDoc(postRef, {
-        replies: replies,
-      });
+      // Update the document in Firestore
+      await updateDoc(postRef, { replies });
+
+      // Update the local state
+      const postIndex = newPosts.findIndex(p => p.id === postId);
+      newPosts[postIndex].data.replies = replies;
     } else {
-      if (post.upvotedBy.includes(userId)) {
-        await updateDoc(postRef, {
-          upvotes: increment(-1),
-          upvotedBy: arrayRemove(userId),
-        });
+      if (Array.isArray(post.upvotedBy) && post.upvotedBy.includes(userId)) {
+        post.upvotes -= 1;
+        post.upvotedBy = post.upvotedBy.filter(id => id !== userId);
       } else {
-        await updateDoc(postRef, {
-          upvotes: increment(1),
-          upvotedBy: arrayUnion(userId),
-        });
+        post.upvotes += 1;
+        post.upvotedBy.push(userId);
       }
+
+      // Update the document in Firestore
+      await updateDoc(postRef, { upvotes: post.upvotes, upvotedBy: post.upvotedBy });
+
+      // Update the local state
+      const postIndex = newPosts.findIndex(p => p.id === postId);
+      newPosts[postIndex].data = post;
     }
+
+    setPosts(newPosts); // Update the posts state
   };
 
   const toggleReplies = (postId) => {
@@ -99,6 +121,7 @@ const Discussion = () => {
   };
 
   const toggleReplyForm = (postId) => {
+    setCurrentQuestion(postId);
     setReplyFormVisible(prevState => ({
       ...prevState,
       [postId]: !prevState[postId]
@@ -108,22 +131,22 @@ const Discussion = () => {
   return (
     <div className="bg-blue-100 min-h-screen p-4 flex justify-center">
       <div className="w-full sm:w-3/4 lg:w-1/2">
-        {posts.map((post) => (
+        {posts?.map((post) => (
           <div key={post.id} className="mb-4 bg-blue-50 border-2 border-blue-200 p-4 rounded">
             <div className="flex justify-between mb-2">
               <h2 className={post.data.type === 'question' ? 'font-bold text-red-500' : 'font-bold text-orange-500'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
-              <p className={post.data.type === 'question' ? 'font- text-red-400' : 'font-bold text-orange-500'}>{post.data.type === 'question' ? 'From: ' : 'Posted by: '}{post.data.createdBy}</p>
+            { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
             </div>
-            <p >{post.data.content}</p>
+            <p className='mb-[15px]'>{post.data.content}</p>
             <div className={post.data.type === 'question' ? 'font- text-red-400 flex justify-between mb-4'  : 'font-bold text-orange-500'}>
-              <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2">Upvote ({post.data.upvotes})</button>
+              <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
               {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)}>Reply</button>}
               {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)}>{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.length})</button>}
             </div>
             {visibleReplies[post.id] && (
               <div>
                 {post.data.replies?.map((reply, index) => (
-                  <div key={index} className="mb-2 bg-blue-50 border-2 border-blue-200 p-4 rounded">
+                  <div key={index} className="mb-2 ml-4 bg-blue-50 border-2 border-blue-200 p-4 rounded">
                     <div className="flex justify-start">
                     <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
                     </div>
@@ -141,12 +164,15 @@ const Discussion = () => {
                 <button type="submit" className="bg-blue-500 text-white px-2 py-1">Reply</button>
               </form>
             )}
+           
           </div>
         ))}
         <form onSubmit={handleSubmit} className="mb-4">
           <select onChange={(e) => setFormType(e.target.value)} className="mr-2">
             <option value="question">Question</option>
-            <option value="post">Post</option>
+            {user.email === 'sc922055@student.nitw.ac.in' && (
+              <option value="post">Post</option>
+            )}
           </select>
           <input type="text" value={content} onChange={(e) => setContent(e.target.value)} required className="mr-2" />
           <button type="submit" className="bg-blue-500 text-white px-2 py-1">Post</button>
