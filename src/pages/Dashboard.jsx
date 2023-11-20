@@ -95,12 +95,23 @@ export default function Dashboard() {
 
   return (
     <>
-    <div className="bg-blue-50 min-h-screen font-serif">
-  
-
+    <div className=" px-[20px] bg-blue-50 min-h-screen font-serif ">
+    
+      <section className="max-w-2xl mx-auto pt-[10px] text-red-600">
+        <h2 className="text-black text-3xl  text-center  cursive">{name}'s Personal Data</h2>
+        <h2 className="text-2xl text-left  cursive">Name : {name}</h2>
+        <h2 className="text-2xl text-left   cursive">Email : {email}</h2>
+        <h2 className="text-2xl text-left   cursive">Roll No : {formData.rollno}</h2>
+        <h2 className="text-2xl text-left   cursive">Course : {formData.course}</h2>
+        <h2 className="text-2xl text-left   cursive">Year : {formData.year}</h2>
+        <h2 className="text-2xl text-left   cursive">Codeforces Handle : {formData.cfhandle}</h2>
+        <h2 className="text-2xl text-left   cursive">Leetcode Handle : {formData.lchandle}</h2>
+      </section>
+      
+    
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col ">
-      <h2 className="text-2xl text-center mt-[50px] cursive">{name}'s Performance Chart</h2>
-        <div className="m-[150px] w-[100%]">
+      <h2 className="text-3xl text-center mt-[50px] cursive">{name}'s Performance Chart</h2>
+        <div className="m-[150px] w-[100%] mt-[10px]">
           <PerformanceChart
             name={name}
             timeData={xData}

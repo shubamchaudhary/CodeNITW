@@ -140,7 +140,7 @@ export default function Contest() {
   )}
 
   {Listings && Listings.upcoming.length > 0 && (
-    <div className="justify-center flex">
+    <div>
       <h2 className="text-3xl  font-semibold text-blue-600 mb-4">Upcoming Contests</h2>
       <ul>
         {Listings.upcoming.map((listing) => (
