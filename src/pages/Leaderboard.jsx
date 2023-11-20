@@ -39,7 +39,7 @@ async function addOrUpdateData(updatedScoreArray, leaderboardCollectionRef) {
 export default function LeaderboardList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [scoreArray, setScoreArray] = useState([]);
-  const contests = ["480776", "482262","483816"]; // Add more contest IDs as needed
+  const contests = ["480776", "482262","483816" , "486358"]; // Add more contest IDs as needed
   const [isPushDataButtonVisible, setPushDataButtonVisible] = useState(true);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [hasPushedData, setHasPushedData] = useState(false);
@@ -63,7 +63,7 @@ export default function LeaderboardList() {
     useEffect(() => {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
-        if ((user && user.email === "rr7433446@gmail.com")) {
+        if ((user && user.email === "rk972006@student.nitw.ac.in")) {
           setPushDataButtonVisible(true);
         }
         else{
@@ -88,7 +88,7 @@ export default function LeaderboardList() {
       //     // Handle the API error appropriately
       //   }
       // }
-     
+      // console.log(updatedScoreArray);
       // setScoreArray(updatedScoreArray);
     
 
@@ -103,7 +103,7 @@ export default function LeaderboardList() {
       setLeaderboardData(leaderboardData);
 
       
-      // Pushing Ranks into firebase 
+     // Pushing Ranks into firebase 
       // if(!hasPushedData){
       // for(const contest_id of contests){
       //   const data = await getStandings(contest_id);
@@ -184,6 +184,9 @@ export default function LeaderboardList() {
     let totalScore = 0;
 
     for (const item of obj.result.problems) {
+      if(!item.rating){
+        item.rating = 1500;
+      }
       totalScore += item.rating;
     }
 
@@ -216,7 +219,7 @@ export default function LeaderboardList() {
         });
       }
     }
-    console.log(updatedScoreArray);
+    //console.log(updatedScoreArray);
 
     return updatedScoreArray;
   }
