@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { getAuth } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, arrayRemove, increment, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, deleteDoc, getDoc } from 'firebase/firestore';
 
 const Discussion = () => {
   const [posts, setPosts] = useState([]);
@@ -16,13 +16,14 @@ const Discussion = () => {
   const [visibleReplies, setVisibleReplies] = useState({});
   const [replyFormVisible, setReplyFormVisible] = useState({});
 
+  const admins = [ 'rk972006@student.nitw.ac.in'];
+
   useEffect(() => {
     const fetchData = async () => {
-      const q = query(collection(db, "posts"), orderBy("timestamp"));
+      const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
       const querySnapshot = await getDocs(q);
       setPosts(querySnapshot.docs?.map(doc => ({ id: doc.id, data: doc.data() })));
     };
-
 
     fetchData();
   }, []);
@@ -38,13 +39,18 @@ const Discussion = () => {
       replies: [],
       upvotedBy: [],
       createdBy: user.displayName,
+      approved: admins.includes(user.email),
+      approvedBy: admins.includes(user.email) ? user.email : null,
     };
 
     const docRef = await addDoc(collection(db, "posts"), newPost);
 
-    // Update the local state
     setPosts(prevPosts => [...prevPosts, { id: docRef.id, data: newPost }]);
     setContent('');
+
+    if (!admins.includes(user.email)) {
+      alert('Your response will be reflected after admins approval');
+    }
   };
 
   const handleReply = async (e) => {
@@ -57,25 +63,30 @@ const Discussion = () => {
       timestamp: new Date(),
       upvotedBy: [],
       createdBy: user.displayName,
+      approved: admins.includes(user.email),
+      approvedBy: admins.includes(user.email) ? user.email : null,
     };
 
     await updateDoc(postRef, {
       replies: arrayUnion(newReply),
     });
 
-    // Update the local state
     const postIndex = posts.findIndex(p => p.id === currentQuestion);
     posts[postIndex].data.replies.push(newReply);
     setPosts([...posts]);
 
     setReplyContent('');
+
+    if (!admins.includes(user.email)) {
+      alert('Your response will be reflected after admins approval');
+    }
   };
 
   const handleUpvote = async (postId, isReply, replyIndex) => {
     const postRef = doc(db, "posts", postId);
     const post = await (await getDoc(postRef)).data();
 
-    let newPosts = [...posts]; // Copy the current posts state
+    let newPosts = [...posts];
 
     if (isReply) {
       const replies = post.replies;
@@ -87,10 +98,8 @@ const Discussion = () => {
         replies[replyIndex].upvotedBy.push(userId);
       }
 
-      // Update the document in Firestore
       await updateDoc(postRef, { replies });
 
-      // Update the local state
       const postIndex = newPosts.findIndex(p => p.id === postId);
       newPosts[postIndex].data.replies = replies;
     } else {
@@ -102,15 +111,49 @@ const Discussion = () => {
         post.upvotedBy.push(userId);
       }
 
-      // Update the document in Firestore
       await updateDoc(postRef, { upvotes: post.upvotes, upvotedBy: post.upvotedBy });
 
-      // Update the local state
       const postIndex = newPosts.findIndex(p => p.id === postId);
       newPosts[postIndex].data = post;
     }
 
-    setPosts(newPosts); // Update the posts state
+    setPosts(newPosts);
+  };
+
+  const handleApprove = async (postId) => {
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+      approved: true,
+      approvedBy: user.email,
+    });
+
+    const postIndex = posts.findIndex(p => p.id === postId);
+    posts[postIndex].data.approved = true;
+    posts[postIndex].data.approvedBy = user.email;
+    setPosts([...posts]);
+  };
+
+  const handleApproveReply = async (postId, replyIndex) => {
+    const postRef = doc(db, "posts", postId);
+    const post = await (await getDoc(postRef)).data();
+
+    post.replies[replyIndex].approved = true;
+    post.replies[replyIndex].approvedBy = user.email;
+
+    await updateDoc(postRef, { replies: post.replies });
+
+    const postIndex = posts.findIndex(p => p.id === postId);
+    posts[postIndex].data.replies = post.replies;
+    setPosts([...posts]);
+  };
+
+  const handleDelete = async (postId) => {
+    if (window.confirm('Do you want to delete this post?')) {
+      const postRef = doc(db, "posts", postId);
+      await deleteDoc(postRef);
+
+      setPosts(posts.filter(p => p.id !== postId));
+    }
   };
 
   const toggleReplies = (postId) => {
@@ -131,7 +174,7 @@ const Discussion = () => {
   return (
     <div className="bg-blue-100 min-h-screen p-4 flex justify-center">
       <div className="w-full sm:w-3/4 lg:w-1/2">
-        {posts?.map((post) => (
+        {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
           <div key={post.id} className="mb-4 bg-blue-50 border-2 border-blue-200 p-4 rounded">
             <div className="flex justify-between mb-2">
               <h2 className={post.data.type === 'question' ? 'font-bold text-red-500' : 'font-bold text-orange-500'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
@@ -142,10 +185,12 @@ const Discussion = () => {
               <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
               {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)}>Reply</button>}
               {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)}>{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.length})</button>}
+              {admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)}>Approve</button>}
             </div>
+            {user.email === 'rk972006@student.nitw.ac.in' && <button onClick={() => handleDelete(post.id)}>Delete</button>}
             {visibleReplies[post.id] && (
               <div>
-                {post.data.replies?.map((reply, index) => (
+                {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
                   <div key={index} className="mb-2 ml-4 bg-blue-50 border-2 border-blue-200 p-4 rounded">
                     <div className="flex justify-start">
                     <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
@@ -153,6 +198,7 @@ const Discussion = () => {
                     <p className='text-gray-400 font-semibold'>{reply.content}</p>
                     <div className="flex justify-end text-green-600 ">
                       <button onClick={() => handleUpvote(post.id, true, index)}>Upvote ({reply.upvotes})</button>
+                      {admins.includes(user.email) && !reply.approved && <button onClick={() => handleApproveReply(post.id, index)}>Approve</button>}
                     </div>
                   </div>
                 ))}
@@ -170,7 +216,7 @@ const Discussion = () => {
         <form onSubmit={handleSubmit} className="mb-4">
           <select onChange={(e) => setFormType(e.target.value)} className="mr-2">
             <option value="question">Question</option>
-            {user.email === 'sc922055@student.nitw.ac.in' && (
+            {user.email === 'rk972006@student.nitw.ac.in' && (
               <option value="post">Post</option>
             )}
           </select>
