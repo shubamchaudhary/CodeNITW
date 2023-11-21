@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import { getAuth } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, deleteDoc, getDoc } from 'firebase/firestore';
+import { Editor } from '@tinymce/tinymce-react';
+import { toast } from "react-toastify";
 
 const Discussion = () => {
   const [posts, setPosts] = useState([]);
@@ -12,18 +14,19 @@ const Discussion = () => {
   const auth = getAuth();
   const user = auth.currentUser;
   const userId = user.uid;
-
+  const admins = ['sc922055@student.nitw.ac.in', 'rk972006@student.nitw.ac.in'];
   const [visibleReplies, setVisibleReplies] = useState({});
   const [replyFormVisible, setReplyFormVisible] = useState({});
+  const editorRef = useRef(null);
 
-  const admins = [ 'rk972006@student.nitw.ac.in'];
 
   useEffect(() => {
     const fetchData = async () => {
-      const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+      const q = query(collection(db, "posts"), orderBy("timestamp" , "desc"));
       const querySnapshot = await getDocs(q);
       setPosts(querySnapshot.docs?.map(doc => ({ id: doc.id, data: doc.data() })));
     };
+
 
     fetchData();
   }, []);
@@ -33,7 +36,7 @@ const Discussion = () => {
 
     const newPost = {
       type: formType,
-      content: content,
+      content: editorRef.current.getContent(),
       upvotes: 0,
       timestamp: new Date(),
       replies: [],
@@ -45,12 +48,13 @@ const Discussion = () => {
 
     const docRef = await addDoc(collection(db, "posts"), newPost);
 
+    // Update the local state
     setPosts(prevPosts => [...prevPosts, { id: docRef.id, data: newPost }]);
     setContent('');
-
     if (!admins.includes(user.email)) {
-      alert('Your response will be reflected after admins approval');
+      toast.success('Your response will be reflected after admins approval');
     }
+    toast.success("Post submitted successfully!");
   };
 
   const handleReply = async (e) => {
@@ -58,7 +62,7 @@ const Discussion = () => {
      
     const postRef = doc(db, "posts", currentQuestion);
     const newReply = {
-      content: replyContent,
+      content: editorRef.current.getContent(),
       upvotes: 0,
       timestamp: new Date(),
       upvotedBy: [],
@@ -71,14 +75,17 @@ const Discussion = () => {
       replies: arrayUnion(newReply),
     });
 
+    // Update the local state
     const postIndex = posts.findIndex(p => p.id === currentQuestion);
     posts[postIndex].data.replies.push(newReply);
     setPosts([...posts]);
 
     setReplyContent('');
 
+    toast.success("Reply submitted successfully!");
+        
     if (!admins.includes(user.email)) {
-      alert('Your response will be reflected after admins approval');
+      toast.success('Your response will be reflected after admins approval');
     }
   };
 
@@ -86,7 +93,7 @@ const Discussion = () => {
     const postRef = doc(db, "posts", postId);
     const post = await (await getDoc(postRef)).data();
 
-    let newPosts = [...posts];
+    let newPosts = [...posts]; 
 
     if (isReply) {
       const replies = post.replies;
@@ -98,8 +105,10 @@ const Discussion = () => {
         replies[replyIndex].upvotedBy.push(userId);
       }
 
+      // Update the document in Firestore
       await updateDoc(postRef, { replies });
 
+      // Update the local state
       const postIndex = newPosts.findIndex(p => p.id === postId);
       newPosts[postIndex].data.replies = replies;
     } else {
@@ -111,40 +120,42 @@ const Discussion = () => {
         post.upvotedBy.push(userId);
       }
 
+      // Update the document in Firestore
       await updateDoc(postRef, { upvotes: post.upvotes, upvotedBy: post.upvotedBy });
 
+      // Update the local state
       const postIndex = newPosts.findIndex(p => p.id === postId);
       newPosts[postIndex].data = post;
     }
 
     setPosts(newPosts);
-  };
+    };
 
-  const handleApprove = async (postId) => {
-    const postRef = doc(db, "posts", postId);
-    await updateDoc(postRef, {
-      approved: true,
-      approvedBy: user.email,
-    });
+    const handleApprove = async (postId) => {
+      const postRef = doc(db, "posts", postId);
+      await updateDoc(postRef, {
+        approved: true,
+        approvedBy: user.email,
+      });
 
-    const postIndex = posts.findIndex(p => p.id === postId);
-    posts[postIndex].data.approved = true;
-    posts[postIndex].data.approvedBy = user.email;
-    setPosts([...posts]);
-  };
+      const postIndex = posts.findIndex(p => p.id === postId);
+      posts[postIndex].data.approved = true;
+      posts[postIndex].data.approvedBy = user.email;
+      setPosts([...posts]);
+    };
 
-  const handleApproveReply = async (postId, replyIndex) => {
-    const postRef = doc(db, "posts", postId);
-    const post = await (await getDoc(postRef)).data();
+    const handleApproveReply = async (postId, replyIndex) => {
+      const postRef = doc(db, "posts", postId);
+      const post = await (await getDoc(postRef)).data();
 
-    post.replies[replyIndex].approved = true;
-    post.replies[replyIndex].approvedBy = user.email;
+      post.replies[replyIndex].approved = true;
+      post.replies[replyIndex].approvedBy = user.email;
 
-    await updateDoc(postRef, { replies: post.replies });
+      await updateDoc(postRef, { replies: post.replies });
 
-    const postIndex = posts.findIndex(p => p.id === postId);
-    posts[postIndex].data.replies = post.replies;
-    setPosts([...posts]);
+      const postIndex = posts.findIndex(p => p.id === postId);
+      posts[postIndex].data.replies = post.replies;
+      setPosts([...posts]);
   };
 
   const handleDelete = async (postId) => {
@@ -172,59 +183,78 @@ const Discussion = () => {
   };
 
   return (
-    <div className="bg-blue-100 min-h-screen p-4 flex justify-center">
-      <div className="w-full sm:w-3/4 lg:w-1/2">
-        {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
-          <div key={post.id} className="mb-4 bg-blue-50 border-2 border-blue-200 p-4 rounded">
-            <div className="flex justify-between mb-2">
-              <h2 className={post.data.type === 'question' ? 'font-bold text-red-500' : 'font-bold text-orange-500'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
-            { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
-            </div>
-            <p className='mb-[15px]'>{post.data.content}</p>
-            <div className={post.data.type === 'question' ? 'font- text-red-400 flex justify-between mb-4'  : 'font-bold text-orange-500'}>
-              <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
-              {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)}>Reply</button>}
-              {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)}>{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.length})</button>}
-              {admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)}>Approve</button>}
-            </div>
-            {user.email === 'rk972006@student.nitw.ac.in' && <button onClick={() => handleDelete(post.id)}>Delete</button>}
-            {visibleReplies[post.id] && (
-              <div>
-                {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
-                  <div key={index} className="mb-2 ml-4 bg-blue-50 border-2 border-blue-200 p-4 rounded">
-                    <div className="flex justify-start">
-                    <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
-                    </div>
-                    <p className='text-gray-400 font-semibold'>{reply.content}</p>
-                    <div className="flex justify-end text-green-600 ">
-                      <button onClick={() => handleUpvote(post.id, true, index)}>Upvote ({reply.upvotes})</button>
-                      {admins.includes(user.email) && !reply.approved && <button onClick={() => handleApproveReply(post.id, index)}>Approve</button>}
-                    </div>
-                  </div>
-                ))}
+
+      <div className="bg-gray-100 min-h-screen p-4 flex justify-center">
+        <div className="w-[80%] sm:w-3/4  bg-white shadow-md rounded-lg p-4">
+          {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
+            <div key={post.id} className="mb-4 bg-white border-2 border-gray-200 p-4 rounded-lg shadow">
+              <div className="flex justify-between mb-2">
+                <h2 className={post.data.type === 'question' ? 'font-bold text-2xl text-red-500' : 'font-bold text-2xl text-blue-600'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
+                { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
               </div>
-            )}
-            {replyFormVisible[post.id] && (
-              <form onSubmit={handleReply} className="mb-4">
-                <input type="text" value={replyContent} onChange={(e) => setReplyContent(e.target.value)} required className="mr-2" />
-                <button type="submit" className="bg-blue-500 text-white px-2 py-1">Reply</button>
-              </form>
-            )}
-           
-          </div>
-        ))}
-        <form onSubmit={handleSubmit} className="mb-4">
-          <select onChange={(e) => setFormType(e.target.value)} className="mr-2">
-            <option value="question">Question</option>
-            {user.email === 'rk972006@student.nitw.ac.in' && (
-              <option value="post">Post</option>
-            )}
-          </select>
-          <input type="text" value={content} onChange={(e) => setContent(e.target.value)} required className="mr-2" />
-          <button type="submit" className="bg-blue-500 text-white px-2 py-1">Post</button>
-        </form>
+              <p className='mb-[15px]' dangerouslySetInnerHTML={{ __html: post.data.content }}></p>
+              <div className={post.data.type === 'question' ? 'font- text-blue-400 flex justify-between mb-4'  : 'font-bold text-green-500'}>
+                <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 text-yellow-600 font-bold px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
+                {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="text-green-500 font-bold  px-2 py-1 rounded">Reply</button>}
+                {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="text-green-500 font-bold px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.length})</button>}
+                {admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)}>Approve</button>}
+              </div>
+              {(user.email === 'rk972006@student.nitw.ac.in' || user.email === 'sc922055@student.nitw.ac.in') && <button onClick={() => handleDelete(post.id)}>Delete</button>}
+              {visibleReplies[post.id] && (
+                <div>
+                  {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
+                    <div key={index} className="mb-2 ml-4 bg-gray-100 border-2 border-gray-200 p-4 rounded shadow">
+                      <div className="flex justify-start">
+                      <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
+                      </div>
+                      <p className='text-gray-400 font-semibold'dangerouslySetInnerHTML={{ __html: reply.content }} />
+                      <div className="flex justify-end text-green-600 ">
+                        <button onClick={() => handleUpvote(post.id, true, index)} className="text-yellow-600 font-bold  px-2 py-1 rounded">Upvote ({reply.upvotes})</button>
+                        {admins.includes(user.email) && !reply.approved && <button onClick={() => handleApproveReply(post.id, index)}>Approve</button>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {replyFormVisible[post.id] && (
+                <form onSubmit={handleReply} className="mb-4">
+                  <Editor
+                    onInit={(evt, editor) => editorRef.current = editor}
+                    apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
+                    init={{
+                      height: 400,
+                      menubar: false,
+                      plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss code quote',
+                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code quote',
+                    }}
+                  />
+                  <button type="submit" className="bg-blue-500 m-[5px] text-white px-2 py-1 rounded"> Post Reply</button>
+                </form>
+              )}
+             
+            </div>
+          ))}
+          <form onSubmit={handleSubmit} className="mb-4">
+            <select onChange={(e) => setFormType(e.target.value)} className="mr-2 bg-gray-200 text-gray-700 px-2 py-1 rounded">
+              <option value="question">Question</option>
+              {(user.email === 'sc922055@student.nitw.ac.in' || user.email === 'rk972006@student.nitw.ac.in')  && (
+                <option value="post">Post</option>
+              )}
+            </select>
+            <Editor
+              onInit={(evt, editor) => editorRef.current = editor}
+              apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
+              init={{
+                height: 400,
+                menubar: false,
+                plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss code quote',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor| link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code quote',
+              }}
+            />
+            <button type="submit" className="bg-blue-500 text-white px-2 py-1 rounded">Post</button>
+          </form>
+        </div>
       </div>
-    </div>
   );
 };
 
