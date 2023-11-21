@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import { getAuth } from "firebase/auth";
-import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, arrayRemove, increment, getDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, deleteDoc, getDoc } from 'firebase/firestore';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from "react-toastify";
 
@@ -14,7 +14,7 @@ const Discussion = () => {
   const auth = getAuth();
   const user = auth.currentUser;
   const userId = user.uid;
-
+  const admins = [ 'rk972006@student.nitw.ac.in'];
   const [visibleReplies, setVisibleReplies] = useState({});
   const [replyFormVisible, setReplyFormVisible] = useState({});
   const editorRef = useRef(null);
@@ -42,6 +42,8 @@ const Discussion = () => {
       replies: [],
       upvotedBy: [],
       createdBy: user.displayName,
+      approved: admins.includes(user.email),
+      approvedBy: admins.includes(user.email) ? user.email : null,
     };
 
     const docRef = await addDoc(collection(db, "posts"), newPost);
@@ -49,6 +51,9 @@ const Discussion = () => {
     // Update the local state
     setPosts(prevPosts => [...prevPosts, { id: docRef.id, data: newPost }]);
     setContent('');
+    if (!admins.includes(user.email)) {
+      toast.success('Your response will be reflected after admins approval');
+    }
     toast.success("Post submitted successfully!");
   };
 
@@ -62,6 +67,8 @@ const Discussion = () => {
       timestamp: new Date(),
       upvotedBy: [],
       createdBy: user.displayName,
+      approved: admins.includes(user.email),
+      approvedBy: admins.includes(user.email) ? user.email : null,
     };
 
     await updateDoc(postRef, {
@@ -74,14 +81,19 @@ const Discussion = () => {
     setPosts([...posts]);
 
     setReplyContent('');
+
     toast.success("Reply submitted successfully!");
+        
+    if (!admins.includes(user.email)) {
+      toast.success('Your response will be reflected after admins approval');
+    }
   };
 
   const handleUpvote = async (postId, isReply, replyIndex) => {
     const postRef = doc(db, "posts", postId);
     const post = await (await getDoc(postRef)).data();
 
-    let newPosts = [...posts]; // Copy the current posts state
+    let newPosts = [...posts]; 
 
     if (isReply) {
       const replies = post.replies;
@@ -116,7 +128,43 @@ const Discussion = () => {
       newPosts[postIndex].data = post;
     }
 
-    setPosts(newPosts); // Update the posts state
+    setPosts(newPosts);
+    };
+
+    const handleApprove = async (postId) => {
+      const postRef = doc(db, "posts", postId);
+      await updateDoc(postRef, {
+        approved: true,
+        approvedBy: user.email,
+      });
+
+      const postIndex = posts.findIndex(p => p.id === postId);
+      posts[postIndex].data.approved = true;
+      posts[postIndex].data.approvedBy = user.email;
+      setPosts([...posts]);
+    };
+
+    const handleApproveReply = async (postId, replyIndex) => {
+      const postRef = doc(db, "posts", postId);
+      const post = await (await getDoc(postRef)).data();
+
+      post.replies[replyIndex].approved = true;
+      post.replies[replyIndex].approvedBy = user.email;
+
+      await updateDoc(postRef, { replies: post.replies });
+
+      const postIndex = posts.findIndex(p => p.id === postId);
+      posts[postIndex].data.replies = post.replies;
+      setPosts([...posts]);
+  };
+
+  const handleDelete = async (postId) => {
+    if (window.confirm('Do you want to delete this post?')) {
+      const postRef = doc(db, "posts", postId);
+      await deleteDoc(postRef);
+
+      setPosts(posts.filter(p => p.id !== postId));
+    }
   };
 
   const toggleReplies = (postId) => {
@@ -138,7 +186,7 @@ const Discussion = () => {
 
       <div className="bg-gray-100 min-h-screen p-4 flex justify-center">
         <div className="w-[80%] sm:w-3/4  bg-white shadow-md rounded-lg p-4">
-          {posts?.map((post) => (
+          {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
             <div key={post.id} className="mb-4 bg-white border-2 border-gray-200 p-4 rounded-lg shadow">
               <div className="flex justify-between mb-2">
                 <h2 className={post.data.type === 'question' ? 'font-bold text-blue-500' : 'font-bold text-green-500'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
@@ -149,10 +197,12 @@ const Discussion = () => {
                 <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 bg-blue-500 text-white px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
                 {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="bg-green-500 text-white px-2 py-1 rounded">Reply</button>}
                 {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="bg-red-500 text-white px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.length})</button>}
+                {admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)}>Approve</button>}
               </div>
+              {user.email === 'rk972006@student.nitw.ac.in' && <button onClick={() => handleDelete(post.id)}>Delete</button>}
               {visibleReplies[post.id] && (
                 <div>
-                  {post.data.replies?.map((reply, index) => (
+                  {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
                     <div key={index} className="mb-2 ml-4 bg-gray-100 border-2 border-gray-200 p-4 rounded shadow">
                       <div className="flex justify-start">
                       <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
@@ -160,6 +210,7 @@ const Discussion = () => {
                       <p className='text-gray-400 font-semibold'dangerouslySetInnerHTML={{ __html: reply.content }} />
                       <div className="flex justify-end text-green-600 ">
                         <button onClick={() => handleUpvote(post.id, true, index)} className="bg-blue-500 text-white px-2 py-1 rounded">Upvote ({reply.upvotes})</button>
+                        {admins.includes(user.email) && !reply.approved && <button onClick={() => handleApproveReply(post.id, index)}>Approve</button>}
                       </div>
                     </div>
                   ))}
