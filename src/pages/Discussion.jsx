@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import { getAuth } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, arrayRemove, increment, getDoc } from 'firebase/firestore';
+import { Editor } from '@tinymce/tinymce-react';
+
 
 const Discussion = () => {
   const [posts, setPosts] = useState([]);
@@ -15,10 +17,12 @@ const Discussion = () => {
 
   const [visibleReplies, setVisibleReplies] = useState({});
   const [replyFormVisible, setReplyFormVisible] = useState({});
+  const editorRef = useRef(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
-      const q = query(collection(db, "posts"), orderBy("timestamp"));
+      const q = query(collection(db, "posts"), orderBy("timestamp" , "desc"));
       const querySnapshot = await getDocs(q);
       setPosts(querySnapshot.docs?.map(doc => ({ id: doc.id, data: doc.data() })));
     };
@@ -32,7 +36,7 @@ const Discussion = () => {
 
     const newPost = {
       type: formType,
-      content: content,
+      content: editorRef.current.getContent(),
       upvotes: 0,
       timestamp: new Date(),
       replies: [],
@@ -52,7 +56,7 @@ const Discussion = () => {
      
     const postRef = doc(db, "posts", currentQuestion);
     const newReply = {
-      content: replyContent,
+      content: editorRef.current.getContent(),
       upvotes: 0,
       timestamp: new Date(),
       upvotedBy: [],
@@ -137,7 +141,7 @@ const Discussion = () => {
               <h2 className={post.data.type === 'question' ? 'font-bold text-red-500' : 'font-bold text-orange-500'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
             { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
             </div>
-            <p className='mb-[15px]'>{post.data.content}</p>
+            <p className='mb-[15px]' dangerouslySetInnerHTML={{ __html: post.data.content }}></p>
             <div className={post.data.type === 'question' ? 'font- text-red-400 flex justify-between mb-4'  : 'font-bold text-orange-500'}>
               <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
               {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)}>Reply</button>}
@@ -150,7 +154,7 @@ const Discussion = () => {
                     <div className="flex justify-start">
                     <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
                     </div>
-                    <p className='text-gray-400 font-semibold'>{reply.content}</p>
+                    <p className='text-gray-400 font-semibold'dangerouslySetInnerHTML={{ __html: reply.content }} />
                     <div className="flex justify-end text-green-600 ">
                       <button onClick={() => handleUpvote(post.id, true, index)}>Upvote ({reply.upvotes})</button>
                     </div>
@@ -160,7 +164,16 @@ const Discussion = () => {
             )}
             {replyFormVisible[post.id] && (
               <form onSubmit={handleReply} className="mb-4">
-                <input type="text" value={replyContent} onChange={(e) => setReplyContent(e.target.value)} required className="mr-2" />
+                <Editor
+                  onInit={(evt, editor) => editorRef.current = editor}
+                  apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
+                  init={{
+                    height: 200,
+                    menubar: false,
+                    plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss code quote',
+                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code quote',
+                  }}
+                />
                 <button type="submit" className="bg-blue-500 text-white px-2 py-1">Reply</button>
               </form>
             )}
@@ -170,11 +183,20 @@ const Discussion = () => {
         <form onSubmit={handleSubmit} className="mb-4">
           <select onChange={(e) => setFormType(e.target.value)} className="mr-2">
             <option value="question">Question</option>
-            {user.email === 'sc922055@student.nitw.ac.in' && (
+            {user.email === 'sc922055@student.nitw.ac.in' || user.email === 'rk972006@student.nitw.ac.in'  && (
               <option value="post">Post</option>
             )}
           </select>
-          <input type="text" value={content} onChange={(e) => setContent(e.target.value)} required className="mr-2" />
+          <Editor
+            onInit={(evt, editor) => editorRef.current = editor}
+            apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
+            init={{
+              height: 200,
+              menubar: false,
+              plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss code quote',
+              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code quote',
+            }}
+          />
           <button type="submit" className="bg-blue-500 text-white px-2 py-1">Post</button>
         </form>
       </div>
