@@ -22,6 +22,7 @@ export default function SignUp() {
     name: "",
     email: "",
     cfhandle: "",
+    lchandle : "",
     rollno: "",
     course: "btech",
     year: "first",
@@ -80,8 +81,12 @@ export default function SignUp() {
   return (
     <section>
       <div className="flex flex-wrap justify-center items-center px-4 md:px-40 bg-blue-100 min-h-screen  max-w-8xl mx-auto">
-        <div className="w-full md:w-[67%] lg:w-[50%] mb-12 md:mb-6">
+        <div className="font-serif w-full md:w-[67%] lg:w-[50%] mb-12 md:mb-6 ">
+          <h2 className="text-blue-600 text-2xl md:text-4xl font-bold text-center mt-4">
+              Helping NIT Warangal Students Code Better
+          </h2>
           <img className="rounded-xl w-full md:max-w-[700px]" src={computer} alt="" />
+          
         </div>
         <div className="w-full lg:w-[40%] md:w-[67%] lg:ml-20">
           <form onSubmit={onSubmit}>
@@ -104,7 +109,14 @@ export default function SignUp() {
                 onChange={onChange}
                 id="cfhandle"
                 placeholder="Codeforces Handle"
-                className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4  text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                type="text"
+              ></input>
+              <input
+                onChange={onChange}
+                id="lchandle"
+                placeholder="Leetcode Handle"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4  text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 type="text"
               ></input>
               <div className="flex flex-col md:flex-row justify-center ">
@@ -112,13 +124,13 @@ export default function SignUp() {
                   onChange={onChange}
                   id="rollno"
                   placeholder="Roll Number"
-                  className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 mb-4 mr-2 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 mr-2 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                   type="text"
                 ></input>
                 <select
                   id="course"
                   onChange={onChange}
-                  className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 mb-4 mx-2 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full h-14 md:h-[50px] p-2 md:p-4 mt-4 mr-2 text-lg md:text-lg  text-gray-700 bg-gray-100 rounded-lg"
                   >
                     <option id="btech" value="btech">
                       BTech
@@ -132,12 +144,11 @@ export default function SignUp() {
                     <option id="mac" value="mac">
                       MCA
                     </option>
-                  </select>
-                  <select
+                </select>
+                <select
                     id="year"
-                    className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 ml-2 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
-                    onChange={onChange}
-                  >
+                    className="w-full h-10 md:h-[50px] p-2 md:p-4 mt-4 mr-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
+                    onChange={onChange}>
                     <option id="first" value="first">
                       1st Year
                     </option>
