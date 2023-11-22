@@ -96,17 +96,21 @@ export default function Dashboard() {
   return (
     <>
     <div className=" px-[20px] bg-blue-50 min-h-screen font-serif ">
-    
-      <section className="max-w-2xl mx-auto pt-[10px] text-red-600">
-        <h2 className="text-black text-3xl  text-center  cursive">{name}'s Personal Data</h2>
-        <h2 className="text-2xl text-left  cursive">Name : {name}</h2>
-        <h2 className="text-2xl text-left   cursive">Email : {email}</h2>
-        <h2 className="text-2xl text-left   cursive">Roll No : {formData.rollno}</h2>
-        <h2 className="text-2xl text-left   cursive">Course : {formData.course}</h2>
-        <h2 className="text-2xl text-left   cursive">Year : {formData.year}</h2>
-        <h2 className="text-2xl text-left   cursive">Codeforces Handle : {formData.cfhandle}</h2>
-        <h2 className="text-2xl text-left   cursive">Leetcode Handle : {formData.lchandle}</h2>
-      </section>
+    <section className="max-w-2xl mx-auto pt-10 text-black-400 bg-blue-50 p-6 rounded-lg shadow-lg">
+  <div className="bg-white shadow-md rounded-lg p-6 hover:bg-blue-100 transition-colors duration-200">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Name: <span className="text-gray-400">{name}</span> </h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Roll No: <span className="text-gray-400">{formData.rollno}</span></h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Course:<span className="text-gray-400">{formData.course}</span> </h2>
+      </div>
+      <div>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Codeforces Handle: <span className="text-gray-400">{formData.cfhandle}</span></h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Leetcode Handle: <span className="text-gray-400">{formData.lchandle}</span></h2>
+      </div>
+    </div>
+  </div>
+</section>
       
     
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col ">

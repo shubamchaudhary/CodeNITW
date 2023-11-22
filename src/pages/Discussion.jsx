@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, deleteDoc, getDoc } from 'firebase/firestore';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from "react-toastify";
+import 'prismjs/themes/prism.css';
 
 const Discussion = () => {
   const [posts, setPosts] = useState([]);
@@ -11,6 +12,7 @@ const Discussion = () => {
   const [content, setContent] = useState('');
   const [replyContent, setReplyContent] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [isAdminView , setIsAdminView] = useState(true);
   const auth = getAuth();
   const user = auth.currentUser;
   const userId = user.uid;
@@ -198,20 +200,22 @@ const Discussion = () => {
   return (
 
       <div className="bg-gray-100 min-h-screen p-4 flex justify-center">
+        { admins.includes(user.email) && <button onClick={() => setIsAdminView(prevState => !prevState)} className="absolute top-[100px] right-[5px] ">Toggle View</button>}
         <div className="w-[100%] sm:w-3/4  bg-white shadow-md rounded-lg p-4">
           {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
-            <div key={post.id} className="mb-4 bg-white border-2 border-gray-200 p-4 rounded-lg shadow">
+            <div key={post.id} className="mb-4 bg-white border-2 border-gray-200 p-4 rounded-lg shadow overflow-auto">
               <div className="flex justify-between mb-2">
-                <h2 className={post.data.type === 'question' ? 'font-bold text-blue-500' : 'font-bold text-green-500'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
-                { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-blue-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
+                <h2 className={post.data.type === 'question' ? 'font-bold text-2xl text-red-500' : 'font-bold text-2xl text-blue-600'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
+                { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
               </div>
               <p className='mb-[15px]' dangerouslySetInnerHTML={{ __html: post.data.content }}></p>
               <div className={post.data.type === 'question' ? 'font- text-blue-400 flex justify-between mb-4'  : 'font-bold text-green-500'}>
-                <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 bg-blue-500 text-white px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
-                {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="bg-green-500 text-white px-2 py-1 rounded">Reply</button>}
-                {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="bg-red-500 text-white px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.filter(reply => reply.approved).length})</button>}
-                {admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Approve</button>}
-                { admins.includes(user.email) && <button onClick={() => handleDelete(post.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" >Delete</button>}
+                <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 text-yellow-600 font-bold px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
+                {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="text-green-500 font-bold  px-2 py-1 rounded">Reply</button>}
+                {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="text-green-500 font-bold px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.filter(reply => reply.approved).length})</button>}
+                { isAdminView && admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)} className="text-green-500  font-bold py-2 px-4 rounded">Approve</button>}
+                { isAdminView && admins.includes(user.email) && <button onClick={() => handleDelete(post.id)} className="text-red-500 font-bold py-2 px-4 rounded ml-2" >Delete</button>}
+               
               </div>
               
               {visibleReplies[post.id] && (
@@ -223,19 +227,19 @@ const Discussion = () => {
                       </div>
                       <p className='text-gray-400 font-semibold'dangerouslySetInnerHTML={{ __html: reply.content }} />
                       <div className="flex justify-end text-green-600 ">
-                        <button onClick={() => handleUpvote(post.id, true, index)} className="bg-blue-500 text-white px-2 py-1 rounded">Upvote ({reply.upvotes})</button>
-                        {admins.includes(user.email) && !reply.approved && 
+                        <button onClick={() => handleUpvote(post.id, true, index)} className="text-yellow-600 font-bold  px-2 py-1 rounded">Upvote ({reply.upvotes})</button>
+                        {isAdminView && admins.includes(user.email) && !reply.approved && 
                             <button 
                                 onClick={() => handleApproveReply(post.id, index)} 
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                                className="text-green-500 font-bold py-2 px-4 rounded"
                             >
                                 Approve
                             </button>
                         }
-                        {admins.includes(user.email) && 
+                        {isAdminView && admins.includes(user.email) && 
                             <button 
                                 onClick={() => handleDeleteReply(post.id, index)} 
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
+                                className="text-red-500 font-bold py-2 px-4 rounded ml-2"
                             >
                                 Delete
                             </button>
@@ -257,7 +261,7 @@ const Discussion = () => {
                       toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | codesample quote',
                     }}
                   />
-                  <button type="submit" className="bg-blue-500 m-[5px] text-white px-2 py-1 rounded"> Post Reply</button>
+                  <button type="submit" className="text-blue-500 m-[5px] px-2 py-1 rounded"> Post Reply</button>
                 </form>
               )}
              
@@ -280,7 +284,7 @@ const Discussion = () => {
                 toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor codesample | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat |  quote',
               }}
             />
-            <button type="submit" className="bg-blue-500 text-white px-2 py-1 rounded">Post</button>
+            <button type="submit" className="text-blue-500 m-[5px] px-2 py-1 rounded">Post</button>
           </form>
         </div>
       </div>
