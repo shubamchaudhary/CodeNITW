@@ -121,7 +121,8 @@ export default function Contest() {
   
 
   return (
-    <div className="bg-blue-100 min-h-screen font-serif ">
+
+  <div className="bg-blue-100 min-h-screen font-serif">
   <div className="max-w-6xl mx-auto pt-4 space-y-6">
   <div className="m-2 mb-6 bg-white shadow-lg p-4 rounded-lg">
   <h1 className="text-4xl font-semibold text-blue-600 mb-4">CCPD Contests</h1>

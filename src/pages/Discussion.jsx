@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, deleteDoc, getDoc } from 'firebase/firestore';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from "react-toastify";
+import 'prismjs/themes/prism.css';
 
 const Discussion = () => {
   const [posts, setPosts] = useState([]);
@@ -11,6 +12,7 @@ const Discussion = () => {
   const [content, setContent] = useState('');
   const [replyContent, setReplyContent] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [isAdminView , setIsAdminView] = useState(true);
   const auth = getAuth();
   const user = auth.currentUser;
   const userId = user.uid;
@@ -158,6 +160,19 @@ const Discussion = () => {
       setPosts([...posts]);
   };
 
+  const handleDeleteReply = async (postId, replyIndex) => {
+  const postRef = doc(db, "posts", postId);
+  const post = await (await getDoc(postRef)).data();
+
+  post.replies.splice(replyIndex, 1);
+
+  await updateDoc(postRef, { replies: post.replies });
+
+  const postIndex = posts.findIndex(p => p.id === postId);
+  posts[postIndex].data.replies = post.replies;
+  setPosts([...posts]);
+};
+
   const handleDelete = async (postId) => {
     if (window.confirm('Do you want to delete this post?')) {
       const postRef = doc(db, "posts", postId);
@@ -184,10 +199,11 @@ const Discussion = () => {
 
   return (
 
-      <div className="bg-gray-100 min-h-screen p-4 flex justify-center">
-        <div className="w-[80%] sm:w-3/4  bg-white shadow-md rounded-lg p-4">
+      <div className="bg-blue-100 min-h-screen p-4 flex justify-center">
+        { admins.includes(user.email) && <button onClick={() => setIsAdminView(prevState => !prevState)} className="absolute top-[100px] right-[5px] ">Toggle View</button>}
+        <div className="w-[100%] sm:w-3/4  bg-blue-50 shadow-md rounded-lg p-4">
           {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
-            <div key={post.id} className="mb-4 bg-white border-2 border-gray-200 p-4 rounded-lg shadow">
+            <div key={post.id} className="mb-4 bg-white  border-gray-200 p-4 rounded-lg shadow overflow-auto">
               <div className="flex justify-between mb-2">
                 <h2 className={post.data.type === 'question' ? 'font-bold text-2xl text-red-500' : 'font-bold text-2xl text-blue-600'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
                 { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
@@ -196,21 +212,38 @@ const Discussion = () => {
               <div className={post.data.type === 'question' ? 'font- text-blue-400 flex justify-between mb-4'  : 'font-bold text-green-500'}>
                 <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 text-yellow-600 font-bold px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
                 {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="text-green-500 font-bold  px-2 py-1 rounded">Reply</button>}
-                {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="text-green-500 font-bold px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.length})</button>}
-                {admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)}>Approve</button>}
+                {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="text-green-500 font-bold px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.filter(reply => reply.approved).length})</button>}
+                { isAdminView && admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)} className="text-green-500  font-bold py-2 px-4 rounded">Approve</button>}
+                { isAdminView && admins.includes(user.email) && <button onClick={() => handleDelete(post.id)} className="text-red-500 font-bold py-2 px-4 rounded ml-2" >Delete</button>}
+               
               </div>
-              {(user.email === 'rk972006@student.nitw.ac.in' || user.email === 'sc922055@student.nitw.ac.in') && <button onClick={() => handleDelete(post.id)}>Delete</button>}
+              
               {visibleReplies[post.id] && (
                 <div>
                   {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
-                    <div key={index} className="mb-2 ml-4 bg-gray-100 border-2 border-gray-200 p-4 rounded shadow">
+                    <div key={index} className="mb-2 ml-4 bg-gray-100  border-gray-200 p-4 rounded shadow">
                       <div className="flex justify-start">
                       <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
                       </div>
                       <p className='text-gray-400 font-semibold'dangerouslySetInnerHTML={{ __html: reply.content }} />
                       <div className="flex justify-end text-green-600 ">
                         <button onClick={() => handleUpvote(post.id, true, index)} className="text-yellow-600 font-bold  px-2 py-1 rounded">Upvote ({reply.upvotes})</button>
-                        {admins.includes(user.email) && !reply.approved && <button onClick={() => handleApproveReply(post.id, index)}>Approve</button>}
+                        {isAdminView && admins.includes(user.email) && !reply.approved && 
+                            <button 
+                                onClick={() => handleApproveReply(post.id, index)} 
+                                className="text-green-500 font-bold py-2 px-4 rounded"
+                            >
+                                Approve
+                            </button>
+                        }
+                        {isAdminView && admins.includes(user.email) && 
+                            <button 
+                                onClick={() => handleDeleteReply(post.id, index)} 
+                                className="text-red-500 font-bold py-2 px-4 rounded ml-2"
+                            >
+                                Delete
+                            </button>
+                        }
                       </div>
                     </div>
                   ))}
@@ -224,11 +257,11 @@ const Discussion = () => {
                     init={{
                       height: 400,
                       menubar: false,
-                      plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss code quote',
-                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code quote',
+                      plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss codesample quote',
+                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | codesample quote',
                     }}
                   />
-                  <button type="submit" className="bg-blue-500 m-[5px] text-white px-2 py-1 rounded"> Post Reply</button>
+                  <button type="submit" className="text-blue-500 m-[5px] px-2 py-1 rounded"> Post Reply</button>
                 </form>
               )}
              
@@ -247,11 +280,11 @@ const Discussion = () => {
               init={{
                 height: 400,
                 menubar: false,
-                plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss code quote',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor| link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | code quote',
+                plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss  quote',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor codesample | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat |  quote',
               }}
             />
-            <button type="submit" className="bg-blue-500 text-white px-2 py-1 rounded">Post</button>
+            <button type="submit" className="text-white bg-blue-700  m-[5px] px-2 py-1 rounded">Post</button>
           </form>
         </div>
       </div>

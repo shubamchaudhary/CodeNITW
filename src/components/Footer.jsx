@@ -1,30 +1,19 @@
-import React, { useState } from 'react';
+// Footer.jsx
+import React from 'react';
 
 const Footer = () => {
-    const [showModal, setShowModal] = useState(false);
-
-    const openModal = () => {
-        setShowModal(true);
-    };
-
-    const closeModal = () => {
-        setShowModal(false);
-    };
-
     return (
-        <footer style={{ textAlign: 'center' }}>
-            <p onClick={openModal} style={{ cursor: 'pointer' }}>
-                Contributors
-            </p>
-            {showModal && (
-                <div>
-                    <button onClick={closeModal}>Close</button>
-                    <a href="https://www.example1.com" target="_blank" rel="noopener noreferrer">Link 1</a>
-                    <a href="https://www.example2.com" target="_blank" rel="noopener noreferrer">Link 2</a>
-                </div>
-            )}
+        <footer className="bg-blue-200 p-5 text-center">
+            <div className="max-w-screen-xl mx-auto flex justify-center items-center">
+                <p className="text-gray-500 font-bold flex justify-center items-center">
+                    Made by 
+                    <a href="https://shubamchaudhary.vercel.app/" target="_blank" rel="noreferrer" className="text-red-800 font-bold mx-2"> Shubam Chaudhary</a>
+                    <span className="mx-2">&</span>
+                    <a href="http://www.oracle.com" target="_blank" rel="noreferrer" className="text-red-800 font-bold mx-2">Rohit Kumar</a>
+                </p>
+            </div>
         </footer>
     );
-};
+}
 
 export default Footer;
