@@ -51,13 +51,13 @@ const Resources = () => {
   
 
   return (
-    <div className='bg-blue-100'>
+    <div className='bg-blue-100 dark:bg-[#1C1C1EFF]'>
       {/* <DailyProblem /> */}
-      <div className='bg-blue-100 min-h-screen flex justify-center'>
+      <div className='bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
           <div className='flex justify-between items-center mb-4'>
             <div className='ml-4'>
-              <h1 className='text-xl mt-4 font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
+              <h1 className='text-xl mt-4 dark:text-gray-300 font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
               <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
             </div>
             <div className='mr-2 mt-2'
@@ -138,9 +138,9 @@ export function QuestionCard(props) {
   }, []);
 
   return (
-    <div className={`flex items-center border rounded p-4 ${isChecked ? "bg-green-200" : "bg-blue-100"} rounded-lg p-4 shadow-md ml-2 mt-2 mr-2 mb-2`}>
+    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#2c2c2e]" : "bg-blue-100 dark:bg-[#343436]"} rounded-lg p-3 shadow-md ml-2 mt-2 mr-2 mb-2`}>
     <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
-      <h3 className={`text-lg font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
+      <h3 className={`text-lg dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
         {isSmallScreen ? truncatedName : lesstruncatedName}
       </h3>
       <div className="flex items-center justify-between w-full mt-2 sm:mt-0">
@@ -165,7 +165,7 @@ export function QuestionCard(props) {
           /> 
         </a>
         <input
-  className={`ml-2 form-checkbox h-6 w-6 s text-green-500 ${isChecked ? 'ring ring-green-200 bg-green-200' : 'ring-red-500 bg-blue-100'}`}
+  className={`ml-2 form-checkbox h-6 w-6 s `}
   type="checkbox"
   checked={isChecked}
   onChange={handleCheckboxChange}
@@ -211,12 +211,12 @@ export const TopicCard = React.forwardRef((props, ref) => {
     return (
       <div 
         ref={ref} 
-        className={`relative bg-white bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 p-4 border-2 m-1 border-gray-300 ${isOpen ? 'pb-8' : ''}`} 
+        className={`relative bg-white dark:bg-[#2C2C2EFF] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-2  m-1  ${isOpen ? 'pb-8' : ''}`} 
         onClick={handleTopicClick}
       >
         <div className={` gap-4 items-center sm:w-[90%]`}>
           <div className=''>
-            <h1 className=' flex text-lg font-semibold text-overflow-ellipsis whitespace-nowrap text-gray-700'>{name}</h1>
+            <h1 className=' flex text-lg font-semibold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
             <p className='text-sm text-gray-600'>{solvedQuestionCount} / {questions.length} solved</p>
           </div>
         </div>
@@ -225,23 +225,27 @@ export const TopicCard = React.forwardRef((props, ref) => {
             <div className={` items-center sm:w-[70%] md:w-[80%] lg:w-[90%] mx-auto`}>
               <AnimatePresence>
               {questions.map((question, index) => (
-    <motion.div
-      key={index}
-      initial={{ opacity: 0, x: -100 }} // Initial position and opacity
-      animate={{ opacity: 1, x: 0 }} // Animation to apply when entering
-      exit={{ opacity: 0, x: -100 }} // Animation to apply when exiting
-      transition={{ duration: 0.5, delay: index * 0.1 }} // Animation duration with delay
-    >
-      <QuestionCard 
-        key={index} 
-        name={question.Question} 
-        link={question.Question_link} 
-        youtube={question.Solution_link} 
-        onQuestionSolved={props.onQuestionSolved} // Pass the prop here
-      />
-    </motion.div>
-  
-              ))}
+  <motion.div
+    key={index}
+    initial={{ opacity: 0, x: -10 }} // Initial position and opacity
+    animate={{ opacity: 1, x: 0 }} // Animation to apply when entering
+    exit={{ opacity: 0, x: -100 }} // Animation to apply when exiting
+    transition={{
+      type: 'spring',
+      stiffness: 200,
+      damping: 10,
+      delay: index * 0.05 // Delay each question by a small amount
+    }} // Use spring physics for the animation
+  >
+    <QuestionCard 
+      key={index} 
+      name={question.Question} 
+      link={question.Question_link} 
+      youtube={question.Solution_link} 
+      onQuestionSolved={props.onQuestionSolved} // Pass the prop here
+    />
+  </motion.div>
+))}
               </AnimatePresence>
             </div>
           </div>

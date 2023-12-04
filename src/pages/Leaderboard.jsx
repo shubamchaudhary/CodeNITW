@@ -224,9 +224,9 @@ export default function LeaderboardList() {
     return updatedScoreArray;
   }
   return (
-    <div className=" min-h-screen bg-blue-100">
+    <div className=" min-h-screen dark:bg-[#1C1C1EFF] bg-blue-100">
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <h1 className="text-4xl text-center font-serif mb-8 mt-8" >Leaderboard</h1>
+        <h1 className="text-4xl dark:text-gray-400 text-center font-serif mb-8 mt-8" >Leaderboard</h1>
         
         {isPushDataButtonVisible && (
           <button
@@ -236,7 +236,7 @@ export default function LeaderboardList() {
             Push Data
           </button>
         )}
-        <div className="w-full bg-white shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
+        <div className="w-full bg-white dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
           <CustomLeaderboard
             leaderboardData={leaderboardData}
             page={page}
@@ -293,12 +293,12 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
   return (
     <div className="p-4">
       {/* <h1 className="text-2xl font-bold mb-4">Leaderboard</h1> */}
-      <table className="w-full border-collapse bg-blue-100 rounded-md">
-      <thead className="bg-blue-200">
+      <table className="w-full  bg-blue-100 dark:text-gray-400 dark:bg-[#3A3A3CFF] rounded-md">
+      <thead className="bg-blue-200 dark:bg-[#2d2d2e]">
           <tr>
-            <th className="p-2 border">Rank</th>
-            <th className="p-2 border">Handle</th>
-            <th className="p-2 border">Score</th>
+            <th className="p-2 ">Rank</th>
+            <th className="p-2 ">Handle</th>
+            <th className="p-2 ">Score</th>
           </tr>
         </thead>
         <tbody>
@@ -308,10 +308,10 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
               topper = "👑";
             }
             return (
-              <tr key={index} className={`${topper} hover:bg-blue-200 justify-center`} >
-              <td className="p-2 font-semibold border text-center">{startIndex + index + 1}{topper}</td>
-               <td className="p-2 font-semibold border text-center"><a href={`https://codeforces.com/profile/${item.handle}`} target="_blank">{item.handle}</a></td>
-              <td className="p-2 font-semibold border text-center">{item.Score}</td>
+              <tr key={index} className={`${topper} hover:bg-blue-200 dark:hover:bg-[#2c2c2e] justify-center`} >
+              <td className="p-2 font-semibold  text-center">{startIndex + index + 1}{topper}</td>
+               <td className="p-2 font-semibold  text-center"><a href={`https://codeforces.com/profile/${item.handle}`} target="_blank">{item.handle}</a></td>
+              <td className="p-2 font-semibold  text-center">{item.Score}</td>
              </tr>
             );
           })}
@@ -322,7 +322,7 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
         <button
           onClick={goToPreviousPage}
           disabled={page === 1}
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors mr-2"
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600  transition-colors mr-2"
         >
           Previous
         </button>

@@ -86,7 +86,7 @@ export default function AddContest() {
   }
 
   return (
-    <div className=" bg-blue-100 ">
+    <div className=" bg-blue-100 dark:bg-[#1C1C1EFF]">
       <main className="max-w-[60%] px-4 mx-auto bg-blue-100 text-gray-800 rounded-lg p-6">
     <h1 className="text-4xl text-center font-cursive text-blue-700">Add New Contest</h1>
     <form onSubmit={onSubmit} className="mt-6 space-y-4">
