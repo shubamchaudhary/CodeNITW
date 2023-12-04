@@ -170,7 +170,7 @@ export function TopicCard({ id, name, questions, addQuestion, newQuestion, setNe
 
   return (
     <>
-    <div className={`relative bg-white bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 p-4 border-2 m-1 border-gray-300 ${isOpen ? 'pb-8' : ''}`} onClick={handleTopicClick}>
+    <div className={`relative bg-white dark:bg-[#2C2C2EFF] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 p-4 border-2 m-1 border-gray-300 ${isOpen ? 'pb-8' : ''}`} onClick={handleTopicClick}>
       <div className={` gap-4 items-center sm:w-[90%]`}>
         <div className=''>
           <h1 className=' flex text-2xl font-semibold text-overflow-ellipsis whitespace-nowrap text-gray-700'>{name}</h1>

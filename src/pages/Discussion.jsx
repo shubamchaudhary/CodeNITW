@@ -199,16 +199,16 @@ const Discussion = () => {
 
   return (
 
-      <div className="bg-blue-100 min-h-screen p-4 flex justify-center">
+      <div className="bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen p-4 flex justify-center">
         { admins.includes(user.email) && <button onClick={() => setIsAdminView(prevState => !prevState)} className="absolute top-[100px] right-[5px] ">Toggle View</button>}
-        <div className="w-[100%] sm:w-3/4  bg-blue-50 shadow-md rounded-lg p-4">
+        <div className="w-[100%] sm:w-3/4 dark:bg-[#2C2C2EFF]  bg-blue-50 shadow-md rounded-lg p-4">
           {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
-            <div key={post.id} className="mb-4 bg-white  border-gray-200 p-4 rounded-lg shadow overflow-auto">
+            <div key={post.id} className="mb-4 bg-white dark:bg-[#3A3A3CFF] border-gray-200 p-4 rounded-lg shadow overflow-auto">
               <div className="flex justify-between mb-2">
                 <h2 className={post.data.type === 'question' ? 'font-bold text-2xl text-red-500' : 'font-bold text-2xl text-blue-600'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
                 { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}
               </div>
-              <p className='mb-[15px]' dangerouslySetInnerHTML={{ __html: post.data.content }}></p>
+              <p className='mb-[15px] dark:text-white' dangerouslySetInnerHTML={{ __html: post.data.content }}></p>
               <div className={post.data.type === 'question' ? 'font- text-blue-400 flex justify-between mb-4'  : 'font-bold text-green-500'}>
                 <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 text-yellow-600 font-bold px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
                 {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="text-green-500 font-bold  px-2 py-1 rounded">Reply</button>}
@@ -221,7 +221,7 @@ const Discussion = () => {
               {visibleReplies[post.id] && (
                 <div>
                   {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
-                    <div key={index} className="mb-2 ml-4 bg-gray-100  border-gray-200 p-4 rounded shadow">
+                    <div key={index} className="mb-2 ml-4 bg-gray-100 dark:bg-[#2C2C2EFF]  border-gray-200 p-4 rounded shadow">
                       <div className="flex justify-start">
                       <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
                       </div>

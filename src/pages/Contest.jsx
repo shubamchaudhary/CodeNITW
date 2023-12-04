@@ -122,9 +122,9 @@ export default function Contest() {
 
   return (
 
-  <div className="bg-blue-100 min-h-screen font-serif">
+  <div className="bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen font-serif">
   <div className="max-w-6xl mx-auto pt-4 space-y-6">
-  <div className="m-2 mb-6 bg-white shadow-lg p-4 rounded-lg">
+  <div className="m-2 mb-6 bg-white dark:bg-[#2C2C2EFF] shadow-lg p-4 rounded-lg">
   <h1 className="text-4xl font-semibold text-blue-600 mb-4">CCPD Contests</h1>
 
   {Listings && Listings.active.length > 0 && (
@@ -132,7 +132,7 @@ export default function Contest() {
       <h2 className="text-3xl font-semibold text-green-600 mb-4">Active Contests</h2>
       <ul>
         {Listings.active.map((listing) => (
-         <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-105">
+         <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-10">
          <ListingItem listing={listing.data} id={listing.id} status="Active" />
        </li>
         ))}
@@ -145,7 +145,7 @@ export default function Contest() {
       <h2 className="text-3xl  font-semibold text-blue-600 mb-4">Upcoming Contests</h2>
       <ul>
         {Listings.upcoming.map((listing) => (
-          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-105">
+          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
           <ListingItem listing={listing.data} id={listing.id} status="Upcoming" />
         </li>
         ))}
@@ -158,7 +158,7 @@ export default function Contest() {
       <h2 className="text-3xl font-semibold text-gray-600 mb-4">Past Contests</h2>
       <ul>
         {Listings.past.map((listing) => (
-          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-105">
+          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
           <ListingItem listing={listing.data} id={listing.id} status="Past"  />
         </li>
         ))}
@@ -167,7 +167,7 @@ export default function Contest() {
   )}
 </div>
 </div>
-<div className="max-w-6xl mx-auto pt-4 space-y-6">
+{/* <div className="max-w-6xl mx-auto pt-4 space-y-6">
 <div className="m-2 mb-6 bg-white shadow-lg p-4 rounded-lg">
   <h1 className="text-4xl font-semibold text-blue-600 mb-4">Other Contests</h1>
 
@@ -197,7 +197,7 @@ export default function Contest() {
     </div>
   )}
 </div>
-</div>
+</div> */}
 </div>
 
   );

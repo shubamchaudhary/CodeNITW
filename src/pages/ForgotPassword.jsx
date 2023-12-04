@@ -19,10 +19,10 @@ export default function PasswordReset() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen mt-4"> {/* Add mt-4 for top margin */}
+    <div className="flex items-center dark:bg-[#1C1C1EFF] justify-center h-screen "> {/* Add mt-4 for top margin */}
       <div className="max-w-md w-full">
-        <h1 className="text-3xl font-bold mb-4 text-center">Forgot Password</h1>
-        <p className="text-center mb-4">
+        <h1 className="text-3xl dark:text-gray-400 font-bold mb-4 text-center">Forgot Password</h1>
+        <p className="text-center dark:text-gray-400 mb-4">
           Enter your email address to reset your password.
         </p>
         <input
@@ -30,16 +30,16 @@ export default function PasswordReset() {
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 mb-4 rounded border border-gray-400 focus:outline-none focus:border-blue-500"
+          className="w-full px-3 dark:bg-[#29292b] py-2 mb-4 rounded  border-gray-400 focus:outline-none focus:border-blue-500"
         />
         <button
           onClick={handleResetPassword}
-          className="w-full bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 dark:bg-[#4b4b64] hover:dark:bg-[#353549] text-white font-semibold py-2 rounded hover:bg-blue-600"
         >
           Send Reset Email
         </button>
-        <p className="mt-4 text-center">
-          Remember your password? <a href="/sign-in" className="text-blue-500">Sign in</a>
+        <p className="mt-4 text-center dark:text-gray-400">
+          Remember your password? <a href="/sign-in" className="text-blue-500 dark:text-blue-800">Sign in</a>
         </p>
       </div>
     </div>

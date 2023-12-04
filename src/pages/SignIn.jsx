@@ -47,7 +47,7 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="bg-blue-100 min-h-screen flex flex-col justify-center items-center">
+    <div className="bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen flex flex-col justify-center items-center">
       <section className="w-full max-w-8xl mx-auto flex flex-col md:flex-row justify-center items-center px-4 md:px-40">
         <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
           <img className="rounded-xl w-full md:max-w-[700px]" src={computer} alt="" />
@@ -60,14 +60,14 @@ export default function SignIn() {
                 onChange={onChange}
                 id="email"
                 placeholder="Email address"
-                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg mb-6"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl dark:bg-[#29292b] dark:text-gray-800 text-gray-700 bg-gray-100 rounded-lg mb-6"
                 type="email"
               ></input>
               <input
                 onChange={onChange}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 dark:bg-[#29292b] text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 id="password"
               ></input>
              {/* {showPassword ? (
@@ -87,19 +87,19 @@ export default function SignIn() {
               )} */}
             </div>
             <div className="flex justify-between text-sm md:text-lg mt-2 mb-8">
-              <p>
+              <p className="dark:text-gray-500">
                 Do Not have a Account?{" "}
-                <a className="text-red-600" href="/sign-up">
+                <a className="text-red-600 dark:text-red-900" href="/sign-up">
                   {" "}
                   Register
                 </a>
               </p>
-              <a className="text-red-600" href="/forgot-password">
+              <a className="text-red-600 dark:text-red-900" href="/forgot-password">
                 Forgot Password?
               </a>
             </div>
             <button
-              className="mb-4 mt-4 w-full text-lg bg-blue-900 text-white h-10 md:h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
+              className="mb-4 mt-4 w-full text-lg dark:bg-[#4b4b64] hover:dark:bg-[#353549] bg-blue-900 text-white h-10 md:h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
               type="submit"
             >
               Sign In

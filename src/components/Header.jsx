@@ -1,13 +1,28 @@
+
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import Codeit from "../images/codeIt3.png";
+import { CiLight } from "react-icons/ci";
+import { SiDarkreader } from "react-icons/si";
 
 export default function Header() {
   const [pageState, setPageState] = useState("sign-in");
   const [displayPageName, setDisplayPageName] = useState("Sign in");
   const [user, setUser] = useState(null); // Add user state to keep track of authentication state
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [darkMode, setDarkMode] = useState( JSON.parse(localStorage.getItem("darkMode")) || false);
+    useEffect(() => {
+        localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    
+        if(darkMode){
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        
+      }, [darkMode]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -66,7 +81,7 @@ export default function Header() {
   return (
     <div>
       <header>
-        <nav className="bg-blue-200 shadow-lg  border-gray-200 px-4 lg:px-6 py-4">
+        <nav className="bg-blue-200 dark:bg-[#2C2C2EFF] shadow-lg dark:text-white  border-gray-200 px-4 lg:px-6 py-4">
           <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <a href="" className="flex items-center">
               <img
@@ -76,6 +91,12 @@ export default function Header() {
               />
             </a>
             <div className="flex items-center lg:order-2">
+              <button 
+                className="text-darkbg text-2xl dark:text-white" 
+                onClick={() => setDarkMode(!darkMode)} 
+              >
+                {darkMode ? <CiLight/> : <SiDarkreader />}
+              </button>
               <button
                 data-collapse-toggle="mobile-menu-2"
                 type="button"
@@ -113,8 +134,8 @@ export default function Header() {
                    onClick={() => handlePageSelect("/discussion")}
                    className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                   isActive("/discussion")
-                      ? "text-gray-600 font-extrabold text-lg mt-1"
-                     : "text-gray-500"
+                      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                     : "text-gray-500 dark:text-gray-400"
                        }`}
                       >
                    DISCUSS
@@ -123,8 +144,8 @@ export default function Header() {
                    onClick={() => handlePageSelect("/resources")}
                    className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                   isActive("/resources")
-                      ? "text-gray-600 font-extrabold text-lg mt-1"
-                     : "text-gray-500"
+                      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                     : "text-gray-500 dark:text-gray-400"
                        }`}
                       >
                    PROBLEMS
@@ -134,8 +155,8 @@ export default function Header() {
                     onClick={() => handlePageSelect("/add-contest")}
                     className={`block py-2 pr-4 pl-3 hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/add-contest")
-                    ? "text-gray-600 font-extrabold text-lg mt-1"
-                      : "text-gray-500"
+                    ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                      : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   ADD CONTEST
@@ -145,8 +166,8 @@ export default function Header() {
                   onClick={() => handlePageSelect("/contest")}
                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer   border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/contest")
-                    ? "text-gray-600 font-extrabold text-lg mt-1"
-                    : "text-gray-500"
+                    ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                    : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   CONTESTS
@@ -155,8 +176,8 @@ export default function Header() {
                   onClick={() => handlePageSelect("/leaderboard")}
                   className={`block py-2 pr-4 pl-3 hover:text-gray-600  hover:cursor-pointer  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/leaderboard")
-                      ? "text-gray-600 font-extrabold text-lg mt-1"
-                      : "text-gray-500"
+                      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                      : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   LEADERBOARD
@@ -165,8 +186,8 @@ export default function Header() {
                   onClick={() => handlePageSelect(pageState)}
                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer   border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
                     isPath("/Dashboard")
-                    ? "text-gray-600 font-extrabold text-lg mt-1"
-                    : "text-gray-500"
+                    ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                    : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   DASHBOARD
@@ -174,15 +195,20 @@ export default function Header() {
                 {/* {user && user.email ? ( */}
                   <li
                     onClick={handleLogout}
-                    className={`block py-2 pr-4 pl-3 text-gray-500 hover:cursor-pointer  hover:text-gray-600  h  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 `} >
+                    className={`block py-2 pr-4 pl-3 text-gray-500 hover:cursor-pointer  hover:text-gray-600  h  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent dark:text-gray-400 lg:border-0 lg:hover:text-primary-700 lg:p-0 `} >
                     {isPath('/sign-in') ? "SIGN IN" : isPath('/sign-up') ? "SIGN IN" : isPath('/forgot-password') ? "SIGN IN" : "LOG OUT"}
                   </li>
-                {/* ) : null} */}
+                  
+               
               </ul>
+                
             </div>
           </div>
+          
         </nav>
+        
       </header>
+      
     </div>
   );
 }
