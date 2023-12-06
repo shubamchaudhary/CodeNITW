@@ -60,14 +60,14 @@ export default function SignIn() {
                 onChange={onChange}
                 id="email"
                 placeholder="Email address"
-                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl dark:bg-[#29292b] dark:text-gray-800 text-gray-700 bg-gray-100 rounded-lg mb-6"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl  dark:bg-[#29292b] dark:text-gray-400 text-gray-700 bg-gray-100 rounded-lg mb-6"
                 type="email"
               ></input>
               <input
                 onChange={onChange}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                className="w-full h-10 md:h-[50px] p-2 md:p-4 dark:bg-[#29292b] text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 dark:text-gray-400 dark:bg-[#29292b] text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 id="password"
               ></input>
              {/* {showPassword ? (

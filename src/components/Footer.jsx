@@ -9,7 +9,7 @@ const Footer = () => {
                     Made by 
                     <a href="https://shubamchaudhary.vercel.app/" target="_blank" rel="noreferrer" className="text-red-800 dark:text-red-900 font-bold mx-2"> Shubam Chaudhary</a>
                     <span className="mx-2">&</span>
-                    <a href="http://www.oracle.com" target="_blank" rel="noreferrer" className="text-red-800 dark:text-red-900 font-bold mx-2">Rohit Kumar</a>
+                    <a href="https://kmrrohit.vercel.app/" target="_blank" rel="noreferrer" className="text-red-800 dark:text-red-900 font-bold mx-2">Rohit Kumar</a>
                 </p>
             </div>
         </footer>

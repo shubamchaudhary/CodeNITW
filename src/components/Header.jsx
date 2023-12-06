@@ -5,6 +5,8 @@ import { useNavigate, useLocation } from "react-router";
 import Codeit from "../images/codeIt3.png";
 import { CiLight } from "react-icons/ci";
 import { SiDarkreader } from "react-icons/si";
+import { BsBrightnessHigh } from "react-icons/bs";
+import { CiBrightnessUp } from "react-icons/ci";
 
 export default function Header() {
   const [pageState, setPageState] = useState("sign-in");
@@ -95,7 +97,7 @@ export default function Header() {
                 className="text-darkbg text-2xl dark:text-white" 
                 onClick={() => setDarkMode(!darkMode)} 
               >
-                {darkMode ? <CiLight/> : <SiDarkreader />}
+                {darkMode ? <BsBrightnessHigh/> : <SiDarkreader />}
               </button>
               <button
                 data-collapse-toggle="mobile-menu-2"
@@ -124,11 +126,15 @@ export default function Header() {
               </button>
             </div>
             <div
-              className={`${
-                menuOpen ? 'block' : 'hidden'
-              } justify-between items-center w-full lg:flex lg:w-auto lg:order-1`}
-              id="mobile-menu-2"
-            >
+  className={`${
+    menuOpen ? 'block' : 'hidden'
+  }
+  ${
+    menuOpen && 'dark:bg-[#2C2C2EFF]'
+  }
+   justify-between items-center w-2/5 lg:w-auto absolute z-10 rounded-[20px] lg:relative lg:flex lg:order-1 top-[60px] right-0 bg-blue-200 bg-opacity  transition ease-in duration-5000 lg:bg-transparent dark:lg:bg-transparent lg:top-auto lg:right-auto`}
+  id="mobile-menu-2"
+>
               <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
               <li
                    onClick={() => handlePageSelect("/discussion")}

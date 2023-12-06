@@ -30,7 +30,7 @@ export default function PasswordReset() {
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 dark:bg-[#29292b] py-2 mb-4 rounded  border-gray-400 focus:outline-none focus:border-blue-500"
+          className="w-full px-3 dark:bg-[#29292b] dark:text-gray-400 py-2 mb-4 rounded  border-gray-400 focus:outline-none focus:border-blue-500"
         />
         <button
           onClick={handleResetPassword}
