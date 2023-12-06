@@ -231,7 +231,7 @@ export default function LeaderboardList() {
         {isPushDataButtonVisible && (
           <button
             onClick={handleUpdateDataClick}
-            className="px-6 py-3 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors mb-8"
+            className="px-6 py-3 rounded-lg bg-blue-500 text-white dark:bg-blue-950 hover:bg-blue-600 transition-colors mb-8"
           >
             Push Data
           </button>
@@ -246,7 +246,7 @@ export default function LeaderboardList() {
           />
           <div className="flex justify-center">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-              <button className="m-2 bg-blue-400 text-white px-2 rounded-full" key={pageNumber} onClick={() => setPage(pageNumber)}>
+              <button className="m-2 dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer bg-blue-400 text-white px-2 rounded-full" key={pageNumber} onClick={() => setPage(pageNumber)}>
                 {pageNumber}
               </button>
             ))}
@@ -322,14 +322,14 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
         <button
           onClick={goToPreviousPage}
           disabled={page === 1}
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600  transition-colors mr-2"
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer hover:bg-blue-600  transition-colors mr-2"
         >
           Previous
         </button>
         <button
            onClick={goToNextPage}
            disabled={page === totalPages}
-           className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+           className="px-4 py-2 rounded-lg bg-blue-500 dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer text-white hover:bg-blue-600 transition-colors"
          >
            Next
          </button>
