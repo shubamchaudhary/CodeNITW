@@ -6,7 +6,7 @@ import { getFirestore } from "firebase/firestore";
 import { collection, addDoc, setDoc, query, where, getDocs, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import authentication modules
-
+import  Tilt from "react-parallax-tilt";
 
 async function sha512(str) {
   return crypto.subtle
@@ -236,6 +236,7 @@ export default function LeaderboardList() {
             Push Data
           </button>
         )}
+      <Tilt className="Tilt md:w-[110%] " options={{ max : 25 }}>
         <div className="w-full bg-white border-2 dark:border-blue-600 border-blue-200 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
           <CustomLeaderboard
             leaderboardData={leaderboardData}
@@ -252,6 +253,7 @@ export default function LeaderboardList() {
             ))}
           </div>
         </div>
+        </Tilt>
       </section>
     </div>
   );
@@ -308,7 +310,7 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
               topper = "👑";
             }
             return (
-              <tr key={index} className={`${topper} hover:bg-blue-200  dark:hover:bg-[#2c2c2e] justify-center`} >
+              <tr key={index} className={`${topper}   justify-center`} >
               <td className="p-2 font-semibold  text-center">{startIndex + index + 1}{topper}</td>
                <td className="p-2 font-semibold  text-center"><a href={`https://codeforces.com/profile/${item.handle}`} target="_blank">{item.handle}</a></td>
               <td className="p-2 font-semibold  text-center">{item.Score}</td>
