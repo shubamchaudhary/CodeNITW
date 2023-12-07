@@ -236,7 +236,7 @@ export default function LeaderboardList() {
             Push Data
           </button>
         )}
-        <div className="w-full bg-white border-2 border-blue-600 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
+        <div className="w-full bg-white border-2 dark:border-blue-600 border-blue-200 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
           <CustomLeaderboard
             leaderboardData={leaderboardData}
             page={page}
