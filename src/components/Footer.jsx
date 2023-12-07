@@ -3,7 +3,7 @@ import React from 'react';
 
 const Footer = () => {
     return (
-        <footer className="bg-blue-100 dark:bg-[#1C1C1EFF] p-3 text-center text-sm">
+        <footer className="bg-blue-100 dark:bg-[#1C1C1EFF] md:block hidden p-3 text-center text-sm">
             <div className="max-w-screen-xl mx-auto flex justify-center items-center">
                 <p className="text-gray-500 font-bold flex justify-center items-center">
                     Made by 
