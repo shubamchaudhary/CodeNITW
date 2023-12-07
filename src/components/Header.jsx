@@ -89,8 +89,8 @@ export default function Header() {
             <a href="" className="flex items-center">
             <Tilt
     className="parallax-effect-img"
-    tiltMaxAngleX={40}
-    tiltMaxAngleY={0}
+    tiltMaxAngleX={0}
+    tiltMaxAngleY={40}
     perspective={2000}
     transitionSpeed={1500}
     scale={1.1}
