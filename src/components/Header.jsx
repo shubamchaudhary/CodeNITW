@@ -156,7 +156,7 @@ export default function Header() {
                       >
                    PROBLEMS
                       </li>
-                 {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rr7433446@gmail.com') && (
+                 {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && (
                   <li
                     onClick={() => handlePageSelect("/add-contest")}
                     className={`block py-2 pr-4 pl-3 hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
