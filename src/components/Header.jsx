@@ -2,7 +2,7 @@
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import Codeit from "../images/codenitw.png";
+import Codeit from "../images/codeIt3.png";
 import { CiLight } from "react-icons/ci";
 import { SiDarkreader } from "react-icons/si";
 import { BsBrightnessHigh } from "react-icons/bs";
