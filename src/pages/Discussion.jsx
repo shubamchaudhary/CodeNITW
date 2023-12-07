@@ -251,13 +251,13 @@ const Discussion = () => {
               )}
               {replyFormVisible[post.id] && (
                 <form onSubmit={handleReply} className="mb-4">
-                  <Editor
+                    <Editor
                     onInit={(evt, editor) => editorRef.current = editor}
                     apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
                     init={{
                       height: 400,
                       menubar: false,
-                      plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss codesample quote',
+                      plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount codesample quote',
                       toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | codesample quote',
                     }}
                   />
@@ -275,15 +275,15 @@ const Discussion = () => {
               )}
             </select>
             <Editor
-              onInit={(evt, editor) => editorRef.current = editor}
-              apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
-              init={{
-                height: 400,
-                menubar: false,
-                plugins: 'mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss  quote',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor codesample | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat |  quote',
-              }}
-            />
+                    onInit={(evt, editor) => editorRef.current = editor}
+                    apiKey='bmcdss687jwqtyt2iwkph4vn5b0epn6f4wc420ezudzsnvff'
+                    init={{
+                      height: 400,
+                      menubar: false,
+                      plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount codesample quote',
+                      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough forecolor backcolor | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat | codesample quote',
+                    }}
+                  />
             <button type="submit" className="text-white bg-blue-700  m-[5px] px-2 py-1 rounded">Post</button>
           </form>
         </div>
