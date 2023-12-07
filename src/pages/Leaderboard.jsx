@@ -236,7 +236,7 @@ export default function LeaderboardList() {
             Push Data
           </button>
         )}
-        <div className="w-full bg-white dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
+        <div className="w-full bg-white border-2 border-blue-600 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
           <CustomLeaderboard
             leaderboardData={leaderboardData}
             page={page}
@@ -246,7 +246,7 @@ export default function LeaderboardList() {
           />
           <div className="flex justify-center">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-              <button className="m-2 dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer bg-blue-400 text-white px-2 rounded-full" key={pageNumber} onClick={() => setPage(pageNumber)}>
+              <button className="m-2 dark:text-gray-400 dark:bg-blue-700 hover:dark:bg-gray-900 cursor-pointer bg-blue-400 text-white px-2 rounded-full" key={pageNumber} onClick={() => setPage(pageNumber)}>
                 {pageNumber}
               </button>
             ))}
@@ -308,7 +308,7 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
               topper = "👑";
             }
             return (
-              <tr key={index} className={`${topper} hover:bg-blue-200 dark:hover:bg-[#2c2c2e] justify-center`} >
+              <tr key={index} className={`${topper} hover:bg-blue-200  dark:hover:bg-[#2c2c2e] justify-center`} >
               <td className="p-2 font-semibold  text-center">{startIndex + index + 1}{topper}</td>
                <td className="p-2 font-semibold  text-center"><a href={`https://codeforces.com/profile/${item.handle}`} target="_blank">{item.handle}</a></td>
               <td className="p-2 font-semibold  text-center">{item.Score}</td>
@@ -322,14 +322,14 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
         <button
           onClick={goToPreviousPage}
           disabled={page === 1}
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer hover:bg-blue-600  transition-colors mr-2"
+          className="px-4 py-2 rounded-lg bg-blue-500 text-white dark:text-gray-400 dark:bg-blue-700 hover:dark:bg-gray-900 cursor-pointer hover:bg-blue-600  transition-colors mr-2"
         >
           Previous
         </button>
         <button
            onClick={goToNextPage}
            disabled={page === totalPages}
-           className="px-4 py-2 rounded-lg bg-blue-500 dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer text-white hover:bg-blue-600 transition-colors"
+           className="px-4 py-2 rounded-lg bg-blue-500 dark:text-gray-400 dark:bg-blue-700 hover:dark:bg-gray-900 cursor-pointer text-white hover:bg-blue-600 transition-colors"
          >
            Next
          </button>
