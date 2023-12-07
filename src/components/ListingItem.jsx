@@ -16,7 +16,7 @@ export default function ListingItem({ listing, id, onDelete, onEdit , status }) 
         </div>
 
         <div className="col-span-1 md:col-span-2">
-          <h1 className="text-3xl font-bold dark:text-blue-950 text-blue-700">
+          <h1 className="text-3xl font-bold dark:text-blue-500 text-blue-700">
             {listing.name}
           </h1>
 
@@ -37,7 +37,7 @@ export default function ListingItem({ listing, id, onDelete, onEdit , status }) 
             href={listing.link}
             target="_blank"
             rel="noreferrer"
-            className="bg-blue-700 dark:text-gray-400 dark:bg-blue-950 hover:dark:bg-gray-900 cursor-pointer text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium"
+            className="bg-blue-700 dark:text-gray-400 dark:bg-blue-900 hover:dark:bg-gray-900 cursor-pointer text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium"
           >
             {status === "Active" ? "Go to Contest" : status === "Upcoming" ? "Register" : "Results"}
           </a>

@@ -16,6 +16,7 @@ import {
 import { db } from "../firebase";
 import { toast } from "react-toastify";
 import PerformanceChart from "./PerformanceChart";
+import Tilt from 'react-parallax-tilt';
 
 
 
@@ -96,7 +97,8 @@ export default function Dashboard() {
   return (
     <>
     <div className=" px-[20px] dark:bg-[#1C1C1EFF] bg-blue-50 min-h-screen font-serif ">
-    <section className="max-w-2xl mx-auto  pt-10 text-black-400 bg-blue-50 dark:bg-[#313133] p-6 rounded-lg shadow-lg">
+    <Tilt className="Tilt " options={{ max : 25 }}>
+    <section className="max-w-2xl mx-auto border-2 dark:border-blue-600 border-blue-200  pt-10 text-black-400 bg-blue-50 dark:bg-[#313133] p-6 rounded-lg shadow-lg">
   <div className="bg-white dark:bg-[#3A3A3CFF] shadow-md rounded-lg p-6 hover:bg-blue-100 transition-colors duration-200">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <div>
@@ -111,7 +113,7 @@ export default function Dashboard() {
     </div>
   </div>
 </section>
-      
+      </Tilt >
     
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col ">
       <h2 className="text-3xl dark:text-gray-400 text-center mt-[50px] cursive">{name}'s Performance Chart</h2>
