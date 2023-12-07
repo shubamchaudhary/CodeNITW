@@ -5,6 +5,8 @@ import { signOut , signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import computer from "../images/computer.png";
+import  Tilt from "react-parallax-tilt";
+
 export default function SignIn() {
   const [formData, setFormData] = useState({
     email: "",
@@ -50,7 +52,18 @@ export default function SignIn() {
     <div className="bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen flex flex-col justify-center items-center">
       <section className="w-full max-w-8xl mx-auto flex flex-col md:flex-row justify-center items-center px-4 md:px-40">
         <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
-          <img className="rounded-xl w-full md:max-w-[700px]" src={computer} alt="" />
+        <Tilt
+    className="parallax-effect-img"
+    tiltMaxAngleX={30}
+    tiltMaxAngleY={30}
+    perspective={1000}
+    transitionSpeed={500}
+    scale={1}
+    gyroscope={true}
+  >
+   <img className="rounded-xl w-full md:max-w-[700px]" src={computer} alt="" />
+  </Tilt>
+          
         </div>
   
         <div className="w-full md:w-1/2 lg:w-1/2 lg:ml-20">
