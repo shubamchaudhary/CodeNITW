@@ -16,6 +16,7 @@ import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import computer from "../images/computer.png";
+import  Tilt from "react-parallax-tilt";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -83,7 +84,17 @@ export default function SignUp() {
       <div className="flex flex-wrap justify-center items-center px-4 md:px-40 dark:bg-[#1C1C1EFF] bg-blue-100 min-h-screen  max-w-8xl mx-auto">
         <div className="font-serif w-full md:w-[67%] lg:w-[50%] mb-12 md:mb-6 ">
           
-          <img className="rounded-xl w-full md:max-w-[700px]" src={computer} alt="" />
+        <Tilt
+    className="parallax-effect-img"
+    tiltMaxAngleX={30}
+    tiltMaxAngleY={30}
+    perspective={1000}
+    transitionSpeed={500}
+    scale={1}
+    gyroscope={true}
+  >
+   <img className="rounded-xl w-full md:max-w-[700px]" src={computer} alt="" />
+  </Tilt>
           
         </div>
         <div className="w-full lg:w-[40%] md:w-[67%] lg:ml-20 ">

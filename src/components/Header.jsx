@@ -7,6 +7,7 @@ import { CiLight } from "react-icons/ci";
 import { SiDarkreader } from "react-icons/si";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { CiBrightnessUp } from "react-icons/ci";
+import  Tilt from "react-parallax-tilt";
 
 export default function Header() {
   const [pageState, setPageState] = useState("sign-in");
@@ -86,11 +87,22 @@ export default function Header() {
         <nav className="bg-blue-200 dark:bg-[#2C2C2EFF] shadow-lg dark:text-white  border-gray-200 px-4 lg:px-6 py-4">
           <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <a href="" className="flex items-center">
-              <img
+            <Tilt
+    className="parallax-effect-img"
+    tiltMaxAngleX={40}
+    tiltMaxAngleY={40}
+    perspective={800}
+    transitionSpeed={1500}
+    scale={1.1}
+    gyroscope={true}
+  >
+   <img
                 src={Codeit}
                 className="mr-3 h-8 sm:h-12 lg:h-14"
                 alt="Flowbite Logo"
               />
+  </Tilt>
+             
             </a>
             <div className="flex items-center lg:order-2">
               <button 
