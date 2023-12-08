@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+import PulseLoader from "react-spinners/PulseLoader";
 import OAuth from "../components/OAuth";
 import {
   getAuth,
@@ -19,6 +20,7 @@ import computer from "../images/computer.png";
 import  Tilt from "react-parallax-tilt";
 
 export default function SignUp() {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -45,6 +47,7 @@ export default function SignUp() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    setIsLoading(true);
     try {
       // Check if email ends with @student.nitw.ac.in
       if (!email.endsWith("@student.nitw.ac.in")) {
@@ -76,6 +79,8 @@ export default function SignUp() {
       console.log(formData);
       console.log(error);
       toast.error("Password too short or not filled all options");
+    } finally {
+          setIsLoading(false);
     }
   }
 
@@ -210,7 +215,11 @@ export default function SignUp() {
               className="mb-4 mt-4 w-full text-lg dark:bg-[#4b4b64] hover:dark:bg-[#353549] bg-blue-900 text-white h-10 md:h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
               type="submit"
             >
-              Sign Up
+            {isLoading ? (
+               <PulseLoader color="#fff" size={16} />
+             ) : (
+               "Sign Up"
+             )}
             </button>
           </form>
         </div>
