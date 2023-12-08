@@ -50,10 +50,10 @@ export default function SignUp() {
     setIsLoading(true);
     try {
       // Check if email ends with @student.nitw.ac.in
-      if (!email.endsWith("@student.nitw.ac.in")) {
-        toast.error("Email must end with @student.nitw.ac.in");
-        return;
-      }
+      // if (!email.endsWith("@student.nitw.ac.in")) {
+      //   toast.error("Email must end with @student.nitw.ac.in");
+      //   return;
+      // }
       const auth = getAuth();
       //console.log(formData);
       const userCredential = await createUserWithEmailAndPassword(
