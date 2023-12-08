@@ -310,7 +310,7 @@ export const CustomLeaderboard = ({ leaderboardData, page, setPage, itemsPerPage
               topper = "👑";
             }
             return (
-              <tr key={index} className={`${topper}   justify-center`} >
+              <tr key={index} className={`${topper} h   justify-center`} >
               <td className="p-2 font-semibold  text-center">{startIndex + index + 1}{topper}</td>
                <td className="p-2 font-semibold  text-center"><a href={`https://codeforces.com/profile/${item.handle}`} target="_blank">{item.handle}</a></td>
               <td className="p-2 font-semibold  text-center">{item.Score}</td>

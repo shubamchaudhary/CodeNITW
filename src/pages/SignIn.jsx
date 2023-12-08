@@ -6,8 +6,11 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import computer from "../images/computer.png";
 import  Tilt from "react-parallax-tilt";
+import PulseLoader from "react-spinners/PulseLoader";
+// import { useDispatch, useSelector } from "react-redux";
 
 export default function SignIn() {
+  // const { status, error } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,8 +23,11 @@ export default function SignIn() {
     }));
   }
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   async function onSubmit(e) {
     e.preventDefault();
+
+    setIsLoading(true); // Start loading when the form is submitted
 
     try {
       const auth = getAuth();
@@ -43,6 +49,8 @@ export default function SignIn() {
       }
     } catch (error) {
       toast.error("Email and Password didn't match");
+    } finally {
+      setIsLoading(false); // Stop loading when the sign-in process is done
     }
   }
 
@@ -115,7 +123,11 @@ export default function SignIn() {
               className="mb-4 mt-4 w-full text-lg dark:bg-[#4b4b64] hover:dark:bg-[#353549] bg-blue-900 text-white h-10 md:h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
               type="submit"
             >
-              Sign In
+              {isLoading ? (
+                <PulseLoader color="#fff" size={16} />
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
         </div>
