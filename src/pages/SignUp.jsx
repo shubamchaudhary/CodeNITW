@@ -66,14 +66,14 @@ export default function SignUp() {
       await signOut(auth);
       // Send verification email
       await sendEmailVerification(user);
-      toast.success("Verification email sent. Please check your inbox.");
+      toast.info("Verification email sent. Please check your inbox.");
       const formDataCopy = { ...formData };
       delete formDataCopy.password;
       formDataCopy.timestamp = serverTimestamp();
       console.log(formDataCopy);
       //pushing data to database(db)
       await setDoc(doc(db, "users", user.uid), formDataCopy);
-      toast.success("Your id is created!!");
+      toast.info("Your id is created!!");
       navigate("/sign-in");
     } catch (error) {
       console.log(formData);
@@ -144,7 +144,7 @@ export default function SignUp() {
                 <select
                   id="course"
                   onChange={onChange}
-                  className="w-full dark:bg-[#29292b] h-14 md:h-[50px] dark:text-gray-400 p-2 md:p-4 mt-4 mr-2 text-lg md:text-lg  text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full dark:bg-[#29292b] h-10 md:h-[50px] dark:text-gray-400 p-2  mt-4 mr-2 text-lg md:text-lg  text-gray-700 bg-gray-100 rounded-lg"
                   >
                     <option id="btech" value="btech">
                       BTech
@@ -161,7 +161,7 @@ export default function SignUp() {
                 </select>
                 <select
                     id="year"
-                    className="w-full dark:bg-[#29292b]  h-10 md:h-[50px] dark:text-gray-400 p-2 md:p-4 mt-4 mr-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
+                    className="w-full dark:bg-[#29292b]  h-10 md:h-[50px] dark:text-gray-400 p-2 mt-4 mr-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
                     onChange={onChange}>
                     <option id="first" value="first">
                       1st Year

@@ -8,6 +8,7 @@ import { SiDarkreader } from "react-icons/si";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { CiBrightnessUp } from "react-icons/ci";
 import  Tilt from "react-parallax-tilt";
+import { toast } from "react-toastify";
 
 export default function Header() {
   const [pageState, setPageState] = useState("sign-in");
@@ -54,13 +55,16 @@ export default function Header() {
 
   // Function to handle logout
   const handleLogout = () => {
-    signOut(auth)
+    if(user){
+      signOut(auth)
       .then(() => {
         navigate("/sign-in");
+        toast.info("Logged Out Successfully ");
       })
       .catch((error) => {
         console.error("Logout error:", error);
       });
+    }
   };
 
   useEffect(() => {

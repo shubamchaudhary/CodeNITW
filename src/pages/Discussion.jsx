@@ -54,9 +54,9 @@ const Discussion = () => {
     setPosts(prevPosts => [...prevPosts, { id: docRef.id, data: newPost }]);
     setContent('');
     if (!admins.includes(user.email)) {
-      toast.success('Your response will be reflected after admins approval');
+      toast.info('Your response will be reflected after admins approval');
     }
-    toast.success("Post submitted successfully!");
+    toast.info("Post submitted successfully!");
   };
 
   const handleReply = async (e) => {
@@ -84,10 +84,10 @@ const Discussion = () => {
 
     setReplyContent('');
 
-    toast.success("Reply submitted successfully!");
+    toast.info("Reply submitted successfully!");
         
     if (!admins.includes(user.email)) {
-      toast.success('Your response will be reflected after admins approval');
+      toast.info('Your response will be reflected after admins approval');
     }
   };
 
