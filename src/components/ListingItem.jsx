@@ -1,5 +1,5 @@
 import React from "react";
-import ContestImg from "../images/contest.png";
+import ContestImg from "../images/codenitwcontest.png";
 import { useNavigate } from "react-router-dom";
 
 export default function ListingItem({ listing, id, onDelete, onEdit , status }) {
