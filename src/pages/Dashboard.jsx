@@ -97,18 +97,26 @@ export default function Dashboard() {
   return (
     <>
     <div className=" px-[20px] dark:bg-[#1C1C1EFF] bg-blue-50 min-h-screen font-serif ">
-    <Tilt className="Tilt " options={{ max : 25 }}>
+    <Tilt
+    className="parallax-effect-img"
+    tiltMaxAngleX={0}
+    tiltMaxAngleY={10}
+    perspective={1000}
+    transitionSpeed={500}
+    scale={1}
+    gyroscope={true}
+  >
     <section className="max-w-2xl mx-auto border-2 dark:border-blue-600 border-blue-200  pt-10 text-black-400 bg-blue-50 dark:bg-[#313133] p-6 rounded-lg shadow-lg">
-  <div className="bg-white dark:bg-[#3A3A3CFF] shadow-md rounded-lg p-6 hover:bg-blue-100 transition-colors duration-200">
+  <div className=" dark:bg-[#3A3A3CFF] shadow-md rounded-lg p-6 bg-blue-100 transition-colors duration-200">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <div>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Name: <span className="text-gray-400">{name}</span> </h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Roll No: <span className="text-gray-400">{formData.rollno}</span></h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Course:<span className="text-gray-400">{formData.course}</span> </h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-white">Name: <span className="text-blue-400">{name}</span> </h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Roll No: <span className="text-blue-400">{formData.rollno}</span></h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Course:<span className="text-blue-400">{formData.course}</span> </h2>
       </div>
       <div>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Codeforces Handle: <span className="text-gray-400">{formData.cfhandle}</span></h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200">Leetcode Handle: <span className="text-gray-400">{formData.lchandle}</span></h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Codeforces Handle: <span className="text-blue-400">{formData.cfhandle}</span></h2>
+        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Leetcode Handle: <span className="text-blue-400">{formData.lchandle}</span></h2>
       </div>
     </div>
   </div>

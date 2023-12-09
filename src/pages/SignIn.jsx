@@ -44,7 +44,7 @@ export default function SignIn() {
         return;
       }
       if (userCredential.user) {
-        toast.success("welcome again!!!");
+        toast.info("Welcome Again!!!");
         navigate("/Dashboard");
       }
     } catch (error) {
