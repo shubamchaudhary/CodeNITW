@@ -33,6 +33,10 @@ const PerformanceChart = (props) => {
             time: {
               unit: 'day'
             }
+          },
+          y: {
+           position:'left',
+           reverse:'true'
           }
         }
       },
