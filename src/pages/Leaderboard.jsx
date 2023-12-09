@@ -236,7 +236,15 @@ export default function LeaderboardList() {
             Push Data
           </button>
         )}
-      <Tilt className="Tilt md:w-[110%] " options={{ max : 25 }}>
+        <Tilt
+    className="parallax-effect-img w-[110%]"
+    tiltMaxAngleX={3}
+    tiltMaxAngleY={1}
+    perspective={1000}
+    transitionSpeed={100}
+    scale={1}
+    gyroscope={true}
+  >
         <div className="w-full bg-white border-2 dark:border-blue-600 border-blue-200 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
           <CustomLeaderboard
             leaderboardData={leaderboardData}

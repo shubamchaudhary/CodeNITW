@@ -90,10 +90,10 @@ export default function Header() {
             <Tilt
     className="parallax-effect-img"
     tiltMaxAngleX={0}
-    tiltMaxAngleY={40}
+    tiltMaxAngleY={20}
     perspective={2000}
-    transitionSpeed={1500}
-    scale={1.1}
+    transitionSpeed={100}
+    scale={1.05}
     gyroscope={true}
   >
    <img
