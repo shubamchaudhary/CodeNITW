@@ -158,7 +158,7 @@ export default function Contest() {
       <ul>
         {Listings.past.map((listing) => (
           <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
-          <ListingItem listing={listing.data} id={listing.id} status="Past"  />
+          <ListingItem listing={listing.data} id={listing.id}  status="Past"  />
         </li>
         ))}
       </ul>
