@@ -14,7 +14,9 @@ import Contest from "./pages/Contest";
 import LeaderboardList  from "./pages/Leaderboard";
 import Resources from "./pages/Resources";
 import Discussion from "./pages/Discussion";
-
+import { inject } from '@vercel/analytics';
+ 
+inject();
 function App() {
   return (
     <>
