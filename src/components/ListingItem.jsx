@@ -2,7 +2,7 @@ import React from "react";
 import ContestImg from "../images/codenitwcontest.png";
 import { useNavigate } from "react-router-dom";
 
-export default function ListingItem({ listing, id, onDelete, onEdit , status }) {
+export default function ListingItem({ listing, id, onDelete, onEdit, status, editorialLink }) {
   let navigate = useNavigate();
   return (
     <li className="relative bg-blue-100 dark:bg-[#3A3A3CFF] w-[95%]  items-center shadow-lg hover:shadow-md rounded-md overflow-hidden transition-shadow duration-300 m-4 p-2">
@@ -33,13 +33,22 @@ export default function ListingItem({ listing, id, onDelete, onEdit , status }) 
         </div>
 
         <div className="col-span-1 md:col-span-1 flex justify-end">
+        {status==="Past" && <a
+            href={listing.editorialLink}
+            target="_blank"
+            rel="noreferrer"
+            className="bg-blue-700 mx-2 dark:text-gray-400 dark:bg-blue-900 hover:dark:bg-gray-900 cursor-pointer text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium"
+          >
+           Editorial
+          </a>}
           <a
             href={listing.link}
             target="_blank"
             rel="noreferrer"
-            className="bg-blue-700 dark:text-gray-400 dark:bg-blue-900 hover:dark:bg-gray-900 cursor-pointer text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium"
+            className="bg-blue-700 dark:text-gray-400 mx-2 dark:bg-blue-900 hover:dark:bg-gray-900 cursor-pointer text-white rounded-full hover:bg-blue-900 py-2 px-4 transition duration-300 inline-block font-medium"
           >
             {status === "Active" ? "Go to Contest" : status === "Upcoming" ? "Register" : "Results"}
+            {/* {console.log(status)} */}
           </a>
         </div>
       </div>
