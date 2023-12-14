@@ -53,9 +53,9 @@ export default function Contest() {
     }
 
     async function getOtherContest() {
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const targetUrl = 'https://clist.by/api/v4/json/contest/?upcoming=true&end_time__during=1728000&duration__gt=5400&duration__lt=10800&username=kmrrohit&api_key=b6bee0d321166ca219f3c2d83da9626a14043d93';
-      const apiUrl = proxyUrl + targetUrl;
+      //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const apiUrl = 'https://contest-api-eight.vercel.app/contest';
+     // const apiUrl = proxyUrl + targetUrl;
       try {
         const response = await fetch(apiUrl);
         if (response.status === 200) {
