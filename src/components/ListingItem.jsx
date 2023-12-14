@@ -2,7 +2,7 @@ import React from "react";
 import ContestImg from "../images/codenitwcontest.png";
 import { useNavigate } from "react-router-dom";
 
-export default function ListingItem({ listing, id, onDelete, onEdit, status, editorialLink }) {
+export default function ListingItem({ listing, status, }) {
   let navigate = useNavigate();
   return (
     <li className="relative bg-blue-100 dark:bg-[#3A3A3CFF] w-[95%]  items-center shadow-lg hover:shadow-md rounded-md overflow-hidden transition-shadow duration-300 m-4 p-2">
@@ -10,7 +10,7 @@ export default function ListingItem({ listing, id, onDelete, onEdit, status, edi
         <div className="hidden md:block md:col-span-1">
           <img
             className="max-w-[170px] p-2 rounded-md"
-            src={ContestImg}
+            src={listing.imageSrc || ContestImg}
             alt="contest image"
           />
         </div>
