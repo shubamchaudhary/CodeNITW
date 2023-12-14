@@ -144,7 +144,7 @@ export default function Contest() {
     }
     
     fetchListings();
-    getOtherContest();
+    //getOtherContest();
   }, []);
 
   
@@ -195,7 +195,7 @@ export default function Contest() {
   )}
 </div>
 </div>
- <div className="max-w-6xl mx-auto pt-4 space-y-6">
+ {/* <div className="max-w-6xl mx-auto pt-4 space-y-6">
 <div className="m-2 mb-6 bg-white dark:bg-[#2C2C2EFF] shadow-lg p-4 rounded-lg">
   <h1 className="text-4xl font-semibold text-blue-600 dark:text-blue-500 mb-4">Other Contests</h1>
 
@@ -226,7 +226,7 @@ export default function Contest() {
     </div>
   )}
 </div>
-</div> 
+</div>  */}
 </div>
 
   );
