@@ -11,6 +11,12 @@ import { getDocs, collection } from "firebase/firestore";
 import { Slide } from "react-toastify";
 import ListingItem from "../components/ListingItem";
 import { da } from "date-fns/locale";
+import AtcoderImage from "../images/AtCoder.png";
+import CodechefImage from "../images/CodeChef.png"
+import CodeforcesImage from "../images/CodeForces.png"
+import LeetcodeImage from "../images/LeetCode.png"
+import DefaultImage from "../images/codenitwcontest.png";
+
 
 
 export default function Contest() {
@@ -89,12 +95,31 @@ export default function Contest() {
               };
               const formattedDate = inputDate.toLocaleString(undefined, options)
               var modifiedStartTime = formattedDate;
+              let imageSrc;
+              switch(item.host) {
+                case "atcoder.jp":
+                  imageSrc = AtcoderImage;
+                  break;
+                case "leetcode.com":
+                  imageSrc = LeetcodeImage
+                  break;
+                case "codechef.com":
+                  imageSrc = CodechefImage
+                  break;
+                case "codeforces.com":  
+                  imageSrc = CodeforcesImage
+                  break;
+                default:
+                  imageSrc = DefaultImage; // Default image or null
+              }
+              
               let contestItem = {
-                imageName : item.site,
+                imageName : item.host,
                 link : item.href,
                 name : item.event,
                 startingTime : modifiedStartTime,
-                duration : modifiedDuration
+                duration : modifiedDuration,
+                imageSrc: imageSrc
               }
               console.log(contestItem);
               const contestEndTime = inputDate.getTime() + modifiedDuration * 60 * 1000;
@@ -179,11 +204,11 @@ export default function Contest() {
     <div>
       <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Active Contests</h2>
       <ul>
-        {activeContests.map((contestItem, index) => (
-          <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
-          <ListingItem listing={contestItem} status="Active" />
+      {activeContests.map((contestItem, index) => (
+        <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
+          <ListingItem listing={contestItem} imageSrc={contestItem.imageSrc} status="Active" />
         </li>
-        ))}
+      ))}
       </ul>
     </div>
   )}
@@ -192,11 +217,11 @@ export default function Contest() {
     <div>
       <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Upcoming Contests</h2>
       <ul>
-        {upcomingContests.map((contestItem, index) => (
-         <li key={index}className="transform transition duration-500 ease-in-out hover:scale-101">
-         <ListingItem listing={contestItem} status="Upcoming" />
-       </li>
-        ))}
+      {upcomingContests.map((contestItem, index) => (
+        <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
+          <ListingItem listing={contestItem} imageSrc={contestItem.imageSrc} status="Upcoming" />
+        </li>
+      ))}
       </ul>
     </div>
   )}
