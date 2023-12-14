@@ -53,27 +53,30 @@ export default function Contest() {
     }
 
     async function getOtherContest() {
-      const apiUrl = 'https://kontests.net/api/v1/all';
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const targetUrl = 'https://clist.by/api/v4/json/contest/?upcoming=true&end_time__during=1728000&duration__gt=5400&duration__lt=10800&username=kmrrohit&api_key=b6bee0d321166ca219f3c2d83da9626a14043d93';
+      const apiUrl = proxyUrl + targetUrl;
       try {
         const response = await fetch(apiUrl);
         if (response.status === 200) {
           const data = await response.json();
           console.log(data);
+          console.log("Entered data")
           const activeContests = [];
           const upcomingContests = [];
-          for(let item of data){
-            if(item.site == "AtCoder" || item.site == "LeetCode" || item.site == "CodeChef" || item.site == "CodeForces" ){
+          for(let item of data.objects){
+            if(item.host == "atcoder.jp" || item.host == "leetcode.com" || item.host == "codechef.com" || item.host == "codeforces.com" ){
               let unix_timestamp = item.duration;
               var modifiedDuration = unix_timestamp/60;
               
               //console.log(modifiedDuration); 
               const currentDate = new Date();
-              var inputDateStr = item.start_time;
-              if(item.site == "CodeChef"){
-                const tempDate = inputDateStr;
-                const modifiedTemp = tempDate.replace(" UTC", "Z");
-                inputDateStr = modifiedTemp;
-              }
+              var inputDateStr = item.start;
+              // if(item.site == "CodeChef"){
+              //   const tempDate = inputDateStr;
+              //   const modifiedTemp = tempDate.replace(" UTC", "Z");
+              //   inputDateStr = modifiedTemp;
+              // }
               const inputDate = new Date(inputDateStr);
               
               const options = {
@@ -88,11 +91,12 @@ export default function Contest() {
               var modifiedStartTime = formattedDate;
               let contestItem = {
                 imageName : item.site,
-                link : item.url,
-                name : item.name,
+                link : item.href,
+                name : item.event,
                 startingTime : modifiedStartTime,
                 duration : modifiedDuration
               }
+              console.log(contestItem);
               const contestEndTime = inputDate.getTime() + modifiedDuration * 60 * 1000;
               if(currentDate.getTime() < contestEndTime) {
                 if(currentDate.getTime() >= inputDate.getTime()) {
@@ -116,7 +120,6 @@ export default function Contest() {
     
     fetchListings();
     getOtherContest();
-    console.log()
   }, []);
 
   
@@ -167,16 +170,17 @@ export default function Contest() {
   )}
 </div>
 </div>
-<div className="max-w-6xl mx-auto pt-4 space-y-6">
-<div className="m-2 mb-6 bg-white shadow-lg p-4 rounded-lg">
-  <h1 className="text-4xl font-semibold text-blue-600 mb-4">Other Contests</h1>
+ <div className="max-w-6xl mx-auto pt-4 space-y-6">
+<div className="m-2 mb-6 bg-white dark:bg-[#2C2C2EFF] shadow-lg p-4 rounded-lg">
+  <h1 className="text-4xl font-semibold text-blue-600 dark:text-blue-500 mb-4">Other Contests</h1>
+
 
   {activeContests.length > 0 && (
     <div>
-      <h2 className="text-3xl font-semibold text-green-600 mb-4">Active Contests</h2>
+      <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Active Contests</h2>
       <ul>
         {activeContests.map((contestItem, index) => (
-          <li key={index} className="transform transition duration-500 ease-in-out hover:scale-105">
+          <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
           <ListingItem listing={contestItem} status="Active" />
         </li>
         ))}
@@ -186,10 +190,10 @@ export default function Contest() {
 
   {upcomingContests.length > 0 && (
     <div>
-      <h2 className="text-3xl font-semibold text-blue-600 mb-4">Upcoming Contests</h2>
+      <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Upcoming Contests</h2>
       <ul>
         {upcomingContests.map((contestItem, index) => (
-         <li key={index} className="transform transition duration-500 ease-in-out hover:scale-105">
+         <li key={index}className="transform transition duration-500 ease-in-out hover:scale-101">
          <ListingItem listing={contestItem} status="Upcoming" />
        </li>
         ))}
@@ -197,7 +201,7 @@ export default function Contest() {
     </div>
   )}
 </div>
-</div>
+</div> 
 </div>
 
   );
