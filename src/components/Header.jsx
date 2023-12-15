@@ -1,4 +1,4 @@
-
+                 
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
@@ -11,12 +11,15 @@ import  Tilt from "react-parallax-tilt";
 import { toast } from "react-toastify";
 
 export default function Header() {
+  
   const [pageState, setPageState] = useState("sign-in");
   const [displayPageName, setDisplayPageName] = useState("Sign in");
   const [user, setUser] = useState(null); // Add user state to keep track of authentication state
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activePage, setActivePage] = useState(localStorage.getItem("lastOpenedPage") || "PROBLEMS");
 
   const [darkMode, setDarkMode] = useState( JSON.parse(localStorage.getItem("darkMode")) || false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
     useEffect(() => {
         localStorage.setItem("darkMode", JSON.stringify(darkMode));
     
@@ -46,6 +49,8 @@ export default function Header() {
     });
   }, [auth]);
 
+  
+
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
@@ -67,6 +72,23 @@ export default function Header() {
     }
   };
 
+useEffect(() => {
+  switch (location.pathname) {
+    case "/learning-resources":
+      setActivePage("LEARNING RESOURCES");
+      break;
+    case "/problems":
+      setActivePage("PROBLEMS");
+      break;
+    case "/ot-material":
+      setActivePage("OT MATERIALS");
+      break;
+    default:
+      setActivePage("RESOURCES");
+      break;
+  }
+}, [location.pathname]);
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (location.pathname === "/") {
@@ -80,8 +102,10 @@ export default function Header() {
     });
   }, [auth, navigate, location.pathname]);
 
-  const handlePageSelect = (path) => {
+  const handlePageSelect = (path, pageName) => {
     navigate(path);
+    setActivePage(pageName);
+    localStorage.setItem("lastOpenedPage", pageName);
     toggleMenu();
   };
 
@@ -162,16 +186,36 @@ export default function Header() {
                       >
                    DISCUSS
                       </li>
-              <li
-                   onClick={() => handlePageSelect("/resources")}
-                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
-                  isActive("/resources")
-                      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
-                     : "text-gray-500 dark:text-gray-400"
-                       }`}
-                      >
-                   PROBLEMS
-                      </li>
+                      <li
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+  className={`group relative block py-2 pr-4 pl-3 hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 ${
+    isActive("/resources")
+      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+      : "text-gray-500 dark:text-gray-400"
+  }`}
+>
+  {activePage} ▼
+  <ul className={`absolute left-0 mt-2 w-48 bg-white dark:bg-[#3A3A3CFF] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
+    <li
+      onClick={() => {handlePageSelect("/learning-resources", "LEARNING RESOURCES"); setDropdownOpen(false);}}
+      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+    >
+      Learning Resources
+    </li>
+    <li
+      onClick={() => {handlePageSelect("/problems", "PROBLEMS");setDropdownOpen(false);}}
+      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+    >
+      Problems
+    </li>
+    <li
+      onClick={() => {handlePageSelect("/ot-material", "OT MATERIALS");setDropdownOpen(false);}}
+      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+    >
+      OT Material
+    </li>
+  </ul>
+</li>
                  {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && (
                   <li
                     onClick={() => handlePageSelect("/add-contest")}
