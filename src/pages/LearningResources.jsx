@@ -196,5 +196,4 @@ export function CoreCSECard({name, description, videoLink, problemSetLink}) {
         </p>
       </div>
     </div>
-  )
-}
+  )}
