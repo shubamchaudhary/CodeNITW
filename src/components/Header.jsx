@@ -93,7 +93,7 @@ useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (location.pathname === "/") {
         if (user) {
-          navigate("/resources");
+          navigate("/Dashboard");
         } else {
           navigate("/sign-in");
         }
