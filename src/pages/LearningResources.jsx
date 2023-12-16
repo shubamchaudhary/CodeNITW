@@ -15,9 +15,9 @@ export default function LearningResources() {
         {dev.map(({name, description, data}) => (
           <DevContainer name={name} description={description} cards={data} />
         ))}
-        {ml.map(({name, description, data}) => (
+        {/* {ml.map(({name, description, data}) => (
           <MLContainer name={name} description={description} cards={data} />
-        ))}
+        ))} */}
       </div>
     </div>
   )
@@ -84,7 +84,7 @@ export function DevContainer({name, description, cards}){
       <p className="mb-4 text-lg dark:text-gray-400 text-gray-700">{description}</p>
       <div className="flex flex-col md:ml-[50px]">
         {cards.map((card) => (
-          <DSACard name={card.name} description={card.description} videoLink={card.videolink} problemSetLink={card.problemsetLink} subtopics={card.subtopics} />
+          <DevCard name={card.name} description={card.description} videoLink={card.videolink} problemSetLink={card.problemsetLink} subtopics={card.subtopics} />
         ))}
       </div>
       </div>
@@ -107,7 +107,7 @@ export function CoreCSEContainer({name, description, cards}){
       <p className="mb-4 text-lg dark:text-gray-400 text-gray-700">{description}</p>
       <div className="flex flex-col md:ml-[50px]">
         {cards.map((card) => (
-          <DSACard name={card.name} description={card.description} videoLink={card.videolink} problemSetLink={card.problemsetLink} subtopics={card.subtopics} />
+          <CoreCSECard name={card.name} description={card.description} videoLink={card.videolink} problemSetLink={card.problemsetLink} subtopics={card.subtopics} />
         ))}
       </div>
       </div>
@@ -158,8 +158,8 @@ export function DevCard({name, description, videoLink, problemSetLink}) {
           <span className='font-normal'>{description}</span>
         </p>
         <p className="ml-2 dark:text-gray-400">
-          <a href={videoLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold mr-4">Youtube Playlist</a>
-          <a href={problemSetLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold">Practice Sheet</a>
+          <a href={videoLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold mr-4">Youtube Video 1</a>
+          <a href={problemSetLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold">Youtube Video 2</a>
         </p>
       </div>
     </div>
@@ -204,8 +204,8 @@ export function CoreCSECard({name, description, videoLink, problemSetLink}) {
           <span className='font-normal'>{description}</span>
         </p>
         <p className="ml-2 dark:text-gray-400">
-          <a href={videoLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold mr-4">Youtube Video</a>
-          <a href={problemSetLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold">Practice Project</a>
+          <a href={videoLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold mr-4">Youtube Video 1</a>
+          <a href={problemSetLink} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold">Youtube Video 2</a>
         </p>
       </div>
     </div>

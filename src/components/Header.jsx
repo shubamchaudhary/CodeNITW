@@ -208,12 +208,12 @@ useEffect(() => {
     >
       PROBLEMS
     </li>
-    <li
+    {/* <li
       onClick={() => {handlePageSelect("/ot-material", "OT MATERIALS");setDropdownOpen(false);}}
       className="px-4 py-2  text-sm cursor-pointer"
     >
       OT MATERIAL
-    </li>
+    </li> */}
   </ul>
 </li>
                  {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && (
