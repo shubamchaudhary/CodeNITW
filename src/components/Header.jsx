@@ -75,13 +75,13 @@ export default function Header() {
 useEffect(() => {
   switch (location.pathname) {
     case "/learning-resources":
-      setActivePage("LEARNING RESOURCES");
+      setActivePage("LEARNING ");
       break;
     case "/problems":
       setActivePage("PROBLEMS");
       break;
     case "/ot-material":
-      setActivePage("OT MATERIALS");
+      setActivePage("OT MATERIAL");
       break;
     default:
       setActivePage("RESOURCES");
@@ -112,7 +112,7 @@ useEffect(() => {
   return (
     <div>
       <header>
-        <nav className="bg-blue-200 dark:bg-[#2C2C2EFF] shadow-lg dark:text-white  border-gray-200 px-4 lg:px-6 py-4">
+        <nav className="bg-blue-200 dark:bg-[#2C2C2EFF] shadow-lg dark:text-white  ray-200 px-4 lg:px-6 py-4">
           <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <a href="" className="flex items-center">
             <Tilt
@@ -178,9 +178,9 @@ useEffect(() => {
               <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
               <li
                    onClick={() => handlePageSelect("/discussion")}
-                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer    lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                   isActive("/discussion")
-                      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                      ? "text-gray-600 font-extrabold   dark:text-gray-400"
                      : "text-gray-500 dark:text-gray-400"
                        }`}
                       >
@@ -188,40 +188,40 @@ useEffect(() => {
                       </li>
                       <li
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-  className={`group relative block py-2 pr-4 pl-3 hover:text-gray-600 hover:cursor-pointer border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 ${
-    isActive("/resources")
-      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+  className={`group relative block py-2 pr-4 pl-3 hover:text-gray-600 hover:cursor-pointer    lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0 ${
+    (isActive("/learning-resources") || isActive("/problems") || isActive("/ot-material"))
+      ? "text-gray-600 font-extrabold   dark:text-gray-400"
       : "text-gray-500 dark:text-gray-400"
   }`}
 >
   {activePage} ▼
-  <ul className={`absolute left-0 mt-2 w-48 bg-white dark:bg-[#3A3A3CFF] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
+  <ul className={`absolute left-0  w-40 bg-blue-100 dark:bg-[#3A3A3CFF] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
     <li
-      onClick={() => {handlePageSelect("/learning-resources", "LEARNING RESOURCES"); setDropdownOpen(false);}}
-      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      onClick={() => {handlePageSelect("/learning-resources", "LEARNING"); setDropdownOpen(false);}}
+      className="px-4 py-2 text-sm cursor-pointer"
     >
-      Learning Resources
+      LEARNING
     </li>
     <li
       onClick={() => {handlePageSelect("/problems", "PROBLEMS");setDropdownOpen(false);}}
-      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      className="px-4 py-2 text-sm  cursor-pointer"
     >
-      Problems
+      PROBLEMS
     </li>
     <li
       onClick={() => {handlePageSelect("/ot-material", "OT MATERIALS");setDropdownOpen(false);}}
-      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+      className="px-4 py-2  text-sm cursor-pointer"
     >
-      OT Material
+      OT MATERIAL
     </li>
   </ul>
 </li>
                  {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && (
                   <li
                     onClick={() => handlePageSelect("/add-contest")}
-                    className={`block py-2 pr-4 pl-3 hover:text-gray-600    border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                    className={`block py-2 pr-4 pl-3 hover:text-gray-600       lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/add-contest")
-                    ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                    ? "text-gray-600 font-extrabold   dark:text-gray-400"
                       : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -230,9 +230,9 @@ useEffect(() => {
                 )}
                 <li
                   onClick={() => handlePageSelect("/contest")}
-                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer   border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer      lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/contest")
-                    ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                    ? "text-gray-600 font-extrabold   dark:text-gray-400"
                     : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -240,9 +240,9 @@ useEffect(() => {
                 </li>
                 <li
                   onClick={() => handlePageSelect("/leaderboard")}
-                  className={`block py-2 pr-4 pl-3 hover:text-gray-600  hover:cursor-pointer  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  className={`block py-2 pr-4 pl-3 hover:text-gray-600  hover:cursor-pointer     lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/leaderboard")
-                      ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                      ? "text-gray-600 font-extrabold   dark:text-gray-400"
                       : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -250,9 +250,9 @@ useEffect(() => {
                 </li>
                 <li
                   onClick={() => handlePageSelect(pageState)}
-                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer   border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0   ${
+                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer      lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isPath("/Dashboard")
-                    ? "text-gray-600 font-extrabold text-lg mt-1 dark:text-gray-400"
+                    ? "text-gray-600 font-extrabold   dark:text-gray-400"
                     : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -261,7 +261,7 @@ useEffect(() => {
                 {/* {user && user.email ? ( */}
                   <li
                     onClick={handleLogout}
-                    className={`block py-2 pr-4 pl-3 text-gray-500 hover:cursor-pointer  hover:text-gray-600  h  border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent dark:text-gray-400 lg:border-0 lg:hover:text-primary-700 lg:p-0 `} >
+                    className={`block py-2 pr-4 pl-3 text-gray-500 hover:cursor-pointer  hover:text-gray-600  h     lg:hover:bg-transparent dark:text-gray-400 lg: lg:hover:text-primary-700 lg:p-0 `} >
                     {isPath('/sign-in') ? "SIGN IN" : isPath('/sign-up') ? "SIGN IN" : isPath('/forgot-password') ? "SIGN IN" : "LOG OUT"}
                   </li>
                   
