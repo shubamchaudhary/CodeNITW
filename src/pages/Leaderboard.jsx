@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Leaderboard } from "flywheel-leaderboard";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 import {
   collection,
   addDoc,

@@ -20,7 +20,7 @@ const PerformanceChart = (props) => {
         datasets: [
           {
             label: `${props.name}'s Rank`,
-            data: props.rankData,
+            data: props.data,
             borderColor: "gray",
             fill: false,
           },
@@ -46,7 +46,7 @@ const PerformanceChart = (props) => {
         charInstance.current.destroy();
       }
     };
-  }, [props.timeData, props.rankData]);
+  }, [props.data]);
 
   return (
     <div className="w-full h-full">
