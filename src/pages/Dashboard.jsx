@@ -17,7 +17,8 @@ import { db } from "../firebase";
 import { toast } from "react-toastify";
 import PerformanceChart from "./PerformanceChart";
 import Tilt from 'react-parallax-tilt';
-
+import CryptoJS from "crypto-js";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 
 export default function Dashboard() {
@@ -33,6 +34,9 @@ export default function Dashboard() {
   });
 
   const { name, email } = formData;
+
+  const secretKey = "gNyWB0zvLYtmhf0vNhY33nZ5m1epu7J1";
+  const ciphertext = CryptoJS.AES.encrypt(user.email, secretKey).toString();
   useEffect(() => {
     async function fetchContestRanks() {
       const xDataArray = [];
@@ -154,6 +158,16 @@ export default function Dashboard() {
 >
   Edit Handles
 </button>
+<CopyToClipboard 
+  text={`${window.location.origin}/Profile/${ciphertext}`}
+  onCopy={() => toast.success("Profile Link has been copied to Clipboard")}
+>
+  <button 
+    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
+  >
+    Share Profile
+  </button>
+</CopyToClipboard>
 {editing && (
   <form onSubmit={handleFormSubmit} className="mt-4">
     <input 
