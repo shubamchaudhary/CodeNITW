@@ -12,11 +12,14 @@ import Dashboard from "./pages/Dashboard";
 import AddContest from "./pages/AddContest";
 import Contest from "./pages/Contest";
 import LeaderboardList from "./pages/Leaderboard";
-import Resources from "./pages/Resources";
+import Problems from "./pages/Problems";
+import LearningResources from "./pages/LearningResources";
+import OTMaterial from "./pages/OTMaterial";
 import Discussion from "./pages/Discussion";
-import { inject } from "@vercel/analytics";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-inject();
+import Profile from "./pages/Profile";
+// import { inject } from "@vercel/analytics";
+// import { SpeedInsights } from "@vercel/speed-insights/react";
+// inject();
 function App() {
   return (
     <>
@@ -26,8 +29,14 @@ function App() {
           <Route path="/discussion" element={<PrivateRoute />}>
             <Route path="/discussion" element={<Discussion />}></Route>
           </Route>
-          <Route path="/resources" element={<PrivateRoute />}>
-            <Route path="/resources" element={<Resources />}></Route>
+          <Route path="/problems" element={<PrivateRoute />}>
+            <Route path="/problems" element={<Problems />}></Route>
+          </Route>
+          <Route path="/learning-resources" element={<PrivateRoute />}>
+            <Route path="/learning-resources" element={<LearningResources />}></Route>
+          </Route>
+          <Route path="/ot-material" element={<PrivateRoute />}>
+            <Route path="/ot-material" element={<OTMaterial />}></Route>
           </Route>
           <Route path="/contest" element={<PrivateRoute />}>
             <Route path="/contest" element={<Contest />}></Route>
@@ -45,6 +54,7 @@ function App() {
           <Route path="/leaderboard" element={<PrivateRoute />}>
             <Route path="/leaderboard" element={<LeaderboardList />}></Route>
           </Route>
+          <Route path="/Profile/*" element={<Profile />} />
         </Routes>
       </Router>
       <ToastContainer
@@ -59,7 +69,7 @@ function App() {
         pauseOnHover
         theme="colored"
       />
-      <SpeedInsights />
+      {/* <SpeedInsights /> */}
     </>
   );
 }

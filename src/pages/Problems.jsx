@@ -1,97 +1,129 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { getDoc, addDoc, collection, serverTimestamp, updateDoc, arrayUnion, getDocs, doc, query, limit } from "firebase/firestore";
-import { getAuth } from '@firebase/auth';
-import DailyProblem from './DailyProblem.jsx'
+import AllQuestionsList from '../Data/AllQuestionsList.json';
+import DailyProblem from './DailyProblem.jsx';
+import Youtube from "../images/Youtube.png";
+import { useRef } from 'react';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Resources = () => {
   const [topics, setTopics] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
-  const [newTopic, setNewTopic] = useState("");
-  const [newQuestion, setNewQuestion] = useState({ name: '', link: '',defficulty:'easy' });
   const [questions, setQuestions] = useState([]);
-  const [page, setPage] = useState(0);
+  const [solvedQuestions, setSolvedQuestions] = useState(() => JSON.parse(localStorage.getItem('solvedQuestions')) || {});
+  const [totalProblems, setTotalProblems] = useState(0);
+  const [solvedProblems, setSolvedProblems] = useState(0);
 
   useEffect(() => {
     const fetchTopics = async () => {
-      const querySnapshot = await getDocs(collection(db, "resources"));
-      setTopics(querySnapshot.docs.map(doc => ({ id: doc.id, topicName: doc.data().topicName })));
+      const topics = Object.keys(AllQuestionsList);
+      setTopics(topics);
     };
 
     fetchTopics();
   }, []);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
-      if (selectedTopic) {
-        const docRef = doc(db, "resources", selectedTopic);
-        const docSnapshot = await getDoc(docRef);
-        setQuestions(docSnapshot.data().questions);
-      }
-    };
-  
-    fetchQuestions();
-  }, [selectedTopic, page]);
-
-  const addTopic = async (e) => {
-    e.preventDefault();
-    const docRef = await addDoc(collection(db, "resources"), {
-      topicName: newTopic,
-      questions: [],
-      timestamp: serverTimestamp(),
-    });
-    setTopics([...topics, { id: docRef.id, topicName: newTopic, questions: [] }]);
-    setNewTopic("");
-  };
-
-  const addQuestion = async ({isAdmin}) => {
-    if (selectedTopic) {
-      const docRef = doc(db, "resources", selectedTopic);
-      await updateDoc(docRef, {
-        questions: arrayUnion(newQuestion)
-      });
-      setQuestions([...questions, newQuestion]);
-      setNewQuestion({ name: '', link: '',defficulty:'easy' });
+    let total = 0;
+    for (let topic in AllQuestionsList) {
+      total += AllQuestionsList[topic].length;
     }
-  };
+    setTotalProblems(total);
 
-  const auth = getAuth();
-  const user=auth.currentUser;
-  const userEmail = user && user.email;
+    let solved = Object.values(solvedQuestions).filter(val => val).length;
+    setSolvedProblems(solved);
+  }, [solvedQuestions]);
+
+  const selectedTopicRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedTopicRef.current) {
+      selectedTopicRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedTopic]);
+
+  const handleCheckboxChange = (name, isChecked) => {
+    const updatedSolvedQuestions = { ...solvedQuestions, [name]: isChecked };
+    setSolvedQuestions(updatedSolvedQuestions);
+    localStorage.setItem('solvedQuestions', JSON.stringify(updatedSolvedQuestions));
+  };
+  
 
   return (
-    <div className='bg-blue-100'>
-    <DailyProblem />
-    <div className='bg-blue-100 min-h-screen flex justify-center'>
-    <div className='w-full sm:w-3/4 lg:w-2/3  '>
-      {topics.map(topic => (
-        <TopicCard  
-          key={topic.id} 
-          id={topic.id}
-          name={topic.topicName} 
-          questions={questions} 
-          addQuestion={addQuestion} 
-          newQuestion={newQuestion} 
-          setNewQuestion={setNewQuestion}
-          selectedTopic={selectedTopic}
-          setSelectedTopic={setSelectedTopic}
-          isAdmin={isAdmin}
-        />
-      ))}
-      {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && <div className='flex justify-center p-2 mt-2'> 
-        <input className='border-2 border-gray-500 text-xl rounded-lg mx-2' type="text" value={newTopic} onChange={e => setNewTopic(e.target.value)} placeholder="Topic name" />
-        <button className='bg-blue-600 text-white text-sm rounded-full hover:bg-blue-900 py-4 px-2 transition duration-300 inline-block font-medium' onClick={addTopic}>Add Topic</button>
-      </div>}
-    </div>
-    </div>
+    <div className='bg-blue-100 dark:bg-[#1C1C1EFF]'>
+      {/* <DailyProblem /> */}
+      <div className='bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen flex justify-center'>
+        <div className='w-full sm:w-3/4 lg:w-2/3  '>
+          <div className='flex justify-between items-center mb-4'>
+            <div className='ml-4'>
+              <h1 className='text-xl mt-4 dark:text-gray-300 font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
+              <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
+            </div>
+            <div className='mr-2 mt-2'
+             style={{ width: 68, height: 60 }}>
+              <CircularProgressbar 
+                value={solvedProblems} 
+                maxValue={totalProblems} 
+                text={`${Math.round((solvedProblems / totalProblems) * 100)}%`} 
+                styles={buildStyles({
+                  pathColor: 'green',
+                  trailColor: 'lightgray',
+                  textSize: '16px',
+                })} 
+              />
+            </div>
+          </div>
+          <AnimatePresence>
+{topics.map((topic, index) => (
+<motion.div
+key={index}
+initial={{ opacity: 0, y: -100 }} // Initial position and opacity
+animate={{ opacity: 1, y: 0 }} // Animation to apply when entering
+exit={{ opacity: 0, y: -100 }} // Animation to apply when exiting
+transition={{ duration: 0.5, delay: index * 0.1 }} // Animation duration with delay
+>
+<TopicCard
+key={index}
+id={topic}
+name={topic}
+questions={AllQuestionsList[topic]}
+selectedTopic={selectedTopic}
+setSelectedTopic={setSelectedTopic}
+solvedQuestions={solvedQuestions}
+onQuestionSolved={handleCheckboxChange}
+ref={topic === selectedTopic ? selectedTopicRef : null}
+/>
+</motion.div>
+))}
+</AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 };
 
-export function QuestionCard({ name, link, defficulty }) {
-  const truncatedName = name.length > 20 ? name.substring(0, 37) + '...' : name;
+
+
+export function QuestionCard(props) {
+  const { name, link, youtube, onQuestionSolved } = props;
+  const truncatedName = name.length > 30 ? name.substring(0, 30) + '..' : name;
+  const lesstruncatedName = name.length > 45 ? name.substring(0, 42) + '..' : name;
+  const truncatedLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
+  const extratruncatedLink = link.length > 30 ? link.substring(0, 25) + '...' : link;
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  const [isChecked, setIsChecked] = useState(() => {
+    // Get the initial state from local storage or set it to false
+    const solvedQuestions = JSON.parse(localStorage.getItem('solvedQuestions')) || {};
+    return solvedQuestions[name] || false;
+  });
+  
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+    onQuestionSolved(name, event.target.checked);
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1000); // Adjust the breakpoint as needed
@@ -105,145 +137,122 @@ export function QuestionCard({ name, link, defficulty }) {
     };
   }, []);
 
-  const getTagStyle = () => {
-    // Define the background colors for different tags
-    const backgroundColors = {
-      easy: 'bg-green-400',
-      medium: 'bg-yellow-400',
-      hard: 'bg-red-400',
-    };
-
-    // Get the background class based on the tag
-    const backgroundClass = backgroundColors[defficulty] || '';
-
-    return `px-2 py-1 rounded ${backgroundClass} text-Black `;
-  };
-
   return (
-    <div className="flex items-center border rounded p-4 bg-blue-100 rounded-lg p-4 shadow-md ml-2 mt-2 mr-2 mb-2">
-    <div className="flex-grow">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold" style={{ width: '40%' }}>
-          {name}
-        </h3>
-        <span className={getTagStyle()}>
-          {defficulty}
-        </span>
-        {isSmallScreen ? (
-          <a
+    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#2c2c2e]" : "bg-blue-100 dark:bg-[#343436]"} rounded-lg p-3 shadow-md ml-2 mt-2 mr-2 mb-2`}>
+    <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
+      <h3 className={`text-lg dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
+        {isSmallScreen ? truncatedName : lesstruncatedName}
+      </h3>
+      <div className="flex items-center justify-between w-full mt-2 sm:mt-0">
+        <a
           href={link}
           target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline ml-6"
-            style={{ width: '10%' }}
-          >
-            Link
-          </a>
-        ) : (
-          <a
-            href={link}
-            className="text-blue-500 hover:underline ml-6"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ width: '46%' }}
-          >
-            {link}
-          </a>
-        )}
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          {isSmallScreen ? extratruncatedLink : truncatedLink}
+        </a>
+        <a
+          href={youtube}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-auto"
+        >
+          <img
+            className="max-w-[50px] p-2  rounded-md hover:underline cursor-pointer"
+            src={Youtube}
+            alt="contest image"
+          /> 
+        </a>
+        <input
+  className={`ml-2 form-checkbox h-6 w-6 s `}
+  type="checkbox"
+  checked={isChecked}
+  onChange={handleCheckboxChange}
+/>
+        
       </div>
     </div>
   </div>
   );
 }
 
-export function TopicCard({ id, name, questions, addQuestion, newQuestion, setNewQuestion, selectedTopic, setSelectedTopic, isAdmin }) {
+export const TopicCard = React.forwardRef((props, ref) => {
+  const { id, name, questions, selectedTopic, setSelectedTopic, solvedQuestions } = props;
+  const [solvedQuestionCount, setSolvedQuestionCount] = useState(0);
   const isOpen = id === selectedTopic;
-  
 
   const handleTopicClick = () => {
     setSelectedTopic(isOpen ? null : id);
-    // Reset page number to 0 when a new topic is selected
   };
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userEmail = user && user.email;
 
-  return (
-    <>
-    <div className={`relative bg-white dark:bg-[#2C2C2EFF] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 p-4 border-2 m-1 border-gray-300 ${isOpen ? 'pb-8' : ''}`} onClick={handleTopicClick}>
-      <div className={` gap-4 items-center sm:w-[90%]`}>
-        <div className=''>
-          <h1 className=' flex text-2xl font-semibold text-overflow-ellipsis whitespace-nowrap text-gray-700'>{name}</h1>
-        </div>
-      </div>
-      {isOpen && (
-        <div className='mt-4' onClick={e => e.stopPropagation()}>
-          <div className={` items-center sm:w-[70%] md:w-[80%] lg:w-[90%] mx-auto`}>
-            {questions.map((question, index) => (
-              <QuestionCard key={index} name={question.name} link={question.link} defficulty={question.defficulty} />
-            ))}
+  useEffect(() => {
+    const updateSolvedCount = () => {
+      const solvedQuestions = JSON.parse(localStorage.getItem('solvedQuestions')) || {};
+      const count = questions.filter(question => solvedQuestions[question.Question]).length;
+      setSolvedQuestionCount(count);
+    };
+
+    // Call the function initially to set the count
+    updateSolvedCount();
+
+    // Listen for changes in local storage
+    window.addEventListener('storage', updateSolvedCount);
+
+    // Cleanup the event listener
+    return () => window.removeEventListener('storage', updateSolvedCount);
+  }, [questions, selectedTopic]);
+
+  useEffect(() => {
+    const count = questions.filter(question => solvedQuestions[question.Question]).length;
+    setSolvedQuestionCount(count);
+  }, [questions, selectedTopic, solvedQuestions]);
+  
+    return (
+      <div 
+        ref={ref} 
+        className={`relative bg-white dark:bg-[#2C2C2EFF] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-2  m-1  ${isOpen ? 'pb-8' : ''}`} 
+        onClick={handleTopicClick}
+      >
+        <div className={` gap-4 items-center sm:w-[90%]`}>
+          <div className=''>
+            <h1 className=' flex text-lg font-semibold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
+            <p className='text-sm text-gray-600'>{solvedQuestionCount} / {questions.length} solved</p>
           </div>
-          {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && (
-            <div className='flex justify-center p-2 mt-2'>
-              <input
-                 className='border-2 border-gray-500 text-xl rounded-lg mx-2'
-                type="text"
-                value={newQuestion.name}
-                onChange={e => {
-                  e.stopPropagation();
-                  setNewQuestion({ ...newQuestion, name: e.target.value });
-                }}
-                placeholder="Question name"
-                onClick={e => e.stopPropagation()}
-              />
-              <input
-              className='border-2 border-gray-500 text-xl rounded-lg mx-2'
-                type="text"
-                value={newQuestion.link}
-                onChange={e => {
-                  e.stopPropagation();
-                  setNewQuestion({ ...newQuestion, link: e.target.value });
-                }}
-                placeholder="Question link"
-                onClick={e => e.stopPropagation()}
-              />
-              <select
-                  id="defficulty"
-                  onChange={e => {
-                    e.stopPropagation();
-                    setNewQuestion({ ...newQuestion, defficulty: e.target.value });
-                  }}
-                  className="w-[100px]  text-gray-700 bg-gray-100 rounded-lg"
-                >
-                   <option id="easy" value="easy">
-                    Easy
-                  </option>
-                  <option id="medium" value="medium">
-                    Medium
-                  </option>
-                 
-                  <option id="hard" value="hard">
-                    Hard
-                  </option>
-                  
-                </select>
-              <button
-             className='bg-blue-600 text-white text-sm rounded-full hover:bg-blue-900 py-4 px-2 transition duration-300 inline-block font-medium'
-                onClick={e => {
-                  e.stopPropagation();
-                  addQuestion({ isAdmin: { isAdmin } });
-                }}
-              >
-                Add Question
-              </button>
-            </div>
-          )}
         </div>
-      )}
-    </div>
-
-    </>
-  );
-}
+        {isOpen && (
+          <div className='mt-4' onClick={e => e.stopPropagation()}>
+            <div className={` items-center sm:w-[70%] md:w-[80%] lg:w-[90%] mx-auto`}>
+              <AnimatePresence>
+              {questions.map((question, index) => (
+  <motion.div
+    key={index}
+    initial={{ opacity: 0, x: -10 }} // Initial position and opacity
+    animate={{ opacity: 1, x: 0 }} // Animation to apply when entering
+    exit={{ opacity: 0, x: -100 }} // Animation to apply when exiting
+    transition={{
+      type: 'spring',
+      stiffness: 200,
+      damping: 10,
+      delay: index * 0.05 // Delay each question by a small amount
+    }} // Use spring physics for the animation
+  >
+    <QuestionCard 
+      key={index} 
+      name={question.Question} 
+      link={question.Question_link} 
+      youtube={question.Solution_link} 
+      onQuestionSolved={props.onQuestionSolved} // Pass the prop here
+    />
+  </motion.div>
+))}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  })
 
 export default Resources;
+
