@@ -17,9 +17,9 @@ import LearningResources from "./pages/LearningResources";
 import OTMaterial from "./pages/OTMaterial";
 import Discussion from "./pages/Discussion";
 
-import { inject } from "@vercel/analytics";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-inject();
+// import { inject } from "@vercel/analytics";
+// import { SpeedInsights } from "@vercel/speed-insights/react";
+// inject();
 function App() {
   return (
     <>
@@ -68,7 +68,7 @@ function App() {
         pauseOnHover
         theme="colored"
       />
-      <SpeedInsights />
+      {/* <SpeedInsights /> */}
     </>
   );
 }
