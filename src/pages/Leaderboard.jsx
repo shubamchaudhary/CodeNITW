@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Leaderboard } from "flywheel-leaderboard";
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 import {
   collection,
   addDoc,
@@ -49,7 +46,7 @@ async function addOrUpdateData(updatedScoreArray, leaderboardCollectionRef) {
 export default function LeaderboardList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [scoreArray, setScoreArray] = useState([]);
-  const contests = ["480776", "482262", "483816", "486358"]; // Add more contest IDs as needed
+  const contests = ["480776", "482262","483816" , "486358", "492543"]; // Add more contest IDs as needed
   const [isPushDataButtonVisible, setPushDataButtonVisible] = useState(true);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [hasPushedData, setHasPushedData] = useState(false);
@@ -82,49 +79,80 @@ export default function LeaderboardList() {
     fetchData();
   }, []);
 
-  async function fetchData() {
-    // // Uncomment this code to push Updated Leaderboard
-    // let updatedScoreArray = [];
+    async function fetchData() {
 
-    // for (const contest_id of contests) {
-    //   const data = await getStandings(contest_id);
-    //   if (data && data.status === "OK") {
-    //     updatedScoreArray = getScores(data, contest_id, updatedScoreArray);
-    //   } else {
-    //     console.error("API Error:", data);
-    //     // Handle the API error appropriately
-    //   }
-    // }
-    // console.log(updatedScoreArray);
-    // setScoreArray(updatedScoreArray);
+      // Get the last contest ID
+      const lastContestId = contests[contests.length - 1];
 
-    // leaderboard data setting
-    //Fetch data from the Leaderboard collection
-    const leaderboardCollectionRef = collection(db, "leaderboard");
-    const leaderboardQuerySnapshot = await getDocs(leaderboardCollectionRef);
-    const leaderboardData = [];
-    leaderboardQuerySnapshot.forEach((doc) => {
-      leaderboardData.push(doc.data());
-    });
-    setLeaderboardData(leaderboardData);
+      // Fetch the scores for the last contest
+      const data = await getStandings(lastContestId);
+      if (data && data.status === "OK") {
+        let updatedScoreArray = getScores(data, lastContestId, []);
 
-    // Pushing Ranks into firebase
-    // if(!hasPushedData){
-    // for(const contest_id of contests){
-    //   const data = await getStandings(contest_id);
-    //   if (data && data.status === "OK") {
-    //     const contestRanksItem = getContestRanks(data , contest_id);
-    //     const contestRanksCollectionRef = collection(db, "contestRanks");
-    //     const q = query(contestRanksCollectionRef, where("contestId", "==", contest_id));
-    //     const querySnapshot = await getDocs(q);
-    //     if (querySnapshot.empty) {
-    //       await addDoc(contestRanksCollectionRef, contestRanksItem);
-    //     }
-    //   }
-    // }
-    // setHasPushedData(true);
-    // }
-  }
+        // Fetch the last leaderboard data from Firebase
+        const leaderboardCollectionRef = collection(db, "leaderboard");
+        const leaderboardQuerySnapshot = await getDocs(leaderboardCollectionRef);
+        const lastLeaderboardData = [];
+        leaderboardQuerySnapshot.forEach((doc) => {
+          lastLeaderboardData.push(doc.data());
+        });
+
+        // Add the new scores to the last leaderboard data
+        for (const newScore of updatedScoreArray) {
+          const existingUserIndex = lastLeaderboardData.findIndex(
+            (user) => user.handle === newScore.handle
+          );
+
+          if (existingUserIndex !== -1) {
+            // Update the existing user's score for the contest
+            lastLeaderboardData[existingUserIndex].Score = (
+              parseFloat(lastLeaderboardData[existingUserIndex].Score) +
+              parseFloat(newScore.Score)
+            ).toFixed(2);
+          } else {
+            // Create a new entry for the user for the given contest
+            lastLeaderboardData.push(newScore);
+          }
+        }
+        console.log(lastLeaderboardData)
+
+        // Update the leaderboard data in the state
+        setScoreArray(lastLeaderboardData);
+
+              // leaderboard data setting 
+      // Fetch data from the Leaderboard collection
+      // const leaderboardCollectionRef = collection(db, "leaderboard");
+      // const leaderboardQuerySnapshot = await getDocs(leaderboardCollectionRef);
+      
+      const leaderboardData = [];
+      leaderboardQuerySnapshot.forEach((doc) => {
+        leaderboardData.push(doc.data());
+      });
+      setLeaderboardData(leaderboardData);
+
+      
+     //Pushing Ranks into firebase 
+      if(!hasPushedData){
+      for(const contest_id of contests){
+        const data = await getStandings(contest_id);
+        if (data && data.status === "OK") {
+          const contestRanksItem = getContestRanks(data , contest_id);
+          const contestRanksCollectionRef = collection(db, "contestRanks");
+          const q = query(contestRanksCollectionRef, where("contestId", "==", contest_id));
+          const querySnapshot = await getDocs(q);
+          if (querySnapshot.empty) {
+            await addDoc(contestRanksCollectionRef, contestRanksItem);
+          }
+        }
+      }
+      setHasPushedData(true);
+      }
+
+      } else {
+        console.error("API Error:", data);
+        // Handle the API error appropriately
+      }
+    }
 
   async function handleUpdateDataClick() {
     const leaderboardCollectionRef = collection(db, "leaderboard");
@@ -223,6 +251,8 @@ export default function LeaderboardList() {
 
     return updatedScoreArray;
   }
+
+  
   return (
     <div className=" min-h-screen dark:bg-[#1C1C1EFF] bg-blue-100">
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
