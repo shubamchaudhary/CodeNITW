@@ -171,7 +171,7 @@ export function MLCard({name, description, videoLink, problemSetLink}) {
     <div className="flex">
       <div className="flex flex-col items-center">
         <div className="h-5 w-5 rounded-full border-2 border-cyan-500 bg-white"></div>
-        <div className="w-1 h-20 bg-cyan-500"></div>
+        <div className={name === "C++ Standard Template Library" ? "w-1 h-[400px] md:h-[320px]  bg-cyan-500" : "w-1 h-[150px] md:h-20  bg-cyan-500"}></div>
       </div>
       <div className="pl-4">
         <p className="ml-2 dark:text-gray-400 font-semibold mb-2">
@@ -194,7 +194,7 @@ export function CoreCSECard({name, description, videoLink, problemSetLink}) {
     <div className="flex">
       <div className="flex flex-col items-center">
         <div className="h-5 w-5 rounded-full border-2 border-cyan-500 bg-white"></div>
-        <div className="w-1 h-20 bg-cyan-500"></div>
+        <div className={name === "C++ Standard Template Library" ? "w-1 h-[400px] md:h-[320px]  bg-cyan-500" : "w-1 h-[150px] md:h-20  bg-cyan-500"}></div>
       </div>
       <div className="pl-4">
         <p className="ml-2 dark:text-gray-400 font-semibold mb-2">
