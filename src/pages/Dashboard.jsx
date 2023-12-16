@@ -24,6 +24,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 export default function Dashboard() {
   const [xData, setXData] = useState([]);
   const [yData, setYData] = useState([]);
+  const [data, setData] = useState([]);
   const auth = getAuth();
   const user = auth.currentUser;
   const navigate = useNavigate();
@@ -39,10 +40,6 @@ export default function Dashboard() {
   const ciphertext = CryptoJS.AES.encrypt(user.email, secretKey).toString();
   useEffect(() => {
     async function fetchContestRanks() {
-      const xDataArray = [];
-      const yDataArray = [];
-      const xDataArrayasTimestamp = [];
-      const contestIdArray = [];
       try {
         const userCollectionRef = collection(db, "users");
         const userDocRef = doc(userCollectionRef, auth.currentUser.uid);
@@ -59,35 +56,26 @@ export default function Dashboard() {
         });
         const contestRanksCollectionRef = collection(db, "contestRanks");
         const orderedQuery = query(contestRanksCollectionRef, orderBy("contestDate"));
-        
         try {
           const querySnapshot = await getDocs(orderedQuery);
+          const data = Array.from({length: querySnapshot.size}, () => ({x: null, y: null}));
+          let index = 0;
           querySnapshot.forEach((doc) => {
             const contestRanks = doc.data();
             const ranks = contestRanks.ranks;
-              contestIdArray.push(contestRanks.contestId);
-              xDataArrayasTimestamp.push(contestRanks.contestDate);
-              for(let rankItem of ranks){
-                if(rankItem.userId === userDocData.cfhandle){
-                  yDataArray.push(rankItem.rank);
-                }
+            const date = new Date(contestRanks.contestDate * 1000);
+            data[index].x = date;
+            for(let rankItem of ranks){
+              if(rankItem.userId === userDocData.cfhandle){
+                data[index].y = rankItem.rank;
               }
-            
+            }
+        index++;
           });
-          // converting date into string 
-          for(let item of xDataArrayasTimestamp){
-            const date = new Date(item * 1000);
-            // xDataArray.push(date.toDateString());
-            xDataArray.push(date);
-          }
-                    console.log(contestIdArray);
-          console.log(xDataArray);
-          console.log(yDataArray);
+          setData(data);
         } catch (error) {
           console.error("Error fetching contest ranks:", error);
         }
-        setXData(xDataArray);
-        setYData(yDataArray);
       } catch (error) {
         console.error("Error fetching contest ranks:", error);
       }
@@ -153,7 +141,7 @@ export default function Dashboard() {
         <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Codeforces Handle: <span className="text-blue-400">{formData.cfhandle}</span></h2>
         <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Leetcode Handle: <span className="text-blue-400">{formData.lchandle}</span></h2>
         <button 
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2" 
   onClick={() => setEditing(!editing)}
 >
   Edit Handles
@@ -205,8 +193,7 @@ export default function Dashboard() {
         <div className="m-[150px] w-[100%] mt-[10px]">
           <PerformanceChart
             name={name}
-            timeData={xData}
-            rankData={yData}
+            data = {data}
           />
         </div>
       </section>
