@@ -48,11 +48,27 @@ Now that you know a Programming language syntax, let's deep dive into DSA.
     [Youtube Playlist](https://www.youtube.com/playlist?list=PLkjdNRgDmcc0Pom5erUBU4ZayeU9AyRRu) & [Problems List](https://leetcode.com/list/pvzsm5jg)
 
 9. Dynamic Programming : 
-    [Youtube Playlsit](https://www.youtube.com/playlist?list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY) & [Problems List](https://leetcode.com/discuss/general-discussion/1000929/solved-all-dynamic-programming-dp-problems-in-7-months)
+    [Youtube Playlist](https://www.youtube.com/playlist?list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY) & [Problems List](https://leetcode.com/discuss/general-discussion/1000929/solved-all-dynamic-programming-dp-problems-in-7-months)
 
 10. Graphs: 
     [Youtube Playlist](https://www.youtube.com/playlist?list=PLgUwDviBIf0oE3gA41TKO2H5bHpPd7fzn) & [Problems List](https://leetcode.com/discuss/study-guide/1326900/graph-algorithms-problems-to-practice)
 
+
+## Core CS Fundamentals
+
+### 1. Object Oriented Programming :
+  1. OOPS in C++ : [Guide](https://drive.google.com/file/d/1h8dxovjY2QREQT5qq4IvLbGwB2oocPUJ/view?usp=sharing)
+  2. OOPS in Java : 
+      * [Youtube Tutorials](https://www.youtube.com/watch?v=5NQjLBuNL0I)
+      * [Youtube One Shot](https://www.youtube.com/watch?v=bSrm9RXwBaI)
+      * [Article ](https://www.freecodecamp.org/news/object-oriented-programming-concepts-java/)
+
+
+### 2. Database Management System (DBMS)
+  1. [Youtube Playlist By Gate Smashers](https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y) 
+  2. [Youtube Playlist by Sanchit Jain](https://www.youtube.com/playlist?list=PLmXKhU9FNesR1rSES7oLdJaNFgmuj0SYV)
+  3. [SQL Cheatsheet](https://www.interviewbit.com/sql-cheat-sheet/)
+  4. Practice from here: [InterviewBit](https://www.interviewbit.com/courses/databases/sql-queries/)
 
 
   `;
