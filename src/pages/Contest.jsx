@@ -14,6 +14,7 @@ import { da } from "date-fns/locale";
 import AtcoderImage from "../images/AtCoder.png";
 import CodechefImage from "../images/CodeChef.png"
 import CodeforcesImage from "../images/CodeForces.png"
+import GFGImage from "../images/gfg.png"
 import LeetcodeImage from "../images/LeetCode.png"
 import DefaultImage from "../images/codenitwcontest.png";
 
@@ -71,7 +72,7 @@ export default function Contest() {
           const activeContests = [];
           const upcomingContests = [];
           for(let item of data.objects){
-            if(item.host == "atcoder.jp" || item.host == "leetcode.com" || item.host == "codechef.com" || item.host == "codeforces.com" ){
+            if(item.host == "atcoder.jp" || item.host == "leetcode.com" || item.host == "codechef.com" || item.host == "codeforces.com" ||   item.host == "geeksforgeeks.org" ){
               let unix_timestamp = item.duration;
               var modifiedDuration = unix_timestamp/60;
               
@@ -108,6 +109,9 @@ export default function Contest() {
                   break;
                 case "codeforces.com":  
                   imageSrc = CodeforcesImage
+                  break;
+                case "geeksforgeeks.org":
+                  imageSrc = GFGImage;
                   break;
                 default:
                   imageSrc = DefaultImage; // Default image or null
