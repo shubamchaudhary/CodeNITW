@@ -72,6 +72,7 @@ export default function Dashboard() {
             }
         index++;
           });
+
           setData(data);
         } catch (error) {
           console.error("Error fetching contest ranks:", error);
