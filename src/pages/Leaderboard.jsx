@@ -254,7 +254,7 @@ export default function LeaderboardList() {
 
   
   return (
-    <div className=" min-h-screen dark:bg-[#1C1C1EFF] bg-blue-100">
+    <div className=" min-h-screen dark:bg-[#050b15] bg-blue-100">
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
         <h1 className="text-4xl dark:text-gray-400 text-center font-serif mb-8 mt-8">
           Leaderboard
@@ -263,7 +263,7 @@ export default function LeaderboardList() {
         {isPushDataButtonVisible && (
           <button
             onClick={handleUpdateDataClick}
-            className="px-6 py-3 rounded-lg bg-blue-500 text-white dark:bg-blue-950 hover:bg-blue-600 transition-colors mb-8"
+            className="px-6 py-3 rounded-lg bg-blue-500 text-white dark:bg-[#121620] hover:bg-blue-600 transition-colors mb-8"
           >
             Push Data
           </button>
@@ -277,7 +277,7 @@ export default function LeaderboardList() {
           scale={1}
           gyroscope={true}
         >
-          <div className="w-full bg-white border-[1px] dark:border-blue-600 border-blue-200 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
+          <div className="w-full bg-white border-[1px] dark:border-[#1c2432] border-blue-200 dark:bg-[#121620] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
             <CustomLeaderboard
               leaderboardData={leaderboardData}
               page={page}
@@ -351,8 +351,8 @@ export const CustomLeaderboard = ({
   return (
     <div className="p-4">
       {/* <h1 className="text-2xl font-bold mb-4">Leaderboard</h1> */}
-      <table className="w-full  bg-blue-100 dark:text-gray-400 dark:bg-[#3A3A3CFF] rounded-md">
-        <thead className="bg-blue-200 dark:bg-[#2d2d2e]">
+      <table className="w-full  bg-blue-100 dark:text-gray-400 dark:bg-[#1c2432] rounded-md">
+        <thead className="bg-blue-200 dark:bg-[#1c2432]">
           <tr>
             <th className="p-2 ">Rank</th>
             <th className="p-2 ">Handle</th>

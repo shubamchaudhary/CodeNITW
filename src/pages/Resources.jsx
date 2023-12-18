@@ -260,7 +260,7 @@ export default Resources;
 
 
 
-<div className='mb-4 bg-white dark:bg-[#3A3A3CFF] border-gray-200 p-10 rounded-lg shadow overflow-auto'>
+<div className='mb-4 bg-white dark:bg-[#050b15] border-gray-200 p-10 rounded-lg shadow overflow-auto'>
 <h2 className="font-bold text-2xl text-blue-600 mb-4"> <span className="h-6 flex items-center sm:h-7">
        <svg class="flex-shrink-0 h-10 w-10 text-cyan-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
          <path fill-rule="evenodd" d="M10 2a2 2 0 00-2 2v12a2 2 0 002 2 2 2 0 002-2V4a2 2 0 00-2-2zm3 2a3 3 0 11-6 0 3 3 0 016 0z" clip-rule="evenodd" />

@@ -51,9 +51,9 @@ const Resources = () => {
   
 
   return (
-    <div className='bg-blue-100 dark:bg-[#1C1C1EFF]'>
+    <div className='bg-blue-100 dark:bg-[#050b15]'>
       {/* <DailyProblem /> */}
-      <div className='bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen flex justify-center'>
+      <div className='bg-blue-100 dark:bg-[#050b15] min-h-screen flex justify-center'>
         <div className='w-full sm:w-3/4 lg:w-2/3  '>
           <div className='flex justify-between items-center mb-4'>
             <div className='ml-4'>
@@ -138,7 +138,7 @@ export function QuestionCard(props) {
   }, []);
 
   return (
-    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#2c2c2e]" : "bg-blue-100 dark:bg-[#343436]"} rounded-lg p-3 shadow-md ml-2 mt-2 mr-2 mb-2`}>
+    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#141a25]" : "bg-blue-100 dark:bg-[#1c2432]"} rounded-lg p-3 shadow-md ml-2 mt-2 mr-2 mb-2`}>
     <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
       <h3 className={`text-lg dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
         {isSmallScreen ? truncatedName : lesstruncatedName}
@@ -211,7 +211,7 @@ export const TopicCard = React.forwardRef((props, ref) => {
     return (
       <div 
         ref={ref} 
-        className={`relative bg-white dark:bg-[#2C2C2EFF] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-2  m-1  ${isOpen ? 'pb-8' : ''}`} 
+        className={`relative bg-white dark:bg-[#141a25] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-2  m-1  ${isOpen ? 'pb-8' : ''}`} 
         onClick={handleTopicClick}
       >
         <div className={` gap-4 items-center sm:w-[90%]`}>

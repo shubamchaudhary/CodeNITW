@@ -119,7 +119,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="px-[20px] dark:bg-[#1C1C1EFF]   bg-blue-100 min-h-screen font-serif">
+    <div className="px-[20px] dark:bg-[#050b15]   bg-blue-100 min-h-screen font-serif">
     <div className=" pt-4 ">
     <Tilt
     className="parallax-effect-img"
@@ -130,19 +130,19 @@ export default function Dashboard() {
     scale={1}
     gyroscope={true}
   >
-    <section className="md:max-w-4xl mx-auto border-[1px] dark:border-blue-600 border-blue-200  pt-10 text-black-400 bg-blue-50 dark:bg-[#313133] p-6 rounded-lg shadow-lg">
-  <div className=" dark:bg-[#3A3A3CFF] shadow-md rounded-lg p-6 bg-blue-100 transition-colors duration-200">
+    <section className="md:max-w-4xl mx-auto border-[1px] dark:border-[#1c2432] border-blue-200  pt-10 text-black-400 bg-blue-50 dark:bg-[#121620] p-6 rounded-lg shadow-lg">
+  <div className=" dark:bg-[#1b222e] shadow-md rounded-lg p-6 bg-blue-100 transition-colors duration-200">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <div style={{ wordWrap: 'break-word' }}>
         <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-white">Name: <span className="text-blue-400">{name}</span> </h2>
-        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Roll No: <span className="text-blue-400">{formData.rollno}</span></h2>
-        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Course:<span className="text-blue-400">{formData.course}</span> </h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-gray-300">Roll No: <span className="text-blue-400">{formData.rollno}</span></h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-gray-300">Course:<span className="text-blue-400">{formData.course}</span> </h2>
       </div>
       <div>
-        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Codeforces Handle: <span className="text-blue-400">{formData.cfhandle}</span></h2>
-        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Leetcode Handle: <span className="text-blue-400">{formData.lchandle}</span></h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-gray-300">Codeforces Handle: <span className="text-blue-400">{formData.cfhandle}</span></h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-gray-300">Leetcode Handle: <span className="text-blue-400">{formData.lchandle}</span></h2>
         <button 
-  className="bg-blue-500 hover:bg-blue-700 text-white mr-2 my-2 px-2 py-1 rounded mb-2" 
+  className="bg-[#5e8fde]  text-white mr-2 my-2 px-2 py-1 rounded mb-2" 
   onClick={() => setEditing(!editing)}
 >
   Edit Handles
@@ -152,7 +152,7 @@ export default function Dashboard() {
   onCopy={() => toast.success("Profile Link has been copied to Clipboard")}
 >
   <button 
-    className="bg-blue-500 hover:bg-blue-700 text-white mr-2 my-2 px-2 py-1 rounded "
+    className="bg-[#5e8fde] text-white mr-2 my-2 px-2 py-1 rounded "
   >
     Share Profile
   </button>
@@ -190,7 +190,7 @@ export default function Dashboard() {
       </Tilt >
     
       <section className="max-w-2xl mx-auto flex justify-center items-center flex-col ">
-      <h2 className="text-3xl dark:text-gray-400 text-center mt-[50px] cursive">{name}'s Performance Chart</h2>
+      <h2 className="md:text-2xl text-xl dark:text-gray-400 text-center mt-[50px] cursive">{name}'s Performance Chart</h2>
         <div className="m-[150px] w-[100%] mt-[10px]">
           <PerformanceChart
             name={name}

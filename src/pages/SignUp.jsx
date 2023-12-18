@@ -86,7 +86,7 @@ export default function SignUp() {
 
   return (
     <section>
-      <div className="flex flex-wrap justify-center items-center px-4 md:px-40 dark:bg-[#1C1C1EFF] bg-blue-100 min-h-screen  max-w-8xl mx-auto">
+      <div className="flex flex-wrap justify-center items-center px-4 md:px-40 dark:bg-[#050b15] bg-blue-100 min-h-screen  max-w-8xl mx-auto">
         <div className="font-serif w-full md:w-[67%] lg:w-[50%] mb-12 md:mb-6 ">
           
         <Tilt
@@ -109,28 +109,28 @@ export default function SignUp() {
                 onChange={onChange}
                 id="name"
                 placeholder="Full Name"
-                className="w-full dark:bg-[#29292b] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 type="text"
               ></input>
               <input
                 onChange={onChange}
                 id="email"
                 placeholder="Student Email"
-                className="w-full dark:bg-[#29292b] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 type="email"
               ></input>
               <input
                 onChange={onChange}
                 id="cfhandle"
                 placeholder="Codeforces Handle"
-                className="w-full dark:bg-[#29292b] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4  text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4  text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 type="text"
               ></input>
               <input
                 onChange={onChange}
                 id="lchandle"
                 placeholder="Leetcode Handle"
-                className="w-full dark:bg-[#29292b] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4  text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4  text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                 type="text"
               ></input>
               <div className="flex flex-col md:flex-row justify-center ">
@@ -138,13 +138,13 @@ export default function SignUp() {
                   onChange={onChange}
                   id="rollno"
                   placeholder="Roll Number"
-                  className="w-full dark:bg-[#29292b] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4 mr-2 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4 mr-2 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
                   type="text"
                 ></input>
                 <select
                   id="course"
                   onChange={onChange}
-                  className="w-full dark:bg-[#29292b] h-10 md:h-[50px] dark:text-gray-400 p-2  mt-4 mr-2 text-lg md:text-lg  text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full dark:bg-[#121620] h-10 md:h-[50px] dark:text-gray-400 p-2  mt-4 mr-2 text-lg md:text-lg  text-gray-700 bg-gray-100 rounded-lg"
                   >
                     <option id="btech" value="btech">
                       BTech
@@ -161,7 +161,7 @@ export default function SignUp() {
                 </select>
                 <select
                     id="year"
-                    className="w-full dark:bg-[#29292b]  h-10 md:h-[50px] dark:text-gray-400 p-2 mt-4 mr-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
+                    className="w-full dark:bg-[#121620]  h-10 md:h-[50px] dark:text-gray-400 p-2 mt-4 mr-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
                     onChange={onChange}>
                     <option id="first" value="first">
                       1st Year
@@ -181,7 +181,7 @@ export default function SignUp() {
                 onChange={onChange}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                className="w-full dark:bg-[#29292b] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg "
+                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mt-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg "
                 id="password"
               ></input>
               {/* {showPassword ? (
@@ -212,7 +212,7 @@ export default function SignUp() {
               </a>
             </div>
             <button
-              className="mb-4 mt-4 w-full text-lg dark:bg-[#4b4b64] hover:dark:bg-[#353549] bg-blue-900 text-white h-10 md:h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
+              className="mb-4 mt-4 w-full text-lg dark:bg-[#141a25] hover:dark:bg-[#0d1520] bg-blue-900 text-white h-10 md:h-14 rounded-md  hover:bg-red-900 shadow-lg active:bg-red-950"
               type="submit"
             >
             {isLoading ? (

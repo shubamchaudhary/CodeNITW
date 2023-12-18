@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function ListingItem({ listing, status, }) {
   let navigate = useNavigate();
   return (
-    <li className="relative bg-blue-100 dark:bg-[#3A3A3CFF] w-[95%]  items-center shadow-lg hover:shadow-md rounded-md overflow-hidden transition-shadow duration-300 m-4 p-2">
+    <li className="relative bg-blue-100 dark:bg-[#1c2432] w-[95%]  items-center shadow-lg hover:shadow-md rounded-md overflow-hidden transition-shadow duration-300 m-4 p-2">
       <div className="grid grid-cols-1 md:grid-cols-4 space-x-4 items-center sm:w-[90%]">
         <div className="hidden md:block md:col-span-1">
           <img
