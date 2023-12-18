@@ -29,10 +29,6 @@ export default function Profile() {
 
     useEffect(() => {
         async function fetchContestRanks() {
-            const xDataArray = [];
-            const yDataArray = [];
-            const xDataArrayasTimestamp = [];
-            const contestIdArray = [];
             try {
               const userCollectionRef = collection(db, "users");
               const q = query(userCollectionRef, where("email", "==", email));
