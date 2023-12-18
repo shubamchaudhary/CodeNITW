@@ -75,7 +75,7 @@ export default function Header() {
 useEffect(() => {
   switch (location.pathname) {
     case "/learning-resources":
-      setActivePage("LEARNING ");
+      setActivePage("ROADMAPS ");
       break;
     case "/problems":
       setActivePage("PROBLEMS");
@@ -180,7 +180,7 @@ useEffect(() => {
                    onClick={() => handlePageSelect("/discussion")}
                    className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer    lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                   isActive("/discussion")
-                      ? "text-gray-600 font-extrabold   dark:text-gray-400"
+                      ? "text-gray-600 font-bold   dark:text-gray-400"
                      : "text-gray-500 dark:text-gray-400"
                        }`}
                       >
@@ -190,17 +190,17 @@ useEffect(() => {
                       onClick={() => setDropdownOpen(!dropdownOpen)}
   className={`group relative block py-2 pr-4 pl-3 hover:text-gray-600 hover:cursor-pointer    lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0 ${
     (isActive("/learning-resources") || isActive("/problems") || isActive("/ot-material"))
-      ? "text-gray-600 font-extrabold   dark:text-gray-400"
+      ? "text-gray-600 font-bold   dark:text-gray-400"
       : "text-gray-500 dark:text-gray-400"
   }`}
 >
   {activePage} ▼
   <ul className={`absolute left-0  w-40 bg-blue-100 dark:bg-[#3A3A3CFF] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
     <li
-      onClick={() => {handlePageSelect("/learning-resources", "LEARNING"); setDropdownOpen(false);}}
+      onClick={() => {handlePageSelect("/learning-resources", "ROADMAPS"); setDropdownOpen(false);}}
       className="px-4 py-2 text-sm cursor-pointer"
     >
-      LEARNING
+      ROADMAPS
     </li>
     <li
       onClick={() => {handlePageSelect("/problems", "PROBLEMS");setDropdownOpen(false);}}
@@ -221,7 +221,7 @@ useEffect(() => {
                     onClick={() => handlePageSelect("/add-contest")}
                     className={`block py-2 pr-4 pl-3 hover:text-gray-600       lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/add-contest")
-                    ? "text-gray-600 font-extrabold   dark:text-gray-400"
+                    ? "text-gray-600 font-bold   dark:text-gray-400"
                       : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -232,7 +232,7 @@ useEffect(() => {
                   onClick={() => handlePageSelect("/contest")}
                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer      lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/contest")
-                    ? "text-gray-600 font-extrabold   dark:text-gray-400"
+                    ? "text-gray-600 font-bold   dark:text-gray-400"
                     : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -242,7 +242,7 @@ useEffect(() => {
                   onClick={() => handlePageSelect("/leaderboard")}
                   className={`block py-2 pr-4 pl-3 hover:text-gray-600  hover:cursor-pointer     lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isActive("/leaderboard")
-                      ? "text-gray-600 font-extrabold   dark:text-gray-400"
+                      ? "text-gray-600 font-bold   dark:text-gray-400"
                       : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -252,7 +252,7 @@ useEffect(() => {
                   onClick={() => handlePageSelect(pageState)}
                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer      lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
                     isPath("/Dashboard")
-                    ? "text-gray-600 font-extrabold   dark:text-gray-400"
+                    ? "text-gray-600 font-bold   dark:text-gray-400"
                     : "text-gray-500 dark:text-gray-400"
                   }`}
                 >

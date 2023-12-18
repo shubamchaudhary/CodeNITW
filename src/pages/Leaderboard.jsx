@@ -269,15 +269,15 @@ export default function LeaderboardList() {
           </button>
         )}
         <Tilt
-          className="parallax-effect-img w-[110%]"
-          tiltMaxAngleX={3}
-          tiltMaxAngleY={1}
+          className="parallax-effect-img w-[100%]"
+          tiltMaxAngleX={1}
+          tiltMaxAngleY={2}
           perspective={1000}
           transitionSpeed={100}
           scale={1}
           gyroscope={true}
         >
-          <div className="w-full bg-white border-2 dark:border-blue-600 border-blue-200 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
+          <div className="w-full bg-white border-[1px] dark:border-blue-600 border-blue-200 dark:bg-[#2C2C2EFF] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
             <CustomLeaderboard
               leaderboardData={leaderboardData}
               page={page}
