@@ -77,7 +77,7 @@ export default function Profile() {
 
     return (
         userData && (
-    <div className=" px-[20px] dark:bg-[#1C1C1EFF] bg-blue-50 min-h-screen font-serif ">
+    <div className=" px-[20px] dark:bg-[#050b15] bg-blue-50 min-h-screen font-serif ">
   <Tilt
     className="parallax-effect-img"
     tiltMaxAngleX={0}

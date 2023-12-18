@@ -112,7 +112,7 @@ useEffect(() => {
   return (
     <div>
       <header>
-        <nav className="bg-blue-200 dark:bg-[#2C2C2EFF] shadow-lg dark:text-white  ray-200 px-4 lg:px-6 py-4">
+        <nav className="bg-blue-200 dark:bg-[#050b15] shadow-lg dark:text-white  ray-200 px-4 lg:px-6 py-4">
           <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
             <a href="" className="flex items-center">
             <Tilt
@@ -170,7 +170,7 @@ useEffect(() => {
     menuOpen ? 'block' : 'hidden'
   }
   ${
-    menuOpen && 'dark:bg-[#2C2C2EFF]'
+    menuOpen && 'dark:bg-[#050b15]'
   }
    justify-between items-center w-2/5 lg:w-auto absolute z-10 rounded-[20px] lg:relative lg:flex lg:order-1 top-[60px] right-0 bg-blue-200 bg-opacity  transition ease-in duration-5000 lg:bg-transparent dark:lg:bg-transparent lg:top-auto lg:right-auto`}
   id="mobile-menu-2"
@@ -195,7 +195,7 @@ useEffect(() => {
   }`}
 >
   {activePage} ▼
-  <ul className={`absolute left-0  w-40 bg-blue-100 dark:bg-[#3A3A3CFF] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
+  <ul className={`absolute left-0  w-40 bg-blue-100 dark:bg-[#050b15] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
     <li
       onClick={() => {handlePageSelect("/learning-resources", "ROADMAPS"); setDropdownOpen(false);}}
       className="px-4 py-2 text-sm cursor-pointer"

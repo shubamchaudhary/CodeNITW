@@ -19,7 +19,7 @@ export default function PasswordReset() {
   };
 
   return (
-    <div className="flex items-center dark:bg-[#1C1C1EFF] justify-center h-screen "> {/* Add mt-4 for top margin */}
+    <div className="flex items-center dark:bg-[#050b15] justify-center h-screen "> {/* Add mt-4 for top margin */}
       <div className="max-w-md w-full">
         <h1 className="text-3xl dark:text-gray-400 font-bold mb-4 text-center">Forgot Password</h1>
         <p className="text-center dark:text-gray-400 mb-4">
@@ -30,11 +30,11 @@ export default function PasswordReset() {
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 dark:bg-[#29292b] dark:text-gray-400 py-2 mb-4 rounded  border-gray-400 focus:outline-none focus:border-blue-500"
+          className="w-full px-3 dark:bg-[#121620] dark:text-gray-400 py-2 mb-4 rounded  border-gray-400 focus:outline-none focus:border-blue-500"
         />
         <button
           onClick={handleResetPassword}
-          className="w-full bg-blue-500 dark:bg-[#4b4b64] hover:dark:bg-[#353549] text-white font-semibold py-2 rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 dark:bg-[#141a25] hover:dark:bg-[#0d1520] text-white font-semibold py-2 rounded hover:bg-blue-600"
         >
           Send Reset Email
         </button>

@@ -199,11 +199,11 @@ const Discussion = () => {
 
   return (
 
-      <div className="bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen p-4 flex justify-center">
+      <div className="bg-blue-100 dark:bg-[#050b15] min-h-screen p-4 flex justify-center">
         { admins.includes(user.email) && <button onClick={() => setIsAdminView(prevState => !prevState)} className="absolute top-[100px] right-[5px] ">Toggle View</button>}
-        <div className="w-[100%] sm:w-3/4 dark:bg-[#2C2C2EFF]  bg-blue-50 shadow-md rounded-lg p-4">
+        <div className="w-[100%] sm:w-3/4 dark:bg-[#141a25]  bg-blue-50 shadow-md rounded-lg p-4">
           {posts?.filter(post => post.data.approvedBy || admins.includes(user.email)).map((post) => (
-            <div key={post.id} className="mb-4 bg-white dark:bg-[#3A3A3CFF] border-gray-200 p-4 rounded-lg shadow overflow-auto">
+            <div key={post.id} className="mb-4 bg-white dark:bg-[#1c2432] border-gray-200 p-4 rounded-lg shadow overflow-auto">
               <div className="flex justify-between mb-2">
                 <h2 className={post.data.type === 'question' ? 'font-bold text-2xl text-red-500' : 'font-bold text-2xl text-blue-600'}>{post.data.type === 'question' ? 'Question' : 'Announcement'}</h2>
                 { post.data.type === 'question' && <p className={post.data.type === 'question' && 'font- text-red-400'}>{post.data.type === 'question' && 'From :  '}{post.data.createdBy}</p>}

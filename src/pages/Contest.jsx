@@ -154,9 +154,9 @@ export default function Contest() {
   
 
   return (
-  <div className="bg-blue-100 dark:bg-[#1C1C1EFF] min-h-screen mb-[-30px] font-serif">
+  <div className="bg-blue-100 dark:bg-[#050b15] min-h-screen mb-[-30px] font-serif">
   <div className="max-w-6xl mx-auto py-10 space-y-6">
-  <div className="m-2 mb-6 bg-white dark:bg-[#2C2C2EFF] shadow-lg p-4 rounded-lg">
+  <div className="m-2 mb-6 bg-white dark:bg-[#121620] shadow-lg p-4 rounded-lg">
   <h1 className="text-4xl font-semibold text-blue-600 dark:text-blue-500 mb-4">CCPD Contests</h1>
 
   {Listings && Listings.active.length > 0 && (
@@ -200,7 +200,7 @@ export default function Contest() {
 </div>
 </div>
  <div className="max-w-6xl mx-auto pt-4 space-y-6">
-<div className="m-2 mb-6 bg-white dark:bg-[#2C2C2EFF] shadow-lg p-4 rounded-lg">
+<div className="m-2 mb-6 bg-white dark:bg-[#121620] shadow-lg p-4 rounded-lg">
   <h1 className="text-4xl font-semibold text-blue-600 dark:text-blue-500 mb-4">Other Contests</h1>
 
 
