@@ -3,7 +3,7 @@
 const dsa = [
   {
     name: "DSA Roadmap",
-    description: "",
+    description: "We assume that you are proficient in any one of the coding Languages,if not we suggest you to try C++.",
     data: [
       {
         name: "C++ Standard Template Library",

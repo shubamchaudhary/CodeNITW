@@ -25,15 +25,10 @@ export default function Profile() {
     const email = bytes.toString(CryptoJS.enc.Utf8);
 
     const [userData, setUserData] = useState(null);
-    const [xData, setXData] = useState([]);
-    const [yData, setYData] = useState([]);
+   const [data , setData] = useState([]);
 
     useEffect(() => {
         async function fetchContestRanks() {
-            const xDataArray = [];
-            const yDataArray = [];
-            const xDataArrayasTimestamp = [];
-            const contestIdArray = [];
             try {
               const userCollectionRef = collection(db, "users");
               const q = query(userCollectionRef, where("email", "==", email));
@@ -44,27 +39,24 @@ export default function Profile() {
               
               try {
                 const querySnapshot = await getDocs(orderedQuery);
+                const data = Array.from({length: querySnapshot.size}, () => ({x: null, y: null}));
+                let index = 0;
                 querySnapshot.forEach((doc) => {
                   const contestRanks = doc.data();
                   const ranks = contestRanks.ranks;
-                  contestIdArray.push(contestRanks.contestId);
-                  xDataArrayasTimestamp.push(contestRanks.contestDate);
+                  const date = new Date(contestRanks.contestDate * 1000);
+                  data[index].x = date;
                   for(let rankItem of ranks){
                     if(rankItem.userId === userDocData.cfhandle){
-                      yDataArray.push(rankItem.rank);
+                      data[index].y = rankItem.rank;
                     }
                   }
-                });
-                // converting date into string 
-                for(let item of xDataArrayasTimestamp){
-                  const date = new Date(item * 1000);
-                  xDataArray.push(date);
-                }
+              index++;
+            });
+            setData(data);
               } catch (error) {
                 console.error("Error fetching contest ranks:", error);
               }
-              setXData(xDataArray);
-              setYData(yDataArray);
             } catch (error) {
                 console.error("Error fetching contest ranks:", error);
               }
@@ -116,8 +108,7 @@ export default function Profile() {
   <div className="m-[150px] w-[100%] mt-[10px]">
     <PerformanceChart
       name={userData ? userData.name : ''}
-      timeData={xData}
-      rankData={yData}
+        data = {data}
     />
   </div>
 </section>
