@@ -119,7 +119,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="px-[20px] dark:bg-[#1C1C1EFF]   bg-blue-50 min-h-screen font-serif">
+    <div className="px-[20px] dark:bg-[#1C1C1EFF]   bg-blue-100 min-h-screen font-serif">
     <div className=" pt-4 ">
     <Tilt
     className="parallax-effect-img"
