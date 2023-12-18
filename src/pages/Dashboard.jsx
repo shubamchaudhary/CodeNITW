@@ -119,30 +119,30 @@ export default function Dashboard() {
   };
 
   return (
-    <>
-    <div className=" px-[20px] dark:bg-[#1C1C1EFF] bg-blue-50 min-h-screen font-serif ">
+    <div className="px-[20px] dark:bg-[#1C1C1EFF]   bg-blue-50 min-h-screen font-serif">
+    <div className=" pt-4 ">
     <Tilt
     className="parallax-effect-img"
     tiltMaxAngleX={0}
-    tiltMaxAngleY={10}
+    tiltMaxAngleY={2}
     perspective={1000}
-    transitionSpeed={500}
+    transitionSpeed={1000}
     scale={1}
     gyroscope={true}
   >
-    <section className="max-w-2xl mx-auto border-2 dark:border-blue-600 border-blue-200  pt-10 text-black-400 bg-blue-50 dark:bg-[#313133] p-6 rounded-lg shadow-lg">
+    <section className="md:max-w-4xl mx-auto border-[1px] dark:border-blue-600 border-blue-200  pt-10 text-black-400 bg-blue-50 dark:bg-[#313133] p-6 rounded-lg shadow-lg">
   <div className=" dark:bg-[#3A3A3CFF] shadow-md rounded-lg p-6 bg-blue-100 transition-colors duration-200">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <div style={{ wordWrap: 'break-word' }}>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-white">Name: <span className="text-blue-400">{name}</span> </h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Roll No: <span className="text-blue-400">{formData.rollno}</span></h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Course:<span className="text-blue-400">{formData.course}</span> </h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-white">Name: <span className="text-blue-400">{name}</span> </h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Roll No: <span className="text-blue-400">{formData.rollno}</span></h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Course:<span className="text-blue-400">{formData.course}</span> </h2>
       </div>
       <div>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Codeforces Handle: <span className="text-blue-400">{formData.cfhandle}</span></h2>
-        <h2 className="text-2xl font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Leetcode Handle: <span className="text-blue-400">{formData.lchandle}</span></h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Codeforces Handle: <span className="text-blue-400">{formData.cfhandle}</span></h2>
+        <h2 className="md:text-2xl text-lg font-cursive hover:text-blue-500 transition-colors duration-200  dark:text-white">Leetcode Handle: <span className="text-blue-400">{formData.lchandle}</span></h2>
         <button 
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2" 
+  className="bg-blue-500 hover:bg-blue-700 text-white mr-2 my-2 px-2 py-1 rounded mb-2" 
   onClick={() => setEditing(!editing)}
 >
   Edit Handles
@@ -152,7 +152,7 @@ export default function Dashboard() {
   onCopy={() => toast.success("Profile Link has been copied to Clipboard")}
 >
   <button 
-    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 mt-2 px-4 rounded "
+    className="bg-blue-500 hover:bg-blue-700 text-white mr-2 my-2 px-2 py-1 rounded "
   >
     Share Profile
   </button>
@@ -177,7 +177,7 @@ export default function Dashboard() {
     />
     <button 
       type="submit" 
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+      className="bg-blue-500 hover:bg-blue-700 text-white mr-2 my-2 px-2 py-1 rounded mb-2"
     >
       Submit
     </button>
@@ -200,6 +200,6 @@ export default function Dashboard() {
       </section>
     </div>
     
-    </>
+    </div>
   );
 }
