@@ -5,6 +5,9 @@ import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from "react-toastify";
 import 'prismjs/themes/prism.css';
+import { BiUpvote } from "react-icons/bi";
+import { BiSolidUpvote } from "react-icons/bi";
+
 
 const Discussion = () => {
   const [posts, setPosts] = useState([]);
@@ -12,7 +15,7 @@ const Discussion = () => {
   const [content, setContent] = useState('');
   const [replyContent, setReplyContent] = useState('');
   const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [isAdminView , setIsAdminView] = useState(true);
+  const [isAdminView , setIsAdminView] = useState(false);
   const auth = getAuth();
   const user = auth.currentUser;
   const userId = user.uid;
@@ -210,7 +213,10 @@ const Discussion = () => {
               </div>
               <p className='mb-[15px] dark:text-white' dangerouslySetInnerHTML={{ __html: post.data.content }}></p>
               <div className={post.data.type === 'question' ? 'font- text-blue-400 flex justify-between mb-4'  : 'font-bold text-green-500'}>
-                <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 text-yellow-600 font-bold px-2 py-1 rounded">{post.data.upvotedBy.includes(userId) ? 'Remove Vote' : 'Upvote'} ({post.data.upvotes})</button>
+              <button onClick={() => handleUpvote(post.id, false, null)} className="mr-2 flex justify-center text-yellow-600 font-bold px-2 py-1 rounded">
+  {post.data.upvotedBy.includes(userId) ? <BiSolidUpvote className='text-xl mr-1 mt-[2px]' /> : <BiUpvote className='text-xl mt-[2px] mr-1'/>}
+  {post.data.upvotedBy.includes(userId) ? ` Remove Vote` : ` Upvote`} ({post.data.upvotes})
+</button>
                 {post.data.type === 'question' && <button onClick={() => toggleReplyForm(post.id)} className="text-green-500 font-bold  px-2 py-1 rounded">Reply</button>}
                 {post.data.type === 'question' && <button onClick={() => toggleReplies(post.id)} className="text-green-500 font-bold px-2 py-1 rounded">{visibleReplies[post.id] ? 'Hide Replies' : 'View Replies'} ({post.data.replies.filter(reply => reply.approved).length})</button>}
                 { isAdminView && admins.includes(user.email) && !post.data.approved && <button onClick={() => handleApprove(post.id)} className="text-green-500  font-bold py-2 px-4 rounded">Approve</button>}
@@ -221,13 +227,16 @@ const Discussion = () => {
               {visibleReplies[post.id] && (
                 <div>
                   {post.data.replies?.filter(reply => reply.approvedBy || admins.includes(user.email)).map((reply, index) => (
-                    <div key={index} className="mb-2 ml-4 bg-gray-100 dark:bg-[#2C2C2EFF]  border-gray-200 p-4 rounded shadow">
+                    <div key={index} className="mb-2 ml-4 bg-gray-100 dark:bg-[#1f2836]  border-gray-200 p-4 rounded shadow">
                       <div className="flex justify-start">
                       <p className="font-bold text-green-500">Replied by: {reply.createdBy}</p>
                       </div>
                       <p className='text-gray-400 font-semibold'dangerouslySetInnerHTML={{ __html: reply.content }} />
                       <div className="flex justify-end text-green-600 ">
-                        <button onClick={() => handleUpvote(post.id, true, index)} className="text-yellow-600 font-bold  px-2 py-1 rounded">Upvote ({reply.upvotes})</button>
+                      <button onClick={() => handleUpvote(post.id, true, index)} className="mr-2 flex justify-center text-yellow-600 font-bold px-2 py-1 rounded">
+  {reply.upvotedBy.includes(userId) ? <BiSolidUpvote className='text-xl mr-1 mt-[2px]' /> : <BiUpvote className='text-xl mt-[2px] mr-1'/>}
+  {reply.upvotedBy.includes(userId) ? ` Remove Vote` : ` Upvote`} ({reply.upvotes})
+</button>
                         {isAdminView && admins.includes(user.email) && !reply.approved && 
                             <button 
                                 onClick={() => handleApproveReply(post.id, index)} 
