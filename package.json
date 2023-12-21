@@ -24,6 +24,7 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
+    "dotenv": "^16.3.1",
     "firebase": "^10.5.2",
     "firebase-admin": "^11.11.0",
     "flywheel-leaderboard": "^0.0.3",

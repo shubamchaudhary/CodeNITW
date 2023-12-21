@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import PulseLoader from "react-spinners/PulseLoader";
-import OAuth from "../components/OAuth";
+import OAuth from "../../components/OAuth";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -12,11 +12,11 @@ import {
   signOut
 } from "firebase/auth";
 import { Link } from "react-router-dom";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import computer from "../images/computer.png";
+import computer from "../../images/computer.png";
 import  Tilt from "react-parallax-tilt";
 
 export default function SignUp() {

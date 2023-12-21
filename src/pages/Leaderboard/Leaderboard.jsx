@@ -8,7 +8,7 @@ import {
   getDocs,
   doc,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import authentication modules
 import Tilt from "react-parallax-tilt";
 
