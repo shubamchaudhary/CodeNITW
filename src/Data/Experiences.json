@@ -1,0 +1,137 @@
+[
+    {
+      "id": 1,
+      "company": "SERVICE NOW",
+      "experiences": [
+        {
+          "studentName": "Vedant Nagre",
+          "onlineTestComments": [
+                "The OT was pretty easy and straightforward. There were 2 coding questions. The level of questions was around leetcode easy to medium. Just some basic questions. I was able to solve them in less than 20 minutes."
+          ],
+          "interviews": [
+            {
+              "round": 1,
+              "comments": ["Interview 1/3 Technical Round Started with basic intro and stuff. First he asked to reverse a string. He then asked to check if the string is palindrome. One more question of string was asked. Then he asked me to tell any 2 sorts. A technical issue popped up in Zoom while I was answering the question, so the interview was cut short. Interview was supposed to be 35-40 minutes, ended up being about 20 minutes."]
+            },
+            {
+              "round": 2,
+              "comments": ["Interview 2/3 Technical Round. Started with a question whose answer I didn’t know initially. Tried answering the question somehow based on logic and common sense. The interviewer helped me a little to reach the answer. He then asked me to tell any 2 sorts. I answered merge sort and BST sort. He asked me to explain what is BST sort. He also asked 2-3 basic questions about OOP. There was a DBMS project in my resume. He asked 2-3 questions about the details of the project. He then asked, how to efficiently search a name in millions of records. Then he asked indexing.In the end, I asked the solution of the first question. He said that he won’t consider that question for evaluation, because the topic(semaphore) wasn’t taught in the class."]
+            },
+            {
+              "round": 3,
+              "comments": ["Interview 3/3 Hiring Manager RoundWent straight to resume. Looked at the DBMS project and started asking questions about the project. She asked why did we use MySQL(she was expecting me to say relational database). One of the reasons I gave was that MySQL is open-source. She then asked what is open source, is linux open source, source code availability on the internet and so on. At this stage she started creating doubts in my mind by repeatedly asking whether I was sure or isn’t this other thing correct and such similar stuff.She then asked me whether I know what ServiceNow does. Ans: It’s a cloud based something something….. She asked asked me questions about cloud computing. The questions weren’t very complex as such, just the basic stuff.The interviewer is from the QA testing team. She gave me a scenario, where we created a product that delivers medicine from pharmacies to homes. How would the testing be done?tbh, I had no idea about testing. I used my logic and common sense to answer it as much as I could. Things like testing the components(functions) independently, testing the integration of components, testing the deployment.Thats’s all I remember 😅"]
+            }
+          ],
+          "finalComments": ["ServiceNow doesn’t ask fancy stuff. They just check if your foundations are clear and strong. The people are very friendly. So don’t get nervous during the interviews. Just be loud and clear when speaking. Confidence is the thing that matters the most in the interview. If you are confident and have strong CS foundations, chances of selection are pretty high. All the best!"]
+        }
+      ]
+    },
+    {
+        "id": 2,
+        "company": "DE SHAW",
+        "experiences": [
+          {
+            "studentName": "Ganesh Yadava",
+            "onlineTestComments": [ "It was conducted on hacker-rank platform. Students with CGPA > 7.0 (with no active backlogs) from CSE, ECE, EEE were eligible to attend the OT. It had 3 questions and each question was allotted a specific amount of time." , 
+            "Online Test Question - 1 : You are given an unweighted undirected graph. Your task is to color the leaf nodes of the graph. A node x is diverse if all the leaf nodes in its subtree have different colors. Return an array of size n where the ith element of the array represents the minimum number of different colors required to make the number of diverse nodes in the graph greater than or equal to i. (where n is the number of nodes)I solved it using BFS. All the test cases were passed.",
+            "Online Test Question - 2 : This was also a graph question. It was medium-hard level. I don't remember the exact question but I tried to solve it using DFS & backtracking. I was only able to pass 7/12 test cases in the given time.",
+            "Online Test Question - 3 : Given an array arr of n integers, in a single operation, one can reduce any element of the array by 1. Find the minimum number of operations required to make the array a bitonic array.Example of bitonic array: [0,1,2,3,2,1,0,0]In the question, a bitonic array was defined as- It can have any number of zeros in prefix and suffix. the non zero part should increase from 1 to some integer k and then decrease to 1.I tried to solve it using two pointer approach. I was only able to pass 8/15 test cases.I was among the 20 students who were shortlisted for the Interviews."
+            ],
+            "interviews": [
+              {
+                "round": 1,
+                "comments" : ["It was an online interview on hacker rank code pair platform. There were 2 interviewers and the first interviewer started the interview by asking my introduction. Then, he started asking some questions about my projects. I had worked on front-end of an app project. Technologies used were Flutter and Dart. Here are some qns he asked - explain in brief about the project, Why you chose flutter, what is dart, is dart object-oriented, how is memory allocated/stored in dart, how did you retrieve the data from backend to frontend. I answered most of the questions correctly, but was not able to answer theory questions on dart which were pretty deep. ", " The other interviewer took over and asked some questions on C++ and STL. He asked what is my favorite data structure in STL. I said unordered map. He asked some questions on internal implementation of map and unordered map. Like difference between map and unordered map, what is used to implement it(red black trees), what is hashing, what are collisions, etc. I was able to answer all of them correctly. Then, he asked me a coding question. " , "You are given a string which contains only a's and b's. A 'good string' can be split into 3 parts. First part should contain only a's(can contain 0 also), second should contain b's and third should contain a's. Now you need to find the length of the largest good string by deleting some characters from the string." , "Example: s = 'aaabbaabbbaa' answer = 10" , "First I explained a brute force solution. The interviewer asked for time complexity and he told to optimized it. I was trying to think of a two pointer solution. The interviewer was very helpful. He gave me a hint to think of a recursive approach. Immediately I was able to find a solution. The recursive function will have index 'i' and a variable 'state'. state variable has 3 possible values - 0/1/2 each corresponding to the states of the 'good string'. At each index, we use pick and notPick as two choices and take maximum of the two" , "He asked the time complexity for which I said 2^n. He said how to optimize and I said DP as there are overlapping subproblems. He then asked what is DP and I answered. I was not asked to code, only the logic. After that, the first interviewer took over.", "He also gave me a coding question: https://www.geeksforgeeks.org/find-smallest-value-represented-sum-subset-given-array/" , "I gave him two approaches - first one recursive (exponential TC) and another using set(O(n^2) + O(sum of elements)). He was not satisfied with my solutions and told to optimize. I was not able to get a better approach." , "He then asked me some theory questions on DBMS. They were somewhat hard and you cannot answer them if you don't have in-depth knowledge in DBMS. I was not able to answer some questions." , "Total duration of the interview was around 1 hr 10 minutes."]
+              }
+            ],
+            "finalComments": ["Only 5 students were shortlisted to 2nd round and I was not among them. 2 students were selected for the internship. D.E Shaw interview is hard to crack. You need to be very good at DSA and CP. And you need to have deep knowledge on CS fundamentals like OOPS and DBMS(Especially theory). Also be thorough with everything you put in your resume."]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "company": "CHRONUS",
+        "experiences": [
+          {
+            "studentName": "Nikhil boob",
+            "onlineTestComments": [ "Ot had 4 coding questions questions 1 easy ,2 medium and 1 hard all of which had to be completed in 75 minutes. First question had 10 points second and third question had 15 points and the last question had 20 points . I was able to slove first ,second and last question only. OT was conducted in the HackerEarth platform." , 
+            "Online Test Question - 1 : The first question was a very easy one. It was a variant of N meeting in one room, basically a greedy question. It stated that there is a single parking slot that is available (accommodates  only one car) for every car irrespective of the time the owner of the parking slot gets 50 rupees. Given the arrival and departure time of n different cars determine the maximum money the owner can make. Note that once a car is parked at its arrival time it will leave at the departure time only. Refer to the link below to understand the question",
+            "Online Test Question - 2 : The second question was a very good variant of binary search. I don't exactly remember the story in the question but finally it boiled down to Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum. But please make note that it was not a straight forward question. There was a big story so it took me around like 7-8 min to understand what was to be done. Refer to the link below to understand the question.",
+            "Online Test Question - 3 : The 3rd Question was a Dynamic programming question. I solved this very quickly cause i had already seen the same....... I mean exact question on LEETCODE. It is a very big question and it would be really difficult to solve it in the OT  if you haven't solved it before. Check the link attached to know the exact question."
+            ],
+            "interviews": [
+              {
+                "round": 1,
+                "comments": ["IT was a pure DSA round. It was an online interview so the interviewer introduced himself first and then asked my introduction Then without wasting any time the  interviewer pasted the first question on the online editor provided by the Hackerearth. The first question we had to find the count of number of findable elements in an unsorted array using binary search. example take {3,2,4,10,22,9,23} as an unsorted array yet if we try to find 23 in the array using classical Binary search we are able to find it in the following way 10->9-> 23 similarly 2,4,10,23 are  findalble using classical BS. First i gave him a normal approach of (NlogN) where i iterate through the array taking each element as target and try finding them using BS. But the  interviewer asked me come up with O(N) approach after some observations, hints from the  interviewer i was able to solve and code it up. The code worked fine for the 2 test cases that he asked me to run.Link to question 1: https://www.geeksforgeeks.org/count-of-elements-that-are-binary-searchable-in-the-given-array/" , "Then without any delay he gave me the second question which is a very famous question that is find the first positive missing element . But the  interviewer was expecting a O(N) TC and O(1) SC . I already knew this question so i was able to solve it and code it up. Link to question 2:https://leetcode.com/problems/first-missing-positive/"]
+              },
+              {
+                "round" :2,
+                "comments" : ["After just 10 min I got called for Round 2.I was expecting this round to be a DBMS and OOPs Round but it turned to be another DSA round> The Interviewer was very friendy he started with introduction and directly jumped to the DSA question . Unlike the previous round this interviewer did not run my code . He just asked me Explain the logic, Code it up and made me dry run my logic on 5 different Test Cases. The first question was Given a string s, rearrange the characters of s so that any two adjacent characters are not the same.Return any possible rearrangement of s or return ' ' if not possible. It was a priority queue question. There may be other approches also but I was able to come up with the max-heap logic. and the interviewer was more than happy The link to this question : https://leetcode.com/problems/reorganize-string/" , "The second question was a standard one. It stated that given an arrray of integers (positive ,zero,negative) you have to delete any paticular non empty subarray from it in such a way that The sum of the remaining array is maximum. example {1,2,-2,-3,4,5,-6}. I would delete {-6} such that i get the maximum sum. I did not find the link to question anywhere online but it was a doable one . I used a basic O(n) Tc approach and a few variables to keep track."]
+              },
+              {
+                "round" : 3,
+                "comments" : ["After 15 min i got called for the 3rd round of interview it was a Pure HR round. I was asked basic HR questions like: 1) introduce yourself 2)where do you see yourself 5 years down the line 3)what are your strengths and weakneeses 4)How do you manage both EEE major and still get time to learn coding. 5) which is your favourite project of yours and WHY ?? Later it was just me asking him questions about the company what it does and what will i be working on as an intern . Thats it."]
+              }
+            ],
+            "finalComments": ["I was finally selected as an intern.Chronus Dosent ask DBMS And OOps .OOps is sometimes asked. But their Main focus is DSA and problem Solving Skills.Also the most important thing to keep in mind is to keep the interview interactive. Cause there were ppl who solved tougher questions but were not able to explain their approach and were rejected.Another important point is they were looking for the most optimal solution available. So make sure you check the editorial for each problem you solve and learn more efficent way to solve the problem if any ."]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "company": "UBER",
+        "experiences": [
+          {
+            "studentName": "Abhishek Navadiya",
+            "onlineTestComments": [ "OT was held in Code Signal plateform, duration was 90 minutes. Contains 3 questions. Easy medium hard question." , 
+            "Online Test Question - 1 : Defuse Bomb - easy question",
+            "Online Test Question - 2 : Assign digit to character- hard questionYou are given an encrypted sum like the following example: SEND + MORE = MONEY, where each letter stands for a number, you need to decrypt this by assigning the digit 0 to 9 to each character, and after assigning each character expression should be valid. Like in the given example assigning like this S => 9, E => 4, N => 4, D => 3, M => 1, O => 0, R => 0, Y => 7 is one way because if we decrypt the expression using this then we get 9443 + 1004 = 10447 which is a valid mathematical expression.So in this question, you need to find the total number of ways of assigning.",
+            "Online Test Question - 3 : Smallest greater palindrome - medium question Given a string of size n containing characters from a to z. Find the next smallest palindrome string strictly larger than the given string."
+            ],
+            "interviews": [
+              {
+                "round": 1,
+                "comments":["It was about 75 min and after the introduction from both sides, the interviewer directly asked a DP Question." , "Question:There are two friends Anshu and Dinesh standing at some different coordinates in 1d space. Anshu sends a message to Dinesh. Message contains only two symbols '+' and '-'. Here '+' indicates that Dinesh needs to move forward from the current position and '-' indicates that Dinesh needs to move backward from the current position. But due to weak connectivity of wifi signals, Dinesh receives a message with some unclear symbols that are indicated by '?' in the given string.Example: Message sent by Anshu: '+-+-++-', Message received by Dinesh: '+?+-??-'" , "At the unclear message, Dinesh can move either forward or backward. What is the probability that Dinesh will reach the final destination in 1d space where he needs to reach the following message sent by Anshu?" , "When the interviewer completed reading the question, I panicked. And not able to understand the question that he was asking me. I asked politely to him that he can read the question once again so I can understand. He read it again for me but still I didn't get the question then I asked Can I take some time to understand this question. He said yes and I took about 5 minutes to understand the question. While I was reading the question I got some doubts about Input strings and some more questions, so at that time only I clarified my doubt with the interviewer to understand the question better. After taking time and clearing all doubt I get the general Idea about a question that is asked. So I explained to him what I understood from this question and asked if I understood it correctly or if I am still not correct. He said yes, and after that, I started writing code in a very basic way based on what I understood till now. While writing code I'm explaining what I wrote in that line and why I wrote. After I completed the basic recursion code he asked to run it on the given sample test case. Code was running on it. After that, he asked me to optimize my approach. Honestly at that time also because of the nervousness of the interview, I wasn't able to get this question can be done using dynamic programming. I said sorry sir still I didn't get a way to optimize it. Then, he said to dry run your code for given test cases. When I did the dry run I got that I'm calculating the answer for the same parameter multiple times. At that time I said confidently to the interviewer that I can optimize this problem by taking some extra space and DP. The interviewer said right this was the approach that he was looking for. After that I did some changes in the recursive code and using memoization I solved that question." , "As I took so much time for explaining the question. We are running out of time so he asked if I have any questions for him. I asked him one question and the interview was done."]
+              },
+              {
+                "round": 2,
+                "comments":["After waiting for 4 hours my call for 2nd round came. During that time some selected candidate finished their HR round so I was too nervous that my chance will come or not. It took around 55 minutes. After introducing himself interviewer asked a question about DSA." , "question: Given an encrypted string, decrypt it as follows: 2[ab]3[cd] => ababcdcdcd Can include nested encoding, eg: 2[ab3[c]] => abcccabccc 2[ab3[c]] => 2[abccc] => abcccabccc","I understood the question and asked my doubt about string format and whether should it contain a number with more than one digit. after clarification, I told my approach using recursion and started coding the question. While coding the answer I was explaining each line of code so that He can understand why I’m writing that line of code. After I completed the coding he said that dry-run the question on a given input. I did it and explained. after that, he told me to run it but at the time of running, it was giving one error that I’m unaware of it. which is “terminate called after throwing an instance of 'std::logic_error' what(): basic_string::_M_construct null not valid”. I tried to debug the code but not getting the error. The interviewer also pointed out some points but I already covered all the points in coding so I explained that I covered that point in code and I showed that. I again dry ran the code in front of him but again I’m not getting the error. But during the dry run, I explained each scenario for various types of test cases. So he was satisfied with my solution. And asked me if I have any questions for him. I asked him one question and the interview was done." , "I was very confident after 2nd round of my interview as My interviewer was satisfied with my approach and solution."]
+              },
+              {
+                "round": 3,
+                "comments":["As soon as round 2 was completed, within 3 minutes I got a call for an offline HR Round. HR was a very nice person. He started a conversation with a very friendly question ‘How is your day going?’ and I was very confident after 2nd round I also started a conversation by answering politely without hesitating. Then he took a copy of my resume and started asking about my educational background and courses I completed in a previous semester. After I answered all his questions he asked about my projects. I had one front-end project and one DBMS project. He told me to draw ER diagram of my project as It was complex so I told him, can I show a PDF of my project? He said yes and I opened my laptop and the PDF of my project and He saw the ER Diagram and asked some questions about it, I answered all the questions. He was satisfied with my project (I have only one complex project which is a DBMS project about IPL Management System). After this, he gave me one scenario, suppose in one university there are multiple departments and each department offers some courses. Now irrespective of department students can choose any number of courses they want to study. Now design schema such that for a particular year and semester we can identify the course which produced a maximum number of students who scored above 90%. I designed and draw the schema and explained why I draw like this and all relationships between all tables. He was satisfied and asked me the last question can you tell the SQL query using aggregate functions to answer the above question? At that time, I don’t know how to use aggregate functions so I honestly said no sir. He said ok and asked if I have any questions for him. I asked a question and he explained very well. He was a nice guy. He didn’t make me realize that I was giving an HR round. Like this, my HR round was completed."]
+              }
+            ],
+            "finalComments": ["Be loud and clear about your thoughts. Don't sit quite in the interview any time. Listen carefully and make the interview engaging. Don't hesitate while explaining your projects. Don't make any expectations from the interview, company, or others. It is your chance, take it and give your best. Remember getting selected is not in your hand, the one thing in your hand is how to give direction to your interview in your way."]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "company": "",
+        "experiences": [
+          {
+            "studentName": "",
+            "onlineTestComments": [ "" , 
+            "",
+            "",
+            ""
+            ],
+            "interviews": [
+              {
+                "round": 1,
+                "comments":[""]
+              },
+              {
+                "round": 1,
+                "comments":[""]
+              },
+              {
+                "round": 1,
+                "comments":[""]
+              }
+            ],
+            "finalComments": [""]
+          }
+        ]
+      }
+  ]

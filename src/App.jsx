@@ -17,6 +17,8 @@ import LearningResources from "./pages/LearningResources";
 import OTMaterial from "./pages/OTMaterial";
 import Discussion from "./pages/Discussion";
 import Profile from "./pages/Profile";
+import InterviewExp from "./pages/InterviewExp";
+
 // import { inject } from "@vercel/analytics";
 // import { SpeedInsights } from "@vercel/speed-insights/react";
 // inject();
@@ -37,6 +39,9 @@ function App() {
           </Route>
           <Route path="/ot-material" element={<PrivateRoute />}>
             <Route path="/ot-material" element={<OTMaterial />}></Route>
+          </Route>
+          <Route path="/interview-exps" element={<PrivateRoute />}>
+            <Route path="/interview-exps" element={<InterviewExp />}></Route>
           </Route>
           <Route path="/contest" element={<PrivateRoute />}>
             <Route path="/contest" element={<Contest />}></Route>
