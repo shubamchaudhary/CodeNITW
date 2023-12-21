@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-import OAuth from "../components/OAuth";
+import OAuth from "../../components/OAuth";
 import { signOut , signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import computer from "../images/computer.png";
+import computer from "../../images/computer.png";
 import  Tilt from "react-parallax-tilt";
 import PulseLoader from "react-spinners/PulseLoader";
 // import { useDispatch, useSelector } from "react-redux";
