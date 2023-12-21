@@ -13,7 +13,7 @@ import {
     updateDoc,
     where,
   } from "firebase/firestore";
-  import { db } from "../firebase";
+  import { db } from "../../firebase";
   import Tilt from 'react-parallax-tilt';
   import PerformanceChart from "./PerformanceChart";
 

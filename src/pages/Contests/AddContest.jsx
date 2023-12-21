@@ -10,10 +10,10 @@ import {
 import { getAuth } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
-import ContestImage from "../images/contest.png";
+
 
 export default function AddContest() {
   const navigate = useNavigate();
