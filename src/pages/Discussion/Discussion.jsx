@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { getAuth } from "firebase/auth";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, arrayUnion, deleteDoc, getDoc } from 'firebase/firestore';
 import { Editor } from '@tinymce/tinymce-react';

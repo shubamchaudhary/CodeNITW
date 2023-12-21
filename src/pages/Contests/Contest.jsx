@@ -4,19 +4,19 @@ import { doc, getDoc, orderBy, query, limit, where } from "firebase/firestore";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { getAuth } from "firebase/auth";
 import { Dna } from "react-loader-spinner";
 import { getDocs, collection } from "firebase/firestore";
 import { Slide } from "react-toastify";
-import ListingItem from "../components/ListingItem";
+import ContestCard from "./ContestCard";
 import { da } from "date-fns/locale";
-import AtcoderImage from "../images/AtCoder.png";
-import CodechefImage from "../images/CodeChef.png"
-import CodeforcesImage from "../images/CodeForces.png"
-import GFGImage from "../images/gfg.png"
-import LeetcodeImage from "../images/LeetCode.png"
-import DefaultImage from "../images/codenitwcontest.png";
+import AtcoderImage from "../../images/AtCoder.png";
+import CodechefImage from "../../images/CodeChef.png";
+import CodeforcesImage from "../../images/CodeForces.png";
+import GFGImage from "../../images/gfg.png";
+import LeetcodeImage from "../../images/LeetCode.png";
+import DefaultImage from "../../images/codenitwcontest.png";
 
 
 
@@ -165,7 +165,7 @@ export default function Contest() {
       <ul>
         {Listings.active.map((listing) => (
          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-10">
-         <ListingItem listing={listing.data} id={listing.id} status="Active" />
+         <ContestCard contest={listing.data} id={listing.id} status="Active" />
        </li>
         ))}
       </ul>
@@ -178,7 +178,7 @@ export default function Contest() {
       <ul>
         {Listings.upcoming.map((listing) => (
           <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
-          <ListingItem listing={listing.data} id={listing.id} status="Upcoming" />
+          <ContestCard contest={listing.data} id={listing.id} status="Upcoming" />
         </li>
         ))}
       </ul>
@@ -191,7 +191,7 @@ export default function Contest() {
       <ul>
         {Listings.past.map((listing) => (
           <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
-          <ListingItem listing={listing.data} id={listing.id}  status="Past"  />
+          <ContestCard contest={listing.data} id={listing.id}  status="Past"  />
         </li>
         ))}
       </ul>
@@ -210,7 +210,7 @@ export default function Contest() {
       <ul>
       {activeContests.map((contestItem, index) => (
         <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
-          <ListingItem listing={contestItem} imageSrc={contestItem.imageSrc} status="Active" />
+          <ContestCard contest={contestItem} imageSrc={contestItem.imageSrc} status="Active" />
         </li>
       ))}
       </ul>
@@ -223,7 +223,7 @@ export default function Contest() {
       <ul>
       {upcomingContests.map((contestItem, index) => (
         <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
-          <ListingItem listing={contestItem} imageSrc={contestItem.imageSrc} status="Upcoming" />
+          <ContestCard contest={contestItem} imageSrc={contestItem.imageSrc} status="Upcoming" />
         </li>
       ))}
       </ul>

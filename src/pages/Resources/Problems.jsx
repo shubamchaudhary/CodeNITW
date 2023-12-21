@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import AllQuestionsList from '../Data/AllQuestionsList.json';
-import DailyProblem from './DailyProblem.jsx';
-import Youtube from "../images/Youtube.png";
+import AllQuestionsList from '../../Data/AllQuestionsList.json';
+import DailyProblem from '../Unusable/DailyProblem.jsx';
+import Youtube from "../../images/Youtube.png";
 import { useRef } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';

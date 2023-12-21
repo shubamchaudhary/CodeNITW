@@ -1,5 +1,5 @@
 import React from 'react'
-import { dsa,dev,core,ml } from '../Data/LearningResourcesData';
+import { dsa,dev,core,ml } from '../../Data/LearningResourcesData';
 
 export default function LearningResources() {
   

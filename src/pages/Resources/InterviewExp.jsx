@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ExperienceDetail from './ExperienceDetail';
 import AnimatedModal from './Modal'; // Import your AnimatedModal component
-import experiences from '../Data/Experiences.json';
+import experiences from '../../Data/Experiences.json';
 
 
 const InterviewExp = () => {
