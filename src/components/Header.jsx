@@ -208,6 +208,12 @@ useEffect(() => {
     >
       PROBLEMS
     </li>
+    <li
+      onClick={() => {handlePageSelect("/interview-exps", "Interview Experiences");setDropdownOpen(false);}}
+      className="px-4 py-2 text-sm  cursor-pointer"
+    >
+      Interview Experiences
+    </li>
     {/* <li
       onClick={() => {handlePageSelect("/ot-material", "OT MATERIALS");setDropdownOpen(false);}}
       className="px-4 py-2  text-sm cursor-pointer"
