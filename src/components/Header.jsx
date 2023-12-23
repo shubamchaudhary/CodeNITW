@@ -83,6 +83,9 @@ useEffect(() => {
     case "/ot-material":
       setActivePage("OT MATERIAL");
       break;
+      case "/interview-exps":
+      setActivePage("INT EXPS");
+      break;
     default:
       setActivePage("RESOURCES");
       break;
@@ -208,12 +211,12 @@ useEffect(() => {
     >
       PROBLEMS
     </li>
-    {/* <li
-      onClick={() => {handlePageSelect("/interview-exps", "Interview Experiences");setDropdownOpen(false);}}
+    <li
+      onClick={() => {handlePageSelect("/interview-exps", "INT EXPS");setDropdownOpen(false);}}
       className="px-4 py-2 text-sm  cursor-pointer"
     >
-      Interview Experiences
-    </li> */}
+      INT EXPS
+    </li>
     {/* <li
       onClick={() => {handlePageSelect("/ot-material", "OT MATERIALS");setDropdownOpen(false);}}
       className="px-4 py-2  text-sm cursor-pointer"

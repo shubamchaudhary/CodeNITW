@@ -42,3 +42,16 @@
   .default-nav {
     flex-direction: row; /* or whatever your default styling is */
   }
+
+  /* styles.css */
+.modal-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #2b6cb0;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #2b6cb0;
+}

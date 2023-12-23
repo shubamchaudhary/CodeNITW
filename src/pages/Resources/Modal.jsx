@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { animated, useSpring } from 'react-spring';
+ // import the CSS file
 
 Modal.setAppElement('#root');
 
@@ -9,7 +10,7 @@ const AnimatedModal = ({ isOpen, onRequestClose, children }) => {
     opacity: isOpen ? 1 : 0,
     transform: isOpen ? 'translateY(0)' : 'translateY(-200px)',
     config: {
-      tension: 280,
+      tension: 2660,
       friction: 60,
     },
   });
@@ -18,6 +19,7 @@ const AnimatedModal = ({ isOpen, onRequestClose, children }) => {
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
+      className="modal-content md:max-w-[90%] max-w-[100%]" // apply the class to the modal content
       style={{
         overlay: {
           display: 'flex',
@@ -34,20 +36,18 @@ const AnimatedModal = ({ isOpen, onRequestClose, children }) => {
           borderRadius: '4px',
           outline: 'none',
           padding: '20px',
-          maxWidth: '75vw', // Set the maximum width to 75% of the viewport width
+          //maxWidth: '100vw', // Set the maximum width to 75% of the viewport width
         }
       }}
     >
       <animated.div style={animation}>
-        <div
+        <div className='bg-blue-200 dark:bg-[#050b15] border-2 border-[#141a25] relative max-h-[700px] mt-[80px] overflow-auto p-20px'
           style={{
-            background: '#fff',
             borderRadius: '10px',
-            padding: '20px',
+            padding: '10px',
             position: 'relative',
-            width: '100%',
-            maxHeight: '80vh', // Set the maximum height to 80% of the viewport height
-            overflow: 'auto',
+            width: '103%',
+            // Set the maximum height to 80% of the viewport height
           }}
         >
           {children}

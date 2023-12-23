@@ -31,14 +31,14 @@ const InterviewExp = () => {
     };
   
     return (
-      <div className="p-10 bg-blue-200 dark:bg-[#1C1C1EFF] dark:text-white">
-        <h1 className="text-4xl mb-4">Interview Experiences</h1>
-        <ul className="divide-y divide-gray-200">
+      <div className="p-10 bg-blue-100 min-h-screen dark:bg-[#050b15] text-gray-700 dark:text-gray-400">
+        <h1 className="text-4xl mb-4">INTERVIEW EXPERIENCES</h1>
+        <ul className="">
           {experiences.map((company) => (
-            <li key={company.id} className="py-4" onClick={() => handleCompanyClick(company)}>
-              <h2 className="text-2xl font-semibold">{company.company}</h2>
+            <li key={company.id} className="py-4 ml-2" onClick={() => handleCompanyClick(company)}>
+              <h2 className="text-2xl text-gray-600 dark:text-gray-500 font-semibold cursor-pointer">{company.company}</h2>
               {selectedCompany === company.id && (
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-2">
                   {company.experiences.map((experience, index) => (
                     <li key={index} className="text-blue-500 hover:text-blue-800 cursor-pointer" onClick={(event) => handleExperienceClick(event, experience)}>
                       {experience.studentName}
