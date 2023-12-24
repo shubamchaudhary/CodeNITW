@@ -14,6 +14,7 @@ import LeaderboardList from "./pages/Leaderboard/Leaderboard";
 import Problems from "./pages/Resources/Problems";
 import LearningResources from "./pages/Resources/LearningResources";
 import OTMaterial from "./pages/Resources/OTMaterial";
+import CPSheet from "./pages/Resources/CPSheet";
 import Discussion from "./pages/Discussion/Discussion";
 import Profile from "./pages/Dashboard/Profile";
 import InterviewExp from "./pages/Resources/InterviewExp";
@@ -38,6 +39,9 @@ function App() {
           </Route>
           <Route path="/ot-material" element={<PrivateRoute />}>
             <Route path="/ot-material" element={<OTMaterial />}></Route>
+          </Route>
+          <Route path="/cp-sheet" element={<PrivateRoute />}>
+            <Route path="/cp-sheet" element={<CPSheet />}></Route>
           </Route>
           <Route path="/interview-exps" element={<PrivateRoute />}>
             <Route path="/interview-exps" element={<InterviewExp />}></Route>
