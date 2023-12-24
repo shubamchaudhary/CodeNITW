@@ -11,7 +11,7 @@ const CPSheet = () => {
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [questions, setQuestions] = useState([]);
-  const [solvedQuestions, setSolvedQuestions] = useState(() => JSON.parse(localStorage.getItem('solvedQuestions')) || {});
+  const [CPsolvedQuestions, setCPsolvedQuestions] = useState(() => JSON.parse(localStorage.getItem('CPsolvedQuestions')) || {});
   const [totalProblems, setTotalProblems] = useState(0);
   const [solvedProblems, setSolvedProblems] = useState(0);
 
@@ -31,9 +31,9 @@ const CPSheet = () => {
     }
     setTotalProblems(total);
 
-    let solved = Object.values(solvedQuestions).filter(val => val).length;
+    let solved = Object.values(CPsolvedQuestions).filter(val => val).length;
     setSolvedProblems(solved);
-  }, [solvedQuestions]);
+  }, [CPsolvedQuestions]);
 
   const selectedTopicRef = useRef(null);
 
@@ -44,9 +44,9 @@ const CPSheet = () => {
   }, [selectedTopic]);
 
   const handleCheckboxChange = (name, isChecked) => {
-    const updatedSolvedQuestions = { ...solvedQuestions, [name]: isChecked };
-    setSolvedQuestions(updatedSolvedQuestions);
-    localStorage.setItem('solvedQuestions', JSON.stringify(updatedSolvedQuestions));
+    const updatedCPsolvedQuestions = { ...CPsolvedQuestions, [name]: isChecked };
+    setCPsolvedQuestions(updatedCPsolvedQuestions);
+    localStorage.setItem('CPsolvedQuestions', JSON.stringify(updatedCPsolvedQuestions));
   };
   
 
@@ -90,7 +90,7 @@ name={topic}
 questions={CPSheetQuestions[topic]}
 selectedTopic={selectedTopic}
 setSelectedTopic={setSelectedTopic}
-solvedQuestions={solvedQuestions}
+CPsolvedQuestions={CPsolvedQuestions}
 onQuestionSolved={handleCheckboxChange}
 ref={topic === selectedTopic ? selectedTopicRef : null}
 />
@@ -106,7 +106,7 @@ ref={topic === selectedTopic ? selectedTopicRef : null}
 
 
 export function QuestionCard(props) {
-  const { name, link,  onQuestionSolved } = props;
+  const { name, id, link,  onQuestionSolved } = props;
  // const truncatedName = name.length > 30 ? name.substring(0, 30) + '..' : name;
  // const lesstruncatedName = name.length > 45 ? name.substring(0, 42) + '..' : name;
   const truncatedLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
@@ -115,8 +115,8 @@ export function QuestionCard(props) {
 
   const [isChecked, setIsChecked] = useState(() => {
     // Get the initial state from local storage or set it to false
-    const solvedQuestions = JSON.parse(localStorage.getItem('solvedQuestions')) || {};
-    return solvedQuestions[name] || false;
+    const CPsolvedQuestions = JSON.parse(localStorage.getItem('CPsolvedQuestions')) || {};
+    return CPsolvedQuestions[id] || false;
   });
   
   const handleCheckboxChange = (event) => {
@@ -178,7 +178,7 @@ export function QuestionCard(props) {
 }
 
 export const TopicCard = React.forwardRef((props, ref) => {
-  const { id, name, questions, selectedTopic, setSelectedTopic, solvedQuestions } = props;
+  const { id, name, questions, selectedTopic, setSelectedTopic, CPsolvedQuestions } = props;
   const [solvedQuestionCount, setSolvedQuestionCount] = useState(0);
   const isOpen = id === selectedTopic;
 
@@ -188,8 +188,8 @@ export const TopicCard = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     const updateSolvedCount = () => {
-      const solvedQuestions = JSON.parse(localStorage.getItem('solvedQuestions')) || {};
-      const count = questions.filter(question => solvedQuestions[question.Question]).length;
+      const CPsolvedQuestions = JSON.parse(localStorage.getItem('CPsolvedQuestions')) || {};
+      const count = questions.filter(question => CPsolvedQuestions[question.Question]).length;
       setSolvedQuestionCount(count);
     };
 
@@ -204,9 +204,9 @@ export const TopicCard = React.forwardRef((props, ref) => {
   }, [questions, selectedTopic]);
 
   useEffect(() => {
-    const count = questions.filter(question => solvedQuestions[question.Question]).length;
+    const count = questions.filter(question => CPsolvedQuestions[question.Question]).length;
     setSolvedQuestionCount(count);
-  }, [questions, selectedTopic, solvedQuestions]);
+  }, [questions, selectedTopic, CPsolvedQuestions]);
   
     return (
       <div 

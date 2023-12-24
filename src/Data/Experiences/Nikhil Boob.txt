@@ -1,0 +1,106 @@
+ONLINE TEST
+
+##### About Online Test
+
+Ot had 4 coding questions questions 1 easy ,2 medium and 1 hard all of which had to be completed in 75 minutes. First question had 10 points second and third question had 15 points and the last question had 20 points . I was able to slove first ,second and last question only. OT was conducted in the HackerEarth platform.
+                
+
+---
+
+##### Online Test Question - 1
+
+The first question was a very easy one. It was a variant of N meeting in one room, basically a greedy question. It stated that there is a single parking slot that is available (accommodates  only one car) for every car irrespective of the time the owner of the parking slot gets 50 rupees. Given the arrival and departure time of n different cars determine the maximum money the owner can make. Note that once a car is parked at its arrival time it will leave at the departure time only. Refer to the link below to understand the question  
+                
+
+To get some idea and source, Follow this LINK : [Question 1 Source](https://practice.geeksforgeeks.org/problems/n-meetings-in-one-room-1587115620/1)
+
+---
+
+##### Online Test Question - 2
+
+The second question was a very good variant of binary search. I don't exactly remember the story in the question but finally it boiled down to Split the given array into K sub-arrays such that maximum sum of all sub arrays is minimum. But please make note that it was not a straight forward question. There was a big story so it took me around like 7-8 min to understand what was to be done. Refer to the link below to understand the question.
+                
+
+To get some idea and source, Follow this LINK : [Question 2 Source](https://www.geeksforgeeks.org/split-the-given-array-into-k-sub-arrays-such-that-maximum-sum-of-all-sub-arrays-is-minimum/)
+
+---
+
+##### Online Test Question - 3
+
+I was not able to solve  this question. Infact I did not even understand the problem statement :( 
+                
+
+---
+
+##### Online Test Question - 4
+
+The 4th Question was a Dynamic programming question. I solved this very quickly cause i had already seen the same....... I mean exact question on LEETCODE. It is a very big question and it would be really difficult to solve it in the OT  if you haven't solved it before. Check the link attached to know the exact question.
+                
+
+To get some idea and source, Follow this LINK : [Question 4 Source](https://leetcode.com/problems/student-attendance-record-ii/)
+
+---
+
+Round 1 Interview
+
+IT was a pure DSA round. It was an online interview so the interviewer introduced himself first and then asked my introduction Then without wasting any time the  interviewer pasted the first question on the online editor provided by the Hackerearth. The first question we had to find the count of number of findable elements in an unsorted array using binary search. example take {3,2,4,10,22,9,23} as an unsorted array yet if we try to find 23 in the array using classical Binary search we are able to find it in the following way 10->9-> 23 similarly 2,4,10,23 are  findalble using classical BS. First i gave him a normal approach of (NlogN) where i iterate through the array taking each element as target and try finding them using BS. But the  interviewer asked me come up with O(N) approach after some observations, hints from the  interviewer i was able to solve and code it up. The code worked fine for the 2 test cases that he asked me to run.
+Link to question 1: https://www.geeksforgeeks.org/count-of-elements-that-are-binary-searchable-in-the-given-array/
+     Then without any delay he gave me the second question which is a very famous question that is find the first positive missing element . But the  interviewer was expecting a O(N) TC and O(1) SC . I already knew this question so i was able to solve it and code it up.
+Link to question 2:https://leetcode.com/problems/first-missing-positive/
+                
+
+--- 
+
+Round 2 Interview
+
+After just 10 min I got called for Round 2.I was expecting this round to be a DBMS and OOPs Round but it turned to be another DSA round> The Interviewer was very friendy he started with introduction and directly jumped to the DSA question . Unlike the previous round this interviewer did not run my code . He just asked me Explain the logic, Code it up and made me dry run my logic on 5 different Test Cases. The first question was Given a string s, rearrange the characters of s so that any two adjacent characters are not the same.
+Return any possible rearrangement of s or return "" if not possible. It was a priority queue question. There may be other approches also but I was able to come up with the max-heap logic. and the interviewer was more than happy The link to this question : https://leetcode.com/problems/reorganize-string/
+
+The second question was a standard one. It stated that given an arrray of integers (positive ,zero,negative) you have to delete any paticular non empty subarray from it in such a way that The sum of the remaining array is maximum. example {1,2,-2,-3,4,5,-6}. I would delete {-6} such that i get the maximum sum. I did not find the link to question anywhere online but it was a doable one . I used a basic O(n) Tc approach and a few variables to keep track.
+                
+
+--- 
+
+Round 3 Interview
+
+After 15 min i got called for the 3rd round of interview it was a Pure HR round. I was asked basic HR questions like:
+1) introduce yourself
+2)where do you see yourself 5 years down the line
+3)what are your strengths and weakneeses
+4)How do you manage both EEE major and still get time to learn coding.
+5) which is your favourite project of yours and WHY ??
+Later it was just me asking him questions about the company what it does and what will i be working on as an intern .
+Thats it.
+                
+
+--- 
+
+Final Comment
+
+I was finally selected as an intern.
+Chronus Dosent ask DBMS And OOps .OOps is sometimes asked. But their Main focus is DSA and problem Solving Skills.
+Also the most important thing to keep in mind is to keep the interview interactive. Cause there were ppl who solved tougher questions but were not able to explain their approach and were rejected.
+Another important point is they were looking for the most optimal solution available. So make sure you check the editorial for each problem you solve and learn more efficent way to solve the problem if any .
+
+So just keep practising and keep giving contests. Trust the process and surely it will workout .
+I am actually from 2021-25 Batch ......but somehow it shows only 2020-24.
+BEST OF LUCK GUYS!!!
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:**  Nikhil Boob
+
+**Batch:** 2020-2024
+
+**Company:** CHRONUS
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE
+
+**CGPA Cut Off:** 7 and above

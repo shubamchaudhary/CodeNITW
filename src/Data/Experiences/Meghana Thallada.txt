@@ -1,0 +1,59 @@
+ONLINE TEST
+
+##### About Online Test
+
+It consists of 4 sections:Coding,Aptitude,CS Fundamentals and 2 HR Questions.
+Coding questions are based on Breadth First search, Dynamic Programming and arrays mostly. These are doable if you had enough practice in DSA and coding platforms like Leetcode.
+Aptitude was mostly on probability,permutations and combinations and logical reasoning.
+CS Fundamentals - These are OOP based
+HR Questions - These are like how do you behave in the given situation
+                
+
+--- 
+
+Round 1 Interview
+
+This round started with an introduction and discussion on the projects mentioned in resume. Later, I was asked a simple probability question(w white balls and b black balls probability that last ball is white).Then , I was asked to explain logic for coding question(Min no of steps to reach target position in snake and ladders game). I tried to give a pseudo code for that as well.
+Later,I was asked to find no.of ways to reach in min no.of steps. As I was able to answer above questions, he asked me if I could give probability that we will reach in minimum no.of steps. I wasn't able to answer it correctly but gave a try. Finally, it ended by asking if I have any questions for interviewer.
+                
+
+--- 
+
+Round 2 Interview
+
+This round also started with Projects discussion.Later, I was asked what other subjects did I learn other than those mentioned in resume.
+Then, we moved to DSA part. I was asked full binary tree definition  and no of missing nodes in a full binary tree.  I was asked some simple probability questions.Probability that two tosses will be heads if 2 coins are given . Probability that you get sum as 7 if two dices are rolled, some questions on expectations ,find indices i and j such that a\[i\]-a\[j\] is maximum,and then he added a constraint that i>j and asked to solve.
+
+This round was more like to evaluate if you are good at basics in DSA and probability
+                
+
+--- 
+
+Round 3 Interview
+
+This round was like a normal conversation. The interviewer asked how were my first 2 rounds .At last, he asked feedback of interview process, and it was ended by asking if I have any questions for him.
+                
+
+--- 
+
+Final Comment
+
+Do concentrate on basics of DSA and probability as well. Try to interact with the interviewer throughtout the interview. Don't stay quiet instead try to explain where you are struck . Be prepared to ask few questions to the interviewer at the end.
+Try to be as calm as possible during the interview process.
+
+Verdict: Selected
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Meghana Thallada
+
+**Batch:** 2020-2024
+
+**Company:** GOLDMAN SACHS
+
+**Drive:** Intern
