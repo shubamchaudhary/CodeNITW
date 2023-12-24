@@ -1,0 +1,48 @@
+ONLINE TEST
+
+##### About Online Test
+
+OT had various sections – 2 coding questions, aptitude questions, simple jee math questions.
+Each section had its own time limit.
+Use time wisely.
+                
+
+--- 
+
+Round 1 Interview
+
+He first introduced himself then asked my name and without any further details he entered into questions. First he asked me a probability question related to expected value. I didn’t answer it (even most of the selected students didn’t answer probability questions). Then he asked simple coding questions. 
+1 – given an array find a, b elements such that a + b = c. 
+Simple straight forward question. Answered it.
+2 – find a, b in array such that b – a = c and index of a < index of b
+Similar question, just use map to store indexes
+3 – some similar array question.
+4 – Then he asked me a simple puzzle – you have 12 blue and 8 red socks in a bag, find minimum number of socks that should be picked to have at least one pair of socks.
+First I told him 10, I thought only blue socks are accepted. (this gave him a bad impression). Then I told 3, which is correct. 
+                
+
+--- 
+
+Final Comment
+
+This was my first interview and I was not at all prepared for interview. I thought I’ll do it directly. But trust me you will get nervous especially if you don't have good communication skills.
+Even though I answered all the questions, I was not selected for round 2.  Because he can clearly see the nervousness in my face.
+So, preparing for an interview is as important as preparing dsa for OT. Please don’t skip it. Be prepared for questions like Tell me about yourself, why do you want to join our company etc.   
+Verdict : not selected
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** K N Adithya Vardhan Reddy
+
+**Batch:** 2020-2024
+
+**Company:** GOLDMAN SACHS
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE MECH CHEM CIVIL MME BIOTECH

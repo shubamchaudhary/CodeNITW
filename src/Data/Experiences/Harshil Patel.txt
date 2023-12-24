@@ -1,0 +1,58 @@
+ONLINE TEST
+
+##### About Online Test
+
+OT consisted of 9 questions(1 coding question, 1 REST API question, 1 SQL query and 6 MCQS) to be completed in 105 minutes. I was able to solve all of them completely except the REST API question. I spent more than half of the time solving the coding question. Initially I was not able to understand the question, then I tried dry-running my understanding of the test case and it worked. SQL query and MCQs were simple.
+I do not remember the questions but you can find Oracle OT questions on leetcode discuss. Before giving OT, check the leetcode discuss section  about Oracle OT in different colleges, you can know the pattern and even the questions are repeated sometimes.
+                
+
+--- 
+
+Round 1 Interview
+
+Interviews were online.
+First Interview started with my introduction followed by a coding question.
+Question was: You are given a sentence. Find k-most frequent words and print them in decreasing order of their frequency along with their count. I had few doubts about the question initially and clarified with the interviewer through some test cases. I started coding. I was explaining each statement while typing. Interviewer asked me few questions from the code. My brute force approach passed the test cases and I told him the time complexity. I asked the interviewer if he wanted me to optimize it. But he was running out of time and told me to wait in the lobby. My first round of interview was done and it lasted for around 30 minutes. I felt that I could have done better while explaining the code and should have told him the optimized approach as well.
+                
+
+--- 
+
+Round 2 Interview
+
+I was losing hope for getting to the second round as I waited for almost 1.5 hours in the lobby. I did not move from my place. Then, the screen changed and I knew it was the interviewer. I was very confident as I expected him to ask DBMS, OOP and project-related questions. He asked me some basic DBMS questions first like difference between truncate and delete, ACID properties of transactions, normal forms etc. Then he asked about the DDL, DML and who can perform the operations. I was able to answer all of these questions confidently. He gave me some SQL queries to write which involved joins and aggregate functions.  He then went on to ask about DBMS project. I explained him the schema and he looked impressed. He asked me about my other projects and I explained him my work. Then, he gave me a case where I was asked to design ER model for library database in college. I tried listing everything possible that came to my mind. Interviewer was satisfied and went on to ask some HR questions. I asked him few questions about his experience at the company and career growth and path. This was a solid 1-hour round. I was interactive and my confidence was high in this round. I was sure of getting to round 3.
+I would highly recommend to checkout interviewbit top 50 dbms questions. I learned SQL from youtube channel EqualConnect Coach. W3schools is also a good resource to learn SQL. You can refer to Sanchit Jain playlist for DBMS concepts.
+                
+
+--- 
+
+Round 3 Interview
+
+After almost 1 hour, I got called for last round. Interviewer saw my resume and asked me about my projects and what have I worked on in the last 2 years. Then, she asked few OOP concepts like difference between run-time and compile-time polymorphism, difference between Java ,C++,Javascript. I partly answered the second answer and asked her for hints. I could not find anymore differences and told her the same. Then, she asked me to implement abstract classes and interfaces on notepad and then asked the difference. She also asked what is the point of interfaces if we have abstract classes. Another question was regarding inheritance where a case was given. After getting done with OOP questions, she asked few HR questions. She asked if I had any questions for her. I asked her 3 questions regarding company and her role. This round got over in 50 minutes.
+Again, interviewbit is really important for OOP, it has a major role in my selection. Also checkout tutorialspoint which has good examples and explanations. 
+                
+
+--- 
+
+Final Comment
+
+Verdict: Selected
+I did everything I could in the days between OT and interview. After clearing first round, I had credence because I had good prepartion in DBMS and OOP. How you interact with interviewer is equally important. I was straight-forward, honest, interactive and confident about whatever I spoke in the interview. So yeah don't neglect DBMS, OOP, be elaborative while you explain, be prepared to answer anything mentioned in your resume, be thorough with projects, explore more about the company before interview. Try to maintain good CG, it plays an important part in the recruitment process. Lastly, believe in yourself and trust in God :)
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** [Harshil Patel](/profile/ha972074)
+
+**Batch:** 2020-2024
+
+**Company:** ORACLE
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE MECH CHEM CIVIL MME BIOTECH
+
+**CGPA Cut Off:** 7.0

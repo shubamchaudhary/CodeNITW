@@ -1,0 +1,145 @@
+ONLINE TEST
+
+##### About Online Test
+
+Online test was easy to medium. Many people did 2 or more questions.
+It was on hackerrank. The platform was good.
+Questions were divided in sections.
+1st question was for 25 mins.
+2nd and 3rd was for 35 mins.
+
+I did 2/3 questions and qualified for interviews.
+For shortlisting, coding profiles(CC and CF) and GPA is important. (Even if your OT didn't go well, you might get selected because of these).
+
+                
+
+---
+
+##### Online Test Question - 1
+
+Question 1 was unbounded knapsack. Doing it O(n) space will pass all test cases. 
+
+i couldn't do it. :)
+                
+
+---
+
+##### Online Test Question - 2
+
+Question 2 was tree question
+You are given a complete tree in array form.
+Every node has a value associated with it.
+Calculate left subtree sum and right subtree sum of these values for each node. Then increase the "level" of all right subtree nodes by leftSum-rightSum and decrease the "level" of left subtree nodes by leftSum-rightSum. The level of each node just needs to be printed at the end. The tree need not be modified.
+
+I did this using two dfs.
+TC accepted -> O(n) n is number of nodes in the tree
+                
+
+---
+
+##### Online Test Question - 3
+
+Question 3
+There are n people in a room. A person has some medals. The medals are numbered from 0 to 50. A person is a friend with another person only if both have >= c common medals. If A and B are friends and B and C are friends then A and C are friends even if common medals are not satisfied between A and C.
+You are give a person with index i. Find the number of friends he has.
+
+I did this using bitset and dsu. It is also possible with dfs.
+bitset AND will have common medals. bitset.count() will return number of common medals.
+                
+
+--- 
+
+Round 1 Interview
+
+In the first interview,
+Key question was a query question of DBMS
+You are given 2 tables one is id1->name and second is id2->(id1, count) 
+You need to write a query to get name, count sorted in descending w.r.t. count and if counts are same then ascending w.r.t. name. There can be multiple entries with same id1 in second table.
+
+Rest were oops questions like 
+difference between abstract class and interface
+What is static block, when is it run exactly. Where is it stored.
+Use of default keyword(in interfaces).
+Types of memories allocated by jvm and examples.
+Garbage collection.
+Function overriding.
+
+There was one simple set question in the end. 
+Calculate number of unique pairs x, y in an array where x+k=y. k is a constant.
+
+It lasted for about an hour.
+                
+
+--- 
+
+Round 2 Interview
+
+Second round was based on dsa.
+
+I was asked to introduce myself in the start. To the questions straight we go afterwards.
+What's dfs and bfs (explain on a white board). Use cases of dfs and bfs.
+Pointers and reference variables in cpp. I had to get the output of a program. I got it wrong and i was asked to explain why i where i was wrong.
+
+Impliment a set using vectors. Range of numbers he already specified as 0 to 1e6. Write functions for insert, delete and contains operation in O(1).
+
+Then write a function which returns a random number out of the numbers inserted till now. This was to be done in O(1) as well. (You are given a function let's say rand(int L, int R) which somehow returns a random number between L and R in O(1)).
+
+
+I used two vectors. One is of size 1e6+1 acting like map. Second is a normal vector where we insert the elements sequentially. The position of the number in the second array is stored in the first array. Then we can get a random number from second array in O(1). On insert just insert this element in second array and it's position in first array if not already present. On delete, get the position of the to be deleted element in second array and fill this space with the last element. 
+
+I didn't know how to do it but i slowly worked up the solution. I was asked what problem i am facing. And was given hints to solve them. 
+
+It's also possible to do with a balanced bst. But you will need to explain rotation (for AVL) or coloring (for red black).
+
+
+Then I was asked to give one practical application of linked list.
+How are collision resolved in hash map.
+Do you know tries?
+Do you know suffix sum tries? I did not know that.
+Then he asked a question of saving and searching urls in history of a browser. You need to return how many times a site is visited. And the times at which the site was visited. It was done using tries.
+
+Then at the end i was asked a dp question. They did not ask me to code it. I just had to come up with a solution.
+There are two ways of deleting a string
+1 delete the whole string.
+2 delete characters at indices 0...i-1 if characters at 0...i-1 are same as characters at indices i...2*i-1.
+(substr(0, i) == substr(i+1, i)).
+
+Maximise the number of operations to delete a given string. 
+I said something like calculating the length of prefix of the given string that is common with the substring starting at a position i. Then deleting either the minimum length of substring or the first possible case where we can use operation 2. Then recalculating the common prefix. And repeating.
+I didn't know if this worked. I was asked time complexity and i said n².
+
+This lasted for about an hour as well.
+                
+
+--- 
+
+Final Comment
+
+The interview is detailed. And you are supposed to know many things before hand. Though it is not hard.
+The interviewer will help you throughout the interview. Its important to pick up hints they give.
+
+If you are stuck just remain calm and verbally tell what exactly is the problem you are facing.
+All the best.
+
+I've tried to write down everything I remember. Though there might be errors. Do ask me if you are confused.
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Aryan Srivastava
+
+**Batch:** 2020-2024
+
+**Company:** DESHAW
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE
+
+**CGPA Cut Off:** 7
+
+**Resume:** [G-Drive](https://drive.google.com/file/d/1fG825U8zPdnG2Bl5qKEfuKl_5mC1Vq89/view)
