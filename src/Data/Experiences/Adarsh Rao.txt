@@ -1,0 +1,178 @@
+ONLINE TEST
+
+##### About Online Test
+
+Online Test:
+The online test was extremely easy... Questions were simple, and shortlisting was done likely on the basis of CGPA as well as number of Test Cases passed. Almost everyone managed to pass all test cases within 30 minutes of the OT (OT was for 60 minutes)
+                
+
+---
+
+##### Online Test Question - 1
+
+1\. Find the sum of the immediate adjacent elements within a 2D Matrix and the sum of the immediate diagonal elements within the 2D Matrix
+
+No optimized approach as such, very straightforward and simple question
+
+Ex:
+
+1 2 3
+4 5 6
+7 8 9
+
+If the element to check is 5, 
+Sum of immediately diagonal elements = 1 + 3 + 7 + 9
+Sum of immediately adjacent elements = 2 + 4 + 6 + 8
+
+If the element to check is 9
+Sum of immediately diagonal elements = 5
+Sum of immediately adjacent elements = 6 + 8
+                
+
+---
+
+##### Online Test Question - 2
+
+Given a string S, and a number K, return the string after the first k characters have been reversed.
+K can be greater than the size of string S.
+
+If K is greater than S, reverse all the characters, and loop back to the start.
+
+Ex:
+S = "impossible"
+K = 3
+Ans - pmiossible
+
+S = "impossible"
+K = 14
+
+After 10 reversals
+S = "elbissopmi"
+
+After 4 more reversals
+S = "iblessopmi"
+                
+
+To get some idea and source, Follow this LINK : [Question 2 Source](https://leetcode.com/problems/reverse-string-ii/)
+
+---
+
+Round 1 Interview
+
+All of the interview rounds were held offline
+
+Round 1 consisted of a technical interview. We were asked to print out copies of our resume, and the interviewers kept copies of the resume with themselves. Interviewees were called in alphabetical order.
+
+The interview started with the interviewer asking a bit about my resume. As I had already completed an internship during the summer break between 2nd and 3rd year, I explained what happened during the internship. Some points I included were:
+1\. What was my team's size.
+2\. What was the problem we were tasked with solving.
+3\. What were some of the approaches we thought of taking to solve the problem
+4\. Explaining the approach we tried to take and failed, and how it would theoretically solve the problem
+5\. Explaining the approach we used for the final demo, how it works, and how it was implemented.
+6\. How did it help the company, and future potential for growth of the project.
+I also talked a lot about my extracurricular activities within the college, such as the clubs I was in, the events I helped conduct, etc.
+After explaining about my internship/projects, I was asked a question on the Dutch National Flag problem (https://www.geeksforgeeks.org/sort-an-array-of-0s-1s-and-2s/).
+I was unaware of the algorithm, so I initially started by explaining a Count Sort approach (Traverse the array, count the number of 0s, 1s and 2s, and rebuild the array). He seemed happy with the approach, but asked me to find something more efficient. I tried to think of a sorting approach using 2 pointers, which the interviewer explained would work if the array had only 0s and 1s, after which I suggested using multiple passes, which again would not have worked, but the interviewer said I got quite close to getting the algorithm right, and seemed happy. Throughout, he kept asking me to write pseudocode, but I kept trying different test cases to see if the algorithm worked or not instead of writing the pseudocode.
+
+After that, I was asked a question on Parentheses matching (https://www.geeksforgeeks.org/check-for-balanced-parentheses-in-an-expression/), which I explained the approach for, which utilized a stack. He then asked me some of the uses for stacks, to which I answered "For things like parentheses matching, expression matching, but the first thing that came to mind was the call stack". He seemed very happy with the call stack answer, and we discussed a bit about how a call stack looks and works.
+
+Round 1 went on for almost an hour, during which a majority of time was spent talking about my previous internship.
+                
+
+--- 
+
+Round 2 Interview
+
+After about 10 minutes after the first interview, I was called for the second interview.
+
+Round 2 was supposed to be a technical interview, but was also part HR (which was not told during the PPT)
+The interviewer looked at my resume, and again asked a bit about my internship. Much like the previous round, I spent about 30 minutes talking about what I did during the internship.
+After that, she asked me whether I'd worked with JSON files. I had not worked much with JSON files, so I said I had no prior experience, but I was open to trying out whatever the question was. The question was as follows
+"Given the contents of a JSON file as a string, traverse through the string character by character, and return a C++ object"
+(This wasn't the example given)
+\[
+	{
+		color: "red",
+		value: "#f00"
+	},
+	{
+		color: "green",
+		value: "#0f0"
+	},
+	{
+		color: "blue",
+		value: "#00f"
+	},
+	{
+		color: "cyan",
+		value: "#0ff"
+	},
+	{
+		color: "magenta",
+		value: "#f0f"
+	},
+	{
+		color: "yellow",
+		value: "#ff0"
+	},
+	{
+		color: "black",
+		value: "#000"
+	}
+\]
+
+I initially explained that you could use a stack to try to track when an object needs to be returned after seeing an opening and closing brace, as well as finding out where a string starts and ends. To handle dynamic datatypes, I suggested the use of the union datatype. Something like
+
+union obj{
+  int a;
+  char c;
+  bool b;
+  string s;
+  float f;
+  map<string,obj> m;
+};
+In order to handle the dynamic datatype, as well as handle cases like nested JSON.
+
+She was quite happy with the approach, and suggested the use of tokenization of the string as well.
+
+After that I was asked why I wanted to join MasterCard. I talked about how I was very inspired by how the UPI system revolutionized transactions across the country, and that MasterCard had the reach to impact billions of lives the way UPI did, and how I wanted to be a part of that change. 
+                
+
+--- 
+
+Final Comment
+
+DSA is very important, but it isn't the be-all-end-all people make it out to be. Focus on the other aspects of the interview as well.
+1\. Body language is very important. Be casual, jovial, and don't get too stressed out. Stress will mess with your ability to think, and you won't be able to show what you know.
+2\. Make sure you smell and look good. First impressions can make or break an interview.
+3\. Don't be overly prepared with things like introductions. You should be able to make up an intro on the spot. Just keep a set of points you want to convey to the interviewer, and make up the rest as you go.
+4\. Be friendly with the interviewer, and try to make it a conversation/discussion, not a Q&A session.
+5\. Talk a lot about your projects and previous work experience (If you have any), as well as your hobbies and interests.
+6\. Keep your language semi-formal, but respectful and civil.
+7\. Keep the instructions CCPD provides in mind. Don't say anything you're not supposed to.
+
+Some other things to keep in mind:
+1\. The interviewers probably haven't done DSA in a few years, so you have to do your best to explain everything about your approach. When solving a question, don't directly jump to the solution. Talk them through what you're thinking, as well as every data structure you're using. Give a brief explanation about everything you're doing and thinking. Things like why you think a certain approach will work/not work, etc. A great way to practice is to practice the Feynman Technique towards teaching. Don't stress too much about how much time you're taking.
+2\. Make sure you get some prior work experience and projects. Understand everything about them. Again, while explaining the project to the interviewer, implement the Feynman Technique, as a lot of the technical details may go over their head.
+3\. Don't be in a rush to write code. Think about every test case, run through the test cases with the interviewer, and keep talking and explain your approach step-by-step. 
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Adarsh Rao
+
+**Batch:** 2020-2024
+
+**Company:** MASTER CARD
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE
+
+**CGPA Cut Off:** 6.5
+
+**Resume:** [G-Drive](https://www.dropbox.com/s/h18tov3lwq2hmxg/Adarsh%20Rao%20Resume.pdf?dl=0)

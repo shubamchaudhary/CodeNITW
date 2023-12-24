@@ -1,0 +1,54 @@
+ONLINE TEST
+
+##### About Online Test
+
+OT consists of 2 problems for 1 hr
+1\. Easy, based on hashmap.
+2\. Medium-Hard based on binary search 
+problem link: https://docs.google.com/document/d/1rXY_vKHN9SbiOQXnU-uUqAx3pT2HEeYQPhREI0YQrrA/edit?usp=sharing
+
+I have completed the OT in 10 minutes
+
+                
+
+--- 
+
+Round 1 Interview
+
+There is only one round of interview.
+Initially, we started with our introduction, then she asked me to explain the codes for the OT, and we had a discussion on our projects,
+schemas of our database, ER diagrams, and some simple theory questions like explain about left join etc.
+She also gave me a SQL problem to solve which was conducted on HackerRank.
+coming to the Coding part its also conducted on HackerRank, there was one string problem based on the lexicographical of the string which was a medium problem, I solved it in 10-15 min, and one Linkedlist problem reverse a linked list, solved in 5 min.
+
+lastly some HR questions, challenges faced, strengths weaknesses, and also she told me about her experience at Visa.
+
+                
+
+--- 
+
+Final Comment
+
+Just be confident with your skills, you will reach success
+verdict : selected
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** manideep sai boddepalli
+
+**Batch:** 2017-2021
+
+**Company:** VISA
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE
+
+**CGPA Cut Off:** 7
+
+**Resume:** [G-Drive](https://drive.google.com/file/d/1UaSe_M5JJZHjOuoB9IjOzl6pOi4Y0jfM/view?usp=sharing)
