@@ -258,252 +258,252 @@
 "Maths: (10*5=50)":[
     
         {
-            "id":0,
+            "id":50,
             "Q_No":0,
             "Question_link":"https://codeforces.com/problemset/problem/1337/A"
         },
         {
-            "id":1,
+            "id":51,
             "Q_No":1,
             "Question_link":"https://codeforces.com/problemset/problem/1389/A"
         },
         {
-            "id":2,
+            "id":52,
             "Q_No":2,
             "Question_link":"https://codeforces.com/problemset/problem/959/A"
         },
         {
-            "id":3,
+            "id":53,
             "Q_No":3,
             "Question_link":"https://codeforces.com/problemset/problem/1426/A"
         },
         {
-            "id":4,
+            "id":54,
             "Q_No":4,
             "Question_link":"https://codeforces.com/problemset/problem/1296/A"
         },
         {
-            "id":5,
+            "id":55,
             "Q_No":5,
             "Question_link":"https://codeforces.com/problemset/problem/1385/A"
         },
         {
-            "id":6,
+            "id":56,
             "Q_No":6,
             "Question_link":"https://codeforces.com/problemset/problem/1358/A"
         },
         {
-            "id":7,
+            "id":57,
             "Q_No":7,
             "Question_link":"https://codeforces.com/problemset/problem/1294/A"
         },
         {
-            "id":8,
+            "id":58,
             "Q_No":8,
             "Question_link":"https://codeforces.com/problemset/problem/1353/A"
         },
         {
-            "id":9,
+            "id":59,
             "Q_No":9,
             "Question_link":"https://codeforces.com/problemset/problem/1371/A"
         },
         {
-            "id":10,
+            "id":60,
             "Q_No":10,
             "Question_link":"https://codeforces.com/problemset/problem/1360/A"
         },
         {
-            "id":11,
+            "id":61,
             "Q_No":11,
             "Question_link":"https://codeforces.com/problemset/problem/1367/B"
         },
         {
-            "id":12,
+            "id":62,
             "Q_No":12,
             "Question_link":"https://codeforces.com/problemset/problem/1374/A"
         },
         {
-            "id":13,
+            "id":63,
             "Q_No":13,
             "Question_link":"https://codeforces.com/problemset/problem/1343/B"
         },
         {
-            "id":14,
+            "id":64,
             "Q_No":14,
             "Question_link":"https://codeforces.com/problemset/problem/732/A"
         },
         {
-            "id":15,
+            "id":65,
             "Q_No":15,
             "Question_link":"https://codeforces.com/problemset/problem/1154/A"
         },
         {
-            "id":16,
+            "id":66,
             "Q_No":16,
             "Question_link":"https://codeforces.com/problemset/problem/1409/A"
         },
         {
-            "id":17,
+            "id":67,
             "Q_No":17,
             "Question_link":"https://codeforces.com/problemset/problem/1335/A"
         },
         {
-            "id":18,
+            "id":68,
             "Q_No":18,
             "Question_link":"https://codeforces.com/problemset/problem/1328/A"
         },
         {
-            "id":19,
+            "id":69,
             "Q_No":19,
             "Question_link":"https://codeforces.com/problemset/problem/617/A"
         },
         {
-            "id":20,
+            "id":70,
             "Q_No":20,
             "Question_link":"https://codeforces.com/problemset/problem/50/A"
         },
         {
-            "id":21,
+            "id":71,
             "Q_No":21,
             "Question_link":"https://codeforces.com/problemset/problem/1117/B"
         },
         {
-            "id":22,
+            "id":72,
             "Q_No":22,
             "Question_link":"https://codeforces.com/problemset/problem/1195/A"
         },
         {
-            "id":23,
+            "id":73,
             "Q_No":23,
             "Question_link":"https://codeforces.com/problemset/problem/1181/A"
         },
         {
-            "id":24,
+            "id":74,
             "Q_No":24,
             "Question_link":"https://codeforces.com/problemset/problem/1266/B"
         },
         {
-            "id":25,
+            "id":75,
             "Q_No":25,
             "Question_link":"https://codeforces.com/problemset/problem/1107/B"
         },
         {
-            "id":26,
+            "id":76,
             "Q_No":26,
             "Question_link":"https://codeforces.com/problemset/problem/1260/A"
         },
         {
-            "id":27,
+            "id":77,
             "Q_No":27,
             "Question_link":"https://codeforces.com/problemset/problem/1266/A"
         },
         {
-            "id":28,
+            "id":78,
             "Q_No":28,
             "Question_link":"https://codeforces.com/problemset/problem/1620/B"
         },
         {
-            "id":29,
+            "id":79,
             "Q_No":29,
             "Question_link":"https://codeforces.com/problemset/problem/610/A"
         },
         {
-            "id":30,
+            "id":80,
             "Q_No":30,
             "Question_link":"https://codeforces.com/problemset/problem/69/A"
         },
         {
-            "id":31,
+            "id":81,
             "Q_No":31,
             "Question_link":"https://codeforces.com/problemset/problem/1/A"
         },
         {
-            "id":32,
+            "id":82,
             "Q_No":32,
             "Question_link":"https://codeforces.com/problemset/problem/1199/B"
         },
         {
-            "id":33,
+            "id":83,
             "Q_No":33,
             "Question_link":"https://codeforces.com/problemset/problem/1257/B"
         },
         {
-            "id":34,
+            "id":84,
             "Q_No":34,
             "Question_link":"https://codeforces.com/problemset/problem/1204/A"
         },
         {
-            "id":35,
+            "id":85,
             "Q_No":35,
             "Question_link":"https://codeforces.com/problemset/problem/515/A"
         },
         {
-            "id":36,
+            "id":86,
             "Q_No":36,
             "Question_link":"https://codeforces.com/problemset/problem/1395/A"
         },
         {
-            "id":37,
+            "id":87,
             "Q_No":37,
             "Question_link":"https://codeforces.com/problemset/problem/688/B"
         },
         {
-            "id":38,
+            "id":88,
             "Q_No":38,
             "Question_link":"https://codeforces.com/problemset/problem/1473/B"
         },
         {
-            "id":39,
+            "id":89,
             "Q_No":39,
             "Question_link":"https://codeforces.com/problemset/problem/1476/A"
         },
         {
-            "id":40,
+            "id":90,
             "Q_No":40,
             "Question_link":"https://codeforces.com/problemset/problem/1359/A"
         },
         {
-            "id":41,
+            "id":91,
             "Q_No":41,
             "Question_link":"https://codeforces.com/problemset/problem/1342/A"
         },
         {
-            "id":42,
+            "id":92,
             "Q_No":42,
             "Question_link":"https://codeforces.com/problemset/problem/1463/A"
         },
         {
-            "id":43,
+            "id":93,
             "Q_No":43,
             "Question_link":"https://codeforces.com/problemset/problem/463/B"
         },
         {
-            "id":44,
+            "id":94,
             "Q_No":44,
             "Question_link":"https://codeforces.com/problemset/problem/1511/B"
         },
         {
-            "id":45,
+            "id":95,
             "Q_No":45,
             "Question_link":"https://codeforces.com/problemset/problem/630/C"
         },
         {
-            "id":46,
+            "id":96,
             "Q_No":46,
             "Question_link":"https://codeforces.com/problemset/problem/1189/B"
         },
         {
-            "id":47,
+            "id":97,
             "Q_No":47,
             "Question_link":"https://codeforces.com/problemset/problem/1038/B"
         },
         {
-            "id":48,
+            "id":98,
             "Q_No":48,
             "Question_link":"https://codeforces.com/problemset/problem/630/D"
         },
         {
-            "id":49,
+            "id":99,
             "Q_No":49,
             "Question_link":"https://codeforces.com/problemset/problem/1355/A"
         }
@@ -512,62 +512,62 @@
 "Binary Search":[
    
             {
-                "id": 0,
+                "id": 100,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/contest/371/problem/C"
             },
             {
-                "id": 1,
+                "id": 101,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/contest/670/problem/D1"
             },
             {
-                "id": 2,
+                "id": 102,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/contest/287/problem/B"
             },
             {
-                "id": 3,
+                "id": 103,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/problemset/problem/1613/C"
             },
             {
-                "id": 4,
+                "id": 104,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/689/problem/C"
             },
             {
-                "id": 5,
+                "id": 105,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/1169/problem/C"
             },
             {
-                "id": 6,
+                "id": 106,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/1073/problem/C"
             },
             {
-                "id": 7,
+                "id": 107,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/contest/448/problem/D"
             },
             {
-                "id": 8,
+                "id": 108,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/1132/problem/D"
             },
             {
-                "id": 9,
+                "id": 109,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/contest/954/problem/E"
             },
             {
-                "id": 10,
+                "id": 110,
                 "Q_No": 10,
                 "Question_link": "https://codeforces.com/contest/1288/problem/D"
             },
             {
-                "id": 11,
+                "id": 111,
                 "Q_No": 11,
                 "Question_link": "https://codeforces.com/contest/1370/problem/D"
             }
@@ -576,52 +576,52 @@
 "Prime, Sieve, Prime Factorisation":[
    
             {
-                "id": 0,
+                "id": 112,
                 "Q_No": 0,
                 "Question_link": "https://www.spoj.com/problems/PRIME1/cstart=10"
             },
             {
-                "id": 1,
+                "id": 113,
                 "Q_No": 1,
                 "Question_link": "https://www.spoj.com/problems/TDPRIMES/"
             },
             {
-                "id": 2,
+                "id": 114,
                 "Q_No": 2,
                 "Question_link": "https://www.spoj.com/problems/TDKPRIME/"
             },
             {
-                "id": 3,
+                "id": 115,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/264/problem/B"
             },
             {
-                "id": 4,
+                "id": 116,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/735/problem/D"
             },
             {
-                "id": 5,
+                "id": 117,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/546/problem/D"
             },
             {
-                "id": 6,
+                "id": 118,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/222/problem/C"
             },
             {
-                "id": 7,
+                "id": 119,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/problemset/problem/111/B"
             },
             {
-                "id": 8,
+                "id": 120,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/1228/problem/C"
             },
             {
-                "id": 9,
+                "id": 121,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/contest/1101/problem/D"
             }
@@ -630,57 +630,57 @@
 "Bit Manipulation/Power Set":[
   
             {
-                "id": 0,
+                "id": 122,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/problemset/problem/912/B"
             },
             {
-                "id": 1,
+                "id": 123,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/problemset/problem/1594/B"
             },
             {
-                "id": 2,
+                "id": 124,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/problemset/problem/1097/B"
             },
             {
-                "id": 3,
+                "id": 125,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/1602/problem/C"
             },
             {
-                "id": 4,
+                "id": 126,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/problemset/problem/1095/C"
             },
             {
-                "id": 5,
+                "id": 127,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/problemset/problem/1494/B"
             },
             {
-                "id": 6,
+                "id": 128,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/problemset/problem/1151/B"
             },
             {
-                "id": 7,
+                "id": 129,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/problemset/problem/1225/C"
             },
             {
-                "id": 8,
+                "id": 130,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/1174/problem/D"
             },
             {
-                "id": 9,
+                "id": 131,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/problemset/problem/1391/D"
             },
             {
-                "id": 10,
+                "id": 132,
                 "Q_No": 10,
                 "Question_link": "https://codeforces.com/problemset/problem/1491/D"
             }
@@ -689,68 +689,63 @@
 "Stack/Queues/PriorityQueues":[
   
             {
-                "id": 0,
+                "id": 133,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/contest/343/problem/B"
             },
             {
-                "id": 1,
+                "id": 134,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/contest/158/problem/C"
             },
             {
-                "id": 2,
+                "id": 135,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/contest/5/problem/C"
             },
             {
-                "id": 3,
+                "id": 136,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/359/problem/D"
             },
             {
-                "id": 4,
+                "id": 137,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/1092/problem/D1"
             },
             {
-                "id": 5,
+                "id": 138,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/1313/problem/C2"
             },
             {
-                "id": 6,
+                "id": 139,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/1515/problem/C"
             },
             {
-                "id": 7,
+                "id": 140,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/contest/319/problem/B"
             },
             {
-                "id": 8,
+                "id": 141,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/487/problem/B"
             },
             {
-                "id": 9,
+                "id": 142,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/contest/1092/problem/D2"
             },
             {
-                "id": 10,
+                "id": 143,
                 "Q_No": 10,
-                "Question_link": "https://codeforces.com/contest/1156/problem/E"
-            },
-            {
-                "id": 11,
-                "Q_No": 11,
                 "Question_link": "https://codeforces.com/contest/911/problem/E"
             },
             {
-                "id": 12,
-                "Q_No": 12,
+                "id": 144,
+                "Q_No": 11,
                 "Question_link": "https://codeforces.com/contest/507/problem/E"
             }
      
@@ -758,97 +753,98 @@
 "String Algorithms:":[
 
             {
-                "id": 0,
+                "id": 145,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/problemset/problem/271/D"
             },
             {
-                "id": 1,
+                "id": 146,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/contest/1326/problem/D2"
             },
             {
-                "id": 2,
+                "id": 147,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/contest/514/problem/C"
             },
             {
-                "id": 3,
+                "id": 148,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/7/problemD"
             },
             {
-                "id": 4,
+                "id": 149,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/514/problemC"
             },
             {
-                "id": 5,
+                "id": 150,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/633/problemC"
             },
             {
-                "id": 6,
+                "id": 151,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/1016/problemB"
             },
+
             {
-                "id": 7,
+                "id": 152,
                 "Q_No": 7,
-                "Question_link": "https://codeforces.com/contest/471/problemD"
-            },
-            {
-                "id": 8,
-                "Q_No": 8,
                 "Question_link": "https://codeforces.com/problemset/problem/126B"
             },
             {
-                "id": 9,
-                "Q_No": 9,
+                "id": 153,
+                "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/346/problemB"
             },
             {
-                "id": 10,
-                "Q_No": 10,
+                "id": 154,
+                "Q_No": 9,
                 "Question_link": "https://codeforces.com/contest/1138/problemD"
             },
             {
-                "id": 11,
+                "id": 155,
+                "Q_No": 10,
+                "Question_link": "https://codeforces.com/problemset/problem/271/D"
+            },
+            {
+                "id": 156,
                 "Q_No": 11,
                 "Question_link": "https://codeforces.com/contest/126/problemB"
             },
             {
-                "id": 12,
+                "id": 157,
                 "Q_No": 12,
                 "Question_link": "https://codeforces.com/contest/432/problemD"
             },
             {
-                "id": 13,
+                "id": 158,
                 "Q_No": 13,
                 "Question_link": "https://codeforces.com/contest/1537/problemE2"
             },
             {
-                "id": 14,
+                "id": 159,
                 "Q_No": 14,
                 "Question_link": "https://www.spoj.com/problems/NUMOFPAL/"
             },
             {
-                "id": 15,
+                "id": 160,
                 "Q_No": 15,
                 "Question_link": "https://www.spoj.com/problems/LPS/"
             },
             {
-                "id": 16,
+                "id": 161,
                 "Q_No": 16,
                 "Question_link": "https://www.spoj.com/problems/MSUBSTR/"
             },
             {
-                "id": 17,
+                "id": 162,
                 "Q_No": 17,
                 "Question_link": "https://www.spoj.com/problems/EPALIN/"
             },
             {
-                "id": 18,
+                "id": 163,
                 "Q_No": 18,
                 "Question_link": "https://codeforces.com/contest/1080/problemE"
             }
@@ -858,42 +854,42 @@
 "Tree's:":[
     
             {
-                "id": 0,
+                "id": 164,
                 "Q_No": 0,
                 "Question_link": "https://cses.fi/problemset/task/1674"
             },
             {
-                "id": 1,
+                "id": 165,
                 "Q_No": 1,
                 "Question_link": "https://cses.fi/problemset/task/1130"
             },
             {
-                "id": 2,
+                "id": 166,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/gym/102694/problem/A"
             },
             {
-                "id": 3,
+                "id": 167,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/gym/102694/problem/B"
             },
             {
-                "id": 4,
+                "id": 168,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/1006/problemE"
             },
             {
-                "id": 5,
+                "id": 169,
                 "Q_No": 5,
                 "Question_link": "https://cses.fi/problemset/task/1133"
             },
             {
-                "id": 6,
+                "id": 170,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/1294/problemF"
             },
             {
-                "id": 7,
+                "id": 171,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/problemset/problem/1006/F"
             }
@@ -902,509 +898,489 @@
 "LCA":[
    
             {
-                "id": 0,
+                "id": 172,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/gym/102694/problem/C"
             },
             {
-                "id": 1,
+                "id": 173,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/gym/102694/problem/D"
             },
             {
-                "id": 2,
+                "id": 174,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/contest/1328/problemE"
             },
             {
-                "id": 3,
+                "id": 175,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/1304/problemE"
             },
             {
-                "id": 4,
+                "id": 176,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/208/problemE"
             },
             {
-                "id": 5,
+                "id": 177,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/191/problemC"
             },
             {
-                "id": 6,
+                "id": 178,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/519/problemE"
             },
             {
-                "id": 7,
+                "id": 179,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/contest/587/problemC"
             },
             {
-                "id": 8,
+                "id": 180,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/609/problemE"
             },
             {
-                "id": 9,
+                "id": 181,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/contest/466/problemE"
             },
             {
-                "id": 10,
+                "id": 182,
                 "Q_No": 10,
                 "Question_link": "https://codeforces.com/gym/102694/problemE"
             },
             {
-                "id": 11,
+                "id": 183,
                 "Q_No": 11,
                 "Question_link": "https://codeforces.com/gym/102694/problemF"
             }
 ],
 "Graph Algorithms":[
             {
-                "id": 0,
+                "id": 184,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/problemset/problem/520/B"
             },
             {
-                "id": 1,
+                "id": 185,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/problemset/problem/115/A"
             },
             {
-                "id": 2,
+                "id": 186,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/problemset/problem/580/C"
             },
             {
-                "id": 3,
+                "id": 187,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/problemset/problem/977/E"
             },
             {
-                "id": 4,
+                "id": 188,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/1144/problem/F"
             },
             {
-                "id": 5,
+                "id": 189,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/510/problem/C"
             },
             {
-                "id": 6,
+                "id": 190,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/20/problem/C"
             },
             {
-                "id": 7,
+                "id": 191,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/problemset/problem/475/B"
             },
             {
-                "id": 8,
+                "id": 192,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/contest/986/problem/A"
             },
             {
-                "id": 9,
+                "id": 193,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/contest/242/problem/C"
             },
             {
-                "id": 10,
+                "id": 194,
                 "Q_No": 10,
                 "Question_link": "https://codeforces.com/contest/1345/problem/D"
             },
             {
-                "id": 11,
+                "id": 195,
                 "Q_No": 11,
                 "Question_link": "https://codeforces.com/contest/229/problem/B"
             },
             {
-                "id": 12,
+                "id": 196,
                 "Q_No": 12,
                 "Question_link": "https://codeforces.com/contest/1385/problem/E"
             },
             {
-                "id": 13,
+                "id": 197,
                 "Q_No": 13,
                 "Question_link": "https://codeforces.com/contest/295/problemB"
             },
             {
-                "id": 14,
+                "id": 198,
                 "Q_No": 14,
                 "Question_link": "https://codeforces.com/contest/1213/problem/F"
             },
             {
-                "id": 15,
+                "id": 199,
                 "Q_No": 15,
                 "Question_link": "https://codeforces.com/contest/1343/problemE"
             },
             {
-                "id": 16,
+                "id": 200,
                 "Q_No": 16,
                 "Question_link": "https://codeforces.com/contest/1296/problemE1"
             },
             {
-                "id": 17,
+                "id": 201,
                 "Q_No": 17,
                 "Question_link": "https://codeforces.com/contest/1573/problemC"
             },
             {
-                "id": 18,
+                "id": 202,
                 "Q_No": 18,
                 "Question_link": "https://codeforces.com/contest/1547/problemG"
             },
             {
-                "id": 19,
+                "id": 203,
                 "Q_No": 19,
                 "Question_link": "https://codeforces.com/contest/229/problemB"
             },
             {
-                "id": 20,
+                "id": 204,
                 "Q_No": 20,
                 "Question_link": "https://codeforces.com/contest/400/problemD"
             },
             {
-                "id": 21,
+                "id": 205,
                 "Q_No": 21,
                 "Question_link": "https://codeforces.com/contest/178/problemB3"
             }
 ],
 "Matrix Exponentiation: (basic to hard sorted)":[
             {
-                "id": 0,
+                "id": 206,
                 "Q_No": 0,
-                "Question_link": "https://codeforces.com/problemset/problem/185/A"
-            },
-            {
-                "id": 1,
-                "Q_No": 1,
                 "Question_link": "https://codeforces.com/contest/1117/problem/D"
             },
             {
-                "id": 2,
-                "Q_No": 2,
+                "id": 207,
+                "Q_No": 1,
                 "Question_link": "https://codeforces.com/contest/582/problem/B"
             },
             {
-                "id": 3,
-                "Q_No": 3,
+                "id": 208,
+                "Q_No": 2,
                 "Question_link": "https://codeforces.com/contest/222/problem/E"
             },
             {
-                "id": 4,
-                "Q_No": 4,
+                "id": 209,
+                "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/621/problem/E"
             },
             {
-                "id": 5,
-                "Q_No": 5,
+                "id": 210,
+                "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/1182/problem/E"
             }
 ],
 "Trie:":[
             {
-                "id": 0,
+                "id": 211,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/contest/706/problem/D"
             },
             {
-                "id": 1,
+                "id": 212,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/contest/948/problem/D"
             },
             {
-                "id": 2,
+                "id": 213,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/contest/665/problem/E"
             },
             {
-                "id": 3,
+                "id": 214,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/contest/1285/problem/D"
             },
             {
-                "id": 4,
+                "id": 215,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/contest/858/problem/D"
             },
             {
-                "id": 5,
+                "id": 216,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/contest/455/problem/B"
             },
             {
-                "id": 6,
+                "id": 217,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/contest/113/problem/B"
             },
             {
-                "id": 7,
+                "id": 218,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/contest/282/problem/E"
             }
 ],
 "Dynamic Programming(Easy to Hard) ":[
             {
-                "id": 0,
+                "id": 219,
                 "Q_No": 0,
                 "Question_link": "https://codeforces.com/problemset/problem/702/A"
             },
             {
-                "id": 1,
+                "id": 220,
                 "Q_No": 1,
                 "Question_link": "https://codeforces.com/problemset/problem/894/A"
             },
             {
-                "id": 2,
+                "id": 221,
                 "Q_No": 2,
                 "Question_link": "https://codeforces.com/problemset/problem/1501/B"
             },
             {
-                "id": 3,
+                "id": 222,
                 "Q_No": 3,
                 "Question_link": "https://codeforces.com/problemset/problem/1469/B"
             },
             {
-                "id": 4,
+                "id": 223,
                 "Q_No": 4,
                 "Question_link": "https://codeforces.com/problemset/problem/363/B"
             },
             {
-                "id": 5,
+                "id": 224,
                 "Q_No": 5,
                 "Question_link": "https://codeforces.com/problemset/problem/313/B"
             },
             {
-                "id": 6,
+                "id": 225,
                 "Q_No": 6,
                 "Question_link": "https://codeforces.com/problemset/problem/327/A"
             },
             {
-                "id": 7,
+                "id": 226,
                 "Q_No": 7,
                 "Question_link": "https://codeforces.com/problemset/problem/961/B"
             },
             {
-                "id": 8,
+                "id": 227,
                 "Q_No": 8,
                 "Question_link": "https://codeforces.com/problemset/problem/522/A"
             },
             {
-                "id": 9,
+                "id": 228,
                 "Q_No": 9,
                 "Question_link": "https://codeforces.com/problemset/problem/1042/B"
             },
             {
-                "id": 10,
+                "id": 229,
                 "Q_No": 10,
                 "Question_link": "https://codeforces.com/problemset/problem/189/A"
             },
             {
-                "id": 11,
+                "id": 230,
                 "Q_No": 11,
                 "Question_link": "https://codeforces.com/problemset/problem/1420/C1"
             },
             {
-                "id": 12,
+                "id": 231,
                 "Q_No": 12,
                 "Question_link": "https://codeforces.com/problemset/problem/414/B"
             },
             {
-                "id": 13,
+                "id": 232,
                 "Q_No": 13,
                 "Question_link": "https://codeforces.com/problemset/problem/1195/C"
             },
             {
-                "id": 14,
+                "id": 233,
                 "Q_No": 14,
                 "Question_link": "https://codeforces.com/problemset/problem/1350/B"
             },
             {
-                "id": 15,
+                "id": 234,
                 "Q_No": 15,
                 "Question_link": "https://codeforces.com/contest/505/problem/C"
             },
             {
-                "id": 16,
+                "id": 235,
                 "Q_No": 16,
                 "Question_link": "https://codeforces.com/contest/577/problem/B"
             },
             {
-                "id": 17,
+                "id": 236,
                 "Q_No": 17,
                 "Question_link": "https://codeforces.com/contest/204/problem/A"
             },
             {
-                "id": 18,
+                "id": 237,
                 "Q_No": 18,
                 "Question_link": "https://codeforces.com/contest/448/problem/C"
             },
             {
-                "id": 19,
+                "id": 238,
                 "Q_No": 19,
                 "Question_link": "https://codeforces.com/contest/479/problem/E"
             },
             {
-                "id": 20,
+                "id": 239,
                 "Q_No": 20,
                 "Question_link": "https://codeforces.com/contest/401/problem/D"
             },
             {
-                "id": 21,
+                "id": 240,
                 "Q_No": 21,
                 "Question_link": "https://codeforces.com/contest/777/problem/E"
             },
             {
-                "id": 22,
+                "id": 241,
                 "Q_No": 22,
                 "Question_link": "https://codeforces.com/contest/1036/problem/C"
             },
             {
-                "id": 23,
+                "id": 242,
                 "Q_No": 23,
                 "Question_link": "https://codeforces.com/contest/219/problem/D"
             },
             {
-                "id": 24,
+                "id": 243,
                 "Q_No": 24,
                 "Question_link": "https://codeforces.com/contest/337/problem/D"
             },
             {
-                "id": 25,
+                "id": 244,
                 "Q_No": 25,
                 "Question_link": "https://codeforces.com/contest/165/problem/E"
             },
             {
-                "id": 26,
+                "id": 245,
                 "Q_No": 26,
                 "Question_link": "https://codeforces.com/contest/687/problem/C"
                 },
                 {
-                "id": 27,
+                "id": 246,
                 "Q_No": 27,
                 "Question_link": "https://codeforces.com/contest/1132/problem/F"
                 },
                 {
-                "id": 28,
+                "id": 247,
                 "Q_No": 28,
                 "Question_link": "https://codeforces.com/contest/1253/problem/E"
                 },
                 {
-                "id": 29,
+                "id": 248,
                 "Q_No": 29,
                 "Question_link": "https://codeforces.com/contest/1216/problem/F"
                 },
                 {
-                "id": 30,
+                "id": 249,
                 "Q_No": 30,
                 "Question_link": "https://codeforces.com/contest/461/problem/B"
                 },
                 {
-                "id": 31,
+                "id": 250,
                 "Q_No": 31,
                 "Question_link": "https://codeforces.com/contest/319/problem/C"
                 },
                 {
-                "id": 32,
+                "id": 251,
                 "Q_No": 32,
                 "Question_link": "https://codeforces.com/contest/1083/problem/E"
                 },
                 {
-                "id": 33,
+                "id": 252,
                 "Q_No": 33,
                 "Question_link": "https://codeforces.com/contest/507/problem/D"
-                },
-                {
-                "id": 34,
-                "Q_No": 34,
-                "Question_link": "https://codeforces.com/contest/540/problem/D"
                 }
 ],
 "Disjoint Set: ":[
             {
-            "id": 0,
+            "id": 253,
             "Q_No": 0,
-            "Question_link": "https://codeforces.com/problemset/problem/1534/C"
-            },
-            {
-            "id": 1,
-            "Q_No": 1,
-            "Question_link": "https://codeforces.com/problemset/problem/217/A"
-            },
-            {
-            "id": 2,
-            "Q_No": 2,
             "Question_link": "https://codeforces.com/contest/277/problem/A"
             },
             {
-            "id": 3,
-            "Q_No": 3,
+            "id": 254,
+            "Q_No": 1,
             "Question_link": "https://codeforces.com/contest/884/problem/C"
             },
             {
-            "id": 4,
-            "Q_No": 4,
+            "id": 255,
+            "Q_No": 2,
             "Question_link": "https://codeforces.com/contest/1332/problem/C"
             },
             {
-            "id": 5,
-            "Q_No": 5,
+            "id": 256,
+            "Q_No": 3,
             "Question_link": "https://codeforces.com/contest/455/problem/C"
             },
             {
-            "id": 6,
-            "Q_No": 6,
+            "id": 257,
+            "Q_No": 4,
             "Question_link": "https://codeforces.com/contest/1156/problem/D"
             },
             {
-            "id": 7,
-            "Q_No": 7,
+            "id": 258,
+            "Q_No": 5,
             "Question_link": "https://codeforces.com/contest/1213/problem/G"
             },
             {
-            "id": 8,
-            "Q_No": 8,
+            "id": 259,
+            "Q_No": 6,
             "Question_link": "https://codeforces.com/problemset/problem/1494/D"
             },
             {
-            "id": 9,
-            "Q_No": 9,
+            "id": 260,
+            "Q_No": 7,
             "Question_link": "https://codeforces.com/problemset/problem/455/C"
             }
 ],
 "Sqrt Decomposition/ MO’s algo:":[
             {
-            "id": 0,
+            "id": 261,
             "Q_No": 0,
             "Question_link": "https://codeforces.com/contest/86/problem/D"
             },
             {
-            "id": 1,
+            "id": 262,
             "Q_No": 1,
             "Question_link": "https://codeforces.com/contest/617/problem/E"
             },
             {
-            "id": 2,
+            "id": 263,
             "Q_No": 2,
             "Question_link": "https://codeforces.com/contest/220/problem/B"
             },
             {
-            "id": 3,
+            "id": 264,
             "Q_No": 3,
             "Question_link": "https://codeforces.com/contest/1514/problem/D"
             },
             {
-            "id": 4,
+            "id": 265,
             "Q_No": 4,
             "Question_link": "https://codeforces.com/contest/375/problem/D"
             },
             {
-            "id": 5,
+            "id": 266,
             "Q_No": 5,
             "Question_link": "https://codeforces.com/contest/242/problem/E"
             }
@@ -1414,62 +1390,62 @@
 "Fenwick Tree:":[
     
         {
-        "id": 0,
+        "id": 267,
         "Q_No": 0,
         "Question_link": "https://codeforces.com/contest/61/problem/E"
         },
         {
-        "id": 1,
+        "id": 268,
         "Q_No": 1,
         "Question_link": "https://codeforces.com/contest/1311/problem/F"
         },
         {
-        "id": 2,
+        "id": 269,
         "Q_No": 2,
         "Question_link": "https://codeforces.com/contest/283/problem/A"
         },
         {
-        "id": 3,
+        "id": 270,
         "Q_No": 3,
         "Question_link": "https://codeforces.com/contest/459/problem/D"
         },
         {
-        "id": 4,
+        "id": 271,
         "Q_No": 4,
         "Question_link": "https://codeforces.com/contest/340/problem/D"
         },
         {
-        "id": 5,
+        "id": 272,
         "Q_No": 5,
         "Question_link": "https://codeforces.com/contest/1076/problem/E"
         },
         {
-        "id": 6,
+        "id": 273,
         "Q_No": 6,
         "Question_link": "https://codeforces.com/contest/1354/problem/D"
         },
         {
-        "id": 7,
+        "id": 274,
         "Q_No": 7,
         "Question_link": "https://codeforces.com/contest/1405/problem/E"
         },
         {
-        "id": 8,
+        "id": 275,
         "Q_No": 8,
         "Question_link": "https://codeforces.com/contest/383/problem/C"
         },
         {
-        "id": 9,
+        "id": 276,
         "Q_No": 9,
         "Question_link": "https://codeforces.com/contest/1526/problem/D"
         },
         {
-        "id": 10,
+        "id": 277,
         "Q_No": 10,
         "Question_link": "https://codeforces.com/contest/276/problem/E"
         },
         {
-        "id": 11,
+        "id": 278,
         "Q_No": 11,
         "Question_link": "https://codeforces.com/contest/375/problem/D"
         }
@@ -1478,77 +1454,67 @@
 "Segment Tree(lazy also included):":[
     
         {
-        "id": 0,
-        "Q_No": 0,
-        "Question_link": "https://codeforces.com/contest/339/problem/D"
-        },
-        {
-        "id": 1,
-        "Q_No": 1,
-        "Question_link": "https://codeforces.com/contest/914/problem/D"
-        },
-        {
-        "id": 2,
+        "id": 279,
         "Q_No": 2,
         "Question_link": "https://codeforces.com/contest/459/problem/D"
         },
         {
-        "id": 3,
+        "id": 280,
         "Q_No": 3,
         "Question_link": "https://codeforces.com/contest/61/problem/E"
         },
         {
-        "id": 4,
+        "id": 281,
         "Q_No": 4,
         "Question_link": "https://codeforces.com/contest/380/problem/C"
         },
         {
-        "id": 5,
+        "id": 282,
         "Q_No": 5,
         "Question_link": "https://codeforces.com/contest/474/problem/F"
         },
         {
-        "id": 6,
+        "id": 283,
         "Q_No": 6,
         "Question_link": "https://codeforces.com/contest/1237/problem/D"
         },
         {
-        "id": 7,
+        "id": 284,
         "Q_No": 7,
         "Question_link": "https://codeforces.com/contest/292/problem/E"
         },
         {
-        "id": 8,
+        "id": 285,
         "Q_No": 8,
         "Question_link": "https://codeforces.com/contest/482/problem/B"
         },
         {
-        "id": 9,
+        "id": 286,
         "Q_No": 9,
         "Question_link": "https://codeforces.com/contest/1187/problem/D"
         },
         {
-        "id": 10,
+        "id": 287,
         "Q_No": 10,
         "Question_link": "https://codeforces.com/contest/920/problem/F"
         },
         {
-        "id": 11,
+        "id": 288,
         "Q_No": 11,
         "Question_link": "https://codeforces.com/contest/1535/problem/D?locale=en"
         },
         {
-        "id": 12,
+        "id": 289,
         "Q_No": 12,
         "Question_link": "https://codeforces.com/contest/438/problem/D?locale=en"
         },
         {
-        "id": 13,
+        "id": 290,
         "Q_No": 13,
         "Question_link": "https://codeforces.com/contest/1556/problem/E"
         },
         {
-        "id": 14,
+        "id": 291,
         "Q_No": 14,
         "Question_link": "https://codeforces.com/contest/1567/problem/E"
         }
@@ -1557,32 +1523,27 @@
 "Lazy propagation:":[
     
         {
-        "id": 0,
-        "Q_No": 0,
-        "Question_link": "https://codeforces.com/contest/52/problem/C"
-        },
-        {
-        "id": 1,
+        "id": 292,
         "Q_No": 1,
         "Question_link": "https://codeforces.com/contest/1023/problem/D"
         },
         {
-        "id": 2,
+        "id": 293,
         "Q_No": 2,
         "Question_link": "https://codeforces.com/contest/242/problem/E"
         },
         {
-        "id": 3,
+        "id": 294,
         "Q_No": 3,
         "Question_link": "https://codeforces.com/contest/1557/problem/D"
         },
         {
-        "id": 4,
+        "id": 295,
         "Q_No": 4,
         "Question_link": "https://codeforces.com/contest/145/problem/E"
         },
         {
-        "id": 5,
+        "id": 296,
         "Q_No": 5,
         "Question_link": "https://codeforces.com/contest/777/problem/E"
         }
