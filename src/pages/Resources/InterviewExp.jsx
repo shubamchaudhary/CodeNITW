@@ -2,18 +2,34 @@ import React, { useState } from 'react';
 
 import AnimatedModal from './Modal';
 import MarkdownPreview from '@uiw/react-markdown-preview';
-import path from 'path';
+import AbhishekNavadiya from '../../Data/Experiences/Abhishek Navadiya.txt';
+import GaneshYadava from '../../Data/Experiences/Ganesh Yadava.txt';
+import AryanSrivastava from '../../Data/Experiences/Aryan Srivastava.txt';
+import VedantNagre from '../../Data/Experiences/Vedant Nagre.txt';
+import NikhilBoob from '../../Data/Experiences/Nikhil Boob.txt';
+import ManideepSaiBoddepalli from '../../Data/Experiences/manideep sai boddepalli.txt';
+import MeghanaThallada from '../../Data/Experiences/Meghana Thallada.txt';
+import AdithyaVardhanReddy from '../../Data/Experiences/K N Adithya Vardhan Reddy.txt';
+import JoelCecil from '../../Data/Experiences/Joel Cecil.txt';
+import HarshilPatel from '../../Data/Experiences/Harshil Patel.txt';
+import ParthSoni from '../../Data/Experiences/Parth Soni.txt';
+import AdarshRao from '../../Data/Experiences/Adarsh Rao.txt';
 
 
 const ExperienceDetail = ({ experience, onClose }) => {
+  
+const [darkMode, setDarkMode] = useState( JSON.parse(localStorage.getItem("darkMode")) || false);
   return (
     <div className="bg-blue-100 dark:bg-[#141a25] shadow overflow-hidden sm:rounded-lg p-6">
       <button onClick={onClose} className="text-blue-500 hover:text-blue-800 mb-4">Close</button>
-      <MarkdownPreview source={experience} 
-          wrapperElement={{
-            "data-color-mode": "light"
-          }}
+      <div className='bg-blue-100 dark:bg-[#141a25]'>
+      <MarkdownPreview 
+        source={experience} 
+        wrapperElement={{
+          "data-color-mode": darkMode ? "dark" : "light"
+        }}
       />
+      </div>
     </div>
   );
 };
@@ -40,39 +56,39 @@ const InterviewExp = () => {
   const companies = [
     {
       name: 'Uber',
-      experiences: ['src/Data/Experiences/Abhishek Navadiya.txt' ]
+      experiences: [AbhishekNavadiya]
     },
     {
       name : 'De Shaw',
-      experiences : ['src/Data/Experiences/Ganesh Yadava.txt' ,'src/Data/Experiences/Aryan Srivastava.txt' ]
+      experiences : [GaneshYadava, AryanSrivastava]
     },
     {
       name : 'Service Now',
-      experiences : ['src/Data/Experiences/Vedant Nagre.txt']
+      experiences : [VedantNagre]
     },
     {
       name : 'Chronus',
-      experiences : ['src/Data/Experiences/Nikhil Boob.txt']
+      experiences : [NikhilBoob]
     },
     {
       name : 'VISA',
-      experiences : ['src/Data/Experiences/manideep sai boddepalli.txt']
+      experiences : [ManideepSaiBoddepalli]
     },
     {
       name : 'GOLDMAN SACHS',
-      experiences : ['src/Data/Experiences/Meghana Thallada.txt' , 'src/Data/Experiences/K N Adithya Vardhan Reddy.txt']
+      experiences : [MeghanaThallada, AdithyaVardhanReddy]
     },
     {
       name : 'Oracle',
-      experiences : ['src/Data/Experiences/Joel Cecil.txt','src/Data/Experiences/Harshil Patel.txt']
+      experiences : [JoelCecil, HarshilPatel]
     },
     {
       name : 'QUALCOMM',
-      experiences : ['src/Data/Experiences/Parth Soni.txt',]
+      experiences : [ParthSoni]
     },
     {
       name : 'MasterCard',
-      experiences : ['src/Data/Experiences/Adarsh Rao.txt',]
+      experiences : [AdarshRao]
     },
   ];
 
