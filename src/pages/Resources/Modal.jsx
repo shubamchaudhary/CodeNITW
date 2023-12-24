@@ -41,7 +41,7 @@ const AnimatedModal = ({ isOpen, onRequestClose, children }) => {
       }}
     >
       <animated.div style={animation}>
-        <div className='bg-blue-200 dark:bg-[#050b15] border-2 border-[#141a25] relative max-h-[700px] mt-[80px] overflow-auto p-20px'
+        <div className='bg-blue-100 dark:bg-[#050b15] border-2 border-[#141a25] relative max-h-[700px] mt-[80px] overflow-auto p-20px'
           style={{
             borderRadius: '10px',
             padding: '10px',

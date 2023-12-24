@@ -2,18 +2,34 @@ import React, { useState } from 'react';
 
 import AnimatedModal from './Modal';
 import MarkdownPreview from '@uiw/react-markdown-preview';
-import path from 'path';
+import AbhishekNavadiya from '../../Data/Experiences/Abhishek Navadiya.txt';
+import GaneshYadava from '../../Data/Experiences/Ganesh Yadava.txt';
+import AryanSrivastava from '../../Data/Experiences/Aryan Srivastava.txt';
+import VedantNagre from '../../Data/Experiences/Vedant Nagre.txt';
+import NikhilBoob from '../../Data/Experiences/Nikhil Boob.txt';
+import ManideepSaiBoddepalli from '../../Data/Experiences/manideep sai boddepalli.txt';
+import MeghanaThallada from '../../Data/Experiences/Meghana Thallada.txt';
+import AdithyaVardhanReddy from '../../Data/Experiences/K N Adithya Vardhan Reddy.txt';
+import JoelCecil from '../../Data/Experiences/Joel Cecil.txt';
+import HarshilPatel from '../../Data/Experiences/Harshil Patel.txt';
+import ParthSoni from '../../Data/Experiences/Parth Soni.txt';
+import AdarshRao from '../../Data/Experiences/Adarsh Rao.txt';
 
 
 const ExperienceDetail = ({ experience, onClose }) => {
+  
+const [darkMode, setDarkMode] = useState( JSON.parse(localStorage.getItem("darkMode")) || false);
   return (
     <div className="bg-blue-100 dark:bg-[#141a25] shadow overflow-hidden sm:rounded-lg p-6">
       <button onClick={onClose} className="text-blue-500 hover:text-blue-800 mb-4">Close</button>
-      <MarkdownPreview source={experience} 
-          wrapperElement={{
-            "data-color-mode": "light"
-          }}
+      <div className='bg-blue-100 dark:bg-[#141a25]'>
+      <MarkdownPreview 
+        source={experience} 
+        wrapperElement={{
+          "data-color-mode": darkMode ? "dark" : "light"
+        }}
       />
+      </div>
     </div>
   );
 };
@@ -40,40 +56,97 @@ const InterviewExp = () => {
   const companies = [
     {
       name: 'Uber',
-      experiences: ['src/Data/Experiences/Abhishek Navadiya.txt' ]
+      experiences: [
+        {
+          name: 'Abhishek Navadiya',
+          file: AbhishekNavadiya
+        }
+      ]
     },
     {
       name : 'De Shaw',
-      experiences : ['src/Data/Experiences/Ganesh Yadava.txt' ,'src/Data/Experiences/Aryan Srivastava.txt' ]
+      experiences : [
+        {
+          name: 'Ganesh Yadava',
+          file: GaneshYadava
+        },
+        {
+          name: 'Aryan Srivastava',
+          file: AryanSrivastava
+        }
+      ]
     },
     {
       name : 'Service Now',
-      experiences : ['src/Data/Experiences/Vedant Nagre.txt']
+      experiences : [
+        {
+          name: 'Vedant Nagre',
+          file: VedantNagre
+        }
+      ]
     },
     {
       name : 'Chronus',
-      experiences : ['src/Data/Experiences/Nikhil Boob.txt']
+      experiences : [
+        {
+          name: 'Nikhil Boob',
+          file: NikhilBoob
+        }
+      ]
     },
     {
       name : 'VISA',
-      experiences : ['src/Data/Experiences/manideep sai boddepalli.txt']
+      experiences : [
+        {
+          name: 'Manideep Sai Boddepalli',
+          file: ManideepSaiBoddepalli
+        }
+      ]
     },
     {
       name : 'GOLDMAN SACHS',
-      experiences : ['src/Data/Experiences/Meghana Thallada.txt' , 'src/Data/Experiences/K N Adithya Vardhan Reddy.txt']
+      experiences : [
+        {
+          name: 'Meghana Thallada',
+          file: MeghanaThallada
+        },
+        {
+          name: 'K N Adithya Vardhan Reddy',
+          file: AdithyaVardhanReddy
+        }
+      ]
     },
     {
       name : 'Oracle',
-      experiences : ['src/Data/Experiences/Joel Cecil.txt','src/Data/Experiences/Harshil Patel.txt']
+      experiences : [
+        {
+          name: 'Joel Cecil',
+          file: JoelCecil
+        },
+        {
+          name: 'Harshil Patel',
+          file: HarshilPatel
+        }
+      ]
     },
     {
       name : 'QUALCOMM',
-      experiences : ['src/Data/Experiences/Parth Soni.txt',]
+      experiences : [
+        {
+          name: 'Parth Soni',
+          file: ParthSoni
+        }
+      ]
     },
     {
       name : 'MasterCard',
-      experiences : ['src/Data/Experiences/Adarsh Rao.txt',]
-    },
+      experiences : [
+        {
+          name: 'Adarsh Rao',
+          file: AdarshRao
+        }
+      ]
+    }
   ];
 
   const handleExperienceClick = async (file) => {
@@ -105,11 +178,11 @@ const InterviewExp = () => {
           </h2>
           {openCompanyIndex === index && (
             <ul className="list-disc list-inside pl-5 bg-gray-100 dark:bg-[#050b15] rounded-lg p-4">
-              {company.experiences.map((file, index) => (
-                <li key={index} onClick={() => handleExperienceClick(file)} className="cursor-pointer mb-2 text-[20px] ">
-                  {getFileName(file)} {/* Render the file name without extension */}
-                </li>
-              ))}
+              {company.experiences.map((experience, index) => (
+              <li key={index} onClick={() => handleExperienceClick(experience.file)} className="cursor-pointer mb-2 text-[20px] ">
+                {experience.name}
+              </li>
+            ))}
             </ul>
           )}
         </div>

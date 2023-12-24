@@ -121,7 +121,7 @@ export function QuestionCard(props) {
   
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
-    onQuestionSolved(name, event.target.checked);
+    onQuestionSolved(id, event.target.checked);
   };
 
   useEffect(() => {
