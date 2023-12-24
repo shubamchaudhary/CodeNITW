@@ -74,11 +74,14 @@ export default function Header() {
 
 useEffect(() => {
   switch (location.pathname) {
-    case "/learning-resources":
-      setActivePage("ROADMAPS ");
-      break;
     case "/problems":
       setActivePage("PROBLEMS");
+      break;
+      case "/cp-sheet":
+        setActivePage("CP SHEET");
+        break;
+    case "/learning-resources":
+      setActivePage("ROADMAPS ");
       break;
     case "/ot-material":
       setActivePage("OT MATERIAL");
@@ -199,17 +202,24 @@ useEffect(() => {
 >
   {activePage} ▼
   <ul className={`absolute left-0  w-40 bg-blue-100 dark:bg-[#050b15] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
-    <li
-      onClick={() => {handlePageSelect("/learning-resources", "ROADMAPS"); setDropdownOpen(false);}}
-      className="px-4 py-2 text-sm cursor-pointer"
-    >
-      ROADMAPS
-    </li>
+   
     <li
       onClick={() => {handlePageSelect("/problems", "PROBLEMS");setDropdownOpen(false);}}
       className="px-4 py-2 text-sm  cursor-pointer"
     >
       PROBLEMS
+    </li>
+    <li
+      onClick={() => {handlePageSelect("/cp-sheet", "CP SHEET"); setDropdownOpen(false);}}
+      className="px-4 py-2 text-sm cursor-pointer"
+    >
+      CP SHEET
+    </li>
+    <li
+      onClick={() => {handlePageSelect("/learning-resources", "ROADMAPS"); setDropdownOpen(false);}}
+      className="px-4 py-2 text-sm cursor-pointer"
+    >
+      ROADMAPS
     </li>
     <li
       onClick={() => {handlePageSelect("/interview-exps", "INT EXPS");setDropdownOpen(false);}}
