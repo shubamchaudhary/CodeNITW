@@ -138,19 +138,19 @@ export function QuestionCard(props) {
   }, []);
 
   return (
-    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#141a25]" : "bg-blue-100 dark:bg-[#1c2432]"} rounded-lg p-3 shadow-md ml-2 mt-2 mr-2 mb-2`}>
-    <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
-      <h3 className={`text-lg dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
+    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#141a25]" : "bg-blue-100 dark:bg-[#1c2432]"} rounded-lg p-3 shadow-md md:m-2 m-2`}>
+    <div className="flex-grow flex flex-row items-center">
+      <h3 className={`md:text-lg text-sm dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
       Question  {name+1}
       </h3>
-      <div className="flex items-center justify-between w-full mt-2 sm:mt-0">
+      <div className="flex items-center justify-between w-full md:mt-2 ">
         <a
           href={link}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
         >
-          {isSmallScreen ? extratruncatedLink : truncatedLink}
+          {isSmallScreen ? "link" : truncatedLink}
         </a>
         <input
   className={`ml-2 form-checkbox h-6 w-6 s `}
@@ -184,12 +184,12 @@ export const TopicCard = React.forwardRef((props, ref) => {
     return (
       <div 
         ref={ref} 
-        className={`relative bg-white dark:bg-[#141a25] bg-opacity-50 w-[100%]  items-left  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-2  m-1  ${isOpen ? 'pb-8' : ''}`} 
+        className={`relative bg-white cursor-pointer dark:bg-[#141a25] bg-opacity-50 md:w-[100%] ml-2 w-[95%] items-center  rounded-md overflow-hidden transition-shadow duration-300 px-4 md:py-1  py-2 my-1  ${isOpen ? 'pb-8' : ''}`} 
         onClick={handleTopicClick}
       >
         <div className={` gap-4 items-center sm:w-[90%]`}>
           <div className=''>
-            <h1 className=' flex text-lg font-semibold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
+            <h1 className=' flex md:text-lg text-sm font-semibold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
             <p className='text-sm text-gray-600'>{CPsolvedQuestionCount} / {questions.length} solved</p>
           </div>
         </div>
