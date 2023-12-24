@@ -1,0 +1,111 @@
+ONLINE TEST
+
+##### About Online Test
+
+OT was held in Code Signal plateform, duration was 90 minutes.
+Contains 3 questions.
+Easy medium hard question.
+                
+
+---
+
+##### Online Test Question - 1
+
+Defuse Bomb
+\- easy question
+                
+
+---
+
+##### Online Test Question - 2
+
+Assign digit to character
+\- hard question
+You are given an encrypted sum like the following example: SEND + MORE = MONEY, where each letter stands for a number, you need to decrypt this by assigning the digit 0 to 9 to each character, and after assigning each character expression should be valid. Like in the given example assigning like this S => 9, E => 4, N => 4, D => 3, M => 1, O => 0, R => 0, Y => 7 is one way because if we decrypt the expression using this then we get 9443 + 1004 = 10447 which is a valid mathematical expression.
+
+So in this question, you need to find the total number of ways of assigning.
+                
+
+---
+
+##### Online Test Question - 3
+
+Smallest greater palindrome
+\- medium question
+Given a string of size n containing characters from a to z. Find the next smallest palindrome string strictly larger than the given string.
+                
+
+To get some idea and source, Follow this LINK : [Question 3 Source](https://practice.geeksforgeeks.org/problems/next-smallest-palindrome4740/1)
+
+---
+
+Round 1 Interview
+
+It was about 75 min and after the introduction from both sides, the interviewer directly asked a DP Question.
+
+Question:
+              There are two friends Anshu and Dinesh standing at some different coordinates in 1d space. Anshu sends a message to Dinesh. Message contains only two symbols '+' and '-'. Here '+' indicates that Dinesh needs to move forward from the current position and '-' indicates that Dinesh needs to move backward from the current position. But due to weak connectivity of wifi signals, Dinesh receives a message with some unclear symbols that are indicated by '?' in the given string.
+
+Example: Message sent by Anshu: "+-+-++-",
+                 Message received by Dinesh: "+?+-??-"
+
+At the unclear message, Dinesh can move either forward or backward. What is the probability that Dinesh will reach the final destination in 1d space where he needs to reach the following message sent by Anshu?
+
+
+When the interviewer completed reading the question, I panicked. And not able to understand the question that he was asking me. I asked politely to him that he can read the question once again so I can understand. He read it again for me but still I didn't get the question then I asked Can I take some time to understand this question. He said yes and I took about 5 minutes to understand the question. While I was reading the question I got some doubts about Input strings and some more questions, so at that time only I clarified my doubt with the interviewer to understand the question better. After taking time and clearing all doubt I get the general Idea about a question that is asked. So I explained to him what I understood from this question and asked if I understood it correctly or if I am still not correct. He said yes, and after that, I started writing code in a very basic way based on what I understood till now. While writing code I'm explaining what I wrote in that line and why I wrote. After I completed the basic recursion code he asked to run it on the given sample test case. Code was running on it. After that, he asked me to optimize my approach. Honestly at that time also because of the nervousness of the interview, I wasn't able to get this question can be done using dynamic programming. I said sorry sir still I didn't get a way to optimize it. Then, he said to dry run your code for given test cases. When I did the dry run I got that I'm calculating the answer for the same parameter multiple times. At that time I said confidently to the interviewer that I can optimize this problem by taking some extra space and DP. The interviewer said right this was the approach that he was looking for. After that I did some changes in the recursive code and using memoization I solved that question.
+
+As I took so much time for explaining the question. We are running out of time so he asked if I have any questions for him. I asked him one question and the interview was done.
+
+                
+
+--- 
+
+Round 2 Interview
+
+After waiting for 4 hours my call for 2nd round came. During that time some selected candidate finished their HR round so I was too nervous that my chance will come or not.
+It took around 55 minutes. After introducing himself interviewer asked a question about DSA.
+Question:
+Given an encrypted string, decrypt it as follows:
+2\[ab\]3\[cd\] => ababcdcdcd
+Can include nested encoding, eg: 2\[ab3\[c\]\] => abcccabccc
+2\[ab3\[c\]\] => 2\[abccc\] => abcccabccc
+
+I understood the question and asked my doubt about string format and whether should it contain a number with more than one digit. after clarification, I told my approach using recursion and started coding the question. While coding the answer I was explaining each line of code so that He can understand why I’m writing that line of code. After I completed the coding he said that dry-run the question on a given input. I did it and explained. after that, he told me to run it but at the time of running, it was giving one error that I’m unaware of it. which is “terminate called after throwing an instance of 'std::logic\_error' what(): basic\_string::\_M\_construct null not valid”. I tried to debug the code but not getting the error. The interviewer also pointed out some points but I already covered all the points in coding so I explained that I covered that point in code and I showed that. I again dry ran the code in front of him but again I’m not getting the error. But during the dry run, I explained each scenario for various types of test cases. So he was satisfied with my solution. And asked me if I have any questions for him. I asked him one question and the interview was done.
+
+I was very confident after 2nd round of my interview as My interviewer was satisfied with my approach and solution.
+
+                
+
+--- 
+
+Round 3 Interview
+
+As soon as round 2 was completed, within 3 minutes I got a call for an offline HR Round. HR was a very nice person. He started a conversation with a very friendly question ‘How is your day going?’ and I was very confident after 2nd round I also started a conversation by answering politely without hesitating. Then he took a copy of my resume and started asking about my educational background and courses I completed in a previous semester. After I answered all his questions he asked about my projects. I had one front-end project and one DBMS project. He told me to draw ER diagram of my project as It was complex so I told him, can I show a PDF of my project? He said yes and I opened my laptop and the PDF of my project and He saw the ER Diagram and asked some questions about it, I answered all the questions. He was satisfied with my project (I have only one complex project which is a DBMS project about IPL Management System). After this, he gave me one scenario, suppose in one university there are multiple departments and each department offers some courses. Now irrespective of department students can choose any number of courses they want to study. Now design schema such that for a particular year and semester we can identify the course which produced a maximum number of students who scored above 90%. I designed and draw the schema and explained why I draw like this and all relationships between all tables. He was satisfied and asked me the last question can you tell the SQL query using aggregate functions to answer the above question? At that time, I don’t know how to use aggregate functions so I honestly said no sir. He said ok and asked if I have any questions for him. I asked a question and he explained very well. He was a nice guy. He didn’t make me realize that I was giving an HR round. Like this, my HR round was completed.
+                
+
+--- 
+
+Final Comment
+
+Be loud and clear about your thoughts. Don't sit quite in the interview any time. Listen carefully and make the interview engaging. Don't hesitate while explaining your projects. Don't make any expectations from the interview, company, or others. It is your chance, take it and give your best. Remember getting selected is not in your hand, the one thing in your hand is how to give direction to your interview in your way.
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Abhishek Navadiya
+
+**Batch:** 2020-2024
+
+**Company:** UBER
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE MECH CHEM CIVIL MME BIOTECH
+
+**CGPA Cut Off:** 0
+
+**Resume:** [G-Drive](https://drive.google.com/file/d/1kO55YdmODgZTWbGykbugZ4luUEJtMN8N/view?usp=drive_link)
