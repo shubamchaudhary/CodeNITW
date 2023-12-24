@@ -13,7 +13,7 @@ const CPSheet = () => {
   const [questions, setQuestions] = useState([]);
   const [CPsolvedQuestions, setCPsolvedQuestions] = useState(() => JSON.parse(localStorage.getItem('CPsolvedQuestions')) || {});
   const [totalProblems, setTotalProblems] = useState(0);
-  const [solvedProblems, setSolvedProblems] = useState(0);
+  const [CPsolvedProblems, setCPsolvedProblems] = useState(0);
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -32,7 +32,7 @@ const CPSheet = () => {
     setTotalProblems(total);
 
     let solved = Object.values(CPsolvedQuestions).filter(val => val).length;
-    setSolvedProblems(solved);
+    setCPsolvedProblems(solved);
   }, [CPsolvedQuestions]);
 
   const selectedTopicRef = useRef(null);
@@ -58,14 +58,14 @@ const CPSheet = () => {
           <div className='flex justify-between items-center mb-4'>
             <div className='ml-4'>
               <h1 className='text-xl mt-4 dark:text-gray-300 font-semibold mb-4'>STRIVERS CP SHEET</h1>
-              <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
+              <h2 className='text-sm ml-2 text-gray-500 font-bold'>{CPsolvedProblems} / {totalProblems} solved</h2>
             </div>
             <div className='mr-2 mt-2'
              style={{ width: 68, height: 60 }}>
               <CircularProgressbar 
-                value={solvedProblems} 
+                value={CPsolvedProblems} 
                 maxValue={totalProblems} 
-                text={`${Math.round((solvedProblems / totalProblems) * 100)}%`} 
+                text={`${Math.round((CPsolvedProblems / totalProblems) * 100)}%`} 
                 styles={buildStyles({
                   pathColor: 'green',
                   trailColor: 'lightgray',
@@ -116,12 +116,12 @@ export function QuestionCard(props) {
   const [isChecked, setIsChecked] = useState(() => {
     // Get the initial state from local storage or set it to false
     const CPsolvedQuestions = JSON.parse(localStorage.getItem('CPsolvedQuestions')) || {};
-    return CPsolvedQuestions[id] || false;
+    return CPsolvedQuestions[link] || false;
   });
   
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
-    onQuestionSolved(id, event.target.checked);
+    onQuestionSolved(link, event.target.checked);
   };
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export function QuestionCard(props) {
     <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#141a25]" : "bg-blue-100 dark:bg-[#1c2432]"} rounded-lg p-3 shadow-md ml-2 mt-2 mr-2 mb-2`}>
     <div className="flex-grow flex flex-col sm:flex-row sm:items-center">
       <h3 className={`text-lg dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
-      Question  { name+1}
+      Question  {name+1}
       </h3>
       <div className="flex items-center justify-between w-full mt-2 sm:mt-0">
         <a
@@ -152,18 +152,6 @@ export function QuestionCard(props) {
         >
           {isSmallScreen ? extratruncatedLink : truncatedLink}
         </a>
-        {/* <a
-          href={youtube}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto"
-        >
-          <img
-            className="max-w-[50px] p-2  rounded-md hover:underline cursor-pointer"
-            src={Youtube}
-            alt="contest image"
-          /> 
-        </a> */}
         <input
   className={`ml-2 form-checkbox h-6 w-6 s `}
   type="checkbox"
@@ -179,7 +167,7 @@ export function QuestionCard(props) {
 
 export const TopicCard = React.forwardRef((props, ref) => {
   const { id, name, questions, selectedTopic, setSelectedTopic, CPsolvedQuestions } = props;
-  const [solvedQuestionCount, setSolvedQuestionCount] = useState(0);
+  const [CPsolvedQuestionCount, setCPsolvedQuestionCount] = useState(0);
   const isOpen = id === selectedTopic;
 
   const handleTopicClick = () => {
@@ -187,26 +175,11 @@ export const TopicCard = React.forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    const updateSolvedCount = () => {
-      const CPsolvedQuestions = JSON.parse(localStorage.getItem('CPsolvedQuestions')) || {};
-      const count = questions.filter(question => CPsolvedQuestions[question.Question]).length;
-      setSolvedQuestionCount(count);
-    };
-
-    // Call the function initially to set the count
-    updateSolvedCount();
-
-    // Listen for changes in local storage
-    window.addEventListener('storage', updateSolvedCount);
-
-    // Cleanup the event listener
-    return () => window.removeEventListener('storage', updateSolvedCount);
-  }, [questions, selectedTopic]);
-
-  useEffect(() => {
-    const count = questions.filter(question => CPsolvedQuestions[question.Question]).length;
-    setSolvedQuestionCount(count);
+    const count = questions.filter(question => CPsolvedQuestions[question.Question_link]).length;
+    setCPsolvedQuestionCount(count);
   }, [questions, selectedTopic, CPsolvedQuestions]);
+
+
   
     return (
       <div 
@@ -217,7 +190,7 @@ export const TopicCard = React.forwardRef((props, ref) => {
         <div className={` gap-4 items-center sm:w-[90%]`}>
           <div className=''>
             <h1 className=' flex text-lg font-semibold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
-            <p className='text-sm text-gray-600'>{solvedQuestionCount} / {questions.length} solved</p>
+            <p className='text-sm text-gray-600'>{CPsolvedQuestionCount} / {questions.length} solved</p>
           </div>
         </div>
         {isOpen && (
