@@ -12,7 +12,7 @@ const ExperienceDetail = ({ experience, onClose }) => {
       <h4 className="text-gray-800 dark:text-gray-400 mb-2">Interviews:</h4>
       <ul className="list-disc list-inside">
         {experience.interviews.map((interview, index) => (
-          <div key={index} className="mb-2 bg-blue-50 dark:bg-[#1c2432] rounded-lg p-4 shadow-md">
+          <div key={index} className="mb-2 bg-blue-100 dark:bg-[#1c2432] rounded-lg p-4 shadow-md">
             <p className="font-semibold text-gray-800 dark:text-gray-400 ">Round: {interview.round}</p>
             {interview.comments.map((comment, commentIndex) => (
               <>
