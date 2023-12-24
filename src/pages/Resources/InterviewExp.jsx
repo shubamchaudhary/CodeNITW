@@ -56,40 +56,97 @@ const InterviewExp = () => {
   const companies = [
     {
       name: 'Uber',
-      experiences: [AbhishekNavadiya]
+      experiences: [
+        {
+          name: 'Abhishek Navadiya',
+          file: AbhishekNavadiya
+        }
+      ]
     },
     {
       name : 'De Shaw',
-      experiences : [GaneshYadava, AryanSrivastava]
+      experiences : [
+        {
+          name: 'Ganesh Yadava',
+          file: GaneshYadava
+        },
+        {
+          name: 'Aryan Srivastava',
+          file: AryanSrivastava
+        }
+      ]
     },
     {
       name : 'Service Now',
-      experiences : [VedantNagre]
+      experiences : [
+        {
+          name: 'Vedant Nagre',
+          file: VedantNagre
+        }
+      ]
     },
     {
       name : 'Chronus',
-      experiences : [NikhilBoob]
+      experiences : [
+        {
+          name: 'Nikhil Boob',
+          file: NikhilBoob
+        }
+      ]
     },
     {
       name : 'VISA',
-      experiences : [ManideepSaiBoddepalli]
+      experiences : [
+        {
+          name: 'Manideep Sai Boddepalli',
+          file: ManideepSaiBoddepalli
+        }
+      ]
     },
     {
       name : 'GOLDMAN SACHS',
-      experiences : [MeghanaThallada, AdithyaVardhanReddy]
+      experiences : [
+        {
+          name: 'Meghana Thallada',
+          file: MeghanaThallada
+        },
+        {
+          name: 'K N Adithya Vardhan Reddy',
+          file: AdithyaVardhanReddy
+        }
+      ]
     },
     {
       name : 'Oracle',
-      experiences : [JoelCecil, HarshilPatel]
+      experiences : [
+        {
+          name: 'Joel Cecil',
+          file: JoelCecil
+        },
+        {
+          name: 'Harshil Patel',
+          file: HarshilPatel
+        }
+      ]
     },
     {
       name : 'QUALCOMM',
-      experiences : [ParthSoni]
+      experiences : [
+        {
+          name: 'Parth Soni',
+          file: ParthSoni
+        }
+      ]
     },
     {
       name : 'MasterCard',
-      experiences : [AdarshRao]
-    },
+      experiences : [
+        {
+          name: 'Adarsh Rao',
+          file: AdarshRao
+        }
+      ]
+    }
   ];
 
   const handleExperienceClick = async (file) => {
@@ -121,11 +178,11 @@ const InterviewExp = () => {
           </h2>
           {openCompanyIndex === index && (
             <ul className="list-disc list-inside pl-5 bg-gray-100 dark:bg-[#050b15] rounded-lg p-4">
-              {company.experiences.map((file, index) => (
-                <li key={index} onClick={() => handleExperienceClick(file)} className="cursor-pointer mb-2 text-[20px] ">
-                  {getFileName(file)} {/* Render the file name without extension */}
-                </li>
-              ))}
+              {company.experiences.map((experience, index) => (
+              <li key={index} onClick={() => handleExperienceClick(experience.file)} className="cursor-pointer mb-2 text-[20px] ">
+                {experience.name}
+              </li>
+            ))}
             </ul>
           )}
         </div>
