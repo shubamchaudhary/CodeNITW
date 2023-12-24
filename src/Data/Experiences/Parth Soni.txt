@@ -1,0 +1,41 @@
+ONLINE TEST
+
+##### About Online Test
+
+Online Test had 3 sections of which last was a choice between 3 topics software, digital ,communications , I went for software. Each of these 3 sections had 20 questions and 30 minutes was given for each section and for every wrong answer there was -0.25 negative marking. In the programming section, the mcqs were mostly to find the output of a given C program and some questions on OOPs. One section was completely based on Logical questions for which programming knowledge wasn't required. 
+                
+
+--- 
+
+Round 1 Interview
+
+This was the first and last technical round for everyone. The interviewer was super friendly. He asked me for my intro and I went on to say that as I was a part of Robotics club I had interest in hardware too being a Computer Science student. When did I start coding, how the environment in the college helped me to get serious about coding. Also mention your primarily used coding language, which in my case is C++. Then he went on to ask Questions. He asked me two coding questions. Take some time after the interviewer tells you the question. For the first question he asked I told him a Dynamic programing approach, for which he asked me complexities and later on asked me to optimise it. After thinking for a while he gave me a hint and I was able to give him an optimised approach. The interviewer might ask you to code. Now, the second coding question he asked was pretty simple. So I told him that I would first like to give you an unoptimised approach which I did using two pointers, and then I went on to tell him an optimised approach using kadane's algorithm. The question was to find the maximum sum of a contiguous subarray. Even while coding the question asked, explain each and every step. 
+
+                
+
+--- 
+
+Final Comment
+
+The interview experience was great. Don't panic before or during the interview. I would suggest everyone to go through gfg archives before going for an interview irrespective of which company it is. Go slow during the interviews and try to elaborate every answer as much as possible. Do try to know as much about the company as they may ask you questions as, Why do you want to join Qualcomm? So you can say something as, Qualcomm is one of the world's leading tech innovator and other things qualcomm focuses on... So my skillset and my interests are best suited for the company. 
+
+That is it from my side, all the best for your intern drive.
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Parth Soni
+
+**Batch:** 2020-2024
+
+**Company:** QUALCOMM
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE
+
+**CGPA Cut Off:** 7

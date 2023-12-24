@@ -1,0 +1,91 @@
+ONLINE TEST
+
+##### About Online Test
+
+It was conducted on hacker-rank platform. Students with CGPA > 7.0 (with no active backlogs) from CSE, ECE, EEE were eligible to attend the OT. It had 3 questions and each question was allotted a specific amount of time. 
+
+Total Duration: 95 minutes
+                
+
+---
+
+##### Online Test Question - 1
+
+You are given an unweighted undirected graph. Your task is to color the leaf nodes of the graph. A node x is diverse if all the leaf nodes in its subtree have different colors. Return an array of size n where the ith element of the array represents the minimum number of different colors required to make the number of diverse nodes in the graph greater than or equal to i. (where n is the number of nodes)
+
+I solved it using BFS. All the test cases were passed.
+                
+
+---
+
+##### Online Test Question - 2
+
+This was also a graph question. It was medium-hard level. I don't remember the exact question but I tried to solve it using DFS & backtracking. I was only able to pass 7/12 test cases in the given time.
+                
+
+---
+
+##### Online Test Question - 3
+
+Given an array arr of n integers, in a single operation, one can reduce any element of the array by 1. Find the minimum number of operations required to make the array a bitonic array.
+
+Example of bitonic array: \[0,1,2,3,2,1,0,0\]
+
+In the question, a bitonic array was defined as- It can have any number of zeros in prefix and suffix. the non zero part should increase from 1 to some integer k and then decrease to 1.
+
+I tried to solve it using two pointer approach. I was only able to pass 8/15 test cases.
+
+I was among the 20 students who were shortlisted for the Interviews.
+                
+
+--- 
+
+Round 1 Interview
+
+It was an online interview on hacker rank code pair platform. There were 2 interviewers and the first interviewer started the interview by asking my introduction. Then, he started asking some questions about my projects. I had worked on front-end of an app project. Technologies used were Flutter and Dart. Here are some qns he asked - explain in brief about the project, Why you chose flutter, what is dart, is dart object-oriented, how is memory allocated/stored in dart, how did you retrieve the data from backend to frontend. I answered most of the questions correctly, but was not able to answer theory questions on dart which were pretty deep. 
+
+The other interviewer took over and asked some questions on C++ and STL. He asked what is my favorite data structure in STL. I said unordered map. He asked some questions on internal implementation of map and unordered map. Like difference between map and unordered map, what is used to implement it(red black trees), what is hashing, what are collisions, etc. I was able to answer all of them correctly. Then, he asked me a coding question. 
+
+You are given a string which contains only a's and b's. A "good string" can be split into 3 parts. First part should contain only a's(can contain 0 also), second should contain b's and third should contain a's. Now you need to find the length of the largest good string by deleting some characters from the string.
+
+Example: s = "aaabbaabbbaa" answer = 10
+
+First I explained a brute force solution. The interviewer asked for time complexity and he told to optimized it. I was trying to think of a two pointer solution. The interviewer was very helpful. He gave me a hint to think of a recursive approach. Immediately I was able to find a solution. The recursive function will have index 'i' and a variable 'state'. state variable has 3 possible values - 0/1/2 each corresponding to the states of the "good string". At each index, we use pick and notPick as two choices and take maximum of the two. 
+
+He asked the time complexity for which I said 2^n. He said how to optimize and I said DP as there are overlapping subproblems. He then asked what is DP and I answered. I was not asked to code, only the logic. After that, the first interviewer took over.
+
+He also gave me a coding question: https://www.geeksforgeeks.org/find-smallest-value-represented-sum-subset-given-array/
+
+I gave him two approaches - first one recursive (exponential TC) and another using set(O(n^2) + O(sum of elements)). He was not satisfied with my solutions and told to optimize. I was not able to get a better approach.
+
+He then asked me some theory questions on DBMS. They were somewhat hard and you cannot answer them if you don't have in-depth knowledge in DBMS. I was not able to answer some questions.
+
+Total duration of the interview was around 1 hr 10 minutes.
+                
+
+--- 
+
+Final Comment
+
+Only 5 students were shortlisted to 2nd round and I was not among them. 2 students were selected for the internship. D.E Shaw interview is hard to crack. You need to be very good at DSA and CP. And you need to have deep knowledge on CS fundamentals like OOPS and DBMS(Especially theory). Also be thorough with everything you put in your resume.
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Ganesh Yadava
+
+**Batch:** 2020-2024
+
+**Company:** DESHAW
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE
+
+**CGPA Cut Off:** 7.0
+
+**Resume:** [G-Drive](https://drive.google.com/file/d/1RZ3CJhpGTcMTwzERKS_I5J0r_CWzd0V0/view?usp=sharing)

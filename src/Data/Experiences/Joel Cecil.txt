@@ -1,0 +1,106 @@
+ONLINE TEST
+
+##### About Online Test
+
+Online Test consisted of 9 questions - 2 coding questions, 1 SQL query and 6 MCQS - to be completed in 105 minutes. It was conducted on HackerRank.
+                
+
+---
+
+##### Online Test Question - 1
+
+The first coding question was easy and it involved sorting.
+                
+
+---
+
+##### Online Test Question - 2
+
+For the second question, we had to fetch data from a REST API and then solve the question. 
+                
+
+---
+
+##### Online Test Question - 3
+
+SQL query was to ORDER BY an attribute and then LIMIT to the first 100 rows. 
+                
+
+---
+
+##### Online Test Question - 4
+
+MCQs were based on DBMS, OOP and time/space complexity.
+                
+
+--- 
+
+Round 1 Interview
+
+Duration: 30 mins
+Tell me about yourself.
+Find height of binary tree (complete code on local editor).
+Explain OOP concepts (Polymorphism, inheritance …).
+Implement dictionary in Java.
+                
+
+--- 
+
+Round 2 Interview
+
+Duration: 60 mins
+Sort linked list of 0’s, 1’s and 2’s (complete code on local editor).
+Number of palindromic subarrays that do not overlap (evaluated on HackerRank).
+Uses of binary trees.
+Difference between array and linked list in terms of memory allocation.
+B Trees - Uses and properties.
+3 SQL queries (Group by, Natural join, Division).
+Why do you want to join the company?
+                
+
+--- 
+
+Round 3 Interview
+
+Duration: 45 mins
+Interviewer asked about my web dev project and the tech stack that I had used.
+How did I implement login authentication in my project?
+Difference between http and https.
+Explain REST API.
+Coding question - To find the number of contiguous triplets that have the \[odd, even, odd\] pattern in the given array.
+How would you handle heavy workload?
+What was your most difficult task and how did you manage it?
+What are your expectations from the internship?
+                
+
+--- 
+
+Final Comment
+
+The coding questions were easy… only required basic DSA and programming skills. Just be confident and always express your ideas and thoughts while you are coding in the interview.
+Revise all the DSA, DBMS and OOP theory concepts.
+Do a bit of research on the company (or just pay attention during the pre placement talk).
+If you have worked on any tech project, make sure you understand the working of each and every component in it. 
+If you haven't, you may be asked to solve puzzles or other aptitude questions, linux commands and shell scripting.
+And most importantly, believe in yourself. All the best!
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Joel Cecil
+
+**Batch:** 2020-2024
+
+**Company:** ORACLE
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE MECH CHEM CIVIL MME
+
+**CGPA Cut Off:** 6.9
+
+**Resume:** [G-Drive](https://drive.google.com/file/d/1PXPaRtfkgtCNNEN56IZr3AsHxupX9Txh/view?usp=sharing)
