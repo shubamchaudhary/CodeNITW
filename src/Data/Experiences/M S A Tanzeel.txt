@@ -1,0 +1,32 @@
+Final Comment
+
+Since the format of the form is not in according with my write up I am writing complete process over here 
+
+Round 1:  This was a online coding round. Generally the number of questions and the duration of the test is not fixed, in my experience I saw this ot as long as 3 hours which consisted of 6 questions and as short as 1.5 hours which consisted of 3 questions. The difficulty of the questions with reference to the Codeforces rating would range from 1400-2000. During my test I solved 2 complete questions and other one partial (ot consisted of 3 questions through which I got shortlisted). And other ot I solved 5 questions out of 6 (I was shortlisted in this too but didn't make it to the end due to some issue from their side). In my view the questions weren't from classical DSA ones, it was pure competitive programming questions and the one who gives regular contests can make through this without much difficulty.
+
+Round 2: This was aptitude + verbal reasoning round. The duration of this round was 15 min in which there were 50 questions were given to solve. Minimum of 45 score was needed to qualify this round. There will be two attempts given to clear this round and this will not be proctored. I was able to clear this round by scoring 47 in my second attempt. One should have good grip on aptitude and English to clear this round.
+
+Round 3: This was a resume shortlisting round. In this round the interviewer will check if the projects mentioned in the resume are genuinely done by the candidate and not copied from YouTube or any other online source. One should have good understanding of projects mentioned. There should be good projects too, only a front end project will not work here. Make sure you are clear of every tiny details of the implementation. In my case I was asked to open the code of a project and then questioning was done.
+
+Round 4: This was a DSA round. I was given a question to solve. The question difficulty was around 1800 with reference to Codeforces. The interviewer was friendly and gave me a hint to solve when I was struck at something. Make sure you communicate everything that runs through your mind. I will share the question too below if its possible that was asked to me.
+
+Round 5: This round will be taken by the Vice president of Trilogy Innovations. This will be an open ended problem solving discussion round where you'll be given some tech problem to solve. One should know the basics of system design to clear this round. You'll have to analyze the problem and design a complete working system that'll solve the problem. This round lasted for 1.5 hours. 
+
+Round 6: This is same as round 2 but the level of difficulty of questions will be bit high and it'll be proctored. One should score a minimum of 40 to clear this round. Clearance of this round is mandatory for SDE. Internship may/may not require this round clearance.
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** M S A Tanzeel
+
+**Batch:** 2017-2021
+
+**Company:** CODENATION
+
+**Drive:** Intern
+
+**Eligible Branches:** BIOTECH

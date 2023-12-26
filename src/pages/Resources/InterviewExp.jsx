@@ -14,6 +14,11 @@ import JoelCecil from '../../Data/Experiences/Joel Cecil.txt';
 import HarshilPatel from '../../Data/Experiences/Harshil Patel.txt';
 import ParthSoni from '../../Data/Experiences/Parth Soni.txt';
 import AdarshRao from '../../Data/Experiences/Adarsh Rao.txt';
+import MSATanzeel from '../../Data/Experiences/M S A Tanzeel.txt';
+import ChirantanMuliya from '../../Data/Experiences/Chirantan Muliya.txt'
+import VijayChowdaryNelakurthi from '../../Data/Experiences/Vijay Chowdary Nelakurthi.txt'
+
+
 
 
 const ExperienceDetail = ({ experience, onClose }) => {
@@ -22,13 +27,13 @@ const [darkMode, setDarkMode] = useState( JSON.parse(localStorage.getItem("darkM
   return (
     <div className="bg-blue-100 dark:bg-[#141a25] shadow overflow-hidden sm:rounded-lg p-6">
       <button onClick={onClose} className="text-blue-500 hover:text-blue-800 mb-4">Close</button>
-      <div className='bg-blue-100 dark:bg-[#141a25]'>
-      <MarkdownPreview 
-        source={experience} 
-        wrapperElement={{
-          "data-color-mode": darkMode ? "dark" : "light"
-        }}
-      />
+      <div className={`bg-blue-100 dark:bg-[#141a25]`}>
+        <MarkdownPreview 
+          source={experience} 
+          wrapperElement={{
+            "data-color-mode": darkMode ? "dark" : "light"
+          }}
+        />
       </div>
     </div>
   );
@@ -144,6 +149,33 @@ const InterviewExp = () => {
         {
           name: 'Adarsh Rao',
           file: AdarshRao
+        }
+      ]
+    },
+    {
+      name : 'CodeNation',
+      experiences : [
+        {
+          name : 'M S A Tanzeel',
+          file : MSATanzeel
+        }
+      ]
+    },
+    {
+      name : 'Microsoft',
+      experiences : [
+        {
+          name : 'Chirantan Muliya',
+          file : ChirantanMuliya
+        }
+      ]
+    },
+    {
+      name : 'John Deere',
+      experiences : [
+        {
+          name : 'Vijay Chowdary Nelakurthi',
+          file : VijayChowdaryNelakurthi
         }
       ]
     }
