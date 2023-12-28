@@ -1,0 +1,89 @@
+ONLINE TEST
+
+##### About Online Test
+
+Online test was conducted on codility platform. Test duration was 1.5 hours and it was not proctored It consisted of 2 problems. I completed both problems in 15 minutes. Almost all students solved both problems so resume and CGPA shortlisting was done for further rounds. About 36 students were shortlisted for next round.
+                
+
+---
+
+##### Online Test Question - 1
+
+given an array and a number k, count number of subarrays with average k.
+                
+
+---
+
+##### Online Test Question - 2
+
+Minesweeper game where you are given position of bombs and then fill n*n matrix. very easy problem.
+                
+
+--- 
+
+Round 1 Interview
+
+Interview was conducted on Microsoft Teams for audio, video and codility for problem solving. Interviewer was very friendly, he gave his intro and then asked me to do the same. After that he praised my project and said he will ask some questions about it at end if time permits. He gave me a coding problem which was stated like this: Given an array of integers representing speeds of cars moving in a 1D road and all in same direction. if one car is crashing with the other, both will move as one unit. speed of that final car will be minimum of both (I was told this after 10 mins). He asked me to determine how many cars will be left at infinite time. so, I gave one solution using stack and then he asked me if I can do it in O (1) space then I thought for 5 minutes and gave a solution for O (1). he was satisfied with it and then asked me to list all cars at infinite time I told first stack-based solution which was correct. It took 15 minutes and then he asked me if I had any questions for him. I was surprised by length of interview. I asked something regarding internship projects and it was over. Around 25 students were shortlisted for further rounds.
+                
+
+--- 
+
+Round 2 Interview
+
+There was total 3 rounds for some students and 2 rounds for some students. I had 2 rounds only. Last (Second) round was technical + HR round. Interviewer was very much experienced. He gave his intro and explained his role in Microsoft. Then asked me for intro. He praised me and then he asked me to be friendly and answer honestly and not waste his time by answering random stuff. I was scared a little bit after this but then he was very friendly. He asked me for my favourite topics. I mentioned database creation and normalisation and Trees, LL in DSA. He asked me problem from DBMS. He asked me to create a database for university from scratch first in 1NF and then keep normalising it and explain what are advantages I am adding by removing some field or splitting tables at each point. He was clearly interested to know how I am understanding the problem and finding solution for it. After I was done, he asked me some cross questions and then asked to run some SQL
+
+queries on it. He was satisfied and then moved to next topic which was a coding problem. DBMS problem went for around 25 minutes. Coding problem was very easy based on URL encoding. I was given some character buffer as URL and was asked to perform some operations on it. Constraints were that I was not allowed to use string/any in built functions and I needed to perform operations in-space (w/o using other char*) I did it in 10 mins he gave test case and it worked. I was expecting some DSA problem but he asked some questions on my Django project and then he concluded interview and asked if I had any questions for him. I asked about work culture and his exp. at MS. He answered it very nicely. 16 students were selected for Internship.
+                
+
+--- 
+
+Final Comment
+
+Advice for interview
+
+For coding problems, First read whole problem in your words and keep telling what you are understanding from it then think about corner cases and ask if they will be present in given input or not. Such doubts make good impression because they intentionally hide such things... Avoid asking constraints, sometimes it turns out as bad impression because it shows that you are narrowing down your thinking process so just try to optimise your TC slowly... once you are done interviewer will ask to reduce TC/SC so don't worry much... keep talking whatever you are thinking that will help you if you misunderstood some part of problem so interviewer can correct you there only.. once logic is finalised but you are unable to optimise it feel free to ask for hint, now carefully listen, depending on the hint you have to get idea if you need to optimise your brute approach or need to think something else, for example if hint is like, "While you are finding this or that..." "While you are performing that operation..." etc statements then you need to optimise your brute approach otherwise think new approach using hint from scratch. At least tell 2 approaches (Brute and one efficient) more than 2 are great!! but make sure to tell TC, SC every time even if not asked... Make sure you are not stuck in a loop (repeating same and same approach again even after getting the hint ) When you are asked to code, while coding try to explain each and every line while you are writing itself specially for DP/recursion-based solution what are you returning when and what will be base case, how you are managing recursive calls etc, if possible after writing the code, perform a dry run on sample or your own made test case that will make a good impression...
+
+For OT: Give contests on CF, CC, Leetcode, kickstart, learn DP, binary search, DFS, BFS those are hot topics for OT. For interview: Solve as many DS problems as you can. Learn OOP, DBMS in last 2 weeks and go through top interview questions and experiences. Prepare a nice intro of not more than 1 minute. Try to include stuff not mentioned in resume. Be confident while answering problems. Try to do mock interviews with your friends it helps a lot for both. Don't worry if you have not any experience in development or you're not part of any clubs. Feel free to contact me via mail for any kind of queries.
+
+References
+
+I gave all contests on codeforces jan-july. I also gave kickstart rounds and leetcode weekly contests to boost confidence. Apart from CP, I solved DSA 450 questions by love Babbar Link: https://drive.google.com/file/d/1FMdN_OCfOI0iAeDlqswCiC2DZzD4nPsb/view or https://450dsa.com/
+
+I solved around 60-70% DS problems from interviewbit.. and many problems from leetcode
+
+OOP:
+
+For learning: refer Javatpoint, Tutorialpoint and YT channel: Saurabh Shukla for revision: https://career.guru99.com/top-50-oops-interview-questions/ https://www.softwaretestinghelp.com/core-java-interview-questions/
+
+DBMS:
+
+For learning: Sanchit Jain YT playlist For revision: https://www.javatpoint.com/dbms-interview-questions
+
+SQL:
+
+For learning: Refer w3schools, geeksforgeeks
+
+For revision: solve queries on hackerrank, interviewbit
+
+Final Comments:
+
+Even if you didn't get selected for any particular round or final shortlisting don't lose hope... it is tough situation but actually intern drive is all about facing that situation only... it's less about getting intern and more about handling failure according to me...talk to your friends, parents.. don't think what they will think about you, just go for it... There's always one company waiting to hire you, you never know which one is chosen for you otherwise you will skip all previous attempts xd but yeah it's all part of the plan so don't lose hope until you reach that chance...try to stay happy and never ever let your confidence level down, that's the key... stay confident in your nth interview as it is your first one!!! as L ( death note) said , "I have lost the battle, but I am not going to lose the war!" : ) All the best!!
+                
+
+--- 
+
+---
+
+#### About the Applicant
+
+**Name:** Chirantan Muliya
+
+**Batch:** 2017-2021
+
+**Company:** MICROSOFT
+
+**Drive:** Intern
+
+**Eligible Branches:** CSE ECE EEE
+
+**CGPA Cut Off:** 7.5
