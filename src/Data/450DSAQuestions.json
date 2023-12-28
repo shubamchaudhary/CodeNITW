@@ -1,0 +1,2725 @@
+{
+    "Array": [
+      {
+        "id": 0,
+        "Q_No": 0,
+        "Question_Name": "Reverse the array",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/reverse-an-array/0"
+      },
+      {
+        "id": 1,
+        "Q_No": 1,
+        "Question_Name": "Find the maximum and minimum element in an array",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/find-minimum-and-maximum-element-in-an-array4428/1"
+      },
+      {
+        "id": 2,
+        "Q_No": 2,
+        "Question_Name": "Find the \"Kth\" max and min element of an array",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/kth-smallest-element/0"
+      },
+      {
+        "id": 3,
+        "Q_No": 3,
+        "Question_Name": "Given an array which consists of only 0, 1 and 2. Sort the array without using any sorting algo",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s/0"
+      },
+      {
+        "id": 4,
+        "Q_No": 4,
+        "Question_Name": "Move all the negative elements to one side of the array",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/move-all-negative-elements-to-end1813/1"
+      },
+      {
+        "id": 5,
+        "Q_No": 5,
+        "Question_Name": "Find the Union and Intersection of the two sorted arrays.",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/union-of-two-arrays/0"
+      },
+      {
+        "id": 6,
+        "Q_No": 6,
+        "Question_Name": "Write a program to cyclically rotate an array by one.",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/cyclically-rotate-an-array-by-one/0"
+      },
+      {
+        "id": 7,
+        "Q_No": 7,
+        "Question_Name": "find Largest sum contiguous Subarray [V. IMP]",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/kadanes-algorithm/0"
+      },
+      {
+        "id": 8,
+        "Q_No": 8,
+        "Question_Name": "Minimise the maximum difference between heights [V.IMP]",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/minimize-the-heights3351/1"
+      },
+      {
+        "id": 9,
+        "Q_No": 9,
+        "Question_Name": "Minimum no. of Jumps to reach end of an array",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-number-of-jumps/0"
+      },
+      {
+        "id": 10,
+        "Q_No": 10,
+        "Question_Name": "find duplicate in an array of N+1 Integers",
+        "Problem_link": "https://leetcode.com/problems/find-the-duplicate-number/"
+      },
+      {
+        "id": 11,
+        "Q_No": 11,
+        "Question_Name": "Merge 2 sorted arrays without using Extra space.",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/merge-two-sorted-arrays5135/1"
+      },
+      {
+        "id": 12,
+        "Q_No": 12,
+        "Question_Name": "Kadane's Algo [V.V.V.V.V IMP]",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/kadanes-algorithm/0"
+      },
+      {
+        "id": 13,
+        "Q_No": 13,
+        "Question_Name": "Merge Intervals",
+        "Problem_link": "https://leetcode.com/problems/merge-intervals/"
+      },
+      {
+        "id": 14,
+        "Q_No": 14,
+        "Question_Name": "Next Permutation",
+        "Problem_link": "https://leetcode.com/problems/next-permutation/"
+      },
+      {
+        "id": 15,
+        "Q_No": 15,
+        "Question_Name": "Count Inversion",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/inversion-of-array/0"
+      },
+      {
+        "id": 16,
+        "Q_No": 16,
+        "Question_Name": "Best time to buy and Sell stock",
+        "Problem_link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/"
+      },
+      {
+        "id": 17,
+        "Q_No": 17,
+        "Question_Name": "find all pairs on integer array whose sum is equal to given number",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/count-pairs-with-given-sum5022/1"
+      },
+      {
+        "id": 18,
+        "Q_No": 18,
+        "Question_Name": "find common elements In 3 sorted arrays",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/common-elements1132/1"
+      },
+      {
+        "id": 19,
+        "Q_No": 19,
+        "Question_Name": "Rearrange the array in alternating positive and negative items with O(1) extra space",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/array-of-alternate-ve-and-ve-nos1401/1"
+      },
+      {
+        "id": 20,
+        "Q_No": 20,
+        "Question_Name": "Find if there is any subarray with sum equal to 0",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/subarray-with-0-sum/0"
+      },
+      {
+        "id": 21,
+        "Q_No": 21,
+        "Question_Name": "Find factorial of a large number",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/factorials-of-large-numbers/0"
+      },
+      {
+        "id": 22,
+        "Q_No": 22,
+        "Question_Name": "Find longest consecutive subsequence",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-consecutive-subsequence2449/1"
+      },
+      {
+        "id": 23,
+        "Q_No": 23,
+        "Question_Name": "Given an array of size n and a number k, find all elements that appear more than n/k times",
+        "Problem_link": "https://www.geeksforgeeks.org/given-an-array-of-of-size-n-finds-all-the-elements-that-appear-more-than-nk-times/"
+      },
+      {
+        "id": 24,
+        "Q_No": 24,
+        "Question_Name": "Maximum profit by buying and selling a share at most twice",
+        "Problem_link": "https://www.geeksforgeeks.org/maximum-profit-by-buying-and-selling-a-share-at-most-twice/"
+      },
+      {
+        "id": 25,
+        "Q_No": 25,
+        "Question_Name": "Find whether an array is a subset of another array",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/array-subset-of-another-array2317/1"
+      },
+      {
+        "id": 26,
+        "Q_No": 26,
+        "Question_Name": "Find the triplet that sum to a given value",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/triplet-sum-in-array-1587115621/1"
+      },
+      {
+        "id": 27,
+        "Q_No": 27,
+        "Question_Name": "Trapping Rain Water",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/trapping-rain-water-1587115621/1"
+      },
+      {
+        "id": 28,
+        "Q_No": 28,
+        "Question_Name": "Chocolate Distribution Problem",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/chocolate-distribution-problem3825/1"
+      },
+      {
+        "id": 29,
+        "Q_No": 29,
+        "Question_Name": "Smallest subarray with sum greater than a given value",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/smallest-subarray-with-sum-greater-than-x5651/1"
+      },
+      {
+        "id": 30,
+        "Q_No": 30,
+        "Question_Name": "Three way partitioning of an array around a given range",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/three-way-partitioning/1"
+      },
+      {
+        "id": 31,
+        "Q_No": 31,
+        "Question_Name": "Minimum swaps required bring elements less equal K together",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-swaps-required-to-bring-all-elements-less-than-or-equal-to-k-together/0"
+      },
+      {
+        "id": 32,
+        "Q_No": 32,
+        "Question_Name": "Minimum no. of operations required to make an array palindrome",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/palindromic-array-1587115620/1"
+      },
+      {
+        "id": 33,
+        "Q_No": 33,
+        "Question_Name": "Median of two sorted arrays of different sizes",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/median-of-two-sorted-arrays-1587115620/1"
+      },
+      {
+        "id": 34,
+        "Q_No": 34,
+        "Question_Name": "Median of 2 sorted arrays of same size",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/median-of-2-sorted-arrays-of-different-sizes/1"
+      },
+      {
+        "id": 35,
+        "Q_No": 35,
+        "Question_Name": "Water Connection Problem",
+        "Problem_link": "https://practice.geeksforgeeks.org/problems/water-connection-problem/0"
+      }
+    ],
+     "Matrix": [
+          {
+            "id": 36,
+            "Q_No": 1,
+            "Question_Name": "Spiral traversal on a Matrix",
+            "Problem_link": "https://practice.geeksforgeeks.org/problems/spirally-traversing-a-matrix/0"
+          },
+          {
+            "id": 37,
+            "Q_No": 2,
+            "Question_Name": "Search an element in a matriix",
+            "Problem_link": "https://leetcode.com/problems/search-a-2d-matrix/"
+          },
+          {
+            "id": 38,
+            "Q_No": 3,
+            "Question_Name": "Find median in a row wise sorted matrix",
+            "Problem_link": "https://practice.geeksforgeeks.org/problems/median-in-a-row-wise-sorted-matrix1527/1"
+          },
+          {
+            "id": 39,
+            "Q_No": 4,
+            "Question_Name": "Find row with maximum no. of 1's",
+            "Problem_link": "https://practice.geeksforgeeks.org/problems/row-with-max-1s0023/1"
+          },
+          {
+            "id": 40,
+            "Q_No": 5,
+            "Question_Name": "Print elements in sorted order using row-column wise sorted matrix",
+            "Problem_link": "https://practice.geeksforgeeks.org/problems/sorted-matrix/0"
+          },
+          {
+            "id": 41,
+            "Q_No": 6,
+            "Question_Name": "Maximum size rectangle",
+            "Problem_link": "https://practice.geeksforgeeks.org/problems/max-rectangle/1"
+          },
+          {
+            "id": 42,
+            "Q_No": 7,
+            "Question_Name": "Find a specific pair in matrix",
+            "Problem_link": "https://www.geeksforgeeks.org/find-a-specific-pair-in-matrix/"
+          },
+          {
+            "id": 43,
+            "Q_No": 8,
+            "Question_Name": "Rotate matrix by 90 degrees",
+            "Problem_link": "https://www.geeksforgeeks.org/rotate-a-matrix-by-90-degree-in-clockwise-direction-without-using-any-extra-space/"
+          },
+          {
+            "id": 44,
+            "Q_No": 9,
+            "Question_Name": "Kth smallest element in a row-column wise sorted matrix",
+            "Problem_link": "https://practice.geeksforgeeks.org/problems/kth-element-in-matrix/1"
+          },
+          {
+            "id": 45,
+            "Q_No": 10,
+            "Question_Name": "Common elements in all rows of a given matrix",
+            "Problem_link": "https://www.geeksforgeeks.org/common-elements-in-all-rows-of-a-given-matrix/"
+          }
+        ],
+     "String": [
+              {
+                "id": 46,
+                "Q_No": 1,
+                "Question_Name": "Reverse a String",
+                "Problem_link": "https://leetcode.com/problems/reverse-string/"
+              },
+              {
+                "id": 47,
+                "Q_No": 2,
+                "Question_Name": "Check whether a String is Palindrome or not",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/palindrome-string0817/1"
+              },
+              {
+                "id": 48,
+                "Q_No": 3,
+                "Question_Name": "Find Duplicate characters in a string",
+                "Problem_link": "https://www.geeksforgeeks.org/print-all-the-duplicates-in-the-input-string/"
+              },
+              {
+                "id": 49,
+                "Q_No": 4,
+                "Question_Name": "Why strings are immutable in Java?",
+                "Problem_link": "https://www.baeldung.com/java-string-immutable"
+              },
+              {
+                "id": 50,
+                "Q_No": 5,
+                "Question_Name": "Write a Code to check whether one string is a rotation of another",
+                "Problem_link": "https://www.geeksforgeeks.org/a-program-to-check-if-strings-are-rotations-of-each-other/"
+              },
+              {
+                "id": 51,
+                "Q_No": 6,
+                "Question_Name": "Write a Program to check whether a string is a valid shuffle of two strings or not",
+                "Problem_link": "https://www.programiz.com/java-programming/examples/check-valid-shuffle-of-strings"
+              },
+              {
+                "id": 52,
+                "Q_No": 7,
+                "Question_Name": "Count and Say problem",
+                "Problem_link": "https://leetcode.com/problems/count-and-say/"
+              },
+              {
+                "id": 53,
+                "Q_No": 8,
+                "Question_Name": "Write a program to find the longest Palindrome in a string.[ Longest palindromic Substring]",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-palindrome-in-a-string/0"
+              },
+              {
+                "id": 54,
+                "Q_No": 9,
+                "Question_Name": "Find Longest Recurring Subsequence in String",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-repeating-subsequence/0"
+              },
+              {
+                "id": 55,
+                "Q_No": 10,
+                "Question_Name": "Print all Subsequences of a string.",
+                "Problem_link": "https://www.geeksforgeeks.org/print-subsequences-string/"
+              },
+              {
+                "id": 56,
+                "Q_No": 11,
+                "Question_Name": "Print all the permutations of the given string",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/permutations-of-a-given-string/0"
+              },
+              {
+                "id": 57,
+                "Q_No": 12,
+                "Question_Name": "Split the Binary string into two substring with equal 0’s and 1’s",
+                "Problem_link": "https://www.geeksforgeeks.org/split-the-binary-string-into-substrings-with-equal-number-of-0s-and-1s/"
+              },
+              {
+                "id": 58,
+                "Q_No": 13,
+                "Question_Name": "Word Wrap Problem [VERY IMP]",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/word-wrap/0"
+              },
+              {
+                "id": 59,
+                "Q_No": 14,
+                "Question_Name": "EDIT Distance [Very Imp]",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/edit-distance3702/1"
+              },
+              {
+                "id": 60,
+                "Q_No": 15,
+                "Question_Name": "Find next greater number with same set of digits. [Very Very IMP]",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/next-permutation/0"
+              },
+              {
+                "id": 61,
+                "Q_No": 16,
+                "Question_Name": "Balanced Parenthesis problem.[Imp]",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/parenthesis-checker/0"
+              },
+              {
+                "id": 62,
+                "Q_No": 17,
+                "Question_Name": "Word break Problem[ Very Imp]",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/word-break/0"
+              },
+              {
+                "id": 63,
+                "Q_No": 18,
+                "Question_Name": "Rabin Karp Algo",
+                "Problem_link": "https://www.geeksforgeeks.org/rabin-karp-algorithm-for-pattern-searching/"
+              },
+              {
+                "id": 64,
+                "Q_No": 19,
+                "Question_Name": "KMP Algo",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-prefix-suffix2527/1"
+              },
+              {
+                "id": 65,
+                "Q_No": 20,
+                "Question_Name": "Convert a Sentence into its equivalent mobile numeric keypad sequence.",
+                "Problem_link": "https://www.geeksforgeeks.org/convert-sentence-equivalent-mobile-numeric-keypad-sequence/"
+              },
+              {
+                "id": 66,
+                "Q_No": 21,
+                "Question_Name": "Minimum number of bracket reversals needed to make an expression balanced.",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/count-the-reversals/0"
+              },
+              {
+                "id": 67,
+                "Q_No": 22,
+                "Question_Name": "Count All Palindromic Subsequence in a given String.",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/count-palindromic-subsequences/1"
+              },
+              {
+                "id": 68,
+                "Q_No": 23,
+                "Question_Name": "Count of number of given string in 2D character array",
+                "Problem_link": "https://www.geeksforgeeks.org/find-count-number-given-string-present-2d-character-array/"
+              },
+              {
+                "id": 69,
+                "Q_No": 24,
+                "Question_Name": "Search a Word in a 2D Grid of characters.",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/find-the-string-in-grid/0"
+              },
+              {
+                "id": 70,
+                "Q_No": 25,
+                "Question_Name": "Boyer Moore Algorithm for Pattern Searching.",
+                "Problem_link": "https://www.geeksforgeeks.org/boyer-moore-algorithm-for-pattern-searching/"
+              },
+              {
+                "id": 71,
+                "Q_No": 26,
+                "Question_Name": "Converting Roman Numerals to Decimal",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/roman-number-to-integer/0"
+              },
+              {
+                "id": 72,
+                "Q_No": 27,
+                "Question_Name": "Longest Common Prefix",
+                "Problem_link": "https://leetcode.com/problems/longest-common-prefix/"
+              },
+              {
+                "id": 73,
+                "Q_No": 28,
+                "Question_Name": "Number of flips to make binary string alternate",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/min-number-of-flips/0"
+              },
+              {
+                "id": 74,
+                "Q_No": 29,
+                "Question_Name": "Find the first repeated word in string.",
+                "Problem_link": "https://www.geeksforgeeks.org/find-first-repeated-word-string/"
+              },
+              {
+                "id": 75,
+                "Q_No": 30,
+                "Question_Name": "Minimum number of swaps for bracket balancing.",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-swaps-for-bracket-balancing/0"
+              },
+              {
+                "id": 76,
+                "Q_No": 31,
+                "Question_Name": "Find the longest common subsequence between two strings.",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-common-subsequence/0"
+              },
+              {
+                "id": 77,
+                "Q_No": 32,
+                "Question_Name": "Program to generate all possible valid IP addresses from given  string.",
+                "Problem_link": "https://www.geeksforgeeks.org/program-generate-possible-valid-ip-addresses-given-string/"
+              },
+              {
+                "id": 78,
+                "Q_No": 33,
+                "Question_Name": "Write a program to find the smallest window that contains all characters of string itself.",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/smallest-distant-window/0"
+              },
+              {
+                "id": 79,
+                "Q_No": 34,
+                "Question_Name": "Rearrange characters in a string such that no two adjacent are same",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/rearrange-characters/0"
+              },
+              {
+                "id": 80,
+                "Q_No": 35,
+                "Question_Name": "Minimum characters to be added at front to make string palindrome",
+                "Problem_link": "https://www.geeksforgeeks.org/minimum-characters-added-front-make-string-palindrome/"
+              },
+              {
+                "id": 81,
+                "Q_No": 36,
+                "Question_Name": "Given a sequence of words, print all anagrams together",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/k-anagrams-1/0"
+              },
+              {
+                "id": 82,
+                "Q_No": 37,
+                "Question_Name": "Find the smallest window in a string containing all characters of another string",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/smallest-window-in-a-string-containing-all-the-characters-of-another-string/0"
+              },
+              {
+                "id": 83,
+                "Q_No": 38,
+                "Question_Name": "Recursively remove all adjacent duplicates",
+                "Problem_link": "https://practice.geeksforgeeks.org/problems/consecutive-elements/0"
+              },
+              {
+                "id": 84,
+                "Q_No": 39,
+                "Question_Name": "String matching where one string contains wildcard characters",
+                "Problem_link": "https://www.geeksforgeeks.org/wildcard-character-matching/"
+              },
+              {
+                "id": 85,
+                "Q_No": 40,
+                "Question_Name": "Function to find Number of customers who could not get a computer",
+                "Problem_link": "https://www.geeksforgeeks.org/function-to-find-number-of-customers-who-could-not-get-a-computer/"
+              },
+              {
+                "id": 86,
+                "Q_No": 41,
+                "Question_Name": "Transform One String to Another using Minimum Number of Given Operation",
+                "Problem_link": "https://www.geeksforgeeks.org/transform-one-string-to-another-using-minimum-number-of-given-operation/"
+              },
+              {
+                "id": 87,
+                "Q_No": 42,
+                "Question_Name": "Check if two given strings are isomorphic to each other",
+                "Problem_link": "https://www.geeksforgeeks.org/check-if-two-given-strings-are-isomorphic-to-each-other/"
+              },
+              {
+                "id": 88,
+                "Q_No": 43,
+                "Question_Name": "Recursively print all sentences that can be formed from list of word lists",
+                "Problem_link": "https://www.geeksforgeeks.org/recursively-print-all-sentences-that-can-be-formed-from-list-of-word-lists/"
+              }
+            ],
+           "Searching and Sorting": [
+                {
+                  "id": 89,
+                  "Q_No": 1,
+                  "Question_Name": "Find first and last positions of an element in a sorted array",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/first-and-last-occurrences-of-x/0"
+                },
+                {
+                  "id": 90,
+                  "Q_No": 2,
+                  "Question_Name": "Find a Fixed Point (Value equal to index) in a given array",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/value-equal-to-index-value1330/1"
+                },
+                {
+                  "id": 91,
+                  "Q_No": 3,
+                  "Question_Name": "Search in a rotated sorted array",
+                  "Problem_link": "https://leetcode.com/problems/search-in-rotated-sorted-array/"
+                },
+                {
+                  "id": 92,
+                  "Q_No": 4,
+                  "Question_Name": "square root of an integer",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/count-squares3649/1"
+                },
+                {
+                  "id": 93,
+                  "Q_No": 5,
+                  "Question_Name": "Maximum and minimum of an array using minimum number of comparisons",
+                  "Problem_link": "https://www.geeksforgeeks.org/maximum-and-minimum-in-an-array/"
+                },
+                {
+                  "id": 94,
+                  "Q_No": 6,
+                  "Question_Name": "Optimum location of point to minimize total distance",
+                  "Problem_link": "https://www.geeksforgeeks.org/optimum-location-point-minimize-total-distance/"
+                },
+                {
+                  "id": 95,
+                  "Q_No": 7,
+                  "Question_Name": "Find the repeating and the missing",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/find-missing-and-repeating2512/1"
+                },
+                {
+                  "id": 96,
+                  "Q_No": 8,
+                  "Question_Name": "find majority element",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/majority-element/0"
+                },
+                {
+                  "id": 97,
+                  "Q_No": 9,
+                  "Question_Name": "Searching in an array where adjacent differ by at most k",
+                  "Problem_link": "https://www.geeksforgeeks.org/searching-array-adjacent-differ-k/"
+                },
+                {
+                  "id": 98,
+                  "Q_No": 10,
+                  "Question_Name": "find a pair with a given difference",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/find-pair-given-difference/0"
+                },
+                {
+                  "id": 99,
+                  "Q_No": 11,
+                  "Question_Name": "find four elements that sum to a given value",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/find-all-four-sum-numbers/0"
+                },
+                {
+                    "id": 100,
+                    "Q_No": 12,
+                    "Question_Name": "maximum sum such that no 2 elements are adjacent",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/stickler-theif/0"
+                  },
+                  {
+                    "id": 101,
+                    "Q_No": 13,
+                    "Question_Name": "Count triplet with sum smaller than a given value",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/count-triplets-with-sum-smaller-than-x5549/1"
+                  },
+                  {
+                    "id": 102,
+                    "Q_No": 14,
+                    "Question_Name": "merge 2 sorted arrays",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/merge-two-sorted-arrays5135/1"
+                  },
+                  {
+                    "id": 103,
+                    "Q_No": 15,
+                    "Question_Name": "print all subarrays with 0 sum",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/zero-sum-subarrays/0"
+                  },
+                  {
+                    "id": 104,
+                    "Q_No": 16,
+                    "Question_Name": "Product array Puzzle",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/product-array-puzzle/0"
+                  },
+                  {
+                    "id": 105,
+                    "Q_No": 17,
+                    "Question_Name": "Sort array according to count of set bits",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/sort-by-set-bit-count/0"
+                  },
+                  {
+                    "id": 106,
+                    "Q_No": 18,
+                    "Question_Name": "minimum no. of swaps required to sort the array",
+                    "Problem_link": "https://www.geeksforgeeks.org/minimum-number-swaps-required-sort-array/"
+                  },
+                  {
+                    "id": 107,
+                    "Q_No": 19,
+                    "Question_Name": "Bishu and Soldiers",
+                    "Problem_link": "https://www.hackerearth.com/practice/algorithms/searching/binary-search/practice-problems/algorithm/bishu-and-soldiers/"
+                  },
+                  {
+                    "id": 108,
+                    "Q_No": 20,
+                    "Question_Name": "Rasta and Kheshtak",
+                    "Problem_link": "https://www.hackerearth.com/practice/algorithms/searching/binary-search/practice-problems/algorithm/rasta-and-kheshtak/"
+                  },
+                  {
+                    "id": 109,
+                    "Q_No": 21,
+                    "Question_Name": "Kth smallest number again",
+                    "Problem_link": "https://www.hackerearth.com/practice/algorithms/searching/binary-search/practice-problems/algorithm/kth-smallest-number-again-2/"
+                  },
+                  {
+                    "id": 110,
+                    "Q_No": 22,
+                    "Question_Name": "Find pivot element in a sorted array",
+                    "Problem_link": "http://theoryofprogramming.com/2017/12/16/find-pivot-element-sorted-rotated-array/"
+                  },
+                  {
+                    "id": 111,
+                    "Q_No": 23,
+                    "Question_Name": "K-th Element of Two Sorted Arrays",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/k-th-element-of-two-sorted-array/0"
+                  },
+                  {
+                    "id": 112,
+                    "Q_No": 24,
+                    "Question_Name": "Aggressive cows",
+                    "Problem_link": "https://www.spoj.com/problems/AGGRCOW/"
+                  },
+                  {
+                    "id": 113,
+                    "Q_No": 25,
+                    "Question_Name": "Book Allocation Problem",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/allocate-minimum-number-of-pages/0"
+                  },
+                  {
+                    "id": 114,
+                    "Q_No": 26,
+                    "Question_Name": "EKOSPOJ:",
+                    "Problem_link": "https://www.spoj.com/problems/EKO/"
+                  },
+                  {
+                    "id": 115,
+                    "Q_No": 27,
+                    "Question_Name": "Job Scheduling Algo",
+                    "Problem_link": "https://www.geeksforgeeks.org/job-sequencing-problem/"
+                  },
+                  {
+                    "id": 116,
+                    "Q_No": 28,
+                    "Question_Name": "Missing Number in AP",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/arithmetic-number/0"
+                  },
+                  {
+                    "id": 117,
+                    "Q_No": 29,
+                    "Question_Name": "Smallest number with atleastn trailing zeroes infactorial",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/smallest-factorial-number5929/1"
+                  },
+                  {
+                    "id": 118,
+                    "Q_No": 30,
+                    "Question_Name": "Painters Partition Problem:",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/allocate-minimum-number-of-pages/0"
+                  },
+                  {
+                    "id": 119,
+                    "Q_No": 31,
+                    "Question_Name": "ROTI-Prata SPOJ",
+                    "Problem_link": "https://www.spoj.com/problems/PRATA/"
+                  },
+                  {
+                    "id": 120,
+                    "Q_No": 32,
+                    "Question_Name": "DoubleHelix SPOJ",
+                    "Problem_link": "https://www.spoj.com/problems/ANARC05B/"
+                  },
+                  {
+                    "id": 121,
+                    "Q_No": 33,
+                    "Question_Name": "Subset Sums",
+                    "Problem_link": "https://www.spoj.com/problems/SUBSUMS/"
+                  },
+                  {
+                    "id": 122,
+                    "Q_No": 34,
+                    "Question_Name": "Find the inversion count",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/inversion-of-array/0"
+                  },
+                  {
+                    "id": 123,
+                    "Q_No": 35,
+                    "Question_Name": "Implement Merge-sort in-place",
+                    "Problem_link": "https://www.geeksforgeeks.org/in-place-merge-sort/"
+                  },
+                  {
+                    "id": 124,
+                    "Q_No": 36,
+                    "Question_Name": "Partitioning and Sorting Arrays with Many Repeated Entries",
+                    "Problem_link": "https://www.baeldung.com/java-sorting-arrays-with-repeated-entries"
+                  }
+              ],
+             "LinkedList": [
+                {
+                  "id": 125,
+                  "Q_No": 1,
+                  "Question_Name": "Write a Program to reverse the Linked List. (Both Iterative and recursive)",
+                  "Problem_link": "https://www.geeksforgeeks.org/reverse-a-linked-list/"
+                },
+                {
+                  "id": 126,
+                  "Q_No": 2,
+                  "Question_Name": "Reverse a Linked List in group of Given Size. [Very Imp]",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/reverse-a-linked-list-in-groups-of-given-size/1"
+                },
+                {
+                  "id": 127,
+                  "Q_No": 3,
+                  "Question_Name": "Write a program to Detect loop in a linked list.",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/detect-loop-in-linked-list/1"
+                },
+                {
+                  "id": 128,
+                  "Q_No": 4,
+                  "Question_Name": "Write a program to Delete loop in a linked list.",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/remove-loop-in-linked-list/1"
+                },
+                {
+                  "id": 129,
+                  "Q_No": 5,
+                  "Question_Name": "Find the starting point of the loop.",
+                  "Problem_link": "https://www.geeksforgeeks.org/find-first-node-of-loop-in-a-linked-list/"
+                },
+                {
+                  "id": 130,
+                  "Q_No": 6,
+                  "Question_Name": "Remove Duplicates in a sorted Linked List.",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/remove-duplicate-element-from-sorted-linked-list/1"
+                },
+                {
+                  "id": 131,
+                  "Q_No": 7,
+                  "Question_Name": "Remove Duplicates in a Un-sorted Linked List.",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/remove-duplicates-from-an-unsorted-linked-list/1"
+                },
+                {
+                  "id": 132,
+                  "Q_No": 8,
+                  "Question_Name": "Write a Program to Move the last element to Front in a Linked List.",
+                  "Problem_link": "https://www.geeksforgeeks.org/move-last-element-to-front-of-a-given-linked-list/"
+                },
+                {
+                  "id": 133,
+                  "Q_No": 9,
+                  "Question_Name": "Add “1” to a number represented as a Linked List.",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/add-1-to-a-number-represented-as-linked-list/1"
+                },
+                {
+                  "id": 134,
+                  "Q_No": 10,
+                  "Question_Name": "Add two numbers represented by linked lists.",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/add-two-numbers-represented-by-linked-lists/1"
+                }, {
+                    "id": 135,
+                    "Q_No": 11,
+                    "Question_Name": "Intersection of two Sorted Linked List.",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/intersection-of-two-sorted-linked-lists/1"
+                  },
+                  {
+                    "id": 136,
+                    "Q_No": 12,
+                    "Question_Name": "Intersection Point of two Linked Lists.",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/intersection-point-in-y-shapped-linked-lists/1"
+                  },
+                  {
+                    "id": 137,
+                    "Q_No": 13,
+                    "Question_Name": "Merge Sort For Linked lists.[Very Important]",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/sort-a-linked-list/1"
+                  },
+                  {
+                    "id": 138,
+                    "Q_No": 14,
+                    "Question_Name": "Quicksort for Linked Lists.[Very Important]",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/quick-sort-on-linked-list/1"
+                  },
+                  {
+                    "id": 139,
+                    "Q_No": 15,
+                    "Question_Name": "Find the middle Element of a linked list.",
+                    "Problem_link": "https://leetcode.com/problems/middle-of-the-linked-list/"
+                  }, {
+                    "id": 140,
+                    "Q_No": 16,
+                    "Question_Name": "Check if a linked list is a circular linked list.",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/circular-linked-list/1"
+                  },
+                  {
+                    "id": 141,
+                    "Q_No": 17,
+                    "Question_Name": "Split a Circular linked list into two halves.",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/split-a-circular-linked-list-into-two-halves/1"
+                  },
+                  {
+                    "id": 142,
+                    "Q_No": 18,
+                    "Question_Name": "Write a Program to check whether the Singly Linked list is a palindrome or not.",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/check-if-linked-list-is-pallindrome/1"
+                  },
+                  {
+                    "id": 143,
+                    "Q_No": 19,
+                    "Question_Name": "Deletion and Reverse in Linked list",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/deletion-and-reverse-in-linked-list/1/"
+                  },
+                  {
+                    "id": 144,
+                    "Q_No": 20,
+                    "Question_Name": "Reverse a Doubly Linked list.",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/reverse-a-doubly-linked-list/1"
+                  },
+                  {
+                    "id": 145,
+                    "Q_No": 21,
+                    "Question_Name": "Find pairs with a given sum in a DLL.",
+                    "Problem_link": "https://www.geeksforgeeks.org/find-pairs-given-sum-doubly-linked-list/"
+                  },
+                  {
+                    "id": 146,
+                    "Q_No": 22,
+                    "Question_Name": "Count triplets in a sorted DLL whose sum is equal to given value “X”.",
+                    "Problem_link": "https://www.geeksforgeeks.org/count-triplets-sorted-doubly-linked-list-whose-sum-equal-given-value-x/"
+                  },
+                  {
+                    "id": 147,
+                    "Q_No": 23,
+                    "Question_Name": "Sort a “k”sorted Doubly Linked list.[Very IMP]",
+                    "Problem_link": "https://www.codingninjas.com/codestudio/problems/sort-a-k-sorted-doubly-linked-list_1118118"
+                  },
+                  {
+                    "id": 148,
+                    "Q_No": 24,
+                    "Question_Name": "Rotate DoublyLinked list by N nodes.",
+                    "Problem_link": "https://www.geeksforgeeks.org/rotate-doubly-linked-list-n-nodes/"
+                  },
+                  {
+                    "id": 149,
+                    "Q_No": 25,
+                    "Question_Name": "Rotate a Doubly Linked list in group of Given Size.[Very IMP]",
+                    "Problem_link": "https://www.geeksforgeeks.org/reverse-doubly-linked-list-groups-given-size/"
+                  },
+                  {
+                    "id": 150,
+                    "Q_No": 26,
+                    "Question_Name": "Can we reverse a linked list in less than O(n) ?",
+                    "Problem_link": "https://www.geeksforgeeks.org/can-we-reverse-a-linked-list-in-less-than-on/"
+                  },
+                  {
+                    "id": 151,
+                    "Q_No": 27,
+                    "Question_Name": "Why Quicksort is preferred for. Arrays and Merge Sort for LinkedLists ?",
+                    "Problem_link": "https://www.geeksforgeeks.org/why-quick-sort-preferred-for-arrays-and-merge-sort-for-linked-lists/"
+                  },
+                  {
+                    "id": 152,
+                    "Q_No": 28,
+                    "Question_Name": "Flatten a Linked List",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/flattening-a-linked-list/1"
+                  },
+                  {
+                    "id": 153,
+                    "Q_No": 29,
+                    "Question_Name": "Sort a LL of 0's, 1's and 2's",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/given-a-linked-list-of-0s-1s-and-2s-sort-it/1"
+                  },    {
+                    "id": 154,
+                    "Q_No": 30,
+                    "Question_Name": "Clone a linked list with next and random pointer",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/clone-a-linked-list-with-next-and-random-pointer/1"
+                  },
+                  {
+                    "id": 155,
+                    "Q_No": 31,
+                    "Question_Name": "Merge K sorted Linked list",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/merge-k-sorted-linked-lists/1"
+                  },
+                  {
+                    "id": 156,
+                    "Q_No": 32,
+                    "Question_Name": "Multiply 2 no. represented by LL",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/multiply-two-linked-lists/1"
+                  },
+                  {
+                    "id": 157,
+                    "Q_No": 33,
+                    "Question_Name": "Delete nodes which have a greater value on right side",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/delete-nodes-having-greater-value-on-right/1"
+                  },
+                  {
+                    "id": 158,
+                    "Q_No": 34,
+                    "Question_Name": "Segregate even and odd nodes in a Linked List",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/segregate-even-and-odd-nodes-in-a-linked-list/0"
+                  },
+                  {
+                    "id": 159,
+                    "Q_No": 35,
+                    "Question_Name": "Program for n’th node from the end of a Linked List",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/nth-node-from-end-of-linked-list/1"
+                  },
+                  {
+                    "id": 160,
+                    "Q_No": 36,
+                    "Question_Name": "Find the first non-repeating character from a stream of characters",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/first-non-repeating-character-in-a-stream/0"
+                  }
+              ],
+             "Binary Trees": [
+                {
+                  "id": 161,
+                  "Q_No": 1,
+                  "Question_Name": "level order traversal",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/level-order-traversal/1"
+                },
+                {
+                  "id": 162,
+                  "Q_No": 2,
+                  "Question_Name": "Reverse Level Order traversal",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/reverse-level-order-traversal/1"
+                },
+                {
+                  "id": 163,
+                  "Q_No": 3,
+                  "Question_Name": "Height of a tree",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/height-of-binary-tree/1"
+                },
+                {
+                  "id": 164,
+                  "Q_No": 4,
+                  "Question_Name": "Diameter of a tree",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/diameter-of-binary-tree/1"
+                },
+                {
+                  "id": 165,
+                  "Q_No": 5,
+                  "Question_Name": "Mirror of a tree",
+                  "Problem_link": "https://leetcode.com/problems/invert-binary-tree/"
+                },
+                {
+                  "id": 166,
+                  "Q_No": 6,
+                  "Question_Name": "Inorder Traversal of a tree both using recursion and Iteration",
+                  "Problem_link": "https://www.techiedelight.com/inorder-tree-traversal-iterative-recursive/"
+                },
+                {
+                  "id": 167,
+                  "Q_No": 7,
+                  "Question_Name": "Preorder Traversal of a tree both using recursion and Iteration",
+                  "Problem_link": "https://www.techiedelight.com/preorder-tree-traversal-iterative-recursive/"
+                },
+                {
+                  "id": 168,
+                  "Q_No": 8,
+                  "Question_Name": "Postorder Traversal of a tree both using recursion and Iteration",
+                  "Problem_link": "https://www.techiedelight.com/postorder-tree-traversal-iterative-recursive/"
+                },
+                {
+                    "id": 169,
+                    "Q_No": 9,
+                    "Question_Name": "Left View of a tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/left-view-of-binary-tree/1"
+                  },
+                  {
+                    "id": 170,
+                    "Q_No": 10,
+                    "Question_Name": "Right View of Tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/right-view-of-binary-tree/1"
+                  },
+                  {
+                    "id": 171,
+                    "Q_No": 11,
+                    "Question_Name": "Top View of a tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/top-view-of-binary-tree/1"
+                  },
+                  {
+                    "id": 172,
+                    "Q_No": 12,
+                    "Question_Name": "Bottom View of a tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/bottom-view-of-binary-tree/1"
+                  },
+                  {
+                    "id": 173,
+                    "Q_No": 13,
+                    "Question_Name": "Zig-Zag traversal of a binary tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/zigzag-tree-traversal/1"
+                  },
+                  {
+                    "id": 174,
+                    "Q_No": 14,
+                    "Question_Name": "Check if a tree is balanced or not",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/check-for-balanced-tree/1"
+                  },
+                  {
+                    "id": 175,
+                    "Q_No": 15,
+                    "Question_Name": "Diagonal Traversal of a Binary tree",
+                    "Problem_link": "https://www.geeksforgeeks.org/diagonal-traversal-of-binary-tree/"
+                  },
+                  {
+                    "id": 176,
+                    "Q_No": 16,
+                    "Question_Name": "Boundary traversal of a Binary tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/boundary-traversal-of-binary-tree/1"
+                  },
+                  {
+                    "id": 177,
+                    "Q_No": 17,
+                    "Question_Name": "Construct Binary Tree from String with Bracket Representation",
+                    "Problem_link": "https://www.geeksforgeeks.org/construct-binary-tree-string-bracket-representation/"
+                  },
+                  {
+                    "id": 178,
+                    "Q_No": 18,
+                    "Question_Name": "Convert Binary tree into Doubly Linked List",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/binary-tree-to-dll/1"
+                  },
+                  {
+                    "id": 179,
+                    "Q_No": 19,
+                    "Question_Name": "Convert Binary tree into Sum tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/transform-to-sum-tree/1"
+                  },
+                  {
+                    "id": 180,
+                    "Q_No": 20,
+                    "Question_Name": "Construct Binary tree from Inorder and preorder traversal",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/construct-tree-1/1"
+                  },
+                  {
+                    "id": 181,
+                    "Q_No": 21,
+                    "Question_Name": "Find minimum swaps required to convert a Binary tree into BST",
+                    "Problem_link": "https://www.geeksforgeeks.org/minimum-swap-required-convert-binary-tree-binary-search-tree/"
+                  },
+                  {
+                    "id": 182,
+                    "Q_No": 22,
+                    "Question_Name": "Check if Binary tree is Sum tree or not",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/sum-tree/1"
+                  },
+                  {
+                    "id": 183,
+                    "Q_No": 23,
+                    "Question_Name": "Check if all leaves are at same level",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/leaves-at-same-level/1"
+                  },
+                  {
+                    "id": 184,
+                    "Q_No": 24,
+                    "Question_Name": "Check if a Binary Tree contains duplicate subtrees of size 2 or more [ IMP ]",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/duplicate-subtree-in-binary-tree/1"
+                  },
+                  {
+                    "id": 185,
+                    "Q_No": 25,
+                    "Question_Name": "Check if 2 trees are mirror or not",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/check-mirror-in-n-ary-tree/0"
+                  },
+                  {
+                    "id": 186,
+                    "Q_No": 26,
+                    "Question_Name": "Sum of Nodes on the Longest path from root to leaf node",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/sum-of-the-longest-bloodline-of-a-tree/1"
+                  },
+                  {
+                    "id": 187,
+                    "Q_No": 27,
+                    "Question_Name": "Check if given graph is tree or not.  [ IMP ]",
+                    "Problem_link": "https://www.geeksforgeeks.org/check-given-graph-tree/"
+                  },
+                  {
+                    "id": 188,
+                    "Q_No": 28,
+                    "Question_Name": "Find Largest subtree sum in a tree",
+                    "Problem_link": "https://www.geeksforgeeks.org/find-largest-subtree-sum-tree/"
+                  },
+                  {
+                    "id": 189,
+                    "Q_No": 29,
+                    "Question_Name": "Maximum Sum of nodes in Binary tree such that no two are adjacent",
+                    "Problem_link": "https://www.geeksforgeeks.org/maximum-sum-nodes-binary-tree-no-two-adjacent/"
+                  },
+                  {
+                    "id": 190,
+                    "Q_No": 30,
+                    "Question_Name": "Print all 'K' Sum paths in a Binary tree",
+                    "Problem_link": "https://www.geeksforgeeks.org/print-k-sum-paths-binary-tree/"
+                  },
+                  {
+                    "id": 191,
+                    "Q_No": 31,
+                    "Question_Name": "Find LCA in a Binary tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-binary-tree/1"
+                  },
+                  {
+                    "id": 192,
+                    "Q_No": 32,
+                    "Question_Name": "Find distance between 2 nodes in a Binary tree",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1"
+                  },
+                  {
+                    "id": 193,
+                    "Q_No": 33,
+                    "Question_Name": "Kth Ancestor of node in a Binary tree",
+                    "Problem_link": "https://www.geeksforgeeks.org/kth-ancestor-node-binary-tree-set-2/"
+                  },
+                  {
+                    "id": 194,
+                    "Q_No": 34,
+                    "Question_Name": "Find all Duplicate subtrees in a Binary tree [ IMP ]",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/duplicate-subtrees/1"
+                  },
+                  {
+                    "id": 195,
+                    "Q_No": 35,
+                    "Question_Name": "Tree Isomorphism Problem",
+                    "Problem_link": "https://practice.geeksforgeeks.org/problems/check-if-tree-is-isomorphic/1"
+                  }
+              ],
+            "BST": [
+                {
+                  "id": 196,
+                  "Q_No": 1,
+                  "Question_Name": "Find a value in a BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/search-a-node-in-bst/1/"
+                },
+                {
+                  "id": 197,
+                  "Q_No": 2,
+                  "Question_Name": "Deletion of a node in a BST",
+                  "Problem_link": "https://leetcode.com/problems/delete-node-in-a-bst/"
+                },
+                {
+                  "id": 198,
+                  "Q_No": 3,
+                  "Question_Name": "Find min and max value in a BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-element-in-bst/1"
+                },
+                {
+                  "id": 199,
+                  "Q_No": 4,
+                  "Question_Name": "Find inorder successor and inorder predecessor in a BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/predecessor-and-successor/1"
+                },
+                {
+                  "id": 200,
+                  "Q_No": 5,
+                  "Question_Name": "Check if a tree is a BST or not",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/check-for-bst/1"
+                },
+                {
+                  "id": 201,
+                  "Q_No": 6,
+                  "Question_Name": "Populate Inorder successor of all nodes",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/populate-inorder-successor-for-all-nodes/1"
+                },
+                {
+                  "id": 202,
+                  "Q_No": 7,
+                  "Question_Name": "Find LCA of 2 nodes in a BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-bst/1"
+                },
+                {
+                  "id": 203,
+                  "Q_No": 8,
+                  "Question_Name": "Construct BST from preorder traversal",
+                  "Problem_link": "https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/"
+                },
+                {
+                  "id": 204,
+                  "Q_No": 9,
+                  "Question_Name": "Convert Binary tree into BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/binary-tree-to-bst/1"
+                },
+                {
+                  "id": 205,
+                  "Q_No": 10,
+                  "Question_Name": "Convert a normal BST into a Balanced BST",
+                  "Problem_link": "https://www.geeksforgeeks.org/convert-normal-bst-balanced-bst/"
+                },
+                {
+                  "id": 206,
+                  "Q_No": 11,
+                  "Question_Name": "Merge two BST [ V.V.V>IMP ]",
+                  "Problem_link": "https://www.geeksforgeeks.org/merge-two-balanced-binary-search-trees/"
+                },
+                {
+                  "id": 207,
+                  "Q_No": 12,
+                  "Question_Name": "Find Kth largest element in a BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/kth-largest-element-in-bst/1"
+                },
+                {
+                  "id": 208,
+                  "Q_No": 13,
+                  "Question_Name": "Find Kth smallest element in a BST",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/find-k-th-smallest-element-in-bst/1"
+                },
+                {
+                  "id": 209,
+                  "Q_No": 14,
+                  "Question_Name": "Count pairs from 2 BST whose sum is equal to given value 'X'",
+                  "Problem_link": "https://practice.geeksforgeeks.org/problems/brothers-from-different-root/1"
+                }, 
+                {
+                    "id": 210,
+                    "Q_No": 15,
+                    "Question_Name": "Find the median of BST in O(n) time and O(1) space",
+                    "Problem_link": "https://www.geeksforgeeks.org/find-median-bst-time-o1-space/"
+                 },  
+                   {
+                      "id": 211,
+                      "Q_No": 16,
+                      "Question_Name": "Count BST nodes that lie in a given range",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/count-bst-nodes-that-lie-in-a-given-range/1"
+                    },
+                    {
+                      "id": 212,
+                      "Q_No": 17,
+                      "Question_Name": "Replace every element with the least greater element on its right",
+                      "Problem_link": "https://www.geeksforgeeks.org/replace-every-element-with-the-least-greater-element-on-its-right/"
+                    },
+                    {
+                      "id": 213,
+                      "Q_No": 18,
+                      "Question_Name": "Given 'n' appointments, find the conflicting appointments",
+                      "Problem_link": "https://www.geeksforgeeks.org/given-n-appointments-find-conflicting-appointments/"
+                    },
+                    {
+                      "id": 214,
+                      "Q_No": 19,
+                      "Question_Name": "Check preorder is valid or not",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/preorder-to-postorder/0"
+                    },
+                    {
+                      "id": 215,
+                      "Q_No": 20,
+                      "Question_Name": "Check whether BST contains Dead end",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/check-whether-bst-contains-dead-end/1"
+                    },
+                    {
+                      "id": 216,
+                      "Q_No": 21,
+                      "Question_Name": "Largest BST in a Binary Tree [ V.V.V.V.V IMP ]",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/largest-bst/1"
+                    },
+                    {
+                      "id": 217,
+                      "Q_No": 22,
+                      "Question_Name": "Flatten BST to sorted list",
+                      "Problem_link": "https://www.geeksforgeeks.org/flatten-bst-to-sorted-list-increasing-order/"
+                    }
+                ],
+               "Greedy": [
+                    {
+                      "id": 218,
+                      "Q_No": 1,
+                      "Question_Name": "Activity Selection Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/activity-selection-1587115620/1/"
+                    },
+                    {
+                      "id": 219,
+                      "Q_No": 2,
+                      "Question_Name": "Job SequencingProblem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/job-sequencing-problem/0"
+                    },
+                    {
+                      "id": 220,
+                      "Q_No": 3,
+                      "Question_Name": "Huffman Coding",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/huffman-encoding/0"
+                    },
+                    {
+                      "id": 221,
+                      "Q_No": 4,
+                      "Question_Name": "Water Connection Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/water-connection-problem/0"
+                    },
+                    {
+                      "id": 222,
+                      "Q_No": 5,
+                      "Question_Name": "Fractional Knapsack Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/fractional-knapsack/0"
+                    },
+                    {
+                      "id": 223,
+                      "Q_No": 6,
+                      "Question_Name": "Greedy Algorithm to find Minimum number of Coins",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/coin-piles/0"
+                    },
+                    {
+                      "id": 224,
+                      "Q_No": 7,
+                      "Question_Name": "Maximum trains for which stoppage can be provided",
+                      "Problem_link": "https://www.geeksforgeeks.org/maximum-trains-stoppage-can-provided/"
+                    },
+                    {
+                      "id": 225,
+                      "Q_No": 8,
+                      "Question_Name": "Minimum Platforms Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-platforms/0"
+                    },
+                    {
+                      "id": 226,
+                      "Q_No": 9,
+                      "Question_Name": "Buy Maximum Stocks if i stocks can be bought on i-th day",
+                      "Problem_link": "https://www.geeksforgeeks.org/buy-maximum-stocks-stocks-can-bought-th-day/"
+                    },
+                    {
+                      "id": 227,
+                      "Q_No": 10,
+                      "Question_Name": "Find the minimum and maximum amount to buy all N candies",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/shop-in-candy-store/0"
+                    },
+                    {
+                      "id": 228,
+                      "Q_No": 11,
+                      "Question_Name": "Minimize Cash Flow among a given set of friends who have borrowed money from each other",
+                      "Problem_link": "https://www.geeksforgeeks.org/minimize-cash-flow-among-given-set-friends-borrowed-money/"
+                    },
+                    {
+                      "id": 229,
+                      "Q_No": 12,
+                      "Question_Name": "Minimum Cost to cut a board into squares",
+                      "Problem_link": "https://www.geeksforgeeks.org/minimum-cost-cut-board-squares/"
+                    },
+                    {
+                      "id": 230,
+                      "Q_No": 13,
+                      "Question_Name": "Check if it is possible to survive on Island",
+                      "Problem_link": "https://www.geeksforgeeks.org/survival/"
+                    },
+                    {
+                      "id": 231,
+                      "Q_No": 14,
+                      "Question_Name": "Find maximum meetings in one room",
+                      "Problem_link": "https://www.geeksforgeeks.org/find-maximum-meetings-in-one-room/"
+                    },  
+                    {
+                        "id": 232,
+                        "Q_No": 15,
+                        "Question_Name": "Maximum product subset of an array",
+                        "Problem_link": "https://www.geeksforgeeks.org/maximum-product-subset-array/"
+                      },
+                      {
+                        "id": 233,
+                        "Q_No": 16,
+                        "Question_Name": "Maximize array sum after K negations",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/maximize-sum-after-k-negations/0"
+                      },
+                      {
+                        "id": 234,
+                        "Q_No": 17,
+                        "Question_Name": "Maximize the sum of arr[i]*i",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/maximize-arrii-of-an-array/0"
+                      },
+                      {
+                        "id": 233,
+                        "Q_No": 17,
+                        "Question_Name": "Maximize the sum of arr[i]*i",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/maximize-arrii-of-an-array/0"
+                      },
+                      {
+                        "id": 234,
+                        "Q_No": 18,
+                        "Question_Name": "Maximum sum of absolute difference of an array",
+                        "Problem_link": "https://www.geeksforgeeks.org/maximum-sum-absolute-difference-array/"
+                      },
+                      {
+                        "id": 235,
+                        "Q_No": 19,
+                        "Question_Name": "Maximize sum of consecutive differences in a circular array",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/swap-and-maximize/0"
+                      },
+                      {
+                        "id": 236,
+                        "Q_No": 20,
+                        "Question_Name": "Minimum sum of absolute difference of pairs of two arrays",
+                        "Problem_link": "https://www.geeksforgeeks.org/minimum-sum-absolute-difference-pairs-two-arrays/"
+                      },
+                      {
+                        "id": 237,
+                        "Q_No": 21,
+                        "Question_Name": "Program for Shortest Job First (or SJF) CPU Scheduling",
+                        "Problem_link": "https://www.geeksforgeeks.org/program-for-shortest-job-first-or-sjf-cpu-scheduling-set-1-non-preemptive/"
+                      },
+                      {
+                        "id": 238,
+                        "Q_No": 22,
+                        "Question_Name": "Program for Least Recently Used (LRU) Page Replacement algorithm",
+                        "Problem_link": "https://www.geeksforgeeks.org/program-for-least-recently-used-lru-page-replacement-algorithm/"
+                      },
+                      {
+                        "id": 239,
+                        "Q_No": 23,
+                        "Question_Name": "Smallest subset with sum greater than all other elements",
+                        "Problem_link": "https://www.geeksforgeeks.org/smallest-subset-sum-greater-elements/"
+                      },
+                      {
+                        "id": 240,
+                        "Q_No": 24,
+                        "Question_Name": "Chocolate Distribution Problem",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/chocolate-distribution-problem/0"
+                      },
+                      {
+                        "id": 241,
+                        "Q_No": 25,
+                        "Question_Name": "DEFKIN -Defense of a Kingdom",
+                        "Problem_link": "https://www.spoj.com/problems/DEFKIN/"
+                      },
+                      {
+                        "id": 242,
+                        "Q_No": 26,
+                        "Question_Name": "DIEHARD -DIE HARD",
+                        "Problem_link": "https://www.spoj.com/problems/DIEHARD/"
+                      },
+                      {
+                        "id": 243,
+                        "Q_No": 27,
+                        "Question_Name": "GERGOVIA -Wine trading in Gergovia",
+                        "Problem_link": "https://www.spoj.com/problems/GERGOVIA/"
+                      },
+                      {
+                        "id": 244,
+                        "Q_No": 28,
+                        "Question_Name": "Picking Up Chicks",
+                        "Problem_link": "https://www.spoj.com/problems/GCJ101BB/"
+                      },
+                      {
+                        "id": 245,
+                        "Q_No": 29,
+                        "Question_Name": "CHOCOLA –Chocolate",
+                        "Problem_link": "https://www.spoj.com/problems/CHOCOLA/"
+                      },
+                      {
+                        "id": 246,
+                        "Q_No": 30,
+                        "Question_Name": "ARRANGE -Arranging Amplifiers",
+                        "Problem_link": "https://www.spoj.com/problems/ARRANGE/"
+                      },
+                      {
+                        "id": 247,
+                        "Q_No": 31,
+                        "Question_Name": "K Centers Problem",
+                        "Problem_link": "https://www.geeksforgeeks.org/k-centers-problem-set-1-greedy-approximate-algorithm/"
+                      },
+                      {
+                        "id": 248,
+                        "Q_No": 32,
+                        "Question_Name": "Minimum Cost of ropes",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-cost-of-ropes/0"
+                      },
+                      {
+                        "id": 249,
+                        "Q_No": 33,
+                        "Question_Name": "Find smallest number with given number of digits and sum of digits",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/smallest-number5829/1"
+                      },
+                      {
+                        "id": 250,
+                        "Q_No": 34,
+                        "Question_Name": "Rearrange characters in a string such that no two adjacent are same",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/rearrange-characters/0"
+                      },
+                      {
+                        "id": 251,
+                        "Q_No": 35,
+                        "Question_Name": "Find maximum sum possible equal sum of three stacks",
+                        "Problem_link": "https://www.geeksforgeeks.org/find-maximum-sum-possible-equal-sum-three-stacks/"
+                      }
+                  ],
+                "Backtracking":  [
+                    {
+                      "id": 257,
+                      "Q_No": 1,
+                      "Question_Name": "Rat in a maze Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/rat-in-a-maze-problem/1"
+                    },
+                    {
+                      "id": 258,
+                      "Q_No": 2,
+                      "Question_Name": "Printing all solutions in N-Queen Problem",
+                      "Problem_link": "https://www.geeksforgeeks.org/printing-solutions-n-queen-problem/"
+                    },
+                    {
+                      "id": 259,
+                      "Q_No": 3,
+                      "Question_Name": "Word Break Problem using Backtracking",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/word-break-part-2/0"
+                    },
+                    {
+                      "id": 260,
+                      "Q_No": 4,
+                      "Question_Name": "Remove Invalid Parentheses",
+                      "Problem_link": "https://leetcode.com/problems/remove-invalid-parentheses/"
+                    },
+                    {
+                      "id": 261,
+                      "Q_No": 5,
+                      "Question_Name": "Sudoku Solver",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/solve-the-sudoku/0"
+                    },
+                    {
+                      "id": 262,
+                      "Q_No": 6,
+                      "Question_Name": "m Coloring Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/m-coloring-problem/0"
+                    },
+                    {
+                      "id": 263,
+                      "Q_No": 7,
+                      "Question_Name": "Print all palindromic partitions of a string",
+                      "Problem_link": "https://www.geeksforgeeks.org/given-a-string-print-all-possible-palindromic-partition/"
+                    },
+                    {
+                      "id": 264,
+                      "Q_No": 8,
+                      "Question_Name": "Subset Sum Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/subset-sum-problem2014/1"
+                    },
+                    {
+                      "id": 265,
+                      "Q_No": 9,
+                      "Question_Name": "The Knight’s tour problem",
+                      "Problem_link": "https://www.geeksforgeeks.org/the-knights-tour-problem-backtracking-1/"
+                    },
+                    {
+                      "id": 266,
+                      "Q_No": 10,
+                      "Question_Name": "Tug of War",
+                      "Problem_link": "https://www.geeksforgeeks.org/tug-of-war/"
+                    },
+                    {
+                      "id": 267,
+                      "Q_No": 11,
+                      "Question_Name": "Find shortest safe route in a path with landmines",
+                      "Problem_link": "https://www.geeksforgeeks.org/find-shortest-safe-route-in-a-path-with-landmines/"
+                    },
+                    {
+                      "id": 268,
+                      "Q_No": 12,
+                      "Question_Name": "Combinational Sum",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/combination-sum/0"
+                    },
+                    {
+                      "id": 269,
+                      "Q_No": 13,
+                      "Question_Name": "Find Maximum number possible by doing at-most K swaps",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/largest-number-in-k-swaps/0"
+                    },
+                    {
+                      "id": 270,
+                      "Q_No": 14,
+                      "Question_Name": "Print all permutations of a string",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/permutations-of-a-given-string/0"
+                    },
+                    {
+                        "id": 271,
+                        "Q_No": 15,
+                        "Question_Name": "Find if there is a path of more than k length from a source",
+                        "Problem_link": "https://www.geeksforgeeks.org/find-if-there-is-a-path-of-more-than-k-length-from-a-source/"
+                      },
+                      {
+                        "id": 272,
+                        "Q_No": 16,
+                        "Question_Name": "Longest Possible Route in a Matrix with Hurdles",
+                        "Problem_link": "https://www.geeksforgeeks.org/longest-possible-route-in-a-matrix-with-hurdles/"
+                      },
+                      {
+                        "id": 273,
+                        "Q_No": 17,
+                        "Question_Name": "Print all possible paths from top left to bottom right of a mXn matrix",
+                        "Problem_link": "https://www.geeksforgeeks.org/print-all-possible-paths-from-top-left-to-bottom-right-of-a-mxn-matrix/"
+                      },
+                      {
+                        "id": 274,
+                        "Q_No": 18,
+                        "Question_Name": "Partition of a set intoK subsets with equal sum",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/partition-array-to-k-subsets/1"
+                      },
+                      {
+                        "id": 275,
+                        "Q_No": 19,
+                        "Question_Name": "Find the K-th Permutation Sequence of first N natural numbers",
+                        "Problem_link": "https://www.geeksforgeeks.org/find-the-k-th-permutation-sequence-of-first-n-natural-numbers/"
+                      }
+                  ],
+                  "Stack and Queues":[
+                    {
+                      "id": 276,
+                      "Q_No": 1,
+                      "Question_Name": "Implement Stack from Scratch",
+                      "Problem_link": "https://www.tutorialspoint.com/javaexamples/data_stack.htm"
+                    },
+                    {
+                      "id": 277,
+                      "Q_No": 2,
+                      "Question_Name": "Implement Queue from Scratch",
+                      "Problem_link": "https://www.geeksforgeeks.org/queue-set-1introduction-and-array-implementation/"
+                    },
+                    {
+                      "id": 278,
+                      "Q_No": 3,
+                      "Question_Name": "Implement 2 stack in an array",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/implement-two-stacks-in-an-array/1"
+                    },
+                    {
+                      "id": 279,
+                      "Q_No": 4,
+                      "Question_Name": "find the middle element of a stack",
+                      "Problem_link": "https://www.geeksforgeeks.org/design-a-stack-with-find-middle-operation/"
+                    },
+                    {
+                      "id": 280,
+                      "Q_No": 5,
+                      "Question_Name": "Implement 'N' stacks in an Array",
+                      "Problem_link": "https://www.geeksforgeeks.org/efficiently-implement-k-stacks-single-array/"
+                    },
+                    {
+                      "id": 281,
+                      "Q_No": 6,
+                      "Question_Name": "Check the expression has valid or Balanced parenthesis or not.",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/parenthesis-checker/0"
+                    },
+                    {
+                      "id": 282,
+                      "Q_No": 7,
+                      "Question_Name": "Reverse a String using Stack",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/reverse-a-string-using-stack/1"
+                    },
+                    {
+                      "id": 283,
+                      "Q_No": 8,
+                      "Question_Name": "Design a Stack that supports getMin() in O(1) time and O(1) extra space.",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/special-stack/1"
+                    },
+                    {
+                      "id": 284,
+                      "Q_No": 9,
+                      "Question_Name": "Find the next Greater element",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/next-larger-element/0"
+                    },
+                    {
+                      "id": 285,
+                      "Q_No": 10,
+                      "Question_Name": "The celebrity Problem",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/the-celebrity-problem/1"
+                    },
+                    {
+                      "id": 286,
+                      "Q_No": 11,
+                      "Question_Name": "Arithmetic Expression evaluation",
+                      "Problem_link": "https://www.geeksforgeeks.org/arithmetic-expression-evalution/"
+                    },
+                    {
+                      "id": 287,
+                      "Q_No": 12,
+                      "Question_Name": "Evaluation of Postfix expression",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/evaluation-of-postfix-expression/0"
+                    },
+                    {
+                      "id": 288,
+                      "Q_No": 13,
+                      "Question_Name": "Implement a method to insert an element at its bottom without using any other data structure.",
+                      "Problem_link": "https://stackoverflow.com/questions/45130465/inserting-at-the-end-of-stack"
+                    },
+                    {
+                      "id": 289,
+                      "Q_No": 14,
+                      "Question_Name": "Reverse a stack using recursion",
+                      "Problem_link": "https://www.geeksforgeeks.org/reverse-a-stack-using-recursion/"
+                    },
+                    {
+                        "id": 290,
+                        "Q_No": 15,
+                        "Question_Name": "Sort a Stack using recursion",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/sort-a-stack/1"
+                      },
+                      {
+                        "id": 291,
+                        "Q_No": 16,
+                        "Question_Name": "Merge Overlapping Intervals",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/overlapping-intervals/0"
+                      },
+                      {
+                        "id": 292,
+                        "Q_No": 17,
+                        "Question_Name": "Largest rectangular Area in Histogram",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/maximum-rectangular-area-in-a-histogram-1587115620/10"
+                    },
+                    {
+                      "id": 293,
+                      "Q_No": 18,
+                      "Question_Name": "Length of the Longest Valid Substring",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/valid-substring0624/1"
+                    },
+                    {
+                      "id": 294,
+                      "Q_No": 19,
+                      "Question_Name": "Expression contains redundant bracket or not",
+                      "Problem_link": "https://www.geeksforgeeks.org/expression-contains-redundant-bracket-not/"
+                    },
+                    {
+                      "id": 295,
+                      "Q_No": 20,
+                      "Question_Name": "Implement Stack using Queue",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/queue-using-two-stacks/1"
+                    },
+                    {
+                      "id": 296,
+                      "Q_No": 21,
+                      "Question_Name": "Implement Stack using Deque",
+                      "Problem_link": "https://www.geeksforgeeks.org/implement-stack-queue-using-deque/"
+                    },
+                    {
+                      "id": 297,
+                      "Q_No": 22,
+                      "Question_Name": "Stack Permutations (Check if an array is stack permutation of other)",
+                      "Problem_link": "https://www.geeksforgeeks.org/stack-permutations-check-if-an-array-is-stack-permutation-of-other/"
+                    },
+                    {
+                      "id": 298,
+                      "Q_No": 23,
+                      "Question_Name": "Implement Queue using Stack",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/queue-using-two-stacks/1"
+                    },
+                    {
+                      "id": 299,
+                      "Q_No": 24,
+                      "Question_Name": "Implement 'n' queue in an array",
+                      "Problem_link": "https://www.geeksforgeeks.org/efficiently-implement-k-queues-single-array/"
+                    },
+                    {
+                      "id": 300,
+                      "Q_No": 25,
+                      "Question_Name": "Implement a Circular queue",
+                      "Problem_link": "https://www.geeksforgeeks.org/circular-queue-set-1-introduction-array-implementation/"
+                    },
+                    {
+                      "id": 301,
+                      "Q_No": 26,
+                      "Question_Name": "LRU Cache Implementationa",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/lru-cache/1"
+                    },
+                    {
+                      "id": 302,
+                      "Q_No": 27,
+                      "Question_Name": "Reverse a Queue using recursion",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/queue-reversal/1"
+                    },
+                    {
+                      "id": 303,
+                      "Q_No": 28,
+                      "Question_Name": "Reverse the first 'K' elements of a queue",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/reverse-first-k-elements-of-queue/1"
+                    },
+                    {
+                      "id": 304,
+                      "Q_No": 29,
+                      "Question_Name": "Interleave the first half of the queue with second half",
+                      "Problem_link": "https://www.geeksforgeeks.org/interleave-first-half-queue-second-half/"
+                    },
+                    {
+                      "id": 305,
+                      "Q_No": 30,
+                      "Question_Name": "Find the first circular tour that visits all Petrol Pumps",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/circular-tour/1"
+                    },
+                    {
+                        "id": 306,
+                        "Q_No": 31,
+                        "Question_Name": "Minimum time required to rot all oranges",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/rotten-oranges/0"
+                      },
+                      {
+                        "id": 307,
+                        "Q_No": 32,
+                        "Question_Name": "Distance of nearest cell having 1 in a binary matrix",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/distance-of-nearest-cell-having-1/0"
+                      },
+                      {
+                        "id": 308,
+                        "Q_No": 33,
+                        "Question_Name": "First negative integer in every window of size 'k'",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/first-negative-integer-in-every-window-of-size-k/0"
+                      },
+                      {
+                        "id": 309,
+                        "Q_No": 34,
+                        "Question_Name": "Check if all levels of two trees are anagrams or not.",
+                        "Problem_link": "https://www.geeksforgeeks.org/check-if-all-levels-of-two-trees-are-anagrams-or-not/"
+                    },
+                    {
+                      "id": 310,
+                      "Q_No": 35,
+                      "Question_Name": "Sum of minimum and maximum elements of all subarrays of size 'k'.",
+                      "Problem_link": "https://www.geeksforgeeks.org/sum-minimum-maximum-elements-subarrays-size-k/"
+                    },
+                    {
+                      "id": 311,
+                      "Q_No": 36,
+                      "Question_Name": "Minimum sum of squares of character counts in a given string after removing 'k' characters.",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/game-with-string/0"
+                    },
+                    {
+                      "id": 312,
+                      "Q_No": 37,
+                      "Question_Name": "Queue based approach or first non-repeating character in a stream.",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/first-non-repeating-character-in-a-stream/0"
+                    },
+                    {
+                      "id": 313,
+                      "Q_No": 38,
+                      "Question_Name": "Next Smaller Element",
+                      "Problem_link": "https://www.geeksforgeeks.org/next-smaller-element/"
+                    }
+                ],
+              "Heap":  [
+                    {
+                      "id": 314,
+                      "Q_No": 1,
+                      "Question_Name": "Implement a Maxheap/MinHeap using arrays and recursion.",
+                      "Problem_link": "https://www.geeksforgeeks.org/building-heap-from-array/"
+                    },
+                    {
+                      "id": 315,
+                      "Q_No": 2,
+                      "Question_Name": "Sort an Array using heap. (HeapSort)",
+                      "Problem_link": "https://www.geeksforgeeks.org/heap-sort/"
+                    },
+                    {
+                      "id": 316,
+                      "Q_No": 3,
+                      "Question_Name": "Maximum of all subarrays of size k.",
+                      "Problem_link": "https://www.geeksforgeeks.org/sliding-window-maximum-maximum-of-all-subarrays-of-size-k/"
+                    },
+                    {
+                      "id": 317,
+                      "Q_No": 4,
+                      "Question_Name": "“k” largest element in an array",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/k-largest-elements4206/1"
+                    },
+                    {
+                      "id": 318,
+                      "Q_No": 5,
+                      "Question_Name": "Kth smallest and largest element in an unsorted array",
+                      "Problem_link": "https://www.geeksforgeeks.org/kth-smallestlargest-element-unsorted-array/"
+                    },
+                    {
+                      "id": 319,
+                      "Q_No": 6,
+                      "Question_Name": "Merge “K” sorted arrays. [ IMP ]",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/merge-k-sorted-arrays/1"
+                    },
+                    {
+                      "id": 320,
+                      "Q_No": 7,
+                      "Question_Name": "Merge 2 Binary Max Heaps",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/merge-two-binary-max-heap/0"
+                    },
+                    {
+                      "id": 321,
+                      "Q_No": 8,
+                      "Question_Name": "Kth largest sum continuous subarrays",
+                      "Problem_link": "https://www.geeksforgeeks.org/k-th-largest-sum-contiguous-subarray/"
+                    },
+                    {
+                      "id": 322,
+                      "Q_No": 9,
+                      "Question_Name": "Leetcode- reorganize strings",
+                      "Problem_link": "https://leetcode.com/problems/reorganize-string/"
+                    },
+                    {
+                      "id": 323,
+                      "Q_No": 10,
+                      "Question_Name": "Merge “K” Sorted Linked Lists [V.IMP]",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/merge-k-sorted-linked-lists/1"
+                    },
+                    {
+                      "id": 324,
+                      "Q_No": 11,
+                      "Question_Name": "Smallest range in “K” Lists",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/find-smallest-range-containing-elements-from-k-lists/1"
+                    },
+                    {
+                      "id": 325,
+                      "Q_No": 12,
+                      "Question_Name": "Median in a stream of Integers",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/find-median-in-a-stream/0"
+                    },
+                    {
+                      "id": 326,
+                      "Q_No": 13,
+                      "Question_Name": "Check if a Binary Tree is Heap",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/is-binary-tree-heap/1"
+                    },
+                    {
+                      "id": 327,
+                      "Q_No": 14,
+                      "Question_Name": "Connect “n” ropes with minimum cost",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-cost-of-ropes/0"
+                    },
+                    {
+                      "id": 328,
+                      "Q_No": 15,
+                      "Question_Name": "Convert BST to Min Heap",
+                      "Problem_link": "https://www.geeksforgeeks.org/convert-bst-min-heap/"
+                    },
+                    {
+                      "id": 329,
+                      "Q_No": 16,
+                      "Question_Name": "Convert min heap to max heap",
+                      "Problem_link": "https://www.geeksforgeeks.org/convert-min-heap-to-max-heap/"
+                    },
+                    {
+                      "id": 330,
+                      "Q_No": 17,
+                      "Question_Name": "Rearrange characters in a string such that no two adjacent are same.",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/rearrange-characters/0"
+                    },
+                    {
+                      "id": 331,
+                      "Q_No": 18,
+                      "Question_Name": "Minimum sum of two numbers formed from digits of an array",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/minimum-sum4058/1"
+                    }
+                ],
+              "Graph":  [
+                    {
+                      "id": 332,
+                      "Q_No": 1,
+                      "Question_Name": "Create a Graph, print it",
+                      "Problem_link": "https://1drv.ms/t/s!AqTOHFO77CqEiRua06v1PATyiFg5"
+                    },
+                    {
+                      "id": 333,
+                      "Q_No": 2,
+                      "Question_Name": "Create a Graph (for practice)",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/print-adjacency-list-1587115620/1"
+                    },
+                    {
+                      "id": 334,
+                      "Q_No": 3,
+                      "Question_Name": "Implement BFS algorithm",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/bfs-traversal-of-graph/1"
+                    },
+                    {
+                      "id": 335,
+                      "Q_No": 4,
+                      "Question_Name": "Implement DFS Algo",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/depth-first-traversal-for-a-graph/1"
+                    },
+                    {
+                      "id": 336,
+                      "Q_No": 5,
+                      "Question_Name": "Detect Cycle in Directed Graph using BFS/DFS Algo",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1"
+                    },
+                    {
+                      "id": 337,
+                      "Q_No": 6,
+                      "Question_Name": "Detect Cycle in UnDirected Graph using BFS/DFS Algo",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1"
+                    },
+                    {
+                      "id": 338,
+                      "Q_No": 7,
+                      "Question_Name": "Search in a Maze",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/rat-in-a-maze-problem/1"
+                    },
+                    {
+                      "id": 339,
+                      "Q_No": 8,
+                      "Question_Name": "Minimum Step by Knight",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/steps-by-knight/0"
+                    },
+                    {
+                      "id": 340,
+                      "Q_No": 9,
+                      "Question_Name": "flood fill algo",
+                      "Problem_link": "https://leetcode.com/problems/flood-fill/"
+                    },
+                    {
+                      "id": 341,
+                      "Q_No": 10,
+                      "Question_Name": "Clone a graph",
+                      "Problem_link": "https://leetcode.com/problems/clone-graph/"
+                    },
+                    {
+                      "id": 342,
+                      "Q_No": 11,
+                      "Question_Name": "Making wired Connections",
+                      "Problem_link": "https://leetcode.com/problems/number-of-operations-to-make-network-connected/"
+                    },
+                    {
+                      "id": 343,
+                      "Q_No": 12,
+                      "Question_Name": "word Ladder",
+                      "Problem_link": "https://leetcode.com/problems/word-ladder/"
+                    },
+                    {
+                      "id": 344,
+                      "Q_No": 13,
+                      "Question_Name": "Dijkstra algo",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/implementing-dijkstra-algorithm/0"
+                    },
+                    {
+                      "id": 345,
+                      "Q_No": 14,
+                      "Question_Name": "Implement Topological Sort",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/topological-sort/1"
+                    },
+                    {
+                      "id": 346,
+                      "Q_No": 15,
+                      "Question_Name": "Minimum time taken by each job to be completed given by a Directed Acyclic Graph",
+                      "Problem_link": "https://www.geeksforgeeks.org/minimum-time-taken-by-each-job-to-be-completed-given-by-a-directed-acyclic-graph/"
+                    },
+                    {
+                      "id": 347,
+                      "Q_No": 16,
+                      "Question_Name": "Find whether it is possible to finish all tasks or not from given dependencies",
+                      "Problem_link": "https://www.geeksforgeeks.org/find-whether-it-is-possible-to-finish-all-tasks-or-not-from-given-dependencies/"
+                    },
+                    {
+                      "id": 348,
+                      "Q_No": 17,
+                      "Question_Name": "Find the no. of Islands",
+                      "Problem_link": "https://practice.geeksforgeeks.org/problems/find-the-number-of-islands/1"
+                    },
+                    {
+                        "id": 349,
+                        "Q_No": 18,
+                        "Question_Name": "Given a sorted Dictionary of an Alien Language, find order of characters",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/alien-dictionary/1"
+                        },
+                        {
+                        "id": 350,
+                        "Q_No": 19,
+                        "Question_Name": "Implement Kruksal’sAlgorithm",
+                        "Problem_link": "https://www.geeksforgeeks.org/kruskals-minimum-spanning-tree-algorithm-greedy-algo-2/"
+                        },
+                        {
+                        "id": 351,
+                        "Q_No": 20,
+                        "Question_Name": "Implement Prim’s Algorithm",
+                        "Problem_link": "https://www.geeksforgeeks.org/prims-minimum-spanning-tree-mst-greedy-algo-5/"
+                        },
+                        {
+                        "id": 352,
+                        "Q_No": 21,
+                        "Question_Name": "Total no. of Spanning tree in a graph",
+                        "Problem_link": "https://www.geeksforgeeks.org/total-number-spanning-trees-graph/"
+                        },
+                        {
+                        "id": 353,
+                        "Q_No": 22,
+                        "Question_Name": "Implement Bellman Ford Algorithm",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/negative-weight-cycle/0"
+                        },
+                        {
+                        "id": 354,
+                        "Q_No": 23,
+                        "Question_Name": "Implement Floyd warshallAlgorithm",
+                        "Problem_link": "https://practice.geeksforgeeks.org/problems/implementing-floyd-warshall/0"
+                        },
+                        {
+                        "id": 355,
+                        "Q_No": 24,
+                        "Question_Name": "Travelling Salesman Problem",
+                        "Problem_link": "https://www.geeksforgeeks.org/travelling-salesman-problem-set-1/"
+                        },
+                        {
+                        "id": 356,
+                        "Q_No": 25,
+                        "Question_Name": "Graph ColouringProblem",
+                        "Problem_link": "https://www.geeksforgeeks.org/graph-coloring-applications/"
+                        },
+                        {
+                        "id": 357,
+                        "Q_No": 26,
+                        "Question_Name": "Snake and Ladders Problem",
+                        "Problem_link": "https://leetcode.com/problems/snakes-and-ladders/"
+                        },
+                        {
+                        "id": 358,
+                        "Q_No": 27,
+                        "Question_Name": "Find bridge in a graph",
+                        "Problem_link": "https://www.geeksforgeeks.org/bridge-in-a-graph/"
+                        },
+                        {
+                        "id": 359,
+                        "Q_No": 28,
+                        "Question_Name": "Count Strongly connected Components(Kosaraju Algo)",
+                        "Problem_link": "https://www.geeksforgeeks.org/strongly-connected-components/"
+                        },
+                        {
+                            "id": 360,
+                            "Q_No": 29,
+                            "Question_Name": "Check whether a graph is Bipartite or Not",
+                            "Problem_link": "https://www.geeksforgeeks.org/bipartite-graph/"
+                            },
+                            {
+                            "id": 361,
+                            "Q_No": 30,
+                            "Question_Name": "Detect Negative cycle in a graph",
+                            "Problem_link": "https://www.geeksforgeeks.org/detect-negative-cycle-graph-bellman-ford/"
+                            },
+                            {
+                            "id": 362,
+                            "Q_No": 31,
+                            "Question_Name": "Longest path in a Directed Acyclic Graph",
+                            "Problem_link": "https://www.geeksforgeeks.org/find-longest-path-directed-acyclic-graph/"
+                            },
+                            {
+                            "id": 363,
+                            "Q_No": 32,
+                            "Question_Name": "Journey to the Moon",
+                            "Problem_link": "https://www.hackerrank.com/challenges/journey-to-the-moon/problem"
+                            },
+                            {
+                            "id": 364,
+                            "Q_No": 33,
+                            "Question_Name": "Cheapest Flights Within K Stops",
+                            "Problem_link": "https://leetcode.com/problems/cheapest-flights-within-k-stops/description/"
+                            },
+                            {
+                            "id": 365,
+                            "Q_No": 34,
+                            "Question_Name": "Oliver and the Game",
+                            "Problem_link": "https://www.hackerearth.com/practice/algorithms/graphs/topological-sort/practice-problems/algorithm/oliver-and-the-game-3/"
+                            },
+                            {
+                                "id": 366,
+                                "Q_No": 35,
+                                "Question_Name": "Water Jug problem using BFS",
+                                "Problem_link": "https://www.geeksforgeeks.org/water-jug-problem-using-bfs/"
+                                },
+                                {
+                                "id": 367,
+                                "Q_No": 36,
+                                "Question_Name": "Find if there is a path of more thank length from a source",
+                                "Problem_link": "https://www.geeksforgeeks.org/find-if-there-is-a-path-of-more-than-k-length-from-a-source/"
+                                },
+                                {
+                                "id": 368,
+                                "Q_No": 37,
+                                "Question_Name": "M-ColouringProblem",
+                                "Problem_link": "https://practice.geeksforgeeks.org/problems/m-coloring-problem/0"
+                                },
+                                {
+                                "id": 369,
+                                "Q_No": 38,
+                                "Question_Name": "Minimum edges to reverse o make path from source to destination",
+                                "Problem_link": "https://www.geeksforgeeks.org/minimum-edges-reverse-make-path-source-destination/"
+                                },
+                                {
+                                "id": 370,
+                                "Q_No": 39,
+                                "Question_Name": "Paths to travel each nodes using each edge(Seven Bridges)",
+                                "Problem_link": "https://www.geeksforgeeks.org/paths-travel-nodes-using-edgeseven-bridges-konigsberg/"
+                                },
+                                {
+                                "id": 371,
+                                "Q_No": 40,
+                                "Question_Name": "Vertex Cover Problem",
+                                "Problem_link": "https://www.geeksforgeeks.org/vertex-cover-problem-set-1-introduction-approximate-algorithm-2/"
+                                },
+                                {
+                                "id": 372,
+                                "Q_No": 41,
+                                "Question_Name": "Chinese Postman or Route Inspection",
+                                "Problem_link": "https://www.geeksforgeeks.org/chinese-postman-route-inspection-set-1-introduction/"
+                                },
+                                {
+                                "id": 373,
+                                "Q_No": 42,
+                                "Question_Name": "Number of Triangles in a Directed and Undirected Graph",
+                                "Problem_link": "https://www.geeksforgeeks.org/number-of-triangles-in-directed-and-undirected-graphs/"
+                                },
+                                {
+                                "id": 374,
+                                "Q_No": 43,
+                                "Question_Name": "Minimise the cashflow among a given set of friends who have borrowed money from each other",
+                                "Problem_link": "https://www.geeksforgeeks.org/minimize-cash-flow-among-given-set-friends-borrowed-money/"
+                                },
+                                {
+                                "id": 375,
+                                "Q_No": 44,
+                                "Question_Name": "Two Clique Problem",
+                                "Problem_link": "https://www.geeksforgeeks.org/two-clique-problem-check-graph-can-divided-two-cliques/"
+                                }
+                                ],
+                              "Trie":  [
+                                    {
+                                      "id": 376,
+                                      "Q_No": 1,
+                                      "Question_Name": "Construct a trie from scratch",
+                                      "Problem_link": "https://www.geeksforgeeks.org/trie-insert-and-search/"
+                                    },
+                                    {
+                                      "id": 377,
+                                      "Q_No": 2,
+                                      "Question_Name": "Find shortest unique prefix for every word in a given list",
+                                      "Problem_link": "https://www.geeksforgeeks.org/find-all-shortest-unique-prefixes-to-represent-each-word-in-a-given-list/"
+                                    },
+                                    {
+                                      "id": 378,
+                                      "Q_No": 3,
+                                      "Question_Name": "Word Break Problem | (Trie solution)",
+                                      "Problem_link": "https://www.geeksforgeeks.org/word-break-problem-trie-solution/"
+                                    },
+                                    {
+                                      "id": 379,
+                                      "Q_No": 4,
+                                      "Question_Name": "Given a sequence of words, print all anagrams together",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/k-anagrams-1/0"
+                                    },
+                                    {
+                                      "id": 380,
+                                      "Q_No": 5,
+                                      "Question_Name": "Implement a Phone Directory",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/phone-directory/0"
+                                    },
+                                    {
+                                      "id": 381,
+                                      "Q_No": 6,
+                                      "Question_Name": "Print unique rows in a given boolean matrix",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/unique-rows-in-boolean-matrix/1"
+                                    }
+                                ],
+                                "Dynamic Programming":[
+                                    {
+                                      "id": 382,
+                                      "Q_No": 1,
+                                      "Question_Name": "Coin ChangeProblem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/coin-change2448/1"
+                                    },
+                                    {
+                                      "id": 383,
+                                      "Q_No": 2,
+                                      "Question_Name": "Knapsack Problem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/0-1-knapsack-problem/0"
+                                    },
+                                    {
+                                      "id": 384,
+                                      "Q_No": 3,
+                                      "Question_Name": "Binomial CoefficientProblem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/ncr1019/1"
+                                    },
+                                    {
+                                      "id": 385,
+                                      "Q_No": 4,
+                                      "Question_Name": "Permutation CoefficientProblem",
+                                      "Problem_link": "https://www.geeksforgeeks.org/permutation-coefficient/"
+                                    },
+                                    {
+                                      "id": 386,
+                                      "Q_No": 5,
+                                      "Question_Name": "Program for nth Catalan Number",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/geek-and-his-binary-strings1951/1/"
+                                    },
+                                    {
+                                      "id": 387,
+                                      "Q_No": 6,
+                                      "Question_Name": "Matrix Chain Multiplication",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1/"
+                                    },
+                                    {
+                                      "id": 388,
+                                      "Q_No": 7,
+                                      "Question_Name": "Edit Distance",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/edit-distance3702/1"
+                                    },
+                                    {
+                                      "id": 389,
+                                      "Q_No": 8,
+                                      "Question_Name": "Subset Sum Problem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/subset-sum-problem2014/1"
+                                    },
+                                    {
+                                      "id": 390,
+                                      "Q_No": 9,
+                                      "Question_Name": "Friends Pairing Problem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/friends-pairing-problem5425/1"
+                                    },
+                                    {
+                                      "id": 391,
+                                      "Q_No": 10,
+                                      "Question_Name": "Gold Mine Problem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/gold-mine-problem2608/1"
+                                    },
+                                    {
+                                      "id": 392,
+                                      "Q_No": 11,
+                                      "Question_Name": "Assembly Line SchedulingProblem",
+                                      "Problem_link": "https://www.geeksforgeeks.org/assembly-line-scheduling-dp-34/"
+                                    },
+                                    {
+                                      "id": 393,
+                                      "Q_No": 12,
+                                      "Question_Name": "Painting the Fenceproblem",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/painting-the-fence3727/1"
+                                    },
+                                    {
+                                      "id": 394,
+                                      "Q_No": 13,
+                                      "Question_Name": "Maximize The Cut Segments",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/cutted-segments/0"
+                                    },
+                                    {
+                                      "id": 395,
+                                      "Q_No": 14,
+                                      "Question_Name": "Longest Common Subsequence",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-common-subsequence/0"
+                                    },
+                                    {
+                                      "id": 396,
+                                      "Q_No": 15,
+                                      "Question_Name": "Longest Repeated Subsequence",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-repeating-subsequence/0"
+                                    },
+                                    {
+                                      "id": 397,
+                                      "Q_No": 16,
+                                      "Question_Name": "Longest Increasing Subsequence",
+                                      "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-increasing-subsequence/0"
+                                    },
+                                    {
+                                      "id": 398,
+                                      "Q_No": 17,
+                                      "Question_Name": "Space Optimized Solution of LCS",
+                                      "Problem_link": "https://www.geeksforgeeks.org/space-optimized-solution-lcs/"
+                                    },
+                                    {
+                                        "id": 399,
+                                        "Q_No": 18,
+                                        "Question_Name": "LCS (Longest Common Subsequence) of three strings",
+                                        "Problem_link": "https://www.geeksforgeeks.org/lcs-longest-common-subsequence-three-strings/"
+                                        },
+                                        {
+                                        "id": 400,
+                                        "Q_No": 19,
+                                        "Question_Name": "Maximum Sum Increasing Subsequence",
+                                        "Problem_link": "https://www.geeksforgeeks.org/maximum-sum-increasing-subsequence-dp-14/"
+                                        },
+                                        {
+                                        "id": 401,
+                                        "Q_No": 20,
+                                        "Question_Name": "Count all subsequences having product less than K",
+                                        "Problem_link": "https://www.geeksforgeeks.org/count-subsequences-product-less-k/"
+                                        },
+                                        {
+                                        "id": 402,
+                                        "Q_No": 21,
+                                        "Question_Name": "Longest subsequence such that difference between adjacent is one",
+                                        "Problem_link": "https://www.geeksforgeeks.org/longest-subsequence-difference-adjacents-one/"
+                                        },
+                                        {
+                                        "id": 403,
+                                        "Q_No": 22,
+                                        "Question_Name": "Maximum subsequence sum such that no three are consecutive",
+                                        "Problem_link": "https://www.geeksforgeeks.org/maximum-subsequence-sum-such-that-no-three-are-consecutive/"
+                                        },
+                                        {
+                                        "id": 404,
+                                        "Q_No": 23,
+                                        "Question_Name": "Egg Dropping Problem",
+                                        "Problem_link": "https://www.geeksforgeeks.org/egg-dropping-puzzle-dp-11/"
+                                        },
+                                        {
+                                        "id": 405,
+                                        "Q_No": 24,
+                                        "Question_Name": "Maximum Length Chain of Pairs",
+                                        "Problem_link": "https://www.geeksforgeeks.org/maximum-length-chain-of-pairs-dp-20/"
+                                        },
+                                        {
+                                        "id": 406,
+                                        "Q_No": 25,
+                                        "Question_Name": "Maximum size square sub-matrix with all 1s",
+                                        "Problem_link": "https://www.geeksforgeeks.org/maximum-size-sub-matrix-with-all-1s-in-a-binary-matrix/"
+                                        },
+                                        {
+                                        "id": 407,
+                                        "Q_No": 26,
+                                        "Question_Name": "Maximum sum of pairs with specific difference",
+                                        "Problem_link": "https://www.geeksforgeeks.org/maximum-sum-pairs-specific-difference/"
+                                        },
+                                        {
+                                        "id": 408,
+                                        "Q_No": 27,
+                                        "Question_Name": "Min Cost PathProblem",
+                                        "Problem_link": "https://www.geeksforgeeks.org/min-cost-path-dp-6/"
+                                        },
+                                        {
+                                            "id": 409,
+                                            "Q_No": 28,
+                                            "Question_Name": "Maximum difference of zeros and ones in binary string",
+                                            "Problem_link": "https://www.geeksforgeeks.org/maximum-difference-zeros-ones-binary-string/"
+                                            },
+                                            {
+                                            "id": 410,
+                                            "Q_No": 29,
+                                            "Question_Name": "Minimum number of jumps to reach end",
+                                            "Problem_link": "https://www.geeksforgeeks.org/minimum-number-of-jumps-to-reach-end-of-a-given-array/"
+                                            },
+                                            {
+                                            "id": 411,
+                                            "Q_No": 30,
+                                            "Question_Name": "Minimum cost to fill given weight in a bag",
+                                            "Problem_link": "https://www.geeksforgeeks.org/minimum-cost-to-fill-given-weight-in-a-bag/"
+                                            },
+                                            {
+                                            "id": 412,
+                                            "Q_No": 31,
+                                            "Question_Name": "Minimum removals from array to make max –min <= K",
+                                            "Problem_link": "https://www.geeksforgeeks.org/minimum-removals-array-make-max-min-k/"
+                                            },
+                                            {
+                                            "id": 413,
+                                            "Q_No": 32,
+                                            "Question_Name": "Longest Common Substring",
+                                            "Problem_link": "https://www.geeksforgeeks.org/longest-common-substring-dp-29/"
+                                            },
+                                            {
+                                            "id": 414,
+                                            "Q_No": 33,
+                                            "Question_Name": "Count number of ways to reacha given score in a game",
+                                            "Problem_link": "https://www.geeksforgeeks.org/count-number-ways-reach-given-score-game/"
+                                            },
+                                            {
+                                                "id": 415,
+                                                "Q_No": 34,
+                                                "Question_Name": "Count Balanced Binary Trees of Height h",
+                                                "Problem_link": "https://www.geeksforgeeks.org/count-balanced-binary-trees-height-h/"
+                                              },
+                                              {
+                                                "id": 416,
+                                                "Q_No": 35,
+                                                "Question_Name": "LargestSum Contiguous Subarray [V>V>V>V IMP ]",
+                                                "Problem_link": "https://www.geeksforgeeks.org/largest-sum-contiguous-subarray/"
+                                              },
+                                              {
+                                                "id": 417,
+                                                "Q_No": 36,
+                                                "Question_Name": "Smallest sum contiguous subarray",
+                                                "Problem_link": "https://www.geeksforgeeks.org/smallest-sum-contiguous-subarray/"
+                                              },
+                                              {
+                                                "id": 418,
+                                                "Q_No": 37,
+                                                "Question_Name": "Unbounded Knapsack (Repetition of items allowed)",
+                                                "Problem_link": "https://www.geeksforgeeks.org/unbounded-knapsack-repetition-items-allowed/"
+                                              },
+                                              {
+                                                "id": 419,
+                                                "Q_No": 38,
+                                                "Question_Name": "Word Break Problem",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/word-break/0"
+                                              },
+                                              {
+                                                "id": 420,
+                                                "Q_No": 39,
+                                                "Question_Name": "Largest Independent Set Problem",
+                                                "Problem_link": "https://www.geeksforgeeks.org/largest-independent-set-problem-dp-26/"
+                                              },
+                                              {
+                                                "id": 421,
+                                                "Q_No": 40,
+                                                "Question_Name": "Partition problem",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/subset-sum-problem2014/1"
+                                              },
+                                              {
+                                                "id": 422,
+                                                "Q_No": 41,
+                                                "Question_Name": "Longest Palindromic Subsequence",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/longest-palindromic-subsequence-1612327878/1/"
+                                              },
+                                              {
+                                                "id": 423,
+                                                "Q_No": 42,
+                                                "Question_Name": "Count All Palindromic Subsequence in a given String",
+                                                "Problem_link": "https://www.geeksforgeeks.org/count-palindromic-subsequence-given-string/"
+                                              },
+                                              {
+                                                "id": 424,
+                                                "Q_No": 43,
+                                                "Question_Name": "Longest Palindromic Substring",
+                                                "Problem_link": "https://www.geeksforgeeks.org/longest-palindrome-substring-set-1/"
+                                              },
+                                              {
+                                                "id": 425,
+                                                "Q_No": 44,
+                                                "Question_Name": "Longest alternating subsequence",
+                                                "Problem_link": "https://www.geeksforgeeks.org/longest-alternating-subsequence/"
+                                              },
+                                              {
+                                                "id": 426,
+                                                "Q_No": 45,
+                                                "Question_Name": "Weighted Job Scheduling",
+                                                "Problem_link": "https://www.geeksforgeeks.org/weighted-job-scheduling/"
+                                              },
+                                              {
+                                                "id": 427,
+                                                "Q_No": 46,
+                                                "Question_Name": "Coin game winner where every player has three choices",
+                                                "Problem_link": "https://www.geeksforgeeks.org/coin-game-winner-every-player-three-choices/"
+                                              },
+                                              {
+                                                "id": 428,
+                                                "Q_No": 47,
+                                                "Question_Name": "Count Derangements (Permutation such that no element appears in its original position) [ IMPORTANT ]",
+                                                "Problem_link": "https://www.geeksforgeeks.org/count-derangements-permutation-such-that-no-element-appears-in-its-original-position/"
+                                              },
+                                              {
+                                                "id": 429,
+                                                "Q_No": 48,
+                                                "Question_Name": "Maximum profit by buying and selling a share at most twice [ IMP ]",
+                                                "Problem_link": "https://www.geeksforgeeks.org/maximum-profit-by-buying-and-selling-a-share-at-most-twice/"
+                                              },
+                                              {
+                                                "id": 430,
+                                                "Q_No": 49,
+                                                "Question_Name": "Optimal Strategy for a Game",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/optimal-strategy-for-a-game/0"
+                                              },
+                                              {
+                                                "id": 431,
+                                                "Q_No": 50,
+                                                "Question_Name": "Optimal Binary Search Tree",
+                                                "Problem_link": "https://www.geeksforgeeks.org/optimal-binary-search-tree-dp-24/"
+                                              },
+                                              {
+                                                "id": 432,
+                                                "Q_No": 51,
+                                                "Question_Name": "Palindrome PartitioningProblem",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/palindromic-patitioning4845/1"
+                                              },
+                                              {
+                                                "id": 433,
+                                                "Q_No": 52,
+                                                "Question_Name": "Word Wrap Problem",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/word-wrap/0"
+                                              },
+                                              {
+                                                "id": 434,
+                                                "Q_No": 53,
+                                                "Question_Name": "Mobile Numeric Keypad Problem [ IMP ]",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/mobile-numeric-keypad5456/1"
+                                              },
+                                              {
+                                                "id": 435,
+                                                "Q_No": 54,
+                                                "Question_Name": "Boolean Parenthesization Problem",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/boolean-parenthesization/0"
+                                              },
+                                              {
+                                                "id": 436,
+                                                "Q_No": 55,
+                                                "Question_Name": "Largest rectangular sub-matrix whose sum is 0",
+                                                "Problem_link": "https://www.geeksforgeeks.org/largest-rectangular-sub-matrix-whose-sum-0/"
+                                              },
+                                              {
+                                                "id": 437,
+                                                "Q_No": 56,
+                                                "Question_Name": "Largest area rectangular sub-matrix with equal number of 1’s and 0’s [ IMP ]",
+                                                "Problem_link": "https://www.geeksforgeeks.org/largest-area-rectangular-sub-matrix-equal-number-1s-0s/"
+                                              },
+                                              {
+                                                "id": 438,
+                                                "Q_No": 57,
+                                                "Question_Name": "Maximum sum rectangle in a 2D matrix",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/maximum-sum-rectangle/0"
+                                              },
+                                              {
+                                                "id": 439,
+                                                "Q_No": 58,
+                                                "Question_Name": "Maximum profit by buying and selling a share at most k times",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/maximum-profit4657/1"
+                                              },
+                                              {
+                                                "id": 440,
+                                                "Q_No": 59,
+                                                "Question_Name": "Find if a string is interleaved of two other strings",
+                                                "Problem_link": "https://practice.geeksforgeeks.org/problems/interleaved-strings/1"
+                                              },
+                                              {
+                                                "id": 441,
+                                                "Q_No": 60,
+                                                "Question_Name": "Maximum Length of Pair Chain",
+                                                "Problem_link": "https://leetcode.com/problems/maximum-length-of-pair-chain/"
+                                              }
+                                          ],
+                                        "Bit Manupulation":  [
+                                            {
+                                              "id": 442,
+                                              "Q_No": 1,
+                                              "Question_Name": "Count set bits in an integer",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/set-bits0143/1"
+                                            },
+                                            {
+                                              "id": 443,
+                                              "Q_No": 2,
+                                              "Question_Name": "Find the two non-repeating elements in an array of repeating elements",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/finding-the-numbers0215/1"
+                                            },
+                                            {
+                                              "id": 444,
+                                              "Q_No": 3,
+                                              "Question_Name": "Count number of bits to be flipped to convert A to B",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/bit-difference/0"
+                                            },
+                                            {
+                                              "id": 445,
+                                              "Q_No": 4,
+                                              "Question_Name": "Count total set bits in all numbers from 1 to n",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/count-total-set-bits/0"
+                                            },
+                                            {
+                                              "id": 446,
+                                              "Q_No": 5,
+                                              "Question_Name": "Program to find whether a no is power of two",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/power-of-2/0"
+                                            },
+                                            {
+                                              "id": 447,
+                                              "Q_No": 6,
+                                              "Question_Name": "Find position of the only set bit",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/find-position-of-set-bit3706/1"
+                                            },
+                                            {
+                                              "id": 448,
+                                              "Q_No": 7,
+                                              "Question_Name": "Copy set bits in a range",
+                                              "Problem_link": "https://www.geeksforgeeks.org/copy-set-bits-in-a-range/"
+                                            },
+                                            {
+                                              "id": 449,
+                                              "Q_No": 8,
+                                              "Question_Name": "Divide two integers without using multiplication, division and mod operator",
+                                              "Problem_link": "https://www.geeksforgeeks.org/divide-two-integers-without-using-multiplication-division-mod-operator/"
+                                            },
+                                            {
+                                              "id": 450,
+                                              "Q_No": 9,
+                                              "Question_Name": "Calculate square of a number without using *, / and pow()",
+                                              "Problem_link": "https://www.geeksforgeeks.org/calculate-square-of-a-number-without-using-and-pow/"
+                                            },
+                                            {
+                                              "id": 451,
+                                              "Q_No": 10,
+                                              "Question_Name": "Power Set",
+                                              "Problem_link": "https://practice.geeksforgeeks.org/problems/power-set4302/1"
+                                            }
+                                        ]
+                                          
+                      
+  }

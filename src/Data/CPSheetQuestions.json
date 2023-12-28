@@ -1,7 +1,7 @@
 
  
  {
-    "Implementation / Constructive: (10*5=50)":[
+    "Constructive":[
         
             {
                 "id":0,
@@ -257,7 +257,7 @@
                 
 ],
 
-"Maths: (10*5=50)":[
+"Maths":[
     
         {
             "id":50,
@@ -575,7 +575,7 @@
             }
      
 ],
-"Prime, Sieve, Prime Factorisation":[
+"Prime, Sieve & Fact":[
    
             {
                 "id": 112,
@@ -629,7 +629,7 @@
             }
       
 ],
-"Bit Manipulation/Power Set":[
+"Bits/Power Set":[
   
             {
                 "id": 122,
@@ -688,7 +688,7 @@
             }
      
 ],
-"Stack/Queues/PriorityQueues":[
+"Stack & Queue":[
   
             {
                 "id": 133,
@@ -752,7 +752,7 @@
             }
      
 ],
-"String Algorithms:":[
+"String:":[
 
             {
                 "id": 145,
@@ -960,7 +960,7 @@
                 "Question_link": "https://codeforces.com/gym/102694/problemF"
             }
 ],
-"Graph Algorithms":[
+"Graph":[
             {
                 "id": 184,
                 "Q_No": 0,
@@ -1072,7 +1072,7 @@
                 "Question_link": "https://codeforces.com/contest/178/problemB3"
             }
 ],
-"Matrix Exponentiation: (basic to hard sorted)":[
+"Matrix Exponentiation":[
             {
                 "id": 206,
                 "Q_No": 0,
@@ -1099,7 +1099,7 @@
                 "Question_link": "https://codeforces.com/contest/1182/problem/E"
             }
 ],
-"Trie:":[
+"Trie":[
             {
                 "id": 211,
                 "Q_No": 0,
@@ -1141,7 +1141,7 @@
                 "Question_link": "https://codeforces.com/contest/282/problem/E"
             }
 ],
-"Dynamic Programming(Easy to Hard) ":[
+"Dynamic Programming":[
             {
                 "id": 219,
                 "Q_No": 0,
@@ -1313,7 +1313,7 @@
                 "Question_link": "https://codeforces.com/contest/507/problem/D"
                 }
 ],
-"Disjoint Set: ":[
+"Disjoint Set":[
             {
             "id": 253,
             "Q_No": 0,
@@ -1355,7 +1355,7 @@
             "Question_link": "https://codeforces.com/problemset/problem/455/C"
             }
 ],
-"Sqrt Decomposition/ MO’s algo:":[
+"Sqrt Decomposition/MO's":[
             {
             "id": 261,
             "Q_No": 0,
@@ -1389,7 +1389,7 @@
             
     
 ],
-"Fenwick Tree:":[
+"Fenwick Tree":[
     
         {
         "id": 267,
@@ -1453,7 +1453,7 @@
         }
         
 ],
-"Segment Tree(lazy also included):":[
+"Segment Tree":[
     
         {
         "id": 279,
@@ -1522,7 +1522,7 @@
         }
         
 ],
-"Lazy propagation:":[
+"Lazy propagation":[
     
         {
         "id": 292,
