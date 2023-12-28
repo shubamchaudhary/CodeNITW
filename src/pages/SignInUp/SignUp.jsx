@@ -50,8 +50,8 @@ export default function SignUp() {
     setIsLoading(true);
     try {
       //Check if email ends with @student.nitw.ac.in
-      if (!email.endsWith("@student.nitw.ac.in")) {
-        toast.error("Email must end with @student.nitw.ac.in");
+      if (!email.endsWith("@student.nitw.ac.in") && !email.endsWith("@iiitdmj.ac.in")) {
+        toast.error("Need Student Mail id!");
         return;
       }
       const auth = getAuth();
