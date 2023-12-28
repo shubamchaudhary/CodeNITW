@@ -12,6 +12,7 @@ import AddContest from "./pages/Contests/AddContest";
 import Contest from "./pages/Contests/Contest";
 import LeaderboardList from "./pages/Leaderboard/Leaderboard";
 import Problems from "./pages/Resources/Problems";
+import DSA450 from "./pages/Resources/DSA450";
 import LearningResources from "./pages/Resources/LearningResources";
 import OTMaterial from "./pages/Resources/OTMaterial";
 import CPSheet from "./pages/Resources/CPSheet";
@@ -42,6 +43,9 @@ function App() {
           </Route>
           <Route path="/cp-sheet" element={<PrivateRoute />}>
             <Route path="/cp-sheet" element={<CPSheet />}></Route>
+          </Route>
+          <Route path="/dsa-450" element={<PrivateRoute />}>
+            <Route path="/dsa-450" element={<DSA450 />}></Route>
           </Route>
           <Route path="/interview-exps" element={<PrivateRoute />}>
             <Route path="/interview-exps" element={<InterviewExp />}></Route>

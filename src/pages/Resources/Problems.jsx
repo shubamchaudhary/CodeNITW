@@ -58,7 +58,7 @@ const Resources = () => {
           <div className='flex justify-between items-center mb-4'>
             <div className='ml-4'>
               <h1 className='text-xl mt-4 dark:text-gray-300 font-semibold mb-4'>DSA FOR INTERVIEWS</h1>
-              <h2 className='text-sm ml-2 text-gray-500 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
+              <h2 className='text-sm ml-2 text-gray-600 font-bold'>{solvedProblems} / {totalProblems} solved</h2>
             </div>
             <div className='mr-2 mt-2'
              style={{ width: 68, height: 60 }}>
@@ -107,9 +107,9 @@ ref={topic === selectedTopic ? selectedTopicRef : null}
 
 export function QuestionCard(props) {
   const { name, link, youtube, onQuestionSolved } = props;
-  const truncatedName = name.length > 20 ? name.substring(0, 20) + '..' : name;
-  const lesstruncatedName = name.length > 45 ? name.substring(0, 42) + '..' : name;
-  const truncatedLink = link.length > 50 ? link.substring(0, 50) + '...' : link;
+  const truncatedName = name.length > 25 ? name.substring(0, 25) + '..' : name;
+  const lesstruncatedName = name.length > 52 ? name.substring(0, 50) + '..' : name;
+  const truncatedLink = link.length > 80 ? link.substring(0, 80) : link;
   const extratruncatedLink = link.length > 30 ? link.substring(0, 25) + '...' : link;
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -138,17 +138,17 @@ export function QuestionCard(props) {
   }, []);
 
   return (
-    <div className={`flex items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#141a25]" : "bg-blue-100 dark:bg-[#1c2432]"} rounded-lg p-3 shadow-md m-2`}>
+    <div className={`flex  items-center  rounded  ${isChecked ? "bg-green-200 dark:bg-[#141a25]" : "bg-blue-100 dark:bg-[#1c2432]"} rounded-lg px-2 p-[7px] shadow-md m-1`}>
     <div className="flex-grow flex flex-row items-center">
-      <h3 className={`md:text-lg text-[13px] dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
+      <h3 className={`md:text-[14px] text-[12px] dark:text-gray-400 font-semibold truncate ${isSmallScreen ? 'w-full' : 'w-3/5'}`}>
         {isSmallScreen ? truncatedName : lesstruncatedName}
       </h3>
-      <div className="flex items-center justify-between w-full mt-2 sm:mt-0">
+      <div className="flex  text-sm items-center justify-between w-full mt-2 sm:mt-0">
         <a
           href={link}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 hover:underline"
+          className="text-blue-500 ml-[40px]  md:ml-[4px] hover:underline"
         >
           {isSmallScreen ? "link" : truncatedLink}
         </a>
@@ -159,13 +159,13 @@ export function QuestionCard(props) {
           className="ml-auto"
         >
           <img
-            className="max-w-[50px] p-2  rounded-md hover:underline cursor-pointer"
+            className={`max-w-[20px] mr-4   rounded-md hover:underline cursor-pointer`}
             src={Youtube}
             alt="contest image"
           /> 
         </a>
         <input
-  className={`ml-2 form-checkbox h-6 w-6 s `}
+  className={`ml-2 form-checkbox h-4 w-4  `}
   type="checkbox"
   checked={isChecked}
   onChange={handleCheckboxChange}
@@ -211,13 +211,19 @@ export const TopicCard = React.forwardRef((props, ref) => {
     return (
       <div 
         ref={ref} 
-        className={`relative cursor-pointer bg-white dark:bg-[#141a25] bg-opacity-50 md:w-[100%] ml-2 w-[95%] items-center  rounded-md overflow-hidden transition-shadow duration-300 px-4 md:py-1  py-2 my-1  ${isOpen ? 'pb-8' : ''}`} 
+        className={`relative cursor-pointer dark:border-b-[1px] dark:border-x-[2px] dark:border-[#1c2432]  bg-white dark:bg-[#141a25] bg-opacity-50 md:w-[100%] ml-2 w-[95%] items-center  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-1  my-[3px]  ${isOpen ? 'pb-8' : ''}`} 
         onClick={handleTopicClick}
       >
-        <div className={` gap-4 items-center sm:w-[90%]`}>
-          <div className=''>
-          <h1 className=' flex md:text-lg text-sm font-semibold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
-            <p className='text-sm text-gray-600'>{solvedQuestionCount} / {questions.length} solved</p>
+        <div className="flex justify-between items-center sm:w-[90%]">
+          <div className="flex-grow">
+          <h1 className='flex md:text-md text-sm font-bold text-overflow-ellipsis whitespace-nowrap dark:text-gray-400 text-gray-700'>{name}</h1>
+        </div>
+        <div className="flex flex-col items-end">
+            <p className='text-[12px] text-gray-600 '>{solvedQuestionCount} / {questions.length} solved</p>
+<div className="flex w-full flex-col  gap-4">
+            {/* <Progress value={100*solvedQuestionCount/questions.length} size="lg" color="green" className='max-w-[100px] min-w-[100px] bg-[#273143]' /> */}
+            <ProgressBar progressPercentage={100*solvedQuestionCount/questions.length} />
+          </div>
           </div>
         </div>
         {isOpen && (
@@ -256,3 +262,14 @@ export const TopicCard = React.forwardRef((props, ref) => {
 
 export default Resources;
 
+export const ProgressBar = ({ progressPercentage }) => {
+  return (
+      <div className=' min-w-[90px] max-w-[90px]  h-3 bg-blue-100 dark:bg-[#273143] rounded-md'>
+          <div
+              style={{ width: `${progressPercentage}%`}}
+              className={`  rounded-lg bg-green-700 ${
+                progressPercentage<5 ? 'h-[60%] mt-[2.5px]' : progressPercentage<12 ? 'h-[80%] mt-[1.5px]':'h-[90%] mt-[0.5px]'}`}>
+          </div>
+      </div>
+  );
+};

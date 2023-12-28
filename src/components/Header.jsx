@@ -77,6 +77,9 @@ useEffect(() => {
     case "/problems":
       setActivePage("PROBLEMS");
       break;
+      case "/dsa-450":
+        setActivePage("450DSA");
+        break;
       case "/cp-sheet":
         setActivePage("CP SHEET");
         break;
@@ -208,6 +211,12 @@ useEffect(() => {
       className="px-4 py-2 text-sm  cursor-pointer"
     >
       PROBLEMS
+    </li>
+    <li
+      onClick={() => {handlePageSelect("/DSA-450", "450DSA"); setDropdownOpen(false);}}
+      className="px-4 py-2 text-sm cursor-pointer"
+    >
+      450 DSA
     </li>
     <li
       onClick={() => {handlePageSelect("/cp-sheet", "CP SHEET"); setDropdownOpen(false);}}
