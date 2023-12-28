@@ -184,7 +184,7 @@ export const TopicCard = React.forwardRef((props, ref) => {
     return (
       <div 
         ref={ref} 
-        className={`relative cursor-pointer dark:border-b-[1px] dark:border-x-[2px] dark:border-[#1c2432]  bg-white dark:bg-[#141a25] bg-opacity-50 md:w-[100%] ml-2 w-[95%] items-center  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-1  my-[3px]  ${isOpen ? 'pb-8' : ''}`} 
+        className={`relative md:cursor-pointer dark:border-b-[1px] dark:border-x-[2px] dark:border-[#1c2432]  bg-white dark:bg-[#141a25] bg-opacity-50 md:w-[100%] ml-2 w-[95%] items-center  rounded-md overflow-hidden transition-shadow duration-300 px-4 py-1  my-[3px]  ${isOpen ? 'pb-8' : ''}`} 
         onClick={handleTopicClick}
       >
         <div className="flex justify-between items-center sm:w-[90%]">
