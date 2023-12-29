@@ -204,35 +204,35 @@ useEffect(() => {
   }`}
 >
   {activePage} ▼
-  <ul className={`absolute left-0  w-40 bg-blue-100 dark:bg-[#050b15] rounded-lg shadow-lg py-2 transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
+  <ul className={`absolute md:left-0 left-[10px] mr-4 md:mr-0 md:w-[130px] w-[120px] bg-blue-100 dark:bg-[#0a1529] rounded-lg shadow-lg  transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
    
     <li
       onClick={() => {handlePageSelect("/problems", "PROBLEMS");setDropdownOpen(false);}}
-      className="px-4 py-2 text-sm  cursor-pointer"
+      className="px-4 pt-2 pb-1 text-sm  cursor-pointer"
     >
       PROBLEMS
     </li>
     <li
       onClick={() => {handlePageSelect("/DSA-450", "450DSA"); setDropdownOpen(false);}}
-      className="px-4 py-2 text-sm cursor-pointer"
+      className="px-4 py-1 text-sm cursor-pointer"
     >
       450 DSA
     </li>
     <li
       onClick={() => {handlePageSelect("/cp-sheet", "CP SHEET"); setDropdownOpen(false);}}
-      className="px-4 py-2 text-sm cursor-pointer"
+      className="px-4 py-1 text-sm cursor-pointer"
     >
       CP SHEET
     </li>
     <li
       onClick={() => {handlePageSelect("/learning-resources", "ROADMAPS"); setDropdownOpen(false);}}
-      className="px-4 py-2 text-sm cursor-pointer"
+      className="px-4 py-1 text-sm cursor-pointer"
     >
       ROADMAPS
     </li>
     <li
       onClick={() => {handlePageSelect("/interview-exps", "INT EXPS");setDropdownOpen(false);}}
-      className="px-4 py-2 text-sm  cursor-pointer"
+      className="px-4 pt-1 pb-2 text-sm  cursor-pointer"
     >
       INT EXPS
     </li>
