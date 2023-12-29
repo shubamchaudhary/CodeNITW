@@ -156,12 +156,12 @@ export default function Contest() {
   return (
   <div className="bg-blue-100 dark:bg-[#050b15] min-h-screen mb-[-30px] font-serif">
   <div className="max-w-6xl mx-auto py-10 space-y-6">
-  <div className="m-2 mb-6 bg-white dark:bg-[#121620] shadow-lg p-4 rounded-lg">
-  <h1 className="text-4xl font-semibold text-blue-600 dark:text-blue-500 mb-4">CCPD Contests</h1>
+  <div className="m-2 mb-6 bg-blue-50 dark:bg-[#121620] shadow-lg p-4 rounded-lg">
+  <h1 className="text-2xl font-semibold text-blue-600 dark:text-blue-500 mb-4">CCPD Contests</h1>
 
   {Listings && Listings.active.length > 0 && (
     <div>
-      <h2 className="text-3xl font-semibold text-green-600 mb-4">Active Contests</h2>
+      <h2 className="text-xl font-semibold text-green-600 mb-4">Active Contests</h2>
       <ul>
         {Listings.active.map((listing) => (
          <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-10">
@@ -174,7 +174,7 @@ export default function Contest() {
 
   {Listings && Listings.upcoming.length > 0 && (
     <div>
-      <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Upcoming Contests</h2>
+      <h2 className="text-xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Upcoming Contests</h2>
       <ul>
         {Listings.upcoming.map((listing) => (
           <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
@@ -187,7 +187,7 @@ export default function Contest() {
 
   {Listings && Listings.past.length > 0 && (
     <div>
-      <h2 className="text-3xl font-semibold dark:text-gray-400  text-gray-600 mb-4">Past Contests</h2>
+      <h2 className="text-xl font-semibold dark:text-gray-400  text-gray-600 mb-4">Past Contests</h2>
       <ul>
         {Listings.past.map((listing) => (
           <li key={listing.id} className="transform transition duration-500 ease-in-out hover:scale-101">
@@ -201,12 +201,12 @@ export default function Contest() {
 </div>
  <div className="max-w-6xl mx-auto pt-4 space-y-6">
 <div className="m-2 mb-6 bg-white dark:bg-[#121620] shadow-lg p-4 rounded-lg">
-  <h1 className="text-4xl font-semibold text-blue-600 dark:text-blue-500 mb-4">Other Contests</h1>
+  <h1 className="text-2xl font-semibold text-blue-600 dark:text-blue-500 mb-4">Other Contests</h1>
 
 
   {activeContests.length > 0 && (
     <div>
-      <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Active Contests</h2>
+      <h2 className="text-xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Active Contests</h2>
       <ul>
       {activeContests.map((contestItem, index) => (
         <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
@@ -219,7 +219,7 @@ export default function Contest() {
 
   {upcomingContests.length > 0 && (
     <div>
-      <h2 className="text-3xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Upcoming Contests</h2>
+      <h2 className="text-xl  font-semibold text-blue-600 dark:text-gray-400   cursor-pointer mb-4">Upcoming Contests</h2>
       <ul>
       {upcomingContests.map((contestItem, index) => (
         <li key={index} className="transform transition duration-500 ease-in-out hover:scale-101">
