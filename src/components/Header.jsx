@@ -77,14 +77,14 @@ useEffect(() => {
     case "/problems":
       setActivePage("PROBLEMS");
       break;
-      case "/dsa-450":
+      case "/DSA-450":
         setActivePage("450DSA");
         break;
       case "/cp-sheet":
         setActivePage("CP SHEET");
         break;
     case "/learning-resources":
-      setActivePage("ROADMAPS ");
+      setActivePage("ROADMAPS");
       break;
     case "/ot-material":
       setActivePage("OT MATERIAL");
