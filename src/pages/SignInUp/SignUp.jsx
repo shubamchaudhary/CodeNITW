@@ -85,11 +85,6 @@ export default function SignUp() {
 
     setIsLoading(true);
     try {
-      // Uncomment if you want to restrict to specific email domain
-      // if (!email.endsWith("@student.nitw.ac.in")) {
-      //   toast.error("Email must end with @student.nitw.ac.in");
-      //   return;
-      // }
 
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(
