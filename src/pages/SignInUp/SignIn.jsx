@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import computer from "../../images/computer.png";
 import Tilt from "react-parallax-tilt";
 import PulseLoader from "react-spinners/PulseLoader";
+import SpringComputer from "./Computer";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
@@ -86,7 +87,7 @@ export default function SignIn() {
   return (
     <div className="bg-blue-100 dark:bg-[#050b15] min-h-screen flex flex-col justify-center items-center">
       <section className="w-full max-w-8xl mx-auto flex flex-col md:flex-row justify-center items-center px-4 md:px-40">
-        <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
+        {/* <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
           <Tilt
             className="parallax-effect-img"
             tiltMaxAngleX={30}
@@ -102,7 +103,8 @@ export default function SignIn() {
               alt=""
             />
           </Tilt>
-        </div>
+        </div> */}
+        <SpringComputer computer={computer} />
 
         <div className="w-full md:w-1/2 lg:w-1/2 lg:ml-20">
           <form onSubmit={onSubmit} className="text-xl">
