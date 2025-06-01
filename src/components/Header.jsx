@@ -1,4 +1,3 @@
-                 
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
@@ -7,37 +6,41 @@ import { CiLight } from "react-icons/ci";
 import { SiDarkreader } from "react-icons/si";
 import { BsBrightnessHigh } from "react-icons/bs";
 import { CiBrightnessUp } from "react-icons/ci";
-import  Tilt from "react-parallax-tilt";
+import { HiUser, HiLogout, HiLogin } from "react-icons/hi";
+import { motion, AnimatePresence } from "framer-motion";
+import Tilt from "react-parallax-tilt";
 import { toast } from "react-toastify";
 
 export default function Header() {
-  
   const [pageState, setPageState] = useState("sign-in");
   const [displayPageName, setDisplayPageName] = useState("Sign in");
-  const [user, setUser] = useState(null); // Add user state to keep track of authentication state
+  const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activePage, setActivePage] = useState(localStorage.getItem("lastOpenedPage") || "PROBLEMS");
-
-  const [darkMode, setDarkMode] = useState( JSON.parse(localStorage.getItem("darkMode")) || false);
+  const [activePage, setActivePage] = useState(
+    localStorage.getItem("lastOpenedPage") || "PROBLEMS"
+  );
+  const [darkMode, setDarkMode] = useState(
+    JSON.parse(localStorage.getItem("darkMode")) || false
+  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-    useEffect(() => {
-        localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    
-        if(darkMode){
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        
-      }, [darkMode]);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
   const auth = getAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const userEmail = user && user.email;
+
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
       if (user) {
         setPageState("Dashboard");
         setDisplayPageName("Dashboard");
@@ -45,264 +48,350 @@ export default function Header() {
         setPageState("sign-in");
         setDisplayPageName("Sign in");
       }
-      setUser(user);
     });
+    return unsubscribe;
   }, [auth]);
 
-  
-
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isActive = (path) => location.pathname === path;
-  function isPath(route) {
-    return route === location.pathname;
-  }
-
-  // Function to handle logout
-  const handleLogout = () => {
-    if(user){
-      signOut(auth)
-      .then(() => {
-        navigate("/sign-in");
-        toast.info("Logged Out Successfully ");
-      })
-      .catch((error) => {
-        console.error("Logout error:", error);
-      });
-    }
-  };
-
-useEffect(() => {
-  switch (location.pathname) {
-    case "/problems":
-      setActivePage("PROBLEMS");
-      break;
-      case "/DSA-450":
-        setActivePage("450DSA");
-        break;
-      case "/cp-sheet":
-        setActivePage("CP SHEET");
-        break;
-    case "/learning-resources":
-      setActivePage("ROADMAPS");
-      break;
-    case "/ot-material":
-      setActivePage("OT MATERIAL");
-      break;
-      case "/interview-exps":
-      setActivePage("INT EXPS");
-      break;
-    default:
-      setActivePage("RESOURCES");
-      break;
-  }
-}, [location.pathname]);
+  useEffect(() => {
+    const pageMap = {
+      "/problems": "PROBLEMS",
+      "/DSA-450": "450DSA",
+      "/cp-sheet": "CP SHEET",
+      "/learning-resources": "ROADMAPS",
+      "/ot-material": "OT MATERIAL",
+      "/interview-exps": "INT EXPS",
+    };
+    setActivePage(pageMap[location.pathname] || "RESOURCES");
+  }, [location.pathname]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (location.pathname === "/") {
-        if (user) {
-          navigate("/Dashboard");
-        } else {
-          navigate("/sign-in");
-        }
+        navigate(user ? "/Dashboard" : "/sign-in");
       }
       setUser(user);
     });
   }, [auth, navigate, location.pathname]);
 
-  const handlePageSelect = (path, pageName) => {
-    navigate(path);
-    setActivePage(pageName);
-    localStorage.setItem("lastOpenedPage", pageName);
-    toggleMenu();
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const isActive = (path) => location.pathname === path;
+  const isPath = (route) => route === location.pathname;
+
+  const handleLogout = () => {
+    if (user) {
+      signOut(auth)
+        .then(() => {
+          navigate("/sign-in");
+          toast.info("Logged Out Successfully");
+        })
+        .catch((error) => {
+          console.error("Logout error:", error);
+          toast.error("Error logging out");
+        });
+    }
   };
 
+  const handleLogin = () => {
+    navigate("/sign-in");
+  };
+
+  const handlePageSelect = (path, pageName) => {
+    navigate(path);
+    if (pageName) {
+      setActivePage(pageName);
+      localStorage.setItem("lastOpenedPage", pageName);
+    }
+    setMenuOpen(false);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownOpen && !event.target.closest(".dropdown-container")) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [dropdownOpen]);
+
+  const navItemClass = (isActiveItem) => `
+    relative block py-2 pr-4 pl-3 
+    hover:text-gray-800 dark:hover:text-white
+    hover:cursor-pointer 
+    transition-all duration-200 ease-in-out
+    lg:hover:bg-transparent lg:p-0
+    ${
+      isActiveItem
+        ? "text-gray-800 font-bold dark:text-white"
+        : "text-gray-600 dark:text-gray-300"
+    }
+    after:content-[''] after:absolute after:bottom-0 after:left-0 
+    after:w-0 after:h-0.5 after:bg-current
+    after:transition-all after:duration-300
+    hover:after:w-full
+    ${isActiveItem ? "after:w-full" : ""}
+  `;
+
   return (
-    <div>
-      <header>
-        <nav className="bg-blue-200 dark:bg-[#050b15] shadow-lg dark:text-white  ray-200 px-4 lg:px-6 py-4">
-          <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-            <a href="" className="flex items-center">
+    <header>
+      <nav className="bg-[#e9f1ff] dark:bg-[#050b15] border-b-2 border-blue-100 dark:border-transparent dark:text-white px-4 lg:px-6 py-4 sticky top-0 z-50">
+        <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+          {/* Logo */}
+          <a href="/" className="flex items-center">
             <Tilt
-    className="parallax-effect-img"
-    tiltMaxAngleX={0}
-    tiltMaxAngleY={20}
-    perspective={2000}
-    transitionSpeed={100}
-    scale={1.05}
-    gyroscope={true}
-  >
-   <img
+              className="parallax-effect-img"
+              tiltMaxAngleX={0}
+              tiltMaxAngleY={20}
+              perspective={2000}
+              transitionSpeed={100}
+              scale={1.05}
+              gyroscope={true}
+            >
+              <img
                 src={Codeit}
-                className="mr-3 h-8 sm:h-12 lg:h-14"
-                alt="Flowbite Logo"
+                className="mr-3 h-8 sm:h-12 lg:h-14 transition-transform duration-300 hover:scale-110"
+                alt="Codeit Logo"
               />
-  </Tilt>
-             
-            </a>
-            <div className="flex items-center lg:order-2">
-              <button 
-                className="text-darkbg text-2xl dark:text-white" 
-                onClick={() => setDarkMode(!darkMode)} 
-              >
-                {darkMode ? <BsBrightnessHigh/> : <SiDarkreader />}
-              </button>
-              <button
-                data-collapse-toggle="mobile-menu-2"
-                type="button"
-                className="inline-flex items-center p-2 ml-1 text-sm text-black-500 rounded-lg lg:hidden hover:bg-black-100 focus:outline-none focus:ring-2 focus:ring-black-200 dark:text-black-200 dark:hover:bg-black-200 dark:focus:bg-black-200"
-                onClick={toggleMenu}
-              >
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    className={`${menuOpen ? 'hidden' : 'block'}`}
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"
-                  ></path>
-                  <path
-                    className={`${menuOpen ? 'block' : 'hidden'}`}
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M6 4h12v2H6zm0 5h12v2H6zm0 5h12v2H6z"
-                  ></path>
-                </svg>
-              </button>
-            </div>
-            <div
-  className={`${
-    menuOpen ? 'block' : 'hidden'
-  }
-  ${
-    menuOpen && 'dark:bg-[#050b15]'
-  }
-   justify-between items-center w-2/5 lg:w-auto absolute z-10 rounded-[20px] lg:relative lg:flex lg:order-1 top-[60px] right-0 bg-blue-200 bg-opacity  transition ease-in duration-5000 lg:bg-transparent dark:lg:bg-transparent lg:top-auto lg:right-auto`}
-  id="mobile-menu-2"
->
-              <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-              <li
-                   onClick={() => handlePageSelect("/discussion")}
-                   className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer    lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
-                  isActive("/discussion")
-                      ? "text-gray-600 font-bold   dark:text-gray-400"
-                     : "text-gray-500 dark:text-gray-400"
-                       }`}
-                      >
-                   DISCUSS
-                      </li>
-                      <li
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-  className={`group relative block py-2 pr-4 pl-3 hover:text-gray-600 hover:cursor-pointer    lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0 ${
-    (isActive("/learning-resources") || isActive("/problems") || isActive("/ot-material"))
-      ? "text-gray-600 font-bold   dark:text-gray-400"
-      : "text-gray-500 dark:text-gray-400"
-  }`}
->
-  {activePage} ▼
-  <ul className={`absolute md:left-0 left-[10px] mr-4 md:mr-0 md:w-[130px] w-[120px] bg-blue-100 dark:bg-[#0a1529] rounded-lg shadow-lg  transition-opacity duration-300 ${dropdownOpen ? 'block' : 'hidden'}`}>
-   
-    <li
-      onClick={() => {handlePageSelect("/problems", "PROBLEMS");setDropdownOpen(false);}}
-      className="px-4 pt-2 pb-1 text-sm  cursor-pointer"
-    >
-      PROBLEMS
-    </li>
-    <li
-      onClick={() => {handlePageSelect("/DSA-450", "450DSA"); setDropdownOpen(false);}}
-      className="px-4 py-1 text-sm cursor-pointer"
-    >
-      450 DSA
-    </li>
-    <li
-      onClick={() => {handlePageSelect("/cp-sheet", "CP SHEET"); setDropdownOpen(false);}}
-      className="px-4 py-1 text-sm cursor-pointer"
-    >
-      CP SHEET
-    </li>
-    <li
-      onClick={() => {handlePageSelect("/learning-resources", "ROADMAPS"); setDropdownOpen(false);}}
-      className="px-4 py-1 text-sm cursor-pointer"
-    >
-      ROADMAPS
-    </li>
-    <li
-      onClick={() => {handlePageSelect("/interview-exps", "INT EXPS");setDropdownOpen(false);}}
-      className="px-4 pt-1 pb-2 text-sm  cursor-pointer"
-    >
-      INT EXPS
-    </li>
-    {/* <li
-      onClick={() => {handlePageSelect("/ot-material", "OT MATERIALS");setDropdownOpen(false);}}
-      className="px-4 py-2  text-sm cursor-pointer"
-    >
-      OT MATERIAL
-    </li> */}
-  </ul>
-</li>
-                 {(userEmail === 'sc922055@student.nitw.ac.in' || userEmail === 'rk972006@student.nitw.ac.in') && (
-                  <li
-                    onClick={() => handlePageSelect("/add-contest")}
-                    className={`block py-2 pr-4 pl-3 hover:text-gray-600       lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
-                    isActive("/add-contest")
-                    ? "text-gray-600 font-bold   dark:text-gray-400"
-                      : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  ADD CONTEST
-                </li>
+            </Tilt>
+          </a>
+
+          {/* Right side controls */}
+          <div className="flex items-center gap-3 lg:order-2">
+            {/* User indicator */}
+            {user && (
+              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <HiUser className="text-lg" />
+                <span className="max-w-[150px] truncate">{user.email}</span>
+              </div>
+            )}
+
+            {/* Dark mode toggle */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-gray-700 text-2xl dark:text-white p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              onClick={() => setDarkMode(!darkMode)}
+            >
+              <AnimatePresence mode="wait">
+                {darkMode ? (
+                  <motion.div
+                    key="light"
+                    initial={{ rotate: -180, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 180, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <BsBrightnessHigh />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="dark"
+                    initial={{ rotate: 180, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -180, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <SiDarkreader />
+                  </motion.div>
                 )}
-                <li
-                  onClick={() => handlePageSelect("/contest")}
-                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer      lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
-                    isActive("/contest")
-                    ? "text-gray-600 font-bold   dark:text-gray-400"
-                    : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  CONTESTS
-                </li>
-                <li
-                  onClick={() => handlePageSelect("/leaderboard")}
-                  className={`block py-2 pr-4 pl-3 hover:text-gray-600  hover:cursor-pointer     lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
-                    isActive("/leaderboard")
-                      ? "text-gray-600 font-bold   dark:text-gray-400"
-                      : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  LEADERBOARD
-                </li>
-                <li
-                  onClick={() => handlePageSelect(pageState)}
-                  className={`block py-2 pr-4 pl-3  hover:text-gray-600 hover:cursor-pointer      lg:hover:bg-transparent lg: lg:hover:text-primary-700 lg:p-0   ${
-                    isPath("/Dashboard")
-                    ? "text-gray-600 font-bold   dark:text-gray-400"
-                    : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  DASHBOARD
-                </li>
-                {/* {user && user.email ? ( */}
-                  <li
-                    onClick={handleLogout}
-                    className={`block py-2 pr-4 pl-3 text-gray-500 hover:cursor-pointer  hover:text-gray-600  h     lg:hover:bg-transparent dark:text-gray-400 lg: lg:hover:text-primary-700 lg:p-0 `} >
-                    {isPath('/sign-in') ? "SIGN IN" : isPath('/sign-up') ? "SIGN IN" : isPath('/forgot-password') ? "SIGN IN" : "LOG OUT"}
-                  </li>
-                  
-               
-              </ul>
-                
-            </div>
+              </AnimatePresence>
+            </motion.button>
+
+            {/* Mobile menu toggle */}
+            <button
+              type="button"
+              className="inline-flex items-center p-2 text-gray-700 dark:text-gray-300 rounded-lg lg:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              onClick={toggleMenu}
+            >
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <AnimatePresence mode="wait">
+                  {menuOpen ? (
+                    <motion.path
+                      key="close"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      exit={{ pathLength: 0 }}
+                      d="M6 18L18 6M6 6l12 12"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      fill="none"
+                    />
+                  ) : (
+                    <motion.path
+                      key="open"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      exit={{ pathLength: 0 }}
+                      fillRule="evenodd"
+                      d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"
+                    />
+                  )}
+                </AnimatePresence>
+              </svg>
+            </button>
           </div>
-          
-        </nav>
-        
-      </header>
-      
-    </div>
+
+          {/* Navigation menu */}
+          <AnimatePresence>
+            {(menuOpen || window.innerWidth >= 1024) && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className={`
+                  ${menuOpen ? "block" : "hidden"}
+                  w-full lg:w-auto
+                  absolute lg:relative
+                  top-[72px] lg:top-auto
+                  left-0 lg:left-auto
+                  bg-white/95 dark:bg-[#050b15]/95
+                  backdrop-blur-sm
+                  lg:bg-transparent dark:lg:bg-transparent
+                  rounded-b-2xl lg:rounded-none
+                  border lg:border-0 border-blue-100 dark:border-gray-800
+                  lg:flex lg:order-1
+                `}
+              >
+                <ul className="flex flex-col p-4 lg:p-0 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                  <li>
+                    <button
+                      onClick={() => handlePageSelect("/discussion")}
+                      className={navItemClass(isActive("/discussion"))}
+                    >
+                      DISCUSS
+                    </button>
+                  </li>
+
+                  {/* Resources Dropdown */}
+                  <li className="dropdown-container relative">
+                    <button
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                      className={`${navItemClass(
+                        isActive("/learning-resources") ||
+                          isActive("/problems") ||
+                          isActive("/ot-material") ||
+                          isActive("/DSA-450") ||
+                          isActive("/cp-sheet") ||
+                          isActive("/interview-exps")
+                      )} flex items-center gap-1`}
+                    >
+                      {activePage}
+                      <motion.span
+                        animate={{ rotate: dropdownOpen ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        ▼
+                      </motion.span>
+                    </button>
+
+                    <AnimatePresence>
+                      {dropdownOpen && (
+                        <motion.ul
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute left-0 mt-2 w-40 bg-white dark:bg-[#0a1529] rounded-lg shadow-xl overflow-hidden"
+                        >
+                          {[
+                            { path: "/problems", name: "PROBLEMS" },
+                            { path: "/DSA-450", name: "450DSA" },
+                            { path: "/cp-sheet", name: "CP SHEET" },
+                            { path: "/learning-resources", name: "ROADMAPS" },
+                            { path: "/interview-exps", name: "INT EXPS" },
+                          ].map((item, index) => (
+                            <motion.li
+                              key={item.path}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                            >
+                              <button
+                                onClick={() => {
+                                  handlePageSelect(item.path, item.name);
+                                  setDropdownOpen(false);
+                                }}
+                                className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                              >
+                                {item.name}
+                              </button>
+                            </motion.li>
+                          ))}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+                  </li>
+
+                  {/* Admin only - Add Contest */}
+                  {(userEmail === "sc922055@student.nitw.ac.in" ||
+                    userEmail === "rk972006@student.nitw.ac.in") && (
+                    <li>
+                      <button
+                        onClick={() => handlePageSelect("/add-contest")}
+                        className={navItemClass(isActive("/add-contest"))}
+                      >
+                        ADD CONTEST
+                      </button>
+                    </li>
+                  )}
+
+                  <li>
+                    <button
+                      onClick={() => handlePageSelect("/contest")}
+                      className={navItemClass(isActive("/contest"))}
+                    >
+                      CONTESTS
+                    </button>
+                  </li>
+
+                  <li>
+                    <button
+                      onClick={() => handlePageSelect("/leaderboard")}
+                      className={navItemClass(isActive("/leaderboard"))}
+                    >
+                      LEADERBOARD
+                    </button>
+                  </li>
+
+                  {/* Dashboard - Only show if logged in */}
+                  {user && (
+                    <li>
+                      <button
+                        onClick={() => handlePageSelect("/Dashboard")}
+                        className={navItemClass(isPath("/Dashboard"))}
+                      >
+                        DASHBOARD
+                      </button>
+                    </li>
+                  )}
+
+                  {/* Login/Logout button - Only show logout when user is logged in */}
+                  {user && (
+                    <li>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleLogout}
+                        className={`
+                          flex items-center gap-2
+                          px-4 py-2 lg:px-0 lg:py-0
+                          ${navItemClass(false)}
+                          text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300
+                        `}
+                      >
+                        <HiLogout className="text-lg" />
+                        <span>LOG OUT</span>
+                      </motion.button>
+                    </li>
+                  )}
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </nav>
+    </header>
   );
 }
