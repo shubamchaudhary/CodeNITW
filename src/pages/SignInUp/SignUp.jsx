@@ -85,7 +85,6 @@ export default function SignUp() {
 
     setIsLoading(true);
     try {
-
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -197,24 +196,7 @@ export default function SignUp() {
 
   return (
     <section>
-      <div className="flex flex-wrap justify-center items-center px-4 md:px-40 dark:bg-[#050b15] bg-blue-100 min-h-screen max-w-8xl mx-auto">
-        {/* <div className="font-serif w-full md:w-[67%] lg:w-[50%] mb-12 md:mb-6">
-          <Tilt
-            className="parallax-effect-img"
-            tiltMaxAngleX={30}
-            tiltMaxAngleY={30}
-            perspective={1000}
-            transitionSpeed={500}
-            scale={1}
-            gyroscope={true}
-          >
-            <img
-              className="rounded-xl w-full md:max-w-[700px]"
-              src={computer}
-              alt=""
-            />
-          </Tilt>
-        </div> */}
+      <div className="flex flex-wrap justify-center items-center px-4 md:px-40 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 max-w-8xl mx-auto">
         <SpringComputer computer={computer} />
 
         <div className="w-full lg:w-[40%] md:w-[67%] lg:ml-20">
@@ -225,7 +207,7 @@ export default function SignUp() {
                 onChange={onChange}
                 id="name"
                 placeholder="Full Name *"
-                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 type="text"
                 value={name}
                 required
@@ -235,7 +217,7 @@ export default function SignUp() {
                 onChange={onChange}
                 id="email"
                 placeholder="Email *"
-                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 type="email"
                 value={email}
                 required
@@ -246,7 +228,7 @@ export default function SignUp() {
                 onChange={onChange}
                 id="cfhandle"
                 placeholder="Codeforces Handle (Optional)"
-                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 type="text"
                 value={cfhandle}
               />
@@ -255,7 +237,7 @@ export default function SignUp() {
                 onChange={onChange}
                 id="lchandle"
                 placeholder="Leetcode Handle (Optional)"
-                className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                className="w-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] p-2 md:p-4 mb-4 text-lg md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 type="text"
                 value={lchandle}
               />
@@ -265,7 +247,7 @@ export default function SignUp() {
                   onChange={onChange}
                   id="rollno"
                   placeholder="Roll Number (Optional)"
-                  className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   type="text"
                   value={rollno}
                 />
@@ -274,7 +256,7 @@ export default function SignUp() {
                   id="course"
                   onChange={onChange}
                   value={course}
-                  className="w-full dark:bg-[#121620] h-10 md:h-[50px] dark:text-gray-400 p-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] text-gray-700 dark:text-gray-300 p-2 text-lg md:text-lg rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 >
                   <option value="btech">BTech</option>
                   <option value="mtech">MTech</option>
@@ -286,7 +268,7 @@ export default function SignUp() {
                   id="year"
                   onChange={onChange}
                   value={year}
-                  className="w-full dark:bg-[#121620] h-10 md:h-[50px] dark:text-gray-400 p-2 text-lg md:text-lg text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] text-gray-700 dark:text-gray-300 p-2 text-lg md:text-lg rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 >
                   <option value="first">1st Year</option>
                   <option value="second">2nd Year</option>
@@ -301,7 +283,7 @@ export default function SignUp() {
                   onChange={onChange}
                   type={showPassword ? "text" : "password"}
                   placeholder="Password *"
-                  className="w-full dark:bg-[#121620] dark:text-gray-400 h-10 md:h-[50px] p-2 md:p-4 pr-12 md:pr-14 text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 h-10 md:h-[50px] p-2 md:p-4 pr-12 md:pr-14 text-lg md:text-2xl rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   id="password"
                   value={password}
                   required
@@ -309,7 +291,7 @@ export default function SignUp() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 >
                   {showPassword ? (
                     <AiFillEye className="text-xl md:text-2xl" />
@@ -321,17 +303,17 @@ export default function SignUp() {
             </div>
 
             <div className="flex justify-between text-sm md:text-lg mt-2 mb-8">
-              <p className="dark:text-gray-500">
+              <p className="text-gray-600 dark:text-gray-400">
                 Have an Account?{" "}
                 <a
-                  className="text-red-600 dark:text-red-900 hover:underline"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline font-medium transition-colors"
                   href="/sign-in"
                 >
                   Sign in
                 </a>
               </p>
               <a
-                className="text-red-600 dark:text-red-900 hover:underline"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline font-medium transition-colors"
                 href="/forgot-password"
               >
                 Forgot Password?
@@ -339,7 +321,7 @@ export default function SignUp() {
             </div>
 
             <button
-              className="mb-4 mt-4 w-full text-lg dark:bg-[#141a25] hover:dark:bg-[#0d1520] bg-blue-900 text-white h-10 md:h-14 rounded-md hover:bg-red-900 shadow-lg active:bg-red-950 transition-colors disabled:opacity-50"
+              className="mb-4 mt-4 w-full text-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white h-10 md:h-14 rounded-lg shadow-lg transition-all duration-200 disabled:opacity-50"
               type="submit"
               disabled={isLoading}
             >
@@ -349,18 +331,18 @@ export default function SignUp() {
 
           {/* Divider */}
           <div className="flex items-center my-6">
-            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            <div className="flex-grow border-t border-gray-300 dark:border-slate-600"></div>
             <span className="px-4 text-gray-500 dark:text-gray-400 text-sm">
               OR
             </span>
-            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            <div className="flex-grow border-t border-gray-300 dark:border-slate-600"></div>
           </div>
 
           {/* Google Sign Up Button */}
           <button
             onClick={signUpWithGoogle}
             disabled={isGoogleLoading}
-            className="w-full flex items-center justify-center gap-3 h-10 md:h-14 text-lg bg-white dark:bg-[#121620] text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-[#1a2332] shadow-lg transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 h-10 md:h-14 text-lg bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 shadow-lg transition-colors disabled:opacity-50"
           >
             {isGoogleLoading ? (
               <PulseLoader color="#4285f4" size={16} />
