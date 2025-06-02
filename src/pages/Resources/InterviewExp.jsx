@@ -31,9 +31,9 @@ const ExperienceDetail = ({ experience, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-[#121620] rounded-2xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-7xl h-[95vh] overflow-hidden border border-gray-200 dark:border-slate-600 flex flex-col">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 md:p-8 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-[#1a2332] dark:via-[#1c2432] dark:to-[#1e2634] flex-shrink-0">
+        <div className="flex items-center justify-between p-6 md:p-8 border-b border-gray-200 dark:border-slate-600 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-xl">
               <AiOutlineFileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -49,7 +49,7 @@ const ExperienceDetail = ({ experience, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-200 hover:scale-105"
+            className="p-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-600/50 rounded-xl transition-all duration-200 hover:scale-105"
           >
             <AiOutlineClose className="w-6 h-6" />
           </button>
@@ -57,7 +57,7 @@ const ExperienceDetail = ({ experience, onClose }) => {
 
         {/* Modal Content */}
         <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto p-6 md:p-8 bg-gradient-to-b from-gray-50/50 to-white dark:from-gray-900/50 dark:to-[#121620]">
+          <div className="h-full overflow-y-auto p-6 md:p-8 bg-gradient-to-b from-slate-50/50 to-white dark:from-slate-900/50 dark:to-slate-800">
             <div className="prose prose-lg prose-blue dark:prose-invert max-w-none">
               <MarkdownPreview
                 source={experience}
@@ -87,13 +87,13 @@ const CompanyCard = ({ company, isOpen, onToggle, onExperienceClick }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121620] rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-600 overflow-hidden transition-all duration-300 hover:shadow-xl">
       {/* Company Header */}
       <div
-        className="flex items-center justify-between p-3 md:p-4 cursor-pointer bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-[#1a2332] dark:to-[#1c2432] hover:from-blue-100 hover:to-indigo-100 dark:hover:from-[#1c2432] dark:hover:to-[#1e2634] transition-all duration-200"
+        className="flex items-center justify-between p-1 md:p-2 cursor-pointer  from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 hover:from-blue-50 hover:to-indigo-100 dark:hover:from-slate-700 dark:hover:to-slate-600 transition-all duration-200"
         onClick={onToggle}
       >
-        <div className="flex items-center space-x-2 md:space-x-3">
+        <div className="flex items-center space-x-3">
           <span className="text-lg md:text-xl">
             {getCompanyIcon(company.name)}
           </span>
@@ -106,7 +106,7 @@ const CompanyCard = ({ company, isOpen, onToggle, onExperienceClick }) => {
               {company.experiences.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <span className="bg-blue-500 text-white px-1.5 py-0.5 md:px-2 md:py-1 rounded-full text-xs font-medium">
+          <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
             {company.experiences.length}
           </span>
         </div>
@@ -125,18 +125,18 @@ const CompanyCard = ({ company, isOpen, onToggle, onExperienceClick }) => {
           isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
         }`}
       >
-        <div className="p-3 md:p-4 pt-0">
-          <div className="space-y-1.5 md:space-y-2">
+        <div className="p-4 md:p-6 pt-0">
+          <div className="space-y-2 md:space-y-3">
             {company.experiences.map((experience, index) => (
               <div
                 key={index}
                 onClick={() => onExperienceClick(experience.file)}
-                className="flex items-center p-2 md:p-3 bg-gray-50 dark:bg-[#1c2432] rounded-lg hover:bg-blue-50 dark:hover:bg-[#1e2634] cursor-pointer transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-700 group"
+                className="flex items-center p-3 md:p-4 bg-slate-50 dark:bg-slate-700 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-600 cursor-pointer transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-700 group"
               >
                 <div className="flex items-center flex-1">
-                  <AiOutlineUser className="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400 mr-2 md:mr-3 group-hover:scale-110 transition-transform" />
+                  <AiOutlineUser className="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400 mr-3 group-hover:scale-110 transition-transform" />
                   <div>
-                    <h3 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {experience.name}
                     </h3>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -145,7 +145,7 @@ const CompanyCard = ({ company, isOpen, onToggle, onExperienceClick }) => {
                   </div>
                 </div>
                 <div className="text-gray-400 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  <AiOutlineFileText className="w-3 h-3 md:w-4 md:h-4" />
+                  <AiOutlineFileText className="w-4 h-4" />
                 </div>
               </div>
             ))}
@@ -259,24 +259,24 @@ const InterviewExp = () => {
   );
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-[#050b15] dark:via-[#0a1020] dark:to-[#0f1419] min-h-screen font-sans">
-      <div className="container mx-auto px-4 py-6 md:py-10 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Page Header */}
-        <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Interview Experiences
           </h1>
-          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-6">
             Learn from the experiences of students who successfully cracked
             interviews at top companies
           </p>
           <div className="flex items-center justify-center mt-4 space-x-4">
-            <div className="bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">
+            <div className="bg-blue-100 dark:bg-blue-900 px-4 py-2 rounded-full">
               <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
                 {companies.length} Companies
               </span>
             </div>
-            <div className="bg-green-100 dark:bg-green-900 px-3 py-1 rounded-full">
+            <div className="bg-green-100 dark:bg-green-900 px-4 py-2 rounded-full">
               <span className="text-sm font-medium text-green-800 dark:text-green-200">
                 {totalExperiences} Experiences
               </span>
@@ -285,7 +285,7 @@ const InterviewExp = () => {
         </div>
 
         {/* Companies Grid */}
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-6">
           {companies.map((company, index) => (
             <CompanyCard
               key={index}
@@ -300,7 +300,7 @@ const InterviewExp = () => {
         {/* Loading State */}
         {isLoading && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-[#121620] rounded-lg p-6 flex items-center space-x-3">
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 flex items-center space-x-3">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
               <span className="text-gray-900 dark:text-white">
                 Loading experience...

@@ -83,71 +83,105 @@ export default function Profile() {
 
   return (
     userData && (
-      <div className="px-[20px] dark:bg-[#0a0f1a] bg-blue-50 min-h-screen font-serif">
-        <Tilt
-          className="parallax-effect-img"
-          tiltMaxAngleX={0}
-          tiltMaxAngleY={10}
-          perspective={1000}
-          transitionSpeed={500}
-          scale={1}
-          gyroscope={true}
-        >
-          <section className="max-w-2xl mx-auto border-2 dark:border-slate-600 border-blue-300 pt-10 text-black-400 bg-blue-50 dark:bg-[#1a1d29] p-6 rounded-lg shadow-lg">
-            <div className="dark:bg-[#242938] shadow-md rounded-lg p-6 bg-blue-100 transition-colors duration-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div style={{ wordWrap: "break-word" }}>
-                  <h2 className="text-xl md:text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-slate-200">
-                    Name:{" "}
-                    <span className="text-blue-500 dark:text-blue-400">
-                      {userData.name}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <Tilt
+            className="parallax-effect-img"
+            tiltMaxAngleX={0}
+            tiltMaxAngleY={10}
+            perspective={1000}
+            transitionSpeed={500}
+            scale={1}
+            gyroscope={true}
+          >
+            <section className="max-w-4xl mx-auto border-2 border-slate-200 dark:border-slate-600 pt-8 text-black-400 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl">
+              <div className="bg-slate-50 dark:bg-slate-700 shadow-lg rounded-xl p-6 transition-colors duration-200">
+                <div className="text-center mb-6">
+                  <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-white">
+                      {userData.name?.charAt(0)}
                     </span>
-                  </h2>
-                  <h2 className="text-xl md:text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-slate-200">
-                    Roll No:{" "}
-                    <span className="text-blue-500 dark:text-blue-400">
-                      {userData.rollno}
-                    </span>
-                  </h2>
-                  <h2 className="text-xl md:text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-slate-200">
-                    Course:{" "}
-                    <span className="text-blue-500 dark:text-blue-400">
-                      {userData.course}
-                    </span>
-                  </h2>
+                  </div>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    {userData.name}
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {userData.course} • {userData.year} Year
+                  </p>
                 </div>
-                <div>
-                  <h2 className="text-xl md:text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-slate-200">
-                    Codeforces Handle:{" "}
-                    <span className="text-blue-500 dark:text-blue-400">
-                      {userData.cfhandle}
-                    </span>
-                  </h2>
-                  <h2 className="text-xl md:text-2xl font-cursive hover:text-blue-500 transition-colors duration-200 dark:text-slate-200">
-                    Leetcode Handle:{" "}
-                    <span className="text-blue-500 dark:text-blue-400">
-                      {userData.lchandle}
-                    </span>
-                  </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-600">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Personal Information
+                      </h3>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Roll Number
+                          </span>
+                          <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                            {userData.rollno}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Course
+                          </span>
+                          <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                            {userData.course}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-600">
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Coding Profiles
+                      </h3>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Codeforces
+                          </span>
+                          <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                            {userData.cfhandle || "Not available"}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Leetcode
+                          </span>
+                          <p className="text-blue-600 dark:text-blue-400 font-semibold">
+                            {userData.lchandle || "Not available"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </section>
+          </Tilt>
+
+          <section className="max-w-6xl mx-auto flex justify-center items-center flex-col mt-12">
+            <h2 className="text-2xl md:text-3xl text-gray-700 dark:text-gray-300 text-center mb-8 font-bold">
+              {userData ? userData.name : ""}'s Performance Chart
+            </h2>
+            <div className="w-full bg-white dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl border border-gray-200 dark:border-slate-600">
+              <div className="h-[400px] md:h-[500px]">
+                <PerformanceChart
+                  name={userData ? userData.name : ""}
+                  data={data}
+                  handle={userData ? userData.cfhandle : ""}
+                />
               </div>
             </div>
           </section>
-        </Tilt>
-        <section className="max-w-4xl mx-auto flex justify-center items-center flex-col">
-          <h2 className="text-2xl md:text-3xl dark:text-slate-300 text-gray-700 text-center mt-[50px] cursive">
-            {userData ? userData.name : ""}'s Performance Chart
-          </h2>
-          <div className="m-4 md:m-[150px] w-full mt-[10px] bg-white dark:bg-[#1a1d29] rounded-lg p-4 md:p-6 shadow-lg">
-            <div className="h-[400px] md:h-[500px]">
-              <PerformanceChart
-                name={userData ? userData.name : ""}
-                data={data}
-                handle={userData ? userData.cfhandle : ""}
-              />
-            </div>
-          </div>
-        </section>
+        </div>
       </div>
     )
   );

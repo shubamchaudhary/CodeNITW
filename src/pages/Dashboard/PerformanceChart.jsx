@@ -251,7 +251,7 @@ const PerformanceChart = ({ name, data, handle }) => {
 
   return (
     <div className="w-full h-full relative bg-transparent">
-      <div className="w-full h-[70%] flex justify-center items-center">
+      <div className="w-full h-[100%] flex justify-center items-center">
         <div className="w-[130%] h-full relative bg-transparent">
           <canvas
             ref={chartRef}

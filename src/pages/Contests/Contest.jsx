@@ -386,9 +386,9 @@ export default function Contest() {
     children,
     count = 0,
   }) => (
-    <div className="bg-white dark:bg-[#121620] shadow-xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl">
+    <div className="bg-white dark:bg-slate-800 shadow-xl rounded-xl overflow-hidden border border-gray-200 dark:border-slate-600 transition-all duration-300 hover:shadow-2xl">
       <div
-        className="flex items-center justify-between p-4 md:p-6 cursor-pointer bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-[#1a2332] dark:to-[#1c2432] hover:from-blue-100 hover:to-indigo-100 dark:hover:from-[#1c2432] dark:hover:to-[#1e2634] transition-all duration-200"
+        className="flex items-center justify-between p-4 md:p-6 cursor-pointer bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-rose-900/20 hover:from-purple-100 hover:to-rose-100 dark:hover:from-purple-800/30 dark:hover:to-rose-800/30 transition-all duration-200"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center space-x-3">
@@ -396,12 +396,12 @@ export default function Contest() {
             {title}
           </h2>
           {count > 0 && (
-            <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs md:text-sm font-medium">
+            <span className="bg-purple-600 text-white px-2 py-1 rounded-full text-xs md:text-sm font-medium">
               {count}
             </span>
           )}
         </div>
-        <div className="text-blue-600 dark:text-blue-400 transition-transform duration-200">
+        <div className="text-purple-600 dark:text-purple-400 transition-transform duration-200">
           {isOpen ? (
             <AiOutlineUp className="w-5 h-5 md:w-6 md:h-6" />
           ) : (
@@ -422,12 +422,12 @@ export default function Contest() {
     </div>
   );
 
-  const ContestSubSection = ({ title, contests, status, color = "blue" }) => {
+  const ContestSubSection = ({ title, contests, status, color = "purple" }) => {
     if (contests.length === 0) return null;
 
     const colorClasses = {
-      green: "text-green-600 dark:text-green-400",
-      blue: "text-blue-600 dark:text-blue-400",
+      green: "text-emerald-600 dark:text-emerald-400",
+      purple: "text-purple-600 dark:text-purple-400",
       gray: "text-gray-600 dark:text-gray-400",
     };
 
@@ -439,9 +439,9 @@ export default function Contest() {
           <span
             className={`w-2 h-2 rounded-full mr-2 ${
               status === "Active"
-                ? "bg-green-500 animate-pulse"
+                ? "bg-emerald-500 animate-pulse"
                 : status === "Upcoming"
-                ? "bg-blue-500"
+                ? "bg-purple-500"
                 : "bg-gray-400"
             }`}
           ></span>
@@ -478,11 +478,11 @@ export default function Contest() {
     );
 
     return (
-      <div className="fixed bottom-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 text-xs border border-gray-200 dark:border-gray-700 opacity-75 hover:opacity-100 transition-opacity">
+      <div className="fixed bottom-4 right-4 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-2 text-xs border border-gray-200 dark:border-slate-600 opacity-75 hover:opacity-100 transition-opacity">
         <div className="flex items-center space-x-2">
           <span
             className={`w-2 h-2 rounded-full ${
-              ccpdCached ? "bg-green-500" : "bg-red-500"
+              ccpdCached ? "bg-emerald-500" : "bg-red-500"
             }`}
           ></span>
           <span className="text-gray-600 dark:text-gray-400">CCPD</span>
@@ -490,7 +490,7 @@ export default function Contest() {
         <div className="flex items-center space-x-2">
           <span
             className={`w-2 h-2 rounded-full ${
-              externalCached ? "bg-green-500" : "bg-red-500"
+              externalCached ? "bg-emerald-500" : "bg-red-500"
             }`}
           ></span>
           <span className="text-gray-600 dark:text-gray-400">External</span>
@@ -501,7 +501,7 @@ export default function Contest() {
 
   if (isLoading) {
     return (
-      <div className="bg-blue-100 dark:bg-[#050b15] min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <Dna visible={true} height="80" width="80" ariaLabel="dna-loading" />
           <p className="mt-4 text-gray-600 dark:text-gray-400">
@@ -517,67 +517,89 @@ export default function Contest() {
     Listings.active.length + Listings.upcoming.length + Listings.past.length;
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-[#050b15] dark:via-[#0a1020] dark:to-[#0f1419] min-h-screen font-sans">
-      <div className="container mx-auto px-4 py-3 md:py-6 space-y-4 md:space-y-6 max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Page Header */}
         <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Coding Contests...
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            🏆 Coding Contests
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-6">
             Discover and participate in coding contests from top platforms
           </p>
+
+          {/* Stats Cards */}
+          <div className="flex items-center justify-center space-x-6">
+            <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl shadow-md border border-gray-200 dark:border-slate-600">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                External Contests
+              </span>
+              <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                {totalUpcoming}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl shadow-md border border-gray-200 dark:border-slate-600">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                CCPD Contests
+              </span>
+              <div className="text-xl font-bold text-pink-600 dark:text-pink-400">
+                {totalCCPD}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Upcoming Contests Section (Other Platforms) */}
         <CollapsibleSection
-          title="Upcoming Contests"
+          title="🌐 External Platform Contests"
           isOpen={isUpcomingOpen}
           setIsOpen={setIsUpcomingOpen}
           count={totalUpcoming}
         >
           <ContestSubSection
-            title="Active Contests"
+            title="🔴 Active Contests"
             contests={activeContests}
             status="Active"
             color="green"
           />
           <ContestSubSection
-            title="Upcoming Contests"
+            title="📅 Upcoming Contests"
             contests={upcomingContests}
             status="Upcoming"
-            color="blue"
+            color="purple"
           />
           {totalUpcoming === 0 && (
             <div className="text-center py-8">
               <p className="text-gray-500 dark:text-gray-400 text-lg">
-                No upcoming contests available
+                No external contests available at the moment
               </p>
             </div>
           )}
         </CollapsibleSection>
 
+        <div className="mb-6"></div>
+
         {/* CCPD Contests Section */}
         <CollapsibleSection
-          title="CCPD Contests"
+          title="🎓 CCPD Contests"
           isOpen={isCCPDOpen}
           setIsOpen={setIsCCPDOpen}
           count={totalCCPD}
         >
           <ContestSubSection
-            title="Active Contests"
+            title="🔴 Active Contests"
             contests={Listings.active}
             status="Active"
             color="green"
           />
           <ContestSubSection
-            title="Upcoming Contests"
+            title="📅 Upcoming Contests"
             contests={Listings.upcoming}
             status="Upcoming"
-            color="blue"
+            color="purple"
           />
           <ContestSubSection
-            title="Past Contests"
+            title="📚 Past Contests"
             contests={Listings.past}
             status="Past"
             color="gray"
