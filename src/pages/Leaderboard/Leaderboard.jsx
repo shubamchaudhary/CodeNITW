@@ -50,7 +50,7 @@ export default function LeaderboardList() {
   const [hasPushedData, setHasPushedData] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const itemsPerPage = 11;
+  const itemsPerPage = 10;
   const [page, setPage] = useState(1);
   const handleChange = (event, value) => {
     setPage(value);
@@ -326,20 +326,20 @@ export default function LeaderboardList() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-[#050b15] dark:via-[#0a1020] dark:to-[#0f1419]">
-      <section className="max-w-6xl mx-auto flex justify-center items-center flex-col px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <section className="max-w-6xl mx-auto flex justify-center items-center flex-col px-4 py-4">
         {/* Modern Header */}
         <div className="text-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
             🏆 Coding Leaderboard
           </h1>
-          <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4">
+          <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
             Track your progress and compete with fellow coders
           </p>
 
           {/* Stats Cards */}
-          <div className="flex justify-center space-x-4 mb-6">
-            <div className="bg-white dark:bg-[#121620] px-3 py-1.5 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <div className="flex justify-center space-x-4 ">
+            <div className="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg shadow-md border border-gray-200 dark:border-slate-600">
               <div className="text-xs text-gray-600 dark:text-gray-400">
                 Participants
               </div>
@@ -347,7 +347,7 @@ export default function LeaderboardList() {
                 {leaderboardData.length}
               </div>
             </div>
-            <div className="bg-white dark:bg-[#121620] px-3 py-1.5 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-slate-800 px-3 py-2 rounded-lg shadow-md border border-gray-200 dark:border-slate-600">
               <div className="text-xs text-gray-600 dark:text-gray-400">
                 Contests
               </div>
@@ -364,11 +364,11 @@ export default function LeaderboardList() {
             <button
               onClick={handleUpdateDataClick}
               disabled={isLoading}
-              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               {isLoading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
                   Updating...
                 </div>
               ) : (
@@ -378,7 +378,7 @@ export default function LeaderboardList() {
             <button
               onClick={handleRefresh}
               disabled={isLoading}
-              className="px-6 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               🔄 Refresh
             </button>
@@ -386,12 +386,12 @@ export default function LeaderboardList() {
         )}
 
         {/* Leaderboard Container */}
-        <div className="w-full bg-white dark:bg-[#121620] shadow-2xl rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="w-full bg-white dark:bg-slate-800 shadow-2xl rounded-2xl overflow-hidden border border-gray-200 dark:border-slate-600">
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
+            <div className="flex items-center justify-center py-12">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-400">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                   Loading leaderboard...
                 </p>
               </div>
@@ -407,14 +407,14 @@ export default function LeaderboardList() {
               />
 
               {/* Modern Pagination */}
-              <div className="flex justify-center p-4 bg-gray-50 dark:bg-[#1c2432] border-t border-gray-200 dark:border-gray-700">
+              <div className="flex justify-center p-4 bg-slate-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <button
-                      className={`mx-1 px-3 py-1.5 rounded-lg font-medium transition-all duration-200 text-sm ${
+                      className={`mx-1 px-3 py-1.5 rounded-lg font-medium transition-all duration-200 text-xs ${
                         page === pageNumber
-                          ? "bg-blue-600 text-white shadow-lg"
-                          : "bg-white dark:bg-[#121620] text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                          ? "bg-blue-600 text-white shadow-md"
+                          : "bg-white dark:bg-slate-600 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-slate-500 border border-gray-300 dark:border-slate-500"
                       }`}
                       key={pageNumber}
                       onClick={() => setPage(pageNumber)}
@@ -473,9 +473,9 @@ export const CustomLeaderboard = ({
   return (
     <div className="p-4">
       {/* Modern Table */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+      <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-slate-600">
         <table className="w-full">
-          <thead className="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-[#1a2332] dark:to-[#1c2432]">
+          <thead className="bg-gradient-to-r from-slate-100 to-blue-100 dark:from-slate-700 dark:to-slate-600">
             <tr>
               <th className="px-4 py-2 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
                 Rank
@@ -488,12 +488,12 @@ export const CustomLeaderboard = ({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-[#1c2432] divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
             {leaderboardItems.map((item, index) => {
               const globalRank = startIndex + index + 1;
               let rankEmoji = "";
               let rowClass =
-                "hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200";
+                "hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200";
 
               if (globalRank === 1) {
                 rankEmoji = "👑";
@@ -502,7 +502,7 @@ export const CustomLeaderboard = ({
               } else if (globalRank === 2) {
                 rankEmoji = "🥈";
                 rowClass =
-                  "bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 border-l-4 border-gray-400";
+                  "bg-gradient-to-r from-slate-100 to-gray-100 dark:from-slate-700/20 dark:to-slate-600/20 border-l-4 border-slate-400";
               } else if (globalRank === 3) {
                 rankEmoji = "🥉";
                 rowClass =
@@ -514,11 +514,11 @@ export const CustomLeaderboard = ({
                   <td className="px-4 py-2 whitespace-nowrap">
                     <div className="flex items-center space-x-1">
                       <span
-                        className={`text-sm font-bold ${
+                        className={`text-xs font-bold ${
                           globalRank === 1
                             ? "text-yellow-600"
                             : globalRank === 2
-                            ? "text-gray-600"
+                            ? "text-slate-600"
                             : globalRank === 3
                             ? "text-amber-600"
                             : "text-gray-900 dark:text-white"
@@ -536,13 +536,13 @@ export const CustomLeaderboard = ({
                       href={`https://codeforces.com/profile/${item.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors hover:underline text-sm"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors hover:underline text-xs"
                     >
                       {item.handle}
                     </a>
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap text-right">
-                    <span className="text-sm font-bold text-gray-900 dark:text-white">
+                    <span className="text-xs font-bold text-gray-900 dark:text-white">
                       {parseFloat(item.Score).toFixed(2)}
                     </span>
                   </td>
@@ -560,18 +560,18 @@ export const CustomLeaderboard = ({
       )}
 
       {/* Navigation Buttons */}
-      <div className="flex justify-center mt-4 space-x-3">
+      <div className="flex justify-center mt-4 space-x-2">
         <button
           onClick={goToPreviousPage}
           disabled={page === 1}
-          className="px-4 py-1.5 rounded-lg bg-white dark:bg-[#1c2432] border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
+          className="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-xs"
         >
           ← Previous
         </button>
         <button
           onClick={goToNextPage}
           disabled={page === totalPages}
-          className="px-4 py-1.5 rounded-lg bg-white dark:bg-[#1c2432] border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
+          className="px-4 py-1.5 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-xs"
         >
           Next →
         </button>

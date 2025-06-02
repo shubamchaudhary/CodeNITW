@@ -192,28 +192,31 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="px-[20px] dark:bg-[#050b15] bg-blue-100 min-h-screen font-serif">
-      <div className="pt-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Profile Section - Header Style */}
-        <div className="max-w-6xl mx-auto mb-8">
+        <div className="mb-8">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-4 text-white rounded-t-lg">
-            <div className="flex justify-between items-center">
+          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-6 text-white rounded-t-2xl shadow-lg">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
               <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                  <span className="text-2xl font-bold">{name?.charAt(0)}</span>
+                </div>
                 <div>
-                  <h1 className="text-2xl font-bold">{name}</h1>
-                  <p className="text-blue-100">
+                  <h1 className="text-2xl md:text-3xl font-bold">{name}</h1>
+                  <p className="text-blue-100 text-sm md:text-base">
                     {formData.course} • {formData.year} Year
                   </p>
                 </div>
               </div>
 
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <button
                   onClick={() => setEditing(!editing)}
-                  className="bg-[#5e8fde] text-white px-3 py-1 rounded"
+                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/20"
                 >
-                  Edit Handles
+                  {editing ? "Cancel" : "Edit Handles"}
                 </button>
 
                 <CopyToClipboard
@@ -222,7 +225,7 @@ export default function Dashboard() {
                     toast.success("Profile Link has been copied to Clipboard")
                   }
                 >
-                  <button className="bg-[#5e8fde] text-white px-3 py-1 rounded">
+                  <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/20">
                     Share Profile
                   </button>
                 </CopyToClipboard>
@@ -231,81 +234,112 @@ export default function Dashboard() {
           </div>
 
           {/* Profile Details */}
-          <div className="bg-white dark:bg-[#121620] px-6 py-4 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-lg shadow-lg">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="bg-white dark:bg-slate-800 px-6 py-6 border-x border-b border-gray-200 dark:border-slate-600 rounded-b-2xl shadow-lg">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
               <div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Name:
+                <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Name
                 </span>
-                <p className="text-blue-400 font-semibold">{formData.name}</p>
-              </div>
-              <div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Roll No:
-                </span>
-                <p className="text-blue-400 font-semibold">{formData.rollno}</p>
-              </div>
-              <div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Course:
-                </span>
-                <p className="text-blue-400 font-semibold">{formData.course}</p>
-              </div>
-              <div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Codeforces:
-                </span>
-                <p className="text-blue-400 font-semibold">
-                  {formData.cfhandle}
+                <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm md:text-base">
+                  {formData.name}
                 </p>
               </div>
               <div>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Leetcode:
+                <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Roll No
                 </span>
-                <p className="text-blue-400 font-semibold">
-                  {formData.lchandle}
+                <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm md:text-base">
+                  {formData.rollno}
+                </p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Course
+                </span>
+                <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm md:text-base">
+                  {formData.course}
+                </p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Codeforces
+                </span>
+                <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm md:text-base">
+                  {formData.cfhandle || "Not set"}
+                </p>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Leetcode
+                </span>
+                <p className="text-blue-600 dark:text-blue-400 font-semibold text-sm md:text-base">
+                  {formData.lchandle || "Not set"}
                 </p>
               </div>
             </div>
 
             {editing && (
-              <form onSubmit={handleFormSubmit} className="mt-4">
-                <input
-                  type="text"
-                  name="cfhandle"
-                  value={formData.cfhandle}
-                  onChange={handleInputChange}
-                  placeholder="Codeforces Handle"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-                <input
-                  type="text"
-                  name="lchandle"
-                  value={formData.lchandle}
-                  onChange={handleInputChange}
-                  placeholder="Leetcode Handle"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-4"
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white mr-2 my-2 px-2 py-1 rounded mb-2"
-                >
-                  Submit
-                </button>
+              <form onSubmit={handleFormSubmit} className="mt-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Codeforces Handle
+                    </label>
+                    <input
+                      type="text"
+                      name="cfhandle"
+                      value={formData.cfhandle}
+                      onChange={handleInputChange}
+                      placeholder="Enter your Codeforces handle"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Leetcode Handle
+                    </label>
+                    <input
+                      type="text"
+                      name="lchandle"
+                      value={formData.lchandle}
+                      onChange={handleInputChange}
+                      placeholder="Enter your Leetcode handle"
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-colors"
+                    />
+                  </div>
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(false)}
+                    className="px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-slate-600 dark:hover:bg-slate-500 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </form>
             )}
           </div>
         </div>
 
-        {/* Performance Chart Section - 2x bigger with title at bottom */}
-        <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-          <div className="w-full bg-white dark:bg-[#121620] shadow-2xl rounded-lg p-6">
-            <div className="h-full w-full">
-              <PerformanceChart name={name} data={data} />
+        {/* Performance Chart Section */}
+        <section className="flex justify-center items-center flex-col">
+          <div className="w-full bg-white dark:bg-slate-800 shadow-2xl rounded-2xl p-6 md:p-8 border border-gray-200 dark:border-slate-600">
+            <div className="h-[500px] md:h-[600px] w-full">
+              <PerformanceChart
+                name={name}
+                data={data}
+                handle={formData.cfhandle}
+              />
             </div>
-            {/* Chart title moved to bottom */}
-            <h2 className="text-2xl dark:text-gray-400 text-center mt-4 cursive">
+            {/* Chart title */}
+            <h2 className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 text-center mt-6 font-semibold">
               {name}'s Performance Chart
             </h2>
           </div>
