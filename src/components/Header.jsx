@@ -325,7 +325,7 @@ export default function Header() {
                   </li>
 
                   {/* Admin only - Add Contest */}
-                  {(userEmail === "sc922055@student.nitw.ac.in" ||
+                  {/* {(userEmail === "sc922055@student.nitw.ac.in" ||
                     userEmail === "rk972006@student.nitw.ac.in") && (
                     <li>
                       <button
@@ -335,7 +335,7 @@ export default function Header() {
                         ADD CONTEST
                       </button>
                     </li>
-                  )}
+                  )} */}
 
                   <li>
                     <button
