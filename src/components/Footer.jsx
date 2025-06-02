@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="text-center">
           {/* Made and maintained by */}
           <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            MADE AND MAINTAINED BY {"   "}
+            MADE AND MAINTAINED BY{" "}
             <a
               href="https://shubamchaudhary.vercel.app/"
               target="_blank"
@@ -15,6 +15,15 @@ const Footer = () => {
               className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors hover:underline"
             >
               SHUBAM CHAUDHARY
+            </a>
+            <span className="text-gray-400 dark:text-gray-500 mx-2">&</span>
+            <a
+              href="https://kmrrohit.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors hover:underline"
+            >
+              ROHIT KUMAR
             </a>
           </div>
 
@@ -30,5 +39,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;
