@@ -9,7 +9,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import authentication modules
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Tilt from "react-parallax-tilt";
 
 async function sha512(str) {
@@ -33,11 +33,9 @@ async function addOrUpdateData(updatedScoreArray, leaderboardCollectionRef) {
     const existingDocsSnapshot = await getDocs(existingDocs);
 
     if (!existingDocsSnapshot.empty) {
-      // Document with the same name exists, update it
       const existingDoc = existingDocsSnapshot.docs[0];
       await setDoc(existingDoc.ref, scoreData, { merge: true });
     } else {
-      // Document with the same name does not exist, add a new one
       await addDoc(leaderboardCollectionRef, scoreData);
     }
   }
@@ -46,11 +44,11 @@ async function addOrUpdateData(updatedScoreArray, leaderboardCollectionRef) {
 export default function LeaderboardList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [scoreArray, setScoreArray] = useState([]);
-  const contests = ["480776", "482262","483816" , "486358", "492543"]; // Add more contest IDs as needed
+  const contests = ["480776", "482262", "483816", "486358", "492543"];
   const [isPushDataButtonVisible, setPushDataButtonVisible] = useState(true);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [hasPushedData, setHasPushedData] = useState(false);
-  // Initialize Firebase Authentication
+  const [isLoading, setIsLoading] = useState(true);
 
   const itemsPerPage = 11;
   const [page, setPage] = useState(1);
@@ -63,10 +61,57 @@ export default function LeaderboardList() {
   );
   const totalPages = Math.ceil(filteredLeaderboardData.length / itemsPerPage);
 
-  // const pages = [];
-  // for(let i = 1; i <= Math.ceil(filteredLeaderboardData.length / itemsPerPage); i++){
-  //   pages.push(i);
-  // }
+  // Cache configuration
+  const CACHE_KEY = "leaderboard_data";
+  const CACHE_TIMESTAMP_KEY = "leaderboard_timestamp";
+  const CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+
+  // Check if cached data is valid
+  const isCacheValid = () => {
+    try {
+      const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+      if (!timestamp) return false;
+
+      const cacheTime = parseInt(timestamp);
+      const now = Date.now();
+      return now - cacheTime < CACHE_DURATION;
+    } catch (error) {
+      console.error("Error checking cache validity:", error);
+      return false;
+    }
+  };
+
+  // Get cached data
+  const getCachedData = () => {
+    try {
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      return cachedData ? JSON.parse(cachedData) : null;
+    } catch (error) {
+      console.error("Error getting cached data:", error);
+      return null;
+    }
+  };
+
+  // Set cached data
+  const setCachedData = (data) => {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+    } catch (error) {
+      console.error("Error setting cached data:", error);
+    }
+  };
+
+  // Clear cache (useful for admin or when data needs refresh)
+  const clearCache = () => {
+    try {
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+    } catch (error) {
+      console.error("Error clearing cache:", error);
+    }
+  };
+
   useEffect(() => {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
@@ -76,88 +121,120 @@ export default function LeaderboardList() {
         setPushDataButtonVisible(false);
       }
     });
-    fetchData();
+    loadLeaderboardData();
   }, []);
 
-    async function fetchData() {
+  const loadLeaderboardData = async () => {
+    setIsLoading(true);
 
-      // Get the last contest ID
+    // Check if we have valid cached data
+    if (isCacheValid()) {
+      const cachedData = getCachedData();
+      if (cachedData) {
+        console.log("📦 Loading data from cache");
+        setLeaderboardData(cachedData);
+        setScoreArray(cachedData);
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    console.log("🔄 Fetching fresh data from database");
+    // If no valid cache, fetch from database
+    await fetchData();
+  };
+
+  async function fetchData() {
+    try {
       const lastContestId = contests[contests.length - 1];
-
-      // Fetch the scores for the last contest
       const data = await getStandings(lastContestId);
       if (data && data.status === "OK") {
         let updatedScoreArray = getScores(data, lastContestId, []);
 
-        // Fetch the last leaderboard data from Firebase
         const leaderboardCollectionRef = collection(db, "leaderboard");
-        const leaderboardQuerySnapshot = await getDocs(leaderboardCollectionRef);
+        const leaderboardQuerySnapshot = await getDocs(
+          leaderboardCollectionRef
+        );
         const lastLeaderboardData = [];
         leaderboardQuerySnapshot.forEach((doc) => {
           lastLeaderboardData.push(doc.data());
         });
 
-        // Add the new scores to the last leaderboard data
         for (const newScore of updatedScoreArray) {
           const existingUserIndex = lastLeaderboardData.findIndex(
             (user) => user.handle === newScore.handle
           );
 
           if (existingUserIndex !== -1) {
-            // Update the existing user's score for the contest
             lastLeaderboardData[existingUserIndex].Score = (
               parseFloat(lastLeaderboardData[existingUserIndex].Score) +
               parseFloat(newScore.Score)
             ).toFixed(2);
           } else {
-            // Create a new entry for the user for the given contest
             lastLeaderboardData.push(newScore);
           }
         }
-        console.log(lastLeaderboardData)
 
-        // Update the leaderboard data in the state
         setScoreArray(lastLeaderboardData);
 
-              // leaderboard data setting 
-      // Fetch data from the Leaderboard collection
-      // const leaderboardCollectionRef = collection(db, "leaderboard");
-      // const leaderboardQuerySnapshot = await getDocs(leaderboardCollectionRef);
-      
-      const leaderboardData = [];
-      leaderboardQuerySnapshot.forEach((doc) => {
-        leaderboardData.push(doc.data());
-      });
-      setLeaderboardData(leaderboardData);
+        const leaderboardData = [];
+        leaderboardQuerySnapshot.forEach((doc) => {
+          leaderboardData.push(doc.data());
+        });
 
-      
-     //Pushing Ranks into firebase 
-      if(!hasPushedData){
-      for(const contest_id of contests){
-        const data = await getStandings(contest_id);
-        if (data && data.status === "OK") {
-          const contestRanksItem = getContestRanks(data , contest_id);
-          const contestRanksCollectionRef = collection(db, "contestRanks");
-          const q = query(contestRanksCollectionRef, where("contestId", "==", contest_id));
-          const querySnapshot = await getDocs(q);
-          if (querySnapshot.empty) {
-            await addDoc(contestRanksCollectionRef, contestRanksItem);
+        // Cache the fetched data
+        setCachedData(leaderboardData);
+        setLeaderboardData(leaderboardData);
+
+        if (!hasPushedData) {
+          for (const contest_id of contests) {
+            const data = await getStandings(contest_id);
+            if (data && data.status === "OK") {
+              const contestRanksItem = getContestRanks(data, contest_id);
+              const contestRanksCollectionRef = collection(db, "contestRanks");
+              const q = query(
+                contestRanksCollectionRef,
+                where("contestId", "==", contest_id)
+              );
+              const querySnapshot = await getDocs(q);
+              if (querySnapshot.empty) {
+                await addDoc(contestRanksCollectionRef, contestRanksItem);
+              }
+            }
           }
+          setHasPushedData(true);
         }
-      }
-      setHasPushedData(true);
-      }
-
       } else {
         console.error("API Error:", data);
-        // Handle the API error appropriately
       }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
+  }
 
   async function handleUpdateDataClick() {
-    const leaderboardCollectionRef = collection(db, "leaderboard");
-    await addOrUpdateData(scoreArray, leaderboardCollectionRef);
+    setIsLoading(true);
+    try {
+      // Clear cache before updating to ensure fresh data
+      clearCache();
+      const leaderboardCollectionRef = collection(db, "leaderboard");
+      await addOrUpdateData(scoreArray, leaderboardCollectionRef);
+      // Fetch fresh data after update
+      await fetchData();
+    } catch (error) {
+      console.error("Error updating data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  // Manual refresh function (you can add a refresh button if needed)
+  const handleRefresh = async () => {
+    clearCache();
+    await loadLeaderboardData();
+  };
 
   async function getStandings(contest_id) {
     const rand = String(Math.floor(Math.random() * 100000)).padStart(6, "0");
@@ -180,7 +257,7 @@ export default function LeaderboardList() {
     const response = await fetch(url);
     if (!response.ok) {
       console.error("Failed to fetch data from the API:", response.statusText);
-      return null; // Handle the error as needed
+      return null;
     }
     const data = await response.json();
     console.log(data);
@@ -226,19 +303,16 @@ export default function LeaderboardList() {
       let Score = 100 * points + (1 - penalty / totalScore);
       Score = Score.toFixed(2);
 
-      // Check if handle already exists in updatedScoreArray
       const existingUserIndex = updatedScoreArray.findIndex(
         (user) => user.handle === handle
       );
 
       if (existingUserIndex !== -1) {
-        // Update the existing user's score for the contest
         updatedScoreArray[existingUserIndex].Score = (
           parseFloat(updatedScoreArray[existingUserIndex].Score) +
           parseFloat(Score)
         ).toFixed(2);
       } else {
-        // Create a new entry for the user for the given contest
         updatedScoreArray.push({
           Score,
           contestId,
@@ -247,59 +321,112 @@ export default function LeaderboardList() {
         });
       }
     }
-    //console.log(updatedScoreArray);
 
     return updatedScoreArray;
   }
 
-  
   return (
-    <div className=" min-h-screen dark:bg-[#050b15] bg-blue-100">
-      <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <h1 className="text-4xl dark:text-gray-400 text-center font-serif mb-8 mt-8">
-          Leaderboard
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-[#050b15] dark:via-[#0a1020] dark:to-[#0f1419]">
+      <section className="max-w-6xl mx-auto flex justify-center items-center flex-col px-4 py-8">
+        {/* Modern Header */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            🏆 Coding Leaderboard
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-4">
+            Track your progress and compete with fellow coders
+          </p>
 
-        {isPushDataButtonVisible && (
-          <button
-            onClick={handleUpdateDataClick}
-            className="px-6 py-3 rounded-lg bg-blue-500 text-white dark:bg-[#121620] hover:bg-blue-600 transition-colors mb-8"
-          >
-            Push Data
-          </button>
-        )}
-        <Tilt
-          className="parallax-effect-img w-[100%]"
-          tiltMaxAngleX={1}
-          tiltMaxAngleY={2}
-          perspective={1000}
-          transitionSpeed={100}
-          scale={1}
-          gyroscope={true}
-        >
-          <div className="w-full bg-white border-[1px] dark:border-[#1c2432] border-blue-200 dark:bg-[#121620] shadow-lg hover:shadow-2xl  rounded-lg overflow-hidden">
-            <CustomLeaderboard
-              leaderboardData={leaderboardData}
-              page={page}
-              setPage={setPage}
-              itemsPerPage={itemsPerPage}
-              searchTerm={searchTerm}
-            />
-            <div className="flex justify-center">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (pageNumber) => (
-                  <button
-                    className="m-2 dark:text-gray-400 dark:bg-blue-700 hover:dark:bg-gray-900 cursor-pointer bg-blue-400 text-white px-2 rounded-full"
-                    key={pageNumber}
-                    onClick={() => setPage(pageNumber)}
-                  >
-                    {pageNumber}
-                  </button>
-                )
-              )}
+          {/* Stats Cards */}
+          <div className="flex justify-center space-x-4 mb-6">
+            <div className="bg-white dark:bg-[#121620] px-3 py-1.5 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Participants
+              </div>
+              <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                {leaderboardData.length}
+              </div>
+            </div>
+            <div className="bg-white dark:bg-[#121620] px-3 py-1.5 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Contests
+              </div>
+              <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                {contests.length}
+              </div>
             </div>
           </div>
-        </Tilt>
+        </div>
+
+        {/* Admin Button */}
+        {isPushDataButtonVisible && (
+          <div className="flex justify-center space-x-3 mb-6">
+            <button
+              onClick={handleUpdateDataClick}
+              disabled={isLoading}
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Updating...
+                </div>
+              ) : (
+                <>🔄 Update Data</>
+              )}
+            </button>
+            <button
+              onClick={handleRefresh}
+              disabled={isLoading}
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              🔄 Refresh
+            </button>
+          </div>
+        )}
+
+        {/* Leaderboard Container */}
+        <div className="w-full bg-white dark:bg-[#121620] shadow-2xl rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Loading leaderboard...
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <CustomLeaderboard
+                leaderboardData={leaderboardData}
+                page={page}
+                setPage={setPage}
+                itemsPerPage={itemsPerPage}
+                searchTerm={searchTerm}
+              />
+
+              {/* Modern Pagination */}
+              <div className="flex justify-center p-4 bg-gray-50 dark:bg-[#1c2432] border-t border-gray-200 dark:border-gray-700">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (pageNumber) => (
+                    <button
+                      className={`mx-1 px-3 py-1.5 rounded-lg font-medium transition-all duration-200 text-sm ${
+                        page === pageNumber
+                          ? "bg-blue-600 text-white shadow-lg"
+                          : "bg-white dark:bg-[#121620] text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                      }`}
+                      key={pageNumber}
+                      onClick={() => setPage(pageNumber)}
+                    >
+                      {pageNumber}
+                    </button>
+                  )
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </section>
     </div>
   );
@@ -315,25 +442,20 @@ export const CustomLeaderboard = ({
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = page * itemsPerPage;
 
-  // Sort the entire leaderboard data
   const sortedLeaderboardData = leaderboardData.sort(
     (a, b) => b.Score - a.Score
   );
 
-  // Find the rank of the searched user in the entire leaderboard data
   const rank =
     leaderboardData.findIndex(
       (item) => item.handle.toLowerCase() === searchTerm.toLowerCase()
     ) + 1;
 
-  // Filter the leaderboard data based on the search term
   const filteredLeaderboardData = sortedLeaderboardData.filter((data) =>
     data.handle.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Get the leaderboard items for the current page
   const leaderboardItems = filteredLeaderboardData.slice(startIndex, endIndex);
-
   const totalPages = Math.ceil(filteredLeaderboardData.length / itemsPerPage);
 
   const goToNextPage = () => {
@@ -350,57 +472,108 @@ export const CustomLeaderboard = ({
 
   return (
     <div className="p-4">
-      {/* <h1 className="text-2xl font-bold mb-4">Leaderboard</h1> */}
-      <table className="w-full  bg-blue-100 dark:text-gray-400 dark:bg-[#1c2432] rounded-md">
-        <thead className="bg-blue-200 dark:bg-[#1c2432]">
-          <tr>
-            <th className="p-2 ">Rank</th>
-            <th className="p-2 ">Handle</th>
-            <th className="p-2 ">Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaderboardItems.map((item, index) => {
-            let topper = "";
-            if (index === 0 && page === 1) {
-              topper = "👑";
-            }
-            return (
-              <tr key={index} className={`${topper} h   justify-center`}>
-                <td className="p-2 font-semibold  text-center">
-                  {startIndex + index + 1}
-                  {topper}
-                </td>
-                <td className="p-2 font-semibold  text-center">
-                  <a
-                    href={`https://codeforces.com/profile/${item.handle}`}
-                    target="_blank"
-                  >
-                    {item.handle}
-                  </a>
-                </td>
-                <td className="p-2 font-semibold  text-center">{item.Score}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      {rank > 0 && <p className="mt-4">Rank: {rank}</p>}{" "}
-      {/* Display the rank if it is greater than 0 */}
-      <div className="flex justify-center mt-4">
+      {/* Modern Table */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+        <table className="w-full">
+          <thead className="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-[#1a2332] dark:to-[#1c2432]">
+            <tr>
+              <th className="px-4 py-2 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                Rank
+              </th>
+              <th className="px-4 py-2 text-left text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                Handle
+              </th>
+              <th className="px-4 py-2 text-right text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
+                Score
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-[#1c2432] divide-y divide-gray-200 dark:divide-gray-700">
+            {leaderboardItems.map((item, index) => {
+              const globalRank = startIndex + index + 1;
+              let rankEmoji = "";
+              let rowClass =
+                "hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200";
+
+              if (globalRank === 1) {
+                rankEmoji = "👑";
+                rowClass =
+                  "bg-gradient-to-r from-yellow-100 to-amber-100 dark:from-yellow-900/20 dark:to-amber-900/20 border-l-4 border-yellow-400";
+              } else if (globalRank === 2) {
+                rankEmoji = "🥈";
+                rowClass =
+                  "bg-gradient-to-r from-gray-100 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 border-l-4 border-gray-400";
+              } else if (globalRank === 3) {
+                rankEmoji = "🥉";
+                rowClass =
+                  "bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 border-l-4 border-amber-400";
+              }
+
+              return (
+                <tr key={index} className={rowClass}>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    <div className="flex items-center space-x-1">
+                      <span
+                        className={`text-sm font-bold ${
+                          globalRank === 1
+                            ? "text-yellow-600"
+                            : globalRank === 2
+                            ? "text-gray-600"
+                            : globalRank === 3
+                            ? "text-amber-600"
+                            : "text-gray-900 dark:text-white"
+                        }`}
+                      >
+                        #{globalRank}
+                      </span>
+                      {rankEmoji && (
+                        <span className="text-sm">{rankEmoji}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    <a
+                      href={`https://codeforces.com/profile/${item.handle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors hover:underline text-sm"
+                    >
+                      {item.handle}
+                    </a>
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap text-right">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white">
+                      {parseFloat(item.Score).toFixed(2)}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {rank > 0 && (
+        <p className="mt-3 text-center text-gray-600 dark:text-gray-400 text-sm">
+          <span className="font-medium">{searchTerm}</span> is ranked #{rank}
+        </p>
+      )}
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-center mt-4 space-x-3">
         <button
           onClick={goToPreviousPage}
           disabled={page === 1}
-          className="px-4 py-2 rounded-lg bg-blue-500 text-white dark:text-gray-400 dark:bg-blue-700 hover:dark:bg-gray-900 cursor-pointer hover:bg-blue-600  transition-colors mr-2"
+          className="px-4 py-1.5 rounded-lg bg-white dark:bg-[#1c2432] border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
         >
-          Previous
+          ← Previous
         </button>
         <button
           onClick={goToNextPage}
           disabled={page === totalPages}
-          className="px-4 py-2 rounded-lg bg-blue-500 dark:text-gray-400 dark:bg-blue-700 hover:dark:bg-gray-900 cursor-pointer text-white hover:bg-blue-600 transition-colors"
+          className="px-4 py-1.5 rounded-lg bg-white dark:bg-[#1c2432] border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm"
         >
-          Next
+          Next →
         </button>
       </div>
     </div>
