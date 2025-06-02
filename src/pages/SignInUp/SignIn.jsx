@@ -85,35 +85,27 @@ export default function SignIn() {
   }
 
   return (
-    <div className="bg-blue-100 dark:bg-[#050b15] min-h-screen flex flex-col justify-center items-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col justify-center items-center">
       <section className="w-full max-w-8xl mx-auto flex flex-col md:flex-row justify-center items-center px-4 md:px-40">
-        {/* <div className="md:w-1/2 lg:w-1/2 mb-12 md:mb-6">
-          <Tilt
-            className="parallax-effect-img"
-            tiltMaxAngleX={30}
-            tiltMaxAngleY={30}
-            perspective={1000}
-            transitionSpeed={500}
-            scale={1}
-            gyroscope={true}
-          >
-            <img
-              className="rounded-xl w-full md:max-w-[700px]"
-              src={computer}
-              alt=""
-            />
-          </Tilt>
-        </div> */}
         <SpringComputer computer={computer} />
 
         <div className="w-full md:w-1/2 lg:w-1/2 lg:ml-20">
+          <div className="mb-8 text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Welcome Back!
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+              Sign in to continue your coding journey
+            </p>
+          </div>
+
           <form onSubmit={onSubmit} className="text-xl">
             <div className="mb-6">
               <input
                 onChange={onChange}
                 id="email"
                 placeholder="Email address"
-                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl dark:bg-[#121620] dark:text-gray-400 text-gray-700 bg-gray-100 rounded-lg mb-6"
+                className="w-full h-10 md:h-[50px] p-2 md:p-4 text-lg md:text-2xl bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 type="email"
                 value={email}
                 required
@@ -125,7 +117,7 @@ export default function SignIn() {
                   onChange={onChange}
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="w-full h-10 md:h-[50px] p-2 md:p-4 pr-12 md:pr-14 dark:text-gray-400 dark:bg-[#121620] text-lg md:text-2xl text-gray-700 bg-gray-100 rounded-lg"
+                  className="w-full h-10 md:h-[50px] p-2 md:p-4 pr-12 md:pr-14 bg-white dark:bg-slate-800 text-lg md:text-2xl text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                   id="password"
                   value={password}
                   required
@@ -134,7 +126,7 @@ export default function SignIn() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                  className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 >
                   {showPassword ? (
                     <AiFillEye className="text-xl md:text-2xl" />
@@ -146,17 +138,17 @@ export default function SignIn() {
             </div>
 
             <div className="flex justify-between text-sm md:text-lg mt-2 mb-8">
-              <p className="dark:text-gray-500">
-                Do Not have a Account?{" "}
+              <p className="text-gray-600 dark:text-gray-400">
+                Don't have an account?{" "}
                 <a
-                  className="text-red-600 dark:text-red-900 hover:underline"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline font-medium transition-colors"
                   href="/sign-up"
                 >
                   Register
                 </a>
               </p>
               <a
-                className="text-red-600 dark:text-red-900 hover:underline"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline font-medium transition-colors"
                 href="/forgot-password"
               >
                 Forgot Password?
@@ -164,7 +156,7 @@ export default function SignIn() {
             </div>
 
             <button
-              className="mb-4 mt-4 w-full text-lg dark:bg-[#141a25] hover:dark:bg-[#0d1520] bg-blue-900 text-white h-10 md:h-14 rounded-md hover:bg-red-900 shadow-lg active:bg-red-950 transition-colors"
+              className="mb-4 mt-4 w-full text-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white h-10 md:h-14 rounded-lg shadow-lg transition-all duration-200 disabled:opacity-50"
               type="submit"
               disabled={isLoading}
             >
@@ -174,18 +166,18 @@ export default function SignIn() {
 
           {/* Divider */}
           <div className="flex items-center my-6">
-            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            <div className="flex-grow border-t border-gray-300 dark:border-slate-600"></div>
             <span className="px-4 text-gray-500 dark:text-gray-400 text-sm">
               OR
             </span>
-            <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            <div className="flex-grow border-t border-gray-300 dark:border-slate-600"></div>
           </div>
 
           {/* Google Sign In Button */}
           <button
             onClick={signInWithGoogle}
             disabled={isGoogleLoading}
-            className="w-full flex items-center justify-center gap-3 h-10 md:h-14 text-lg bg-white dark:bg-[#121620] text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-[#1a2332] shadow-lg transition-colors disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 h-10 md:h-14 text-lg bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 shadow-lg transition-colors disabled:opacity-50"
           >
             {isGoogleLoading ? (
               <PulseLoader color="#4285f4" size={16} />
