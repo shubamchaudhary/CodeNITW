@@ -116,26 +116,19 @@ export default function Header() {
   }, [dropdownOpen]);
 
   const navItemClass = (isActiveItem) => `
-    relative block py-2 pr-4 pl-3 
-    hover:text-gray-800 dark:hover:text-white
-    hover:cursor-pointer 
+    relative block py-3 px-4 font-medium text-sm
     transition-all duration-200 ease-in-out
-    lg:hover:bg-transparent lg:p-0
+    lg:hover:bg-transparent lg:p-3
     ${
       isActiveItem
-        ? "text-gray-800 font-bold dark:text-white"
-        : "text-gray-600 dark:text-gray-300"
+        ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
+        : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-lg"
     }
-    after:content-[''] after:absolute after:bottom-0 after:left-0 
-    after:w-0 after:h-0.5 after:bg-current
-    after:transition-all after:duration-300
-    hover:after:w-full
-    ${isActiveItem ? "after:w-full" : ""}
   `;
 
   return (
     <header>
-      <nav className="bg-[#e9f1ff] dark:bg-[#050b15] border-b-2 border-blue-100 dark:border-transparent dark:text-white px-4 lg:px-6 py-4 sticky top-0 z-50">
+      <nav className="bg-white dark:bg-slate-900 shadow-lg border-b border-gray-200 dark:border-slate-700 px-4 lg:px-6 py-4 sticky top-0 z-50">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           {/* Logo */}
           <a href="/" className="flex items-center">
@@ -160,9 +153,11 @@ export default function Header() {
           <div className="flex items-center gap-3 lg:order-2">
             {/* User indicator */}
             {user && (
-              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <HiUser className="text-lg" />
-                <span className="max-w-[150px] truncate">{user.email}</span>
+              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 px-3 py-2 rounded-lg">
+                <HiUser className="text-lg text-blue-600 dark:text-blue-400" />
+                <span className="max-w-[150px] truncate font-medium">
+                  {user.email}
+                </span>
               </div>
             )}
 
@@ -170,7 +165,7 @@ export default function Header() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="text-gray-700 text-2xl dark:text-white p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="text-gray-600 dark:text-gray-400 text-2xl p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
               onClick={() => setDarkMode(!darkMode)}
             >
               <AnimatePresence mode="wait">
@@ -201,7 +196,7 @@ export default function Header() {
             {/* Mobile menu toggle */}
             <button
               type="button"
-              className="inline-flex items-center p-2 text-gray-700 dark:text-gray-300 rounded-lg lg:hidden hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center p-2 text-gray-600 dark:text-gray-400 rounded-lg lg:hidden bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
               onClick={toggleMenu}
             >
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -246,11 +241,11 @@ export default function Header() {
                   absolute lg:relative
                   top-[72px] lg:top-auto
                   left-0 lg:left-auto
-                  bg-white/95 dark:bg-[#050b15]/95
-                  backdrop-blur-sm
+                  bg-white dark:bg-slate-900
                   lg:bg-transparent dark:lg:bg-transparent
                   rounded-b-2xl lg:rounded-none
-                  border lg:border-0 border-blue-100 dark:border-gray-800
+                  border lg:border-0 border-gray-200 dark:border-slate-700
+                  shadow-lg lg:shadow-none
                   lg:flex lg:order-1
                 `}
               >
@@ -265,7 +260,7 @@ export default function Header() {
                   </li>
 
                   {/* Resources Dropdown */}
-                  <li className="dropdown-container relative">
+                  <li className="dropdown-container relative lg:static">
                     <button
                       onClick={() => setDropdownOpen(!dropdownOpen)}
                       className={`${navItemClass(
@@ -275,12 +270,13 @@ export default function Header() {
                           isActive("/DSA-450") ||
                           isActive("/cp-sheet") ||
                           isActive("/interview-exps")
-                      )} flex items-center gap-1`}
+                      )} flex items-center gap-1 w-full lg:w-auto justify-between lg:justify-center`}
                     >
                       {activePage}
                       <motion.span
                         animate={{ rotate: dropdownOpen ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
+                        className="text-blue-600 dark:text-blue-400"
                       >
                         ▼
                       </motion.span>
@@ -288,54 +284,44 @@ export default function Header() {
 
                     <AnimatePresence>
                       {dropdownOpen && (
-                        <motion.ul
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="absolute left-0 mt-2 w-40 bg-white dark:bg-[#0a1529] rounded-lg shadow-xl overflow-hidden"
+                          className="lg:absolute lg:left-0 lg:mt-2 lg:w-40 lg:bg-white lg:dark:bg-slate-800 lg:rounded-lg lg:shadow-xl lg:border lg:border-gray-200 lg:dark:border-slate-600 overflow-hidden"
                         >
-                          {[
-                            { path: "/problems", name: "PROBLEMS" },
-                            { path: "/DSA-450", name: "450DSA" },
-                            { path: "/cp-sheet", name: "CP SHEET" },
-                            { path: "/learning-resources", name: "ROADMAPS" },
-                            { path: "/interview-exps", name: "INT EXPS" },
-                          ].map((item, index) => (
-                            <motion.li
-                              key={item.path}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                            >
-                              <button
-                                onClick={() => {
-                                  handlePageSelect(item.path, item.name);
-                                  setDropdownOpen(false);
-                                }}
-                                className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          <ul className="lg:block">
+                            {[
+                              { path: "/problems", name: "PROBLEMS" },
+                              { path: "/DSA-450", name: "450DSA" },
+                              { path: "/cp-sheet", name: "CP SHEET" },
+                              { path: "/learning-resources", name: "ROADMAPS" },
+                              { path: "/interview-exps", name: "INT EXPS" },
+                            ].map((item, index) => (
+                              <motion.li
+                                key={item.path}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                                className="lg:block"
                               >
-                                {item.name}
-                              </button>
-                            </motion.li>
-                          ))}
-                        </motion.ul>
+                                <button
+                                  onClick={() => {
+                                    handlePageSelect(item.path, item.name);
+                                    setDropdownOpen(false);
+                                  }}
+                                  className="w-full px-4 py-2 lg:py-3 text-sm text-left text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg lg:rounded-none ml-4 lg:ml-0 my-1 lg:my-0"
+                                >
+                                  {item.name}
+                                </button>
+                              </motion.li>
+                            ))}
+                          </ul>
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </li>
-
-                  {/* Admin only - Add Contest */}
-                  {/* {(userEmail === "sc922055@student.nitw.ac.in" ||
-                    userEmail === "rk972006@student.nitw.ac.in") && (
-                    <li>
-                      <button
-                        onClick={() => handlePageSelect("/add-contest")}
-                        className={navItemClass(isActive("/add-contest"))}
-                      >
-                        ADD CONTEST
-                      </button>
-                    </li>
-                  )} */}
 
                   <li>
                     <button
@@ -376,9 +362,11 @@ export default function Header() {
                         onClick={handleLogout}
                         className={`
                           flex items-center gap-2
-                          px-4 py-2 lg:px-0 lg:py-0
-                          ${navItemClass(false)}
-                          text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300
+                          px-4 py-2 lg:px-3 lg:py-2
+                          text-red-600 dark:text-red-400 
+                          hover:text-red-700 dark:hover:text-red-300
+                          hover:bg-red-50 dark:hover:bg-red-900/20
+                          rounded-lg transition-colors font-medium
                         `}
                       >
                         <HiLogout className="text-lg" />

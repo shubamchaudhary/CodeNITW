@@ -5,20 +5,20 @@ const SpringComputer = ({ computer }) => {
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef(null);
 
-  // Spring physics configuration
+  // Spring physics configuration - slightly reduced stiffness for smoother motion
   const springConfig = {
-    stiffness: 150,
-    damping: 15,
-    mass: 0.5,
+    stiffness: 100, // Reduced from 150
+    damping: 20, // Increased from 15 for more damping
+    mass: 0.8, // Increased from 0.5 for less responsive motion
   };
 
   // Create spring values for mouse position
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
-  // Transform mouse position to rotation values
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], [10, -10]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-10, 10]);
+  // Transform mouse position to rotation values - REDUCED TO HALF
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], [5, -5]); // Reduced from [10, -10]
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-5, 5]); // Reduced from [-10, 10]
 
   const handleMouseMove = (event) => {
     if (!ref.current) return;
@@ -28,8 +28,9 @@ const SpringComputer = ({ computer }) => {
     const centerY = rect.top + rect.height / 2;
 
     // Normalize mouse position relative to center (-0.5 to 0.5)
-    const normalizedX = (event.clientX - centerX) / rect.width;
-    const normalizedY = (event.clientY - centerY) / rect.height;
+    // REDUCED sensitivity by multiplying by 0.5
+    const normalizedX = ((event.clientX - centerX) / rect.width) * 0.5;
+    const normalizedY = ((event.clientY - centerY) / rect.height) * 0.5;
 
     mouseX.set(normalizedX);
     mouseY.set(normalizedY);
@@ -64,28 +65,28 @@ const SpringComputer = ({ computer }) => {
             transformStyle: "preserve-3d",
           }}
           animate={{
-            scale: isHovered ? 1.02 : 1,
-            z: isHovered ? 50 : 0,
+            scale: isHovered ? 1.005 : 1, // Further reduced from 1.01
+            z: isHovered ? 25 : 0, // Reduced from 50
           }}
           transition={{
             scale: {
               type: "spring",
-              stiffness: 200,
-              damping: 20,
-              mass: 0.8,
+              stiffness: 150, // Reduced from 200
+              damping: 25, // Increased from 20
+              mass: 1.0, // Increased from 0.8
             },
           }}
           whileTap={{
-            scale: 0.95,
+            scale: 0.98, // Reduced from 0.95
             transition: {
               type: "spring",
-              stiffness: 400,
-              damping: 10,
+              stiffness: 300, // Reduced from 400
+              damping: 15, // Increased from 10
             },
           }}
         />
 
-        {/* Optional: Add a subtle shadow that responds to tilt */}
+        {/* Optional: Add a subtle shadow that responds to tilt - REDUCED motion */}
         <motion.div
           className="absolute inset-0 -z-10 rounded-xl"
           style={{
@@ -97,13 +98,13 @@ const SpringComputer = ({ computer }) => {
             rotateY,
           }}
           animate={{
-            opacity: isHovered ? 0.6 : 0.3,
-            scale: isHovered ? 0.95 : 0.9,
+            opacity: isHovered ? 0.3 : 0.15, // Further reduced from 0.4 : 0.2
+            scale: isHovered ? 0.97 : 0.93, // Further reduced from 0.96 : 0.92
           }}
           transition={{
             type: "spring",
-            stiffness: 200,
-            damping: 20,
+            stiffness: 150, // Reduced from 200
+            damping: 25, // Increased from 20
           }}
         />
       </motion.div>
@@ -118,13 +119,13 @@ const SpringComputerReactSpring = ({ computer }) => {
   const [isHovered, setIsHovered] = useState(false);
   const ref = useRef(null);
 
-  // Spring animation with damping
+  // Spring animation with damping - REDUCED motion
   const [{ xys }, api] = useReactSpring(() => ({
     xys: [0, 0, 1],
     config: {
-      mass: 5,
-      tension: 350,
-      friction: 40, // This creates the damping effect
+      mass: 8, // Increased from 5 for slower motion
+      tension: 250, // Reduced from 350
+      friction: 60, // Increased from 40 for more damping
     },
   }));
 
@@ -137,9 +138,9 @@ const SpringComputerReactSpring = ({ computer }) => {
 
     api.start({
       xys: [
-        -(y - 0.5) * 20, // rotateX
-        (x - 0.5) * 20, // rotateY
-        1.05, // scale
+        -(y - 0.5) * 10, // REDUCED from 20 to 10 (rotateX)
+        (x - 0.5) * 10, // REDUCED from 20 to 10 (rotateY)
+        1.005, // Further reduced from 1.025 (scale)
       ],
     });
   };
