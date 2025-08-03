@@ -19,6 +19,7 @@ import CPSheet from "./pages/Resources/CPSheet";
 import Discussion from "./pages/Discussion/Discussion";
 import Profile from "./pages/Dashboard/Profile";
 import InterviewExp from "./pages/Resources/InterviewExp";
+import PersonalPlan from "./pages/Resources/PersonalPlan";
 
 // import { inject } from "@vercel/analytics";
 // import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -36,7 +37,10 @@ function App() {
             <Route path="/problems" element={<Problems />}></Route>
           </Route>
           <Route path="/learning-resources" element={<PrivateRoute />}>
-            <Route path="/learning-resources" element={<LearningResources />}></Route>
+            <Route
+              path="/learning-resources"
+              element={<LearningResources />}
+            ></Route>
           </Route>
           <Route path="/ot-material" element={<PrivateRoute />}>
             <Route path="/ot-material" element={<OTMaterial />}></Route>
@@ -49,6 +53,9 @@ function App() {
           </Route>
           <Route path="/interview-exps" element={<PrivateRoute />}>
             <Route path="/interview-exps" element={<InterviewExp />}></Route>
+          </Route>
+          <Route path="/personal-plan" element={<PrivateRoute />}>
+            <Route path="/personal-plan" element={<PersonalPlan />}></Route>
           </Route>
           <Route path="/contest" element={<PrivateRoute />}>
             <Route path="/contest" element={<Contest />}></Route>

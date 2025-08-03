@@ -55,6 +55,7 @@ export default function Header() {
   useEffect(() => {
     const pageMap = {
       "/problems": "PROBLEMS",
+      "/personal-plan": "PERSONAL PLAN",
       "/DSA-450": "450DSA",
       "/cp-sheet": "CP SHEET",
       "/learning-resources": "ROADMAPS",
@@ -116,9 +117,9 @@ export default function Header() {
   }, [dropdownOpen]);
 
   const navItemClass = (isActiveItem) => `
-    relative block py-3 px-4 font-medium text-sm
+    relative block py-2 px-3 font-medium text-xs
     transition-all duration-200 ease-in-out
-    lg:hover:bg-transparent lg:p-3
+    lg:hover:bg-transparent lg:p-2
     ${
       isActiveItem
         ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg"
@@ -128,7 +129,7 @@ export default function Header() {
 
   return (
     <header>
-      <nav className="bg-white dark:bg-slate-900 shadow-lg border-b border-gray-200 dark:border-slate-700 px-4 lg:px-6 py-4 sticky top-0 z-50">
+      <nav className="bg-white dark:bg-slate-900 shadow-lg border-b border-gray-200 dark:border-slate-700 px-3 lg:px-5 py-3 sticky top-0 z-50">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           {/* Logo */}
           <a href="/" className="flex items-center">
@@ -143,19 +144,19 @@ export default function Header() {
             >
               <img
                 src={Codeit}
-                className="mr-3 h-8 sm:h-12 lg:h-14 transition-transform duration-300 hover:scale-110"
+                className="mr-3 h-6 sm:h-10 lg:h-12 transition-transform duration-300 hover:scale-110"
                 alt="Codeit Logo"
               />
             </Tilt>
           </a>
 
           {/* Right side controls */}
-          <div className="flex items-center gap-3 lg:order-2">
+          <div className="flex items-center gap-2 lg:order-2">
             {/* User indicator */}
             {user && (
-              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 px-3 py-2 rounded-lg">
-                <HiUser className="text-lg text-blue-600 dark:text-blue-400" />
-                <span className="max-w-[150px] truncate font-medium">
+              <div className="hidden lg:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                <HiUser className="text-md text-blue-600 dark:text-blue-400" />
+                <span className="max-w-[120px] truncate font-medium">
                   {user.email}
                 </span>
               </div>
@@ -165,7 +166,7 @@ export default function Header() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="text-gray-600 dark:text-gray-400 text-2xl p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+              className="text-gray-600 dark:text-gray-400 text-xl p-1 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
               onClick={() => setDarkMode(!darkMode)}
             >
               <AnimatePresence mode="wait">
@@ -196,10 +197,10 @@ export default function Header() {
             {/* Mobile menu toggle */}
             <button
               type="button"
-              className="inline-flex items-center p-2 text-gray-600 dark:text-gray-400 rounded-lg lg:hidden bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+              className="inline-flex items-center p-1 text-gray-600 dark:text-gray-400 rounded-lg lg:hidden bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
               onClick={toggleMenu}
             >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <AnimatePresence mode="wait">
                   {menuOpen ? (
                     <motion.path
@@ -239,7 +240,7 @@ export default function Header() {
                   ${menuOpen ? "block" : "hidden"}
                   w-full lg:w-auto
                   absolute lg:relative
-                  top-[72px] lg:top-auto
+                  top-[58px] lg:top-auto
                   left-0 lg:left-auto
                   bg-white dark:bg-slate-900
                   lg:bg-transparent dark:lg:bg-transparent
@@ -249,7 +250,7 @@ export default function Header() {
                   lg:flex lg:order-1
                 `}
               >
-                <ul className="flex flex-col p-4 lg:p-0 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-6 lg:mt-0">
                   <li>
                     <button
                       onClick={() => handlePageSelect("/discussion")}
@@ -265,14 +266,15 @@ export default function Header() {
                       onClick={() => setDropdownOpen(!dropdownOpen)}
                       className={`${navItemClass(
                         isActive("/learning-resources") ||
+                          isActive("/personal-plan") ||
                           isActive("/problems") ||
                           isActive("/ot-material") ||
                           isActive("/DSA-450") ||
                           isActive("/cp-sheet") ||
                           isActive("/interview-exps")
-                      )} flex items-center gap-1 w-full lg:w-auto justify-between lg:justify-center`}
+                      )} flex items-center gap-1 w-full lg:w-auto max-w-[150px] justify-between lg:justify-center`}
                     >
-                      {activePage}
+                      <span className="truncate">{activePage}</span>
                       <motion.span
                         animate={{ rotate: dropdownOpen ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
@@ -289,10 +291,11 @@ export default function Header() {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="lg:absolute lg:left-0 lg:mt-2 lg:w-40 lg:bg-white lg:dark:bg-slate-800 lg:rounded-lg lg:shadow-xl lg:border lg:border-gray-200 lg:dark:border-slate-600 overflow-hidden"
+                          className="lg:absolute lg:left-0 lg:mt-2 lg:w-32 lg:bg-white lg:dark:bg-slate-800 lg:rounded-lg lg:shadow-xl lg:border lg:border-gray-200 lg:dark:border-slate-600 overflow-hidden"
                         >
                           <ul className="lg:block">
                             {[
+                              { path: "/personal-plan", name: "PERSONAL PLAN" },
                               { path: "/problems", name: "PROBLEMS" },
                               { path: "/DSA-450", name: "450DSA" },
                               { path: "/cp-sheet", name: "CP SHEET" },
@@ -311,7 +314,7 @@ export default function Header() {
                                     handlePageSelect(item.path, item.name);
                                     setDropdownOpen(false);
                                   }}
-                                  className="w-full px-4 py-2 lg:py-3 text-sm text-left text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg lg:rounded-none ml-4 lg:ml-0 my-1 lg:my-0"
+                                  className="w-full px-3 py-1 lg:py-2 text-xs text-left text-gray-600 dark:text-gray-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors rounded-lg lg:rounded-none ml-3 lg:ml-0 my-1 lg:my-0"
                                 >
                                   {item.name}
                                 </button>
@@ -362,14 +365,14 @@ export default function Header() {
                         onClick={handleLogout}
                         className={`
                           flex items-center gap-2
-                          px-4 py-2 lg:px-3 lg:py-2
+                          px-3 py-1 lg:px-2 lg:py-1
                           text-red-600 dark:text-red-400 
                           hover:text-red-700 dark:hover:text-red-300
                           hover:bg-red-50 dark:hover:bg-red-900/20
                           rounded-lg transition-colors font-medium
                         `}
                       >
-                        <HiLogout className="text-lg" />
+                        <HiLogout className="text-md" />
                         <span>LOG OUT</span>
                       </motion.button>
                     </li>
