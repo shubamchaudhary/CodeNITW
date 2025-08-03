@@ -6,6 +6,8 @@ import { useRef } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { motion, AnimatePresence } from "framer-motion";
+import useProgressSync from "../../hooks/useProgressSync";
+import SyncButton from "../../components/SyncButton";
 
 const PersonalPlan = () => {
   const [topics, setTopics] = useState([]);
@@ -16,6 +18,18 @@ const PersonalPlan = () => {
   );
   const [totalProblems, setTotalProblems] = useState(0);
   const [solvedProblems, setSolvedProblems] = useState(0);
+
+  // Initialize sync functionality
+  const {
+    isSyncing,
+    isLoading,
+    syncStatus,
+    hasUnsyncedChanges,
+    syncToDatabase,
+    loadFromDatabase,
+    markAsChanged,
+    isAuthenticated,
+  } = useProgressSync("PERSONAL_DSA");
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -57,14 +71,32 @@ const PersonalPlan = () => {
       "PersonalDSASolvedQuestions",
       JSON.stringify(updatedPersonalSolvedQuestions)
     );
+    // Mark that we have unsaved changes
+    markAsChanged();
   };
+
+  // Listen for progress data loaded from database
+  useEffect(() => {
+    const handleProgressDataLoaded = (event) => {
+      if (event.detail.sheetType === "PERSONAL_DSA") {
+        setPersonalSolvedQuestions(event.detail.data);
+      }
+    };
+
+    window.addEventListener("progressDataLoaded", handleProgressDataLoaded);
+    return () =>
+      window.removeEventListener(
+        "progressDataLoaded",
+        handleProgressDataLoaded
+      );
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* <DailyProblem /> */}
       <div className="min-h-screen flex justify-center">
         <div className="w-full sm:w-3/4 lg:w-2/3">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
             <div className="ml-4">
               <h1 className="text-xl mt-4 dark:text-gray-300 font-semibold mb-4">
                 Personal DSA Roadmap
@@ -73,16 +105,34 @@ const PersonalPlan = () => {
                 {solvedProblems} / {totalProblems} solved
               </h2>
             </div>
-            <div className="mr-2 mt-2" style={{ width: 68, height: 60 }}>
-              <CircularProgressbar
-                value={solvedProblems}
-                maxValue={totalProblems}
-                text={`${Math.round((solvedProblems / totalProblems) * 100)}%`}
-                styles={buildStyles({
-                  pathColor: "#805ad5",
-                  trailColor: "lightgray",
-                  textSize: "16px",
-                })}
+
+            {/* Progress circle and sync controls */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 mr-4">
+              <div className="mt-2" style={{ width: 68, height: 60 }}>
+                <CircularProgressbar
+                  value={solvedProblems}
+                  maxValue={totalProblems}
+                  text={`${Math.round(
+                    (solvedProblems / totalProblems) * 100
+                  )}%`}
+                  styles={buildStyles({
+                    pathColor: "#805ad5",
+                    trailColor: "lightgray",
+                    textSize: "16px",
+                  })}
+                />
+              </div>
+
+              {/* Sync Button */}
+              <SyncButton
+                onSyncToDatabase={syncToDatabase}
+                onLoadFromDatabase={loadFromDatabase}
+                isSyncing={isSyncing}
+                isLoading={isLoading}
+                hasUnsyncedChanges={hasUnsyncedChanges}
+                syncStatus={syncStatus}
+                isAuthenticated={isAuthenticated}
+                className="mt-2 sm:mt-0"
               />
             </div>
           </div>
