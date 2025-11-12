@@ -74,6 +74,10 @@ const PersonalPlan = () => {
     // Mark that we have unsaved changes
     markAsChanged();
   };
+  const handleStarChange = (name, isStarred) => {
+    // LocalStorage is updated inside QuestionCard. Just mark unsynced here.
+    markAsChanged();
+  };
 
   // Listen for progress data loaded from database
   useEffect(() => {
@@ -153,6 +157,7 @@ const PersonalPlan = () => {
                   setSelectedTopic={setSelectedTopic}
                   DSASolvedQuestions={personalSolvedQuestions}
                   onQuestionSolved={handleCheckboxChange}
+                  onQuestionStarred={handleStarChange}
                   ref={topic === selectedTopic ? selectedTopicRef : null}
                 />
               </motion.div>
@@ -179,10 +184,35 @@ export function QuestionCard(props) {
       JSON.parse(localStorage.getItem("PersonalDSASolvedQuestions")) || {};
     return personalSolvedQuestions[name] || false;
   });
+  const [isStarred, setIsStarred] = useState(() => {
+    const personalStarredQuestions =
+      JSON.parse(localStorage.getItem("PersonalDSAStarredQuestions")) || {};
+    return personalStarredQuestions[name] || false;
+  });
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
     onQuestionSolved(name, event.target.checked);
+  };
+  const handleStarToggle = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const newStarred = !isStarred;
+    setIsStarred(newStarred);
+    const personalStarredQuestions =
+      JSON.parse(localStorage.getItem("PersonalDSAStarredQuestions")) || {};
+    const updatedPersonalStarredQuestions = {
+      ...personalStarredQuestions,
+      [name]: newStarred,
+    };
+    localStorage.setItem(
+      "PersonalDSAStarredQuestions",
+      JSON.stringify(updatedPersonalStarredQuestions)
+    );
+    // Inform parent to mark unsynced changes
+    if (props.onQuestionStarred) {
+      props.onQuestionStarred(name, newStarred);
+    }
   };
 
   useEffect(() => {
@@ -223,12 +253,25 @@ export function QuestionCard(props) {
           >
             {isSmallScreen ? "link" : truncatedLink}
           </a>
-          <input
-            className={`ml-2 form-checkbox h-4 w-4 `}
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-          />
+          <div className="flex items-center ml-2">
+            <button
+              onClick={handleStarToggle}
+              aria-label={isStarred ? "Unstar question" : "Star question"}
+              title={isStarred ? "Unstar" : "Star"}
+              className={`mr-2 text-yellow-500 hover:scale-110 transition-transform ${
+                isStarred ? "" : "opacity-40"
+              }`}
+              style={{ fontSize: "20px", lineHeight: "20px" }}
+            >
+              {isStarred ? "★" : "☆"}
+            </button>
+            <input
+              className={`form-checkbox h-4 w-4 `}
+              type="checkbox"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -324,6 +367,7 @@ export const TopicCard = React.forwardRef((props, ref) => {
                     name={question.Question} // Note: JSON has 'Question', not 'Question_Name'? Wait, in JSON it's 'Question', but code uses question.Question_Name. Need to check.
                     link={question.Question_link}
                     onQuestionSolved={props.onQuestionSolved}
+                    onQuestionStarred={props.onQuestionStarred}
                   />
                 </motion.div>
               ))}
