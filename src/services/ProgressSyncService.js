@@ -57,6 +57,15 @@ class ProgressSyncService {
     }
 
     try {
+      // Special handling for PERSONAL_DSA to include both solved and starred maps
+      if (sheetType === "PERSONAL_DSA") {
+        const solvedRaw = localStorage.getItem("PersonalDSASolvedQuestions");
+        const starredRaw = localStorage.getItem("PersonalDSAStarredQuestions");
+        const solved = solvedRaw ? JSON.parse(solvedRaw) : {};
+        const starred = starredRaw ? JSON.parse(starredRaw) : {};
+        return { solved, starred };
+      }
+
       const data = localStorage.getItem(config.localStorageKey);
       return data ? JSON.parse(data) : {};
     } catch (error) {
@@ -75,6 +84,15 @@ class ProgressSyncService {
     }
 
     try {
+      if (sheetType === "PERSONAL_DSA") {
+        // Support nested structure with solved/starred
+        const solved = progressData.solved || {};
+        const starred = progressData.starred || {};
+        localStorage.setItem("PersonalDSASolvedQuestions", JSON.stringify(solved));
+        localStorage.setItem("PersonalDSAStarredQuestions", JSON.stringify(starred));
+        return true;
+      }
+
       localStorage.setItem(
         config.localStorageKey,
         JSON.stringify(progressData)
@@ -121,9 +139,11 @@ class ProgressSyncService {
       await setDoc(docRef, progressData, { merge: true });
 
       if (showToast) {
-        const solvedCount = Object.values(localProgress).filter(
-          (val) => val
-        ).length;
+        const solvedSource =
+          sheetType === "PERSONAL_DSA"
+            ? localProgress.solved || {}
+            : localProgress || {};
+        const solvedCount = Object.values(solvedSource).filter((val) => val).length;
         toast.success(
           `${config.displayName} progress synced! (${solvedCount} problems saved)`
         );
@@ -164,13 +184,16 @@ class ProgressSyncService {
         const data = docSnap.data();
         const progressData = data.progress || {};
 
-        // Save to localStorage
+        // Save to localStorage (handles PERSONAL_DSA specially)
         this.saveLocalProgress(sheetType, progressData);
 
         if (showToast) {
-          const solvedCount = Object.values(progressData).filter(
-            (val) => val
-          ).length;
+          const solvedSource =
+            sheetType === "PERSONAL_DSA"
+              ? progressData.solved || {}
+              : progressData || {};
+          const solvedCount = Object.values(solvedSource).filter((val) => val)
+            .length;
           toast.success(
             `${config.displayName} progress loaded! (${solvedCount} problems)`
           );
@@ -214,8 +237,12 @@ class ProgressSyncService {
         return {
           hasRemoteData: true,
           lastSynced: data.lastSynced,
-          solvedCount: Object.values(data.progress || {}).filter((val) => val)
-            .length,
+          solvedCount: (() => {
+            const progress = data.progress || {};
+            const solvedSource =
+              sheetType === "PERSONAL_DSA" ? progress.solved || {} : progress;
+            return Object.values(solvedSource).filter((val) => val).length;
+          })(),
         };
       }
 
