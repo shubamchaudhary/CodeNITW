@@ -5,6 +5,7 @@
       "Q_No": 1,
       "Question": "Two Sum",
       "Question_link": "https://leetcode.com/problems/two-sum/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -12,6 +13,7 @@
       "Q_No": 2,
       "Question": "3Sum",
       "Question_link": "https://leetcode.com/problems/3sum/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -19,6 +21,7 @@
       "Q_No": 3,
       "Question": "3Sum Closest",
       "Question_link": "https://leetcode.com/problems/3sum-closest/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -26,6 +29,7 @@
       "Q_No": 4,
       "Question": "4Sum",
       "Question_link": "https://leetcode.com/problems/4sum/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -33,6 +37,7 @@
       "Q_No": 5,
       "Question": "Container With Most Water",
       "Question_link": "https://leetcode.com/problems/container-with-most-water/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -40,6 +45,7 @@
       "Q_No": 6,
       "Question": "Trapping Rain Water",
       "Question_link": "https://leetcode.com/problems/trapping-rain-water/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -47,6 +53,7 @@
       "Q_No": 7,
       "Question": "Remove Duplicates from Sorted Array II",
       "Question_link": "https://leetcode.com/problems/remove-duplicates-from-sorted-array-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -54,6 +61,7 @@
       "Q_No": 8,
       "Question": "Sort Colors",
       "Question_link": "https://leetcode.com/problems/sort-colors/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -61,6 +69,7 @@
       "Q_No": 9,
       "Question": "Next Permutation",
       "Question_link": "https://leetcode.com/problems/next-permutation/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -68,6 +77,7 @@
       "Q_No": 10,
       "Question": "Rotate Array",
       "Question_link": "https://leetcode.com/problems/rotate-array/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -75,164 +85,189 @@
       "Q_No": 11,
       "Question": "Find First and Last Position of Element in Sorted Array",
       "Question_link": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 12,
       "Q_No": 12,
-      "Question": "Squares of Sorted Array",
-      "Question_link": "https://leetcode.com/problems/squares-of-a-sorted-array/",
+      "Question": "Best Time to Buy and Sell Stock",
+      "Question_link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+      "Priority": "Must Solve",
       "Solution_link": ""
-    }
-  ],
-  "Sliding Window": [
+    },
     {
       "id": 13,
-      "Q_No": 1,
-      "Question": "Longest Substring Without Repeating Characters",
-      "Question_link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+      "Q_No": 13,
+      "Question": "Best Time to Buy and Sell Stock II",
+      "Question_link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 14,
-      "Q_No": 2,
-      "Question": "Longest Repeating Character Replacement",
-      "Question_link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+      "Q_No": 14,
+      "Question": "Find All Duplicates in an Array",
+      "Question_link": "https://leetcode.com/problems/find-all-duplicates-in-an-array/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 15,
-      "Q_No": 3,
-      "Question": "Minimum Window Substring",
-      "Question_link": "https://leetcode.com/problems/minimum-window-substring/",
+      "Q_No": 15,
+      "Question": "Majority Element II",
+      "Question_link": "https://leetcode.com/problems/majority-element-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 16,
-      "Q_No": 4,
-      "Question": "Permutation in String",
-      "Question_link": "https://leetcode.com/problems/permutation-in-string/",
-      "Solution_link": ""
+      "Q_No": 16,
+      "Question": "First Missing Positive",
+      "Question_link": "https://leetcode.com/problems/first-missing-positive/",
+      "Priority": "Must Solve",
+      "Solution_link": "",
+      "Note": "Classic hard array problem - cyclic sort pattern"
     },
     {
       "id": 17,
-      "Q_No": 5,
-      "Question": "Find All Anagrams in a String",
-      "Question_link": "https://leetcode.com/problems/find-all-anagrams-in-a-string/",
-      "Solution_link": ""
-    },
+      "Q_No": 17,
+      "Question": "Longest Consecutive Sequence",
+      "Question_link": "https://leetcode.com/problems/longest-consecutive-sequence/",
+      "Priority": "Must Solve",
+      "Solution_link": "",
+      "Note": "Union Find or HashSet approach - frequently asked"
+    }
+  ],
+  "Sliding Window": [
     {
       "id": 18,
-      "Q_No": 6,
-      "Question": "Fruits Into Baskets",
-      "Question_link": "https://leetcode.com/problems/fruit-into-baskets/",
+      "Q_No": 1,
+      "Question": "Longest Substring Without Repeating Characters",
+      "Question_link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 19,
-      "Q_No": 7,
-      "Question": "Max Consecutive Ones III",
-      "Question_link": "https://leetcode.com/problems/max-consecutive-ones-iii/",
+      "Q_No": 2,
+      "Question": "Longest Repeating Character Replacement",
+      "Question_link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 20,
-      "Q_No": 8,
-      "Question": "Sliding Window Maximum",
-      "Question_link": "https://leetcode.com/problems/sliding-window-maximum/",
+      "Q_No": 3,
+      "Question": "Minimum Window Substring",
+      "Question_link": "https://leetcode.com/problems/minimum-window-substring/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 21,
-      "Q_No": 9,
-      "Question": "Minimum Window Subsequence",
-      "Question_link": "https://leetcode.com/problems/minimum-window-subsequence/",
+      "Q_No": 4,
+      "Question": "Permutation in String",
+      "Question_link": "https://leetcode.com/problems/permutation-in-string/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 22,
-      "Q_No": 10,
-      "Question": "Substring with Concatenation of All Words",
-      "Question_link": "https://leetcode.com/problems/substring-with-concatenation-of-all-words/",
+      "Q_No": 5,
+      "Question": "Find All Anagrams in a String",
+      "Question_link": "https://leetcode.com/problems/find-all-anagrams-in-a-string/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 23,
+      "Q_No": 6,
+      "Question": "Fruits Into Baskets",
+      "Question_link": "https://leetcode.com/problems/fruit-into-baskets/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 24,
+      "Q_No": 7,
+      "Question": "Max Consecutive Ones III",
+      "Question_link": "https://leetcode.com/problems/max-consecutive-ones-iii/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 25,
+      "Q_No": 8,
+      "Question": "Sliding Window Maximum",
+      "Question_link": "https://leetcode.com/problems/sliding-window-maximum/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     }
   ],
   "Array Manipulation and Prefix Sums": [
     {
-      "id": 23,
+      "id": 26,
       "Q_No": 1,
       "Question": "Product of Array Except Self",
       "Question_link": "https://leetcode.com/problems/product-of-array-except-self/",
-      "Solution_link": ""
-    },
-    {
-      "id": 24,
-      "Q_No": 2,
-      "Question": "Maximum Subarray",
-      "Question_link": "https://leetcode.com/problems/maximum-subarray/",
-      "Solution_link": ""
-    },
-    {
-      "id": 25,
-      "Q_No": 3,
-      "Question": "Maximum Product Subarray",
-      "Question_link": "https://leetcode.com/problems/maximum-product-subarray/",
-      "Solution_link": ""
-    },
-    {
-      "id": 26,
-      "Q_No": 4,
-      "Question": "Subarray Sum Equals K",
-      "Question_link": "https://leetcode.com/problems/subarray-sum-equals-k/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 27,
-      "Q_No": 5,
-      "Question": "Continuous Subarray Sum",
-      "Question_link": "https://leetcode.com/problems/continuous-subarray-sum/",
+      "Q_No": 2,
+      "Question": "Maximum Subarray",
+      "Question_link": "https://leetcode.com/problems/maximum-subarray/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 28,
-      "Q_No": 6,
-      "Question": "Range Sum Query - Immutable",
-      "Question_link": "https://leetcode.com/problems/range-sum-query-immutable/",
+      "Q_No": 3,
+      "Question": "Maximum Product Subarray",
+      "Question_link": "https://leetcode.com/problems/maximum-product-subarray/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 29,
-      "Q_No": 7,
-      "Question": "Range Sum Query 2D - Immutable",
-      "Question_link": "https://leetcode.com/problems/range-sum-query-2d-immutable/",
+      "Q_No": 4,
+      "Question": "Subarray Sum Equals K",
+      "Question_link": "https://leetcode.com/problems/subarray-sum-equals-k/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 30,
-      "Q_No": 8,
-      "Question": "Maximum Size Subarray Sum Equals k",
-      "Question_link": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/",
+      "Q_No": 5,
+      "Question": "Continuous Subarray Sum",
+      "Question_link": "https://leetcode.com/problems/continuous-subarray-sum/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 31,
-      "Q_No": 9,
-      "Question": "Subarray Sums Divisible by K",
-      "Question_link": "https://leetcode.com/problems/subarray-sums-divisible-by-k/",
+      "Q_No": 6,
+      "Question": "Range Sum Query - Immutable",
+      "Question_link": "https://leetcode.com/problems/range-sum-query-immutable/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 32,
-      "Q_No": 10,
-      "Question": "Count Number of Subarrays with Given XOR",
-      "Question_link": "https://www.interviewbit.com/problems/subarray-with-given-xor/",
+      "Q_No": 7,
+      "Question": "Range Sum Query 2D - Immutable",
+      "Question_link": "https://leetcode.com/problems/range-sum-query-2d-immutable/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 33,
-      "Q_No": 11,
-      "Question": "Maximum Absolute Sum of Any Subarray",
-      "Question_link": "https://leetcode.com/problems/maximum-absolute-sum-of-any-subarray/",
+      "Q_No": 8,
+      "Question": "Subarray Sums Divisible by K",
+      "Question_link": "https://leetcode.com/problems/subarray-sums-divisible-by-k/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
@@ -242,6 +277,7 @@
       "Q_No": 1,
       "Question": "Valid Anagram",
       "Question_link": "https://leetcode.com/problems/valid-anagram/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -249,6 +285,7 @@
       "Q_No": 2,
       "Question": "Group Anagrams",
       "Question_link": "https://leetcode.com/problems/group-anagrams/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -256,6 +293,7 @@
       "Q_No": 3,
       "Question": "Longest Palindromic Substring",
       "Question_link": "https://leetcode.com/problems/longest-palindromic-substring/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
@@ -263,6 +301,7 @@
       "Q_No": 4,
       "Question": "Palindromic Substrings",
       "Question_link": "https://leetcode.com/problems/palindromic-substrings/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -270,6 +309,7 @@
       "Q_No": 5,
       "Question": "Longest Palindromic Subsequence",
       "Question_link": "https://leetcode.com/problems/longest-palindromic-subsequence/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
@@ -277,2266 +317,1697 @@
       "Q_No": 6,
       "Question": "Valid Palindrome II",
       "Question_link": "https://leetcode.com/problems/valid-palindrome-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 40,
       "Q_No": 7,
-      "Question": "Implement strStr() (KMP Algorithm)",
-      "Question_link": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+      "Question": "Longest Common Prefix",
+      "Question_link": "https://leetcode.com/problems/longest-common-prefix/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 41,
       "Q_No": 8,
-      "Question": "Repeated DNA Sequences",
-      "Question_link": "https://leetcode.com/problems/repeated-dna-sequences/",
+      "Question": "Decode String",
+      "Question_link": "https://leetcode.com/problems/decode-string/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 42,
       "Q_No": 9,
-      "Question": "Longest Duplicate Substring",
-      "Question_link": "https://leetcode.com/problems/longest-duplicate-substring/",
+      "Question": "Compare Version Numbers",
+      "Question_link": "https://leetcode.com/problems/compare-version-numbers/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 43,
       "Q_No": 10,
-      "Question": "Shortest Palindrome",
-      "Question_link": "https://leetcode.com/problems/shortest-palindrome/",
+      "Question": "String to Integer (atoi)",
+      "Question_link": "https://leetcode.com/problems/string-to-integer-atoi/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 44,
       "Q_No": 11,
-      "Question": "Text Justification",
-      "Question_link": "https://leetcode.com/problems/text-justification/",
-      "Solution_link": ""
-    },
-    {
-      "id": 45,
-      "Q_No": 12,
-      "Question": "String to Integer (atoi)",
-      "Question_link": "https://leetcode.com/problems/string-to-integer-atoi/",
-      "Solution_link": ""
-    },
-    {
-      "id": 46,
-      "Q_No": 13,
       "Question": "Multiply Strings",
       "Question_link": "https://leetcode.com/problems/multiply-strings/",
-      "Solution_link": ""
-    },
-    {
-      "id": 47,
-      "Q_No": 14,
-      "Question": "Palindrome Pairs",
-      "Question_link": "https://leetcode.com/problems/palindrome-pairs/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Linked Lists": [
     {
-      "id": 48,
+      "id": 45,
       "Q_No": 1,
       "Question": "Reverse Linked List",
       "Question_link": "https://leetcode.com/problems/reverse-linked-list/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 46,
+      "Q_No": 2,
+      "Question": "Reverse Linked List II",
+      "Question_link": "https://leetcode.com/problems/reverse-linked-list-ii/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 47,
+      "Q_No": 3,
+      "Question": "Reverse Nodes in k-Group",
+      "Question_link": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 48,
+      "Q_No": 4,
+      "Question": "Merge Two Sorted Lists",
+      "Question_link": "https://leetcode.com/problems/merge-two-sorted-lists/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 49,
-      "Q_No": 2,
-      "Question": "Reverse Linked List II",
-      "Question_link": "https://leetcode.com/problems/reverse-linked-list-ii/",
+      "Q_No": 5,
+      "Question": "Merge k Sorted Lists",
+      "Question_link": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 50,
-      "Q_No": 3,
-      "Question": "Reverse Nodes in k-Group",
-      "Question_link": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
+      "Q_No": 6,
+      "Question": "Remove Nth Node From End of List",
+      "Question_link": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 51,
-      "Q_No": 4,
-      "Question": "Merge Two Sorted Lists",
-      "Question_link": "https://leetcode.com/problems/merge-two-sorted-lists/",
+      "Q_No": 7,
+      "Question": "Linked List Cycle",
+      "Question_link": "https://leetcode.com/problems/linked-list-cycle/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 52,
-      "Q_No": 5,
-      "Question": "Merge k Sorted Lists",
-      "Question_link": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "Q_No": 8,
+      "Question": "Linked List Cycle II",
+      "Question_link": "https://leetcode.com/problems/linked-list-cycle-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 53,
-      "Q_No": 6,
-      "Question": "Remove Nth Node From End of List",
-      "Question_link": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
-      "Solution_link": ""
+      "Q_No": 9,
+      "Question": "Happy Number",
+      "Question_link": "https://leetcode.com/problems/happy-number/",
+      "Priority": "Must Solve",
+      "Solution_link": "",
+      "Note": "Fast & Slow pointer pattern - cycle detection"
     },
     {
       "id": 54,
-      "Q_No": 7,
-      "Question": "Linked List Cycle",
-      "Question_link": "https://leetcode.com/problems/linked-list-cycle/",
+      "Q_No": 10,
+      "Question": "Intersection of Two Linked Lists",
+      "Question_link": "https://leetcode.com/problems/intersection-of-two-linked-lists/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 55,
-      "Q_No": 8,
-      "Question": "Linked List Cycle II",
-      "Question_link": "https://leetcode.com/problems/linked-list-cycle-ii/",
+      "Q_No": 11,
+      "Question": "Add Two Numbers",
+      "Question_link": "https://leetcode.com/problems/add-two-numbers/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 56,
-      "Q_No": 9,
-      "Question": "Intersection of Two Linked Lists",
-      "Question_link": "https://leetcode.com/problems/intersection-of-two-linked-lists/",
+      "Q_No": 12,
+      "Question": "Copy List with Random Pointer",
+      "Question_link": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 57,
-      "Q_No": 10,
-      "Question": "Add Two Numbers",
-      "Question_link": "https://leetcode.com/problems/add-two-numbers/",
+      "Q_No": 13,
+      "Question": "Palindrome Linked List",
+      "Question_link": "https://leetcode.com/problems/palindrome-linked-list/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 58,
-      "Q_No": 11,
-      "Question": "Add Two Numbers II",
-      "Question_link": "https://leetcode.com/problems/add-two-numbers-ii/",
+      "Q_No": 14,
+      "Question": "Reorder List",
+      "Question_link": "https://leetcode.com/problems/reorder-list/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 59,
-      "Q_No": 12,
-      "Question": "Copy List with Random Pointer",
-      "Question_link": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+      "Q_No": 15,
+      "Question": "Sort List",
+      "Question_link": "https://leetcode.com/problems/sort-list/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 60,
-      "Q_No": 13,
-      "Question": "Palindrome Linked List",
-      "Question_link": "https://leetcode.com/problems/palindrome-linked-list/",
-      "Solution_link": ""
-    },
-    {
-      "id": 61,
-      "Q_No": 14,
-      "Question": "Odd Even Linked List",
-      "Question_link": "https://leetcode.com/problems/odd-even-linked-list/",
-      "Solution_link": ""
-    },
-    {
-      "id": 62,
-      "Q_No": 15,
+      "Q_No": 16,
       "Question": "Rotate List",
       "Question_link": "https://leetcode.com/problems/rotate-list/",
-      "Solution_link": ""
-    },
-    {
-      "id": 63,
-      "Q_No": 16,
-      "Question": "Partition List",
-      "Question_link": "https://leetcode.com/problems/partition-list/",
-      "Solution_link": ""
-    },
-    {
-      "id": 64,
-      "Q_No": 17,
-      "Question": "Remove Duplicates from Sorted List II",
-      "Question_link": "https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 65,
-      "Q_No": 18,
-      "Question": "Flatten a Multilevel Doubly Linked List",
-      "Question_link": "https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Stack and Queue": [
     {
-      "id": 66,
+      "id": 61,
       "Q_No": 1,
       "Question": "Valid Parentheses",
       "Question_link": "https://leetcode.com/problems/valid-parentheses/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 62,
+      "Q_No": 2,
+      "Question": "Min Stack",
+      "Question_link": "https://leetcode.com/problems/min-stack/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 63,
+      "Q_No": 3,
+      "Question": "Implement Queue using Stacks",
+      "Question_link": "https://leetcode.com/problems/implement-queue-using-stacks/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 64,
+      "Q_No": 4,
+      "Question": "Daily Temperatures",
+      "Question_link": "https://leetcode.com/problems/daily-temperatures/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 65,
+      "Q_No": 5,
+      "Question": "Next Greater Element I",
+      "Question_link": "https://leetcode.com/problems/next-greater-element-i/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 66,
+      "Q_No": 6,
+      "Question": "Next Greater Element II",
+      "Question_link": "https://leetcode.com/problems/next-greater-element-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 67,
-      "Q_No": 2,
-      "Question": "Min Stack",
-      "Question_link": "https://leetcode.com/problems/min-stack/",
+      "Q_No": 7,
+      "Question": "Largest Rectangle in Histogram",
+      "Question_link": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
       "id": 68,
-      "Q_No": 3,
-      "Question": "Implement Queue using Stacks",
-      "Question_link": "https://leetcode.com/problems/implement-queue-using-stacks/",
+      "Q_No": 8,
+      "Question": "Maximal Rectangle",
+      "Question_link": "https://leetcode.com/problems/maximal-rectangle/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 69,
-      "Q_No": 4,
-      "Question": "Daily Temperatures",
-      "Question_link": "https://leetcode.com/problems/daily-temperatures/",
+      "Q_No": 9,
+      "Question": "Evaluate Reverse Polish Notation",
+      "Question_link": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 70,
-      "Q_No": 5,
-      "Question": "Next Greater Element I",
-      "Question_link": "https://leetcode.com/problems/next-greater-element-i/",
+      "Q_No": 10,
+      "Question": "Asteroid Collision",
+      "Question_link": "https://leetcode.com/problems/asteroid-collision/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
       "id": 71,
-      "Q_No": 6,
-      "Question": "Next Greater Element II",
-      "Question_link": "https://leetcode.com/problems/next-greater-element-ii/",
-      "Solution_link": ""
+      "Q_No": 11,
+      "Question": "Sum of Subarray Minimums",
+      "Question_link": "https://leetcode.com/problems/sum-of-subarray-minimums/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "Monotonic stack pattern"
     },
     {
       "id": 72,
-      "Q_No": 7,
-      "Question": "Largest Rectangle in Histogram",
-      "Question_link": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
-      "Solution_link": ""
+      "Q_No": 12,
+      "Question": "Remove K Digits",
+      "Question_link": "https://leetcode.com/problems/remove-k-digits/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "Monotonic stack pattern"
     },
     {
       "id": 73,
-      "Q_No": 8,
-      "Question": "Maximal Rectangle",
-      "Question_link": "https://leetcode.com/problems/maximal-rectangle/",
-      "Solution_link": ""
-    },
-    {
-      "id": 74,
-      "Q_No": 9,
-      "Question": "Sliding Window Maximum",
-      "Question_link": "https://leetcode.com/problems/sliding-window-maximum/",
-      "Solution_link": ""
-    },
-    {
-      "id": 75,
-      "Q_No": 10,
-      "Question": "Online Stock Span",
-      "Question_link": "https://leetcode.com/problems/online-stock-span/",
-      "Solution_link": ""
-    },
-    {
-      "id": 76,
-      "Q_No": 11,
-      "Question": "Car Fleet",
-      "Question_link": "https://leetcode.com/problems/car-fleet/",
-      "Solution_link": ""
-    },
-    {
-      "id": 77,
-      "Q_No": 12,
-      "Question": "Basic Calculator",
-      "Question_link": "https://leetcode.com/problems/basic-calculator/",
-      "Solution_link": ""
-    },
-    {
-      "id": 78,
       "Q_No": 13,
-      "Question": "Basic Calculator II",
-      "Question_link": "https://leetcode.com/problems/basic-calculator-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 79,
-      "Q_No": 14,
-      "Question": "Evaluate Reverse Polish Notation",
-      "Question_link": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
-      "Solution_link": ""
-    },
-    {
-      "id": 80,
-      "Q_No": 15,
-      "Question": "Remove Invalid Parentheses",
-      "Question_link": "https://leetcode.com/problems/remove-invalid-parentheses/",
-      "Solution_link": ""
-    },
-    {
-      "id": 81,
-      "Q_No": 16,
-      "Question": "Asteroid Collision",
-      "Question_link": "https://leetcode.com/problems/asteroid-collision/",
-      "Solution_link": ""
+      "Question": "132 Pattern",
+      "Question_link": "https://leetcode.com/problems/132-pattern/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "Monotonic stack pattern"
     }
   ],
   "Trees - Basic and Traversal": [
     {
-      "id": 82,
+      "id": 74,
       "Q_No": 1,
       "Question": "Maximum Depth of Binary Tree",
       "Question_link": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 83,
+      "id": 75,
       "Q_No": 2,
       "Question": "Minimum Depth of Binary Tree",
       "Question_link": "https://leetcode.com/problems/minimum-depth-of-binary-tree/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 84,
+      "id": 76,
       "Q_No": 3,
       "Question": "Same Tree",
       "Question_link": "https://leetcode.com/problems/same-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 85,
+      "id": 77,
       "Q_No": 4,
       "Question": "Symmetric Tree",
       "Question_link": "https://leetcode.com/problems/symmetric-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 86,
+      "id": 78,
       "Q_No": 5,
       "Question": "Invert Binary Tree",
       "Question_link": "https://leetcode.com/problems/invert-binary-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 87,
+      "id": 79,
       "Q_No": 6,
       "Question": "Binary Tree Level Order Traversal",
       "Question_link": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 88,
+      "id": 80,
       "Q_No": 7,
-      "Question": "Binary Tree Level Order Traversal II",
-      "Question_link": "https://leetcode.com/problems/binary-tree-level-order-traversal-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 89,
-      "Q_No": 8,
       "Question": "Binary Tree Zigzag Level Order Traversal",
       "Question_link": "https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 90,
-      "Q_No": 9,
+      "id": 81,
+      "Q_No": 8,
       "Question": "Binary Tree Right Side View",
       "Question_link": "https://leetcode.com/problems/binary-tree-right-side-view/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 91,
-      "Q_No": 10,
-      "Question": "Binary Tree Vertical Order Traversal",
-      "Question_link": "https://leetcode.com/problems/binary-tree-vertical-order-traversal/",
-      "Solution_link": ""
-    },
-    {
-      "id": 92,
-      "Q_No": 11,
+      "id": 82,
+      "Q_No": 9,
       "Question": "Vertical Order Traversal of a Binary Tree",
       "Question_link": "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
-      "Solution_link": ""
-    },
-    {
-      "id": 93,
-      "Q_No": 12,
-      "Question": "Boundary Traversal of Binary Tree",
-      "Question_link": "https://practice.geeksforgeeks.org/problems/boundary-traversal-of-binary-tree/1",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Trees - Advanced Properties": [
     {
-      "id": 94,
+      "id": 83,
       "Q_No": 1,
       "Question": "Diameter of Binary Tree",
       "Question_link": "https://leetcode.com/problems/diameter-of-binary-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 95,
+      "id": 84,
       "Q_No": 2,
       "Question": "Balanced Binary Tree",
       "Question_link": "https://leetcode.com/problems/balanced-binary-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 96,
+      "id": 85,
       "Q_No": 3,
       "Question": "Binary Tree Maximum Path Sum",
       "Question_link": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 97,
+      "id": 86,
       "Q_No": 4,
       "Question": "Lowest Common Ancestor of a Binary Tree",
       "Question_link": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 98,
+      "id": 87,
       "Q_No": 5,
       "Question": "Count Complete Tree Nodes",
       "Question_link": "https://leetcode.com/problems/count-complete-tree-nodes/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 99,
+      "id": 88,
       "Q_No": 6,
       "Question": "Sum Root to Leaf Numbers",
       "Question_link": "https://leetcode.com/problems/sum-root-to-leaf-numbers/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 100,
+      "id": 89,
       "Q_No": 7,
       "Question": "Path Sum II",
       "Question_link": "https://leetcode.com/problems/path-sum-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 101,
+      "id": 90,
       "Q_No": 8,
       "Question": "Path Sum III",
       "Question_link": "https://leetcode.com/problems/path-sum-iii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 102,
+      "id": 91,
       "Q_No": 9,
-      "Question": "Binary Tree Cameras",
-      "Question_link": "https://leetcode.com/problems/binary-tree-cameras/",
-      "Solution_link": ""
-    },
-    {
-      "id": 103,
-      "Q_No": 10,
-      "Question": "House Robber III",
-      "Question_link": "https://leetcode.com/problems/house-robber-iii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 104,
-      "Q_No": 11,
-      "Question": "Maximum Width of Binary Tree",
-      "Question_link": "https://leetcode.com/problems/maximum-width-of-binary-tree/",
-      "Solution_link": ""
-    },
-    {
-      "id": 105,
-      "Q_No": 12,
       "Question": "All Nodes Distance K in Binary Tree",
       "Question_link": "https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Trees - Construction and Modification": [
     {
-      "id": 106,
+      "id": 92,
       "Q_No": 1,
       "Question": "Construct Binary Tree from Preorder and Inorder Traversal",
       "Question_link": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 107,
+      "id": 93,
       "Q_No": 2,
       "Question": "Construct Binary Tree from Inorder and Postorder Traversal",
       "Question_link": "https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 108,
+      "id": 94,
       "Q_No": 3,
-      "Question": "Construct Binary Tree from Preorder and Postorder Traversal",
-      "Question_link": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/",
-      "Solution_link": ""
-    },
-    {
-      "id": 109,
-      "Q_No": 4,
       "Question": "Serialize and Deserialize Binary Tree",
       "Question_link": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 110,
-      "Q_No": 5,
+      "id": 95,
+      "Q_No": 4,
       "Question": "Flatten Binary Tree to Linked List",
       "Question_link": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 111,
-      "Q_No": 6,
+      "id": 96,
+      "Q_No": 5,
       "Question": "Populate Next Right Pointers in Each Node",
       "Question_link": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 112,
-      "Q_No": 7,
-      "Question": "Populate Next Right Pointers in Each Node II",
-      "Question_link": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 113,
-      "Q_No": 8,
+      "id": 97,
+      "Q_No": 6,
       "Question": "Convert Sorted Array to Binary Search Tree",
       "Question_link": "https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/",
-      "Solution_link": ""
-    },
-    {
-      "id": 114,
-      "Q_No": 9,
-      "Question": "Convert Sorted List to Binary Search Tree",
-      "Question_link": "https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Binary Search Trees": [
     {
-      "id": 115,
+      "id": 98,
       "Q_No": 1,
       "Question": "Validate Binary Search Tree",
       "Question_link": "https://leetcode.com/problems/validate-binary-search-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 116,
+      "id": 99,
       "Q_No": 2,
-      "Question": "Recover Binary Search Tree",
-      "Question_link": "https://leetcode.com/problems/recover-binary-search-tree/",
-      "Solution_link": ""
-    },
-    {
-      "id": 117,
-      "Q_No": 3,
       "Question": "Kth Smallest Element in BST",
       "Question_link": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 118,
-      "Q_No": 4,
+      "id": 100,
+      "Q_No": 3,
       "Question": "Binary Search Tree Iterator",
       "Question_link": "https://leetcode.com/problems/binary-search-tree-iterator/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 119,
-      "Q_No": 5,
+      "id": 101,
+      "Q_No": 4,
       "Question": "Lowest Common Ancestor of BST",
       "Question_link": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 120,
-      "Q_No": 6,
+      "id": 102,
+      "Q_No": 5,
       "Question": "Insert into BST",
       "Question_link": "https://leetcode.com/problems/insert-into-a-binary-search-tree/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 121,
-      "Q_No": 7,
+      "id": 103,
+      "Q_No": 6,
       "Question": "Delete Node in BST",
       "Question_link": "https://leetcode.com/problems/delete-node-in-a-bst/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 122,
-      "Q_No": 8,
-      "Question": "Two Sum IV - Input is BST",
-      "Question_link": "https://leetcode.com/problems/two-sum-iv-input-is-a-bst/",
-      "Solution_link": ""
-    },
-    {
-      "id": 123,
-      "Q_No": 9,
-      "Question": "Trim BST",
-      "Question_link": "https://leetcode.com/problems/trim-a-binary-search-tree/",
-      "Solution_link": ""
-    },
-    {
-      "id": 124,
-      "Q_No": 10,
-      "Question": "Unique Binary Search Trees",
-      "Question_link": "https://leetcode.com/problems/unique-binary-search-trees/",
-      "Solution_link": ""
-    },
-    {
-      "id": 125,
-      "Q_No": 11,
-      "Question": "Unique Binary Search Trees II",
-      "Question_link": "https://leetcode.com/problems/unique-binary-search-trees-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 126,
-      "Q_No": 12,
-      "Question": "Largest BST Subtree",
-      "Question_link": "https://leetcode.com/problems/largest-bst-subtree/",
+      "id": 104,
+      "Q_No": 7,
+      "Question": "Serialize and Deserialize BST",
+      "Question_link": "https://leetcode.com/problems/serialize-and-deserialize-bst/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Heap and Priority Queue": [
     {
-      "id": 127,
+      "id": 105,
       "Q_No": 1,
       "Question": "Kth Largest Element in Array",
       "Question_link": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 128,
+      "id": 106,
       "Q_No": 2,
       "Question": "Top K Frequent Elements",
       "Question_link": "https://leetcode.com/problems/top-k-frequent-elements/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 129,
+      "id": 107,
       "Q_No": 3,
+      "Question": "K Closest Points to Origin",
+      "Question_link": "https://leetcode.com/problems/k-closest-points-to-origin/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 108,
+      "Q_No": 4,
       "Question": "Find Median from Data Stream",
       "Question_link": "https://leetcode.com/problems/find-median-from-data-stream/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 130,
-      "Q_No": 4,
+      "id": 109,
+      "Q_No": 5,
       "Question": "Merge k Sorted Lists",
       "Question_link": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 131,
-      "Q_No": 5,
-      "Question": "Ugly Number II",
-      "Question_link": "https://leetcode.com/problems/ugly-number-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 132,
+      "id": 110,
       "Q_No": 6,
-      "Question": "Super Ugly Number",
-      "Question_link": "https://leetcode.com/problems/super-ugly-number/",
-      "Solution_link": ""
-    },
-    {
-      "id": 133,
-      "Q_No": 7,
-      "Question": "Kth Smallest Element in Sorted Matrix",
-      "Question_link": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
-      "Solution_link": ""
-    },
-    {
-      "id": 134,
-      "Q_No": 8,
       "Question": "Meeting Rooms II",
       "Question_link": "https://leetcode.com/problems/meeting-rooms-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 135,
-      "Q_No": 9,
+      "id": 111,
+      "Q_No": 7,
       "Question": "Task Scheduler",
       "Question_link": "https://leetcode.com/problems/task-scheduler/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 136,
-      "Q_No": 10,
+      "id": 112,
+      "Q_No": 8,
       "Question": "Reorganize String",
       "Question_link": "https://leetcode.com/problems/reorganize-string/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 137,
-      "Q_No": 11,
-      "Question": "Cheapest Flights Within K Stops",
-      "Question_link": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
-      "Solution_link": ""
-    },
-    {
-      "id": 138,
-      "Q_No": 12,
-      "Question": "IPO",
-      "Question_link": "https://leetcode.com/problems/ipo/",
-      "Solution_link": ""
-    },
-    {
-      "id": 139,
-      "Q_No": 13,
-      "Question": "Find K Closest Elements",
-      "Question_link": "https://leetcode.com/problems/find-k-closest-elements/",
-      "Solution_link": ""
-    },
-    {
-      "id": 140,
-      "Q_No": 14,
-      "Question": "Smallest Range Covering Elements from K Lists",
-      "Question_link": "https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/",
+      "id": 113,
+      "Q_No": 9,
+      "Question": "Last Stone Weight",
+      "Question_link": "https://leetcode.com/problems/last-stone-weight/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Binary Search": [
     {
-      "id": 141,
+      "id": 114,
       "Q_No": 1,
       "Question": "Binary Search",
       "Question_link": "https://leetcode.com/problems/binary-search/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 142,
+      "id": 115,
       "Q_No": 2,
       "Question": "Search in Rotated Sorted Array",
       "Question_link": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 143,
+      "id": 116,
       "Q_No": 3,
       "Question": "Search in Rotated Sorted Array II",
       "Question_link": "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 144,
+      "id": 117,
       "Q_No": 4,
       "Question": "Find Minimum in Rotated Sorted Array",
       "Question_link": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 145,
+      "id": 118,
       "Q_No": 5,
-      "Question": "Find Minimum in Rotated Sorted Array II",
-      "Question_link": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 146,
-      "Q_No": 6,
       "Question": "Search a 2D Matrix",
       "Question_link": "https://leetcode.com/problems/search-a-2d-matrix/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 147,
-      "Q_No": 7,
+      "id": 119,
+      "Q_No": 6,
       "Question": "Search a 2D Matrix II",
       "Question_link": "https://leetcode.com/problems/search-a-2d-matrix-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 148,
-      "Q_No": 8,
+      "id": 120,
+      "Q_No": 7,
       "Question": "Find Peak Element",
       "Question_link": "https://leetcode.com/problems/find-peak-element/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 149,
-      "Q_No": 9,
-      "Question": "Find Peak Element II",
-      "Question_link": "https://leetcode.com/problems/find-a-peak-element-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 150,
-      "Q_No": 10,
+      "id": 121,
+      "Q_No": 8,
       "Question": "Median of Two Sorted Arrays",
       "Question_link": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 151,
-      "Q_No": 11,
+      "id": 122,
+      "Q_No": 9,
       "Question": "Koko Eating Bananas",
       "Question_link": "https://leetcode.com/problems/koko-eating-bananas/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 152,
-      "Q_No": 12,
-      "Question": "Minimum Number of Days to Make m Bouquets",
-      "Question_link": "https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/",
-      "Solution_link": ""
-    },
-    {
-      "id": 153,
-      "Q_No": 13,
+      "id": 123,
+      "Q_No": 10,
       "Question": "Capacity To Ship Packages Within D Days",
       "Question_link": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 154,
-      "Q_No": 14,
+      "id": 124,
+      "Q_No": 11,
       "Question": "Split Array Largest Sum",
       "Question_link": "https://leetcode.com/problems/split-array-largest-sum/",
-      "Solution_link": ""
-    },
-    {
-      "id": 155,
-      "Q_No": 15,
-      "Question": "Aggressive Cows",
-      "Question_link": "https://www.spoj.com/problems/AGGRCOW/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Dynamic Programming - 1D": [
     {
-      "id": 156,
+      "id": 125,
       "Q_No": 1,
       "Question": "Climbing Stairs",
       "Question_link": "https://leetcode.com/problems/climbing-stairs/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 157,
+      "id": 126,
       "Q_No": 2,
       "Question": "House Robber",
       "Question_link": "https://leetcode.com/problems/house-robber/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 158,
+      "id": 127,
       "Q_No": 3,
       "Question": "House Robber II",
       "Question_link": "https://leetcode.com/problems/house-robber-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 159,
+      "id": 128,
       "Q_No": 4,
       "Question": "Decode Ways",
       "Question_link": "https://leetcode.com/problems/decode-ways/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 160,
+      "id": 129,
       "Q_No": 5,
-      "Question": "Decode Ways II",
-      "Question_link": "https://leetcode.com/problems/decode-ways-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 161,
-      "Q_No": 6,
       "Question": "Coin Change",
       "Question_link": "https://leetcode.com/problems/coin-change/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 162,
-      "Q_No": 7,
+      "id": 130,
+      "Q_No": 6,
       "Question": "Coin Change 2",
       "Question_link": "https://leetcode.com/problems/coin-change-2/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 163,
-      "Q_No": 8,
-      "Question": "Perfect Squares",
-      "Question_link": "https://leetcode.com/problems/perfect-squares/",
-      "Solution_link": ""
-    },
-    {
-      "id": 164,
-      "Q_No": 9,
+      "id": 131,
+      "Q_No": 7,
       "Question": "Longest Increasing Subsequence",
       "Question_link": "https://leetcode.com/problems/longest-increasing-subsequence/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 165,
-      "Q_No": 10,
-      "Question": "Russian Doll Envelopes",
-      "Question_link": "https://leetcode.com/problems/russian-doll-envelopes/",
+      "id": 132,
+      "Q_No": 8,
+      "Question": "Number of Longest Increasing Subsequence",
+      "Question_link": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 166,
-      "Q_No": 11,
-      "Question": "Largest Divisible Subset",
-      "Question_link": "https://leetcode.com/problems/largest-divisible-subset/",
-      "Solution_link": ""
-    },
-    {
-      "id": 167,
-      "Q_No": 12,
+      "id": 133,
+      "Q_No": 9,
       "Question": "Word Break",
       "Question_link": "https://leetcode.com/problems/word-break/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 168,
-      "Q_No": 13,
+      "id": 134,
+      "Q_No": 10,
       "Question": "Word Break II",
       "Question_link": "https://leetcode.com/problems/word-break-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 169,
-      "Q_No": 14,
-      "Question": "Maximum Product Subarray",
-      "Question_link": "https://leetcode.com/problems/maximum-product-subarray/",
-      "Solution_link": ""
-    },
-    {
-      "id": 170,
-      "Q_No": 15,
+      "id": 135,
+      "Q_No": 11,
       "Question": "Jump Game",
       "Question_link": "https://leetcode.com/problems/jump-game/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 171,
-      "Q_No": 16,
+      "id": 136,
+      "Q_No": 12,
       "Question": "Jump Game II",
       "Question_link": "https://leetcode.com/problems/jump-game-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     }
   ],
   "Dynamic Programming - 2D": [
     {
-      "id": 172,
+      "id": 137,
       "Q_No": 1,
       "Question": "Unique Paths",
       "Question_link": "https://leetcode.com/problems/unique-paths/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 173,
+      "id": 138,
       "Q_No": 2,
       "Question": "Unique Paths II",
       "Question_link": "https://leetcode.com/problems/unique-paths-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 174,
+      "id": 139,
       "Q_No": 3,
       "Question": "Minimum Path Sum",
       "Question_link": "https://leetcode.com/problems/minimum-path-sum/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 175,
+      "id": 140,
       "Q_No": 4,
       "Question": "Maximum Square",
       "Question_link": "https://leetcode.com/problems/maximal-square/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 176,
+      "id": 141,
       "Q_No": 5,
       "Question": "Longest Common Subsequence",
       "Question_link": "https://leetcode.com/problems/longest-common-subsequence/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 177,
+      "id": 142,
       "Q_No": 6,
       "Question": "Edit Distance",
       "Question_link": "https://leetcode.com/problems/edit-distance/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 178,
+      "id": 143,
       "Q_No": 7,
       "Question": "Distinct Subsequences",
       "Question_link": "https://leetcode.com/problems/distinct-subsequences/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 179,
+      "id": 144,
       "Q_No": 8,
       "Question": "Regular Expression Matching",
       "Question_link": "https://leetcode.com/problems/regular-expression-matching/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 180,
+      "id": 145,
       "Q_No": 9,
       "Question": "Wildcard Matching",
       "Question_link": "https://leetcode.com/problems/wildcard-matching/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 181,
+      "id": 146,
       "Q_No": 10,
-      "Question": "Interleaving String",
-      "Question_link": "https://leetcode.com/problems/interleaving-string/",
-      "Solution_link": ""
-    },
-    {
-      "id": 182,
-      "Q_No": 11,
       "Question": "Best Time to Buy and Sell Stock with Cooldown",
       "Question_link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 183,
-      "Q_No": 12,
+      "id": 147,
+      "Q_No": 11,
       "Question": "Best Time to Buy and Sell Stock IV",
       "Question_link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 184,
-      "Q_No": 13,
-      "Question": "Best Time to Buy and Sell Stock with Transaction Fee",
-      "Question_link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/",
-      "Solution_link": ""
-    },
-    {
-      "id": 185,
-      "Q_No": 14,
+      "id": 148,
+      "Q_No": 12,
       "Question": "Target Sum",
       "Question_link": "https://leetcode.com/problems/target-sum/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 186,
-      "Q_No": 15,
+      "id": 149,
+      "Q_No": 13,
       "Question": "Partition Equal Subset Sum",
       "Question_link": "https://leetcode.com/problems/partition-equal-subset-sum/",
-      "Solution_link": ""
-    },
-    {
-      "id": 187,
-      "Q_No": 16,
-      "Question": "Ones and Zeroes",
-      "Question_link": "https://leetcode.com/problems/ones-and-zeroes/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     }
   ],
   "Dynamic Programming - Advanced": [
     {
-      "id": 188,
+      "id": 150,
       "Q_No": 1,
       "Question": "Burst Balloons",
       "Question_link": "https://leetcode.com/problems/burst-balloons/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 189,
+      "id": 151,
       "Q_No": 2,
-      "Question": "Minimum Cost to Cut a Stick",
-      "Question_link": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
-      "Solution_link": ""
-    },
-    {
-      "id": 190,
-      "Q_No": 3,
-      "Question": "Stone Game",
-      "Question_link": "https://leetcode.com/problems/stone-game/",
-      "Solution_link": ""
-    },
-    {
-      "id": 191,
-      "Q_No": 4,
-      "Question": "Stone Game II",
-      "Question_link": "https://leetcode.com/problems/stone-game-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 192,
-      "Q_No": 5,
-      "Question": "Matrix Chain Multiplication",
-      "Question_link": "https://practice.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1",
-      "Solution_link": ""
-    },
-    {
-      "id": 193,
-      "Q_No": 6,
       "Question": "Palindrome Partitioning II",
       "Question_link": "https://leetcode.com/problems/palindrome-partitioning-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 194,
-      "Q_No": 7,
-      "Question": "Boolean Parenthesization",
-      "Question_link": "https://practice.geeksforgeeks.org/problems/boolean-parenthesization5610/1",
-      "Solution_link": ""
-    },
-    {
-      "id": 195,
-      "Q_No": 8,
+      "id": 152,
+      "Q_No": 3,
       "Question": "Longest Valid Parentheses",
       "Question_link": "https://leetcode.com/problems/longest-valid-parentheses/",
-      "Solution_link": ""
-    },
-    {
-      "id": 196,
-      "Q_No": 9,
-      "Question": "Count Different Palindromic Subsequences",
-      "Question_link": "https://leetcode.com/problems/count-different-palindromic-subsequences/",
-      "Solution_link": ""
-    },
-    {
-      "id": 197,
-      "Q_No": 10,
-      "Question": "Minimum Insertion Steps to Make String Palindrome",
-      "Question_link": "https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/",
-      "Solution_link": ""
-    },
-    {
-      "id": 198,
-      "Q_No": 11,
-      "Question": "Cherry Pickup",
-      "Question_link": "https://leetcode.com/problems/cherry-pickup/",
-      "Solution_link": ""
-    },
-    {
-      "id": 199,
-      "Q_No": 12,
-      "Question": "Cherry Pickup II",
-      "Question_link": "https://leetcode.com/problems/cherry-pickup-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Graphs - Basic Traversal": [
     {
-      "id": 200,
+      "id": 153,
       "Q_No": 1,
       "Question": "Number of Islands",
       "Question_link": "https://leetcode.com/problems/number-of-islands/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 201,
+      "id": 154,
       "Q_No": 2,
       "Question": "Max Area of Island",
       "Question_link": "https://leetcode.com/problems/max-area-of-island/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 202,
+      "id": 155,
       "Q_No": 3,
       "Question": "Clone Graph",
       "Question_link": "https://leetcode.com/problems/clone-graph/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 203,
+      "id": 156,
       "Q_No": 4,
       "Question": "Pacific Atlantic Water Flow",
       "Question_link": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 204,
+      "id": 157,
       "Q_No": 5,
       "Question": "Surrounded Regions",
       "Question_link": "https://leetcode.com/problems/surrounded-regions/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 205,
+      "id": 158,
       "Q_No": 6,
       "Question": "Rotting Oranges",
       "Question_link": "https://leetcode.com/problems/rotting-oranges/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 206,
+      "id": 159,
       "Q_No": 7,
-      "Question": "Walls and Gates",
-      "Question_link": "https://leetcode.com/problems/walls-and-gates/",
-      "Solution_link": ""
-    },
-    {
-      "id": 207,
-      "Q_No": 8,
       "Question": "Word Ladder",
       "Question_link": "https://leetcode.com/problems/word-ladder/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 208,
-      "Q_No": 9,
-      "Question": "Word Ladder II",
-      "Question_link": "https://leetcode.com/problems/word-ladder-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 209,
-      "Q_No": 10,
+      "id": 160,
+      "Q_No": 8,
       "Question": "01 Matrix",
       "Question_link": "https://leetcode.com/problems/01-matrix/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 210,
-      "Q_No": 11,
-      "Question": "As Far from Land as Possible",
-      "Question_link": "https://leetcode.com/problems/as-far-from-land-as-possible/",
+      "id": 161,
+      "Q_No": 9,
+      "Question": "Is Graph Bipartite",
+      "Question_link": "https://leetcode.com/problems/is-graph-bipartite/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Graphs - Topological Sort and Cycle Detection": [
     {
-      "id": 211,
+      "id": 162,
       "Q_No": 1,
       "Question": "Course Schedule",
       "Question_link": "https://leetcode.com/problems/course-schedule/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 212,
+      "id": 163,
       "Q_No": 2,
       "Question": "Course Schedule II",
       "Question_link": "https://leetcode.com/problems/course-schedule-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 213,
+      "id": 164,
       "Q_No": 3,
-      "Question": "Course Schedule III",
-      "Question_link": "https://leetcode.com/problems/course-schedule-iii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 214,
-      "Q_No": 4,
       "Question": "Alien Dictionary",
       "Question_link": "https://leetcode.com/problems/alien-dictionary/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 215,
-      "Q_No": 5,
+      "id": 165,
+      "Q_No": 4,
       "Question": "Minimum Height Trees",
       "Question_link": "https://leetcode.com/problems/minimum-height-trees/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 216,
-      "Q_No": 6,
-      "Question": "Parallel Courses",
-      "Question_link": "https://leetcode.com/problems/parallel-courses/",
-      "Solution_link": ""
-    },
-    {
-      "id": 217,
-      "Q_No": 7,
+      "id": 166,
+      "Q_No": 5,
       "Question": "Find Eventual Safe States",
       "Question_link": "https://leetcode.com/problems/find-eventual-safe-states/",
-      "Solution_link": ""
-    },
-    {
-      "id": 218,
-      "Q_No": 8,
-      "Question": "All Paths from Source Lead to Destination",
-      "Question_link": "https://leetcode.com/problems/all-paths-from-source-lead-to-destination/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Graphs - Shortest Path and Advanced": [
     {
-      "id": 219,
+      "id": 167,
       "Q_No": 1,
       "Question": "Network Delay Time",
       "Question_link": "https://leetcode.com/problems/network-delay-time/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 220,
+      "id": 168,
       "Q_No": 2,
       "Question": "Cheapest Flights Within K Stops",
       "Question_link": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 221,
+      "id": 169,
       "Q_No": 3,
       "Question": "Path with Maximum Probability",
       "Question_link": "https://leetcode.com/problems/path-with-maximum-probability/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 222,
+      "id": 170,
       "Q_No": 4,
       "Question": "Min Cost to Connect All Points",
       "Question_link": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 223,
+      "id": 171,
       "Q_No": 5,
-      "Question": "Critical Connections in a Network",
-      "Question_link": "https://leetcode.com/problems/critical-connections-in-a-network/",
+      "Question": "Shortest Bridge",
+      "Question_link": "https://leetcode.com/problems/shortest-bridge/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 224,
+      "id": 172,
       "Q_No": 6,
-      "Question": "Reconstruct Itinerary",
-      "Question_link": "https://leetcode.com/problems/reconstruct-itinerary/",
-      "Solution_link": ""
-    },
-    {
-      "id": 225,
-      "Q_No": 7,
       "Question": "Swim in Rising Water",
       "Question_link": "https://leetcode.com/problems/swim-in-rising-water/",
-      "Solution_link": ""
-    },
-    {
-      "id": 226,
-      "Q_No": 8,
-      "Question": "Path With Minimum Effort",
-      "Question_link": "https://leetcode.com/problems/path-with-minimum-effort/",
-      "Solution_link": ""
-    },
-    {
-      "id": 227,
-      "Q_No": 9,
-      "Question": "Shortest Path to Get All Keys",
-      "Question_link": "https://leetcode.com/problems/shortest-path-to-get-all-keys/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Union Find": [
     {
-      "id": 228,
+      "id": 173,
       "Q_No": 1,
       "Question": "Number of Connected Components in Undirected Graph",
       "Question_link": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 229,
+      "id": 174,
       "Q_No": 2,
       "Question": "Graph Valid Tree",
       "Question_link": "https://leetcode.com/problems/graph-valid-tree/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 230,
+      "id": 175,
       "Q_No": 3,
       "Question": "Redundant Connection",
       "Question_link": "https://leetcode.com/problems/redundant-connection/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 231,
+      "id": 176,
       "Q_No": 4,
-      "Question": "Redundant Connection II",
-      "Question_link": "https://leetcode.com/problems/redundant-connection-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 232,
-      "Q_No": 5,
       "Question": "Accounts Merge",
       "Question_link": "https://leetcode.com/problems/accounts-merge/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 233,
-      "Q_No": 6,
-      "Question": "Most Stones Removed with Same Row or Column",
-      "Question_link": "https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/",
-      "Solution_link": ""
-    },
-    {
-      "id": 234,
-      "Q_No": 7,
-      "Question": "Number of Islands II",
-      "Question_link": "https://leetcode.com/problems/number-of-islands-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 235,
-      "Q_No": 8,
-      "Question": "Satisfiability of Equality Equations",
-      "Question_link": "https://leetcode.com/problems/satisfiability-of-equality-equations/",
-      "Solution_link": ""
-    },
-    {
-      "id": 236,
-      "Q_No": 9,
-      "Question": "Smallest String With Swaps",
-      "Question_link": "https://leetcode.com/problems/smallest-string-with-swaps/",
-      "Solution_link": ""
-    },
-    {
-      "id": 237,
-      "Q_No": 10,
-      "Question": "Number of Operations to Make Network Connected",
-      "Question_link": "https://leetcode.com/problems/number-of-operations-to-make-network-connected/",
+      "id": 177,
+      "Q_No": 5,
+      "Question": "Number of Provinces",
+      "Question_link": "https://leetcode.com/problems/number-of-provinces/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     }
   ],
   "Backtracking": [
     {
-      "id": 238,
+      "id": 178,
       "Q_No": 1,
       "Question": "Letter Combinations of Phone Number",
       "Question_link": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 239,
+      "id": 179,
       "Q_No": 2,
       "Question": "Generate Parentheses",
       "Question_link": "https://leetcode.com/problems/generate-parentheses/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 240,
+      "id": 180,
       "Q_No": 3,
       "Question": "Permutations",
       "Question_link": "https://leetcode.com/problems/permutations/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 241,
+      "id": 181,
       "Q_No": 4,
       "Question": "Permutations II",
       "Question_link": "https://leetcode.com/problems/permutations-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 242,
+      "id": 182,
       "Q_No": 5,
       "Question": "Subsets",
       "Question_link": "https://leetcode.com/problems/subsets/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 243,
+      "id": 183,
       "Q_No": 6,
       "Question": "Subsets II",
       "Question_link": "https://leetcode.com/problems/subsets-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 244,
+      "id": 184,
       "Q_No": 7,
       "Question": "Combination Sum",
       "Question_link": "https://leetcode.com/problems/combination-sum/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 245,
+      "id": 185,
       "Q_No": 8,
       "Question": "Combination Sum II",
       "Question_link": "https://leetcode.com/problems/combination-sum-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 246,
+      "id": 186,
       "Q_No": 9,
-      "Question": "Combination Sum III",
-      "Question_link": "https://leetcode.com/problems/combination-sum-iii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 247,
-      "Q_No": 10,
       "Question": "Palindrome Partitioning",
       "Question_link": "https://leetcode.com/problems/palindrome-partitioning/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 248,
-      "Q_No": 11,
+      "id": 187,
+      "Q_No": 10,
       "Question": "Word Search",
       "Question_link": "https://leetcode.com/problems/word-search/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 249,
-      "Q_No": 12,
+      "id": 188,
+      "Q_No": 11,
       "Question": "Word Search II",
       "Question_link": "https://leetcode.com/problems/word-search-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 250,
-      "Q_No": 13,
+      "id": 189,
+      "Q_No": 12,
       "Question": "N-Queens",
       "Question_link": "https://leetcode.com/problems/n-queens/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 251,
-      "Q_No": 14,
-      "Question": "N-Queens II",
-      "Question_link": "https://leetcode.com/problems/n-queens-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 252,
-      "Q_No": 15,
+      "id": 190,
+      "Q_No": 13,
       "Question": "Sudoku Solver",
       "Question_link": "https://leetcode.com/problems/sudoku-solver/",
-      "Solution_link": ""
-    },
-    {
-      "id": 253,
-      "Q_No": 16,
-      "Question": "Restore IP Addresses",
-      "Question_link": "https://leetcode.com/problems/restore-ip-addresses/",
-      "Solution_link": ""
-    },
-    {
-      "id": 254,
-      "Q_No": 17,
-      "Question": "Expression Add Operators",
-      "Question_link": "https://leetcode.com/problems/expression-add-operators/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Greedy Algorithms": [
     {
-      "id": 255,
+      "id": 191,
       "Q_No": 1,
       "Question": "Meeting Rooms",
       "Question_link": "https://leetcode.com/problems/meeting-rooms/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 256,
+      "id": 192,
       "Q_No": 2,
       "Question": "Meeting Rooms II",
       "Question_link": "https://leetcode.com/problems/meeting-rooms-ii/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 257,
+      "id": 193,
       "Q_No": 3,
       "Question": "Merge Intervals",
       "Question_link": "https://leetcode.com/problems/merge-intervals/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 258,
+      "id": 194,
       "Q_No": 4,
       "Question": "Insert Interval",
       "Question_link": "https://leetcode.com/problems/insert-interval/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 259,
+      "id": 195,
       "Q_No": 5,
       "Question": "Non-overlapping Intervals",
       "Question_link": "https://leetcode.com/problems/non-overlapping-intervals/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 260,
+      "id": 196,
       "Q_No": 6,
       "Question": "Minimum Number of Arrows to Burst Balloons",
       "Question_link": "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 261,
+      "id": 197,
       "Q_No": 7,
       "Question": "Gas Station",
       "Question_link": "https://leetcode.com/problems/gas-station/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 262,
+      "id": 198,
       "Q_No": 8,
-      "Question": "Jump Game",
-      "Question_link": "https://leetcode.com/problems/jump-game/",
-      "Solution_link": ""
-    },
-    {
-      "id": 263,
-      "Q_No": 9,
-      "Question": "Jump Game II",
-      "Question_link": "https://leetcode.com/problems/jump-game-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 264,
-      "Q_No": 10,
-      "Question": "Candy",
-      "Question_link": "https://leetcode.com/problems/candy/",
-      "Solution_link": ""
-    },
-    {
-      "id": 265,
-      "Q_No": 11,
-      "Question": "Task Scheduler",
-      "Question_link": "https://leetcode.com/problems/task-scheduler/",
-      "Solution_link": ""
-    },
-    {
-      "id": 266,
-      "Q_No": 12,
       "Question": "Partition Labels",
       "Question_link": "https://leetcode.com/problems/partition-labels/",
-      "Solution_link": ""
-    },
-    {
-      "id": 267,
-      "Q_No": 13,
-      "Question": "Queue Reconstruction by Height",
-      "Question_link": "https://leetcode.com/problems/queue-reconstruction-by-height/",
-      "Solution_link": ""
-    },
-    {
-      "id": 268,
-      "Q_No": 14,
-      "Question": "Minimum Cost to Connect Sticks",
-      "Question_link": "https://leetcode.com/problems/minimum-cost-to-connect-sticks/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Trie": [
     {
-      "id": 269,
+      "id": 199,
       "Q_No": 1,
       "Question": "Implement Trie (Prefix Tree)",
       "Question_link": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 270,
+      "id": 200,
       "Q_No": 2,
       "Question": "Design Add and Search Words Data Structure",
       "Question_link": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 271,
+      "id": 201,
       "Q_No": 3,
       "Question": "Word Search II",
       "Question_link": "https://leetcode.com/problems/word-search-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 272,
-      "Q_No": 4,
-      "Question": "Replace Words",
-      "Question_link": "https://leetcode.com/problems/replace-words/",
-      "Solution_link": ""
-    },
-    {
-      "id": 273,
-      "Q_No": 5,
-      "Question": "Map Sum Pairs",
-      "Question_link": "https://leetcode.com/problems/map-sum-pairs/",
-      "Solution_link": ""
-    },
-    {
-      "id": 274,
-      "Q_No": 6,
-      "Question": "Maximum XOR of Two Numbers in Array",
-      "Question_link": "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
-      "Solution_link": ""
-    },
-    {
-      "id": 275,
-      "Q_No": 7,
-      "Question": "Maximum XOR With an Element From Array",
-      "Question_link": "https://leetcode.com/problems/maximum-xor-with-an-element-from-array/",
-      "Solution_link": ""
-    },
-    {
-      "id": 276,
-      "Q_No": 8,
-      "Question": "Concatenated Words",
-      "Question_link": "https://leetcode.com/problems/concatenated-words/",
-      "Solution_link": ""
-    },
-    {
-      "id": 277,
-      "Q_No": 9,
-      "Question": "Design Search Autocomplete System",
-      "Question_link": "https://leetcode.com/problems/design-search-autocomplete-system/",
-      "Solution_link": ""
-    },
-    {
-      "id": 278,
-      "Q_No": 10,
-      "Question": "Stream of Characters",
-      "Question_link": "https://leetcode.com/problems/stream-of-characters/",
-      "Solution_link": ""
-    }
-  ],
-  "Segment Tree and Binary Indexed Tree": [
-    {
-      "id": 279,
-      "Q_No": 1,
-      "Question": "Range Sum Query - Mutable",
-      "Question_link": "https://leetcode.com/problems/range-sum-query-mutable/",
-      "Solution_link": ""
-    },
-    {
-      "id": 280,
-      "Q_No": 2,
-      "Question": "Range Sum Query 2D - Mutable",
-      "Question_link": "https://leetcode.com/problems/range-sum-query-2d-mutable/",
-      "Solution_link": ""
-    },
-    {
-      "id": 281,
-      "Q_No": 3,
-      "Question": "Count of Smaller Numbers After Self",
-      "Question_link": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
-      "Solution_link": ""
-    },
-    {
-      "id": 282,
-      "Q_No": 4,
-      "Question": "Count of Range Sum",
-      "Question_link": "https://leetcode.com/problems/count-of-range-sum/",
-      "Solution_link": ""
-    },
-    {
-      "id": 283,
-      "Q_No": 5,
-      "Question": "Reverse Pairs",
-      "Question_link": "https://leetcode.com/problems/reverse-pairs/",
-      "Solution_link": ""
-    },
-    {
-      "id": 284,
-      "Q_No": 6,
-      "Question": "My Calendar I",
-      "Question_link": "https://leetcode.com/problems/my-calendar-i/",
-      "Solution_link": ""
-    },
-    {
-      "id": 285,
-      "Q_No": 7,
-      "Question": "My Calendar II",
-      "Question_link": "https://leetcode.com/problems/my-calendar-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 286,
-      "Q_No": 8,
-      "Question": "My Calendar III",
-      "Question_link": "https://leetcode.com/problems/my-calendar-iii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 287,
-      "Q_No": 9,
-      "Question": "Falling Squares",
-      "Question_link": "https://leetcode.com/problems/falling-squares/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Bit Manipulation": [
     {
-      "id": 288,
+      "id": 202,
       "Q_No": 1,
       "Question": "Single Number",
       "Question_link": "https://leetcode.com/problems/single-number/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 289,
+      "id": 203,
       "Q_No": 2,
       "Question": "Single Number II",
       "Question_link": "https://leetcode.com/problems/single-number-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 290,
+      "id": 204,
       "Q_No": 3,
-      "Question": "Single Number III",
-      "Question_link": "https://leetcode.com/problems/single-number-iii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 291,
-      "Q_No": 4,
       "Question": "Number of 1 Bits",
       "Question_link": "https://leetcode.com/problems/number-of-1-bits/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 292,
-      "Q_No": 5,
+      "id": 205,
+      "Q_No": 4,
       "Question": "Counting Bits",
       "Question_link": "https://leetcode.com/problems/counting-bits/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 293,
-      "Q_No": 6,
+      "id": 206,
+      "Q_No": 5,
       "Question": "Missing Number",
       "Question_link": "https://leetcode.com/problems/missing-number/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 294,
-      "Q_No": 7,
+      "id": 207,
+      "Q_No": 6,
       "Question": "Reverse Bits",
       "Question_link": "https://leetcode.com/problems/reverse-bits/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 295,
-      "Q_No": 8,
+      "id": 208,
+      "Q_No": 7,
       "Question": "Power of Two",
       "Question_link": "https://leetcode.com/problems/power-of-two/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 296,
-      "Q_No": 9,
+      "id": 209,
+      "Q_No": 8,
       "Question": "Sum of Two Integers",
       "Question_link": "https://leetcode.com/problems/sum-of-two-integers/",
-      "Solution_link": ""
-    },
-    {
-      "id": 297,
-      "Q_No": 10,
-      "Question": "Bitwise AND of Numbers Range",
-      "Question_link": "https://leetcode.com/problems/bitwise-and-of-numbers-range/",
-      "Solution_link": ""
-    },
-    {
-      "id": 298,
-      "Q_No": 11,
-      "Question": "Maximum Product of Word Lengths",
-      "Question_link": "https://leetcode.com/problems/maximum-product-of-word-lengths/",
-      "Solution_link": ""
-    },
-    {
-      "id": 299,
-      "Q_No": 12,
-      "Question": "Total Hamming Distance",
-      "Question_link": "https://leetcode.com/problems/total-hamming-distance/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Matrix and 2D Arrays": [
     {
-      "id": 300,
+      "id": 210,
       "Q_No": 1,
       "Question": "Set Matrix Zeroes",
       "Question_link": "https://leetcode.com/problems/set-matrix-zeroes/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 301,
+      "id": 211,
       "Q_No": 2,
       "Question": "Spiral Matrix",
       "Question_link": "https://leetcode.com/problems/spiral-matrix/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 302,
+      "id": 212,
       "Q_No": 3,
       "Question": "Spiral Matrix II",
       "Question_link": "https://leetcode.com/problems/spiral-matrix-ii/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 303,
+      "id": 213,
       "Q_No": 4,
       "Question": "Rotate Image",
       "Question_link": "https://leetcode.com/problems/rotate-image/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 304,
+      "id": 214,
       "Q_No": 5,
       "Question": "Valid Sudoku",
       "Question_link": "https://leetcode.com/problems/valid-sudoku/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 305,
+      "id": 215,
       "Q_No": 6,
       "Question": "Game of Life",
       "Question_link": "https://leetcode.com/problems/game-of-life/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 306,
+      "id": 216,
       "Q_No": 7,
       "Question": "Longest Increasing Path in Matrix",
       "Question_link": "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/",
-      "Solution_link": ""
-    },
-    {
-      "id": 307,
-      "Q_No": 8,
-      "Question": "Kth Smallest Element in Sorted Matrix",
-      "Question_link": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
-      "Solution_link": ""
-    },
-    {
-      "id": 308,
-      "Q_No": 9,
-      "Question": "Count Square Submatrices with All Ones",
-      "Question_link": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/",
-      "Solution_link": ""
-    },
-    {
-      "id": 309,
-      "Q_No": 10,
-      "Question": "Dungeon Game",
-      "Question_link": "https://leetcode.com/problems/dungeon-game/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ],
   "Design and Implementation": [
     {
-      "id": 310,
+      "id": 217,
       "Q_No": 1,
       "Question": "LRU Cache",
       "Question_link": "https://leetcode.com/problems/lru-cache/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 311,
+      "id": 218,
       "Q_No": 2,
       "Question": "LFU Cache",
       "Question_link": "https://leetcode.com/problems/lfu-cache/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 312,
+      "id": 219,
       "Q_No": 3,
+      "Question": "Design HashMap",
+      "Question_link": "https://leetcode.com/problems/design-hashmap/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 220,
+      "Q_No": 4,
+      "Question": "Design HashSet",
+      "Question_link": "https://leetcode.com/problems/design-hashset/",
+      "Priority": "Must Solve",
+      "Solution_link": ""
+    },
+    {
+      "id": 221,
+      "Q_No": 5,
       "Question": "Insert Delete GetRandom O(1)",
       "Question_link": "https://leetcode.com/problems/insert-delete-getrandom-o1/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 313,
-      "Q_No": 4,
-      "Question": "Insert Delete GetRandom O(1) - Duplicates allowed",
-      "Question_link": "https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/",
-      "Solution_link": ""
-    },
-    {
-      "id": 314,
-      "Q_No": 5,
+      "id": 222,
+      "Q_No": 6,
       "Question": "Design Twitter",
       "Question_link": "https://leetcode.com/problems/design-twitter/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 315,
-      "Q_No": 6,
+      "id": 223,
+      "Q_No": 7,
       "Question": "Design Hit Counter",
       "Question_link": "https://leetcode.com/problems/design-hit-counter/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 316,
-      "Q_No": 7,
-      "Question": "Logger Rate Limiter",
-      "Question_link": "https://leetcode.com/problems/logger-rate-limiter/",
-      "Solution_link": ""
-    },
-    {
-      "id": 317,
+      "id": 224,
       "Q_No": 8,
-      "Question": "Design File System",
-      "Question_link": "https://leetcode.com/problems/design-file-system/",
+      "Question": "Design Rate Limiter",
+      "Question_link": "https://leetcode.com/problems/logger-rate-limiter/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 318,
+      "id": 225,
       "Q_No": 9,
       "Question": "Time Based Key-Value Store",
       "Question_link": "https://leetcode.com/problems/time-based-key-value-store/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 319,
+      "id": 226,
       "Q_No": 10,
-      "Question": "Design In-Memory File System",
-      "Question_link": "https://leetcode.com/problems/design-in-memory-file-system/",
-      "Solution_link": ""
-    },
-    {
-      "id": 320,
-      "Q_No": 11,
-      "Question": "Design Phone Directory",
-      "Question_link": "https://leetcode.com/problems/design-phone-directory/",
-      "Solution_link": ""
-    },
-    {
-      "id": 321,
-      "Q_No": 12,
       "Question": "Design Circular Queue",
       "Question_link": "https://leetcode.com/problems/design-circular-queue/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 322,
-      "Q_No": 13,
+      "id": 227,
+      "Q_No": 11,
       "Question": "Design Circular Deque",
       "Question_link": "https://leetcode.com/problems/design-circular-deque/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 323,
-      "Q_No": 14,
+      "id": 228,
+      "Q_No": 12,
       "Question": "Design Browser History",
       "Question_link": "https://leetcode.com/problems/design-browser-history/",
+      "Priority": "Important",
       "Solution_link": ""
+    },
+    {
+      "id": 229,
+      "Q_No": 13,
+      "Question": "Design Parking System",
+      "Question_link": "https://leetcode.com/problems/design-parking-system/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 230,
+      "Q_No": 14,
+      "Question": "Design Underground System",
+      "Question_link": "https://leetcode.com/problems/design-underground-system/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 231,
+      "Q_No": 15,
+      "Question": "Design File System",
+      "Question_link": "https://leetcode.com/problems/design-file-system/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "2025 addition - File system design is frequently asked"
+    },
+    {
+      "id": 232,
+      "Q_No": 16,
+      "Question": "Design In-Memory File System",
+      "Question_link": "https://leetcode.com/problems/design-in-memory-file-system/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "2025 addition - Advanced file system operations"
+    },
+    {
+      "id": 233,
+      "Q_No": 17,
+      "Question": "Implement Magic Dictionary",
+      "Question_link": "https://leetcode.com/problems/implement-magic-dictionary/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "2025 addition - Trie-based design problem"
+    }
+  ],
+  "Concurrency and Multithreading": [
+    {
+      "id": 234,
+      "Q_No": 1,
+      "Question": "Print in Order",
+      "Question_link": "https://leetcode.com/problems/print-in-order/",
+      "Priority": "Must Solve",
+      "Solution_link": "",
+      "Note": "CRITICAL for Java backend roles - Thread synchronization basics"
+    },
+    {
+      "id": 235,
+      "Q_No": 2,
+      "Question": "Print FooBar Alternately",
+      "Question_link": "https://leetcode.com/problems/print-foobar-alternately/",
+      "Priority": "Must Solve",
+      "Solution_link": "",
+      "Note": "CRITICAL - Thread coordination and signaling"
+    },
+    {
+      "id": 236,
+      "Q_No": 3,
+      "Question": "Building H2O",
+      "Question_link": "https://leetcode.com/problems/building-h2o/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "Semaphore and barrier patterns"
+    },
+    {
+      "id": 237,
+      "Q_No": 4,
+      "Question": "Fizz Buzz Multithreaded",
+      "Question_link": "https://leetcode.com/problems/fizz-buzz-multithreaded/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "Multiple thread coordination"
+    },
+    {
+      "id": 238,
+      "Q_No": 5,
+      "Question": "Web Crawler Multithreaded",
+      "Question_link": "https://leetcode.com/problems/web-crawler-multithreaded/",
+      "Priority": "Important",
+      "Solution_link": "",
+      "Note": "Practical concurrency with shared state - frequently asked in 2024-2025"
     }
   ],
   "Mathematical and Number Theory": [
     {
-      "id": 324,
+      "id": 239,
       "Q_No": 1,
-      "Question": "Happy Number",
-      "Question_link": "https://leetcode.com/problems/happy-number/",
-      "Solution_link": ""
-    },
-    {
-      "id": 325,
-      "Q_No": 2,
       "Question": "Plus One",
       "Question_link": "https://leetcode.com/problems/plus-one/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 326,
-      "Q_No": 3,
+      "id": 240,
+      "Q_No": 2,
       "Question": "Pow(x, n)",
       "Question_link": "https://leetcode.com/problems/powx-n/",
+      "Priority": "Must Solve",
       "Solution_link": ""
     },
     {
-      "id": 327,
-      "Q_No": 4,
+      "id": 241,
+      "Q_No": 3,
       "Question": "Sqrt(x)",
       "Question_link": "https://leetcode.com/problems/sqrtx/",
+      "Priority": "Important",
       "Solution_link": ""
     },
     {
-      "id": 328,
+      "id": 242,
+      "Q_No": 4,
+      "Question": "Roman to Integer",
+      "Question_link": "https://leetcode.com/problems/roman-to-integer/",
+      "Priority": "Important",
+      "Solution_link": ""
+    },
+    {
+      "id": 243,
       "Q_No": 5,
       "Question": "Integer to Roman",
       "Question_link": "https://leetcode.com/problems/integer-to-roman/",
-      "Solution_link": ""
-    },
-    {
-      "id": 329,
-      "Q_No": 6,
-      "Question": "Roman to Integer",
-      "Question_link": "https://leetcode.com/problems/roman-to-integer/",
-      "Solution_link": ""
-    },
-    {
-      "id": 330,
-      "Q_No": 7,
-      "Question": "Factorial Trailing Zeroes",
-      "Question_link": "https://leetcode.com/problems/factorial-trailing-zeroes/",
-      "Solution_link": ""
-    },
-    {
-      "id": 331,
-      "Q_No": 8,
-      "Question": "Excel Sheet Column Number",
-      "Question_link": "https://leetcode.com/problems/excel-sheet-column-number/",
-      "Solution_link": ""
-    },
-    {
-      "id": 332,
-      "Q_No": 9,
-      "Question": "Excel Sheet Column Title",
-      "Question_link": "https://leetcode.com/problems/excel-sheet-column-title/",
-      "Solution_link": ""
-    },
-    {
-      "id": 333,
-      "Q_No": 10,
-      "Question": "Fraction to Recurring Decimal",
-      "Question_link": "https://leetcode.com/problems/fraction-to-recurring-decimal/",
-      "Solution_link": ""
-    },
-    {
-      "id": 334,
-      "Q_No": 11,
-      "Question": "Largest Number",
-      "Question_link": "https://leetcode.com/problems/largest-number/",
-      "Solution_link": ""
-    },
-    {
-      "id": 335,
-      "Q_No": 12,
-      "Question": "Self Dividing Numbers",
-      "Question_link": "https://leetcode.com/problems/self-dividing-numbers/",
-      "Solution_link": ""
-    }
-  ],
-  "Hard Mixed Problems": [
-    {
-      "id": 336,
-      "Q_No": 1,
-      "Question": "First Missing Positive",
-      "Question_link": "https://leetcode.com/problems/first-missing-positive/",
-      "Solution_link": ""
-    },
-    {
-      "id": 337,
-      "Q_No": 2,
-      "Question": "Trapping Rain Water II",
-      "Question_link": "https://leetcode.com/problems/trapping-rain-water-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 338,
-      "Q_No": 3,
-      "Question": "Skyline Problem",
-      "Question_link": "https://leetcode.com/problems/the-skyline-problem/",
-      "Solution_link": ""
-    },
-    {
-      "id": 339,
-      "Q_No": 4,
-      "Question": "Median of Two Sorted Arrays",
-      "Question_link": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
-      "Solution_link": ""
-    },
-    {
-      "id": 340,
-      "Q_No": 5,
-      "Question": "Regular Expression Matching",
-      "Question_link": "https://leetcode.com/problems/regular-expression-matching/",
-      "Solution_link": ""
-    },
-    {
-      "id": 341,
-      "Q_No": 6,
-      "Question": "Sliding Window Maximum",
-      "Question_link": "https://leetcode.com/problems/sliding-window-maximum/",
-      "Solution_link": ""
-    },
-    {
-      "id": 342,
-      "Q_No": 7,
-      "Question": "Largest Rectangle in Histogram",
-      "Question_link": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
-      "Solution_link": ""
-    },
-    {
-      "id": 343,
-      "Q_No": 8,
-      "Question": "Basic Calculator III",
-      "Question_link": "https://leetcode.com/problems/basic-calculator-iii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 344,
-      "Q_No": 9,
-      "Question": "Minimum Window Substring",
-      "Question_link": "https://leetcode.com/problems/minimum-window-substring/",
-      "Solution_link": ""
-    },
-    {
-      "id": 345,
-      "Q_No": 10,
-      "Question": "Valid Number",
-      "Question_link": "https://leetcode.com/problems/valid-number/",
-      "Solution_link": ""
-    },
-    {
-      "id": 346,
-      "Q_No": 11,
-      "Question": "Substring with Concatenation of All Words",
-      "Question_link": "https://leetcode.com/problems/substring-with-concatenation-of-all-words/",
-      "Solution_link": ""
-    },
-    {
-      "id": 347,
-      "Q_No": 12,
-      "Question": "Count of Smaller Numbers After Self",
-      "Question_link": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
-      "Solution_link": ""
-    },
-    {
-      "id": 348,
-      "Q_No": 13,
-      "Question": "Reverse Pairs",
-      "Question_link": "https://leetcode.com/problems/reverse-pairs/",
-      "Solution_link": ""
-    },
-    {
-      "id": 349,
-      "Q_No": 14,
-      "Question": "Longest Consecutive Sequence",
-      "Question_link": "https://leetcode.com/problems/longest-consecutive-sequence/",
-      "Solution_link": ""
-    },
-    {
-      "id": 350,
-      "Q_No": 15,
-      "Question": "Maximum Gap",
-      "Question_link": "https://leetcode.com/problems/maximum-gap/",
-      "Solution_link": ""
-    },
-    {
-      "id": 351,
-      "Q_No": 16,
-      "Question": "Find Minimum in Rotated Sorted Array",
-      "Question_link": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
-      "Solution_link": ""
-    },
-    {
-      "id": 352,
-      "Q_No": 17,
-      "Question": "Search in Rotated Sorted Array",
-      "Question_link": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
-      "Solution_link": ""
-    },
-    {
-      "id": 353,
-      "Q_No": 18,
-      "Question": "Merge k Sorted Lists",
-      "Question_link": "https://leetcode.com/problems/merge-k-sorted-lists/",
-      "Solution_link": ""
-    },
-    {
-      "id": 354,
-      "Q_No": 19,
-      "Question": "Word Ladder II",
-      "Question_link": "https://leetcode.com/problems/word-ladder-ii/",
-      "Solution_link": ""
-    },
-    {
-      "id": 355,
-      "Q_No": 20,
-      "Question": "Alien Dictionary",
-      "Question_link": "https://leetcode.com/problems/alien-dictionary/",
+      "Priority": "Important",
       "Solution_link": ""
     }
   ]
