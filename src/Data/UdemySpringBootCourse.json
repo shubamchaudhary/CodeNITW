@@ -532,14 +532,13 @@
       ],
       "completed": false,
       "estimatedHours": 3.5
-    }
-  ],
-  "additionalSections": [
+    },
     {
       "sectionNumber": 29,
       "title": "Docker",
       "lectures": 18,
       "duration": "2h 30m",
+      "completed": false,
       "estimatedHours": 3
     },
     {
@@ -547,6 +546,7 @@
       "title": "AWS Cloud Deployment",
       "lectures": 14,
       "duration": "2h",
+      "completed": false,
       "estimatedHours": 2.5
     },
     {
@@ -554,6 +554,7 @@
       "title": "Spring AI",
       "lectures": 48,
       "duration": "6h 30m",
+      "completed": false,
       "estimatedHours": 8
     },
     {
@@ -561,6 +562,7 @@
       "title": "Microservices with Spring Boot",
       "lectures": 26,
       "duration": "4h 15m",
+      "completed": false,
       "estimatedHours": 5
     },
     {
@@ -568,6 +570,7 @@
       "title": "Git Version Control",
       "lectures": 26,
       "duration": "3h 30m",
+      "completed": false,
       "estimatedHours": 4
     }
   ],
