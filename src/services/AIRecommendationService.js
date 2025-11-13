@@ -571,7 +571,12 @@ class AIRecommendationService {
     const questionsByDifficulty = this.groupQuestionsByDifficulty(analysis);
     const udemyCourse = UdemySpringBootCourse;
     const uncompletedSections = udemyCourse.sections.filter(s => !s.completed);
-    let sectionIndex = 0;
+
+    // Smart course distribution tracker
+    let currentSectionIndex = 0;
+    let currentSectionRemainingHours = uncompletedSections.length > 0
+      ? uncompletedSections[0].estimatedHours
+      : 0;
 
     for (let day = 0; day < totalDays; day++) {
       const currentDate = new Date(startDate);
@@ -627,56 +632,67 @@ class AIRecommendationService {
         completed: solvedQuestions[q.Question] || false,
       }));
 
-      // Add learning materials
-      // 1. Udemy Course Content (Sequential)
-      if (sectionIndex < uncompletedSections.length) {
-        const currentSection = uncompletedSections[sectionIndex];
-        const sectionHours = currentSection.estimatedHours || 2;
+      // Smart course distribution with carryover
+      dayPlan.learningMaterials = [];
+      let availableLearningHours = learningHours;
 
-        if (sectionHours <= learningHours) {
+      while (availableLearningHours > 0 && currentSectionIndex < uncompletedSections.length) {
+        const currentSection = uncompletedSections[currentSectionIndex];
+
+        if (currentSectionRemainingHours <= availableLearningHours) {
+          // Can complete this section today
           dayPlan.learningMaterials.push({
             type: "Udemy Course",
             title: `Section ${currentSection.sectionNumber}: ${currentSection.title}`,
+            description: currentSection.topics?.slice(0, 3).join(", ") + (currentSection.topics?.length > 3 ? "..." : ""),
             url: udemyCourse.courseUrl,
-            estimatedHours: sectionHours,
-            topics: currentSection.topics,
+            estimatedHours: parseFloat(currentSectionRemainingHours.toFixed(2)),
+            sectionNumber: currentSection.sectionNumber,
+            totalSectionHours: currentSection.estimatedHours,
+            progress: `Completing section (${currentSectionRemainingHours}h remaining)`,
             completed: false,
             skipped: false,
             source: "udemy",
-            sectionNumber: currentSection.sectionNumber,
           });
-          learningHours -= sectionHours;
-          sectionIndex++;
+
+          availableLearningHours -= currentSectionRemainingHours;
+          currentSectionIndex++;
+
+          // Move to next section
+          if (currentSectionIndex < uncompletedSections.length) {
+            currentSectionRemainingHours = uncompletedSections[currentSectionIndex].estimatedHours;
+          } else {
+            currentSectionRemainingHours = 0;
+          }
+        } else {
+          // Section extends beyond today - split it
+          dayPlan.learningMaterials.push({
+            type: "Udemy Course",
+            title: `Section ${currentSection.sectionNumber}: ${currentSection.title}`,
+            description: currentSection.topics?.slice(0, 3).join(", ") + (currentSection.topics?.length > 3 ? "..." : ""),
+            url: udemyCourse.courseUrl,
+            estimatedHours: parseFloat(availableLearningHours.toFixed(2)),
+            sectionNumber: currentSection.sectionNumber,
+            totalSectionHours: currentSection.estimatedHours,
+            progress: `Part ${Math.ceil((currentSection.estimatedHours - currentSectionRemainingHours) / availableLearningHours) + 1} (${currentSectionRemainingHours.toFixed(1)}h remaining of ${currentSection.estimatedHours}h)`,
+            completed: false,
+            skipped: false,
+            source: "udemy",
+            isPartial: true,
+          });
+
+          currentSectionRemainingHours -= availableLearningHours;
+          availableLearningHours = 0;
         }
       }
 
-      // 2. Add complementary learning materials
-      if (learningHours > 0) {
-        const complementaryMaterial = this.getComplementaryLearning(day, learningHours, analysis);
-        if (complementaryMaterial) {
-          dayPlan.learningMaterials.push(complementaryMaterial);
-        }
-      }
-
-      // 3. Special day activities
-      if (day % 7 === 0 && day > 0) {
-        // Weekly revision
+      // Special day activities (only if time remains or specific days)
+      if (day % 10 === 9 && day > 0) {
+        // Revision every 10 days
         dayPlan.learningMaterials.push({
           type: "Revision",
-          title: "Review previous week's questions and concepts",
+          title: "Review previous 10 days' questions and concepts",
           estimatedHours: 1,
-          completed: false,
-          skipped: false,
-        });
-      }
-
-      if (day % 5 === 4) {
-        // Mock interview every 5 days
-        dayPlan.learningMaterials.push({
-          type: "Mock Interview",
-          title: "Practice interview with peer or platform",
-          estimatedHours: 1.5,
-          platform: "Pramp / Interviewing.io / Peers",
           completed: false,
           skipped: false,
         });
