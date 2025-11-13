@@ -47,6 +47,14 @@ const AIRecommendations = ({ onQuestionSelect }) => {
     const auth = getAuth();
     if (auth.currentUser) {
       loadRecommendations();
+    } else {
+      // If not logged in yet, wait for auth state
+      const unsubscribe = getAuth().onAuthStateChanged((user) => {
+        if (user) {
+          loadRecommendations();
+        }
+      });
+      return () => unsubscribe();
     }
   }, []);
 
