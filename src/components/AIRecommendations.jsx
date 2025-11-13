@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import { getAuth } from "firebase/auth";
 import aiRecommendationService from "../services/AIRecommendationService";
 import cacheService from "../services/CacheService";
+import ProgressSyncService from "../services/ProgressSyncService";
 
 const AIRecommendations = ({ onQuestionSelect }) => {
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,27 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       loadRecommendations();
     }
   }, []);
+
+  const syncPlanWithMainProgress = (plan) => {
+    // Sync 40-day plan questions with PersonalDSA solved questions
+    const progressData = ProgressSyncService.getLocalProgress("PERSONAL_DSA");
+    const solvedQuestions = progressData.solved || {};
+
+    plan.dailyPlans.forEach((day) => {
+      day.questions.forEach((question) => {
+        question.completed = solvedQuestions[question.Question] || false;
+      });
+
+      // Update day progress counts
+      const completedCount = day.questions.filter((q) => q.completed).length;
+      day.progress.questionsCompleted = completedCount;
+
+      // Update day completion status
+      if (completedCount === day.questions.length && day.learningMaterials?.length === 0) {
+        day.completed = true;
+      }
+    });
+  };
 
   const loadRecommendations = async (forceRefresh = false) => {
     const auth = getAuth();
@@ -109,12 +131,16 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       // Load 40-day plan with cache
       const cachedPlan = cacheService.getCached40DayPlan(auth.currentUser.uid);
       if (cachedPlan && !forceRefresh) {
+        // Sync plan with current PersonalDSA progress
+        syncPlanWithMainProgress(cachedPlan);
         setDailyPlan(cachedPlan);
       } else {
         const existingPlan = await aiRecommendationService.loadDailyPlan(
           auth.currentUser.uid
         );
         if (existingPlan) {
+          // Sync plan with current PersonalDSA progress
+          syncPlanWithMainProgress(existingPlan);
           setDailyPlan(existingPlan);
           cacheService.cache40DayPlan(auth.currentUser.uid, existingPlan);
         }
@@ -139,6 +165,10 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       const plan = await aiRecommendationService.generate40DayPlan(
         auth.currentUser.uid
       );
+
+      // Sync with current PersonalDSA progress
+      syncPlanWithMainProgress(plan);
+
       await aiRecommendationService.saveDailyPlan(auth.currentUser.uid, plan);
       setDailyPlan(plan);
 
@@ -268,15 +298,15 @@ const AIRecommendations = ({ onQuestionSelect }) => {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "CRITICAL":
-        return "bg-red-100 text-red-800 border-red-300";
+        return "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-700";
       case "HIGH":
-        return "bg-orange-100 text-orange-800 border-orange-300";
+        return "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-700";
       case "MEDIUM":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+        return "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-700";
       case "LOW":
-        return "bg-green-100 text-green-800 border-green-300";
+        return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-700";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-300";
+        return "bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600";
     }
   };
 
@@ -654,7 +684,8 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
 
     try {
       const day = dailyPlan.dailyPlans[dayNumber];
-      day.questions[questionIndex].completed = completed;
+      const question = day.questions[questionIndex];
+      question.completed = completed;
 
       const completedCount = day.questions.filter((q) => q.completed).length;
       day.progress.questionsCompleted = completedCount;
@@ -663,13 +694,31 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
         day.completed = true;
       }
 
+      // Update PersonalDSA progress (main 243 questions list)
+      const progressData = ProgressSyncService.getLocalProgress("PERSONAL_DSA");
+      const solvedQuestions = progressData.solved || {};
+      const starredQuestions = progressData.starred || {};
+
+      if (completed) {
+        solvedQuestions[question.Question] = true;
+      } else {
+        delete solvedQuestions[question.Question];
+      }
+
+      // Save back to localStorage
+      ProgressSyncService.saveLocalProgress("PERSONAL_DSA", {
+        solved: solvedQuestions,
+        starred: starredQuestions,
+      });
+
+      // Update the 40-day plan in Firebase
       await aiRecommendationService.updateDailyProgress(
         auth.currentUser.uid,
         dayNumber + 1,
         day
       );
 
-      toast.success("Progress updated!");
+      toast.success(completed ? "Question completed! ✅ (synced with main progress)" : "Marked as incomplete");
     } catch (error) {
       console.error("Error updating progress:", error);
       toast.error("Failed to update progress");
@@ -724,8 +773,8 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
 
       {/* Day Selector */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
-        <h4 className="font-semibold mb-3">Select Day</h4>
-        <div className="grid grid-cols-7 gap-2 max-h-64 overflow-y-auto">
+        <h4 className="font-semibold mb-3 dark:text-gray-100">Select Day</h4>
+        <div className="grid grid-cols-7 gap-2">
           {dailyPlan.dailyPlans.map((day, idx) => {
             const isToday = idx === daysPassed;
             const isPast = idx < daysPassed;
@@ -739,12 +788,12 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
                   selectedDay === idx
                     ? "bg-purple-600 text-white"
                     : day.completed
-                    ? "bg-green-100 text-green-800"
+                    ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300"
                     : isToday
-                    ? "bg-blue-100 text-blue-800"
+                    ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300"
                     : isPast
-                    ? "bg-red-100 text-red-800"
-                    : "bg-gray-100 text-gray-800"
+                    ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300"
+                    : "bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300"
                 } hover:shadow`}
               >
                 Day {day.day}
@@ -936,15 +985,113 @@ const TopicLearningSuggestions = ({ onSyncToCloud }) => {
   const generateChatGPTLink = (category, topic) => {
     let prompt = "";
     if (category === "System Design (Must Learn)") {
-      prompt = `I'm preparing for Java Spring Boot interviews with 2 years of experience. Teach me about ${topic} in detail with real-world examples. Then give me 5 practice questions to test my understanding.`;
+      prompt = `I am a Java Spring Boot developer with 2 years of experience preparing for senior developer interviews. I need to master ${topic} for my upcoming interview.
+
+Please help me learn this topic using the following structured approach:
+
+1. **Core Concepts**: Explain the fundamental concepts of ${topic} in a clear, concise manner. Use analogies if helpful.
+
+2. **Real-World Architecture**: Show me how ${topic} is implemented in real production systems at companies like Amazon, Netflix, or Uber. Include architecture diagrams (describe them in text).
+
+3. **Trade-offs & Decision Making**: Explain when to use ${topic} vs alternatives. What are the pros and cons? What scale/scenario makes it suitable?
+
+4. **Common Pitfalls**: What mistakes do developers commonly make with ${topic}? How do I avoid them?
+
+5. **Code Examples**: If applicable, provide Java/Spring Boot code snippets demonstrating ${topic}.
+
+6. **Interview Preparation**: Give me 5 progressively difficult interview questions about ${topic} that I might face, ranging from easy conceptual questions to system design scenarios.
+
+Please structure your response in a way that helps me learn efficiently for interview preparation.`;
     } else if (category === "Java Advanced (Important)") {
-      prompt = `Explain ${topic} for a Java developer with 2 YoE. Use real-world examples from production systems. Then quiz me with 5 challenging questions to verify my understanding.`;
+      prompt = `I am preparing for Java Spring Boot developer interviews (2 YoE level) and need to deeply understand ${topic} for technical rounds.
+
+Please teach me ${topic} using this learning framework:
+
+1. **Fundamentals**: Core concepts of ${topic} explained simply with examples.
+
+2. **Under the Hood**: How does ${topic} work internally in the JVM? What's happening at the bytecode/memory level?
+
+3. **Production Use Cases**: Real-world scenarios where ${topic} is critical. Give examples from enterprise applications.
+
+4. **Code Examples**: Provide working Java code demonstrating ${topic}. Include both basic and advanced usage.
+
+5. **Best Practices**: What are the industry-standard best practices for using ${topic}? Include dos and don'ts.
+
+6. **Common Interview Questions**: Give me 7 interview questions about ${topic}:
+   - 3 conceptual questions (explain how it works)
+   - 2 coding problems (implement or debug code)
+   - 2 scenario-based questions (when to use it, trade-offs)
+
+7. **Quick Practice**: Give me a small coding challenge to practice ${topic} right now.
+
+Format your response to help me master this topic efficiently for interviews.`;
     } else if (category === "Spring Boot Advanced") {
-      prompt = `I'm a Spring Boot developer with 2 years experience. Teach me ${topic} in depth with code examples. Then test me with 5 practical scenario-based questions.`;
+      prompt = `I'm a Spring Boot developer with 2 years of experience preparing for interviews. I need to master ${topic} for Spring Boot technical rounds.
+
+Please teach me ${topic} using this comprehensive approach:
+
+1. **Spring Boot Context**: What is ${topic} in Spring Boot? How does it fit into the Spring ecosystem?
+
+2. **Step-by-Step Implementation**: Show me how to implement ${topic} in a Spring Boot application with complete code examples.
+
+3. **Configuration & Annotations**: Explain all relevant annotations, configuration properties, and how to customize ${topic}.
+
+4. **Real Production Examples**: How do companies use ${topic} in production Spring Boot microservices? Give realistic scenarios.
+
+5. **Integration with Other Components**: How does ${topic} work with Spring Security, Spring Data, REST APIs, etc.?
+
+6. **Troubleshooting**: Common issues developers face with ${topic} and how to debug/resolve them.
+
+7. **Interview Preparation**: Provide:
+   - 3 theoretical questions about ${topic}
+   - 2 coding questions (write Spring Boot code demonstrating ${topic})
+   - 2 debugging scenarios (fix broken code related to ${topic})
+   - 1 architecture question (design a system using ${topic})
+
+8. **Hands-on Practice**: Give me a mini-project idea to practice ${topic} immediately.
+
+Structure your response to maximize my interview readiness.`;
     } else if (category === "DevOps & Cloud") {
-      prompt = `Explain ${topic} for a Java Spring Boot developer. Focus on practical usage and best practices. Then give me 5 questions to test my knowledge.`;
+      prompt = `I am a Java Spring Boot developer with 2 YoE preparing for interviews that include DevOps & Cloud knowledge. I need to learn ${topic} from a developer's perspective.
+
+Please teach me ${topic} using this practical framework:
+
+1. **Fundamentals for Developers**: Explain ${topic} in simple terms that a Java developer can understand.
+
+2. **Why It Matters**: Why should I, as a Spring Boot developer, care about ${topic}? How does it impact my applications?
+
+3. **Practical Implementation**: Show me step-by-step how to use ${topic} with a Spring Boot application. Include commands, configuration files, and code if applicable.
+
+4. **Real-World Usage**: How do companies like Netflix, Amazon, or Spotify use ${topic} in their tech stack?
+
+5. **Integration with Spring Boot**: Specific examples of how ${topic} integrates with Spring Boot apps (Docker containers, Kubernetes deployments, CI/CD pipelines, etc.).
+
+6. **Common Interview Topics**: What do interviewers typically ask about ${topic} for Java developer roles?
+
+7. **Practice Questions**: Give me:
+   - 3 conceptual questions about ${topic}
+   - 2 hands-on scenarios (what commands/configs to use)
+   - 2 troubleshooting questions (debug common issues)
+
+8. **Quick Win**: Give me one thing I can do today to practice ${topic} with a Spring Boot app.
+
+Please make your response practical and interview-focused.`;
     } else {
-      prompt = `I'm preparing for Java interviews. Explain ${topic} with examples and then test me with 5 questions.`;
+      prompt = `I'm preparing for Java Spring Boot developer interviews (2 years experience) and need to master ${topic}.
+
+Please teach me ${topic} using an efficient, interview-focused approach:
+
+1. **Core Concepts**: Explain ${topic} clearly and concisely.
+
+2. **Why It's Important**: Why do interviewers ask about ${topic}? Where is it used in real applications?
+
+3. **Examples & Code**: Provide practical examples with code if applicable.
+
+4. **Interview Questions**: Give me 5-7 interview questions about ${topic} with varying difficulty.
+
+5. **Quick Practice**: One thing I can practice right now to solidify my understanding.
+
+Please structure this to help me learn quickly for interviews.`;
     }
 
     return `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`;
