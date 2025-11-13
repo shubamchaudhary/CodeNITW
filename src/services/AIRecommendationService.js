@@ -1010,10 +1010,42 @@ class AIRecommendationService {
       const progressRate = completedQuestions / expectedQuestions;
       const remainingDays = plan.totalDays - daysPassed;
 
-      // Adjust future days based on progress
+      // Always get fresh analysis to filter out solved questions
+      const analysis = await this.analyzeUserProgress(userId);
+
+      // Remove solved questions from all remaining days
+      for (let i = daysPassed; i < plan.dailyPlans.length; i++) {
+        const day = plan.dailyPlans[i];
+
+        // Filter out questions that are now solved
+        const unsolvedQuestions = day.questions.filter(
+          q => !analysis.solvedQuestions[q.Question]
+        );
+
+        // If we removed solved questions, we need to replace them
+        if (unsolvedQuestions.length < day.questions.length) {
+          const questionsNeeded = day.questions.length - unsolvedQuestions.length;
+
+          // Get new recommendations to replace solved ones
+          const newRecommendations = await this.generateRecommendations(
+            userId,
+            questionsNeeded
+          );
+
+          // Add only truly unsolved questions
+          const replacementQuestions = newRecommendations.recommendations
+            .filter(r => !analysis.solvedQuestions[r.Question])
+            .slice(0, questionsNeeded);
+
+          day.questions = [...unsolvedQuestions, ...replacementQuestions];
+        } else {
+          day.questions = unsolvedQuestions;
+        }
+      }
+
+      // Adjust future days based on progress if behind schedule
       if (progressRate < 0.8 && remainingDays > 0) {
         // Behind schedule - reduce daily load
-        const analysis = await this.analyzeUserProgress(userId);
         const remainingQuestions =
           analysis.totalQuestions - analysis.totalSolved;
         const newQuestionsPerDay = Math.ceil(
@@ -1025,13 +1057,13 @@ class AIRecommendationService {
             userId,
             newQuestionsPerDay
           );
-          // Check localStorage for actual completion status
-          plan.dailyPlans[i].questions = recommendations.recommendations.map(
-            (r) => ({
+          // Only include unsolved questions
+          plan.dailyPlans[i].questions = recommendations.recommendations
+            .filter(r => !analysis.solvedQuestions[r.Question])
+            .map(r => ({
               ...r,
-              completed: analysis.solvedQuestions[r.Question] || false,
-            })
-          );
+              completed: false,
+            }));
         }
       }
 
