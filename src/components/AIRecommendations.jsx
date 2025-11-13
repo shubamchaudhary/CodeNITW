@@ -29,7 +29,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
   const [externalRecommendations, setExternalRecommendations] = useState([]);
   const [dailyPlan, setDailyPlan] = useState(null);
   const [analysis, setAnalysis] = useState(null);
-  const [activeTab, setActiveTab] = useState("recommendations");
+  const [activeTab, setActiveTab] = useState("plan");
   const [expandedSections, setExpandedSections] = useState({
     starred: true,
     weak: true,
@@ -131,18 +131,29 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       // Load 40-day plan with cache
       const cachedPlan = cacheService.getCached40DayPlan(auth.currentUser.uid);
       if (cachedPlan && !forceRefresh) {
-        // Sync plan with current PersonalDSA progress
-        syncPlanWithMainProgress(cachedPlan);
-        setDailyPlan(cachedPlan);
+        // Check if it's an old 45-day plan
+        if (cachedPlan.totalDays === 45) {
+          toast.warning("Old 45-day plan detected. Please regenerate your plan to get the new 40-day structure.");
+          cacheService.invalidate40DayPlan(auth.currentUser.uid);
+        } else {
+          // Sync plan with current PersonalDSA progress
+          syncPlanWithMainProgress(cachedPlan);
+          setDailyPlan(cachedPlan);
+        }
       } else {
         const existingPlan = await aiRecommendationService.loadDailyPlan(
           auth.currentUser.uid
         );
         if (existingPlan) {
-          // Sync plan with current PersonalDSA progress
-          syncPlanWithMainProgress(existingPlan);
-          setDailyPlan(existingPlan);
-          cacheService.cache40DayPlan(auth.currentUser.uid, existingPlan);
+          // Check if it's an old 45-day plan
+          if (existingPlan.totalDays === 45) {
+            toast.warning("Old 45-day plan detected. Please regenerate your plan to get the new 40-day structure.");
+          } else {
+            // Sync plan with current PersonalDSA progress
+            syncPlanWithMainProgress(existingPlan);
+            setDailyPlan(existingPlan);
+            cacheService.cache40DayPlan(auth.currentUser.uid, existingPlan);
+          }
         }
       }
     } catch (error) {
@@ -641,6 +652,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
             ) : (
               <DailyPlanView
                 dailyPlan={dailyPlan}
+                setDailyPlan={setDailyPlan}
                 onReplan={replanBasedOnProgress}
                 loading={loading}
               />
@@ -664,7 +676,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 };
 
 // Daily Plan View Component
-const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
+const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, loading }) => {
   const [selectedDay, setSelectedDay] = useState(null);
 
   useEffect(() => {
@@ -683,16 +695,21 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
     if (!auth.currentUser) return;
 
     try {
-      const day = dailyPlan.dailyPlans[dayNumber];
+      // Create a deep copy of dailyPlan to avoid mutation
+      const updatedPlan = JSON.parse(JSON.stringify(dailyPlan));
+      const day = updatedPlan.dailyPlans[dayNumber];
       const question = day.questions[questionIndex];
       question.completed = completed;
 
       const completedCount = day.questions.filter((q) => q.completed).length;
       day.progress.questionsCompleted = completedCount;
 
-      if (completedCount === day.questions.length && day.topics.length === 0) {
+      if (completedCount === day.questions.length && (!day.learningMaterials || day.learningMaterials.length === 0)) {
         day.completed = true;
       }
+
+      // Update state immediately to show checkbox change
+      setDailyPlan(updatedPlan);
 
       // Update PersonalDSA progress (main 243 questions list)
       const progressData = ProgressSyncService.getLocalProgress("PERSONAL_DSA");
@@ -710,6 +727,9 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
         solved: solvedQuestions,
         starred: starredQuestions,
       });
+
+      // Update cache
+      cacheService.cache40DayPlan(auth.currentUser.uid, updatedPlan);
 
       // Update the 40-day plan in Firebase
       await aiRecommendationService.updateDailyProgress(
