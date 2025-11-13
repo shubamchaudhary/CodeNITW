@@ -231,9 +231,10 @@ const AIRecommendations = ({ onQuestionSelect }) => {
         // Cache the updated plan
         cacheService.cache40DayPlan(auth.currentUser.uid, result.updatedPlan);
 
-        toast.success(
-          `Plan adjusted! Progress rate: ${(result.metrics.progressRate * 100).toFixed(1)}%`
-        );
+        const message = result.metrics.totalIncompleteHours > 0
+          ? `Plan adjusted! Progress: ${(result.metrics.progressRate * 100).toFixed(1)}% • ${result.metrics.totalIncompleteHours.toFixed(1)}h catch-up work redistributed`
+          : `Plan adjusted! Progress: ${(result.metrics.progressRate * 100).toFixed(1)}% • All solved questions removed`;
+        toast.success(message);
       }
     } catch (error) {
       console.error("Error replanning:", error);

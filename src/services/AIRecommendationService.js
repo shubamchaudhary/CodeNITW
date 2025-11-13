@@ -1029,6 +1029,23 @@ class AIRecommendationService {
       // Always get fresh analysis to filter out solved questions
       const analysis = await this.analyzeUserProgress(userId);
 
+      // Calculate incomplete learning hours from past days
+      let incompleteCourseDays = 0;
+      let totalIncompleteHours = 0;
+      for (let i = 0; i < daysPassed && i < plan.dailyPlans.length; i++) {
+        const day = plan.dailyPlans[i];
+        const materialsCompleted = day.progress?.materialsCompleted || 0;
+        const totalMaterials = day.learningMaterials?.length || 0;
+
+        if (materialsCompleted < totalMaterials) {
+          incompleteCourseDays++;
+          // Calculate incomplete hours
+          for (let j = materialsCompleted; j < day.learningMaterials.length; j++) {
+            totalIncompleteHours += day.learningMaterials[j].estimatedHours || 0;
+          }
+        }
+      }
+
       // Remove solved questions from all remaining days
       for (let i = daysPassed; i < plan.dailyPlans.length; i++) {
         const day = plan.dailyPlans[i];
@@ -1056,6 +1073,24 @@ class AIRecommendationService {
           day.questions = [...unsolvedQuestions, ...replacementQuestions];
         } else {
           day.questions = unsolvedQuestions;
+        }
+      }
+
+      // Redistribute incomplete learning hours across remaining days
+      if (totalIncompleteHours > 0 && remainingDays > 0) {
+        const extraHoursPerDay = totalIncompleteHours / remainingDays;
+
+        // Adjust remaining days' learning materials to accommodate incomplete work
+        for (let i = daysPassed; i < plan.dailyPlans.length; i++) {
+          const day = plan.dailyPlans[i];
+          const isWeekend = new Date(day.date).getDay() === 0 || new Date(day.date).getDay() === 6;
+          const baseHours = isWeekend ? 3 : 2;
+
+          // Note: Add visual indicator that this day has catch-up work
+          if (day.learningMaterials && day.learningMaterials.length > 0) {
+            day.learningMaterials[0].catchUpHours = parseFloat(extraHoursPerDay.toFixed(2));
+            day.learningMaterials[0].adjustedTotalHours = parseFloat((baseHours + extraHoursPerDay).toFixed(2));
+          }
         }
       }
 
@@ -1098,6 +1133,8 @@ class AIRecommendationService {
           expectedQuestions,
           daysPassed,
           remainingDays,
+          incompleteCourseDays,
+          totalIncompleteHours,
         },
       };
     } catch (error) {
