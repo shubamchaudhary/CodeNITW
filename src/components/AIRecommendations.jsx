@@ -934,7 +934,7 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
                     <div className="flex-1">
                       <p className="font-medium dark:text-gray-200">{question.Question}</p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {question.topic} • {question.difficulty || "Medium"}
+                        {question.topic}
                         {question.isStarred && " ⭐"}
                       </p>
                     </div>
