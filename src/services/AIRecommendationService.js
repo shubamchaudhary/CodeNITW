@@ -299,11 +299,15 @@ class AIRecommendationService {
 
   /**
    * Get recommendations from starred questions
+   * Ensures diversity by limiting max 2 questions per topic
    */
   getStarredRecommendations(analysis, count) {
     const recommendations = [];
     const { starredQuestions, solvedQuestions } = analysis;
+    const topicQuestionCount = {}; // Track questions per topic
 
+    // Group starred questions by topic
+    const starredByTopic = {};
     for (const topic in PersonalDSARoadmap) {
       const questions = PersonalDSARoadmap[topic];
       for (const question of questions) {
@@ -311,7 +315,10 @@ class AIRecommendationService {
           starredQuestions[question.Question] &&
           !solvedQuestions[question.Question]
         ) {
-          recommendations.push({
+          if (!starredByTopic[topic]) {
+            starredByTopic[topic] = [];
+          }
+          starredByTopic[topic].push({
             ...question,
             topic,
             reason: "⭐ Starred by you - High Priority",
@@ -322,17 +329,44 @@ class AIRecommendationService {
       }
     }
 
+    // Round-robin selection to ensure diversity (max 2 per topic)
+    const topics = Object.keys(starredByTopic);
+    let currentIndex = 0;
+    const maxPerTopic = 2;
+
+    while (recommendations.length < count && topics.length > 0) {
+      const topic = topics[currentIndex % topics.length];
+      const topicCount = topicQuestionCount[topic] || 0;
+
+      if (topicCount < maxPerTopic && starredByTopic[topic].length > topicCount) {
+        recommendations.push(starredByTopic[topic][topicCount]);
+        topicQuestionCount[topic] = topicCount + 1;
+      } else if (starredByTopic[topic].length <= topicCount) {
+        // This topic is exhausted, remove it
+        topics.splice(currentIndex % topics.length, 1);
+        if (topics.length === 0) break;
+        continue;
+      }
+
+      currentIndex++;
+      if (currentIndex >= count * 10) break; // Safety limit
+    }
+
     return recommendations.slice(0, count);
   }
 
   /**
    * Get recommendations from weak areas
+   * Ensures diversity by limiting max 2-3 questions per topic
    */
   getWeakAreaRecommendations(analysis, count) {
     const recommendations = [];
     const { weakAreas, solvedQuestions, starredQuestions } = analysis;
+    const topicQuestionCount = {};
+    const maxPerTopic = 3; // Allow up to 3 questions from a weak area
 
-    for (const weakArea of weakAreas) {
+    // Prepare questions from each weak area
+    const weakAreaQuestions = weakAreas.map((weakArea) => {
       const questions = PersonalDSARoadmap[weakArea.topic] || [];
       const unsolvedQuestions = questions.filter(
         (q) =>
@@ -348,15 +382,37 @@ class AIRecommendationService {
         ? priorityQuestions
         : unsolvedQuestions;
 
-      for (const question of questionsToAdd.slice(0, 2)) {
+      return {
+        topic: weakArea.topic,
+        completionRate: weakArea.completionRate,
+        questions: questionsToAdd,
+      };
+    }).filter(wa => wa.questions.length > 0);
+
+    // Round-robin selection to ensure diversity
+    let currentIndex = 0;
+    while (recommendations.length < count && weakAreaQuestions.length > 0) {
+      const weakArea = weakAreaQuestions[currentIndex % weakAreaQuestions.length];
+      const topicCount = topicQuestionCount[weakArea.topic] || 0;
+
+      if (topicCount < maxPerTopic && weakArea.questions.length > topicCount) {
         recommendations.push({
-          ...question,
+          ...weakArea.questions[topicCount],
           topic: weakArea.topic,
           reason: `📊 Weak area (${weakArea.completionRate}% complete)`,
           priority: "HIGH",
           source: "personal",
         });
+        topicQuestionCount[weakArea.topic] = topicCount + 1;
+      } else if (weakArea.questions.length <= topicCount) {
+        // This weak area is exhausted
+        weakAreaQuestions.splice(currentIndex % weakAreaQuestions.length, 1);
+        if (weakAreaQuestions.length === 0) break;
+        continue;
       }
+
+      currentIndex++;
+      if (currentIndex >= count * 10) break; // Safety limit
     }
 
     return recommendations.slice(0, count);
@@ -364,13 +420,21 @@ class AIRecommendationService {
 
   /**
    * Get recommendations based on trending topics
+   * Limits to 1-2 questions per topic for diversity
    */
   getTrendingRecommendations(analysis, count) {
     const recommendations = [];
     const { solvedQuestions, starredQuestions } = analysis;
+    const topicsSeen = new Set();
+    const maxPerTopic = 1; // Only 1 question per topic for trending
 
     for (const trendingTopic of this.trendingTopics) {
+      if (recommendations.length >= count) break;
+
       for (const topic in PersonalDSARoadmap) {
+        if (recommendations.length >= count) break;
+        if (topicsSeen.has(topic)) continue; // Skip if already used
+
         if (topic.toLowerCase().includes(trendingTopic.toLowerCase())) {
           const questions = PersonalDSARoadmap[topic];
           const unsolvedQuestions = questions.filter(
@@ -387,6 +451,7 @@ class AIRecommendationService {
               priority: "MEDIUM",
               source: "personal",
             });
+            topicsSeen.add(topic);
           }
         }
       }
