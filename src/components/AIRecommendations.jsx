@@ -35,6 +35,10 @@ const AIRecommendations = ({ onQuestionSelect }) => {
     external: true,
     topics: false,
   });
+  const [externalQuestionsProgress, setExternalQuestionsProgress] = useState(() => {
+    const saved = localStorage.getItem("ExternalQuestionsProgress");
+    return saved ? JSON.parse(saved) : { solved: {}, lastUpdated: Date.now() };
+  });
 
   // Load recommendations on mount
   useEffect(() => {
@@ -64,9 +68,14 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       // Load external recommendations
       const extData = await aiRecommendationService.generateExternalRecommendations(
         recData.analysis,
-        5
+        10
       );
-      setExternalRecommendations(extData);
+
+      // Filter out already solved external questions
+      const filteredExtData = extData.filter(
+        (rec) => !externalQuestionsProgress.solved[rec.Question]
+      );
+      setExternalRecommendations(filteredExtData.slice(0, 5));
 
       // Try to load existing plan
       const existingPlan = await aiRecommendationService.loadDailyPlan(
@@ -129,6 +138,58 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       toast.error("Failed to replan");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExternalQuestionToggle = (questionName) => {
+    const newProgress = {
+      ...externalQuestionsProgress,
+      solved: {
+        ...externalQuestionsProgress.solved,
+        [questionName]: !externalQuestionsProgress.solved[questionName],
+      },
+      lastUpdated: Date.now(),
+    };
+    setExternalQuestionsProgress(newProgress);
+    localStorage.setItem("ExternalQuestionsProgress", JSON.stringify(newProgress));
+    toast.success(newProgress.solved[questionName] ? "Question marked as solved! ✅" : "Marked as unsolved");
+  };
+
+  const syncExternalQuestionsToCloud = async () => {
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      toast.error("Please login to sync progress");
+      return;
+    }
+
+    try {
+      await aiRecommendationService.saveExternalQuestionsProgress(
+        auth.currentUser.uid,
+        externalQuestionsProgress
+      );
+      toast.success("External questions progress synced to cloud! ☁️");
+    } catch (error) {
+      console.error("Error syncing external questions:", error);
+      toast.error("Failed to sync progress");
+    }
+  };
+
+  const syncTopicsToMasterToCloud = async (topicsProgress) => {
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      toast.error("Please login to sync progress");
+      return;
+    }
+
+    try {
+      await aiRecommendationService.saveTopicsToMasterProgress(
+        auth.currentUser.uid,
+        topicsProgress
+      );
+      toast.success("Topics to Master progress synced to cloud! ☁️");
+    } catch (error) {
+      console.error("Error syncing topics to master:", error);
+      toast.error("Failed to sync progress");
     }
   };
 
@@ -375,55 +436,80 @@ const AIRecommendations = ({ onQuestionSelect }) => {
                 {/* External Recommendations */}
                 {externalRecommendations.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
-                    <div
-                      className="flex items-center justify-between cursor-pointer"
-                      onClick={() => toggleSection("external")}
-                    >
-                      <h3 className="text-lg font-bold flex items-center dark:text-gray-100">
-                        <FaExternalLinkAlt className="mr-2 text-blue-500" />
-                        External Questions ({externalRecommendations.length})
-                      </h3>
-                      {expandedSections.external ? (
-                        <FaChevronUp className="dark:text-gray-300" />
-                      ) : (
-                        <FaChevronDown className="dark:text-gray-300" />
-                      )}
+                    <div className="flex items-center justify-between mb-3">
+                      <div
+                        className="flex items-center cursor-pointer flex-1"
+                        onClick={() => toggleSection("external")}
+                      >
+                        <h3 className="text-lg font-bold flex items-center dark:text-gray-100">
+                          <FaExternalLinkAlt className="mr-2 text-blue-500" />
+                          External Questions ({externalRecommendations.length})
+                        </h3>
+                        <span className="ml-2">
+                          {expandedSections.external ? (
+                            <FaChevronUp className="dark:text-gray-300" />
+                          ) : (
+                            <FaChevronDown className="dark:text-gray-300" />
+                          )}
+                        </span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          syncExternalQuestionsToCloud();
+                        }}
+                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm flex items-center"
+                      >
+                        <FaSync className="mr-1" />
+                        Sync to Cloud
+                      </button>
                     </div>
                     {expandedSections.external && (
                       <div className="mt-3 space-y-2">
-                        {externalRecommendations.map((rec, idx) => (
-                          <div
-                            key={idx}
-                            className={`p-3 rounded-lg border-l-4 ${getPriorityColor(
-                              rec.priority
-                            )} hover:shadow-md transition`}
-                          >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <p className="font-semibold text-gray-800 dark:text-gray-100">
-                                  {rec.Question}
-                                </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                  {rec.Topic} • {rec.Difficulty}
-                                  {rec.company && ` • ${rec.company}`}
-                                </p>
-                                <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
-                                  {rec.reason}
-                                </p>
+                        {externalRecommendations.map((rec, idx) => {
+                          const isSolved = externalQuestionsProgress.solved[rec.Question] || false;
+                          return (
+                            <div
+                              key={idx}
+                              className={`p-3 rounded-lg border-l-4 ${getPriorityColor(
+                                rec.priority
+                              )} hover:shadow-md transition ${isSolved ? 'opacity-60' : ''}`}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex items-start space-x-2 flex-1">
+                                  <input
+                                    type="checkbox"
+                                    checked={isSolved}
+                                    onChange={() => handleExternalQuestionToggle(rec.Question)}
+                                    className="mt-1 h-4 w-4 text-purple-600 rounded focus:ring-purple-500 cursor-pointer"
+                                  />
+                                  <div className="flex-1">
+                                    <p className={`font-semibold text-gray-800 dark:text-gray-100 ${isSolved ? 'line-through' : ''}`}>
+                                      {rec.Question}
+                                    </p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                      {rec.Topic} • {rec.Difficulty}
+                                      {rec.company && ` • ${rec.company}`}
+                                    </p>
+                                    <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
+                                      {rec.reason}
+                                    </p>
+                                  </div>
+                                </div>
+                                {rec.Question_link && (
+                                  <a
+                                    href={rec.Question_link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800"
+                                  >
+                                    <FaExternalLinkAlt />
+                                  </a>
+                                )}
                               </div>
-                              {rec.Question_link && (
-                                <a
-                                  href={rec.Question_link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800"
-                                >
-                                  <FaExternalLinkAlt />
-                                </a>
-                              )}
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -493,7 +579,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <TopicLearningSuggestions />
+            <TopicLearningSuggestions onSyncToCloud={syncTopicsToMasterToCloud} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -777,7 +863,7 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
 };
 
 // Topic Learning Suggestions Component
-const TopicLearningSuggestions = () => {
+const TopicLearningSuggestions = ({ onSyncToCloud }) => {
   const suggestions = aiRecommendationService.getTopicLearningSuggestions();
   const [topicsProgress, setTopicsProgress] = useState(() => {
     const saved = localStorage.getItem("TopicsToMasterProgress");
@@ -793,6 +879,12 @@ const TopicLearningSuggestions = () => {
     setTopicsProgress(newProgress);
     localStorage.setItem("TopicsToMasterProgress", JSON.stringify(newProgress));
     toast.success(newProgress[key] ? "Topic completed! ✅" : "Marked as incomplete");
+  };
+
+  const handleSyncClick = () => {
+    if (onSyncToCloud) {
+      onSyncToCloud(topicsProgress);
+    }
   };
 
   const generateChatGPTLink = (category, topic) => {
@@ -815,10 +907,21 @@ const TopicLearningSuggestions = () => {
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
-        <h3 className="text-xl font-bold mb-2 dark:text-gray-100">Topics to Master for Job Switch</h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Focus areas for Java Spring Boot Developer with 2 YoE
-        </p>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold dark:text-gray-100">Topics to Master for Job Switch</h3>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Focus areas for Java Spring Boot Developer with 2 YoE
+            </p>
+          </div>
+          <button
+            onClick={handleSyncClick}
+            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm flex items-center"
+          >
+            <FaSync className="mr-1" />
+            Sync to Cloud
+          </button>
+        </div>
       </div>
 
       {suggestions.map((category, idx) => (

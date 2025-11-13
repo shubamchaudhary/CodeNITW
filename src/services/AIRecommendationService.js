@@ -1134,6 +1134,76 @@ class AIRecommendationService {
       },
     ];
   }
+
+  /**
+   * Save external questions progress to Firestore
+   */
+  async saveExternalQuestionsProgress(userId, progress) {
+    try {
+      const docRef = doc(db, "user_external_questions_progress", userId);
+      await setDoc(docRef, {
+        ...progress,
+        updatedAt: serverTimestamp(),
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error saving external questions progress:", error);
+      return { success: false, error };
+    }
+  }
+
+  /**
+   * Load external questions progress from Firestore
+   */
+  async loadExternalQuestionsProgress(userId) {
+    try {
+      const docRef = doc(db, "user_external_questions_progress", userId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return docSnap.data();
+      }
+      return { solved: {}, lastUpdated: Date.now() };
+    } catch (error) {
+      console.error("Error loading external questions progress:", error);
+      return { solved: {}, lastUpdated: Date.now() };
+    }
+  }
+
+  /**
+   * Save Topics to Master progress to Firestore
+   */
+  async saveTopicsToMasterProgress(userId, progress) {
+    try {
+      const docRef = doc(db, "user_topics_to_master_progress", userId);
+      await setDoc(docRef, {
+        progress,
+        updatedAt: serverTimestamp(),
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error saving topics to master progress:", error);
+      return { success: false, error };
+    }
+  }
+
+  /**
+   * Load Topics to Master progress from Firestore
+   */
+  async loadTopicsToMasterProgress(userId) {
+    try {
+      const docRef = doc(db, "user_topics_to_master_progress", userId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return docSnap.data().progress || {};
+      }
+      return {};
+    } catch (error) {
+      console.error("Error loading topics to master progress:", error);
+      return {};
+    }
+  }
 }
 
 // Export singleton instance
