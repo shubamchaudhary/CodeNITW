@@ -1,0 +1,357 @@
+{
+  "courseTitle": "Spring Framework 5: Beginner to Guru",
+  "courseUrl": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+  "totalSections": 29,
+  "totalLectures": 430,
+  "totalDuration": "45 hours",
+  "sections": [
+    {
+      "sectionNumber": 1,
+      "title": "Introduction",
+      "lectures": 7,
+      "duration": "25 min",
+      "topics": [
+        "Course Introduction",
+        "Setting Up Your Development Environment",
+        "Spring Framework Overview",
+        "Getting the Most Out of Your Class"
+      ],
+      "completed": true
+    },
+    {
+      "sectionNumber": 2,
+      "title": "Building a Spring Boot Web App",
+      "lectures": 11,
+      "duration": "1 hr 15 min",
+      "topics": [
+        "Introduction to Spring Boot",
+        "Creating Your First Spring Boot Application",
+        "Using Spring Initializr",
+        "Spring Boot Project Structure",
+        "Spring MVC Controllers",
+        "Thymeleaf Templates"
+      ],
+      "completed": true
+    },
+    {
+      "sectionNumber": 3,
+      "title": "Dependency Injection",
+      "lectures": 15,
+      "duration": "1 hr 45 min",
+      "topics": [
+        "Introduction to Dependency Injection",
+        "Types of Dependency Injection",
+        "Constructor Based Injection",
+        "Setter Based Injection",
+        "Field Injection",
+        "Primary Beans",
+        "Spring Profiles",
+        "@Qualifier Annotation"
+      ],
+      "completed": false,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Understanding Dependency Injection",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "1 hr 45 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 4,
+      "title": "Spring Configuration",
+      "lectures": 12,
+      "duration": "1 hr 30 min",
+      "topics": [
+        "Spring Configuration Options",
+        "Java Configuration",
+        "XML Configuration",
+        "Component Scanning",
+        "@ComponentScan",
+        "Spring Bean Scopes",
+        "Bean Lifecycle"
+      ],
+      "completed": false,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Spring Configuration Deep Dive",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "1 hr 30 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 5,
+      "title": "Spring MVC",
+      "lectures": 18,
+      "duration": "2 hrs 15 min",
+      "topics": [
+        "Spring MVC Request Flow",
+        "Controllers",
+        "Request Mapping",
+        "Model, View, and Controller",
+        "Form Handling",
+        "Data Binding",
+        "Validation",
+        "Exception Handling"
+      ],
+      "completed": false,
+      "estimatedHours": 3,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Building Web Apps with Spring MVC",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "2 hrs 15 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 6,
+      "title": "Spring Data JPA",
+      "lectures": 22,
+      "duration": "3 hrs",
+      "topics": [
+        "Introduction to JPA",
+        "Entity Relationships",
+        "One-to-One",
+        "One-to-Many",
+        "Many-to-Many",
+        "Spring Data Repositories",
+        "Query Methods",
+        "JPQL Queries",
+        "Native Queries"
+      ],
+      "completed": false,
+      "estimatedHours": 3,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Mastering Spring Data JPA",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "3 hrs"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 7,
+      "title": "Spring RestTemplate",
+      "lectures": 10,
+      "duration": "1 hr 20 min",
+      "topics": [
+        "Introduction to REST APIs",
+        "RestTemplate Basics",
+        "GET Requests",
+        "POST Requests",
+        "PUT and DELETE Requests",
+        "Error Handling",
+        "RestTemplate Configuration"
+      ],
+      "completed": false,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Working with REST APIs",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "1 hr 20 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 8,
+      "title": "Spring RESTful Web Services",
+      "lectures": 25,
+      "duration": "3 hrs 30 min",
+      "topics": [
+        "RESTful API Design Principles",
+        "Building RESTful Services",
+        "@RestController",
+        "@RequestMapping",
+        "@PathVariable",
+        "@RequestParam",
+        "@RequestBody",
+        "ResponseEntity",
+        "HTTP Status Codes",
+        "HATEOAS",
+        "API Versioning"
+      ],
+      "completed": false,
+      "estimatedHours": 4,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Creating Production-Ready REST APIs",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "3 hrs 30 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 9,
+      "title": "Testing Spring Applications",
+      "lectures": 20,
+      "duration": "2 hrs 45 min",
+      "topics": [
+        "Introduction to Testing",
+        "JUnit 5",
+        "Mockito Framework",
+        "Unit Testing",
+        "Integration Testing",
+        "@SpringBootTest",
+        "@WebMvcTest",
+        "@DataJpaTest",
+        "Test Driven Development (TDD)"
+      ],
+      "completed": false,
+      "estimatedHours": 3,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Testing Spring Boot Applications",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "2 hrs 45 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 10,
+      "title": "Spring Security",
+      "lectures": 28,
+      "duration": "4 hrs 15 min",
+      "topics": [
+        "Introduction to Spring Security",
+        "Authentication",
+        "Authorization",
+        "User Details Service",
+        "Password Encoding",
+        "Form Login",
+        "JWT Authentication",
+        "OAuth 2.0",
+        "Method Security",
+        "CSRF Protection"
+      ],
+      "completed": false,
+      "estimatedHours": 5,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Securing Spring Boot Applications",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "4 hrs 15 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 11,
+      "title": "Spring WebFlux",
+      "lectures": 16,
+      "duration": "2 hrs 30 min",
+      "topics": [
+        "Introduction to Reactive Programming",
+        "Project Reactor",
+        "Mono and Flux",
+        "WebFlux Controllers",
+        "Functional Endpoints",
+        "Reactive Data Access"
+      ],
+      "completed": false,
+      "estimatedHours": 3,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Reactive Programming with Spring WebFlux",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "2 hrs 30 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 12,
+      "title": "Spring Boot Actuator",
+      "lectures": 10,
+      "duration": "1 hr 15 min",
+      "topics": [
+        "Introduction to Actuator",
+        "Health Checks",
+        "Metrics",
+        "Custom Endpoints",
+        "Monitoring and Management"
+      ],
+      "completed": false,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Monitoring with Spring Boot Actuator",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "1 hr 15 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 13,
+      "title": "Docker and Spring Boot",
+      "lectures": 12,
+      "duration": "1 hr 45 min",
+      "topics": [
+        "Introduction to Docker",
+        "Docker Basics",
+        "Creating Docker Images",
+        "Dockerfile for Spring Boot",
+        "Docker Compose",
+        "Multi-Container Applications"
+      ],
+      "completed": false,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Containerizing Spring Boot with Docker",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "1 hr 45 min"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 14,
+      "title": "Microservices with Spring Cloud",
+      "lectures": 30,
+      "duration": "5 hrs",
+      "topics": [
+        "Microservices Architecture",
+        "Spring Cloud Config",
+        "Service Discovery with Eureka",
+        "API Gateway with Spring Cloud Gateway",
+        "Load Balancing",
+        "Circuit Breaker with Resilience4j",
+        "Distributed Tracing",
+        "Spring Cloud Sleuth"
+      ],
+      "completed": false,
+      "estimatedHours": 6,
+      "resources": [
+        {
+          "type": "video",
+          "title": "Building Microservices with Spring Cloud",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "5 hrs"
+        }
+      ]
+    }
+  ],
+  "userProgress": {
+    "completedSections": 2,
+    "currentSection": 3,
+    "lastAccessed": "2025-11-13",
+    "nextSection": {
+      "sectionNumber": 3,
+      "title": "Dependency Injection",
+      "estimatedHours": 2
+    }
+  }
+}
