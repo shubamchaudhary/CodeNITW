@@ -893,7 +893,7 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
               </h4>
               {currentDay.isWeekend && (
                 <span className="text-sm text-blue-600 dark:text-blue-400">
-                  🎯 Weekend Plan: 6 questions + 4 hrs learning
+                  🎯 Weekend Plan: 6 questions + 3 hrs learning
                 </span>
               )}
               {!currentDay.isWeekend && (
