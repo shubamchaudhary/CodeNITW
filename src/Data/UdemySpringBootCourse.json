@@ -1,10 +1,10 @@
 {
   "courseTitle": "Spring Framework 5: Beginner to Guru",
   "courseUrl": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
-  "totalSections": 34,
-  "totalLectures": 500,
-  "totalDuration": "54h 55m",
-  "note": "Sections 1-28 are main course, Sections 29-34 are bonus content (Docker, AWS, Spring AI, Microservices, Git, DSA)",
+  "totalSections": 33,
+  "totalLectures": 472,
+  "totalDuration": "49h 10m",
+  "note": "Sections 1-28 are main course, Sections 29-33 are bonus content (Docker, AWS, Spring AI, Microservices, Git). DSA excluded as it's covered separately in 40-day plan.",
   "sections": [
     {
       "sectionNumber": 1,
@@ -569,13 +569,6 @@
       "lectures": 26,
       "duration": "3h 30m",
       "estimatedHours": 4
-    },
-    {
-      "sectionNumber": 34,
-      "title": "Data Structures & Algorithms",
-      "lectures": 28,
-      "duration": "5h 45m",
-      "estimatedHours": 7
     }
   ],
   "userProgress": {
