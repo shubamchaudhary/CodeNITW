@@ -228,6 +228,40 @@ const AIRecommendations = ({ onQuestionSelect }) => {
     }
   };
 
+  const deleteAndRegeneratePlan = async () => {
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      toast.error("Please login to regenerate plan");
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to delete the old plan and create a fresh 40-day plan with updated course data?")) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Delete from Firebase
+      await aiRecommendationService.deleteDailyPlan(auth.currentUser.uid);
+
+      // Invalidate cache
+      cacheService.invalidate40DayPlan(auth.currentUser.uid);
+
+      // Clear local state
+      setDailyPlan(null);
+
+      toast.success("Old plan deleted! Generating fresh plan...");
+
+      // Generate new plan
+      await generate40DayPlan();
+    } catch (error) {
+      console.error("Error deleting and regenerating plan:", error);
+      toast.error("Failed to regenerate plan");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleExternalQuestionToggle = (questionName) => {
     const newProgress = {
       ...externalQuestionsProgress,
@@ -654,6 +688,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
                 dailyPlan={dailyPlan}
                 setDailyPlan={setDailyPlan}
                 onReplan={replanBasedOnProgress}
+                onDeleteAndRegenerate={deleteAndRegeneratePlan}
                 loading={loading}
               />
             )}
@@ -676,7 +711,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 };
 
 // Daily Plan View Component
-const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, loading }) => {
+const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerate, loading }) => {
   const [selectedDay, setSelectedDay] = useState(null);
 
   useEffect(() => {
@@ -762,14 +797,24 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, loading }) => {
               {new Date(dailyPlan.endDate).toLocaleDateString()}
             </p>
           </div>
-          <button
-            onClick={onReplan}
-            disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-          >
-            <FaSync className={loading ? "animate-spin inline mr-2" : "inline mr-2"} />
-            Replan
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={onDeleteAndRegenerate}
+              disabled={loading}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+            >
+              <FaSync className={loading ? "animate-spin inline mr-2" : "inline mr-2"} />
+              Fresh Start
+            </button>
+            <button
+              onClick={onReplan}
+              disabled={loading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              <FaSync className={loading ? "animate-spin inline mr-2" : "inline mr-2"} />
+              Adjust Plan
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}

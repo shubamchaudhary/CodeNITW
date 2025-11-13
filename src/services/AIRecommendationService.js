@@ -8,6 +8,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   serverTimestamp,
   query,
   where,
@@ -572,11 +573,11 @@ class AIRecommendationService {
       let learningHours;
 
       if (isWeekend) {
-        // Weekend: 6 questions (2 hard, 3 medium, 1 easy) + 4 hours learning
+        // Weekend: 6 questions (2 hard, 3 medium, 1 easy) + 3 hours learning
         hardCount = 2;
         mediumCount = 3;
         easyCount = 1;
-        learningHours = 4;
+        learningHours = 3;
       } else {
         // Weekday: 3 questions (1 hard, 2 medium) + 2 hours learning
         hardCount = 1;
@@ -898,6 +899,20 @@ class AIRecommendationService {
     } catch (error) {
       console.error("Error loading daily plan:", error);
       return null;
+    }
+  }
+
+  /**
+   * Delete daily plan from Firestore
+   */
+  async deleteDailyPlan(userId) {
+    try {
+      const docRef = doc(db, "user_daily_plans", userId);
+      await deleteDoc(docRef);
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting daily plan:", error);
+      return { success: false, error };
     }
   }
 
