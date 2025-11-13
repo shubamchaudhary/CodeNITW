@@ -20,6 +20,7 @@ import {
 import { toast } from "react-toastify";
 import { getAuth } from "firebase/auth";
 import aiRecommendationService from "../services/AIRecommendationService";
+import cacheService from "../services/CacheService";
 
 const AIRecommendations = ({ onQuestionSelect }) => {
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
     }
   }, []);
 
-  const loadRecommendations = async () => {
+  const loadRecommendations = async (forceRefresh = false) => {
     const auth = getAuth();
     if (!auth.currentUser) {
       toast.error("Please login to get personalized recommendations");
@@ -57,33 +58,67 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
     setLoading(true);
     try {
-      // Load Smart recommendations
-      const recData = await aiRecommendationService.generateRecommendations(
-        auth.currentUser.uid,
-        15
-      );
-      setRecommendations(recData.recommendations);
-      setAnalysis(recData.analysis);
+      // Check cache first for recommendations (unless force refresh)
+      if (!forceRefresh) {
+        const cachedRec = cacheService.getCachedRecommendations(auth.currentUser.uid);
+        if (cachedRec) {
+          setRecommendations(cachedRec.recommendations);
+          setAnalysis(cachedRec.analysis);
 
-      // Load external recommendations
-      const extData = await aiRecommendationService.generateExternalRecommendations(
-        recData.analysis,
-        10
-      );
+          // Filter external recommendations based on current progress
+          const filteredExtData = cachedRec.externalRecommendations.filter(
+            (rec) => !externalQuestionsProgress.solved[rec.Question]
+          );
+          setExternalRecommendations(filteredExtData.slice(0, 5));
 
-      // Filter out already solved external questions
-      const filteredExtData = extData.filter(
-        (rec) => !externalQuestionsProgress.solved[rec.Question]
-      );
-      setExternalRecommendations(filteredExtData.slice(0, 5));
+          toast.info("Loaded from cache (refreshes every 24 hours)");
+        }
+      }
 
-      // Try to load existing plan
-      const existingPlan = await aiRecommendationService.loadDailyPlan(
-        auth.currentUser.uid
-      );
-      setDailyPlan(existingPlan);
+      // Generate fresh recommendations if no cache or force refresh
+      if (forceRefresh || !cacheService.getCachedRecommendations(auth.currentUser.uid)) {
+        const recData = await aiRecommendationService.generateRecommendations(
+          auth.currentUser.uid,
+          15
+        );
+        setRecommendations(recData.recommendations);
+        setAnalysis(recData.analysis);
 
-      toast.success("Recommendations loaded successfully!");
+        // Load external recommendations
+        const extData = await aiRecommendationService.generateExternalRecommendations(
+          recData.analysis,
+          10
+        );
+
+        // Filter out already solved external questions
+        const filteredExtData = extData.filter(
+          (rec) => !externalQuestionsProgress.solved[rec.Question]
+        );
+        setExternalRecommendations(filteredExtData.slice(0, 5));
+
+        // Cache the recommendations
+        cacheService.cacheRecommendations(auth.currentUser.uid, {
+          recommendations: recData.recommendations,
+          analysis: recData.analysis,
+          externalRecommendations: extData,
+        });
+
+        toast.success("Recommendations loaded successfully!");
+      }
+
+      // Load 40-day plan with cache
+      const cachedPlan = cacheService.getCached40DayPlan(auth.currentUser.uid);
+      if (cachedPlan && !forceRefresh) {
+        setDailyPlan(cachedPlan);
+      } else {
+        const existingPlan = await aiRecommendationService.loadDailyPlan(
+          auth.currentUser.uid
+        );
+        if (existingPlan) {
+          setDailyPlan(existingPlan);
+          cacheService.cache40DayPlan(auth.currentUser.uid, existingPlan);
+        }
+      }
     } catch (error) {
       console.error("Error loading recommendations:", error);
       toast.error("Failed to load recommendations");
@@ -106,6 +141,10 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       );
       await aiRecommendationService.saveDailyPlan(auth.currentUser.uid, plan);
       setDailyPlan(plan);
+
+      // Cache the plan for 7 days
+      cacheService.cache40DayPlan(auth.currentUser.uid, plan);
+
       toast.success("40-day study plan generated successfully! 🎉");
       setActiveTab("plan");
     } catch (error) {
@@ -124,11 +163,18 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
     setLoading(true);
     try {
+      // Invalidate old cache
+      cacheService.invalidate40DayPlan(auth.currentUser.uid);
+
       const result = await aiRecommendationService.replanBasedOnProgress(
         auth.currentUser.uid
       );
       if (result.success) {
         setDailyPlan(result.updatedPlan);
+
+        // Cache the updated plan
+        cacheService.cache40DayPlan(auth.currentUser.uid, result.updatedPlan);
+
         toast.success(
           `Plan adjusted! Progress rate: ${(result.metrics.progressRate * 100).toFixed(1)}%`
         );
@@ -276,7 +322,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
           </div>
         </div>
         <button
-          onClick={loadRecommendations}
+          onClick={() => loadRecommendations(true)}
           disabled={loading}
           className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
         >
