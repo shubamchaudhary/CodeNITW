@@ -83,7 +83,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
     }
   };
 
-  const generate45DayPlan = async () => {
+  const generate40DayPlan = async () => {
     const auth = getAuth();
     if (!auth.currentUser) {
       toast.error("Please login to generate a plan");
@@ -92,12 +92,12 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
     setLoading(true);
     try {
-      const plan = await aiRecommendationService.generate45DayPlan(
+      const plan = await aiRecommendationService.generate40DayPlan(
         auth.currentUser.uid
       );
       await aiRecommendationService.saveDailyPlan(auth.currentUser.uid, plan);
       setDailyPlan(plan);
-      toast.success("45-day study plan generated successfully! 🎉");
+      toast.success("40-day study plan generated successfully! 🎉");
       setActiveTab("plan");
     } catch (error) {
       console.error("Error generating plan:", error);
@@ -200,16 +200,16 @@ const AIRecommendations = ({ onQuestionSelect }) => {
   }
 
   return (
-    <div className="ai-recommendations-container p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl shadow-lg">
+    <div className="ai-recommendations-container p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-900 rounded-xl shadow-lg">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <FaBrain className="text-3xl text-purple-600 mr-3" />
+          <FaBrain className="text-3xl text-purple-600 dark:text-purple-400 mr-3" />
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
               Smart Recommendation System
             </h2>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Personalized recommendations for your interview prep
             </p>
           </div>
@@ -291,12 +291,12 @@ const AIRecommendations = ({ onQuestionSelect }) => {
           onClick={() => setActiveTab("plan")}
           className={`px-4 py-2 font-semibold transition ${
             activeTab === "plan"
-              ? "text-purple-600 border-b-2 border-purple-600"
-              : "text-gray-600 hover:text-purple-600"
+              ? "text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400"
+              : "text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
           }`}
         >
           <FaCalendarAlt className="inline mr-2" />
-          45-Day Plan
+          40-Day Plan
         </button>
         <button
           onClick={() => setActiveTab("topics")}
@@ -448,16 +448,18 @@ const AIRecommendations = ({ onQuestionSelect }) => {
             transition={{ duration: 0.3 }}
           >
             {!dailyPlan ? (
-              <div className="text-center py-12 bg-white rounded-lg shadow">
+              <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-lg shadow">
                 <FaCalendarAlt className="text-6xl text-purple-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">
-                  Generate Your 45-Day Study Plan
+                <h3 className="text-xl font-bold mb-2 dark:text-gray-100">
+                  Generate Your 40-Day Study Plan
                 </h3>
-                <p className="text-gray-600 mb-6">
-                  Get a personalized day-by-day plan from Nov 13 to Dec 28, 2025
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  Get a personalized day-by-day plan from Nov 13 to Dec 23, 2025
+                  <br />
+                  <span className="text-sm">Weekdays: 3 questions + 2 hrs learning | Weekends: 6 questions + 4 hrs learning</span>
                 </p>
                 <button
-                  onClick={generate45DayPlan}
+                  onClick={generate40DayPlan}
                   disabled={loading}
                   className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition disabled:opacity-50 font-semibold"
                 >
@@ -550,11 +552,11 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
   return (
     <div className="space-y-4">
       {/* Plan Header */}
-      <div className="bg-white rounded-lg shadow p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-xl font-bold">Your 45-Day Study Plan</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-xl font-bold dark:text-gray-100">Your 40-Day Study Plan</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               {new Date(dailyPlan.startDate).toLocaleDateString()} -{" "}
               {new Date(dailyPlan.endDate).toLocaleDateString()}
             </p>
@@ -571,13 +573,13 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
 
         {/* Progress Bar */}
         <div className="mb-4">
-          <div className="flex justify-between text-sm mb-1">
+          <div className="flex justify-between text-sm mb-1 dark:text-gray-300">
             <span>Overall Progress</span>
             <span>
               Day {daysPassed + 1} / {dailyPlan.totalDays}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
             <div
               className="bg-purple-600 h-3 rounded-full transition-all"
               style={{
@@ -589,7 +591,7 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
       </div>
 
       {/* Day Selector */}
-      <div className="bg-white rounded-lg shadow p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
         <h4 className="font-semibold mb-3">Select Day</h4>
         <div className="grid grid-cols-7 gap-2 max-h-64 overflow-y-auto">
           {dailyPlan.dailyPlans.map((day, idx) => {
@@ -622,13 +624,25 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
 
       {/* Selected Day Details */}
       {currentDay && (
-        <div className="bg-white rounded-lg shadow p-4">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-bold">
-              Day {currentDay.day} - {currentDay.date}
-            </h4>
+            <div>
+              <h4 className="text-lg font-bold dark:text-gray-100">
+                Day {currentDay.day} - {currentDay.dayOfWeek}, {currentDay.date}
+              </h4>
+              {currentDay.isWeekend && (
+                <span className="text-sm text-blue-600 dark:text-blue-400">
+                  🎯 Weekend Plan: 6 questions + 4 hrs learning
+                </span>
+              )}
+              {!currentDay.isWeekend && (
+                <span className="text-sm text-purple-600 dark:text-purple-400">
+                  📚 Weekday Plan: 3 questions + 2 hrs learning
+                </span>
+              )}
+            </div>
             {currentDay.completed && (
-              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+              <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full text-sm font-semibold">
                 <FaCheckCircle className="inline mr-1" />
                 Completed
               </span>
@@ -638,7 +652,7 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
           {/* Questions */}
           {currentDay.questions.length > 0 && (
             <div className="mb-4">
-              <h5 className="font-semibold mb-2">
+              <h5 className="font-semibold mb-2 dark:text-gray-200">
                 DSA Questions ({currentDay.progress?.questionsCompleted || 0}/
                 {currentDay.questions.length})
               </h5>
@@ -646,7 +660,7 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
                 {currentDay.questions.map((question, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start p-2 rounded-lg bg-gray-50 hover:bg-gray-100"
+                    className="flex items-start p-2 rounded-lg bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600"
                   >
                     <input
                       type="checkbox"
@@ -657,15 +671,18 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
                       className="mt-1 mr-3"
                     />
                     <div className="flex-1">
-                      <p className="font-medium">{question.Question}</p>
-                      <p className="text-sm text-gray-600">{question.topic}</p>
+                      <p className="font-medium dark:text-gray-200">{question.Question}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {question.topic} • {question.difficulty || "Medium"}
+                        {question.isStarred && " ⭐"}
+                      </p>
                     </div>
                     {question.Question_link && (
                       <a
                         href={question.Question_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
                       >
                         <FaExternalLinkAlt />
                       </a>
@@ -676,28 +693,78 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
             </div>
           )}
 
-          {/* Topics */}
-          {currentDay.topics.length > 0 && (
+          {/* Learning Materials */}
+          {currentDay.learningMaterials && currentDay.learningMaterials.length > 0 && (
             <div>
-              <h5 className="font-semibold mb-2">Topics to Study</h5>
+              <h5 className="font-semibold mb-2 dark:text-gray-200">
+                Learning Materials ({currentDay.progress?.materialsCompleted || 0}/{currentDay.learningMaterials.length})
+              </h5>
               <div className="space-y-2">
-                {currentDay.topics.map((topic, idx) => (
+                {currentDay.learningMaterials.map((material, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg bg-blue-50 border-l-4 border-blue-500"
+                    className={`p-3 rounded-lg border-l-4 ${
+                      material.skipped
+                        ? "bg-gray-100 dark:bg-slate-700 border-gray-400 opacity-60"
+                        : material.source === "udemy"
+                        ? "bg-purple-50 dark:bg-purple-900/20 border-purple-500"
+                        : "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
+                    }`}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium">{topic.title}</span>
-                      <span className="text-sm text-gray-600">
-                        {topic.estimatedTime}
-                      </span>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-start flex-1">
+                        <input
+                          type="checkbox"
+                          checked={material.completed || false}
+                          disabled={material.skipped}
+                          onChange={(e) => {
+                            // Update material completion
+                            material.completed = e.target.checked;
+                            const completedCount = currentDay.learningMaterials.filter(m => m.completed).length;
+                            currentDay.progress.materialsCompleted = completedCount;
+                            toast.success(e.target.checked ? "Material completed! ✅" : "Marked as incomplete");
+                          }}
+                          className="mt-1 mr-3"
+                        />
+                        <div className="flex-1">
+                          <span className="font-medium dark:text-gray-200">{material.title}</span>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            {material.type} • {material.estimatedHours} hrs
+                            {material.source === "udemy" && " • Udemy Course"}
+                          </p>
+                          {material.topics && (
+                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                              Topics: {material.topics.join(", ")}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2 ml-2">
+                        {material.url && !material.skipped && (
+                          <a
+                            href={material.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800"
+                            title="Open resource"
+                          >
+                            <FaExternalLinkAlt />
+                          </a>
+                        )}
+                        {!material.completed && !material.skipped && (
+                          <button
+                            onClick={() => {
+                              material.skipped = true;
+                              toast.info("Material skipped. It may be reassigned later.");
+                            }}
+                            className="text-xs px-2 py-1 bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300"
+                            title="Skip this topic"
+                          >
+                            Skip
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <span className="text-sm text-blue-600">{topic.type}</span>
-                    {topic.resources && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        Resources: {topic.resources.join(", ")}
-                      </p>
-                    )}
                   </div>
                 ))}
               </div>

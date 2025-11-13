@@ -1,0 +1,298 @@
+{
+  "Amazon": [
+    {
+      "Question": "LRU Cache",
+      "Question_link": "https://leetcode.com/problems/lru-cache/",
+      "Difficulty": "Medium",
+      "Topic": "Design",
+      "Frequency": "Very High"
+    },
+    {
+      "Question": "Merge K Sorted Lists",
+      "Question_link": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "Difficulty": "Hard",
+      "Topic": "Linked List",
+      "Frequency": "Very High"
+    },
+    {
+      "Question": "Critical Connections in a Network",
+      "Question_link": "https://leetcode.com/problems/critical-connections-in-a-network/",
+      "Difficulty": "Hard",
+      "Topic": "Graph",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Reorder Data in Log Files",
+      "Question_link": "https://leetcode.com/problems/reorder-data-in-log-files/",
+      "Difficulty": "Medium",
+      "Topic": "Sorting",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Number of Islands",
+      "Question_link": "https://leetcode.com/problems/number-of-islands/",
+      "Difficulty": "Medium",
+      "Topic": "DFS/BFS",
+      "Frequency": "Very High"
+    },
+    {
+      "Question": "Copy List with Random Pointer",
+      "Question_link": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+      "Difficulty": "Medium",
+      "Topic": "Linked List",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Max Area of Island",
+      "Question_link": "https://leetcode.com/problems/max-area-of-island/",
+      "Difficulty": "Medium",
+      "Topic": "DFS/BFS",
+      "Frequency": "Medium"
+    },
+    {
+      "Question": "Longest Palindromic Substring",
+      "Question_link": "https://leetcode.com/problems/longest-palindromic-substring/",
+      "Difficulty": "Medium",
+      "Topic": "String",
+      "Frequency": "High"
+    }
+  ],
+  "Google": [
+    {
+      "Question": "Fruit Into Baskets",
+      "Question_link": "https://leetcode.com/problems/fruit-into-baskets/",
+      "Difficulty": "Medium",
+      "Topic": "Sliding Window",
+      "Frequency": "High"
+    },
+    {
+      "Question": "License Key Formatting",
+      "Question_link": "https://leetcode.com/problems/license-key-formatting/",
+      "Difficulty": "Easy",
+      "Topic": "String",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Odd Even Jump",
+      "Question_link": "https://leetcode.com/problems/odd-even-jump/",
+      "Difficulty": "Hard",
+      "Topic": "Dynamic Programming",
+      "Frequency": "Medium"
+    },
+    {
+      "Question": "Minimum Window Substring",
+      "Question_link": "https://leetcode.com/problems/minimum-window-substring/",
+      "Difficulty": "Hard",
+      "Topic": "Sliding Window",
+      "Frequency": "Very High"
+    },
+    {
+      "Question": "Decode String",
+      "Question_link": "https://leetcode.com/problems/decode-string/",
+      "Difficulty": "Medium",
+      "Topic": "Stack",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Evaluate Division",
+      "Question_link": "https://leetcode.com/problems/evaluate-division/",
+      "Difficulty": "Medium",
+      "Topic": "Graph",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Robot Room Cleaner",
+      "Question_link": "https://leetcode.com/problems/robot-room-cleaner/",
+      "Difficulty": "Hard",
+      "Topic": "DFS",
+      "Frequency": "Medium"
+    }
+  ],
+  "Microsoft": [
+    {
+      "Question": "Design Add and Search Words Data Structure",
+      "Question_link": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+      "Difficulty": "Medium",
+      "Topic": "Design",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Reverse Linked List II",
+      "Question_link": "https://leetcode.com/problems/reverse-linked-list-ii/",
+      "Difficulty": "Medium",
+      "Topic": "Linked List",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Excel Sheet Column Number",
+      "Question_link": "https://leetcode.com/problems/excel-sheet-column-number/",
+      "Difficulty": "Easy",
+      "Topic": "Math",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Word Search",
+      "Question_link": "https://leetcode.com/problems/word-search/",
+      "Difficulty": "Medium",
+      "Topic": "Backtracking",
+      "Frequency": "Very High"
+    },
+    {
+      "Question": "Clone Graph",
+      "Question_link": "https://leetcode.com/problems/clone-graph/",
+      "Difficulty": "Medium",
+      "Topic": "Graph",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Rotting Oranges",
+      "Question_link": "https://leetcode.com/problems/rotting-oranges/",
+      "Difficulty": "Medium",
+      "Topic": "BFS",
+      "Frequency": "High"
+    }
+  ],
+  "Uber": [
+    {
+      "Question": "Valid Sudoku",
+      "Question_link": "https://leetcode.com/problems/valid-sudoku/",
+      "Difficulty": "Medium",
+      "Topic": "Hash Table",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Spiral Matrix",
+      "Question_link": "https://leetcode.com/problems/spiral-matrix/",
+      "Difficulty": "Medium",
+      "Topic": "Array",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Insert Delete GetRandom O(1)",
+      "Question_link": "https://leetcode.com/problems/insert-delete-getrandom-o1/",
+      "Difficulty": "Medium",
+      "Topic": "Design",
+      "Frequency": "Very High"
+    },
+    {
+      "Question": "Word Break",
+      "Question_link": "https://leetcode.com/problems/word-break/",
+      "Difficulty": "Medium",
+      "Topic": "Dynamic Programming",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Group Anagrams",
+      "Question_link": "https://leetcode.com/problems/group-anagrams/",
+      "Difficulty": "Medium",
+      "Topic": "Hash Table",
+      "Frequency": "Very High"
+    }
+  ],
+  "Netflix": [
+    {
+      "Question": "Design Hit Counter",
+      "Question_link": "https://leetcode.com/problems/design-hit-counter/",
+      "Difficulty": "Medium",
+      "Topic": "Design",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Design Log Storage System",
+      "Question_link": "https://leetcode.com/problems/design-log-storage-system/",
+      "Difficulty": "Medium",
+      "Topic": "Design",
+      "Frequency": "Medium"
+    },
+    {
+      "Question": "Top K Frequent Elements",
+      "Question_link": "https://leetcode.com/problems/top-k-frequent-elements/",
+      "Difficulty": "Medium",
+      "Topic": "Heap",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Alien Dictionary",
+      "Question_link": "https://leetcode.com/problems/alien-dictionary/",
+      "Difficulty": "Hard",
+      "Topic": "Graph",
+      "Frequency": "Medium"
+    }
+  ],
+  "Meta": [
+    {
+      "Question": "Buildings With an Ocean View",
+      "Question_link": "https://leetcode.com/problems/buildings-with-an-ocean-view/",
+      "Difficulty": "Medium",
+      "Topic": "Array",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Random Pick with Weight",
+      "Question_link": "https://leetcode.com/problems/random-pick-with-weight/",
+      "Difficulty": "Medium",
+      "Topic": "Binary Search",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Binary Tree Vertical Order Traversal",
+      "Question_link": "https://leetcode.com/problems/binary-tree-vertical-order-traversal/",
+      "Difficulty": "Medium",
+      "Topic": "Tree",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Shortest Way to Form String",
+      "Question_link": "https://leetcode.com/problems/shortest-way-to-form-string/",
+      "Difficulty": "Medium",
+      "Topic": "Greedy",
+      "Frequency": "Medium"
+    }
+  ],
+  "Apple": [
+    {
+      "Question": "Longest Continuous Increasing Subsequence",
+      "Question_link": "https://leetcode.com/problems/longest-continuous-increasing-subsequence/",
+      "Difficulty": "Easy",
+      "Topic": "Array",
+      "Frequency": "Medium"
+    },
+    {
+      "Question": "Design Circular Queue",
+      "Question_link": "https://leetcode.com/problems/design-circular-queue/",
+      "Difficulty": "Medium",
+      "Topic": "Design",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Find K Closest Elements",
+      "Question_link": "https://leetcode.com/problems/find-k-closest-elements/",
+      "Difficulty": "Medium",
+      "Topic": "Binary Search",
+      "Frequency": "High"
+    }
+  ],
+  "LinkedIn": [
+    {
+      "Question": "Nested List Weight Sum",
+      "Question_link": "https://leetcode.com/problems/nested-list-weight-sum/",
+      "Difficulty": "Medium",
+      "Topic": "DFS",
+      "Frequency": "High"
+    },
+    {
+      "Question": "Factor Combinations",
+      "Question_link": "https://leetcode.com/problems/factor-combinations/",
+      "Difficulty": "Medium",
+      "Topic": "Backtracking",
+      "Frequency": "Medium"
+    },
+    {
+      "Question": "Can Place Flowers",
+      "Question_link": "https://leetcode.com/problems/can-place-flowers/",
+      "Difficulty": "Easy",
+      "Topic": "Array",
+      "Frequency": "Medium"
+    }
+  ]
+}

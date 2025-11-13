@@ -1,4 +1,6 @@
 import PersonalDSARoadmap from "../Data/PersonalDSARoadmap.json";
+import CompanySpecificQuestions from "../Data/CompanySpecificQuestions.json";
+import UdemySpringBootCourse from "../Data/UdemySpringBootCourse.json";
 import { db } from "../firebase";
 import {
   collection,
@@ -36,10 +38,18 @@ class AIRecommendationService {
         "React",
         "Docker",
       ],
-      targetCompanies: ["Amazon", "Google", "Microsoft", "Uber", "Netflix"],
-      switchTimeline: 45, // days
+      targetCompanies: ["Amazon", "Google", "Microsoft", "Uber", "Netflix", "Meta", "Apple", "LinkedIn"],
+      switchTimeline: 40, // days (updated from 45)
       startDate: new Date("2025-11-13"),
     };
+
+    // Load all existing questions from PersonalDSARoadmap for duplicate checking
+    this.existingQuestions = new Set();
+    Object.values(PersonalDSARoadmap).forEach((questions) => {
+      questions.forEach((q) => {
+        this.existingQuestions.add(q.Question.toLowerCase().trim());
+      });
+    });
 
     // Interview focus areas for Java Spring Boot with 2 YoE
     this.interviewFocusAreas = {
@@ -414,155 +424,168 @@ class AIRecommendationService {
   }
 
   /**
-   * Generate external question recommendations
+   * Generate external question recommendations from company-specific lists
+   * Filters out questions already in PersonalDSARoadmap to avoid duplicates
    */
-  async generateExternalRecommendations(analysis, count = 5) {
-    // These would be searched from external sources based on:
-    // 1. User's weak areas
-    // 2. Market trends
-    // 3. Company-specific questions
+  async generateExternalRecommendations(analysis, count = 10) {
     const externalRecommendations = [];
-
-    // Focus areas based on analysis
     const focusAreas = analysis.weakAreas.map((w) => w.topic);
 
-    // Add company-specific recommendations
-    for (const company of this.userProfile.targetCompanies.slice(0, 3)) {
-      externalRecommendations.push({
-        Question: `${company} interview question`,
-        topic: focusAreas[0] || "System Design",
-        company,
-        reason: `💼 ${company} frequently asks this`,
-        priority: "HIGH",
-        source: "external",
-        searchUrl: `https://leetcode.com/company/${company.toLowerCase()}/`,
-      });
+    // Get company-specific questions that are NOT in personal list
+    for (const company of this.userProfile.targetCompanies) {
+      const companyQuestions = CompanySpecificQuestions[company] || [];
+
+      for (const question of companyQuestions) {
+        // Check if question already exists in personal roadmap
+        const isDuplicate = this.existingQuestions.has(
+          question.Question.toLowerCase().trim()
+        );
+
+        if (!isDuplicate) {
+          externalRecommendations.push({
+            ...question,
+            company,
+            reason: `💼 ${company} frequently asks this - ${question.Frequency} frequency`,
+            priority: question.Difficulty === "Hard" ? "HIGH" : "MEDIUM",
+            source: "external",
+          });
+        }
+      }
+
+      // Limit questions per company
+      if (externalRecommendations.length >= count * 2) break;
     }
 
-    // Add trending questions
-    externalRecommendations.push({
-      Question: "Design a rate limiter",
-      topic: "System Design",
-      reason: "🔥 Trending in 2024-2025 interviews",
-      priority: "CRITICAL",
-      source: "external",
-      searchUrl: "https://leetcode.com/problems/design-hit-counter/",
-    });
-
-    externalRecommendations.push({
-      Question: "Implement LRU Cache",
-      topic: "Design",
-      reason: "🔥 Common in Java Spring Boot interviews",
-      priority: "HIGH",
-      source: "external",
-      searchUrl: "https://leetcode.com/problems/lru-cache/",
+    // Sort by frequency and difficulty
+    externalRecommendations.sort((a, b) => {
+      const freqOrder = { "Very High": 3, "High": 2, "Medium": 1, "Low": 0 };
+      return (freqOrder[b.Frequency] || 0) - (freqOrder[a.Frequency] || 0);
     });
 
     return externalRecommendations.slice(0, count);
   }
 
   /**
-   * Generate a 45-day study plan
+   * Generate a 40-day study plan with weekday/weekend structure
+   * Weekdays: 3 questions (1 hard, 2 medium) + 2 hours learning
+   * Weekends: 6 questions (2 hard, 3 medium, 1 easy) + 4 hours learning
    */
-  async generate45DayPlan(userId) {
+  async generate40DayPlan(userId) {
     const analysis = await this.analyzeUserProgress(userId);
     const startDate = new Date(this.userProfile.startDate);
     const dailyPlans = [];
+    const totalDays = 40; // Updated from 45
 
-    // Calculate daily targets
-    const totalDays = this.userProfile.switchTimeline;
-    const unsolvedCount = analysis.totalQuestions - analysis.totalSolved;
-    const questionsPerDay = Math.ceil(unsolvedCount / totalDays);
-
-    // Allocate time for different activities
-    const dailyAllocation = {
-      dsa: questionsPerDay, // DSA questions
-      systemDesign: Math.floor(totalDays / 10), // System design every 10 days
-      revision: Math.floor(totalDays / 7), // Revision every week
-      mockInterview: Math.floor(totalDays / 5), // Mock every 5 days
-    };
+    // Get all unsolved questions grouped by difficulty
+    const questionsByDifficulty = this.groupQuestionsByDifficulty(analysis);
+    const udemyCourse = UdemySpringBootCourse;
+    const uncompletedSections = udemyCourse.sections.filter(s => !s.completed);
+    let sectionIndex = 0;
 
     for (let day = 0; day < totalDays; day++) {
       const currentDate = new Date(startDate);
       currentDate.setDate(startDate.getDate() + day);
+      const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
       const dayPlan = {
         day: day + 1,
         date: currentDate.toISOString().split("T")[0],
+        dayOfWeek: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][dayOfWeek],
+        isWeekend,
         questions: [],
-        topics: [],
+        learningMaterials: [],
         completed: false,
         progress: {
           questionsCompleted: 0,
-          topicsCompleted: 0,
+          materialsCompleted: 0,
         },
       };
 
-      // Week-based structure
-      const week = Math.floor(day / 7) + 1;
+      // Determine question count based on weekday/weekend
+      let hardCount, mediumCount, easyCount;
+      let learningHours;
 
-      // Day-specific focus
-      if (day % 10 === 0) {
-        // System Design focus
-        dayPlan.topics.push({
-          type: "System Design",
-          title: this.getSystemDesignTopic(week),
-          estimatedTime: "2 hours",
-          resources: ["System Design Primer", "Grokking System Design"],
-        });
+      if (isWeekend) {
+        // Weekend: 6 questions (2 hard, 3 medium, 1 easy) + 4 hours learning
+        hardCount = 2;
+        mediumCount = 3;
+        easyCount = 1;
+        learningHours = 4;
+      } else {
+        // Weekday: 3 questions (1 hard, 2 medium) + 2 hours learning
+        hardCount = 1;
+        mediumCount = 2;
+        easyCount = 0;
+        learningHours = 2;
       }
 
+      // Get diverse questions from different topics
+      const selectedQuestions = this.selectDiverseQuestions(
+        questionsByDifficulty,
+        hardCount,
+        mediumCount,
+        easyCount,
+        analysis
+      );
+
+      dayPlan.questions = selectedQuestions.map((q) => ({
+        ...q,
+        completed: false,
+      }));
+
+      // Add learning materials
+      // 1. Udemy Course Content (Sequential)
+      if (sectionIndex < uncompletedSections.length) {
+        const currentSection = uncompletedSections[sectionIndex];
+        const sectionHours = currentSection.estimatedHours || 2;
+
+        if (sectionHours <= learningHours) {
+          dayPlan.learningMaterials.push({
+            type: "Udemy Course",
+            title: `Section ${currentSection.sectionNumber}: ${currentSection.title}`,
+            url: udemyCourse.courseUrl,
+            estimatedHours: sectionHours,
+            topics: currentSection.topics,
+            completed: false,
+            skipped: false,
+            source: "udemy",
+            sectionNumber: currentSection.sectionNumber,
+          });
+          learningHours -= sectionHours;
+          sectionIndex++;
+        }
+      }
+
+      // 2. Add complementary learning materials
+      if (learningHours > 0) {
+        const complementaryMaterial = this.getComplementaryLearning(day, learningHours, analysis);
+        if (complementaryMaterial) {
+          dayPlan.learningMaterials.push(complementaryMaterial);
+        }
+      }
+
+      // 3. Special day activities
       if (day % 7 === 0 && day > 0) {
-        // Revision day
-        dayPlan.topics.push({
+        // Weekly revision
+        dayPlan.learningMaterials.push({
           type: "Revision",
-          title: "Review previous week's questions",
-          estimatedTime: "1 hour",
+          title: "Review previous week's questions and concepts",
+          estimatedHours: 1,
+          completed: false,
+          skipped: false,
         });
       }
 
       if (day % 5 === 4) {
-        // Mock interview
-        dayPlan.topics.push({
+        // Mock interview every 5 days
+        dayPlan.learningMaterials.push({
           type: "Mock Interview",
-          title: "Practice interview questions",
-          estimatedTime: "1.5 hours",
-          platform: "Pramp / Interviewing.io",
-        });
-      }
-
-      // Add daily DSA questions
-      const recommendations = await this.generateRecommendations(
-        userId,
-        questionsPerDay
-      );
-      dayPlan.questions = recommendations.recommendations.map((r) => ({
-        ...r,
-        completed: false,
-      }));
-
-      // Add topic learning based on weak areas
-      if (day < 20) {
-        // First 20 days: Focus on weak areas
-        const weakArea = analysis.weakAreas[day % analysis.weakAreas.length];
-        if (weakArea) {
-          dayPlan.topics.push({
-            type: "Topic Study",
-            title: `Deep dive: ${weakArea.topic}`,
-            estimatedTime: "1 hour",
-            resources: ["GeeksForGeeks", "LeetCode Explore"],
-          });
-        }
-      } else {
-        // Last 25 days: Focus on interview-specific topics
-        const focusArea = Object.keys(this.interviewFocusAreas)[
-          day % Object.keys(this.interviewFocusAreas).length
-        ];
-        dayPlan.topics.push({
-          type: "Interview Prep",
-          title: focusArea,
-          estimatedTime: "1 hour",
-          resources: ["Company Interview Experiences"],
+          title: "Practice interview with peer or platform",
+          estimatedHours: 1.5,
+          platform: "Pramp / Interviewing.io / Peers",
+          completed: false,
+          skipped: false,
         });
       }
 
@@ -578,11 +601,187 @@ class AIRecommendationService {
       totalDays,
       dailyPlans,
       goals: {
-        totalQuestions: unsolvedCount,
-        questionsPerDay,
+        totalQuestions: analysis.totalQuestions - analysis.totalSolved,
+        weekdayQuestions: 3,
+        weekendQuestions: 6,
         targetCompletion: 100,
       },
+      udemyCourseProgress: {
+        courseName: udemyCourse.courseTitle,
+        completedSections: udemyCourse.userProgress.completedSections,
+        totalSections: udemyCourse.totalSections,
+      },
       createdAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Group questions by difficulty for diverse selection
+   */
+  groupQuestionsByDifficulty(analysis) {
+    const grouped = {
+      hard: [],
+      medium: [],
+      easy: [],
+    };
+
+    const { solvedQuestions, starredQuestions } = analysis;
+
+    for (const topic in PersonalDSARoadmap) {
+      const questions = PersonalDSARoadmap[topic];
+
+      for (const question of questions) {
+        // Skip already solved questions
+        if (solvedQuestions[question.Question]) continue;
+
+        const enrichedQuestion = {
+          ...question,
+          topic,
+          completed: false,
+          isStarred: starredQuestions[question.Question] || false,
+        };
+
+        // Determine difficulty based on Priority or pattern
+        if (question.Priority === "Must Solve" || question.Question_link?.includes("hard")) {
+          grouped.hard.push(enrichedQuestion);
+        } else if (question.Question_link?.includes("easy")) {
+          grouped.easy.push(enrichedQuestion);
+        } else {
+          grouped.medium.push(enrichedQuestion);
+        }
+      }
+    }
+
+    return grouped;
+  }
+
+  /**
+   * Select diverse questions from different topics
+   */
+  selectDiverseQuestions(questionsByDifficulty, hardCount, mediumCount, easyCount, analysis) {
+    const selectedQuestions = [];
+    const usedTopics = new Set();
+
+    // Helper to get question from a topic not yet used today
+    const getQuestionFromUnusedTopic = (difficultyList) => {
+      // Prioritize starred questions first
+      const starredUnused = difficultyList.filter(
+        (q) => q.isStarred && !usedTopics.has(q.topic)
+      );
+      if (starredUnused.length > 0) {
+        return starredUnused[0];
+      }
+
+      // Then weak area questions
+      const weakTopics = analysis.weakAreas.map((w) => w.topic);
+      const weakUnused = difficultyList.filter(
+        (q) => weakTopics.includes(q.topic) && !usedTopics.has(q.topic)
+      );
+      if (weakUnused.length > 0) {
+        return weakUnused[0];
+      }
+
+      // Finally, any unused topic
+      const unused = difficultyList.filter((q) => !usedTopics.has(q.topic));
+      return unused.length > 0 ? unused[0] : difficultyList[0];
+    };
+
+    // Select hard questions
+    for (let i = 0; i < hardCount && questionsByDifficulty.hard.length > 0; i++) {
+      const question = getQuestionFromUnusedTopic(questionsByDifficulty.hard);
+      if (question) {
+        selectedQuestions.push({ ...question, difficulty: "Hard" });
+        usedTopics.add(question.topic);
+        // Remove from pool
+        const index = questionsByDifficulty.hard.indexOf(question);
+        questionsByDifficulty.hard.splice(index, 1);
+      }
+    }
+
+    // Select medium questions
+    for (let i = 0; i < mediumCount && questionsByDifficulty.medium.length > 0; i++) {
+      const question = getQuestionFromUnusedTopic(questionsByDifficulty.medium);
+      if (question) {
+        selectedQuestions.push({ ...question, difficulty: "Medium" });
+        usedTopics.add(question.topic);
+        const index = questionsByDifficulty.medium.indexOf(question);
+        questionsByDifficulty.medium.splice(index, 1);
+      }
+    }
+
+    // Select easy questions
+    for (let i = 0; i < easyCount && questionsByDifficulty.easy.length > 0; i++) {
+      const question = getQuestionFromUnusedTopic(questionsByDifficulty.easy);
+      if (question) {
+        selectedQuestions.push({ ...question, difficulty: "Easy" });
+        usedTopics.add(question.topic);
+        const index = questionsByDifficulty.easy.indexOf(question);
+        questionsByDifficulty.easy.splice(index, 1);
+      }
+    }
+
+    return selectedQuestions;
+  }
+
+  /**
+   * Get complementary learning material for the day
+   */
+  getComplementaryLearning(day, remainingHours, analysis) {
+    const learningTopics = [
+      {
+        title: "Java Multithreading and Concurrency",
+        url: "https://www.baeldung.com/java-concurrency",
+        estimatedHours: 2,
+        topics: ["Thread pools", "Executor framework", "CompletableFuture"],
+      },
+      {
+        title: "Spring Boot Microservices Patterns",
+        url: "https://microservices.io/patterns/index.html",
+        estimatedHours: 2,
+        topics: ["Service Discovery", "API Gateway", "Circuit Breaker"],
+      },
+      {
+        title: "System Design - Caching Strategies",
+        url: "https://www.youtube.com/watch?v=U3RkDLtS7uY",
+        estimatedHours: 1.5,
+        topics: ["Redis", "CDN", "Cache invalidation"],
+      },
+      {
+        title: "Docker and Kubernetes Basics",
+        url: "https://kubernetes.io/docs/tutorials/",
+        estimatedHours: 2,
+        topics: ["Containers", "Pods", "Deployments"],
+      },
+      {
+        title: "Database Optimization Techniques",
+        url: "https://use-the-index-luke.com/",
+        estimatedHours: 2,
+        topics: ["Indexing", "Query optimization", "Sharding"],
+      },
+      {
+        title: "REST API Best Practices",
+        url: "https://restfulapi.net/",
+        estimatedHours: 1.5,
+        topics: ["Versioning", "HATEOAS", "Error handling"],
+      },
+      {
+        title: "Message Queues - Kafka Fundamentals",
+        url: "https://kafka.apache.org/documentation/",
+        estimatedHours: 2,
+        topics: ["Producers", "Consumers", "Topics", "Partitions"],
+      },
+    ];
+
+    const material = learningTopics[day % learningTopics.length];
+    return {
+      type: "Technical Topic",
+      title: material.title,
+      url: material.url,
+      estimatedHours: Math.min(material.estimatedHours, remainingHours),
+      topics: material.topics,
+      completed: false,
+      skipped: false,
+      source: "external",
     };
   }
 
