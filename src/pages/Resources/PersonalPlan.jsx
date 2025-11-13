@@ -8,6 +8,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { motion, AnimatePresence } from "framer-motion";
 import useProgressSync from "../../hooks/useProgressSync";
 import SyncButton from "../../components/SyncButton";
+import AIRecommendations from "../../components/AIRecommendations";
 
 const PersonalPlan = () => {
   const [topics, setTopics] = useState([]);
@@ -163,6 +164,18 @@ const PersonalPlan = () => {
               </motion.div>
             ))}
           </AnimatePresence>
+
+          {/* Smart Recommendation System Section */}
+          <div className="mt-8 mb-8">
+            <AIRecommendations
+              onQuestionSelect={(question) => {
+                // When user selects a recommended question, scroll to that topic
+                if (question.topic) {
+                  setSelectedTopic(question.topic);
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

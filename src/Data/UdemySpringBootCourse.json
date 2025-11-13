@@ -1,0 +1,598 @@
+{
+  "courseTitle": "Spring Framework 5: Beginner to Guru",
+  "courseUrl": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+  "totalSections": 28,
+  "totalLectures": 500,
+  "totalDuration": "54h 55m",
+  "sections": [
+    {
+      "sectionNumber": 1,
+      "title": "Java Fundamentals (Basics to Operators)",
+      "lectures": 25,
+      "duration": "2h 15m",
+      "topics": [
+        "Course Introduction",
+        "JDK & IntelliJ Setup",
+        "Variables & Data Types",
+        "Type Conversion",
+        "Arithmetic, Relational & Logical Operators"
+      ],
+      "completed": true,
+      "estimatedHours": 2.5
+    },
+    {
+      "sectionNumber": 2,
+      "title": "Control Flow & Loops",
+      "lectures": 18,
+      "duration": "1h 45m",
+      "topics": [
+        "If-Else Statements",
+        "Ternary Operator",
+        "Switch Statement",
+        "While, Do-While, For Loops",
+        "Smart Console Calculator Exercise"
+      ],
+      "completed": true,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 3,
+      "title": "OOP Concepts & Classes",
+      "lectures": 48,
+      "duration": "4h 30m",
+      "topics": [
+        "Class and Object",
+        "Methods & Method Overloading",
+        "Arrays & Array of Objects",
+        "Strings (Mutable vs Immutable)",
+        "Static Variables, Methods & Blocks",
+        "Encapsulation & Getters/Setters",
+        "This Keyword",
+        "Constructors",
+        "Naming Conventions",
+        "Anonymous Objects"
+      ],
+      "completed": false,
+      "currentLecture": 51,
+      "lastCompletedLecture": "Anonymous Object",
+      "estimatedHours": 5,
+      "resources": [
+        {
+          "type": "video",
+          "title": "OOP in Java",
+          "url": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
+          "duration": "4h 30m"
+        }
+      ]
+    },
+    {
+      "sectionNumber": 4,
+      "title": "Inheritance & Polymorphism",
+      "lectures": 22,
+      "duration": "2h 45m",
+      "topics": [
+        "Need for Inheritance",
+        "Single & Multilevel Inheritance",
+        "Multiple Inheritance",
+        "This and Super Methods",
+        "Method Overriding",
+        "Packages & Access Modifiers",
+        "Polymorphism",
+        "Dynamic Method Dispatch",
+        "Final Keyword",
+        "Object Class (equals, toString, hashcode)",
+        "Upcasting & Downcasting",
+        "Wrapper Classes"
+      ],
+      "completed": false,
+      "estimatedHours": 3
+    },
+    {
+      "sectionNumber": 5,
+      "title": "Project 1 - Quiz Application",
+      "lectures": 6,
+      "duration": "35m",
+      "topics": [
+        "QuestionService and Question Class",
+        "Hard Coded Questions",
+        "Play Quiz",
+        "Calculate Score"
+      ],
+      "completed": false,
+      "estimatedHours": 1
+    },
+    {
+      "sectionNumber": 6,
+      "title": "Advanced Java (Abstract, Interface, Enum, Annotations)",
+      "lectures": 28,
+      "duration": "3h 15m",
+      "topics": [
+        "Abstract Keyword & Abstract Classes",
+        "Inner Class & Anonymous Inner Class",
+        "Interfaces",
+        "Need of Interface",
+        "Enum (if, switch, class)",
+        "Annotations",
+        "Types of Interface",
+        "Functional Interface",
+        "Lambda Expressions"
+      ],
+      "completed": false,
+      "estimatedHours": 4
+    },
+    {
+      "sectionNumber": 7,
+      "title": "Exception Handling",
+      "lectures": 14,
+      "duration": "1h 45m",
+      "topics": [
+        "What is Exception",
+        "Try-Catch Blocks",
+        "Multiple Catch Blocks",
+        "Exception Hierarchy",
+        "Throw Keyword",
+        "Custom Exceptions",
+        "Throws (Ducking Exceptions)",
+        "User Input (BufferedReader, Scanner)",
+        "Try with Resources"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 8,
+      "title": "Multithreading",
+      "lectures": 8,
+      "duration": "1h 15m",
+      "topics": [
+        "Threads Introduction",
+        "Multiple Threads",
+        "Thread Priority & Sleep",
+        "Runnable vs Thread",
+        "Race Condition",
+        "Thread States"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 9,
+      "title": "Collection API",
+      "lectures": 8,
+      "duration": "1h 10m",
+      "topics": [
+        "Collection API Introduction",
+        "ArrayList",
+        "Set",
+        "Map",
+        "Comparator vs Comparable"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 10,
+      "title": "Stream API",
+      "lectures": 10,
+      "duration": "1h 30m",
+      "topics": [
+        "Need of Stream API",
+        "forEach Method",
+        "Stream API Basics",
+        "Map, Filter, Reduce, Sorted",
+        "ParallelStream",
+        "Optional Class",
+        "Method Reference",
+        "Constructor Reference"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 11,
+      "title": "Maven",
+      "lectures": 9,
+      "duration": "45m",
+      "topics": [
+        "Maven Introduction",
+        "Maven in IDE",
+        "Getting Dependencies",
+        "Effective POM",
+        "Maven Archetype",
+        "How Maven Works"
+      ],
+      "completed": false,
+      "estimatedHours": 1
+    },
+    {
+      "sectionNumber": 12,
+      "title": "JDBC (Java Database Connectivity)",
+      "lectures": 14,
+      "duration": "1h 30m",
+      "topics": [
+        "JDBC Introduction",
+        "Postgres Setup",
+        "JDBC Steps",
+        "Connecting Java to Database",
+        "Execute and Process",
+        "Fetching Records",
+        "CRUD Operations",
+        "PreparedStatement"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 13,
+      "title": "Hibernate",
+      "lectures": 28,
+      "duration": "3h 15m",
+      "topics": [
+        "What is Hibernate",
+        "Project Setup",
+        "Saving & Fetching Data",
+        "Update & Delete Objects",
+        "Embeddable",
+        "Mapping Relationships (OneToOne, OneToMany, ManyToOne, ManyToMany)",
+        "Eager & Lazy Fetch",
+        "Caching",
+        "HQL (Hibernate Query Language)",
+        "Get vs Load",
+        "Level 2 Cache (Ehcache)"
+      ],
+      "completed": false,
+      "estimatedHours": 4
+    },
+    {
+      "sectionNumber": 14,
+      "title": "Introduction to Spring & Spring Boot",
+      "lectures": 11,
+      "duration": "1h 15m",
+      "topics": [
+        "Introduction to Spring",
+        "Prerequisites",
+        "IoC and DI",
+        "Spring vs Spring Boot",
+        "First Spring Boot App",
+        "Dependency Injection Using Spring Boot",
+        "Autowiring in Spring Boot"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 15,
+      "title": "Spring XML Configuration",
+      "lectures": 18,
+      "duration": "2h",
+      "topics": [
+        "Spring Bean XML Config",
+        "Object Creation",
+        "Scopes",
+        "Setter & Constructor Injection",
+        "Ref Attribute",
+        "Autowiring",
+        "Primary Bean",
+        "Lazy Init Bean",
+        "Inner Bean"
+      ],
+      "completed": false,
+      "estimatedHours": 2.5
+    },
+    {
+      "sectionNumber": 16,
+      "title": "Spring Java-Based Configuration",
+      "lectures": 12,
+      "duration": "45m",
+      "topics": [
+        "Java Based Config",
+        "Bean Name",
+        "Scope Annotation",
+        "Autowire",
+        "Primary & Qualifier",
+        "Component Stereotype Annotation",
+        "Autowire (Field, Constructor, Setter)",
+        "Scope & Value Annotation"
+      ],
+      "completed": false,
+      "estimatedHours": 1.5
+    },
+    {
+      "sectionNumber": 17,
+      "title": "Spring Boot Layers (Service & Repository)",
+      "lectures": 8,
+      "duration": "35m",
+      "topics": [
+        "Spring to Spring Boot Transition",
+        "Using Annotations in Spring Boot",
+        "Different Layers",
+        "Service Class",
+        "Repository Layer"
+      ],
+      "completed": false,
+      "estimatedHours": 1
+    },
+    {
+      "sectionNumber": 18,
+      "title": "Spring JDBC",
+      "lectures": 9,
+      "duration": "55m",
+      "topics": [
+        "Spring JDBC Introduction",
+        "Creating Project",
+        "Student Service & Repo",
+        "JDBCTemplate",
+        "Schema & Data Files",
+        "RowMapper",
+        "Spring JDBC with Postgres"
+      ],
+      "completed": false,
+      "estimatedHours": 1.5
+    },
+    {
+      "sectionNumber": 19,
+      "title": "Spring Boot Web Applications",
+      "lectures": 22,
+      "duration": "2h 15m",
+      "topics": [
+        "Creating Servlet Project",
+        "Running Tomcat",
+        "Servlet Mapping",
+        "Introduction to MVC",
+        "Creating Spring Boot Web App",
+        "JSP Pages",
+        "Controllers",
+        "RequestMapping",
+        "RequestParam",
+        "Model Object",
+        "ModelAndView",
+        "ModelAttribute",
+        "Spring Boot with Thymeleaf"
+      ],
+      "completed": false,
+      "estimatedHours": 3
+    },
+    {
+      "sectionNumber": 20,
+      "title": "Spring MVC (Eclipse-based)",
+      "lectures": 10,
+      "duration": "50m",
+      "topics": [
+        "Spring MVC Introduction",
+        "Creating Spring MVC Project",
+        "Running Tomcat in Eclipse",
+        "DispatcherServlet",
+        "Internal Resource View Resolver"
+      ],
+      "completed": false,
+      "estimatedHours": 1.5
+    },
+    {
+      "sectionNumber": 21,
+      "title": "Job App Project",
+      "lectures": 9,
+      "duration": "55m",
+      "topics": [
+        "Building Job App",
+        "Creating Project",
+        "Understanding Views",
+        "Home and AddJob Controller",
+        "Handling Forms",
+        "Working with Layers",
+        "View Data"
+      ],
+      "completed": false,
+      "estimatedHours": 1.5
+    },
+    {
+      "sectionNumber": 22,
+      "title": "REST API with Spring Boot",
+      "lectures": 16,
+      "duration": "2h",
+      "topics": [
+        "What is REST",
+        "HTTP Methods",
+        "Understanding React UI",
+        "Working with Postman",
+        "Creating RestController",
+        "Connecting React & Spring",
+        "PathVariable",
+        "RequestBody",
+        "PUT & DELETE Mapping",
+        "Content Negotiation"
+      ],
+      "completed": false,
+      "estimatedHours": 2.5
+    },
+    {
+      "sectionNumber": 23,
+      "title": "Spring Data JPA",
+      "lectures": 16,
+      "duration": "1h 45m",
+      "topics": [
+        "What is ORM and JPA",
+        "Creating Table & Inserting Data",
+        "findAll & findById",
+        "JPQL Query",
+        "Update & Delete",
+        "JPA in Job App",
+        "Loading Data & Entity",
+        "Search by Keyword",
+        "React UI for Search, Update & Delete"
+      ],
+      "completed": false,
+      "estimatedHours": 2.5
+    },
+    {
+      "sectionNumber": 24,
+      "title": "E-commerce Project (Product Management)",
+      "lectures": 22,
+      "duration": "3h",
+      "topics": [
+        "Project Introduction",
+        "React UI Code",
+        "Spring Boot Project Setup",
+        "Product Model & Table",
+        "Fetching Products from DB",
+        "ResponseEntity",
+        "Add Product with Image",
+        "Fetch Product Image",
+        "Update & Delete Product",
+        "Search",
+        "Order Checkout",
+        "Creating DTOs for Order",
+        "Place Order Service",
+        "Get All Orders"
+      ],
+      "completed": false,
+      "estimatedHours": 4
+    },
+    {
+      "sectionNumber": 25,
+      "title": "Spring Data REST",
+      "lectures": 6,
+      "duration": "30m",
+      "topics": [
+        "Spring Data REST Introduction",
+        "Creating Data REST Project",
+        "Running the Project",
+        "Update & Delete"
+      ],
+      "completed": false,
+      "estimatedHours": 1
+    },
+    {
+      "sectionNumber": 26,
+      "title": "Spring AOP (Aspect-Oriented Programming)",
+      "lectures": 10,
+      "duration": "1h 15m",
+      "topics": [
+        "Spring AOP Introduction",
+        "Logging Calls",
+        "AOP Concepts",
+        "Before Advice",
+        "JoinPoint",
+        "After Advice",
+        "Around Advice (Performance Monitoring)",
+        "Validating Input with Around Advice"
+      ],
+      "completed": false,
+      "estimatedHours": 2
+    },
+    {
+      "sectionNumber": 27,
+      "title": "Spring Security",
+      "lectures": 32,
+      "duration": "4h 15m",
+      "topics": [
+        "Importance of Security",
+        "OWASP Top 10",
+        "Creating Spring Security Project",
+        "Default Login Form",
+        "Spring Security Filters",
+        "Session ID",
+        "Setting Username & Password",
+        "Basic Auth with Postman",
+        "CSRF (Cross-Site Request Forgery)",
+        "Security Configuration",
+        "Working with Multiple Users",
+        "User Table & DB Properties",
+        "AuthenticationProvider",
+        "UserDetailsService",
+        "UserDetails & UserPrincipal",
+        "Bcrypt Password Encoding",
+        "User Registration"
+      ],
+      "completed": false,
+      "estimatedHours": 5
+    },
+    {
+      "sectionNumber": 28,
+      "title": "JWT & OAuth2",
+      "lectures": 20,
+      "duration": "2h 45m",
+      "topics": [
+        "Plan to Secure Job App",
+        "Cross Origin",
+        "Security Configuration",
+        "Encryption & Decryption",
+        "Digital Signature",
+        "Why JWT",
+        "What is JWT",
+        "Project Setup for JWT",
+        "Custom Login",
+        "Generating Token",
+        "JWT Filter",
+        "Setting AuthToken in SecurityContext",
+        "Validating Token",
+        "Implementing OAuth2",
+        "Google OAuth2 Login",
+        "Github Login"
+      ],
+      "completed": false,
+      "estimatedHours": 3.5
+    }
+  ],
+  "additionalSections": [
+    {
+      "sectionNumber": 29,
+      "title": "Docker",
+      "lectures": 18,
+      "duration": "2h 30m",
+      "estimatedHours": 3
+    },
+    {
+      "sectionNumber": 30,
+      "title": "AWS Cloud Deployment",
+      "lectures": 14,
+      "duration": "2h",
+      "estimatedHours": 2.5
+    },
+    {
+      "sectionNumber": 31,
+      "title": "Spring AI",
+      "lectures": 48,
+      "duration": "6h 30m",
+      "estimatedHours": 8
+    },
+    {
+      "sectionNumber": 32,
+      "title": "Microservices with Spring Boot",
+      "lectures": 26,
+      "duration": "4h 15m",
+      "estimatedHours": 5
+    },
+    {
+      "sectionNumber": 33,
+      "title": "Git Version Control",
+      "lectures": 26,
+      "duration": "3h 30m",
+      "estimatedHours": 4
+    },
+    {
+      "sectionNumber": 34,
+      "title": "Data Structures & Algorithms",
+      "lectures": 28,
+      "duration": "5h 45m",
+      "estimatedHours": 7
+    }
+  ],
+  "userProgress": {
+    "completedSections": 2,
+    "currentSection": 3,
+    "currentLecture": 51,
+    "lastCompletedLecture": "Anonymous Object",
+    "lastAccessed": "2025-11-13",
+    "nextSection": {
+      "sectionNumber": 3,
+      "title": "OOP Concepts & Classes",
+      "remainingLectures": 48,
+      "estimatedHours": 5
+    }
+  },
+  "userStudyTime": {
+    "weekday": 2,
+    "weekend": 3,
+    "note": "Hours available for Udemy course learning"
+  }
+}
