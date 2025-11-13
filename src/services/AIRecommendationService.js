@@ -620,9 +620,11 @@ class AIRecommendationService {
         analysis
       );
 
+      // Check localStorage for actual completion status
+      const { solvedQuestions } = analysis;
       dayPlan.questions = selectedQuestions.map((q) => ({
         ...q,
-        completed: false,
+        completed: solvedQuestions[q.Question] || false,
       }));
 
       // Add learning materials
@@ -1023,10 +1025,11 @@ class AIRecommendationService {
             userId,
             newQuestionsPerDay
           );
+          // Check localStorage for actual completion status
           plan.dailyPlans[i].questions = recommendations.recommendations.map(
             (r) => ({
               ...r,
-              completed: false,
+              completed: analysis.solvedQuestions[r.Question] || false,
             })
           );
         }
