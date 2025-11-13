@@ -1,9 +1,10 @@
 {
   "courseTitle": "Spring Framework 5: Beginner to Guru",
   "courseUrl": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
-  "totalSections": 28,
+  "totalSections": 34,
   "totalLectures": 500,
   "totalDuration": "54h 55m",
+  "note": "Sections 1-28 are main course, Sections 29-34 are bonus content (Docker, AWS, Spring AI, Microservices, Git, DSA)",
   "sections": [
     {
       "sectionNumber": 1,

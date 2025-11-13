@@ -979,12 +979,38 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
                           type="checkbox"
                           checked={material.completed || false}
                           disabled={material.skipped}
-                          onChange={(e) => {
+                          onChange={async (e) => {
+                            const isCompleted = e.target.checked;
+
+                            // Create deep copy to avoid mutation
+                            const updatedPlan = JSON.parse(JSON.stringify(dailyPlan));
+                            const day = updatedPlan.dailyPlans[selectedDay];
+                            const targetMaterial = day.learningMaterials[idx];
+
                             // Update material completion
-                            material.completed = e.target.checked;
-                            const completedCount = currentDay.learningMaterials.filter(m => m.completed).length;
-                            currentDay.progress.materialsCompleted = completedCount;
-                            toast.success(e.target.checked ? "Material completed! ✅" : "Marked as incomplete");
+                            targetMaterial.completed = isCompleted;
+
+                            // Update completed count
+                            const completedCount = day.learningMaterials.filter(m => m.completed).length;
+                            day.progress.materialsCompleted = completedCount;
+
+                            // Update state immediately for UI
+                            setDailyPlan(updatedPlan);
+
+                            // Update cache
+                            const auth = getAuth();
+                            if (auth.currentUser) {
+                              cacheService.cache40DayPlan(auth.currentUser.uid, updatedPlan);
+
+                              // Update Firebase in background
+                              try {
+                                await aiRecommendationService.saveDailyPlan(auth.currentUser.uid, updatedPlan);
+                              } catch (error) {
+                                console.error("Error saving material progress:", error);
+                              }
+                            }
+
+                            toast.success(isCompleted ? "Material completed! ✅" : "Marked as incomplete");
                           }}
                           className="mt-1 mr-3"
                         />
@@ -1015,8 +1041,31 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
                         )}
                         {!material.completed && !material.skipped && (
                           <button
-                            onClick={() => {
-                              material.skipped = true;
+                            onClick={async () => {
+                              // Create deep copy to avoid mutation
+                              const updatedPlan = JSON.parse(JSON.stringify(dailyPlan));
+                              const day = updatedPlan.dailyPlans[selectedDay];
+                              const targetMaterial = day.learningMaterials[idx];
+
+                              // Update material as skipped
+                              targetMaterial.skipped = true;
+
+                              // Update state immediately for UI
+                              setDailyPlan(updatedPlan);
+
+                              // Update cache
+                              const auth = getAuth();
+                              if (auth.currentUser) {
+                                cacheService.cache40DayPlan(auth.currentUser.uid, updatedPlan);
+
+                                // Update Firebase in background
+                                try {
+                                  await aiRecommendationService.saveDailyPlan(auth.currentUser.uid, updatedPlan);
+                                } catch (error) {
+                                  console.error("Error saving skip status:", error);
+                                }
+                              }
+
                               toast.info("Material skipped. It may be reassigned later.");
                             }}
                             className="text-xs px-2 py-1 bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300"
