@@ -1,14 +1,16 @@
-# 🤖 AI-Powered Study Assistant for CodeNITW
+# 🧠 Smart Recommendation System for CodeNITW
 
 ## Overview
 
-The new AI-powered study assistant provides personalized question recommendations, 45-day study planning, and intelligent progress tracking to help you prepare for Java Spring Boot Developer interviews.
+The Smart Recommendation System provides personalized question recommendations, 45-day study planning, and intelligent progress tracking to help you prepare for Java Spring Boot Developer interviews.
+
+**Note:** This is an intelligent algorithm-based system (not AI/ML models like GPT or Claude). It uses weighted algorithms and market analysis to generate personalized recommendations.
 
 ## Features
 
 ### 1. 🎯 Smart Question Recommendations
 
-The AI analyzes your progress and suggests questions based on:
+The system analyzes your progress and suggests questions based on:
 
 #### Priority System:
 - **⭐ Starred Questions (30%)** - Questions you marked as important get highest priority
@@ -101,7 +103,7 @@ Comprehensive learning path for 2 YoE Java Spring Boot Developer:
 
 ### 5. 🔄 Dynamic Replanning
 
-The AI automatically adjusts your plan based on:
+The system automatically adjusts your plan based on:
 - **Progress Rate**: If you're completing less than 80% of daily goals
 - **Days Remaining**: Redistributes work across remaining days
 - **Updated Analysis**: Re-evaluates weak areas and priorities
@@ -111,7 +113,7 @@ The AI automatically adjusts your plan based on:
 ### Getting Started
 
 1. **Navigate to Personal Plan**: Go to the "Personal Plan" section in CodeNITW
-2. **Scroll Down**: Find the "AI-Powered Study Assistant" section at the bottom
+2. **Scroll Down**: Find the "Smart Recommendation System" section at the bottom
 3. **Login Required**: Make sure you're logged in with Google OAuth
 
 ### Viewing Recommendations
@@ -162,9 +164,9 @@ All data is stored in Firebase Firestore:
 - `PersonalDSASolvedQuestions`: Synced with Firebase
 - `PersonalDSAStarredQuestions`: Synced with Firebase
 
-### AI Algorithm
+### Smart Algorithm
 
-The recommendation engine considers:
+The recommendation engine uses a weighted algorithm that considers:
 
 1. **Completion Rate per Topic**: Identifies weak areas (<30% solved)
 2. **Interview Weight**: Based on market trends for Java Spring Boot roles
@@ -204,18 +206,18 @@ Based on 2024-2025 interview trends:
    - Reflect on what you learned
    - Star difficult questions for revision
 
-### Maximizing AI Recommendations
+### Maximizing Smart Recommendations
 
-1. **Star Important Questions**: AI prioritizes these in recommendations
+1. **Star Important Questions**: System prioritizes these in recommendations
 2. **Solve Consistently**: Better progress rates = more accurate replanning
-3. **Review Weak Areas**: AI identifies topics you struggle with
+3. **Review Weak Areas**: System identifies topics you struggle with
 4. **Check Trending**: Stay updated with current interview trends
 5. **Use External Links**: Practice on actual coding platforms
 
 ### Preparation Strategy
 
 #### Weeks 1-2 (Nov 13-26):
-- Focus on **weak areas** identified by AI
+- Focus on **weak areas** identified by the system
 - Complete **starred questions**
 - Study **System Design basics**
 
@@ -272,4 +274,4 @@ Found a bug or have suggestions? Create an issue on GitHub or contact:
 
 **Good luck with your interview preparation! 🚀**
 
-*Remember: Consistency is key. Even 2-3 hours daily with focused practice using AI recommendations will prepare you well for your job switch!*
+*Remember: Consistency is key. Even 2-3 hours daily with focused practice using smart recommendations will prepare you well for your job switch!*

@@ -13,8 +13,11 @@ import {
 } from "firebase/firestore";
 
 /**
- * AI-powered recommendation service for personalized DSA question suggestions
+ * Smart recommendation service for personalized DSA question suggestions
  * and study plan generation for interview preparation
+ *
+ * Uses intelligent algorithms to analyze user progress, identify weak areas,
+ * and generate recommendations based on market trends and interview patterns.
  */
 class AIRecommendationService {
   constructor() {
@@ -242,7 +245,8 @@ class AIRecommendationService {
   }
 
   /**
-   * Generate AI-powered question recommendations
+   * Generate smart question recommendations based on user progress analysis
+   * Uses weighted algorithm: 30% starred, 40% weak areas, 20% trending, 10% revision
    */
   async generateRecommendations(userId, count = 10) {
     const analysis = await this.analyzeUserProgress(userId);
