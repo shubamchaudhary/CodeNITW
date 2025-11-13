@@ -165,7 +165,7 @@ const PersonalPlan = () => {
             ))}
           </AnimatePresence>
 
-          {/* AI-Powered Recommendations Section */}
+          {/* Smart Recommendation System Section */}
           <div className="mt-8 mb-8">
             <AIRecommendations
               onQuestionSelect={(question) => {

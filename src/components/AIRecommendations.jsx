@@ -18,8 +18,8 @@ import {
   FaChevronUp,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { getAuth } from "firebase/auth";
 import aiRecommendationService from "../services/AIRecommendationService";
-import { auth } from "../firebase";
 
 const AIRecommendations = ({ onQuestionSelect }) => {
   const [loading, setLoading] = useState(false);
@@ -38,12 +38,14 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
   // Load recommendations on mount
   useEffect(() => {
+    const auth = getAuth();
     if (auth.currentUser) {
       loadRecommendations();
     }
   }, []);
 
   const loadRecommendations = async () => {
+    const auth = getAuth();
     if (!auth.currentUser) {
       toast.error("Please login to get personalized recommendations");
       return;
@@ -51,7 +53,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
     setLoading(true);
     try {
-      // Load AI recommendations
+      // Load Smart recommendations
       const recData = await aiRecommendationService.generateRecommendations(
         auth.currentUser.uid,
         15
@@ -82,6 +84,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
   };
 
   const generate45DayPlan = async () => {
+    const auth = getAuth();
     if (!auth.currentUser) {
       toast.error("Please login to generate a plan");
       return;
@@ -105,6 +108,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
   };
 
   const replanBasedOnProgress = async () => {
+    const auth = getAuth();
     if (!auth.currentUser || !dailyPlan) {
       return;
     }
@@ -190,7 +194,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
     return (
       <div className="flex items-center justify-center p-12">
         <FaSpinner className="animate-spin text-4xl text-blue-500" />
-        <span className="ml-3 text-lg">Generating AI recommendations...</span>
+        <span className="ml-3 text-lg">Generating smart recommendations...</span>
       </div>
     );
   }
@@ -203,7 +207,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
           <FaBrain className="text-3xl text-purple-600 mr-3" />
           <div>
             <h2 className="text-2xl font-bold text-gray-800">
-              AI-Powered Study Assistant
+              Smart Recommendation System
             </h2>
             <p className="text-sm text-gray-600">
               Personalized recommendations for your interview prep
@@ -511,6 +515,7 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
   }, [dailyPlan]);
 
   const updateDayProgress = async (dayNumber, questionIndex, completed) => {
+    const auth = getAuth();
     if (!auth.currentUser) return;
 
     try {
