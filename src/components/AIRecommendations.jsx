@@ -227,44 +227,44 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       {/* Analysis Overview */}
       {analysis && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Questions</p>
-                <p className="text-2xl font-bold text-gray-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Questions</p>
+                <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                   {analysis.totalQuestions}
                 </p>
               </div>
               <FaBook className="text-3xl text-blue-500" />
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Solved</p>
-                <p className="text-2xl font-bold text-green-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Solved</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {analysis.totalSolved}
                 </p>
               </div>
               <FaCheckCircle className="text-3xl text-green-500" />
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Starred</p>
-                <p className="text-2xl font-bold text-yellow-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Starred</p>
+                <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                   {analysis.totalStarred}
                 </p>
               </div>
               <FaStar className="text-3xl text-yellow-500" />
             </div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Completion</p>
-                <p className="text-2xl font-bold text-purple-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">Completion</p>
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {analysis.overallCompletion}%
                 </p>
               </div>
