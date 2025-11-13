@@ -81,16 +81,23 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
   const loadRecommendations = async (forceRefresh = false) => {
     const auth = getAuth();
-    if (!auth.currentUser) {
+
+    // Check if we have localStorage data available
+    const hasLocalStorage = localStorage.getItem("PersonalDSASolvedQuestions");
+
+    if (!auth.currentUser && !hasLocalStorage) {
       toast.error("Please login to get personalized recommendations");
       return;
     }
+
+    // If no auth but we have localStorage, use a temporary ID
+    const userId = auth.currentUser?.uid || "local_user";
 
     setLoading(true);
     try {
       // Check cache first for recommendations (unless force refresh)
       if (!forceRefresh) {
-        const cachedRec = cacheService.getCachedRecommendations(auth.currentUser.uid);
+        const cachedRec = cacheService.getCachedRecommendations(userId);
         if (cachedRec) {
           setRecommendations(cachedRec.recommendations);
           setAnalysis(cachedRec.analysis);
@@ -106,9 +113,9 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       }
 
       // Generate fresh recommendations if no cache or force refresh
-      if (forceRefresh || !cacheService.getCachedRecommendations(auth.currentUser.uid)) {
+      if (forceRefresh || !cacheService.getCachedRecommendations(userId)) {
         const recData = await aiRecommendationService.generateRecommendations(
-          auth.currentUser.uid,
+          userId,
           15
         );
         setRecommendations(recData.recommendations);
@@ -127,7 +134,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
         setExternalRecommendations(filteredExtData.slice(0, 5));
 
         // Cache the recommendations
-        cacheService.cacheRecommendations(auth.currentUser.uid, {
+        cacheService.cacheRecommendations(userId, {
           recommendations: recData.recommendations,
           analysis: recData.analysis,
           externalRecommendations: extData,
@@ -136,31 +143,31 @@ const AIRecommendations = ({ onQuestionSelect }) => {
         toast.success("Recommendations loaded successfully!");
       }
 
-      // Load 40-day plan with cache
-      const cachedPlan = cacheService.getCached40DayPlan(auth.currentUser.uid);
-      if (cachedPlan && !forceRefresh) {
-        // Check if it's an old 45-day plan
-        if (cachedPlan.totalDays === 45) {
-          toast.warning("Old 45-day plan detected. Please regenerate your plan to get the new 40-day structure.");
-          cacheService.invalidate40DayPlan(auth.currentUser.uid);
-        } else {
-          // Sync plan with current PersonalDSA progress
-          syncPlanWithMainProgress(cachedPlan);
-          setDailyPlan(cachedPlan);
-        }
-      } else {
-        const existingPlan = await aiRecommendationService.loadDailyPlan(
-          auth.currentUser.uid
-        );
-        if (existingPlan) {
+      // Load 40-day plan with cache (only if authenticated)
+      if (auth.currentUser) {
+        const cachedPlan = cacheService.getCached40DayPlan(userId);
+        if (cachedPlan && !forceRefresh) {
           // Check if it's an old 45-day plan
-          if (existingPlan.totalDays === 45) {
+          if (cachedPlan.totalDays === 45) {
             toast.warning("Old 45-day plan detected. Please regenerate your plan to get the new 40-day structure.");
+            cacheService.invalidate40DayPlan(userId);
           } else {
             // Sync plan with current PersonalDSA progress
-            syncPlanWithMainProgress(existingPlan);
-            setDailyPlan(existingPlan);
-            cacheService.cache40DayPlan(auth.currentUser.uid, existingPlan);
+            syncPlanWithMainProgress(cachedPlan);
+            setDailyPlan(cachedPlan);
+          }
+        } else {
+          const existingPlan = await aiRecommendationService.loadDailyPlan(userId);
+          if (existingPlan) {
+            // Check if it's an old 45-day plan
+            if (existingPlan.totalDays === 45) {
+              toast.warning("Old 45-day plan detected. Please regenerate your plan to get the new 40-day structure.");
+            } else {
+              // Sync plan with current PersonalDSA progress
+              syncPlanWithMainProgress(existingPlan);
+              setDailyPlan(existingPlan);
+              cacheService.cache40DayPlan(userId, existingPlan);
+            }
           }
         }
       }

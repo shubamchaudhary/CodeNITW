@@ -127,20 +127,45 @@ class AIRecommendationService {
 
   /**
    * Analyzes user's current progress and generates comprehensive insights
+   * Uses localStorage first (same as Personal Plan), falls back to Firebase
    */
   async analyzeUserProgress(userId) {
     try {
-      const progressDoc = await getDoc(
-        doc(db, "user_progress", `${userId}_personal_dsa_progress`)
-      );
+      let solvedQuestions = {};
+      let starredQuestions = {};
 
-      if (!progressDoc.exists()) {
-        return this.getDefaultAnalysis();
+      // FIRST: Check localStorage (same source as Personal Plan 243 questions)
+      try {
+        const localSolved = localStorage.getItem("PersonalDSASolvedQuestions");
+        const localStarred = localStorage.getItem("PersonalDSAStarredQuestions");
+
+        if (localSolved) {
+          solvedQuestions = JSON.parse(localSolved);
+        }
+        if (localStarred) {
+          starredQuestions = JSON.parse(localStarred);
+        }
+      } catch (e) {
+        console.error("Error reading localStorage:", e);
       }
 
-      const progressData = progressDoc.data();
-      const solvedQuestions = progressData.progress?.solved || {};
-      const starredQuestions = progressData.progress?.starred || {};
+      // FALLBACK: If localStorage is empty, try Firebase
+      if (Object.keys(solvedQuestions).length === 0) {
+        const progressDoc = await getDoc(
+          doc(db, "user_progress", `${userId}_personal_dsa_progress`)
+        );
+
+        if (progressDoc.exists()) {
+          const progressData = progressDoc.data();
+          solvedQuestions = progressData.progress?.solved || {};
+          starredQuestions = progressData.progress?.starred || {};
+        }
+      }
+
+      // If still no data, return default analysis
+      if (Object.keys(solvedQuestions).length === 0 && Object.keys(starredQuestions).length === 0) {
+        return this.getDefaultAnalysis();
+      }
 
       // Analyze by topic
       const topicAnalysis = {};
