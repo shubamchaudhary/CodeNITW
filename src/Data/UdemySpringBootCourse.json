@@ -1,9 +1,10 @@
 {
   "courseTitle": "Spring Framework 5: Beginner to Guru",
   "courseUrl": "https://www.udemy.com/course/spring-5-with-spring-boot-2/",
-  "totalSections": 28,
-  "totalLectures": 500,
-  "totalDuration": "54h 55m",
+  "totalSections": 33,
+  "totalLectures": 472,
+  "totalDuration": "49h 10m",
+  "note": "Sections 1-28 are main course, Sections 29-33 are bonus content (Docker, AWS, Spring AI, Microservices, Git). DSA excluded as it's covered separately in 40-day plan.",
   "sections": [
     {
       "sectionNumber": 1,
@@ -531,14 +532,13 @@
       ],
       "completed": false,
       "estimatedHours": 3.5
-    }
-  ],
-  "additionalSections": [
+    },
     {
       "sectionNumber": 29,
       "title": "Docker",
       "lectures": 18,
       "duration": "2h 30m",
+      "completed": false,
       "estimatedHours": 3
     },
     {
@@ -546,6 +546,7 @@
       "title": "AWS Cloud Deployment",
       "lectures": 14,
       "duration": "2h",
+      "completed": false,
       "estimatedHours": 2.5
     },
     {
@@ -553,6 +554,7 @@
       "title": "Spring AI",
       "lectures": 48,
       "duration": "6h 30m",
+      "completed": false,
       "estimatedHours": 8
     },
     {
@@ -560,6 +562,7 @@
       "title": "Microservices with Spring Boot",
       "lectures": 26,
       "duration": "4h 15m",
+      "completed": false,
       "estimatedHours": 5
     },
     {
@@ -567,14 +570,8 @@
       "title": "Git Version Control",
       "lectures": 26,
       "duration": "3h 30m",
+      "completed": false,
       "estimatedHours": 4
-    },
-    {
-      "sectionNumber": 34,
-      "title": "Data Structures & Algorithms",
-      "lectures": 28,
-      "duration": "5h 45m",
-      "estimatedHours": 7
     }
   ],
   "userProgress": {
