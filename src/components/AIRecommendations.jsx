@@ -326,8 +326,8 @@ const AIRecommendations = ({ onQuestionSelect }) => {
                 {Object.entries(groupRecommendationsByPriority()).map(
                   ([priority, questions]) =>
                     questions.length > 0 && (
-                      <div key={priority} className="bg-white rounded-lg shadow p-4">
-                        <h3 className="text-lg font-bold mb-3 flex items-center">
+                      <div key={priority} className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+                        <h3 className="text-lg font-bold mb-3 flex items-center dark:text-gray-100">
                           {priority === "CRITICAL" && <FaFire className="mr-2 text-red-500" />}
                           {priority === "HIGH" && <FaTrophy className="mr-2 text-orange-500" />}
                           {priority} Priority ({questions.length})
@@ -343,13 +343,13 @@ const AIRecommendations = ({ onQuestionSelect }) => {
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
-                                  <p className="font-semibold text-gray-800">
+                                  <p className="font-semibold text-gray-800 dark:text-gray-100">
                                     {rec.Question}
                                   </p>
-                                  <p className="text-sm text-gray-600 mt-1">
+                                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                     {rec.topic}
                                   </p>
-                                  <p className="text-sm text-purple-600 mt-1">
+                                  <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
                                     {rec.reason}
                                   </p>
                                 </div>
@@ -358,7 +358,7 @@ const AIRecommendations = ({ onQuestionSelect }) => {
                                     href={rec.Question_link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="ml-2 text-blue-600 hover:text-blue-800"
+                                    className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     <FaExternalLinkAlt />
@@ -374,19 +374,19 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 
                 {/* External Recommendations */}
                 {externalRecommendations.length > 0 && (
-                  <div className="bg-white rounded-lg shadow p-4">
+                  <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
                     <div
                       className="flex items-center justify-between cursor-pointer"
                       onClick={() => toggleSection("external")}
                     >
-                      <h3 className="text-lg font-bold flex items-center">
+                      <h3 className="text-lg font-bold flex items-center dark:text-gray-100">
                         <FaExternalLinkAlt className="mr-2 text-blue-500" />
                         External Questions ({externalRecommendations.length})
                       </h3>
                       {expandedSections.external ? (
-                        <FaChevronUp />
+                        <FaChevronUp className="dark:text-gray-300" />
                       ) : (
-                        <FaChevronDown />
+                        <FaChevronDown className="dark:text-gray-300" />
                       )}
                     </div>
                     {expandedSections.external && (
@@ -400,23 +400,23 @@ const AIRecommendations = ({ onQuestionSelect }) => {
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <p className="font-semibold text-gray-800">
+                                <p className="font-semibold text-gray-800 dark:text-gray-100">
                                   {rec.Question}
                                 </p>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  {rec.topic}
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                  {rec.Topic} • {rec.Difficulty}
                                   {rec.company && ` • ${rec.company}`}
                                 </p>
-                                <p className="text-sm text-purple-600 mt-1">
+                                <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
                                   {rec.reason}
                                 </p>
                               </div>
-                              {rec.searchUrl && (
+                              {rec.Question_link && (
                                 <a
-                                  href={rec.searchUrl}
+                                  href={rec.Question_link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="ml-2 text-blue-600 hover:text-blue-800"
+                                  className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800"
                                 >
                                   <FaExternalLinkAlt />
                                 </a>
@@ -779,41 +779,94 @@ const DailyPlanView = ({ dailyPlan, onReplan, loading }) => {
 // Topic Learning Suggestions Component
 const TopicLearningSuggestions = () => {
   const suggestions = aiRecommendationService.getTopicLearningSuggestions();
+  const [topicsProgress, setTopicsProgress] = useState(() => {
+    const saved = localStorage.getItem("TopicsToMasterProgress");
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const handleTopicToggle = (categoryIndex, topicIndex) => {
+    const key = `${categoryIndex}-${topicIndex}`;
+    const newProgress = {
+      ...topicsProgress,
+      [key]: !topicsProgress[key],
+    };
+    setTopicsProgress(newProgress);
+    localStorage.setItem("TopicsToMasterProgress", JSON.stringify(newProgress));
+    toast.success(newProgress[key] ? "Topic completed! ✅" : "Marked as incomplete");
+  };
+
+  const generateChatGPTLink = (category, topic) => {
+    let prompt = "";
+    if (category === "System Design (Must Learn)") {
+      prompt = `I'm preparing for Java Spring Boot interviews with 2 years of experience. Teach me about ${topic} in detail with real-world examples. Then give me 5 practice questions to test my understanding.`;
+    } else if (category === "Java Advanced (Important)") {
+      prompt = `Explain ${topic} for a Java developer with 2 YoE. Use real-world examples from production systems. Then quiz me with 5 challenging questions to verify my understanding.`;
+    } else if (category === "Spring Boot Advanced") {
+      prompt = `I'm a Spring Boot developer with 2 years experience. Teach me ${topic} in depth with code examples. Then test me with 5 practical scenario-based questions.`;
+    } else if (category === "DevOps & Cloud") {
+      prompt = `Explain ${topic} for a Java Spring Boot developer. Focus on practical usage and best practices. Then give me 5 questions to test my knowledge.`;
+    } else {
+      prompt = `I'm preparing for Java interviews. Explain ${topic} with examples and then test me with 5 questions.`;
+    }
+
+    return `https://chat.openai.com/?q=${encodeURIComponent(prompt)}`;
+  };
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="text-xl font-bold mb-2">Topics to Master for Job Switch</h3>
-        <p className="text-gray-600 mb-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h3 className="text-xl font-bold mb-2 dark:text-gray-100">Topics to Master for Job Switch</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
           Focus areas for Java Spring Boot Developer with 2 YoE
         </p>
       </div>
 
       {suggestions.map((category, idx) => (
-        <div key={idx} className="bg-white rounded-lg shadow p-4">
-          <h4 className="text-lg font-bold mb-2 text-purple-600">
+        <div key={idx} className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+          <h4 className="text-lg font-bold mb-2 text-purple-600 dark:text-purple-400">
             {category.category}
           </h4>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
             Estimated time: {category.estimatedTime}
           </p>
 
           <div className="mb-3">
-            <h5 className="font-semibold mb-2">Topics:</h5>
-            <ul className="list-disc list-inside space-y-1">
-              {category.topics.map((topic, tidx) => (
-                <li key={tidx} className="text-gray-700">
-                  {topic}
-                </li>
-              ))}
+            <h5 className="font-semibold mb-2 dark:text-gray-200">Topics:</h5>
+            <ul className="space-y-2">
+              {category.topics.map((topic, tidx) => {
+                const key = `${idx}-${tidx}`;
+                const isCompleted = topicsProgress[key] || false;
+                return (
+                  <li key={tidx} className="flex items-start space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={isCompleted}
+                      onChange={() => handleTopicToggle(idx, tidx)}
+                      className="mt-1"
+                    />
+                    <span className={`flex-1 ${isCompleted ? 'line-through text-gray-500 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}>
+                      {topic}
+                    </span>
+                    <a
+                      href={generateChatGPTLink(category.category, topic)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-900/50 flex items-center"
+                      title="Learn with ChatGPT"
+                    >
+                      🤖 ChatGPT
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
           <div>
-            <h5 className="font-semibold mb-2">Recommended Resources:</h5>
+            <h5 className="font-semibold mb-2 dark:text-gray-200">Recommended Resources:</h5>
             <ul className="list-disc list-inside space-y-1">
               {category.resources.map((resource, ridx) => (
-                <li key={ridx} className="text-gray-700">
+                <li key={ridx} className="text-gray-700 dark:text-gray-300">
                   {resource}
                 </li>
               ))}
