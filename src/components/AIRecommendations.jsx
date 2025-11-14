@@ -231,10 +231,9 @@ const AIRecommendations = ({ onQuestionSelect }) => {
         // Cache the updated plan
         cacheService.cache40DayPlan(auth.currentUser.uid, result.updatedPlan);
 
-        const message = result.metrics.totalIncompleteHours > 0
-          ? `Plan adjusted! Progress: ${(result.metrics.progressRate * 100).toFixed(1)}% • ${result.metrics.totalIncompleteHours.toFixed(1)}h catch-up work redistributed`
-          : `Plan adjusted! Progress: ${(result.metrics.progressRate * 100).toFixed(1)}% • All solved questions removed`;
-        toast.success(message);
+        toast.success(
+          `✅ Plan adjusted! ${result.metrics.remainingDays} days left • ${result.metrics.remainingQuestions} questions • ${result.metrics.remainingCourseHours.toFixed(1)}h course • ${result.metrics.questionsPerSession} Q/session`
+        );
       }
     } catch (error) {
       console.error("Error replanning:", error);
@@ -251,7 +250,19 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       return;
     }
 
-    if (!window.confirm("Are you sure you want to delete the old plan and create a fresh 40-day plan with updated course data?")) {
+    // Prompt for total days
+    const daysInput = window.prompt(
+      "How many days do you want to plan for?\n\nThis will create a fresh plan starting TODAY with:\n• Remaining unsolved questions (excluding already solved)\n• Remaining course sections (excluding completed)\n• Smart distribution: weekends count as 2 study sessions\n\nEnter number of days (e.g., 30, 35, 40):",
+      "40"
+    );
+
+    if (!daysInput) {
+      return; // User cancelled
+    }
+
+    const totalDays = parseInt(daysInput);
+    if (isNaN(totalDays) || totalDays < 1 || totalDays > 365) {
+      toast.error("Please enter a valid number between 1 and 365");
       return;
     }
 
@@ -266,10 +277,23 @@ const AIRecommendations = ({ onQuestionSelect }) => {
       // Clear local state
       setDailyPlan(null);
 
-      toast.success("Old plan deleted! Generating fresh plan...");
+      toast.success(`Old plan deleted! Generating fresh ${totalDays}-day plan...`);
 
-      // Generate new plan
-      await generate40DayPlan();
+      // Generate new plan with custom days
+      const plan = await aiRecommendationService.generateSmartPlan(
+        auth.currentUser.uid,
+        totalDays,
+        new Date()
+      );
+
+      setDailyPlan(plan);
+      cacheService.cache40DayPlan(auth.currentUser.uid, plan);
+
+      await aiRecommendationService.saveDailyPlan(auth.currentUser.uid, plan);
+
+      toast.success(
+        `✅ ${totalDays}-day plan created! ${plan.goals.totalQuestions} questions, ${plan.goals.totalCourseHours}h course over ${plan.goals.totalStudySessions} study sessions`
+      );
     } catch (error) {
       console.error("Error deleting and regenerating plan:", error);
       toast.error("Failed to regenerate plan");
@@ -894,12 +918,12 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
               </h4>
               {currentDay.isWeekend && (
                 <span className="text-sm text-blue-600 dark:text-blue-400">
-                  🎯 Weekend Plan: 6 questions + 3 hrs learning
+                  🎯 Weekend Plan: {currentDay.questions.length} questions + {currentDay.learningMaterials.reduce((sum, m) => sum + (m.estimatedHours || 0), 0).toFixed(1)}h learning (2 sessions)
                 </span>
               )}
               {!currentDay.isWeekend && (
                 <span className="text-sm text-purple-600 dark:text-purple-400">
-                  📚 Weekday Plan: 3 questions + 2 hrs learning
+                  📚 Weekday Plan: {currentDay.questions.length} questions + {currentDay.learningMaterials.reduce((sum, m) => sum + (m.estimatedHours || 0), 0).toFixed(1)}h learning (1 session)
                 </span>
               )}
             </div>

@@ -561,27 +561,69 @@ class AIRecommendationService {
    * Weekdays: 3 questions (1 hard, 2 medium) + 2 hours learning
    * Weekends: 6 questions (2 hard, 3 medium, 1 easy) + 4 hours learning
    */
-  async generate40DayPlan(userId) {
+  /**
+   * Generate smart plan with custom duration
+   * Distributes remaining course and questions evenly across available time slots
+   * Weekends count as 2 study sessions
+   */
+  async generateSmartPlan(userId, totalDays = 40, startDate = new Date()) {
     const analysis = await this.analyzeUserProgress(userId);
-    const startDate = new Date(this.userProfile.startDate);
-    const dailyPlans = [];
-    const totalDays = 40; // Updated from 45
-
-    // Get all unsolved questions grouped by difficulty
-    const questionsByDifficulty = this.groupQuestionsByDifficulty(analysis);
     const udemyCourse = UdemySpringBootCourse;
-    const uncompletedSections = udemyCourse.sections.filter(s => !s.completed);
 
-    // Smart course distribution tracker
+    // Calculate remaining course sections (exclude completed)
+    const uncompletedSections = udemyCourse.sections.filter(s => !s.completed);
+    const totalRemainingCourseHours = uncompletedSections.reduce(
+      (sum, s) => sum + (s.estimatedHours || 0), 0
+    );
+
+    // Calculate remaining questions (exclude solved)
+    const allUnsolvedQuestions = [];
+    Object.keys(PersonalDSARoadmap).forEach(topic => {
+      const questions = PersonalDSARoadmap[topic];
+      questions.forEach(q => {
+        if (!analysis.solvedQuestions[q.Question]) {
+          allUnsolvedQuestions.push({
+            ...q,
+            topic,
+            isStarred: analysis.starredQuestions[q.Question] || false,
+          });
+        }
+      });
+    });
+
+    // Calculate time slots: weekdays + (weekends × 2)
+    const dailyPlans = [];
+    let weekdays = 0;
+    let weekends = 0;
+
+    for (let day = 0; day < totalDays; day++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + day);
+      const dayOfWeek = currentDate.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+      if (isWeekend) weekends++;
+      else weekdays++;
+    }
+
+    const totalStudySessions = weekdays + (weekends * 2);
+
+    // Calculate per-session allocation
+    const courseHoursPerSession = totalRemainingCourseHours / totalStudySessions;
+    const questionsPerSession = Math.ceil(allUnsolvedQuestions.length / totalStudySessions);
+
+    // Track progress through content
+    let questionIndex = 0;
     let currentSectionIndex = 0;
     let currentSectionRemainingHours = uncompletedSections.length > 0
       ? uncompletedSections[0].estimatedHours
       : 0;
 
+    // Generate daily plans
     for (let day = 0; day < totalDays; day++) {
       const currentDate = new Date(startDate);
       currentDate.setDate(startDate.getDate() + day);
-      const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+      const dayOfWeek = currentDate.getDay();
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
       const dayPlan = {
@@ -598,48 +640,26 @@ class AIRecommendationService {
         },
       };
 
-      // Determine question count based on weekday/weekend
-      let hardCount, mediumCount, easyCount;
-      let learningHours;
+      // Allocate questions for this day
+      const sessionsToday = isWeekend ? 2 : 1;
+      const questionsToday = questionsPerSession * sessionsToday;
 
-      if (isWeekend) {
-        // Weekend: 6 questions (2 hard, 3 medium, 1 easy) + 3 hours learning
-        hardCount = 2;
-        mediumCount = 3;
-        easyCount = 1;
-        learningHours = 3;
-      } else {
-        // Weekday: 3 questions (1 hard, 2 medium) + 2 hours learning
-        hardCount = 1;
-        mediumCount = 2;
-        easyCount = 0;
-        learningHours = 2;
+      for (let i = 0; i < questionsToday && questionIndex < allUnsolvedQuestions.length; i++) {
+        const question = allUnsolvedQuestions[questionIndex];
+        dayPlan.questions.push({
+          ...question,
+          completed: false,
+        });
+        questionIndex++;
       }
 
-      // Get diverse questions from different topics
-      const selectedQuestions = this.selectDiverseQuestions(
-        questionsByDifficulty,
-        hardCount,
-        mediumCount,
-        easyCount,
-        analysis
-      );
+      // Allocate course hours for this day
+      let availableCourseHours = courseHoursPerSession * sessionsToday;
 
-      // Check localStorage for actual completion status
-      const { solvedQuestions } = analysis;
-      dayPlan.questions = selectedQuestions.map((q) => ({
-        ...q,
-        completed: solvedQuestions[q.Question] || false,
-      }));
-
-      // Smart course distribution with carryover
-      dayPlan.learningMaterials = [];
-      let availableLearningHours = learningHours;
-
-      while (availableLearningHours > 0 && currentSectionIndex < uncompletedSections.length) {
+      while (availableCourseHours > 0 && currentSectionIndex < uncompletedSections.length) {
         const currentSection = uncompletedSections[currentSectionIndex];
 
-        if (currentSectionRemainingHours <= availableLearningHours) {
+        if (currentSectionRemainingHours <= availableCourseHours) {
           // Can complete this section today
           dayPlan.learningMaterials.push({
             type: "Udemy Course",
@@ -649,53 +669,40 @@ class AIRecommendationService {
             estimatedHours: parseFloat(currentSectionRemainingHours.toFixed(2)),
             sectionNumber: currentSection.sectionNumber,
             totalSectionHours: currentSection.estimatedHours,
-            progress: `Completing section (${currentSectionRemainingHours}h remaining)`,
+            progress: `Completing section`,
             completed: false,
             skipped: false,
             source: "udemy",
           });
 
-          availableLearningHours -= currentSectionRemainingHours;
+          availableCourseHours -= currentSectionRemainingHours;
           currentSectionIndex++;
 
-          // Move to next section
           if (currentSectionIndex < uncompletedSections.length) {
             currentSectionRemainingHours = uncompletedSections[currentSectionIndex].estimatedHours;
           } else {
             currentSectionRemainingHours = 0;
           }
         } else {
-          // Section extends beyond today - split it
+          // Section extends beyond today
           dayPlan.learningMaterials.push({
             type: "Udemy Course",
             title: `Section ${currentSection.sectionNumber}: ${currentSection.title}`,
             description: currentSection.topics?.slice(0, 3).join(", ") + (currentSection.topics?.length > 3 ? "..." : ""),
             url: udemyCourse.courseUrl,
-            estimatedHours: parseFloat(availableLearningHours.toFixed(2)),
+            estimatedHours: parseFloat(availableCourseHours.toFixed(2)),
             sectionNumber: currentSection.sectionNumber,
             totalSectionHours: currentSection.estimatedHours,
-            progress: `Part ${Math.ceil((currentSection.estimatedHours - currentSectionRemainingHours) / availableLearningHours) + 1} (${currentSectionRemainingHours.toFixed(1)}h remaining of ${currentSection.estimatedHours}h)`,
+            progress: `Part (${currentSectionRemainingHours.toFixed(1)}h remaining)`,
             completed: false,
             skipped: false,
             source: "udemy",
             isPartial: true,
           });
 
-          currentSectionRemainingHours -= availableLearningHours;
-          availableLearningHours = 0;
+          currentSectionRemainingHours -= availableCourseHours;
+          availableCourseHours = 0;
         }
-      }
-
-      // Special day activities (only if time remains or specific days)
-      if (day % 10 === 9 && day > 0) {
-        // Revision every 10 days
-        dayPlan.learningMaterials.push({
-          type: "Revision",
-          title: "Review previous 10 days' questions and concepts",
-          estimatedHours: 1,
-          completed: false,
-          skipped: false,
-        });
       }
 
       dailyPlans.push(dayPlan);
@@ -710,19 +717,32 @@ class AIRecommendationService {
       totalDays,
       dailyPlans,
       goals: {
-        totalQuestions: analysis.totalQuestions - analysis.totalSolved,
-        weekdayQuestions: 3,
-        weekendQuestions: 6,
-        targetCompletion: 100,
+        totalQuestions: allUnsolvedQuestions.length,
+        totalCourseHours: totalRemainingCourseHours,
+        studySessionsPerWeekday: 1,
+        studySessionsPerWeekend: 2,
+        totalStudySessions: totalStudySessions,
+        questionsPerSession: questionsPerSession,
+        courseHoursPerSession: parseFloat(courseHoursPerSession.toFixed(2)),
       },
       udemyCourseProgress: {
         courseName: udemyCourse.courseTitle,
-        completedSections: udemyCourse.userProgress.completedSections,
+        remainingSections: uncompletedSections.length,
         totalSections: udemyCourse.totalSections,
       },
-      createdAt: new Date().toISOString(),
     };
   }
+
+  /**
+   * Legacy method - now calls generateSmartPlan with 40 days default
+   */
+  async generate40DayPlan(userId) {
+    return await this.generateSmartPlan(userId, 40, new Date(this.userProfile.startDate));
+  }
+
+  /**
+   * Group questions by difficulty for diverse selection
+   */
 
   /**
    * Group questions by difficulty for diverse selection
@@ -998,7 +1018,8 @@ class AIRecommendationService {
   }
 
   /**
-   * Replan based on actual progress
+   * Replan based on actual progress - uses smart redistribution
+   * Regenerates remaining days with remaining content
    */
   async replanBasedOnProgress(userId) {
     try {
@@ -1013,128 +1034,34 @@ class AIRecommendationService {
         (today - startDate) / (1000 * 60 * 60 * 24)
       );
 
-      // Calculate actual progress
-      let completedQuestions = 0;
-      let expectedQuestions = 0;
-
-      for (let i = 0; i < daysPassed && i < plan.dailyPlans.length; i++) {
-        const day = plan.dailyPlans[i];
-        completedQuestions += day.progress?.questionsCompleted || 0;
-        expectedQuestions += day.questions.length;
-      }
-
-      const progressRate = completedQuestions / expectedQuestions;
       const remainingDays = plan.totalDays - daysPassed;
 
-      // Always get fresh analysis to filter out solved questions
-      const analysis = await this.analyzeUserProgress(userId);
-
-      // Calculate incomplete learning hours from past days
-      let incompleteCourseDays = 0;
-      let totalIncompleteHours = 0;
-      for (let i = 0; i < daysPassed && i < plan.dailyPlans.length; i++) {
-        const day = plan.dailyPlans[i];
-        const materialsCompleted = day.progress?.materialsCompleted || 0;
-        const totalMaterials = day.learningMaterials?.length || 0;
-
-        if (materialsCompleted < totalMaterials) {
-          incompleteCourseDays++;
-          // Calculate incomplete hours
-          for (let j = materialsCompleted; j < day.learningMaterials.length; j++) {
-            totalIncompleteHours += day.learningMaterials[j].estimatedHours || 0;
-          }
-        }
+      if (remainingDays <= 0) {
+        return { success: false, error: "Plan already completed" };
       }
 
-      // Remove solved questions from all remaining days
-      for (let i = daysPassed; i < plan.dailyPlans.length; i++) {
-        const day = plan.dailyPlans[i];
+      // Generate smart plan for remaining days starting from today
+      const newPlan = await this.generateSmartPlan(userId, remainingDays, today);
 
-        // Filter out questions that are now solved
-        const unsolvedQuestions = day.questions.filter(
-          q => !analysis.solvedQuestions[q.Question]
-        );
-
-        // If we removed solved questions, we need to replace them
-        if (unsolvedQuestions.length < day.questions.length) {
-          const questionsNeeded = day.questions.length - unsolvedQuestions.length;
-
-          // Get new recommendations to replace solved ones
-          const newRecommendations = await this.generateRecommendations(
-            userId,
-            questionsNeeded
-          );
-
-          // Add only truly unsolved questions
-          const replacementQuestions = newRecommendations.recommendations
-            .filter(r => !analysis.solvedQuestions[r.Question])
-            .slice(0, questionsNeeded);
-
-          day.questions = [...unsolvedQuestions, ...replacementQuestions];
-        } else {
-          day.questions = unsolvedQuestions;
-        }
-      }
-
-      // Redistribute incomplete learning hours across remaining days
-      if (totalIncompleteHours > 0 && remainingDays > 0) {
-        const extraHoursPerDay = totalIncompleteHours / remainingDays;
-
-        // Adjust remaining days' learning materials to accommodate incomplete work
-        for (let i = daysPassed; i < plan.dailyPlans.length; i++) {
-          const day = plan.dailyPlans[i];
-          const isWeekend = new Date(day.date).getDay() === 0 || new Date(day.date).getDay() === 6;
-          const baseHours = isWeekend ? 3 : 2;
-
-          // Note: Add visual indicator that this day has catch-up work
-          if (day.learningMaterials && day.learningMaterials.length > 0) {
-            day.learningMaterials[0].catchUpHours = parseFloat(extraHoursPerDay.toFixed(2));
-            day.learningMaterials[0].adjustedTotalHours = parseFloat((baseHours + extraHoursPerDay).toFixed(2));
-          }
-        }
-      }
-
-      // Adjust future days based on progress if behind schedule
-      if (progressRate < 0.8 && remainingDays > 0) {
-        // Behind schedule - reduce daily load
-        const remainingQuestions =
-          analysis.totalQuestions - analysis.totalSolved;
-        const newQuestionsPerDay = Math.ceil(
-          remainingQuestions / remainingDays
-        );
-
-        for (let i = daysPassed; i < plan.dailyPlans.length; i++) {
-          const recommendations = await this.generateRecommendations(
-            userId,
-            newQuestionsPerDay
-          );
-          // Only include unsolved questions
-          plan.dailyPlans[i].questions = recommendations.recommendations
-            .filter(r => !analysis.solvedQuestions[r.Question])
-            .map(r => ({
-              ...r,
-              completed: false,
-            }));
-        }
-      }
+      // Keep completed days from old plan, replace remaining days with new plan
+      const completedDays = plan.dailyPlans.slice(0, daysPassed);
+      plan.dailyPlans = [...completedDays, ...newPlan.dailyPlans];
+      plan.goals = newPlan.goals;
+      plan.lastReplanned = new Date().toISOString();
 
       // Save updated plan
-      await this.saveDailyPlan(userId, {
-        ...plan,
-        lastReplanned: new Date().toISOString(),
-      });
+      await this.saveDailyPlan(userId, plan);
 
       return {
         success: true,
         updatedPlan: plan,
         metrics: {
-          progressRate,
-          completedQuestions,
-          expectedQuestions,
           daysPassed,
           remainingDays,
-          incompleteCourseDays,
-          totalIncompleteHours,
+          remainingQuestions: newPlan.goals.totalQuestions,
+          remainingCourseHours: newPlan.goals.totalCourseHours,
+          questionsPerSession: newPlan.goals.questionsPerSession,
+          courseHoursPerSession: newPlan.goals.courseHoursPerSession,
         },
       };
     } catch (error) {
