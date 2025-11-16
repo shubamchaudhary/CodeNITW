@@ -591,6 +591,13 @@ class AIRecommendationService {
       });
     });
 
+    // Shuffle questions randomly for variety
+    // Fisher-Yates shuffle algorithm
+    for (let i = allUnsolvedQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allUnsolvedQuestions[i], allUnsolvedQuestions[j]] = [allUnsolvedQuestions[j], allUnsolvedQuestions[i]];
+    }
+
     // Calculate time slots: weekdays + (weekends × 2)
     const dailyPlans = [];
     let weekdays = 0;

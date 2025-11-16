@@ -753,9 +753,10 @@ const AIRecommendations = ({ onQuestionSelect }) => {
 // Daily Plan View Component
 const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerate, loading }) => {
   const [selectedDay, setSelectedDay] = useState(null);
+  const [currentDate, setCurrentDate] = useState(new Date().toDateString());
 
   useEffect(() => {
-    // Auto-select current day
+    // Auto-select current day based on today's date
     const today = new Date();
     const startDate = new Date(dailyPlan.startDate);
     const daysPassed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
@@ -763,7 +764,19 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
     if (daysPassed >= 0 && daysPassed < dailyPlan.totalDays) {
       setSelectedDay(daysPassed);
     }
-  }, [dailyPlan]);
+  }, [dailyPlan, currentDate]); // Re-run when currentDate changes
+
+  useEffect(() => {
+    // Check for day change every minute
+    const interval = setInterval(() => {
+      const newDate = new Date().toDateString();
+      if (newDate !== currentDate) {
+        setCurrentDate(newDate); // This will trigger the above useEffect
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [currentDate]);
 
   const updateDayProgress = async (dayNumber, questionIndex, completed) => {
     const auth = getAuth();
