@@ -1035,8 +1035,11 @@ class AIRecommendationService {
         return { success: false, error: "No plan found" };
       }
 
+      // Normalize dates to midnight for accurate day calculation
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const startDate = new Date(plan.startDate);
+      startDate.setHours(0, 0, 0, 0);
       const daysPassed = Math.floor(
         (today - startDate) / (1000 * 60 * 60 * 24)
       );
@@ -1049,6 +1052,11 @@ class AIRecommendationService {
 
       // Generate smart plan for remaining days starting from today
       const newPlan = await this.generateSmartPlan(userId, remainingDays, today);
+
+      // Renumber the new plan's days to continue from where we left off
+      newPlan.dailyPlans.forEach((day, idx) => {
+        day.day = daysPassed + idx + 1; // Continue numbering: Day 3, Day 4, etc.
+      });
 
       // Keep completed days from old plan, replace remaining days with new plan
       const completedDays = plan.dailyPlans.slice(0, daysPassed);

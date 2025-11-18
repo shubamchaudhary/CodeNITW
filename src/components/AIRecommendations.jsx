@@ -757,12 +757,21 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
 
   useEffect(() => {
     // Auto-select current day based on today's date
+    // Normalize dates to midnight to avoid timestamp issues
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const startDate = new Date(dailyPlan.startDate);
+    startDate.setHours(0, 0, 0, 0);
+
     const daysPassed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
 
     if (daysPassed >= 0 && daysPassed < dailyPlan.totalDays) {
       setSelectedDay(daysPassed);
+    } else if (daysPassed < 0) {
+      setSelectedDay(0); // Plan hasn't started yet, show first day
+    } else {
+      setSelectedDay(dailyPlan.totalDays - 1); // Plan completed, show last day
     }
   }, [dailyPlan, currentDate]); // Re-run when currentDate changes
 
@@ -834,8 +843,12 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
   };
 
   const currentDay = dailyPlan.dailyPlans[selectedDay];
+
+  // Normalize dates to midnight for accurate day comparison
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const startDate = new Date(dailyPlan.startDate);
+  startDate.setHours(0, 0, 0, 0);
   const daysPassed = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
 
   return (
@@ -844,7 +857,7 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-xl font-bold dark:text-gray-100">Your 40-Day Study Plan</h3>
+            <h3 className="text-xl font-bold dark:text-gray-100">Your {dailyPlan.totalDays}-Day Study Plan</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {new Date(dailyPlan.startDate).toLocaleDateString()} -{" "}
               {new Date(dailyPlan.endDate).toLocaleDateString()}
