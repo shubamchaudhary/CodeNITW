@@ -13,9 +13,52 @@ class InterviewPrepService {
       TIME_TRACKING: "InterviewPrepTimeTracking",
       PROBLEM_NOTES: "InterviewPrepProblemNotes",
       STREAK_DATA: "InterviewPrepStreakData",
-      INTERVIEW_DATE: "InterviewPrepTargetDate",
       SYSTEM_DESIGN: "InterviewPrepSystemDesign",
       WEEKLY_GOALS: "InterviewPrepWeeklyGoals",
+    };
+
+    // Topic weights for interview importance (based on frequency in FAANG interviews)
+    // Higher weight = more important for interviews
+    this.TOPIC_WEIGHTS = {
+      // Core DSA - High Priority
+      "Arrays": 1.0,
+      "Strings": 0.9,
+      "Linked List": 0.8,
+      "Stack": 0.85,
+      "Queue": 0.7,
+      "Trees": 0.95,
+      "Binary Search Tree": 0.9,
+      "Heap": 0.8,
+      "Graph": 0.9,
+      "Trie": 0.7,
+
+      // Algorithms - Critical
+      "Binary Search": 0.95,
+      "Two Pointers": 0.9,
+      "Sliding Window": 0.9,
+      "Recursion": 0.85,
+      "Backtracking": 0.85,
+      "Greedy": 0.8,
+      "Bit Manipulation": 0.6,
+
+      // Dynamic Programming - Very High Priority (combine all DP)
+      "DP": 1.0,
+      "DP-Easy": 1.0,
+      "DP-Advanced": 1.0,
+      "Dynamic Programming": 1.0,
+
+      // Math & Others
+      "Math": 0.5,
+      "Sorting": 0.7,
+      "Hashing": 0.85,
+    };
+
+    // Map to combine related topics
+    this.TOPIC_GROUPS = {
+      "DP-Easy": "Dynamic Programming",
+      "DP-Advanced": "Dynamic Programming",
+      "DP": "Dynamic Programming",
+      "Binary Search Tree": "Trees",
     };
 
     this.SYSTEM_DESIGN_TOPICS = [
@@ -173,60 +216,6 @@ class InterviewPrepService {
     return streakData;
   }
 
-  // ==================== INTERVIEW COUNTDOWN ====================
-
-  getInterviewDate() {
-    try {
-      const data = localStorage.getItem(this.STORAGE_KEYS.INTERVIEW_DATE);
-      return data ? JSON.parse(data) : null;
-    } catch {
-      return null;
-    }
-  }
-
-  setInterviewDate(date, company = "Target Company") {
-    const data = {
-      date: date,
-      company: company,
-      setAt: Date.now(),
-    };
-    localStorage.setItem(this.STORAGE_KEYS.INTERVIEW_DATE, JSON.stringify(data));
-    return data;
-  }
-
-  getDaysRemaining() {
-    const interviewData = this.getInterviewDate();
-    if (!interviewData) return null;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const interviewDate = new Date(interviewData.date);
-    interviewDate.setHours(0, 0, 0, 0);
-
-    const diffTime = interviewDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
-  }
-
-  getDailyTargets() {
-    const daysRemaining = this.getDaysRemaining();
-    if (!daysRemaining || daysRemaining <= 0) return null;
-
-    const solvedQuestions = JSON.parse(localStorage.getItem("PersonalDSASolvedQuestions") || "{}");
-    const totalSolved = Object.values(solvedQuestions).filter(v => v).length;
-    const totalQuestions = 243; // From PersonalDSARoadmap
-    const remaining = totalQuestions - totalSolved;
-
-    const questionsPerDay = Math.ceil(remaining / daysRemaining);
-
-    return {
-      daysRemaining,
-      questionsPerDay,
-      remainingQuestions: remaining,
-      totalSolved,
-    };
-  }
 
   // ==================== SYSTEM DESIGN TRACKER ====================
 
@@ -288,21 +277,60 @@ class InterviewPrepService {
 
   calculateReadinessScore() {
     const solvedQuestions = JSON.parse(localStorage.getItem("PersonalDSASolvedQuestions") || "{}");
+
+    // Calculate weighted DSA score based on topic importance
+    let weightedSolved = 0;
+    let totalWeight = 0;
+    const groupedStats = {};
+
+    Object.entries(PersonalDSARoadmap).forEach(([topic, questions]) => {
+      // Get the group name (e.g., DP-Easy -> Dynamic Programming)
+      const groupName = this.TOPIC_GROUPS[topic] || topic;
+
+      // Get weight for this topic (default 0.7 if not specified)
+      const weight = this.TOPIC_WEIGHTS[topic] || this.TOPIC_WEIGHTS[groupName] || 0.7;
+
+      const solved = questions.filter(q => solvedQuestions[q.Question]).length;
+      const total = questions.length;
+
+      // Group stats for combined topics
+      if (!groupedStats[groupName]) {
+        groupedStats[groupName] = { solved: 0, total: 0, weight };
+      }
+      groupedStats[groupName].solved += solved;
+      groupedStats[groupName].total += total;
+
+      // Calculate weighted score
+      weightedSolved += solved * weight;
+      totalWeight += total * weight;
+    });
+
     const totalSolved = Object.values(solvedQuestions).filter(v => v).length;
-    const totalQuestions = 243;
+    const totalQuestions = Object.values(PersonalDSARoadmap).reduce((sum, q) => sum + q.length, 0);
 
     const systemDesign = this.getSystemDesignProgress();
     const completedSD = Object.values(systemDesign).filter(s => s.completed).length;
     const totalSD = this.SYSTEM_DESIGN_TOPICS.length;
 
     const streakData = this.getStreakData();
-    const timeTracking = this.getTimeTracking();
 
-    // Calculate component scores
-    const dsaScore = (totalSolved / totalQuestions) * 40; // 40% weight
+    // Calculate component scores with weighted DSA
+    const weightedDsaPercentage = totalWeight > 0 ? (weightedSolved / totalWeight) : 0;
+    const dsaScore = weightedDsaPercentage * 40; // 40% weight
     const sdScore = (completedSD / totalSD) * 30; // 30% weight
     const consistencyScore = Math.min(streakData.currentStreak / 7, 1) * 15; // 15% weight
-    const practiceScore = Math.min(Object.keys(timeTracking).length / 50, 1) * 15; // 15% weight
+
+    // Practice depth score based on coverage of high-weight topics
+    const highPriorityTopics = Object.entries(groupedStats)
+      .filter(([_, data]) => data.weight >= 0.9)
+      .map(([name, data]) => ({
+        name,
+        percentage: data.total > 0 ? (data.solved / data.total) * 100 : 0
+      }));
+    const avgHighPriorityCompletion = highPriorityTopics.length > 0
+      ? highPriorityTopics.reduce((sum, t) => sum + t.percentage, 0) / highPriorityTopics.length
+      : 0;
+    const practiceScore = (avgHighPriorityCompletion / 100) * 15; // 15% weight
 
     const totalScore = Math.round(dsaScore + sdScore + consistencyScore + practiceScore);
 
@@ -320,7 +348,63 @@ class InterviewPrepService {
         sdCompleted: completedSD,
         totalSD: totalSD,
         currentStreak: streakData.currentStreak,
+        weightedCompletion: Math.round(weightedDsaPercentage * 100),
       },
+      groupedStats,
+    };
+  }
+
+  // Get interview date from Smart Plan
+  getSmartPlanData() {
+    try {
+      const planData = localStorage.getItem("aiDailyPlan");
+      if (planData) {
+        return JSON.parse(planData);
+      }
+    } catch (e) {
+      console.error("Error reading smart plan:", e);
+    }
+    return null;
+  }
+
+  // Get days remaining from Smart Plan
+  getDaysRemainingFromPlan() {
+    const plan = this.getSmartPlanData();
+    if (!plan || !plan.endDate) return null;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endDate = new Date(plan.endDate);
+    endDate.setHours(0, 0, 0, 0);
+
+    const diffTime = endDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return Math.max(0, diffDays);
+  }
+
+  // Get daily targets from Smart Plan
+  getDailyTargetsFromPlan() {
+    const plan = this.getSmartPlanData();
+    const daysRemaining = this.getDaysRemainingFromPlan();
+
+    if (!plan || daysRemaining === null) return null;
+
+    const solvedQuestions = JSON.parse(localStorage.getItem("PersonalDSASolvedQuestions") || "{}");
+    const totalSolved = Object.values(solvedQuestions).filter(v => v).length;
+    const totalQuestions = plan.goals?.totalQuestions || 243;
+    const remaining = Math.max(0, totalQuestions - totalSolved);
+
+    const questionsPerDay = daysRemaining > 0 ? Math.ceil(remaining / daysRemaining) : remaining;
+
+    return {
+      daysRemaining,
+      questionsPerDay,
+      remainingQuestions: remaining,
+      totalSolved,
+      totalDays: plan.totalDays,
+      startDate: plan.startDate,
+      endDate: plan.endDate,
     };
   }
 
@@ -400,7 +484,6 @@ class InterviewPrepService {
         timeTracking: this.getTimeTracking(),
         problemNotes: this.getProblemNotes(),
         streakData: this.getStreakData(),
-        interviewDate: this.getInterviewDate(),
         systemDesign: this.getSystemDesignProgress(),
         updatedAt: serverTimestamp(),
       };
@@ -434,9 +517,6 @@ class InterviewPrepService {
         }
         if (data.streakData) {
           localStorage.setItem(this.STORAGE_KEYS.STREAK_DATA, JSON.stringify(data.streakData));
-        }
-        if (data.interviewDate) {
-          localStorage.setItem(this.STORAGE_KEYS.INTERVIEW_DATE, JSON.stringify(data.interviewDate));
         }
         if (data.systemDesign) {
           localStorage.setItem(this.STORAGE_KEYS.SYSTEM_DESIGN, JSON.stringify(data.systemDesign));

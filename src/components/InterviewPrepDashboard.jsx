@@ -37,7 +37,7 @@ const InterviewPrepDashboard = () => {
   const loadAllData = () => {
     setReadinessScore(interviewPrepService.calculateReadinessScore());
     setStreakData(interviewPrepService.updateStreak());
-    setDailyTargets(interviewPrepService.getDailyTargets());
+    setDailyTargets(interviewPrepService.getDailyTargetsFromPlan());
     setWeaknessData(interviewPrepService.getWeaknessAnalysis());
     setSystemDesignTopics(interviewPrepService.getSystemDesignTopics());
     setRevisionList(interviewPrepService.getProblemsForRevision());
@@ -105,7 +105,6 @@ const InterviewPrepDashboard = () => {
       <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
         {[
           { id: "overview", label: "Overview", icon: FaChartLine },
-          { id: "streak", label: "Streak", icon: FaFire },
           { id: "weakness", label: "Weakness Map", icon: FaExclamationTriangle },
           { id: "systemdesign", label: "System Design", icon: FaBook },
           { id: "revision", label: "Revision", icon: FaRedo },
@@ -132,11 +131,7 @@ const InterviewPrepDashboard = () => {
             readinessScore={readinessScore}
             streakData={streakData}
             dailyTargets={dailyTargets}
-            onSetInterview={() => setActiveSection("countdown")}
           />
-        )}
-        {activeSection === "streak" && (
-          <StreakSection streakData={streakData} />
         )}
         {activeSection === "weakness" && (
           <WeaknessSection weaknessData={weaknessData} />
@@ -156,27 +151,8 @@ const InterviewPrepDashboard = () => {
 };
 
 // ==================== OVERVIEW SECTION ====================
-const OverviewSection = ({ readinessScore, streakData, dailyTargets, onSetInterview }) => {
-  const [interviewDate, setInterviewDate] = useState("");
-  const [showDateInput, setShowDateInput] = useState(false);
-
-  useEffect(() => {
-    const saved = interviewPrepService.getInterviewDate();
-    if (saved) {
-      setInterviewDate(saved.date);
-    }
-  }, []);
-
-  const handleSetDate = () => {
-    if (interviewDate) {
-      interviewPrepService.setInterviewDate(interviewDate);
-      setShowDateInput(false);
-      toast.success("Interview date set!");
-      window.location.reload(); // Refresh to update targets
-    }
-  };
-
-  const daysRemaining = interviewPrepService.getDaysRemaining();
+const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
+  const daysRemaining = dailyTargets?.daysRemaining;
 
   return (
     <motion.div
@@ -236,7 +212,7 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets, onSetInterv
             <FaCalendarAlt className="text-blue-500 mr-2" />
             <span className="text-sm text-blue-600 dark:text-blue-400">Days Left</span>
           </div>
-          {daysRemaining !== null ? (
+          {daysRemaining !== null && daysRemaining !== undefined ? (
             <>
               <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
                 {daysRemaining}
@@ -246,12 +222,9 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets, onSetInterv
               </p>
             </>
           ) : (
-            <button
-              onClick={() => setShowDateInput(true)}
-              className="text-sm text-blue-600 dark:text-blue-400 underline"
-            >
-              Set interview date
-            </button>
+            <p className="text-sm text-blue-600 dark:text-blue-400">
+              Generate a plan first
+            </p>
           )}
         </div>
 
@@ -284,33 +257,6 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets, onSetInterv
         </div>
       </div>
 
-      {/* Set Interview Date Modal */}
-      {showDateInput && (
-        <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
-          <h4 className="font-semibold mb-3 dark:text-gray-200">Set Interview Date</h4>
-          <div className="flex gap-2">
-            <input
-              type="date"
-              value={interviewDate}
-              onChange={(e) => setInterviewDate(e.target.value)}
-              className="flex-1 px-3 py-2 border rounded-lg dark:bg-slate-600 dark:border-slate-500 dark:text-white"
-            />
-            <button
-              onClick={handleSetDate}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Set
-            </button>
-            <button
-              onClick={() => setShowDateInput(false)}
-              className="px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded-lg hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Daily Target Alert */}
       {dailyTargets && dailyTargets.questionsPerDay > 6 && (
         <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-4 rounded-lg">
@@ -318,112 +264,11 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets, onSetInterv
             <FaExclamationTriangle className="text-red-500 mr-2" />
             <span className="text-red-700 dark:text-red-300 font-medium">
               High daily target! You need to solve {dailyTargets.questionsPerDay} problems/day.
-              Consider extending your timeline or increasing study hours.
+              Consider adjusting your plan duration.
             </span>
           </div>
         </div>
       )}
-    </motion.div>
-  );
-};
-
-// ==================== STREAK SECTION ====================
-const StreakSection = ({ streakData }) => {
-  const [activityMap, setActivityMap] = useState({});
-
-  useEffect(() => {
-    if (streakData) {
-      setActivityMap(streakData.activityMap || {});
-    }
-  }, [streakData]);
-
-  // Generate last 12 weeks of dates
-  const generateCalendarData = () => {
-    const weeks = [];
-    const today = new Date();
-
-    for (let w = 11; w >= 0; w--) {
-      const week = [];
-      for (let d = 0; d < 7; d++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - (w * 7 + (6 - d)));
-        const dateStr = date.toISOString().split("T")[0];
-        const count = activityMap[dateStr] || 0;
-        week.push({ date: dateStr, count });
-      }
-      weeks.push(week);
-    }
-    return weeks;
-  };
-
-  const getColorClass = (count) => {
-    if (count === 0) return "bg-gray-100 dark:bg-slate-700";
-    if (count <= 2) return "bg-green-200 dark:bg-green-900";
-    if (count <= 4) return "bg-green-400 dark:bg-green-700";
-    if (count <= 6) return "bg-green-500 dark:bg-green-600";
-    return "bg-green-600 dark:bg-green-500";
-  };
-
-  const weeks = generateCalendarData();
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-6"
-    >
-      {/* Streak Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg text-center">
-          <FaFire className="text-3xl text-orange-500 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-            {streakData?.currentStreak || 0}
-          </p>
-          <p className="text-sm text-orange-600 dark:text-orange-400">Current Streak</p>
-        </div>
-        <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg text-center">
-          <FaTrophy className="text-3xl text-yellow-500 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
-            {streakData?.longestStreak || 0}
-          </p>
-          <p className="text-sm text-yellow-600 dark:text-yellow-400">Longest Streak</p>
-        </div>
-        <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg text-center">
-          <FaCalendarAlt className="text-3xl text-green-500 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-            {streakData?.totalDaysActive || 0}
-          </p>
-          <p className="text-sm text-green-600 dark:text-green-400">Days Active</p>
-        </div>
-      </div>
-
-      {/* Activity Heatmap */}
-      <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
-        <h4 className="font-semibold mb-4 dark:text-gray-200">Activity (Last 12 Weeks)</h4>
-        <div className="flex gap-1 overflow-x-auto pb-2">
-          {weeks.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-1">
-              {week.map((day, di) => (
-                <div
-                  key={di}
-                  className={`w-3 h-3 rounded-sm ${getColorClass(day.count)}`}
-                  title={`${day.date}: ${day.count} problems`}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center justify-end gap-2 mt-3 text-xs text-gray-500 dark:text-gray-400">
-          <span>Less</span>
-          <div className="w-3 h-3 rounded-sm bg-gray-100 dark:bg-slate-700" />
-          <div className="w-3 h-3 rounded-sm bg-green-200 dark:bg-green-900" />
-          <div className="w-3 h-3 rounded-sm bg-green-400 dark:bg-green-700" />
-          <div className="w-3 h-3 rounded-sm bg-green-500 dark:bg-green-600" />
-          <div className="w-3 h-3 rounded-sm bg-green-600 dark:bg-green-500" />
-          <span>More</span>
-        </div>
-      </div>
     </motion.div>
   );
 };
