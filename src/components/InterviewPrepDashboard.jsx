@@ -36,29 +36,19 @@ const InterviewPrepDashboard = () => {
 
   // Listen for progress updates from other components
   useEffect(() => {
-    const handleCourseProgress = () => {
-      // Refresh readiness score when course materials are completed
-      setReadinessScore(interviewPrepService.calculateReadinessScore());
-    };
-
-    const handleDSAProgress = () => {
-      // Refresh all data when DSA questions are solved
+    const handleProgressUpdate = () => {
+      // Refresh all data when any progress is updated
       loadAllData();
     };
 
-    const handleStorageChange = () => {
-      // Refresh when localStorage changes (cross-tab)
-      loadAllData();
-    };
-
-    window.addEventListener("courseProgressUpdated", handleCourseProgress);
-    window.addEventListener("dsaProgressUpdated", handleDSAProgress);
-    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("courseProgressUpdated", handleProgressUpdate);
+    window.addEventListener("dsaProgressUpdated", handleProgressUpdate);
+    window.addEventListener("storage", handleProgressUpdate);
 
     return () => {
-      window.removeEventListener("courseProgressUpdated", handleCourseProgress);
-      window.removeEventListener("dsaProgressUpdated", handleDSAProgress);
-      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("courseProgressUpdated", handleProgressUpdate);
+      window.removeEventListener("dsaProgressUpdated", handleProgressUpdate);
+      window.removeEventListener("storage", handleProgressUpdate);
     };
   }, []);
 
@@ -214,7 +204,7 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
             <div className="text-right">
               <div className="space-y-1 text-sm">
                 <p>DSA: {readinessScore.breakdown.dsa}/60 ({readinessScore.percentages?.dsa || 0}%)</p>
-                <p>Course: {readinessScore.breakdown.course}/25 ({readinessScore.details?.materialsCompleted || 0}/{readinessScore.details?.totalMaterials || 0} done)</p>
+                <p>Course: {readinessScore.breakdown.course}/25 ({readinessScore.details?.courseHoursCompleted || 0}/{readinessScore.details?.courseHoursTotal || 0}h)</p>
                 <p>System Design: {readinessScore.breakdown.systemDesign}/10 ({readinessScore.percentages?.systemDesign || 0}%)</p>
                 <p>Consistency: {readinessScore.breakdown.consistency}/5 ({readinessScore.percentages?.consistency || 0}%)</p>
               </div>
@@ -275,17 +265,17 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
           </p>
         </div>
 
-        {/* Course Materials */}
+        {/* Course Hours */}
         <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
           <div className="flex items-center mb-2">
             <FaBook className="text-purple-500 mr-2" />
             <span className="text-sm text-purple-600 dark:text-purple-400">Course</span>
           </div>
           <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
-            {readinessScore?.details?.materialsCompleted || 0}
+            {readinessScore?.details?.courseHoursCompleted || 0}h
           </p>
           <p className="text-xs text-purple-600 dark:text-purple-400">
-            of {readinessScore?.details?.totalMaterials || 0} materials
+            of {readinessScore?.details?.courseHoursTotal || 0}h total
           </p>
         </div>
       </div>

@@ -259,36 +259,10 @@ class InterviewPrepService {
 
   // ==================== COURSE HOURS TRACKING ====================
 
-  getCourseHours() {
-    try {
-      const data = localStorage.getItem(this.STORAGE_KEYS.COURSE_HOURS);
-      if (data) {
-        return JSON.parse(data);
-      }
-    } catch (e) {
-      console.error("Error reading course hours:", e);
-    }
-    // Return default values if no data
-    return {
-      completed: this.COURSE_CONFIG.defaultCompleted,
-      total: this.COURSE_CONFIG.totalHours,
-    };
-  }
-
-  updateCourseHours(completedHours) {
-    const data = {
-      completed: Math.min(completedHours, this.COURSE_CONFIG.totalHours),
-      total: this.COURSE_CONFIG.totalHours,
-      updatedAt: Date.now(),
-    };
-    localStorage.setItem(this.STORAGE_KEYS.COURSE_HOURS, JSON.stringify(data));
-
-    // Dispatch event to notify dashboard
-    window.dispatchEvent(new CustomEvent("courseProgressUpdated", {
-      detail: data
-    }));
-
-    return data;
+  // Get base hours completed before starting the plan (user's initial progress)
+  getBaseCompletedHours() {
+    // User has already completed 3 hours of the course before starting the plan
+    return 3;
   }
 
   // ==================== WEAKNESS ANALYSIS ====================
@@ -354,17 +328,30 @@ class InterviewPrepService {
     const completedSD = Object.values(systemDesign).filter(s => s.completed).length;
     const totalSD = this.SYSTEM_DESIGN_TOPICS.length;
 
-    // Get course completion from learning materials in Smart Plan
+    // Get course completion from learning materials in Smart Plan (by hours)
     const planData = this.getSmartPlanData();
     let courseCompletion = 0;
-    let completedMaterials = 0;
-    let totalMaterials = 0;
+    let completedHours = 0;
+    let totalHours = 0;
     let todayQuestions = 0;
+
+    // Get base hours completed before plan started (user's initial progress)
+    const baseHours = this.getBaseCompletedHours();
+
     if (planData && planData.dailyPlans) {
       const allMaterials = planData.dailyPlans.flatMap(day => day.learningMaterials || []);
-      completedMaterials = allMaterials.filter(m => m.completed).length;
-      totalMaterials = allMaterials.length;
-      courseCompletion = totalMaterials > 0 ? completedMaterials / totalMaterials : 0;
+
+      // Calculate total and completed hours from materials
+      totalHours = allMaterials.reduce((sum, m) => sum + (parseFloat(m.estimatedHours) || 0), 0);
+      completedHours = allMaterials
+        .filter(m => m.completed)
+        .reduce((sum, m) => sum + (parseFloat(m.estimatedHours) || 0), 0);
+
+      // Add base hours to completed
+      completedHours += baseHours;
+      totalHours += baseHours;
+
+      courseCompletion = totalHours > 0 ? completedHours / totalHours : 0;
 
       // Get today's questions count
       const today = new Date();
@@ -375,6 +362,10 @@ class InterviewPrepService {
       if (dayIndex >= 0 && dayIndex < planData.dailyPlans.length) {
         todayQuestions = planData.dailyPlans[dayIndex].questions?.length || 0;
       }
+    } else {
+      // If no plan, just show base hours
+      completedHours = baseHours;
+      totalHours = baseHours;
     }
 
     // Streak and recent activity
@@ -441,8 +432,8 @@ class InterviewPrepService {
         totalProblems: totalQuestions,
         sdCompleted: completedSD,
         totalSD: totalSD,
-        materialsCompleted: completedMaterials,
-        totalMaterials: totalMaterials,
+        courseHoursCompleted: Math.round(completedHours * 10) / 10,
+        courseHoursTotal: Math.round(totalHours * 10) / 10,
         todayQuestions: todayQuestions,
         currentStreak: streakData.currentStreak,
         recentSolved: recentSolved,
