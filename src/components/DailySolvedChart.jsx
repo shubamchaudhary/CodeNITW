@@ -220,6 +220,20 @@ const DailySolvedChart = () => {
       y: entry.totalSolved,
     }));
 
+    // Prepare benchmark/target data (4 for weekdays, 6 for weekends)
+    let benchmarkTotal = 0;
+    const benchmarkData = chartData.map((entry) => {
+      const date = new Date(entry.date);
+      const dayOfWeek = date.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      const target = isWeekend ? 6 : 4;
+      benchmarkTotal += target;
+      return {
+        x: date,
+        y: benchmarkTotal,
+      };
+    });
+
     chartInstance.current = new Chart(ctx, {
       type: "bar",
       data: {
@@ -233,7 +247,7 @@ const DailySolvedChart = () => {
             borderRadius: 6,
             hoverBackgroundColor: "#7c3aed",
             yAxisID: "y",
-            order: 2,
+            order: 3,
           },
           {
             label: "Total Progress",
@@ -249,6 +263,24 @@ const DailySolvedChart = () => {
             pointBorderWidth: 2,
             pointRadius: 4,
             pointHoverRadius: 6,
+            yAxisID: "y1",
+            order: 2,
+          },
+          {
+            label: "Target",
+            data: benchmarkData,
+            type: "line",
+            borderColor: "#f59e0b",
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            borderDash: [6, 4],
+            fill: false,
+            tension: 0.4,
+            pointBackgroundColor: "#f59e0b",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 1,
+            pointRadius: 3,
+            pointHoverRadius: 5,
             yAxisID: "y1",
             order: 1,
           },
@@ -313,6 +345,9 @@ const DailySolvedChart = () => {
               label: function (context) {
                 if (context.dataset.label === "Total Progress") {
                   return `Total: ${context.parsed.y} problems`;
+                }
+                if (context.dataset.label === "Target") {
+                  return `Target: ${context.parsed.y} problems`;
                 }
                 return `Daily: ${context.parsed.y} problems`;
               },
