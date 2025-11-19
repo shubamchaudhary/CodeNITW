@@ -398,9 +398,24 @@ class InterviewPrepService {
   // Get interview date from Smart Plan
   getSmartPlanData() {
     try {
-      const planData = localStorage.getItem("aiDailyPlan");
-      if (planData) {
-        return JSON.parse(planData);
+      const auth = getAuth();
+      const userId = auth.currentUser?.uid || "local_user";
+      const cacheKey = `40day_plan_${userId}`;
+      const cached = localStorage.getItem(cacheKey);
+
+      if (cached) {
+        const cacheData = JSON.parse(cached);
+        // CacheService wraps values with timestamp and expiresAt
+        // Check if it's wrapped or raw data
+        if (cacheData.value) {
+          // Check expiration
+          if (cacheData.expiresAt && Date.now() > cacheData.expiresAt) {
+            return null;
+          }
+          return cacheData.value;
+        }
+        // If no wrapper, return raw data
+        return cacheData;
       }
     } catch (e) {
       console.error("Error reading smart plan:", e);
