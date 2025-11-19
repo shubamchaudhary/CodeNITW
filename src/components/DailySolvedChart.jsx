@@ -205,22 +205,52 @@ const DailySolvedChart = () => {
     const tickColor = isDarkMode ? "#9ca3af" : "#6b7280";
 
     // Create gradient for bars
-    const gradient = ctx.createLinearGradient(0, ctx.canvas.height, 0, 0);
-    gradient.addColorStop(0, "rgba(139, 92, 246, 0.3)");
-    gradient.addColorStop(1, "rgba(139, 92, 246, 0.8)");
+    const barGradient = ctx.createLinearGradient(0, ctx.canvas.height, 0, 0);
+    barGradient.addColorStop(0, "rgba(139, 92, 246, 0.3)");
+    barGradient.addColorStop(1, "rgba(139, 92, 246, 0.8)");
+
+    // Create gradient for line area
+    const lineGradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+    lineGradient.addColorStop(0, "rgba(59, 130, 246, 0.4)");
+    lineGradient.addColorStop(1, "rgba(59, 130, 246, 0.05)");
+
+    // Prepare cumulative data for line
+    const cumulativeData = chartData.map((entry) => ({
+      x: new Date(entry.date),
+      y: entry.totalSolved,
+    }));
 
     chartInstance.current = new Chart(ctx, {
       type: "bar",
       data: {
         datasets: [
           {
-            label: "Problems Solved",
+            label: "Daily Solved",
             data: formattedData,
-            backgroundColor: gradient,
+            backgroundColor: barGradient,
             borderColor: "#8b5cf6",
             borderWidth: 2,
             borderRadius: 6,
             hoverBackgroundColor: "#7c3aed",
+            yAxisID: "y",
+            order: 2,
+          },
+          {
+            label: "Total Progress",
+            data: cumulativeData,
+            type: "line",
+            borderColor: "#3b82f6",
+            backgroundColor: lineGradient,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: "#3b82f6",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            yAxisID: "y1",
+            order: 1,
           },
         ],
       },
@@ -281,7 +311,10 @@ const DailySolvedChart = () => {
                 });
               },
               label: function (context) {
-                return `Solved: ${context.parsed.y} problems`;
+                if (context.dataset.label === "Total Progress") {
+                  return `Total: ${context.parsed.y} problems`;
+                }
+                return `Daily: ${context.parsed.y} problems`;
               },
             },
           },
@@ -319,10 +352,11 @@ const DailySolvedChart = () => {
           },
           y: {
             beginAtZero: true,
+            position: "left",
             title: {
               display: true,
-              text: "Problems Solved",
-              color: titleColor,
+              text: "Daily Solved",
+              color: "#8b5cf6",
               font: {
                 size: window.innerWidth < 768 ? 10 : 12,
                 weight: "500",
@@ -333,11 +367,33 @@ const DailySolvedChart = () => {
               lineWidth: 1,
             },
             ticks: {
-              color: tickColor,
+              color: "#8b5cf6",
               font: {
                 size: window.innerWidth < 768 ? 9 : 11,
               },
               stepSize: 1,
+            },
+          },
+          y1: {
+            beginAtZero: true,
+            position: "right",
+            title: {
+              display: true,
+              text: "Total Progress",
+              color: "#3b82f6",
+              font: {
+                size: window.innerWidth < 768 ? 10 : 12,
+                weight: "500",
+              },
+            },
+            grid: {
+              drawOnChartArea: false,
+            },
+            ticks: {
+              color: "#3b82f6",
+              font: {
+                size: window.innerWidth < 768 ? 9 : 11,
+              },
             },
           },
         },
