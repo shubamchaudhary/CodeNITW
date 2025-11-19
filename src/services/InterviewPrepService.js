@@ -15,6 +15,13 @@ class InterviewPrepService {
       STREAK_DATA: "InterviewPrepStreakData",
       SYSTEM_DESIGN: "InterviewPrepSystemDesign",
       WEEKLY_GOALS: "InterviewPrepWeeklyGoals",
+      COURSE_HOURS: "InterviewPrepCourseHours",
+    };
+
+    // Course configuration
+    this.COURSE_CONFIG = {
+      totalHours: 50, // Total course duration in hours
+      defaultCompleted: 3, // User's current progress
     };
 
     // Topic weights for interview importance (based on frequency in FAANG interviews)
@@ -250,6 +257,40 @@ class InterviewPrepService {
     }));
   }
 
+  // ==================== COURSE HOURS TRACKING ====================
+
+  getCourseHours() {
+    try {
+      const data = localStorage.getItem(this.STORAGE_KEYS.COURSE_HOURS);
+      if (data) {
+        return JSON.parse(data);
+      }
+    } catch (e) {
+      console.error("Error reading course hours:", e);
+    }
+    // Return default values if no data
+    return {
+      completed: this.COURSE_CONFIG.defaultCompleted,
+      total: this.COURSE_CONFIG.totalHours,
+    };
+  }
+
+  updateCourseHours(completedHours) {
+    const data = {
+      completed: Math.min(completedHours, this.COURSE_CONFIG.totalHours),
+      total: this.COURSE_CONFIG.totalHours,
+      updatedAt: Date.now(),
+    };
+    localStorage.setItem(this.STORAGE_KEYS.COURSE_HOURS, JSON.stringify(data));
+
+    // Dispatch event to notify dashboard
+    window.dispatchEvent(new CustomEvent("courseProgressUpdated", {
+      detail: data
+    }));
+
+    return data;
+  }
+
   // ==================== WEAKNESS ANALYSIS ====================
 
   getWeaknessAnalysis() {
@@ -313,15 +354,9 @@ class InterviewPrepService {
     const completedSD = Object.values(systemDesign).filter(s => s.completed).length;
     const totalSD = this.SYSTEM_DESIGN_TOPICS.length;
 
-    // Get course completion from Smart Plan
-    const planData = this.getSmartPlanData();
-    let courseCompletion = 0;
-    if (planData && planData.dailyPlans) {
-      const allMaterials = planData.dailyPlans.flatMap(day => day.learningMaterials || []);
-      const completedMaterials = allMaterials.filter(m => m.completed).length;
-      const totalMaterials = allMaterials.length;
-      courseCompletion = totalMaterials > 0 ? completedMaterials / totalMaterials : 0;
-    }
+    // Get course completion based on hours completed
+    const courseHours = this.getCourseHours();
+    const courseCompletion = courseHours.completed / courseHours.total;
 
     // Streak and recent activity
     const streakData = this.getStreakData();
@@ -338,11 +373,11 @@ class InterviewPrepService {
     const sdPercentage = completedSD / totalSD;
     const consistencyPercentage = Math.min(streakData.currentStreak / 7, 1) * 0.5 + recentActivityScore * 0.5;
 
-    // Weighted scores (50% DSA, 30% Course, 10% SD, 10% Consistency)
-    const dsaScore = dsaPercentage * 50;
-    const courseScore = coursePercentage * 30;
+    // Weighted scores (60% DSA, 25% Course, 10% SD, 5% Consistency)
+    const dsaScore = dsaPercentage * 60;
+    const courseScore = coursePercentage * 25;
     const sdScore = sdPercentage * 10;
-    const consistencyScore = consistencyPercentage * 10;
+    const consistencyScore = consistencyPercentage * 5;
 
     // Base arithmetic sum
     const baseSum = dsaScore + courseScore + sdScore + consistencyScore;
@@ -387,6 +422,8 @@ class InterviewPrepService {
         totalProblems: totalQuestions,
         sdCompleted: completedSD,
         totalSD: totalSD,
+        courseHoursCompleted: courseHours.completed,
+        courseHoursTotal: courseHours.total,
         currentStreak: streakData.currentStreak,
         recentSolved: recentSolved,
         balanceMultiplier: Math.round(balanceMultiplier * 100),

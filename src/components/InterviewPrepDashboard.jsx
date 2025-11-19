@@ -207,16 +207,16 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
               </p>
               {readinessScore.details?.balanceMultiplier < 100 && (
                 <p className="text-xs opacity-60 mt-1">
-                  Balance: {readinessScore.details.balanceMultiplier}% (improve weak areas)
+                  Score multiplier: {readinessScore.details.balanceMultiplier}% (balanced prep gives higher score)
                 </p>
               )}
             </div>
             <div className="text-right">
               <div className="space-y-1 text-sm">
-                <p>DSA: {readinessScore.breakdown.dsa}/50 ({readinessScore.percentages?.dsa || 0}%)</p>
-                <p>Course: {readinessScore.breakdown.course}/30 ({readinessScore.percentages?.course || 0}%)</p>
+                <p>DSA: {readinessScore.breakdown.dsa}/60 ({readinessScore.percentages?.dsa || 0}%)</p>
+                <p>Course: {readinessScore.breakdown.course}/25 ({readinessScore.details?.courseHoursCompleted || 0}/{readinessScore.details?.courseHoursTotal || 50}h)</p>
                 <p>System Design: {readinessScore.breakdown.systemDesign}/10 ({readinessScore.percentages?.systemDesign || 0}%)</p>
-                <p>Consistency: {readinessScore.breakdown.consistency}/10 ({readinessScore.percentages?.consistency || 0}%)</p>
+                <p>Consistency: {readinessScore.breakdown.consistency}/5 ({readinessScore.percentages?.consistency || 0}%)</p>
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
                 {daysRemaining}
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-400">
-                {dailyTargets ? `${dailyTargets.questionsPerDay}/day needed` : ""}
+                {dailyTargets ? `${dailyTargets.questionsPerDay} problems/day to finish` : ""}
               </p>
             </>
           ) : (
@@ -275,17 +275,29 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
           </p>
         </div>
 
-        {/* System Design */}
+        {/* Course Hours */}
         <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
           <div className="flex items-center mb-2">
             <FaBook className="text-purple-500 mr-2" />
-            <span className="text-sm text-purple-600 dark:text-purple-400">SD Topics</span>
+            <span className="text-sm text-purple-600 dark:text-purple-400">Course Hours</span>
           </div>
-          <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
-            {readinessScore?.details?.sdCompleted || 0}
-          </p>
+          <div className="flex items-center">
+            <input
+              type="number"
+              min="0"
+              max={readinessScore?.details?.courseHoursTotal || 50}
+              value={readinessScore?.details?.courseHoursCompleted || 0}
+              onChange={(e) => {
+                const hours = parseFloat(e.target.value) || 0;
+                interviewPrepService.updateCourseHours(hours);
+                setReadinessScore(interviewPrepService.calculateReadinessScore());
+              }}
+              className="w-16 text-2xl font-bold text-purple-700 dark:text-purple-300 bg-transparent border-b border-purple-300 dark:border-purple-600 text-center focus:outline-none focus:border-purple-500"
+            />
+            <span className="text-sm text-purple-600 dark:text-purple-400 ml-1">h</span>
+          </div>
           <p className="text-xs text-purple-600 dark:text-purple-400">
-            of {readinessScore?.details?.totalSD || 15}
+            of {readinessScore?.details?.courseHoursTotal || 50}h total
           </p>
         </div>
       </div>
