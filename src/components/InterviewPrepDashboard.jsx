@@ -43,11 +43,13 @@ const InterviewPrepDashboard = () => {
 
     window.addEventListener("courseProgressUpdated", handleProgressUpdate);
     window.addEventListener("dsaProgressUpdated", handleProgressUpdate);
+    window.addEventListener("systemDesignUpdated", handleProgressUpdate);
     window.addEventListener("storage", handleProgressUpdate);
 
     return () => {
       window.removeEventListener("courseProgressUpdated", handleProgressUpdate);
       window.removeEventListener("dsaProgressUpdated", handleProgressUpdate);
+      window.removeEventListener("systemDesignUpdated", handleProgressUpdate);
       window.removeEventListener("storage", handleProgressUpdate);
     };
   }, []);

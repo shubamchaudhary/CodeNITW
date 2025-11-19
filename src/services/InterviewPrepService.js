@@ -243,6 +243,12 @@ class InterviewPrepService {
       updatedAt: Date.now(),
     };
     localStorage.setItem(this.STORAGE_KEYS.SYSTEM_DESIGN, JSON.stringify(progress));
+
+    // Dispatch event to notify dashboard to refresh
+    window.dispatchEvent(new CustomEvent("systemDesignUpdated", {
+      detail: { topicId, ...updates }
+    }));
+
     return progress;
   }
 
