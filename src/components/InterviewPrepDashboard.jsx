@@ -34,6 +34,34 @@ const InterviewPrepDashboard = () => {
     loadAllData();
   }, []);
 
+  // Listen for progress updates from other components
+  useEffect(() => {
+    const handleCourseProgress = () => {
+      // Refresh readiness score when course materials are completed
+      setReadinessScore(interviewPrepService.calculateReadinessScore());
+    };
+
+    const handleDSAProgress = () => {
+      // Refresh all data when DSA questions are solved
+      loadAllData();
+    };
+
+    const handleStorageChange = () => {
+      // Refresh when localStorage changes (cross-tab)
+      loadAllData();
+    };
+
+    window.addEventListener("courseProgressUpdated", handleCourseProgress);
+    window.addEventListener("dsaProgressUpdated", handleDSAProgress);
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("courseProgressUpdated", handleCourseProgress);
+      window.removeEventListener("dsaProgressUpdated", handleDSAProgress);
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const loadAllData = () => {
     setReadinessScore(interviewPrepService.calculateReadinessScore());
     setStreakData(interviewPrepService.updateStreak());

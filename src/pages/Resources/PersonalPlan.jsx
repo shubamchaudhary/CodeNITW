@@ -79,6 +79,11 @@ const PersonalPlan = () => {
     markAsChanged();
     // Update streak data
     interviewPrepService.updateStreak();
+
+    // Dispatch event to notify other components (like InterviewPrepDashboard)
+    window.dispatchEvent(new CustomEvent("dsaProgressUpdated", {
+      detail: { questionName: name, solved: isChecked }
+    }));
   };
   const handleStarChange = (name, isStarred) => {
     // LocalStorage is updated inside QuestionCard. Just mark unsynced here.
