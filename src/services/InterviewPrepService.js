@@ -354,9 +354,28 @@ class InterviewPrepService {
     const completedSD = Object.values(systemDesign).filter(s => s.completed).length;
     const totalSD = this.SYSTEM_DESIGN_TOPICS.length;
 
-    // Get course completion based on hours completed
-    const courseHours = this.getCourseHours();
-    const courseCompletion = courseHours.completed / courseHours.total;
+    // Get course completion from learning materials in Smart Plan
+    const planData = this.getSmartPlanData();
+    let courseCompletion = 0;
+    let completedMaterials = 0;
+    let totalMaterials = 0;
+    let todayQuestions = 0;
+    if (planData && planData.dailyPlans) {
+      const allMaterials = planData.dailyPlans.flatMap(day => day.learningMaterials || []);
+      completedMaterials = allMaterials.filter(m => m.completed).length;
+      totalMaterials = allMaterials.length;
+      courseCompletion = totalMaterials > 0 ? completedMaterials / totalMaterials : 0;
+
+      // Get today's questions count
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const startDate = new Date(planData.startDate);
+      startDate.setHours(0, 0, 0, 0);
+      const dayIndex = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+      if (dayIndex >= 0 && dayIndex < planData.dailyPlans.length) {
+        todayQuestions = planData.dailyPlans[dayIndex].questions?.length || 0;
+      }
+    }
 
     // Streak and recent activity
     const streakData = this.getStreakData();
@@ -422,8 +441,9 @@ class InterviewPrepService {
         totalProblems: totalQuestions,
         sdCompleted: completedSD,
         totalSD: totalSD,
-        courseHoursCompleted: courseHours.completed,
-        courseHoursTotal: courseHours.total,
+        materialsCompleted: completedMaterials,
+        totalMaterials: totalMaterials,
+        todayQuestions: todayQuestions,
         currentStreak: streakData.currentStreak,
         recentSolved: recentSolved,
         balanceMultiplier: Math.round(balanceMultiplier * 100),

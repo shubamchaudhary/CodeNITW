@@ -214,7 +214,7 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
             <div className="text-right">
               <div className="space-y-1 text-sm">
                 <p>DSA: {readinessScore.breakdown.dsa}/60 ({readinessScore.percentages?.dsa || 0}%)</p>
-                <p>Course: {readinessScore.breakdown.course}/25 ({readinessScore.details?.courseHoursCompleted || 0}/{readinessScore.details?.courseHoursTotal || 50}h)</p>
+                <p>Course: {readinessScore.breakdown.course}/25 ({readinessScore.details?.materialsCompleted || 0}/{readinessScore.details?.totalMaterials || 0} done)</p>
                 <p>System Design: {readinessScore.breakdown.systemDesign}/10 ({readinessScore.percentages?.systemDesign || 0}%)</p>
                 <p>Consistency: {readinessScore.breakdown.consistency}/5 ({readinessScore.percentages?.consistency || 0}%)</p>
               </div>
@@ -251,7 +251,7 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
                 {daysRemaining}
               </p>
               <p className="text-xs text-blue-600 dark:text-blue-400">
-                {dailyTargets ? `${dailyTargets.questionsPerDay} problems/day to finish` : ""}
+                {readinessScore?.details?.todayQuestions ? `${readinessScore.details.todayQuestions} problems today` : ""}
               </p>
             </>
           ) : (
@@ -275,41 +275,28 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
           </p>
         </div>
 
-        {/* Course Hours */}
+        {/* Course Materials */}
         <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg">
           <div className="flex items-center mb-2">
             <FaBook className="text-purple-500 mr-2" />
-            <span className="text-sm text-purple-600 dark:text-purple-400">Course Hours</span>
+            <span className="text-sm text-purple-600 dark:text-purple-400">Course</span>
           </div>
-          <div className="flex items-center">
-            <input
-              type="number"
-              min="0"
-              max={readinessScore?.details?.courseHoursTotal || 50}
-              value={readinessScore?.details?.courseHoursCompleted || 0}
-              onChange={(e) => {
-                const hours = parseFloat(e.target.value) || 0;
-                interviewPrepService.updateCourseHours(hours);
-                setReadinessScore(interviewPrepService.calculateReadinessScore());
-              }}
-              className="w-16 text-2xl font-bold text-purple-700 dark:text-purple-300 bg-transparent border-b border-purple-300 dark:border-purple-600 text-center focus:outline-none focus:border-purple-500"
-            />
-            <span className="text-sm text-purple-600 dark:text-purple-400 ml-1">h</span>
-          </div>
+          <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
+            {readinessScore?.details?.materialsCompleted || 0}
+          </p>
           <p className="text-xs text-purple-600 dark:text-purple-400">
-            of {readinessScore?.details?.courseHoursTotal || 50}h total
+            of {readinessScore?.details?.totalMaterials || 0} materials
           </p>
         </div>
       </div>
 
       {/* Daily Target Alert */}
-      {dailyTargets && dailyTargets.questionsPerDay > 6 && (
+      {readinessScore?.details?.todayQuestions > 6 && (
         <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-4 rounded-lg">
           <div className="flex items-center">
             <FaExclamationTriangle className="text-red-500 mr-2" />
             <span className="text-red-700 dark:text-red-300 font-medium">
-              High daily target! You need to solve {dailyTargets.questionsPerDay} problems/day.
-              Consider adjusting your plan duration.
+              High daily target! You have {readinessScore.details.todayQuestions} problems scheduled for today.
             </span>
           </div>
         </div>
