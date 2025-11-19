@@ -1048,6 +1048,11 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
                             }
 
                             toast.success(isCompleted ? "Material completed! ✅" : "Marked as incomplete");
+
+                            // Dispatch event to notify other components (like InterviewPrepDashboard)
+                            window.dispatchEvent(new CustomEvent("courseProgressUpdated", {
+                              detail: { materialsCompleted: completedCount, totalMaterials: day.learningMaterials.length }
+                            }));
                           }}
                           className="mt-1 mr-3"
                         />
