@@ -308,39 +308,79 @@ class InterviewPrepService {
     const totalSolved = Object.values(solvedQuestions).filter(v => v).length;
     const totalQuestions = Object.values(PersonalDSARoadmap).reduce((sum, q) => sum + q.length, 0);
 
+    // System Design progress
     const systemDesign = this.getSystemDesignProgress();
     const completedSD = Object.values(systemDesign).filter(s => s.completed).length;
     const totalSD = this.SYSTEM_DESIGN_TOPICS.length;
 
+    // Get course completion from Smart Plan
+    const planData = this.getSmartPlanData();
+    let courseCompletion = 0;
+    if (planData && planData.dailyPlans) {
+      const allMaterials = planData.dailyPlans.flatMap(day => day.learningMaterials || []);
+      const completedMaterials = allMaterials.filter(m => m.completed).length;
+      const totalMaterials = allMaterials.length;
+      courseCompletion = totalMaterials > 0 ? completedMaterials / totalMaterials : 0;
+    }
+
+    // Streak and recent activity
     const streakData = this.getStreakData();
+    const dailyProgress = JSON.parse(localStorage.getItem("DailySolvedProgress") || "[]");
 
-    // Calculate component scores with weighted DSA
-    const weightedDsaPercentage = totalWeight > 0 ? (weightedSolved / totalWeight) : 0;
-    const dsaScore = weightedDsaPercentage * 40; // 40% weight
-    const sdScore = (completedSD / totalSD) * 30; // 30% weight
-    const consistencyScore = Math.min(streakData.currentStreak / 7, 1) * 15; // 15% weight
+    // Recent activity score (last 7 days)
+    const last7Days = dailyProgress.slice(-7);
+    const recentSolved = last7Days.reduce((sum, day) => sum + (day.solvedToday || 0), 0);
+    const recentActivityScore = Math.min(recentSolved / 28, 1); // Target: 4/day * 7 = 28
 
-    // Practice depth score based on coverage of high-weight topics
-    const highPriorityTopics = Object.entries(groupedStats)
-      .filter(([_, data]) => data.weight >= 0.9)
-      .map(([name, data]) => ({
-        name,
-        percentage: data.total > 0 ? (data.solved / data.total) * 100 : 0
-      }));
-    const avgHighPriorityCompletion = highPriorityTopics.length > 0
-      ? highPriorityTopics.reduce((sum, t) => sum + t.percentage, 0) / highPriorityTopics.length
-      : 0;
-    const practiceScore = (avgHighPriorityCompletion / 100) * 15; // 15% weight
+    // Calculate component percentages (0-1 scale)
+    const dsaPercentage = totalWeight > 0 ? (weightedSolved / totalWeight) : 0;
+    const coursePercentage = courseCompletion;
+    const sdPercentage = completedSD / totalSD;
+    const consistencyPercentage = Math.min(streakData.currentStreak / 7, 1) * 0.5 + recentActivityScore * 0.5;
 
-    const totalScore = Math.round(dsaScore + sdScore + consistencyScore + practiceScore);
+    // Weighted scores (50% DSA, 30% Course, 10% SD, 10% Consistency)
+    const dsaScore = dsaPercentage * 50;
+    const courseScore = coursePercentage * 30;
+    const sdScore = sdPercentage * 10;
+    const consistencyScore = consistencyPercentage * 10;
+
+    // Base arithmetic sum
+    const baseSum = dsaScore + courseScore + sdScore + consistencyScore;
+
+    // Smart balance formula:
+    // - Don't just sum (ignores balance)
+    // - Don't just multiply (too harsh on zeros)
+    // - Use: baseSum * balanceMultiplier
+    //
+    // balanceMultiplier rewards having all areas covered
+    // If one area is 0, you still get credit but with penalty
+    const components = [dsaPercentage, coursePercentage, sdPercentage, consistencyPercentage];
+    const minComponent = Math.min(...components);
+    const maxComponent = Math.max(...components);
+
+    // Gap penalty: penalize if there's a big gap between best and worst area
+    // Also penalize if any area is completely 0
+    const gapPenalty = (maxComponent - minComponent) * 0.15; // Max 15% penalty for imbalance
+    const zeroPenalty = components.filter(c => c === 0).length * 0.05; // 5% penalty per zero area
+
+    // Balance multiplier: ranges from 0.7 (worst case) to 1.0 (perfect balance)
+    const balanceMultiplier = Math.max(0.7, 1 - gapPenalty - zeroPenalty);
+
+    const totalScore = Math.round(baseSum * balanceMultiplier);
 
     return {
-      total: totalScore,
+      total: Math.min(100, totalScore),
       breakdown: {
         dsa: Math.round(dsaScore),
+        course: Math.round(courseScore),
         systemDesign: Math.round(sdScore),
         consistency: Math.round(consistencyScore),
-        practice: Math.round(practiceScore),
+      },
+      percentages: {
+        dsa: Math.round(dsaPercentage * 100),
+        course: Math.round(coursePercentage * 100),
+        systemDesign: Math.round(sdPercentage * 100),
+        consistency: Math.round(consistencyPercentage * 100),
       },
       details: {
         problemsSolved: totalSolved,
@@ -348,7 +388,8 @@ class InterviewPrepService {
         sdCompleted: completedSD,
         totalSD: totalSD,
         currentStreak: streakData.currentStreak,
-        weightedCompletion: Math.round(weightedDsaPercentage * 100),
+        recentSolved: recentSolved,
+        balanceMultiplier: Math.round(balanceMultiplier * 100),
       },
       groupedStats,
     };
