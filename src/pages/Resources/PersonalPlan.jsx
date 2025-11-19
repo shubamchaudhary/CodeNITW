@@ -10,6 +10,8 @@ import useProgressSync from "../../hooks/useProgressSync";
 import SyncButton from "../../components/SyncButton";
 import AIRecommendations from "../../components/AIRecommendations";
 import DailySolvedChart from "../../components/DailySolvedChart";
+import InterviewPrepDashboard from "../../components/InterviewPrepDashboard";
+import interviewPrepService from "../../services/InterviewPrepService";
 
 const PersonalPlan = () => {
   const [topics, setTopics] = useState([]);
@@ -75,6 +77,13 @@ const PersonalPlan = () => {
     );
     // Mark that we have unsaved changes
     markAsChanged();
+    // Update streak data
+    interviewPrepService.updateStreak();
+
+    // Dispatch event to notify other components (like InterviewPrepDashboard)
+    window.dispatchEvent(new CustomEvent("dsaProgressUpdated", {
+      detail: { questionName: name, solved: isChecked }
+    }));
   };
   const handleStarChange = (name, isStarred) => {
     // LocalStorage is updated inside QuestionCard. Just mark unsynced here.
@@ -165,6 +174,11 @@ const PersonalPlan = () => {
               </motion.div>
             ))}
           </AnimatePresence>
+
+          {/* Interview Prep Dashboard */}
+          <div className="mt-8 mb-8">
+            <InterviewPrepDashboard />
+          </div>
 
           {/* Smart Recommendation System Section */}
           <div className="mt-8 mb-8">

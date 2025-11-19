@@ -78,18 +78,20 @@ const DailySolvedChart = () => {
 
   // Calculate and update chart when solved questions change
   useEffect(() => {
-    const handleStorageChange = () => {
+    const handleProgressChange = () => {
       updateDailyProgress();
     };
 
-    // Listen for localStorage changes
-    window.addEventListener("storage", handleStorageChange);
+    // Listen for localStorage changes (cross-tab) and DSA progress updates (same-tab)
+    window.addEventListener("storage", handleProgressChange);
+    window.addEventListener("dsaProgressUpdated", handleProgressChange);
 
     // Also update when component mounts
     updateDailyProgress();
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("storage", handleProgressChange);
+      window.removeEventListener("dsaProgressUpdated", handleProgressChange);
     };
   }, []);
 
