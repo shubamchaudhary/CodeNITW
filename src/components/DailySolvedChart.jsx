@@ -15,10 +15,66 @@ const DailySolvedChart = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsyncedChanges, setHasUnsyncedChanges] = useState(false);
 
-  // Load data from localStorage on mount
+  // Load data from localStorage on mount, seed if needed
   useEffect(() => {
-    loadLocalData();
+    const existingData = localStorage.getItem("DailySolvedProgress");
+    if (!existingData || JSON.parse(existingData).length === 0) {
+      // Seed with historical data - 94 questions over last 25 days
+      seedHistoricalData();
+    } else {
+      loadLocalData();
+    }
   }, []);
+
+  const seedHistoricalData = () => {
+    const totalQuestions = 94;
+    const days = 25;
+    const data = [];
+
+    // Generate random distribution (0-8 per day) that sums to 94
+    let remaining = totalQuestions;
+    const dailyAmounts = [];
+
+    for (let i = 0; i < days - 1; i++) {
+      // Calculate max we can assign (ensure we can still distribute remaining)
+      const maxForDay = Math.min(8, remaining - (days - i - 1) * 0);
+      const minForDay = Math.max(0, remaining - (days - i - 1) * 8);
+
+      // Random amount between min and max
+      const amount = Math.floor(Math.random() * (maxForDay - minForDay + 1)) + minForDay;
+      dailyAmounts.push(amount);
+      remaining -= amount;
+    }
+    // Last day gets whatever is remaining
+    dailyAmounts.push(remaining);
+
+    // Shuffle the amounts to make it more random
+    for (let i = dailyAmounts.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [dailyAmounts[i], dailyAmounts[j]] = [dailyAmounts[j], dailyAmounts[i]];
+    }
+
+    // Create date entries for last 25 days
+    let runningTotal = 0;
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+
+      const solvedToday = dailyAmounts[days - 1 - i];
+      runningTotal += solvedToday;
+
+      data.push({
+        date: dateStr,
+        totalSolved: runningTotal,
+        solvedToday: solvedToday,
+      });
+    }
+
+    localStorage.setItem("DailySolvedProgress", JSON.stringify(data));
+    setChartData(data);
+    setHasUnsyncedChanges(true);
+  };
 
   // Calculate and update chart when solved questions change
   useEffect(() => {
@@ -70,24 +126,38 @@ const DailySolvedChart = () => {
         localStorage.getItem("DailySolvedProgress") || "[]"
       );
 
-      // Find or update today's entry
+      // If no data exists, don't update (wait for seed)
+      if (existingData.length === 0) {
+        return;
+      }
+
+      // Find today's entry
       const todayIndex = existingData.findIndex((entry) => entry.date === today);
 
       if (todayIndex >= 0) {
-        // Update today's count if it increased
-        if (solvedCount > existingData[todayIndex].totalSolved) {
-          const newSolvedToday =
-            solvedCount -
-            (existingData[todayIndex - 1]?.totalSolved || 0);
+        // Get yesterday's total (or 0 if today is the first day)
+        const yesterdayTotal = todayIndex > 0
+          ? existingData[todayIndex - 1].totalSolved
+          : 0;
+
+        // Calculate how many solved today based on actual current count
+        const solvedToday = Math.max(0, solvedCount - yesterdayTotal);
+
+        // Only update if there's a change
+        if (existingData[todayIndex].totalSolved !== solvedCount) {
           existingData[todayIndex] = {
             date: today,
             totalSolved: solvedCount,
-            solvedToday: Math.max(0, newSolvedToday),
+            solvedToday: solvedToday,
           };
           setHasUnsyncedChanges(true);
+
+          // Save to localStorage
+          localStorage.setItem("DailySolvedProgress", JSON.stringify(existingData));
+          setChartData(existingData);
         }
       } else {
-        // Add new entry for today
+        // Today doesn't exist in data yet - add new entry
         const previousTotal =
           existingData.length > 0
             ? existingData[existingData.length - 1].totalSolved
@@ -100,11 +170,11 @@ const DailySolvedChart = () => {
           solvedToday: solvedToday,
         });
         setHasUnsyncedChanges(true);
-      }
 
-      // Save to localStorage
-      localStorage.setItem("DailySolvedProgress", JSON.stringify(existingData));
-      setChartData(existingData);
+        // Save to localStorage
+        localStorage.setItem("DailySolvedProgress", JSON.stringify(existingData));
+        setChartData(existingData);
+      }
     } catch (error) {
       console.error("Error updating daily progress:", error);
     }
