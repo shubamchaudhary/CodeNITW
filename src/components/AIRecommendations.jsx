@@ -827,6 +827,11 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
       );
 
       toast.success(completed ? "Question completed! ✅ (synced with main progress)" : "Marked as incomplete");
+
+      // Dispatch event to notify other components (like InterviewPrepDashboard)
+      window.dispatchEvent(new CustomEvent("dsaProgressUpdated", {
+        detail: { questionName: question.Question, solved: completed }
+      }));
     } catch (error) {
       console.error("Error updating progress:", error);
       toast.error("Failed to update progress");
@@ -1048,6 +1053,11 @@ const DailyPlanView = ({ dailyPlan, setDailyPlan, onReplan, onDeleteAndRegenerat
                             }
 
                             toast.success(isCompleted ? "Material completed! ✅" : "Marked as incomplete");
+
+                            // Dispatch event to notify other components (like InterviewPrepDashboard)
+                            window.dispatchEvent(new CustomEvent("courseProgressUpdated", {
+                              detail: { materialsCompleted: completedCount, totalMaterials: day.learningMaterials.length }
+                            }));
                           }}
                           className="mt-1 mr-3"
                         />
