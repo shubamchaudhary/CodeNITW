@@ -1,6 +1,7 @@
 import { db } from "../firebase";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import PersonalDSARoadmap from "../Data/PersonalDSARoadmap.json";
 
 /**
  * Central service for interview preparation tracking
@@ -264,12 +265,10 @@ class InterviewPrepService {
 
   getWeaknessAnalysis() {
     const solvedQuestions = JSON.parse(localStorage.getItem("PersonalDSASolvedQuestions") || "{}");
-    const roadmap = require("../Data/PersonalDSARoadmap.json");
 
     const topicStats = {};
-    const difficulties = ["Easy", "Medium", "Hard"];
 
-    Object.entries(roadmap).forEach(([topic, questions]) => {
+    Object.entries(PersonalDSARoadmap).forEach(([topic, questions]) => {
       const solved = questions.filter(q => solvedQuestions[q.Question]).length;
       const total = questions.length;
       const percentage = total > 0 ? Math.round((solved / total) * 100) : 0;
@@ -331,13 +330,12 @@ class InterviewPrepService {
     const notes = this.getProblemNotes();
     const timeTracking = this.getTimeTracking();
     const solvedQuestions = JSON.parse(localStorage.getItem("PersonalDSASolvedQuestions") || "{}");
-    const roadmap = require("../Data/PersonalDSARoadmap.json");
 
     const revisionList = [];
     const now = Date.now();
     const dayInMs = 86400000;
 
-    Object.entries(roadmap).forEach(([topic, questions]) => {
+    Object.entries(PersonalDSARoadmap).forEach(([topic, questions]) => {
       questions.forEach(question => {
         if (!solvedQuestions[question.Question]) return;
 
