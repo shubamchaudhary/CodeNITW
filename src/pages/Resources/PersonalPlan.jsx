@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import useProgressSync from "../../hooks/useProgressSync";
 import SyncButton from "../../components/SyncButton";
 import AIRecommendations from "../../components/AIRecommendations";
+import DailySolvedChart from "../../components/DailySolvedChart";
 
 const PersonalPlan = () => {
   const [topics, setTopics] = useState([]);
@@ -175,6 +176,11 @@ const PersonalPlan = () => {
                 }
               }}
             />
+          </div>
+
+          {/* Daily Progress Chart */}
+          <div className="mt-8 mb-8">
+            <DailySolvedChart />
           </div>
         </div>
       </div>
