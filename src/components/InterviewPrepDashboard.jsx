@@ -177,13 +177,18 @@ const OverviewSection = ({ readinessScore, streakData, dailyTargets }) => {
                   ? "Making progress, stay consistent"
                   : "Just getting started, focus on fundamentals"}
               </p>
+              {readinessScore.details?.balanceMultiplier < 100 && (
+                <p className="text-xs opacity-60 mt-1">
+                  Balance: {readinessScore.details.balanceMultiplier}% (improve weak areas)
+                </p>
+              )}
             </div>
             <div className="text-right">
               <div className="space-y-1 text-sm">
-                <p>DSA: {readinessScore.breakdown.dsa}/40</p>
-                <p>System Design: {readinessScore.breakdown.systemDesign}/30</p>
-                <p>Consistency: {readinessScore.breakdown.consistency}/15</p>
-                <p>Practice: {readinessScore.breakdown.practice}/15</p>
+                <p>DSA: {readinessScore.breakdown.dsa}/50 ({readinessScore.percentages?.dsa || 0}%)</p>
+                <p>Course: {readinessScore.breakdown.course}/30 ({readinessScore.percentages?.course || 0}%)</p>
+                <p>System Design: {readinessScore.breakdown.systemDesign}/10 ({readinessScore.percentages?.systemDesign || 0}%)</p>
+                <p>Consistency: {readinessScore.breakdown.consistency}/10 ({readinessScore.percentages?.consistency || 0}%)</p>
               </div>
             </div>
           </div>
