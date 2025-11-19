@@ -211,8 +211,8 @@ const DailySolvedChart = () => {
 
     // Create gradient for line area
     const lineGradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-    lineGradient.addColorStop(0, "rgba(59, 130, 246, 0.4)");
-    lineGradient.addColorStop(1, "rgba(59, 130, 246, 0.05)");
+    lineGradient.addColorStop(0, "rgba(34, 197, 94, 0.4)");
+    lineGradient.addColorStop(1, "rgba(34, 197, 94, 0.05)");
 
     // Prepare cumulative data for line
     const cumulativeData = chartData.map((entry) => ({
@@ -244,38 +244,23 @@ const DailySolvedChart = () => {
             backgroundColor: barGradient,
             borderColor: "#8b5cf6",
             borderWidth: 2,
-            borderRadius: 6,
+            borderRadius: 4,
             hoverBackgroundColor: "#7c3aed",
             yAxisID: "y",
-            order: 4,
-          },
-          {
-            label: "Daily Trend",
-            data: formattedData,
-            type: "line",
-            borderColor: "#a78bfa",
-            backgroundColor: "transparent",
-            borderWidth: 3,
-            fill: false,
-            tension: 0.4,
-            pointBackgroundColor: "#a78bfa",
-            pointBorderColor: "#ffffff",
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            yAxisID: "y",
             order: 3,
+            barPercentage: 1.0,
+            categoryPercentage: 1.0,
           },
           {
             label: "Total Progress",
             data: cumulativeData,
             type: "line",
-            borderColor: "#3b82f6",
+            borderColor: "#22c55e",
             backgroundColor: lineGradient,
-            borderWidth: 3,
+            borderWidth: 4,
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: "#3b82f6",
+            pointBackgroundColor: "#22c55e",
             pointBorderColor: "#ffffff",
             pointBorderWidth: 2,
             pointRadius: 4,
@@ -287,13 +272,13 @@ const DailySolvedChart = () => {
             label: "Target",
             data: benchmarkData,
             type: "line",
-            borderColor: "#f59e0b",
+            borderColor: "#22c55e",
             backgroundColor: "transparent",
-            borderWidth: 2,
-            borderDash: [6, 4],
+            borderWidth: 4,
+            borderDash: [8, 4],
             fill: false,
             tension: 0.4,
-            pointBackgroundColor: "#f59e0b",
+            pointBackgroundColor: "#22c55e",
             pointBorderColor: "#ffffff",
             pointBorderWidth: 1,
             pointRadius: 3,
@@ -366,9 +351,6 @@ const DailySolvedChart = () => {
                 if (context.dataset.label === "Target") {
                   return `Target: ${context.parsed.y} problems`;
                 }
-                if (context.dataset.label === "Daily Trend") {
-                  return null; // Hide duplicate tooltip for trend line
-                }
                 return `Daily: ${context.parsed.y} problems`;
               },
             },
@@ -435,7 +417,7 @@ const DailySolvedChart = () => {
             title: {
               display: true,
               text: "Total Progress",
-              color: "#3b82f6",
+              color: "#22c55e",
               font: {
                 size: window.innerWidth < 768 ? 10 : 12,
                 weight: "500",
@@ -445,7 +427,7 @@ const DailySolvedChart = () => {
               drawOnChartArea: false,
             },
             ticks: {
-              color: "#3b82f6",
+              color: "#22c55e",
               font: {
                 size: window.innerWidth < 768 ? 9 : 11,
               },
@@ -633,7 +615,7 @@ const DailySolvedChart = () => {
       </div>
 
       {/* Chart */}
-      <div className="w-full h-64 md:h-80">
+      <div className="w-full h-96 md:h-[30rem]">
         {chartData.length > 0 ? (
           <canvas ref={chartRef} className="w-full h-full"></canvas>
         ) : (
