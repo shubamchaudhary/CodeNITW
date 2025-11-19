@@ -1050,9 +1050,19 @@ class AIRecommendationService {
       // Generate smart plan for remaining days starting from today
       const newPlan = await this.generateSmartPlan(userId, remainingDays, today);
 
-      // Keep completed days from old plan, replace remaining days with new plan
-      const completedDays = plan.dailyPlans.slice(0, daysPassed);
-      plan.dailyPlans = [...completedDays, ...newPlan.dailyPlans];
+      // Keep completed days from old plan, fix their day numbers
+      const completedDays = plan.dailyPlans.slice(0, daysPassed).map((dayPlan, index) => ({
+        ...dayPlan,
+        day: index + 1, // Ensure correct day numbering for completed days
+      }));
+
+      // Fix: Update day numbers in new plan to continue from completed days
+      const updatedNewDays = newPlan.dailyPlans.map((dayPlan, index) => ({
+        ...dayPlan,
+        day: daysPassed + index + 1, // Continue day numbering from completed days
+      }));
+
+      plan.dailyPlans = [...completedDays, ...updatedNewDays];
       plan.goals = newPlan.goals;
       plan.lastReplanned = new Date().toISOString();
 
