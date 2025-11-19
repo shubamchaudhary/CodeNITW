@@ -247,6 +247,23 @@ const DailySolvedChart = () => {
             borderRadius: 6,
             hoverBackgroundColor: "#7c3aed",
             yAxisID: "y",
+            order: 4,
+          },
+          {
+            label: "Daily Trend",
+            data: formattedData,
+            type: "line",
+            borderColor: "#a78bfa",
+            backgroundColor: "transparent",
+            borderWidth: 3,
+            fill: false,
+            tension: 0.4,
+            pointBackgroundColor: "#a78bfa",
+            pointBorderColor: "#ffffff",
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7,
+            yAxisID: "y",
             order: 3,
           },
           {
@@ -348,6 +365,9 @@ const DailySolvedChart = () => {
                 }
                 if (context.dataset.label === "Target") {
                   return `Target: ${context.parsed.y} problems`;
+                }
+                if (context.dataset.label === "Daily Trend") {
+                  return null; // Hide duplicate tooltip for trend line
                 }
                 return `Daily: ${context.parsed.y} problems`;
               },
