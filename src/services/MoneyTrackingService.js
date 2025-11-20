@@ -10,17 +10,25 @@ class MoneyTrackingService {
     this.STORAGE_KEY = "MoneyTrackingData";
 
     this.CATEGORIES = [
-      { id: "food", name: "Food", icon: "🍔", color: "#ef4444" },
+      { id: "meals", name: "Meals", icon: "🍽️", color: "#ef4444" },
+      { id: "groceries", name: "Groceries", icon: "🛒", color: "#10b981" },
+      { id: "fast_food", name: "Fast Food", icon: "🍕", color: "#f97316" },
       { id: "rent", name: "Rent", icon: "🏠", color: "#3b82f6" },
       { id: "shopping", name: "Shopping", icon: "🛍️", color: "#ec4899" },
       { id: "travel", name: "Travel", icon: "🚗", color: "#8b5cf6" },
       { id: "electricity", name: "Electricity", icon: "⚡", color: "#eab308" },
-      { id: "ven_home", name: "Ven Home", icon: "🏡", color: "#14b8a6" },
-      { id: "gifts", name: "Gifts", icon: "🎁", color: "#f97316" },
-      { id: "gym", name: "Gym", icon: "💪", color: "#10b981" },
+      { id: "gifts", name: "Gifts", icon: "🎁", color: "#f59e0b" },
+      { id: "gym", name: "Gym", icon: "💪", color: "#14b8a6" },
       { id: "entertainment", name: "Entertainment", icon: "🎬", color: "#6366f1" },
+      { id: "courses", name: "Courses", icon: "📚", color: "#a855f7" },
+      { id: "ai_subscription", name: "AI Subscription", icon: "🤖", color: "#ec4899" },
+      { id: "bing_subscription", name: "Bing Subscription", icon: "🔍", color: "#06b6d4" },
+      { id: "other_subscriptions", name: "Other Subscriptions", icon: "📱", color: "#f43f5e" },
       { id: "other", name: "Other", icon: "💰", color: "#64748b" },
     ];
+
+    // Subscription categories (need period)
+    this.SUBSCRIPTION_CATEGORIES = ["courses", "ai_subscription", "bing_subscription", "other_subscriptions"];
 
     // Fixed monthly expenses (distributed daily)
     this.FIXED_EXPENSES = ["rent", "electricity", "gym"];
@@ -30,10 +38,10 @@ class MoneyTrackingService {
   getData() {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
-      return data ? JSON.parse(data) : { dailyEntries: {}, fixedMonthly: {} };
+      return data ? JSON.parse(data) : { dailyEntries: {}, fixedMonthly: {}, subscriptions: {} };
     } catch (e) {
       console.error("Error reading money data:", e);
-      return { dailyEntries: {}, fixedMonthly: {} };
+      return { dailyEntries: {}, fixedMonthly: {}, subscriptions: {} };
     }
   }
 
@@ -45,8 +53,8 @@ class MoneyTrackingService {
     window.dispatchEvent(new CustomEvent("moneyTrackingUpdated", { detail: data }));
   }
 
-  // Add/update daily spending
-  addDailySpending(date, category, amount) {
+  // Add/update daily spending with notes
+  addDailySpending(date, category, amount, note = "") {
     const data = this.getData();
     const dateKey = this.formatDate(date);
 
@@ -54,7 +62,29 @@ class MoneyTrackingService {
       data.dailyEntries[dateKey] = {};
     }
 
-    data.dailyEntries[dateKey][category] = parseFloat(amount) || 0;
+    data.dailyEntries[dateKey][category] = {
+      amount: parseFloat(amount) || 0,
+      note: note || "",
+    };
+    this.saveData(data);
+
+    return data;
+  }
+
+  // Add/update subscription with period
+  addSubscription(date, category, amount, period, note = "") {
+    const data = this.getData();
+    const dateKey = this.formatDate(date);
+
+    if (!data.dailyEntries[dateKey]) {
+      data.dailyEntries[dateKey] = {};
+    }
+
+    data.dailyEntries[dateKey][category] = {
+      amount: parseFloat(amount) || 0,
+      period: period || "monthly", // monthly, yearly, etc.
+      note: note || "",
+    };
     this.saveData(data);
 
     return data;
@@ -94,7 +124,9 @@ class MoneyTrackingService {
       const dateKey = this.formatDate(date);
       const daySpending = data.dailyEntries[dateKey] || {};
 
-      Object.entries(daySpending).forEach(([category, amount]) => {
+      Object.entries(daySpending).forEach(([category, value]) => {
+        // Handle both old format (number) and new format (object with amount)
+        const amount = typeof value === 'object' ? (value.amount || 0) : value;
         categoryTotals[category] = (categoryTotals[category] || 0) + amount;
       });
     }
