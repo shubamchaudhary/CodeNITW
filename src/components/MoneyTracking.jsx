@@ -10,9 +10,11 @@ import {
   FaChartPie,
   FaChartBar,
   FaStickyNote,
+  FaBrain,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import moneyTrackingService from "../services/MoneyTrackingService";
+import aiInsightsService from "../services/AIInsightsService";
 
 const MoneyTracking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -23,6 +25,8 @@ const MoneyTracking = () => {
   const [period, setPeriod] = useState(30);
   const [trendPeriod, setTrendPeriod] = useState(7);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [aiInsights, setAiInsights] = useState("");
+  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
@@ -175,6 +179,24 @@ const MoneyTracking = () => {
       toast.error("Failed to load: " + result.error);
     }
     setIsSyncing(false);
+  };
+
+  const getAIInsights = async () => {
+    if (!analysis || !trends || trends.length === 0) {
+      toast.error("No spending data available for analysis");
+      return;
+    }
+
+    setIsLoadingAI(true);
+    try {
+      const insights = await aiInsightsService.analyzeSpending(analysis, trends);
+      setAiInsights(insights);
+      toast.success("AI insights generated!");
+    } catch (error) {
+      toast.error("Failed to get AI insights");
+      setAiInsights(`Error: ${error.message}`);
+    }
+    setIsLoadingAI(false);
   };
 
   const renderChart = () => {
@@ -578,6 +600,47 @@ const MoneyTracking = () => {
             )}
           </div>
         )}
+
+        {/* AI Insights */}
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold dark:text-white flex items-center">
+              <FaBrain className="mr-2 text-indigo-500" />
+              AI Insights
+            </h2>
+            <button
+              onClick={getAIInsights}
+              disabled={isLoadingAI || !analysis}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoadingAI ? (
+                <>
+                  <FaSync className="animate-spin mr-2" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <FaBrain className="mr-2" />
+                  Get AI Insights
+                </>
+              )}
+            </button>
+          </div>
+
+          {aiInsights ? (
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
+              <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-sans">
+                {aiInsights}
+              </pre>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 dark:text-gray-400 py-8 bg-gray-50 dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
+              <FaBrain className="text-4xl mx-auto mb-3 opacity-50" />
+              <p>Click "Get AI Insights" to analyze your spending patterns</p>
+              <p className="text-xs mt-2">Powered by free AI models via OpenRouter</p>
+            </div>
+          )}
+        </div>
       </motion.div>
     </div>
   );
