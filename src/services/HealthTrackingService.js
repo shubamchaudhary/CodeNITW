@@ -9,14 +9,19 @@ class HealthTrackingService {
   constructor() {
     this.STORAGE_KEY = "HealthTrackingData";
 
+    this.MEALS = [
+      { id: "breakfast", label: "Breakfast", icon: "🍳" },
+      { id: "lunch", label: "Lunch", icon: "🍱" },
+      { id: "dinner", label: "Dinner", icon: "🍽️" },
+      { id: "snacks", label: "Snacks", icon: "🍿" },
+    ];
+
     this.FOOD_ITEMS = [
-      { id: "fruits", label: "Ate fruits today?", icon: "🍎" },
-      { id: "protein_shake", label: "Protein shake?", icon: "🥤" },
-      { id: "tea", label: "Tea?", icon: "☕" },
-      { id: "vegetables", label: "Vegetables?", icon: "🥗" },
-      { id: "water_8glasses", label: "8 glasses of water?", icon: "💧" },
-      { id: "breakfast", label: "Healthy breakfast?", icon: "🍳" },
-      { id: "junk_food", label: "Avoided junk food?", icon: "🚫🍔" },
+      { id: "fruits", label: "Fruits", icon: "🍎" },
+      { id: "protein_shake", label: "Protein shake", icon: "🥤" },
+      { id: "tea_coffee", label: "Tea/Coffee", icon: "☕" },
+      { id: "water", label: "Water (8 glasses)", icon: "💧" },
+      { id: "junk_food", label: "Junk Food (avoided?)", icon: "🚫🍔" },
     ];
 
     this.EXERCISE_TYPES = [
@@ -49,26 +54,48 @@ class HealthTrackingService {
     const data = this.getData();
     const dateKey = this.formatDate(date);
     return data.dailyEntries[dateKey] || {
+      meals: {},
       food: {},
       sleep: { bedTime: "", wakeTime: "" },
-      gym: { attended: false, duration: 0, exercises: [] },
+      gym: { attended: false, duration: 0, exercises: [], note: "" },
     };
   }
 
-  // Update food item for a date
-  updateFood(date, foodId, checked) {
+  // Update meal with details
+  updateMeal(date, mealId, details) {
     const data = this.getData();
     const dateKey = this.formatDate(date);
 
     if (!data.dailyEntries[dateKey]) {
       data.dailyEntries[dateKey] = {
+        meals: {},
         food: {},
         sleep: { bedTime: "", wakeTime: "" },
-        gym: { attended: false, duration: 0, exercises: [] },
+        gym: { attended: false, duration: 0, exercises: [], note: "" },
       };
     }
 
-    data.dailyEntries[dateKey].food[foodId] = checked;
+    data.dailyEntries[dateKey].meals[mealId] = details;
+    this.saveData(data);
+
+    return data;
+  }
+
+  // Update food item for a date with note
+  updateFood(date, foodId, checked, note = "") {
+    const data = this.getData();
+    const dateKey = this.formatDate(date);
+
+    if (!data.dailyEntries[dateKey]) {
+      data.dailyEntries[dateKey] = {
+        meals: {},
+        food: {},
+        sleep: { bedTime: "", wakeTime: "" },
+        gym: { attended: false, duration: 0, exercises: [], note: "" },
+      };
+    }
+
+    data.dailyEntries[dateKey].food[foodId] = { checked, note };
     this.saveData(data);
 
     return data;
@@ -94,19 +121,20 @@ class HealthTrackingService {
   }
 
   // Update gym session for a date
-  updateGym(date, attended, duration = 0, exercises = []) {
+  updateGym(date, attended, duration = 0, exercises = [], note = "") {
     const data = this.getData();
     const dateKey = this.formatDate(date);
 
     if (!data.dailyEntries[dateKey]) {
       data.dailyEntries[dateKey] = {
+        meals: {},
         food: {},
         sleep: { bedTime: "", wakeTime: "" },
-        gym: { attended: false, duration: 0, exercises: [] },
+        gym: { attended: false, duration: 0, exercises: [], note: "" },
       };
     }
 
-    data.dailyEntries[dateKey].gym = { attended, duration, exercises };
+    data.dailyEntries[dateKey].gym = { attended, duration, exercises, note };
     this.saveData(data);
 
     return data;
