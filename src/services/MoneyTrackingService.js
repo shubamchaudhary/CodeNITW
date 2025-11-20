@@ -166,11 +166,15 @@ class MoneyTrackingService {
       const dateKey = this.formatDate(date);
       const daySpending = data.dailyEntries[dateKey] || {};
 
-      const total = Object.values(daySpending).reduce((sum, amt) => sum + amt, 0);
+      // Handle both old format (number) and new format (object with amount)
+      const total = Object.values(daySpending).reduce((sum, value) => {
+        const amount = typeof value === 'object' ? (value.amount || 0) : value;
+        return sum + amount;
+      }, 0);
 
       trends.push({
         date: dateKey,
-        total,
+        total: Math.round(total),
         label: this.formatDateLabel(date),
       });
     }

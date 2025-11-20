@@ -8,6 +8,7 @@ import {
   FaSync,
   FaDownload,
   FaChartPie,
+  FaChartBar,
   FaStickyNote,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -18,11 +19,15 @@ const MoneyTracking = () => {
   const [dailySpending, setDailySpending] = useState({});
   const [fixedMonthly, setFixedMonthly] = useState({});
   const [analysis, setAnalysis] = useState(null);
+  const [trends, setTrends] = useState([]);
   const [period, setPeriod] = useState(30);
+  const [trendPeriod, setTrendPeriod] = useState(7);
   const [isSyncing, setIsSyncing] = useState(false);
 
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
+  const trendChartRef = useRef(null);
+  const trendChartInstance = useRef(null);
 
   useEffect(() => {
     loadData();
@@ -31,6 +36,10 @@ const MoneyTracking = () => {
   useEffect(() => {
     loadAnalysis();
   }, [period]);
+
+  useEffect(() => {
+    loadTrends();
+  }, [trendPeriod]);
 
   useEffect(() => {
     if (analysis) {
@@ -44,16 +53,29 @@ const MoneyTracking = () => {
     };
   }, [analysis]);
 
+  useEffect(() => {
+    if (trends && trends.length > 0) {
+      renderTrendChart();
+    }
+
+    return () => {
+      if (trendChartInstance.current) {
+        trendChartInstance.current.destroy();
+      }
+    };
+  }, [trends]);
+
   // Listen for updates
   useEffect(() => {
     const handleUpdate = () => {
       loadData();
       loadAnalysis();
+      loadTrends();
     };
 
     window.addEventListener("moneyTrackingUpdated", handleUpdate);
     return () => window.removeEventListener("moneyTrackingUpdated", handleUpdate);
-  }, [selectedDate, period]);
+  }, [selectedDate, period, trendPeriod]);
 
   const loadData = () => {
     const spending = moneyTrackingService.getDailySpending(selectedDate);
@@ -65,6 +87,11 @@ const MoneyTracking = () => {
   const loadAnalysis = () => {
     const stats = moneyTrackingService.getSpendingAnalysis(period);
     setAnalysis(stats);
+  };
+
+  const loadTrends = () => {
+    const trendData = moneyTrackingService.getSpendingTrends(trendPeriod);
+    setTrends(trendData);
   };
 
   const handleSpendingChange = (category, field, value) => {
@@ -84,24 +111,35 @@ const MoneyTracking = () => {
   const saveDailySpending = () => {
     let savedCount = 0;
     Object.entries(dailySpending).forEach(([category, value]) => {
-      if (value && (value.amount || typeof value === 'number')) {
-        const amount = typeof value === 'object' ? value.amount : value;
-        const note = typeof value === 'object' ? (value.note || "") : "";
-        const period = typeof value === 'object' ? (value.period || "") : "";
+      if (!value) return;
 
-        if (moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(category) && period) {
-          moneyTrackingService.addSubscription(selectedDate, category, amount, period, note);
+      const amount = typeof value === 'object' ? value.amount : value;
+      const note = typeof value === 'object' ? (value.note || "") : "";
+      const period = typeof value === 'object' ? (value.period || "") : "";
+
+      // Check if amount is a valid number (including 0)
+      const numAmount = parseFloat(amount);
+      if (!isNaN(numAmount) && amount !== "") {
+        if (moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(category)) {
+          // For subscriptions, require period to be selected
+          if (period) {
+            moneyTrackingService.addSubscription(selectedDate, category, numAmount, period, note);
+            savedCount++;
+          }
         } else {
-          moneyTrackingService.addDailySpending(selectedDate, category, amount, note);
+          moneyTrackingService.addDailySpending(selectedDate, category, numAmount, note);
+          savedCount++;
         }
-        savedCount++;
       }
     });
 
     if (savedCount > 0) {
       toast.success(`Saved ${savedCount} expense(s)!`);
+      loadData();
+      loadAnalysis();
+      loadTrends();
     } else {
-      toast.info("No expenses to save");
+      toast.info("No expenses to save. Add amounts to save.");
     }
   };
 
@@ -193,6 +231,90 @@ const MoneyTracking = () => {
     });
   };
 
+  const renderTrendChart = () => {
+    if (!trendChartRef.current || !trends || trends.length === 0) return;
+
+    if (trendChartInstance.current) {
+      trendChartInstance.current.destroy();
+    }
+
+    const ctx = trendChartRef.current.getContext("2d");
+    const isDark = document.documentElement.classList.contains("dark");
+
+    // Create benchmark line at 1200 rs
+    const benchmarkData = trends.map(() => 1200);
+
+    trendChartInstance.current = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: trends.map(t => t.label),
+        datasets: [
+          {
+            label: "Daily Spending",
+            data: trends.map(t => t.total),
+            backgroundColor: trends.map(t => t.total > 1200 ? "#ef4444" : "#10b981"),
+            borderColor: trends.map(t => t.total > 1200 ? "#dc2626" : "#059669"),
+            borderWidth: 1,
+          },
+          {
+            label: "Target (₹1200/day)",
+            data: benchmarkData,
+            type: "line",
+            borderColor: "#f59e0b",
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            pointHoverRadius: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: {
+              color: isDark ? "#e5e7eb" : "#1f2937",
+            },
+            grid: {
+              color: isDark ? "#374151" : "#e5e7eb",
+            },
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: isDark ? "#e5e7eb" : "#1f2937",
+              callback: (value) => `₹${value}`,
+            },
+            grid: {
+              color: isDark ? "#374151" : "#e5e7eb",
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: isDark ? "#e5e7eb" : "#1f2937",
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                if (context.datasetIndex === 0) {
+                  const amount = context.parsed.y;
+                  const status = amount > 1200 ? "Over budget" : "Within budget";
+                  return `₹${amount} (${status})`;
+                }
+                return `Target: ₹${context.parsed.y}`;
+              },
+            },
+          },
+        },
+      },
+    });
+  };
+
   const formatDate = (date) => {
     return date.toISOString().split('T')[0];
   };
@@ -245,9 +367,9 @@ const MoneyTracking = () => {
         </div>
 
         {/* Daily Spending Form */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold dark:text-white flex items-center">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-slate-700">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-bold dark:text-white flex items-center">
               <FaCalendarAlt className="mr-2 text-blue-500" />
               Daily Spending
             </h2>
@@ -255,37 +377,38 @@ const MoneyTracking = () => {
               type="date"
               value={formatDate(selectedDate)}
               onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white"
+              className="px-2 py-1 text-sm border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-700 dark:text-white"
+              style={{ colorScheme: document.documentElement.classList.contains("dark") ? "dark" : "light" }}
             />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {moneyTrackingService.CATEGORIES.filter(
               cat => !moneyTrackingService.FIXED_EXPENSES.includes(cat.id)
             ).map((category) => {
               const isSubscription = moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(category.id);
 
               return (
-                <div key={category.id} className="bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-200 dark:border-slate-600">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-2xl">{category.icon}</span>
-                    <label className="text-sm font-medium dark:text-gray-200 flex-1">{category.name}</label>
+                <div key={category.id} className="bg-gray-50 dark:bg-slate-700 p-2 rounded border border-gray-200 dark:border-slate-600">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="text-xl">{category.icon}</span>
+                    <label className="text-xs font-medium dark:text-gray-200 flex-1">{category.name}</label>
                     <input
                       type="number"
                       min="0"
                       placeholder="₹0"
                       value={getValue(category.id, 'amount')}
                       onChange={(e) => handleSpendingChange(category.id, 'amount', e.target.value)}
-                      className="w-24 px-2 py-1 border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white text-right"
+                      className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white text-right"
                     />
                   </div>
 
                   {isSubscription && (
-                    <div className="ml-10 mb-2">
+                    <div className="ml-7 mb-1">
                       <select
                         value={getValue(category.id, 'period')}
                         onChange={(e) => handleSpendingChange(category.id, 'period', e.target.value)}
-                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white"
+                        className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white"
                       >
                         <option value="">Select period</option>
                         <option value="monthly">Monthly</option>
@@ -295,13 +418,13 @@ const MoneyTracking = () => {
                     </div>
                   )}
 
-                  <div className="ml-10">
+                  <div className="ml-7">
                     <input
                       type="text"
                       placeholder="Add note (where you spent)"
                       value={getValue(category.id, 'note')}
                       onChange={(e) => handleSpendingChange(category.id, 'note', e.target.value)}
-                      className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                      className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                     />
                   </div>
                 </div>
@@ -311,7 +434,7 @@ const MoneyTracking = () => {
 
           <button
             onClick={saveDailySpending}
-            className="w-full mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center"
+            className="w-full mt-3 px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center"
           >
             <FaSave className="mr-2" />
             Save Today's Spending
@@ -353,6 +476,54 @@ const MoneyTracking = () => {
             Save Fixed Expenses
           </button>
         </div>
+
+        {/* Daily Spending Trends */}
+        {trends && trends.length > 0 && (
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold dark:text-white flex items-center">
+                <FaChartBar className="mr-2 text-blue-500" />
+                Daily Spending Trends
+              </h2>
+              <select
+                value={trendPeriod}
+                onChange={(e) => setTrendPeriod(parseInt(e.target.value))}
+                className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white"
+              >
+                <option value={7}>Last 7 days</option>
+                <option value={14}>Last 14 days</option>
+                <option value={30}>Last 30 days</option>
+              </select>
+            </div>
+
+            {/* Summary Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-600 dark:text-blue-400">Total Spent</p>
+                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                  ₹{trends.reduce((sum, t) => sum + t.total, 0)}
+                </p>
+              </div>
+              <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                <p className="text-sm text-green-600 dark:text-green-400">Daily Average</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                  ₹{Math.round(trends.reduce((sum, t) => sum + t.total, 0) / trends.length)}
+                </p>
+              </div>
+              <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-sm text-orange-600 dark:text-orange-400">Daily Target</p>
+                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                  ₹1200
+                </p>
+              </div>
+            </div>
+
+            {/* Bar Chart */}
+            <div className="relative h-80 bg-white dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+              <canvas ref={trendChartRef}></canvas>
+            </div>
+          </div>
+        )}
 
         {/* Spending Analysis */}
         {analysis && (
