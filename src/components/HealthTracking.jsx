@@ -128,12 +128,6 @@ const HealthTracking = () => {
           ))}
           {days}
         </div>
-        {hoveredDay && (
-          <div className="mt-2 p-2 bg-gray-100 dark:bg-slate-700 rounded-lg text-center">
-            <p className="text-xs text-gray-600 dark:text-gray-300">{hoveredDay.dateKey}</p>
-            <p className="text-lg font-bold text-gray-800 dark:text-white">Score: {hoveredDay.score}</p>
-          </div>
-        )}
         <div className="flex justify-center gap-2 text-[10px] mt-2">
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-500"></span>80+</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-yellow-500"></span>50-79</span>
@@ -152,6 +146,8 @@ const HealthTracking = () => {
     await healthTrackingService.saveEntry(selectedDate, updatedEntry);
     toast.success("Health data saved!");
     loadStats();
+    loadScoreHistory(); // Refresh calendar
+    loadEntry(); // Refresh current entry to update score
   };
 
   const handleSync = async () => {
@@ -174,7 +170,13 @@ const HealthTracking = () => {
   };
 
   const updateSleep = (field, value) => setEntry(prev => ({ ...prev, sleep: { ...prev.sleep, [field]: value } }));
-  const updateGym = (field, value) => setEntry(prev => ({ ...prev, gym: { ...prev.gym, [field]: value } }));
+  const updateGym = (field, value) => {
+    setEntry(prev => ({ ...prev, gym: { ...prev.gym, [field]: value } }));
+    if (field === 'attended') {
+      // Trigger stats refresh when gym attendance changes
+      setTimeout(() => loadStats(), 100);
+    }
+  };
 
   const toggleExercise = (exerciseId) => {
     setEntry(prev => {
@@ -425,11 +427,11 @@ const HealthTracking = () => {
           {/* Right - Stats */}
           <div className="space-y-4">
             {/* Score Card */}
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4" style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
               <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3">Today's Score</h3>
               <div className="flex items-center gap-4">
                 <div className="w-20 h-20">
-                  <CircularProgressbar value={eatingScore} text={`${eatingScore}`} styles={buildStyles({ pathColor: eatingScore >= 80 ? "#10b981" : eatingScore >= 50 ? "#f59e0b" : "#ef4444", textColor: "#1f2937", trailColor: "#e5e7eb" })} />
+                  <CircularProgressbar value={eatingScore} text={`${eatingScore}`} styles={buildStyles({ pathColor: eatingScore >= 80 ? "#10b981" : eatingScore >= 50 ? "#f59e0b" : "#ef4444", textColor: document.documentElement.classList.contains("dark") ? "#fff" : "#1f2937", trailColor: document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb" })} />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
                   <p>🍽️ Meals: +10 each (40)</p>
@@ -444,7 +446,7 @@ const HealthTracking = () => {
             </motion.div>
 
             {/* Score Calendar */}
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4" style={{ transform: 'scale(0.85)', transformOrigin: 'center' }}>
               <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3">Score History</h3>
               {renderScoreCalendar()}
             </motion.div>

@@ -66,10 +66,10 @@ const MoneyTracking = () => {
     setBankBalance(moneyTrackingService.getBankBalance());
   };
 
-  // Filter to only show active subscriptions (not expired)
+  // Filter to only show subscriptions active for the selected date
   const activeSubscriptions = Object.entries(subscriptions).filter(([_, sub]) => {
-    const today = moneyTrackingService.formatDate(new Date());
-    return today <= sub.endDate;
+    const currentDateKey = moneyTrackingService.formatDate(selectedDate);
+    return currentDateKey >= sub.startDate && currentDateKey <= sub.endDate;
   });
 
   const handleAddSubscription = () => {
@@ -77,8 +77,9 @@ const MoneyTracking = () => {
       toast.error("Please select category and enter amount");
       return;
     }
-    moneyTrackingService.addSubscription(newSub.category, newSub.amount, newSub.periodDays, new Date(), newSub.note);
-    toast.success(`Subscription added! ₹${Math.round(newSub.amount / newSub.periodDays)}/day for ${newSub.periodDays} days`);
+    // Use selectedDate instead of today
+    moneyTrackingService.addSubscription(newSub.category, newSub.amount, newSub.periodDays, selectedDate, newSub.note);
+    toast.success(`Subscription added from ${moneyTrackingService.formatDate(selectedDate)}! ₹${Math.round(newSub.amount / newSub.periodDays)}/day for ${newSub.periodDays} days`);
     setNewSub({ category: '', amount: '', periodDays: 30, note: '' });
     setShowSubModal(false);
     loadSubscriptions();
@@ -126,15 +127,25 @@ const MoneyTracking = () => {
 
   const handleSave = async () => {
     let saved = 0;
+    let totalExpense = 0;
     for (const [category, value] of Object.entries(dailySpending)) {
       const amount = typeof value === 'object' ? value.amount : value;
       if (amount && parseFloat(amount) > 0) {
         await moneyTrackingService.addDailySpending(selectedDate, category, amount);
+        totalExpense += parseFloat(amount);
         saved++;
       }
     }
-    if (saved > 0) { toast.success(`Saved ${saved} expense(s)!`); loadAnalysis(); loadTrends(); }
-    else toast.info("No expenses to save");
+    if (saved > 0) {
+      // Deduct total expense from bank balance
+      moneyTrackingService.deductMoney(totalExpense, `Expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
+      setBankBalance(moneyTrackingService.getBankBalance());
+      toast.success(`Saved ${saved} expense(s) and deducted ₹${Math.round(totalExpense)} from balance`);
+      loadAnalysis();
+      loadTrends();
+    } else {
+      toast.info("No expenses to save");
+    }
   };
 
   const handleSync = async () => {
@@ -252,53 +263,6 @@ const MoneyTracking = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left - Input */}
           <div className="space-y-4">
-            {/* Bank Balance Card */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FaPiggyBank className="text-2xl" />
-                  <div>
-                    <p className="text-xs opacity-80">Bank Balance</p>
-                    <p className="text-2xl font-bold">₹{Math.round(bankBalance).toLocaleString()}</p>
-                  </div>
-                </div>
-                <button onClick={() => setShowBankModal(true)} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all">
-                  <FaPlus className="inline mr-1" /> Add/Deduct
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Today's Budget */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-white">Today's Spending</h3>
-                <div className="flex items-center gap-2">
-                  <div className={`text-2xl font-bold ${isOverBudget ? "text-red-500" : "text-green-500"}`}>
-                    ₹{Math.round(todayTotal)}
-                    <span className="text-xs font-normal text-gray-400 ml-1">/ ₹{dailyBudget}</span>
-                  </div>
-                  <button onClick={() => setShowBudgetEdit(!showBudgetEdit)} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <FaCog className="text-sm" />
-                  </button>
-                </div>
-              </div>
-              {showBudgetEdit && (
-                <div className="mt-2 flex gap-2">
-                  <input type="number" min="100" value={dailyBudget} onChange={(e) => setDailyBudget(parseInt(e.target.value) || 1500)} className="flex-1 px-2 py-1 text-sm rounded border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
-                  <button onClick={handleBudgetSave} className="px-3 py-1 bg-indigo-600 text-white text-sm rounded font-medium">Save</button>
-                </div>
-              )}
-              <div className="mt-2 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div className={`h-full transition-all ${isOverBudget ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${Math.min(100, (todayTotal / dailyBudget) * 100)}%` }} />
-              </div>
-              {subscriptionDaily > 0 && (
-                <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>Daily expenses: ₹{Math.round(regularExpenses)}</span>
-                  <span>Subscriptions: ₹{Math.round(subscriptionDaily)}</span>
-                </div>
-              )}
-            </motion.div>
-
             {/* Daily Expenses */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
               <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500">
@@ -436,6 +400,53 @@ const MoneyTracking = () => {
 
           {/* Right - Stats */}
           <div className="space-y-4">
+            {/* Bank Balance Card */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FaPiggyBank className="text-2xl" />
+                  <div>
+                    <p className="text-xs opacity-80">Bank Balance</p>
+                    <p className="text-2xl font-bold">₹{Math.round(bankBalance).toLocaleString()}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowBankModal(true)} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all">
+                  <FaPlus className="inline mr-1" /> Add/Deduct
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Today's Budget */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-gray-800 dark:text-white">Today's Spending</h3>
+                <div className="flex items-center gap-2">
+                  <div className={`text-2xl font-bold ${isOverBudget ? "text-red-500" : "text-green-500"}`}>
+                    ₹{Math.round(todayTotal)}
+                    <span className="text-xs font-normal text-gray-400 ml-1">/ ₹{dailyBudget}</span>
+                  </div>
+                  <button onClick={() => setShowBudgetEdit(!showBudgetEdit)} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <FaCog className="text-sm" />
+                  </button>
+                </div>
+              </div>
+              {showBudgetEdit && (
+                <div className="mt-2 flex gap-2">
+                  <input type="number" min="100" value={dailyBudget} onChange={(e) => setDailyBudget(parseInt(e.target.value) || 1500)} className="flex-1 px-2 py-1 text-sm rounded border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                  <button onClick={handleBudgetSave} className="px-3 py-1 bg-indigo-600 text-white text-sm rounded font-medium">Save</button>
+                </div>
+              )}
+              <div className="mt-2 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className={`h-full transition-all ${isOverBudget ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${Math.min(100, (todayTotal / dailyBudget) * 100)}%` }} />
+              </div>
+              {subscriptionDaily > 0 && (
+                <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <span>Daily expenses: ₹{Math.round(regularExpenses)}</span>
+                  <span>Subscriptions: ₹{Math.round(subscriptionDaily)}</span>
+                </div>
+              )}
+            </motion.div>
+
             {/* Summary Stats */}
             {analysis && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
