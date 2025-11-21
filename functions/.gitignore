@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# Firebase cache
+.firebase/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+.runtimeconfig.json

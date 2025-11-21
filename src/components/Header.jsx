@@ -56,6 +56,8 @@ export default function Header() {
     const pageMap = {
       "/problems": "PROBLEMS",
       "/personal-plan": "PERSONAL PLAN",
+      "/money-tracking": "MONEY TRACKING",
+      "/health-tracking": "HEALTH TRACKING",
       "/DSA-450": "450DSA",
       "/cp-sheet": "CP SHEET",
       "/learning-resources": "ROADMAPS",
@@ -267,6 +269,8 @@ export default function Header() {
                       className={`${navItemClass(
                         isActive("/learning-resources") ||
                           isActive("/personal-plan") ||
+                          isActive("/money-tracking") ||
+                          isActive("/health-tracking") ||
                           isActive("/problems") ||
                           isActive("/ot-material") ||
                           isActive("/DSA-450") ||
@@ -296,6 +300,8 @@ export default function Header() {
                           <ul className="lg:block">
                             {[
                               { path: "/personal-plan", name: "PERSONAL PLAN" },
+                              { path: "/money-tracking", name: "MONEY TRACKING" },
+                              { path: "/health-tracking", name: "HEALTH TRACKING" },
                               { path: "/problems", name: "PROBLEMS" },
                               { path: "/DSA-450", name: "450DSA" },
                               { path: "/cp-sheet", name: "CP SHEET" },
