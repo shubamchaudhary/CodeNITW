@@ -135,34 +135,38 @@ const MoneyTracking = () => {
 
     let saved = 0;
     let newTotal = 0;
+    // Save all expenses (including 0 amounts to clear them)
     for (const [category, value] of Object.entries(dailySpending)) {
       const amount = typeof value === 'object' ? value.amount : value;
-      if (amount && parseFloat(amount) > 0) {
-        await moneyTrackingService.addDailySpending(selectedDate, category, amount);
-        newTotal += parseFloat(amount);
+      const amountNum = parseFloat(amount) || 0;
+      if (amountNum > 0) {
+        await moneyTrackingService.addDailySpending(selectedDate, category, amountNum);
+        newTotal += amountNum;
         saved++;
       }
     }
-    if (saved > 0) {
-      // Only deduct the difference from previous total
-      const difference = newTotal - previousTotal;
-      if (difference !== 0) {
-        if (difference > 0) {
-          moneyTrackingService.deductMoney(difference, `Additional expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
-          toast.success(`Saved ${saved} expense(s) and deducted ₹${Math.round(difference)} from balance`);
-        } else {
-          moneyTrackingService.addMoney(Math.abs(difference), `Reduced expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
-          toast.success(`Saved ${saved} expense(s) and added back ₹${Math.round(Math.abs(difference))} to balance`);
-        }
-        setBankBalance(moneyTrackingService.getBankBalance());
+
+    // Calculate difference and adjust bank balance
+    const difference = newTotal - previousTotal;
+    if (difference !== 0) {
+      if (difference > 0) {
+        moneyTrackingService.deductMoney(difference, `Additional expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
+        toast.success(`Saved changes and deducted ₹${Math.round(difference)} from balance`);
       } else {
-        toast.success(`Saved ${saved} expense(s) (no balance change)`);
+        moneyTrackingService.addMoney(Math.abs(difference), `Reduced expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
+        toast.success(`Saved changes and added back ₹${Math.round(Math.abs(difference))} to balance`);
       }
-      loadAnalysis();
-      loadTrends();
+      setBankBalance(moneyTrackingService.getBankBalance());
+    } else if (saved > 0) {
+      toast.success(`Saved ${saved} expense(s) (no balance change)`);
     } else {
-      toast.info("No expenses to save");
+      toast.info("No changes to save");
     }
+
+    // Refresh data to prevent duplicate calculations on next save
+    loadData();
+    loadAnalysis();
+    loadTrends();
   };
 
   const handleSync = async () => {
@@ -273,7 +277,7 @@ const MoneyTracking = () => {
               <AnimatePresence>
                 {showCalendar && (
                   <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 top-12 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-slate-600 p-3">
-                    <input type="date" value={moneyTrackingService.formatDate(selectedDate)} onChange={(e) => { setSelectedDate(new Date(e.target.value)); setShowCalendar(false); }} className="w-full p-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                    <input type="date" value={moneyTrackingService.formatDate(selectedDate)} onChange={(e) => { setSelectedDate(new Date(e.target.value)); }} className="w-full p-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
                   </motion.div>
                 )}
               </AnimatePresence>
