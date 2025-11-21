@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chart } from "chart.js/auto";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { FaHeart, FaSync, FaCloudDownloadAlt, FaCalendarAlt, FaCheck } from "react-icons/fa";
+import { FaHeart, FaSync, FaCloudDownloadAlt, FaCalendarAlt, FaCheck, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { toast } from "react-toastify";
 import healthTrackingService from "../services/HealthTrackingService";
 
@@ -14,6 +14,9 @@ const HealthTracking = () => {
   const [stats, setStats] = useState(null);
   const [statsPeriod, setStatsPeriod] = useState(7);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [scoreCalendarMonth, setScoreCalendarMonth] = useState(new Date());
+  const [hoveredDay, setHoveredDay] = useState(null);
+  const [scoreHistory, setScoreHistory] = useState({});
 
   const sleepChartRef = useRef(null);
   const sleepChartInstance = useRef(null);
@@ -21,12 +24,15 @@ const HealthTracking = () => {
   const gymChartInstance = useRef(null);
   const eatingChartRef = useRef(null);
   const eatingChartInstance = useRef(null);
+  const bigScoreChartRef = useRef(null);
+  const bigScoreChartInstance = useRef(null);
   const calendarRef = useRef(null);
 
   useEffect(() => {
     loadEntry();
     loadStats();
-  }, [selectedDate, statsPeriod]);
+    loadScoreHistory();
+  }, [selectedDate, statsPeriod, scoreCalendarMonth]);
 
   useEffect(() => {
     if (stats) renderCharts();
@@ -34,6 +40,7 @@ const HealthTracking = () => {
       sleepChartInstance.current?.destroy();
       gymChartInstance.current?.destroy();
       eatingChartInstance.current?.destroy();
+      bigScoreChartInstance.current?.destroy();
     };
   }, [stats]);
 
@@ -50,6 +57,92 @@ const HealthTracking = () => {
 
   const loadEntry = () => setEntry(healthTrackingService.getEntry(selectedDate));
   const loadStats = () => setStats(healthTrackingService.getStats(statsPeriod));
+
+  const loadScoreHistory = () => {
+    const history = {};
+    const year = scoreCalendarMonth.getFullYear();
+    const month = scoreCalendarMonth.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateKey = healthTrackingService.formatDate(date);
+      const dayEntry = healthTrackingService.getEntry(date);
+      history[dateKey] = healthTrackingService.calculateEatingScore(dayEntry);
+    }
+    setScoreHistory(history);
+  };
+
+  const getScoreColor = (score) => {
+    if (score >= 80) return 'bg-green-500';
+    if (score >= 50) return 'bg-yellow-500';
+    if (score > 0) return 'bg-red-500';
+    return 'bg-gray-200 dark:bg-slate-700';
+  };
+
+  const renderScoreCalendar = () => {
+    const year = scoreCalendarMonth.getFullYear();
+    const month = scoreCalendarMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const days = [];
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="w-6 h-6"></div>);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateKey = healthTrackingService.formatDate(date);
+      const score = scoreHistory[dateKey] || 0;
+      const isToday = dateKey === healthTrackingService.formatDate(new Date());
+
+      days.push(
+        <div
+          key={day}
+          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-medium cursor-pointer relative transition-all ${getScoreColor(score)} ${isToday ? 'ring-2 ring-indigo-500' : ''}`}
+          onMouseEnter={() => setHoveredDay({ day, score, dateKey })}
+          onMouseLeave={() => setHoveredDay(null)}
+          onClick={() => { setSelectedDate(date); }}
+        >
+          <span className={score > 0 ? 'text-white' : 'text-gray-600 dark:text-gray-400'}>{day}</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <button onClick={() => setScoreCalendarMonth(new Date(year, month - 1))} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded">
+            <FaChevronLeft className="text-xs text-gray-500" />
+          </button>
+          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{monthNames[month]} {year}</span>
+          <button onClick={() => setScoreCalendarMonth(new Date(year, month + 1))} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded">
+            <FaChevronRight className="text-xs text-gray-500" />
+          </button>
+        </div>
+        <div className="grid grid-cols-7 gap-1 text-center">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+            <div key={i} className="text-[10px] font-medium text-gray-400 w-6">{d}</div>
+          ))}
+          {days}
+        </div>
+        {hoveredDay && (
+          <div className="mt-2 p-2 bg-gray-100 dark:bg-slate-700 rounded-lg text-center">
+            <p className="text-xs text-gray-600 dark:text-gray-300">{hoveredDay.dateKey}</p>
+            <p className="text-lg font-bold text-gray-800 dark:text-white">Score: {hoveredDay.score}</p>
+          </div>
+        )}
+        <div className="flex justify-center gap-2 text-[10px] mt-2">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-500"></span>80+</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-yellow-500"></span>50-79</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-500"></span>1-49</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-gray-200"></span>0</span>
+        </div>
+      </div>
+    );
+  };
 
   const handleSave = async () => {
     const updatedEntry = {
@@ -129,7 +222,7 @@ const HealthTracking = () => {
       });
     }
 
-    // Eating Score Chart
+    // Eating Score Chart (small)
     if (eatingChartRef.current && stats?.eatingScoreData) {
       eatingChartInstance.current?.destroy();
       eatingChartInstance.current = new Chart(eatingChartRef.current, {
@@ -142,6 +235,37 @@ const HealthTracking = () => {
           ],
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, max: 100, ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } } } },
+      });
+    }
+
+    // Big Score Chart (at bottom)
+    if (bigScoreChartRef.current && stats?.eatingScoreData) {
+      bigScoreChartInstance.current?.destroy();
+      bigScoreChartInstance.current = new Chart(bigScoreChartRef.current, {
+        type: "line",
+        data: {
+          labels: stats.eatingScoreData.map(d => d.label),
+          datasets: [
+            { label: "Health Score", data: stats.eatingScoreData.map(d => d.value), borderColor: "#8b5cf6", backgroundColor: "rgba(139, 92, 246, 0.2)", fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: stats.eatingScoreData.map(d => d.value >= 80 ? '#10b981' : d.value >= 50 ? '#f59e0b' : '#ef4444') },
+            { label: "Target (80)", data: stats.eatingScoreData.map(() => 80), borderColor: "#10b981", borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 2 },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', labels: { color: textColor, font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `Score: ${ctx.raw} ${ctx.raw >= 80 ? '(Great!)' : ctx.raw >= 50 ? '(Good)' : '(Needs work)'}`,
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { color: textColor, font: { size: 11 } }, grid: { display: false } },
+            y: { beginAtZero: true, max: 100, ticks: { color: textColor, font: { size: 11 }, stepSize: 20 }, grid: { color: gridColor } },
+          },
+        },
       });
     }
   };
@@ -305,7 +429,7 @@ const HealthTracking = () => {
               <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3">Today's Score</h3>
               <div className="flex items-center gap-4">
                 <div className="w-20 h-20">
-                  <CircularProgressbar value={eatingScore} text={`${eatingScore}`} styles={buildStyles({ pathColor: eatingScore >= 80 ? "#10b981" : eatingScore >= 50 ? "#f59e0b" : "#ef4444", textColor: document.documentElement.classList.contains("dark") ? "#fff" : "#1f2937", trailColor: document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb" })} />
+                  <CircularProgressbar value={eatingScore} text={`${eatingScore}`} styles={buildStyles({ pathColor: eatingScore >= 80 ? "#10b981" : eatingScore >= 50 ? "#f59e0b" : "#ef4444", textColor: "#1f2937", trailColor: "#e5e7eb" })} />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
                   <p>🍽️ Meals: +10 each (40)</p>
@@ -317,6 +441,12 @@ const HealthTracking = () => {
                   <p>🍔 Junk: -20</p>
                 </div>
               </div>
+            </motion.div>
+
+            {/* Score Calendar */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+              <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3">Score History</h3>
+              {renderScoreCalendar()}
             </motion.div>
 
             {/* Period Selector */}
@@ -354,6 +484,22 @@ const HealthTracking = () => {
             </motion.div>
           </div>
         </div>
+
+        {/* Big Score Trend Chart */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mt-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-white">📊 Health Score Trend</h3>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500 dark:text-gray-400">Average: <span className="font-bold text-indigo-600 dark:text-indigo-400">{stats?.averageEatingScore || 0}</span></span>
+              <div className="flex gap-1">
+                {[7, 14, 30].map((days) => (
+                  <button key={days} onClick={() => setStatsPeriod(days)} className={`px-2 py-1 rounded text-xs font-medium ${statsPeriod === days ? "bg-indigo-600 text-white" : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300"}`}>{days}d</button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="h-64"><canvas ref={bigScoreChartRef}></canvas></div>
+        </motion.div>
       </div>
     </div>
   );
