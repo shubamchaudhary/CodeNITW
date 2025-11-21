@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chart } from "chart.js/auto";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { FaWallet, FaCalendarAlt, FaSync, FaCloudDownloadAlt, FaChartPie } from "react-icons/fa";
+import { FaWallet, FaCalendarAlt, FaSync, FaCloudDownloadAlt, FaChartPie, FaPlus, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import moneyTrackingService from "../services/MoneyTrackingService";
 
@@ -16,6 +16,9 @@ const MoneyTracking = () => {
   const [period, setPeriod] = useState(30);
   const [trendPeriod, setTrendPeriod] = useState(7);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [subscriptions, setSubscriptions] = useState({});
+  const [showSubModal, setShowSubModal] = useState(false);
+  const [newSub, setNewSub] = useState({ category: '', amount: '', periodDays: 30, note: '' });
 
   const pieChartRef = useRef(null);
   const pieChartInstance = useRef(null);
@@ -27,6 +30,7 @@ const MoneyTracking = () => {
     loadData();
     loadAnalysis();
     loadTrends();
+    loadSubscriptions();
   }, [selectedDate, period, trendPeriod]);
 
   useEffect(() => {
@@ -49,6 +53,29 @@ const MoneyTracking = () => {
   const loadData = () => setDailySpending(moneyTrackingService.getDailySpending(selectedDate));
   const loadAnalysis = () => setAnalysis(moneyTrackingService.getSpendingAnalysis(period));
   const loadTrends = () => setTrends(moneyTrackingService.getSpendingTrends(trendPeriod));
+  const loadSubscriptions = () => setSubscriptions(moneyTrackingService.getAllSubscriptions());
+
+  const handleAddSubscription = () => {
+    if (!newSub.category || !newSub.amount || newSub.amount <= 0) {
+      toast.error("Please select category and enter amount");
+      return;
+    }
+    moneyTrackingService.addSubscription(newSub.category, newSub.amount, newSub.periodDays, new Date(), newSub.note);
+    toast.success(`Subscription added! ₹${Math.round(newSub.amount / newSub.periodDays)}/day for ${newSub.periodDays} days`);
+    setNewSub({ category: '', amount: '', periodDays: 30, note: '' });
+    setShowSubModal(false);
+    loadSubscriptions();
+    loadAnalysis();
+    loadTrends();
+  };
+
+  const handleDeleteSubscription = (category) => {
+    moneyTrackingService.deleteSubscription(category);
+    toast.success("Subscription removed");
+    loadSubscriptions();
+    loadAnalysis();
+    loadTrends();
+  };
 
   const handleSave = async () => {
     let saved = 0;
@@ -131,12 +158,17 @@ const MoneyTracking = () => {
     });
   };
 
-  const todayTotal = Object.values(dailySpending).reduce((sum, v) => sum + (typeof v === 'object' ? (v.amount || 0) : v), 0);
+  // Calculate today's total (regular expenses + subscription daily amounts)
+  const regularExpenses = Object.entries(dailySpending).reduce((sum, [cat, v]) => {
+    if (moneyTrackingService.SUBSCRIPTION_CATEGORY_IDS.includes(cat)) return sum;
+    return sum + (typeof v === 'object' ? (v.amount || 0) : v);
+  }, 0);
+  const subscriptionDaily = moneyTrackingService.getDailySubscriptionAmount(selectedDate);
+  const todayTotal = regularExpenses + subscriptionDaily;
   const isOverBudget = todayTotal > 1200;
 
-  // Categories grouped by type
-  const regularCategories = moneyTrackingService.CATEGORIES.filter(c => !moneyTrackingService.FIXED_EXPENSES.includes(c.id) && !moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(c.id));
-  const subscriptionCategories = moneyTrackingService.CATEGORIES.filter(c => moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(c.id));
+  // Categories grouped by type - exclude subscription categories from regular daily input
+  const regularCategories = moneyTrackingService.CATEGORIES.filter(c => !moneyTrackingService.SUBSCRIPTION_CATEGORY_IDS.includes(c.id));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
@@ -185,6 +217,12 @@ const MoneyTracking = () => {
               <div className="mt-2 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div className={`h-full transition-all ${isOverBudget ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${Math.min(100, (todayTotal / 1200) * 100)}%` }} />
               </div>
+              {subscriptionDaily > 0 && (
+                <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <span>Daily expenses: ₹{Math.round(regularExpenses)}</span>
+                  <span>Subscriptions: ₹{Math.round(subscriptionDaily)}</span>
+                </div>
+              )}
             </motion.div>
 
             {/* Daily Expenses */}
@@ -222,36 +260,101 @@ const MoneyTracking = () => {
 
             {/* Subscriptions */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
-              <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500">
-                <h2 className="text-base font-bold text-white">📱 Subscriptions</h2>
+              <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 flex justify-between items-center">
+                <h2 className="text-base font-bold text-white">📱 Subscriptions & Fixed Expenses</h2>
+                <button onClick={() => setShowSubModal(true)} className="p-1.5 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
+                  <FaPlus className="text-white text-sm" />
+                </button>
               </div>
               <div className="p-3">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {subscriptionCategories.map((cat) => {
-                    const value = dailySpending[cat.id];
-                    const amount = typeof value === 'object' ? (value.amount || 0) : (value || 0);
-                    const hasValue = amount > 0;
-
-                    return (
-                      <div key={cat.id} className={`p-2 rounded-lg border-2 transition-all ${hasValue ? "border-purple-400 bg-purple-50 dark:bg-purple-900/20" : "border-transparent bg-gray-50 dark:bg-slate-700/50"}`}>
-                        <div className="text-center">
-                          <span className="text-xl block">{cat.icon}</span>
-                          <span className="text-[10px] font-medium text-gray-600 dark:text-gray-300 block mt-1">{cat.name}</span>
-                          <input
-                            type="number"
-                            min="0"
-                            placeholder="₹0"
-                            value={amount || ""}
-                            onChange={(e) => updateSpending(cat.id, e.target.value)}
-                            className="w-full mt-1 px-1 py-0.5 text-xs text-center rounded border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
-                          />
+                {/* Active Subscriptions */}
+                {Object.keys(subscriptions).length > 0 ? (
+                  <div className="space-y-2 mb-3">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Subscriptions:</p>
+                    {Object.entries(subscriptions).map(([catId, sub]) => {
+                      const cat = moneyTrackingService.CATEGORIES.find(c => c.id === catId);
+                      const isActive = new Date() >= new Date(sub.startDate) && new Date() <= new Date(sub.endDate);
+                      return (
+                        <div key={catId} className={`flex items-center justify-between p-2 rounded-lg ${isActive ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-gray-100 dark:bg-slate-700/50 opacity-60'}`}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{cat?.icon || '📱'}</span>
+                            <div>
+                              <p className="text-xs font-medium text-gray-700 dark:text-gray-200">{cat?.name || catId}</p>
+                              <p className="text-[10px] text-gray-500">₹{sub.amount} / {sub.periodDays} days = ₹{sub.dailyAmount}/day</p>
+                              <p className="text-[10px] text-gray-400">{sub.startDate} to {sub.endDate}</p>
+                            </div>
+                          </div>
+                          <button onClick={() => handleDeleteSubscription(catId)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                            <FaTrash className="text-xs" />
+                          </button>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 text-center py-2">No active subscriptions. Click + to add.</p>
+                )}
+
+                {/* Daily subscription total */}
+                {Object.keys(subscriptions).length > 0 && (
+                  <div className="mt-2 p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-center">
+                    <p className="text-xs text-purple-600 dark:text-purple-400">Today's subscription cost:</p>
+                    <p className="text-lg font-bold text-purple-700 dark:text-purple-300">₹{Math.round(moneyTrackingService.getDailySubscriptionAmount(selectedDate))}</p>
+                  </div>
+                )}
               </div>
             </motion.div>
+
+            {/* Subscription Modal */}
+            <AnimatePresence>
+              {showSubModal && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSubModal(false)}>
+                  <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 max-w-md w-full" onClick={e => e.stopPropagation()}>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Add Subscription / Fixed Expense</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
+                        <select value={newSub.category} onChange={e => setNewSub(prev => ({ ...prev, category: e.target.value }))} className="w-full p-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
+                          <option value="">Select category...</option>
+                          {moneyTrackingService.SUBSCRIPTION_CATEGORIES.map(sub => (
+                            <option key={sub.id} value={sub.id}>{sub.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Total Amount (₹)</label>
+                        <input type="number" min="0" placeholder="e.g., 3000" value={newSub.amount} onChange={e => setNewSub(prev => ({ ...prev, amount: e.target.value }))} className="w-full p-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Period (days)</label>
+                        <div className="flex gap-2">
+                          {[30, 60, 90, 365].map(days => (
+                            <button key={days} onClick={() => setNewSub(prev => ({ ...prev, periodDays: days }))} className={`flex-1 py-1.5 rounded-lg text-xs font-medium ${newSub.periodDays === days ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300'}`}>
+                              {days === 365 ? '1yr' : `${days}d`}
+                            </button>
+                          ))}
+                        </div>
+                        <input type="number" min="1" value={newSub.periodDays} onChange={e => setNewSub(prev => ({ ...prev, periodDays: parseInt(e.target.value) || 30 }))} className="w-full mt-2 p-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" placeholder="Custom days" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Note (optional)</label>
+                        <input type="text" placeholder="e.g., Netflix, ChatGPT" value={newSub.note} onChange={e => setNewSub(prev => ({ ...prev, note: e.target.value }))} className="w-full p-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                      </div>
+                      {newSub.amount && newSub.periodDays && (
+                        <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-center">
+                          <p className="text-xs text-purple-600 dark:text-purple-400">Daily cost:</p>
+                          <p className="text-xl font-bold text-purple-700 dark:text-purple-300">₹{Math.round((newSub.amount / newSub.periodDays) * 100) / 100}/day</p>
+                        </div>
+                      )}
+                      <div className="flex gap-2 pt-2">
+                        <button onClick={() => setShowSubModal(false)} className="flex-1 py-2 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 rounded-lg font-medium">Cancel</button>
+                        <button onClick={handleAddSubscription} className="flex-1 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700">Add Subscription</button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onClick={handleSave} className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
               Save Expenses

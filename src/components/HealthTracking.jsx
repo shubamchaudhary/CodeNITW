@@ -210,12 +210,12 @@ const HealthTracking = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2"><span className="text-xl">💧</span><span className="font-medium text-sm text-gray-700 dark:text-gray-200">Water</span></div>
                     <div className="flex items-center gap-2">
-                      <input type="number" min="0" max="10" step="0.5" value={entry.food.water || 0} onChange={(e) => updateFood('water', 'water', parseFloat(e.target.value) || 0)} className="w-14 px-2 py-1 text-center text-sm rounded-lg border border-blue-200 dark:border-blue-700 dark:bg-slate-800 dark:text-white" />
+                      <input type="number" min="0" max="10" step="0.5" value={healthTrackingService.getWaterValue(entry.food)} onChange={(e) => setEntry(prev => ({ ...prev, food: { ...prev.food, water: parseFloat(e.target.value) || 0 } }))} className="w-14 px-2 py-1 text-center text-sm rounded-lg border border-blue-200 dark:border-blue-700 dark:bg-slate-800 dark:text-white" />
                       <span className="text-xs text-gray-500">/ 4L</span>
                     </div>
                   </div>
                   <div className="mt-1 h-1.5 bg-blue-100 dark:bg-blue-900 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, ((entry.food.water || 0) / 4) * 100)}%` }} />
+                    <div className="h-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, (healthTrackingService.getWaterValue(entry.food) / 4) * 100)}%` }} />
                   </div>
                 </div>
 
@@ -308,10 +308,13 @@ const HealthTracking = () => {
                   <CircularProgressbar value={eatingScore} text={`${eatingScore}`} styles={buildStyles({ pathColor: eatingScore >= 80 ? "#10b981" : eatingScore >= 50 ? "#f59e0b" : "#ef4444", textColor: document.documentElement.classList.contains("dark") ? "#fff" : "#1f2937", trailColor: document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb" })} />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
-                  <p>✅ Meals: +15 each</p>
-                  <p>💧 Water 4L: +10</p>
-                  <p>🍎 Fruits/Nuts: +5</p>
-                  <p>❌ Junk: -20</p>
+                  <p>🍽️ Meals: +10 each (40)</p>
+                  <p>💧 Water: +2.5/L (max 10)</p>
+                  <p>💪 Gym: +20</p>
+                  <p>🍎 Fruits: +10</p>
+                  <p>🥜 Dry Fruits: +10</p>
+                  <p>😴 Sleep: +20 (timing)</p>
+                  <p>🍔 Junk: -20</p>
                 </div>
               </div>
             </motion.div>
