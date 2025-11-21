@@ -20,6 +20,8 @@ import Discussion from "./pages/Discussion/Discussion";
 import Profile from "./pages/Dashboard/Profile";
 import InterviewExp from "./pages/Resources/InterviewExp";
 import PersonalPlan from "./pages/Resources/PersonalPlan";
+import HealthTracking from "./pages/Resources/HealthTracking";
+import MoneyTracking from "./pages/Resources/MoneyTracking";
 
 // import { inject } from "@vercel/analytics";
 // import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -56,6 +58,12 @@ function App() {
           </Route>
           <Route path="/personal-plan" element={<PrivateRoute />}>
             <Route path="/personal-plan" element={<PersonalPlan />}></Route>
+          </Route>
+          <Route path="/health-tracking" element={<PrivateRoute />}>
+            <Route path="/health-tracking" element={<HealthTracking />}></Route>
+          </Route>
+          <Route path="/money-tracking" element={<PrivateRoute />}>
+            <Route path="/money-tracking" element={<MoneyTracking />}></Route>
           </Route>
           <Route path="/contest" element={<PrivateRoute />}>
             <Route path="/contest" element={<Contest />}></Route>

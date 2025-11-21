@@ -61,6 +61,8 @@ export default function Header() {
       "/learning-resources": "ROADMAPS",
       "/ot-material": "OT MATERIAL",
       "/interview-exps": "INT EXPS",
+      "/health-tracking": "HEALTH",
+      "/money-tracking": "MONEY",
     };
     setActivePage(pageMap[location.pathname] || "RESOURCES");
   }, [location.pathname]);
@@ -271,7 +273,9 @@ export default function Header() {
                           isActive("/ot-material") ||
                           isActive("/DSA-450") ||
                           isActive("/cp-sheet") ||
-                          isActive("/interview-exps")
+                          isActive("/interview-exps") ||
+                          isActive("/health-tracking") ||
+                          isActive("/money-tracking")
                       )} flex items-center gap-1 w-full lg:w-auto max-w-[150px] justify-between lg:justify-center`}
                     >
                       <span className="truncate">{activePage}</span>
@@ -301,6 +305,8 @@ export default function Header() {
                               { path: "/cp-sheet", name: "CP SHEET" },
                               { path: "/learning-resources", name: "ROADMAPS" },
                               { path: "/interview-exps", name: "INT EXPS" },
+                              { path: "/health-tracking", name: "HEALTH" },
+                              { path: "/money-tracking", name: "MONEY" },
                             ].map((item, index) => (
                               <motion.li
                                 key={item.path}
