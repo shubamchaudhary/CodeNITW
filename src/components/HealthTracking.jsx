@@ -1,661 +1,357 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Chart } from "chart.js/auto";
-import {
-  FaHeart,
-  FaAppleAlt,
-  FaBed,
-  FaDumbbell,
-  FaSave,
-  FaSync,
-  FaDownload,
-  FaCalendarAlt,
-  FaChartBar,
-  FaBrain,
-} from "react-icons/fa";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import { FaHeart, FaSync, FaCloudDownloadAlt, FaCalendarAlt, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import healthTrackingService from "../services/HealthTrackingService";
-import aiInsightsService from "../services/AIInsightsService";
 
 const HealthTracking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [entry, setEntry] = useState({
-    meals: {},
-    food: {},
-    sleep: { bedTime: "", wakeTime: "" },
-    gym: { attended: false, duration: 0, exercises: [], note: "" },
-  });
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [entry, setEntry] = useState(healthTrackingService.getEmptyEntry());
   const [stats, setStats] = useState(null);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [statsPeriod, setStatsPeriod] = useState(7);
-  const [aiInsights, setAiInsights] = useState("");
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  const chartRef = useRef(null);
-  const chartInstance = useRef(null);
+  const sleepChartRef = useRef(null);
+  const sleepChartInstance = useRef(null);
+  const gymChartRef = useRef(null);
+  const gymChartInstance = useRef(null);
+  const eatingChartRef = useRef(null);
+  const eatingChartInstance = useRef(null);
+  const calendarRef = useRef(null);
 
   useEffect(() => {
     loadEntry();
     loadStats();
-  }, [selectedDate]);
+  }, [selectedDate, statsPeriod]);
 
   useEffect(() => {
-    loadStats();
-  }, [statsPeriod]);
-
-  useEffect(() => {
-    if (stats) {
-      renderChart();
-    }
-
+    if (stats) renderCharts();
     return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
+      sleepChartInstance.current?.destroy();
+      gymChartInstance.current?.destroy();
+      eatingChartInstance.current?.destroy();
     };
   }, [stats]);
 
-  // Listen for updates
+  // Close calendar when clicking outside
   useEffect(() => {
-    const handleUpdate = () => {
-      loadEntry();
-      loadStats();
+    const handleClickOutside = (e) => {
+      if (calendarRef.current && !calendarRef.current.contains(e.target)) {
+        setShowCalendar(false);
+      }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    window.addEventListener("healthTrackingUpdated", handleUpdate);
-    return () => window.removeEventListener("healthTrackingUpdated", handleUpdate);
-  }, [selectedDate, statsPeriod]);
+  const loadEntry = () => setEntry(healthTrackingService.getEntry(selectedDate));
+  const loadStats = () => setStats(healthTrackingService.getStats(statsPeriod));
 
-  const loadEntry = () => {
-    const data = healthTrackingService.getEntry(selectedDate);
-    setEntry(data);
-  };
-
-  const loadStats = () => {
-    const statistics = healthTrackingService.getHealthStats(statsPeriod);
-    setStats(statistics);
-  };
-
-  const handleMealChange = (mealId, value) => {
-    const newEntry = { ...entry };
-    newEntry.meals[mealId] = value;
-    setEntry(newEntry);
-  };
-
-  const saveMeal = (mealId) => {
-    const details = entry.meals[mealId] || "";
-    healthTrackingService.updateMeal(selectedDate, mealId, details);
-    toast.success("Meal saved!");
-  };
-
-  const handleFoodChange = (foodId, field, value) => {
-    const newEntry = { ...entry };
-    if (!newEntry.food[foodId]) {
-      newEntry.food[foodId] = { checked: false, note: "" };
-    }
-    newEntry.food[foodId][field] = value;
-    setEntry(newEntry);
-  };
-
-  const saveFoodItem = (foodId) => {
-    const foodData = entry.food[foodId] || { checked: false, note: "" };
-    healthTrackingService.updateFood(selectedDate, foodId, foodData.checked, foodData.note);
-    toast.success("Food item saved!");
-  };
-
-  const handleSleepChange = (field, value) => {
-    const newSleep = { ...entry.sleep, [field]: value };
-    setEntry(prev => ({ ...prev, sleep: newSleep }));
-  };
-
-  const saveSleep = () => {
-    healthTrackingService.updateSleep(selectedDate, entry.sleep.bedTime, entry.sleep.wakeTime);
-    toast.success("Sleep schedule saved!");
-  };
-
-  const handleGymChange = (field, value) => {
-    const newGym = { ...entry.gym, [field]: value };
-    setEntry(prev => ({ ...prev, gym: newGym }));
-  };
-
-  const toggleExercise = (exercise) => {
-    const exercises = entry.gym.exercises || [];
-    const newExercises = exercises.includes(exercise)
-      ? exercises.filter(e => e !== exercise)
-      : [...exercises, exercise];
-
-    handleGymChange("exercises", newExercises);
-  };
-
-  const saveGym = () => {
-    healthTrackingService.updateGym(
-      selectedDate,
-      entry.gym.attended,
-      entry.gym.duration,
-      entry.gym.exercises,
-      entry.gym.note
-    );
-    toast.success("Gym session saved!");
+  const handleSave = async () => {
+    const updatedEntry = {
+      ...entry,
+      sleep: { ...entry.sleep, hours: healthTrackingService.calculateSleepHours(entry.sleep.bedTime, entry.sleep.wakeTime) },
+    };
+    await healthTrackingService.saveEntry(selectedDate, updatedEntry);
+    toast.success("Health data saved!");
+    loadStats();
   };
 
   const handleSync = async () => {
     setIsSyncing(true);
-    const result = await healthTrackingService.syncToFirebase();
-    if (result.success) {
-      toast.success("Health data synced to cloud!");
-    } else {
-      toast.error("Failed to sync: " + result.error);
-    }
+    const result = await healthTrackingService.loadFromCloud(true);
+    if (result.success) { toast.success("Synced with cloud!"); loadEntry(); loadStats(); }
+    else toast.error(result.error || "Sync failed");
     setIsSyncing(false);
   };
 
-  const handleLoad = async () => {
-    setIsSyncing(true);
-    const result = await healthTrackingService.loadFromFirebase();
-    if (result.success) {
-      toast.success("Health data loaded from cloud!");
-      loadEntry();
-      loadStats();
-    } else {
-      toast.error("Failed to load: " + result.error);
-    }
-    setIsSyncing(false);
+  const updateMeal = (mealId, field, value) => {
+    setEntry(prev => ({ ...prev, meals: { ...prev.meals, [mealId]: { ...prev.meals[mealId], [field]: value } } }));
   };
 
-  const getAIInsights = async () => {
-    if (!stats) {
-      toast.error("No health data available for analysis");
-      return;
-    }
-
-    setIsLoadingAI(true);
-    try {
-      const insights = await aiInsightsService.analyzeHealth(stats, statsPeriod);
-      setAiInsights(insights);
-      toast.success("AI insights generated!");
-    } catch (error) {
-      toast.error("Failed to get AI insights");
-      setAiInsights(`Error: ${error.message}`);
-    }
-    setIsLoadingAI(false);
+  const updateFood = (foodId, field, value) => {
+    setEntry(prev => ({
+      ...prev,
+      food: { ...prev.food, [foodId]: typeof prev.food[foodId] === 'object' ? { ...prev.food[foodId], [field]: value } : { [field]: value } },
+    }));
   };
 
-  const renderChart = () => {
-    if (!chartRef.current || !stats) return;
+  const updateSleep = (field, value) => setEntry(prev => ({ ...prev, sleep: { ...prev.sleep, [field]: value } }));
+  const updateGym = (field, value) => setEntry(prev => ({ ...prev, gym: { ...prev.gym, [field]: value } }));
 
-    if (chartInstance.current) {
-      chartInstance.current.destroy();
-    }
-
-    const ctx = chartRef.current.getContext("2d");
-
-    // Prepare data for multiple metrics
-    const datasets = [
-      {
-        label: "Sleep Hours",
-        data: [stats.averageSleep || 0],
-        backgroundColor: "#3b82f6",
-        borderColor: "#2563eb",
-        borderWidth: 2,
-      },
-      {
-        label: "Sleep Target",
-        data: [8], // 8 hours target
-        backgroundColor: "rgba(59, 130, 246, 0.2)",
-        borderColor: "#2563eb",
-        borderWidth: 2,
-        borderDash: [5, 5],
-      },
-      {
-        label: "Gym Days",
-        data: [stats.gymDays || 0],
-        backgroundColor: "#f97316",
-        borderColor: "#ea580c",
-        borderWidth: 2,
-      },
-      {
-        label: "Gym Target",
-        data: [statsPeriod >= 7 ? 5 : 1], // 5 days per week
-        backgroundColor: "rgba(249, 115, 22, 0.2)",
-        borderColor: "#ea580c",
-        borderWidth: 2,
-        borderDash: [5, 5],
-      },
-      {
-        label: "Avg Gym Duration (min)",
-        data: [(stats.avgGymDuration || 0) / 10], // Scale down to fit
-        backgroundColor: "#10b981",
-        borderColor: "#059669",
-        borderWidth: 2,
-      },
-      {
-        label: "Duration Target",
-        data: [6], // 60 min target (scaled to 6)
-        backgroundColor: "rgba(16, 185, 129, 0.2)",
-        borderColor: "#059669",
-        borderWidth: 2,
-        borderDash: [5, 5],
-      },
-    ];
-
-    chartInstance.current = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["Sleep (hrs)", "Gym (days)", "Duration (×10 min)"],
-        datasets: datasets,
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top",
-            labels: {
-              color: document.documentElement.classList.contains("dark") ? "#e5e7eb" : "#1f2937",
-              filter: (item) => !item.text.includes("Target"), // Hide target from legend
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                let label = context.dataset.label || "";
-                if (label.includes("Duration")) {
-                  return `${label}: ${context.parsed.y * 10} min`;
-                }
-                return `${label}: ${context.parsed.y}`;
-              },
-            },
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: document.documentElement.classList.contains("dark") ? "#e5e7eb" : "#1f2937",
-            },
-            grid: {
-              color: document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb",
-            },
-          },
-          x: {
-            ticks: {
-              color: document.documentElement.classList.contains("dark") ? "#e5e7eb" : "#1f2937",
-            },
-            grid: {
-              color: document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb",
-            },
-          },
-        },
-      },
+  const toggleExercise = (exerciseId) => {
+    setEntry(prev => {
+      const exercises = prev.gym.exercises || [];
+      return { ...prev, gym: { ...prev.gym, exercises: exercises.includes(exerciseId) ? exercises.filter(e => e !== exerciseId) : [...exercises, exerciseId] } };
     });
   };
 
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
+  const formatDateDisplay = (date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const renderCharts = () => {
+    const isDark = document.documentElement.classList.contains("dark");
+    const gridColor = isDark ? "#374151" : "#e5e7eb";
+    const textColor = isDark ? "#9ca3af" : "#4b5563";
+
+    // Sleep Chart
+    if (sleepChartRef.current && stats?.sleepData) {
+      sleepChartInstance.current?.destroy();
+      sleepChartInstance.current = new Chart(sleepChartRef.current, {
+        type: "line",
+        data: {
+          labels: stats.sleepData.map(d => d.label),
+          datasets: [
+            { label: "Sleep", data: stats.sleepData.map(d => d.value), borderColor: "#8b5cf6", backgroundColor: "rgba(139, 92, 246, 0.1)", fill: true, tension: 0.4, pointRadius: 3 },
+            { label: "Target (7.5h)", data: stats.sleepData.map(() => 7.5), borderColor: "#10b981", borderDash: [5, 5], pointRadius: 0, fill: false },
+          ],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, max: 12, ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } } } },
+      });
+    }
+
+    // Gym Chart
+    if (gymChartRef.current && stats?.gymData) {
+      gymChartInstance.current?.destroy();
+      gymChartInstance.current = new Chart(gymChartRef.current, {
+        type: "line",
+        data: {
+          labels: stats.gymData.map(d => d.label),
+          datasets: [
+            { label: "Gym", data: stats.gymData.map(d => d.value), borderColor: "#f97316", backgroundColor: "rgba(249, 115, 22, 0.1)", fill: true, tension: 0.4, pointRadius: 3 },
+            { label: "Target (60min)", data: stats.gymData.map(() => 60), borderColor: "#10b981", borderDash: [5, 5], pointRadius: 0, fill: false },
+          ],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } } } },
+      });
+    }
+
+    // Eating Score Chart
+    if (eatingChartRef.current && stats?.eatingScoreData) {
+      eatingChartInstance.current?.destroy();
+      eatingChartInstance.current = new Chart(eatingChartRef.current, {
+        type: "line",
+        data: {
+          labels: stats.eatingScoreData.map(d => d.label),
+          datasets: [
+            { label: "Score", data: stats.eatingScoreData.map(d => d.value), borderColor: "#06b6d4", backgroundColor: "rgba(6, 182, 212, 0.1)", fill: true, tension: 0.4, pointRadius: 3 },
+            { label: "Target (80)", data: stats.eatingScoreData.map(() => 80), borderColor: "#10b981", borderDash: [5, 5], pointRadius: 0, fill: false },
+          ],
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, max: 100, ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } } } },
+      });
+    }
   };
 
-  const getFoodValue = (foodId, field) => {
-    const food = entry.food[foodId];
-    if (!food) return field === 'checked' ? false : "";
-    if (typeof food === 'object') {
-      return food[field] || (field === 'checked' ? false : "");
-    }
-    return field === 'checked' ? food : "";
-  };
+  const eatingScore = healthTrackingService.calculateEatingScore(entry);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold dark:text-white flex items-center">
-              <FaHeart className="mr-3 text-red-500" />
-              Health Tracking
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+              <FaHeart className="text-red-500" /> Health Tracker
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Track your food, sleep, and workout habits
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Track your daily wellness</p>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleSync}
-              disabled={isSyncing}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center disabled:opacity-50"
-            >
-              {isSyncing ? <FaSync className="animate-spin mr-2" /> : <FaSave className="mr-2" />}
-              Save to Cloud
+
+          <div className="flex items-center gap-3">
+            <div className="relative" ref={calendarRef}>
+              <button onClick={() => setShowCalendar(prev => !prev)} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-md border border-gray-200 dark:border-slate-600 hover:shadow-lg transition-all">
+                <FaCalendarAlt className="text-indigo-500" />
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{formatDateDisplay(selectedDate)}</span>
+              </button>
+              <AnimatePresence>
+                {showCalendar && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 top-12 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-slate-600 p-3">
+                    <input type="date" value={healthTrackingService.formatDate(selectedDate)} onChange={(e) => { setSelectedDate(new Date(e.target.value)); setShowCalendar(false); }} className="w-full p-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <button onClick={handleSync} disabled={isSyncing} className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50" title="Sync with Cloud">
+              {isSyncing ? <FaSync className="animate-spin" /> : <FaCloudDownloadAlt />}
             </button>
-            <button
-              onClick={handleLoad}
-              disabled={isSyncing}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center disabled:opacity-50"
-            >
-              <FaDownload className="mr-2" />
-              Load from Cloud
-            </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Date Selector */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 flex items-center justify-between border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center">
-            <FaCalendarAlt className="text-blue-500 mr-2" />
-            <span className="dark:text-white font-medium">Select Date:</span>
-          </div>
-          <input
-            type="date"
-            value={formatDate(selectedDate)}
-            onChange={(e) => setSelectedDate(new Date(e.target.value))}
-            className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white"
-          />
-        </div>
-
-        {/* Meals Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <h2 className="text-xl font-bold dark:text-white mb-4 flex items-center">
-            <FaAppleAlt className="mr-2 text-green-500" />
-            Meals - What did you eat?
-          </h2>
-
-          <div className="space-y-3">
-            {healthTrackingService.MEALS.map((meal) => (
-              <div key={meal.id} className="bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-200 dark:border-slate-600">
-                <div className="flex items-center mb-2">
-                  <span className="text-2xl mr-2">{meal.icon}</span>
-                  <label className="text-sm font-medium dark:text-gray-200">{meal.label}</label>
-                </div>
-                <div className="ml-10">
-                  <textarea
-                    value={entry.meals[meal.id] || ""}
-                    onChange={(e) => handleMealChange(meal.id, e.target.value)}
-                    placeholder={`What did you have for ${meal.label.toLowerCase()}?`}
-                    rows={2}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none"
-                  />
-                  <button
-                    onClick={() => saveMeal(meal.id)}
-                    className="mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
-                  >
-                    Save {meal.label}
-                  </button>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left - Forms */}
+          <div className="space-y-4">
+            {/* Meals & Nutrition */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-3 bg-gradient-to-r from-emerald-500 to-teal-500">
+                <h2 className="text-base font-bold text-white">🍽️ Meals & Nutrition</h2>
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="p-3 space-y-2">
+                {healthTrackingService.MEALS.map((meal) => (
+                  <div key={meal.id} className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-2 border border-gray-100 dark:border-slate-600">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={entry.meals[meal.id]?.checked || false} onChange={(e) => updateMeal(meal.id, 'checked', e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-emerald-500 focus:ring-emerald-500" />
+                      <span className="text-xl">{meal.icon}</span>
+                      <span className="font-medium text-sm text-gray-700 dark:text-gray-200">{meal.label}</span>
+                      <span className="text-xs text-gray-400 ml-auto">{meal.time}</span>
+                    </label>
+                    <AnimatePresence>
+                      {entry.meals[meal.id]?.checked && (
+                        <motion.input initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} type="text" placeholder={`What did you eat?`} value={entry.meals[meal.id]?.details || ""} onChange={(e) => updateMeal(meal.id, 'details', e.target.value)} className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white" />
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
 
-        {/* Food Items Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <h2 className="text-xl font-bold dark:text-white mb-4">Food Items Tracker</h2>
+                {/* Water */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2 border border-blue-100 dark:border-blue-800">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2"><span className="text-xl">💧</span><span className="font-medium text-sm text-gray-700 dark:text-gray-200">Water</span></div>
+                    <div className="flex items-center gap-2">
+                      <input type="number" min="0" max="10" step="0.5" value={entry.food.water || 0} onChange={(e) => updateFood('water', 'water', parseFloat(e.target.value) || 0)} className="w-14 px-2 py-1 text-center text-sm rounded-lg border border-blue-200 dark:border-blue-700 dark:bg-slate-800 dark:text-white" />
+                      <span className="text-xs text-gray-500">/ 4L</span>
+                    </div>
+                  </div>
+                  <div className="mt-1 h-1.5 bg-blue-100 dark:bg-blue-900 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 transition-all" style={{ width: `${Math.min(100, ((entry.food.water || 0) / 4) * 100)}%` }} />
+                  </div>
+                </div>
 
-          <div className="space-y-3">
-            {healthTrackingService.FOOD_ITEMS.map((item) => (
-              <div key={item.id} className="bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-200 dark:border-slate-600">
-                <div className="flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    id={`food-${item.id}`}
-                    checked={getFoodValue(item.id, 'checked')}
-                    onChange={(e) => handleFoodChange(item.id, 'checked', e.target.checked)}
-                    className="mr-3 h-5 w-5"
-                  />
-                  <label htmlFor={`food-${item.id}`} className="flex items-center cursor-pointer flex-1">
-                    <span className="text-2xl mr-2">{item.icon}</span>
-                    <span className="dark:text-white font-medium">{item.label}</span>
+                {/* Junk */}
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-2 border border-red-100 dark:border-red-800">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={entry.food.junk?.had || false} onChange={(e) => updateFood('junk', 'had', e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-red-500 focus:ring-red-500" />
+                    <span className="text-xl">🍔</span>
+                    <span className="font-medium text-sm text-gray-700 dark:text-gray-200">Had Junk?</span>
                   </label>
+                  <AnimatePresence>
+                    {entry.food.junk?.had && (
+                      <motion.input initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} type="text" placeholder="What?" value={entry.food.junk?.details || ""} onChange={(e) => updateFood('junk', 'details', e.target.value)} className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg border border-red-200 dark:border-red-800 dark:bg-slate-800 dark:text-white" />
+                    )}
+                  </AnimatePresence>
                 </div>
-                <div className="ml-10">
-                  <input
-                    type="text"
-                    placeholder="Add note..."
-                    value={getFoodValue(item.id, 'note')}
-                    onChange={(e) => handleFoodChange(item.id, 'note', e.target.value)}
-                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                  />
-                  <button
-                    onClick={() => saveFoodItem(item.id)}
-                    className="mt-2 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Sleep Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <h2 className="text-xl font-bold dark:text-white mb-4 flex items-center">
-            <FaBed className="mr-2 text-blue-500" />
-            Sleep Schedule
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg border border-gray-200 dark:border-slate-600">
-              <label className="block text-sm font-medium dark:text-gray-300 mb-2">
-                Bed Time
-              </label>
-              <input
-                type="time"
-                value={entry.sleep.bedTime || ""}
-                onChange={(e) => handleSleepChange("bedTime", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-800 dark:text-white"
-                style={{ colorScheme: document.documentElement.classList.contains("dark") ? "dark" : "light" }}
-              />
-            </div>
-            <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg border border-gray-200 dark:border-slate-600">
-              <label className="block text-sm font-medium dark:text-gray-300 mb-2">
-                Wake Up Time
-              </label>
-              <input
-                type="time"
-                value={entry.sleep.wakeTime || ""}
-                onChange={(e) => handleSleepChange("wakeTime", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-800 dark:text-white"
-                style={{ colorScheme: document.documentElement.classList.contains("dark") ? "dark" : "light" }}
-              />
-            </div>
-          </div>
-
-          {entry.sleep.bedTime && entry.sleep.wakeTime && (
-            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                Sleep Duration: {healthTrackingService.calculateSleepHours(
-                  entry.sleep.bedTime,
-                  entry.sleep.wakeTime
-                ).toFixed(1)} hours
-              </p>
-            </div>
-          )}
-
-          <button
-            onClick={saveSleep}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
-          >
-            <FaSave className="mr-2" />
-            Save Sleep Schedule
-          </button>
-        </div>
-
-        {/* Gym Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <h2 className="text-xl font-bold dark:text-white mb-4 flex items-center">
-            <FaDumbbell className="mr-2 text-orange-500" />
-            Gym Session
-          </h2>
-
-          <div className="mb-4">
-            <label className="flex items-center p-3 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-600">
-              <input
-                type="checkbox"
-                checked={entry.gym.attended || false}
-                onChange={(e) => handleGymChange("attended", e.target.checked)}
-                className="mr-3 h-5 w-5"
-              />
-              <span className="dark:text-white font-medium">Hit gym today?</span>
-            </label>
-          </div>
-
-          {entry.gym.attended && (
-            <div className="space-y-4">
-              <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg border border-gray-200 dark:border-slate-600">
-                <label className="block text-sm font-medium dark:text-gray-300 mb-2">
-                  Duration (minutes)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={entry.gym.duration || ""}
-                  onChange={(e) => handleGymChange("duration", parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-800 dark:text-white"
-                  placeholder="e.g., 60"
-                />
-              </div>
-
-              <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg border border-gray-200 dark:border-slate-600">
-                <label className="block text-sm font-medium dark:text-gray-300 mb-2">
-                  Exercises
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-                  {healthTrackingService.EXERCISE_TYPES.map((exercise) => (
-                    <button
-                      key={exercise}
-                      onClick={() => toggleExercise(exercise)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                        (entry.gym.exercises || []).includes(exercise)
-                          ? "bg-orange-600 text-white"
-                          : "bg-white dark:bg-slate-800 dark:text-gray-300 border border-gray-300 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-700"
-                      }`}
-                    >
-                      {exercise}
-                    </button>
+                {/* Other Items */}
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[{ id: 'tea_coffee', label: 'Tea/Coffee', icon: '☕' }, { id: 'fruits', label: 'Fruits', icon: '🍎' }, { id: 'dry_fruits', label: 'Dry Fruits', icon: '🥜' }, { id: 'protein_shake', label: 'Protein', icon: '🥤' }].map((item) => (
+                    <label key={item.id} className={`flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all border-2 ${entry.food[item.id]?.had ? "bg-green-50 dark:bg-green-900/20 border-green-400" : "bg-gray-50 dark:bg-slate-700/50 border-transparent hover:border-gray-200"}`}>
+                      <input type="checkbox" checked={entry.food[item.id]?.had || false} onChange={(e) => updateFood(item.id, 'had', e.target.checked)} className="sr-only" />
+                      <span className="text-xl">{item.icon}</span>
+                      <span className="text-[10px] font-medium text-gray-600 dark:text-gray-300 text-center mt-1">{item.label}</span>
+                      {entry.food[item.id]?.had && <FaCheck className="text-green-500 text-xs mt-1" />}
+                    </label>
                   ))}
                 </div>
               </div>
+            </motion.div>
 
-              <div className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg border border-gray-200 dark:border-slate-600">
-                <label className="block text-sm font-medium dark:text-gray-300 mb-2">
-                  Notes
+            {/* Sleep */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-3 bg-gradient-to-r from-violet-500 to-purple-500">
+                <h2 className="text-base font-bold text-white">😴 Sleep</h2>
+              </div>
+              <div className="p-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Bed Time</label><input type="time" value={entry.sleep.bedTime || ""} onChange={(e) => updateSleep('bedTime', e.target.value)} className="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" /></div>
+                  <div><label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Wake Time</label><input type="time" value={entry.sleep.wakeTime || ""} onChange={(e) => updateSleep('wakeTime', e.target.value)} className="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" /></div>
+                </div>
+                {entry.sleep.bedTime && entry.sleep.wakeTime && (
+                  <div className="mt-2 p-2 bg-violet-50 dark:bg-violet-900/20 rounded-lg text-center">
+                    <span className="text-xl font-bold text-violet-600 dark:text-violet-400">{healthTrackingService.calculateSleepHours(entry.sleep.bedTime, entry.sleep.wakeTime)}h</span>
+                    <span className="text-xs text-gray-500 ml-1">sleep</span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Gym */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-3 bg-gradient-to-r from-orange-500 to-amber-500">
+                <h2 className="text-base font-bold text-white">💪 Gym</h2>
+              </div>
+              <div className="p-3 space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={entry.gym.attended || false} onChange={(e) => updateGym('attended', e.target.checked)} className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500" />
+                  <span className="font-medium text-sm text-gray-700 dark:text-gray-200">Hit the gym today?</span>
                 </label>
-                <textarea
-                  value={entry.gym.note || ""}
-                  onChange={(e) => handleGymChange("note", e.target.value)}
-                  placeholder="How did your workout go?"
-                  rows={3}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none"
-                />
+                <AnimatePresence>
+                  {entry.gym.attended && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="space-y-2">
+                      <div><label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Duration (min)</label><input type="number" min="0" value={entry.gym.duration || ""} onChange={(e) => updateGym('duration', parseInt(e.target.value) || 0)} className="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" /></div>
+                      <div className="flex flex-wrap gap-1">
+                        {healthTrackingService.EXERCISE_TYPES.map((ex) => (
+                          <button key={ex.id} onClick={() => toggleExercise(ex.id)} className={`px-2 py-1 rounded-full text-xs font-medium transition-all ${(entry.gym.exercises || []).includes(ex.id) ? "bg-orange-500 text-white" : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300"}`}>
+                            {ex.label}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          )}
+            </motion.div>
 
-          <button
-            onClick={saveGym}
-            className="w-full mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-center"
-          >
-            <FaSave className="mr-2" />
-            Save Gym Session
-          </button>
-        </div>
-
-        {/* Statistics */}
-        {stats && (
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold dark:text-white flex items-center">
-                <FaChartBar className="mr-2 text-purple-500" />
-                Health Stats
-              </h2>
-              <select
-                value={statsPeriod}
-                onChange={(e) => setStatsPeriod(parseInt(e.target.value))}
-                className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white"
-              >
-                <option value={7}>Last 7 days</option>
-                <option value={30}>Last 30 days</option>
-              </select>
-            </div>
-
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-sm text-blue-600 dark:text-blue-400">Avg Sleep</p>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                  {stats.averageSleep}h
-                </p>
-                <p className="text-xs text-blue-600 dark:text-blue-400">Target: 8h</p>
-              </div>
-              <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-sm text-orange-600 dark:text-orange-400">Gym Days</p>
-                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                  {stats.gymDays}/{statsPeriod}
-                </p>
-                <p className="text-xs text-orange-600 dark:text-orange-400">
-                  ({stats.gymPercentage}%)
-                </p>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                <p className="text-sm text-green-600 dark:text-green-400">Avg Gym Duration</p>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                  {stats.avgGymDuration}m
-                </p>
-                <p className="text-xs text-green-600 dark:text-green-400">Target: 60m</p>
-              </div>
-            </div>
-
-            {/* Bar Chart with Benchmarks */}
-            <div className="relative h-64 bg-white dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
-              <canvas ref={chartRef}></canvas>
-            </div>
-          </div>
-        )}
-
-        {/* AI Insights */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold dark:text-white flex items-center">
-              <FaBrain className="mr-2 text-indigo-500" />
-              AI Health Insights
-            </h2>
-            <button
-              onClick={getAIInsights}
-              disabled={isLoadingAI || !stats}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoadingAI ? (
-                <>
-                  <FaSync className="animate-spin mr-2" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <FaBrain className="mr-2" />
-                  Get AI Insights
-                </>
-              )}
-            </button>
+            <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onClick={handleSave} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
+              Save Health Data
+            </motion.button>
           </div>
 
-          {aiInsights ? (
-            <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
-              <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-sans">
-                {aiInsights}
-              </pre>
+          {/* Right - Stats */}
+          <div className="space-y-4">
+            {/* Score Card */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+              <h3 className="text-sm font-bold text-gray-800 dark:text-white mb-3">Today's Score</h3>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20">
+                  <CircularProgressbar value={eatingScore} text={`${eatingScore}`} styles={buildStyles({ pathColor: eatingScore >= 80 ? "#10b981" : eatingScore >= 50 ? "#f59e0b" : "#ef4444", textColor: document.documentElement.classList.contains("dark") ? "#fff" : "#1f2937", trailColor: document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb" })} />
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
+                  <p>✅ Meals: +15 each</p>
+                  <p>💧 Water 4L: +10</p>
+                  <p>🍎 Fruits/Nuts: +5</p>
+                  <p>❌ Junk: -20</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Period Selector */}
+            <div className="flex gap-2">
+              {[7, 14, 30].map((days) => (
+                <button key={days} onClick={() => setStatsPeriod(days)} className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition-all ${statsPeriod === days ? "bg-indigo-600 text-white" : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700"}`}>
+                  {days}d
+                </button>
+              ))}
             </div>
-          ) : (
-            <div className="text-center text-gray-500 dark:text-gray-400 py-8 bg-gray-50 dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
-              <FaBrain className="text-4xl mx-auto mb-3 opacity-50" />
-              <p>Click "Get AI Insights" to analyze your health patterns</p>
-              <p className="text-xs mt-2">Powered by free AI models via OpenRouter</p>
-            </div>
-          )}
+
+            {/* Charts */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-3">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xs font-bold text-gray-800 dark:text-white">😴 Sleep</h3>
+                <span className="text-xs text-violet-500 font-medium">{stats?.averageSleep || 0}h avg</span>
+              </div>
+              <div className="h-32"><canvas ref={sleepChartRef}></canvas></div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-3">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xs font-bold text-gray-800 dark:text-white">💪 Gym Duration</h3>
+                <span className="text-xs text-orange-500 font-medium">{stats?.gymDays || 0} days</span>
+              </div>
+              <div className="h-32"><canvas ref={gymChartRef}></canvas></div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-3">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xs font-bold text-gray-800 dark:text-white">🍎 Eating Score</h3>
+                <span className="text-xs text-cyan-500 font-medium">{stats?.averageEatingScore || 0} avg</span>
+              </div>
+              <div className="h-32"><canvas ref={eatingChartRef}></canvas></div>
+            </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
