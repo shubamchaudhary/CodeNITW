@@ -170,13 +170,7 @@ const HealthTracking = () => {
   };
 
   const updateSleep = (field, value) => setEntry(prev => ({ ...prev, sleep: { ...prev.sleep, [field]: value } }));
-  const updateGym = (field, value) => {
-    setEntry(prev => ({ ...prev, gym: { ...prev.gym, [field]: value } }));
-    if (field === 'attended') {
-      // Trigger stats refresh when gym attendance changes
-      setTimeout(() => loadStats(), 100);
-    }
-  };
+  const updateGym = (field, value) => setEntry(prev => ({ ...prev, gym: { ...prev.gym, [field]: value } }));
 
   const toggleExercise = (exerciseId) => {
     setEntry(prev => {
@@ -323,11 +317,7 @@ const HealthTracking = () => {
                       <span className="font-medium text-sm text-gray-700 dark:text-gray-200">{meal.label}</span>
                       <span className="text-xs text-gray-400 ml-auto">{meal.time}</span>
                     </label>
-                    <AnimatePresence>
-                      {entry.meals[meal.id]?.checked && (
-                        <motion.input initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} type="text" placeholder={`What did you eat?`} value={entry.meals[meal.id]?.details || ""} onChange={(e) => updateMeal(meal.id, 'details', e.target.value)} className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white" />
-                      )}
-                    </AnimatePresence>
+                    <input type="text" placeholder={`What did you eat?`} value={entry.meals[meal.id]?.details || ""} onChange={(e) => updateMeal(meal.id, 'details', e.target.value)} className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white" />
                   </div>
                 ))}
 
@@ -352,11 +342,7 @@ const HealthTracking = () => {
                     <span className="text-xl">🍔</span>
                     <span className="font-medium text-sm text-gray-700 dark:text-gray-200">Had Junk?</span>
                   </label>
-                  <AnimatePresence>
-                    {entry.food.junk?.had && (
-                      <motion.input initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} type="text" placeholder="What?" value={entry.food.junk?.details || ""} onChange={(e) => updateFood('junk', 'details', e.target.value)} className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg border border-red-200 dark:border-red-800 dark:bg-slate-800 dark:text-white" />
-                    )}
-                  </AnimatePresence>
+                  <input type="text" placeholder="What?" value={entry.food.junk?.details || ""} onChange={(e) => updateFood('junk', 'details', e.target.value)} className="w-full mt-2 px-2 py-1.5 text-xs rounded-lg border border-red-200 dark:border-red-800 dark:bg-slate-800 dark:text-white" />
                 </div>
 
                 {/* Other Items */}

@@ -126,21 +126,38 @@ const MoneyTracking = () => {
   };
 
   const handleSave = async () => {
+    // Get previous total for this date to calculate difference
+    const previousData = moneyTrackingService.getDailySpending(selectedDate);
+    const previousTotal = Object.entries(previousData).reduce((sum, [cat, v]) => {
+      if (moneyTrackingService.SUBSCRIPTION_CATEGORY_IDS.includes(cat)) return sum;
+      return sum + (typeof v === 'object' ? (v.amount || 0) : v);
+    }, 0);
+
     let saved = 0;
-    let totalExpense = 0;
+    let newTotal = 0;
     for (const [category, value] of Object.entries(dailySpending)) {
       const amount = typeof value === 'object' ? value.amount : value;
       if (amount && parseFloat(amount) > 0) {
         await moneyTrackingService.addDailySpending(selectedDate, category, amount);
-        totalExpense += parseFloat(amount);
+        newTotal += parseFloat(amount);
         saved++;
       }
     }
     if (saved > 0) {
-      // Deduct total expense from bank balance
-      moneyTrackingService.deductMoney(totalExpense, `Expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
-      setBankBalance(moneyTrackingService.getBankBalance());
-      toast.success(`Saved ${saved} expense(s) and deducted ₹${Math.round(totalExpense)} from balance`);
+      // Only deduct the difference from previous total
+      const difference = newTotal - previousTotal;
+      if (difference !== 0) {
+        if (difference > 0) {
+          moneyTrackingService.deductMoney(difference, `Additional expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
+          toast.success(`Saved ${saved} expense(s) and deducted ₹${Math.round(difference)} from balance`);
+        } else {
+          moneyTrackingService.addMoney(Math.abs(difference), `Reduced expenses for ${moneyTrackingService.formatDate(selectedDate)}`);
+          toast.success(`Saved ${saved} expense(s) and added back ₹${Math.round(Math.abs(difference))} to balance`);
+        }
+        setBankBalance(moneyTrackingService.getBankBalance());
+      } else {
+        toast.success(`Saved ${saved} expense(s) (no balance change)`);
+      }
       loadAnalysis();
       loadTrends();
     } else {
@@ -151,7 +168,14 @@ const MoneyTracking = () => {
   const handleSync = async () => {
     setIsSyncing(true);
     const result = await moneyTrackingService.loadFromCloud(true);
-    if (result.success) { toast.success("Synced with cloud!"); loadData(); loadAnalysis(); loadTrends(); }
+    if (result.success) {
+      toast.success("Synced with cloud!");
+      loadData();
+      loadAnalysis();
+      loadTrends();
+      loadSubscriptions();
+      loadSettings();
+    }
     else toast.error(result.error || "Sync failed");
     setIsSyncing(false);
   };
@@ -263,6 +287,22 @@ const MoneyTracking = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left - Input */}
           <div className="space-y-4">
+            {/* Bank Balance Card */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FaPiggyBank className="text-2xl" />
+                  <div>
+                    <p className="text-xs opacity-80">Bank Balance</p>
+                    <p className="text-2xl font-bold">₹{Math.round(bankBalance).toLocaleString()}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowBankModal(true)} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all">
+                  <FaPlus className="inline mr-1" /> Add/Deduct
+                </button>
+              </div>
+            </motion.div>
+
             {/* Daily Expenses */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
               <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500">
@@ -400,22 +440,6 @@ const MoneyTracking = () => {
 
           {/* Right - Stats */}
           <div className="space-y-4">
-            {/* Bank Balance Card */}
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FaPiggyBank className="text-2xl" />
-                  <div>
-                    <p className="text-xs opacity-80">Bank Balance</p>
-                    <p className="text-2xl font-bold">₹{Math.round(bankBalance).toLocaleString()}</p>
-                  </div>
-                </div>
-                <button onClick={() => setShowBankModal(true)} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all">
-                  <FaPlus className="inline mr-1" /> Add/Deduct
-                </button>
-              </div>
-            </motion.div>
-
             {/* Today's Budget */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
               <div className="flex items-center justify-between">
