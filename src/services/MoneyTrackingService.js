@@ -29,11 +29,22 @@ class MoneyTrackingService {
       { id: "other", name: "Other", icon: "💰", color: "#64748b" },
     ];
 
-    // Subscription categories (need period)
-    this.SUBSCRIPTION_CATEGORIES = ["courses", "ai_subscription", "bing_subscription", "other_subscriptions"];
+    // Subscription categories (need period in days)
+    this.SUBSCRIPTION_CATEGORIES = [
+      { id: "rent", defaultPeriod: 30, name: "Rent" },
+      { id: "electricity", defaultPeriod: 30, name: "Electricity" },
+      { id: "gym", defaultPeriod: 90, name: "Gym Subscription" },
+      { id: "ai_subscription", defaultPeriod: 30, name: "AI Subscription" },
+      { id: "bing_subscription", defaultPeriod: 30, name: "Bing Subscription" },
+      { id: "other_subscriptions", defaultPeriod: 30, name: "Other Subscriptions" },
+      { id: "courses", defaultPeriod: 30, name: "Courses" },
+    ];
 
-    // Fixed monthly expenses (distributed daily)
-    this.FIXED_EXPENSES = ["rent", "electricity", "gym"];
+    // Get subscription category IDs
+    this.SUBSCRIPTION_CATEGORY_IDS = this.SUBSCRIPTION_CATEGORIES.map(c => c.id);
+
+    // Fixed monthly expenses (distributed daily) - legacy, now handled by subscriptions
+    this.FIXED_EXPENSES = [];
   }
 
   // Get all spending data
@@ -122,23 +133,53 @@ class MoneyTrackingService {
     return data;
   }
 
-  // Add/update subscription with period
-  addSubscription(date, category, amount, period, note = "") {
+  // Add/update subscription with period (days)
+  addSubscription(category, amount, periodDays, startDate = new Date(), note = "") {
     const data = this.getData();
-    const dateKey = this.formatDate(date);
+    if (!data.subscriptions) data.subscriptions = {};
 
-    if (!data.dailyEntries[dateKey]) {
-      data.dailyEntries[dateKey] = {};
-    }
+    const startDateKey = this.formatDate(startDate);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + periodDays - 1);
+    const endDateKey = this.formatDate(endDate);
 
-    data.dailyEntries[dateKey][category] = {
+    data.subscriptions[category] = {
       amount: parseFloat(amount) || 0,
-      period: period || "monthly", // monthly, yearly, etc.
+      periodDays: parseInt(periodDays) || 30,
+      startDate: startDateKey,
+      endDate: endDateKey,
+      dailyAmount: Math.round((parseFloat(amount) / parseInt(periodDays)) * 100) / 100,
       note: note || "",
     };
     this.saveData(data);
 
     return data;
+  }
+
+  // Get active subscriptions for a given date
+  getActiveSubscriptions(date) {
+    const data = this.getData();
+    const dateKey = this.formatDate(date);
+    const active = [];
+
+    if (!data.subscriptions) return active;
+
+    Object.entries(data.subscriptions).forEach(([category, sub]) => {
+      if (dateKey >= sub.startDate && dateKey <= sub.endDate) {
+        active.push({
+          category,
+          ...sub,
+        });
+      }
+    });
+
+    return active;
+  }
+
+  // Get daily subscription amount for a date
+  getDailySubscriptionAmount(date) {
+    const active = this.getActiveSubscriptions(date);
+    return active.reduce((sum, sub) => sum + (sub.dailyAmount || 0), 0);
   }
 
   // Set fixed monthly expense
@@ -168,26 +209,27 @@ class MoneyTrackingService {
       categoryTotals[cat.id] = 0;
     });
 
-    // Sum up daily spending
+    // Sum up daily spending and subscriptions
     for (let i = 0; i < days; i++) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dateKey = this.formatDate(date);
       const daySpending = data.dailyEntries[dateKey] || {};
 
+      // Add regular daily spending (exclude subscription categories as they're handled separately)
       Object.entries(daySpending).forEach(([category, value]) => {
-        // Handle both old format (number) and new format (object with amount)
-        const amount = typeof value === 'object' ? (value.amount || 0) : value;
-        categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+        if (!this.SUBSCRIPTION_CATEGORY_IDS.includes(category)) {
+          const amount = typeof value === 'object' ? (value.amount || 0) : value;
+          categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+        }
+      });
+
+      // Add subscription daily amounts for this date
+      const activeSubscriptions = this.getActiveSubscriptions(date);
+      activeSubscriptions.forEach(sub => {
+        categoryTotals[sub.category] = (categoryTotals[sub.category] || 0) + (sub.dailyAmount || 0);
       });
     }
-
-    // Add distributed fixed costs
-    this.FIXED_EXPENSES.forEach(category => {
-      const monthlyAmount = data.fixedMonthly[category] || 0;
-      const dailyAmount = monthlyAmount / 30; // Divide monthly by 30 days
-      categoryTotals[category] += dailyAmount * days;
-    });
 
     // Calculate total and percentages
     const total = Object.values(categoryTotals).reduce((sum, amt) => sum + amt, 0);
@@ -217,11 +259,15 @@ class MoneyTrackingService {
       const dateKey = this.formatDate(date);
       const daySpending = data.dailyEntries[dateKey] || {};
 
-      // Handle both old format (number) and new format (object with amount)
-      const total = Object.values(daySpending).reduce((sum, value) => {
+      // Sum regular expenses (exclude subscription categories)
+      let total = Object.entries(daySpending).reduce((sum, [category, value]) => {
+        if (this.SUBSCRIPTION_CATEGORY_IDS.includes(category)) return sum;
         const amount = typeof value === 'object' ? (value.amount || 0) : value;
         return sum + amount;
       }, 0);
+
+      // Add daily subscription amounts
+      total += this.getDailySubscriptionAmount(date);
 
       trends.push({
         date: dateKey,
@@ -231,6 +277,22 @@ class MoneyTrackingService {
     }
 
     return trends;
+  }
+
+  // Get all subscriptions
+  getAllSubscriptions() {
+    const data = this.getData();
+    return data.subscriptions || {};
+  }
+
+  // Delete a subscription
+  deleteSubscription(category) {
+    const data = this.getData();
+    if (data.subscriptions && data.subscriptions[category]) {
+      delete data.subscriptions[category];
+      this.saveData(data);
+    }
+    return data;
   }
 
   // Format date as YYYY-MM-DD
