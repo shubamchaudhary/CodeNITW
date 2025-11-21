@@ -133,14 +133,28 @@ const MoneyTracking = () => {
       return sum + (typeof v === 'object' ? (v.amount || 0) : v);
     }, 0);
 
+    // Get all categories that need to be updated (current + previous)
+    const allCategories = new Set([
+      ...Object.keys(previousData),
+      ...Object.keys(dailySpending)
+    ]);
+
     let saved = 0;
     let newTotal = 0;
-    // Save all expenses (including 0 amounts to clear them)
-    for (const [category, value] of Object.entries(dailySpending)) {
+
+    // Save ALL categories (including 0 to clear previous values)
+    for (const category of allCategories) {
+      // Skip subscription categories (handled separately)
+      if (moneyTrackingService.SUBSCRIPTION_CATEGORY_IDS.includes(category)) continue;
+
+      const value = dailySpending[category];
       const amount = typeof value === 'object' ? value.amount : value;
       const amountNum = parseFloat(amount) || 0;
+
+      // ALWAYS save to database, even if 0 (to clear previous values)
+      await moneyTrackingService.addDailySpending(selectedDate, category, amountNum);
+
       if (amountNum > 0) {
-        await moneyTrackingService.addDailySpending(selectedDate, category, amountNum);
         newTotal += amountNum;
         saved++;
       }
@@ -160,10 +174,10 @@ const MoneyTracking = () => {
     } else if (saved > 0) {
       toast.success(`Saved ${saved} expense(s) (no balance change)`);
     } else {
-      toast.info("No changes to save");
+      toast.success("Changes saved successfully");
     }
 
-    // Refresh data to prevent duplicate calculations on next save
+    // Refresh data to ensure UI matches database
     loadData();
     loadAnalysis();
     loadTrends();
