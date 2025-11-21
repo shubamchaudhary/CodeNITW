@@ -3,267 +3,94 @@ import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 /**
- * HealthTrackingService - Track food, sleep, and gym habits
+ * HealthTrackingService - Redesigned with smart sync
+ * Tracks: meals, water, junk, tea/coffee, fruits, dry fruits, protein shake, sleep, gym
  */
 class HealthTrackingService {
   constructor() {
     this.STORAGE_KEY = "HealthTrackingData";
+    this.LAST_SYNC_KEY = "HealthTrackingLastSync";
+    this.SYNC_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
+    // Meals configuration
     this.MEALS = [
-      { id: "breakfast", label: "Breakfast", icon: "🍳" },
-      { id: "lunch", label: "Lunch", icon: "🍱" },
-      { id: "dinner", label: "Dinner", icon: "🍽️" },
-      { id: "snacks", label: "Snacks", icon: "🍿" },
+      { id: 'breakfast', label: 'Breakfast', icon: '🌅', time: '8:00 AM' },
+      { id: 'lunch', label: 'Lunch', icon: '☀️', time: '1:00 PM' },
+      { id: 'dinner', label: 'Dinner', icon: '🌙', time: '8:00 PM' },
     ];
 
+    // Food items with scoring
     this.FOOD_ITEMS = [
-      { id: "fruits", label: "Fruits", icon: "🍎" },
-      { id: "protein_shake", label: "Protein shake", icon: "🥤" },
-      { id: "tea_coffee", label: "Tea/Coffee", icon: "☕" },
-      { id: "water", label: "Water (8 glasses)", icon: "💧" },
-      { id: "junk_food", label: "Junk Food (avoided?)", icon: "🚫🍔" },
+      { id: 'water', label: 'Water', icon: '💧', unit: 'L', target: 4, type: 'quantity' },
+      { id: 'junk', label: 'Junk Food', icon: '🍔', type: 'bad', score: -20 },
+      { id: 'tea_coffee', label: 'Tea/Coffee', icon: '☕', type: 'neutral', score: 0 },
+      { id: 'fruits', label: 'Fruits', icon: '🍎', type: 'good', score: 5 },
+      { id: 'dry_fruits', label: 'Dry Fruits', icon: '🥜', type: 'good', score: 5 },
+      { id: 'protein_shake', label: 'Protein Shake', icon: '🥤', type: 'good', score: 5 },
     ];
 
+    // Exercise types
     this.EXERCISE_TYPES = [
-      "Chest", "Back", "Shoulders", "Arms", "Legs", "Core",
-      "Cardio", "Full Body", "Stretching", "Other"
+      { id: 'chest', label: 'Chest', icon: '💪' },
+      { id: 'back', label: 'Back', icon: '🔙' },
+      { id: 'shoulders', label: 'Shoulders', icon: '🎯' },
+      { id: 'arms', label: 'Arms', icon: '💪' },
+      { id: 'legs', label: 'Legs', icon: '🦵' },
+      { id: 'core', label: 'Core', icon: '🎯' },
+      { id: 'cardio', label: 'Cardio', icon: '🏃' },
     ];
   }
 
-  // Get all health data
+  // ==================== SMART SYNC METHODS ====================
+
   getData() {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
       return data ? JSON.parse(data) : { dailyEntries: {} };
     } catch (e) {
-      console.error("Error reading health data:", e);
       return { dailyEntries: {} };
     }
   }
 
-  // Save health data
-  saveData(data) {
+  // Save to both cache AND cloud simultaneously
+  async saveData(data) {
+    // Save to cache immediately
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-
-    // Dispatch event to notify components
     window.dispatchEvent(new CustomEvent("healthTrackingUpdated", { detail: data }));
+
+    // Sync to cloud in background
+    this.syncToCloud(data).catch(err => console.warn('Background sync failed:', err));
   }
 
-  // Get entry for a specific date
-  getEntry(date) {
-    const data = this.getData();
-    const dateKey = this.formatDate(date);
-    return data.dailyEntries[dateKey] || {
-      meals: {},
-      food: {},
-      sleep: { bedTime: "", wakeTime: "" },
-      gym: { attended: false, duration: 0, exercises: [], note: "" },
-    };
+  shouldFetchFromCloud() {
+    const lastSync = localStorage.getItem(this.LAST_SYNC_KEY);
+    if (!lastSync) return true;
+    return Date.now() - parseInt(lastSync) > this.SYNC_INTERVAL;
   }
 
-  // Update meal with details
-  updateMeal(date, mealId, details) {
-    const data = this.getData();
-    const dateKey = this.formatDate(date);
-
-    if (!data.dailyEntries[dateKey]) {
-      data.dailyEntries[dateKey] = {
-        meals: {},
-        food: {},
-        sleep: { bedTime: "", wakeTime: "" },
-        gym: { attended: false, duration: 0, exercises: [], note: "" },
-      };
-    }
-
-    data.dailyEntries[dateKey].meals[mealId] = details;
-    this.saveData(data);
-
-    return data;
-  }
-
-  // Update food item for a date with note
-  updateFood(date, foodId, checked, note = "") {
-    const data = this.getData();
-    const dateKey = this.formatDate(date);
-
-    if (!data.dailyEntries[dateKey]) {
-      data.dailyEntries[dateKey] = {
-        meals: {},
-        food: {},
-        sleep: { bedTime: "", wakeTime: "" },
-        gym: { attended: false, duration: 0, exercises: [], note: "" },
-      };
-    }
-
-    data.dailyEntries[dateKey].food[foodId] = { checked, note };
-    this.saveData(data);
-
-    return data;
-  }
-
-  // Update sleep schedule for a date
-  updateSleep(date, bedTime, wakeTime) {
-    const data = this.getData();
-    const dateKey = this.formatDate(date);
-
-    if (!data.dailyEntries[dateKey]) {
-      data.dailyEntries[dateKey] = {
-        food: {},
-        sleep: { bedTime: "", wakeTime: "" },
-        gym: { attended: false, duration: 0, exercises: [] },
-      };
-    }
-
-    data.dailyEntries[dateKey].sleep = { bedTime, wakeTime };
-    this.saveData(data);
-
-    return data;
-  }
-
-  // Update gym session for a date
-  updateGym(date, attended, duration = 0, exercises = [], note = "") {
-    const data = this.getData();
-    const dateKey = this.formatDate(date);
-
-    if (!data.dailyEntries[dateKey]) {
-      data.dailyEntries[dateKey] = {
-        meals: {},
-        food: {},
-        sleep: { bedTime: "", wakeTime: "" },
-        gym: { attended: false, duration: 0, exercises: [], note: "" },
-      };
-    }
-
-    data.dailyEntries[dateKey].gym = { attended, duration, exercises, note };
-    this.saveData(data);
-
-    return data;
-  }
-
-  // Get health stats for a period
-  getHealthStats(days = 7) {
-    const data = this.getData();
-    const today = new Date();
-    const stats = {
-      food: {},
-      sleepHours: [],
-      gymDays: 0,
-      totalGymMinutes: 0,
-      exerciseCount: {},
-    };
-
-    // Initialize food stats
-    this.FOOD_ITEMS.forEach(item => {
-      stats.food[item.id] = { count: 0, percentage: 0 };
-    });
-
-    let validDays = 0;
-
-    for (let i = 0; i < days; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      const dateKey = this.formatDate(date);
-      const entry = data.dailyEntries[dateKey];
-
-      if (entry) {
-        validDays++;
-
-        // Food stats
-        Object.entries(entry.food || {}).forEach(([foodId, checked]) => {
-          if (checked && stats.food[foodId]) {
-            stats.food[foodId].count++;
-          }
-        });
-
-        // Sleep stats
-        if (entry.sleep?.bedTime && entry.sleep?.wakeTime) {
-          const hours = this.calculateSleepHours(entry.sleep.bedTime, entry.sleep.wakeTime);
-          if (hours > 0) {
-            stats.sleepHours.push(hours);
-          }
-        }
-
-        // Gym stats
-        if (entry.gym?.attended) {
-          stats.gymDays++;
-          stats.totalGymMinutes += entry.gym.duration || 0;
-
-          (entry.gym.exercises || []).forEach(exercise => {
-            stats.exerciseCount[exercise] = (stats.exerciseCount[exercise] || 0) + 1;
-          });
-        }
-      }
-    }
-
-    // Calculate percentages
-    Object.keys(stats.food).forEach(foodId => {
-      stats.food[foodId].percentage = validDays > 0
-        ? Math.round((stats.food[foodId].count / validDays) * 100)
-        : 0;
-    });
-
-    // Average sleep
-    stats.averageSleep = stats.sleepHours.length > 0
-      ? (stats.sleepHours.reduce((sum, h) => sum + h, 0) / stats.sleepHours.length).toFixed(1)
-      : 0;
-
-    stats.gymPercentage = validDays > 0 ? Math.round((stats.gymDays / validDays) * 100) : 0;
-    stats.avgGymDuration = stats.gymDays > 0 ? Math.round(stats.totalGymMinutes / stats.gymDays) : 0;
-
-    return stats;
-  }
-
-  // Calculate sleep duration
-  calculateSleepHours(bedTime, wakeTime) {
-    if (!bedTime || !wakeTime) return 0;
-
-    try {
-      const bed = new Date(`2000-01-01T${bedTime}`);
-      let wake = new Date(`2000-01-01T${wakeTime}`);
-
-      // If wake time is before bed time, it's next day
-      if (wake < bed) {
-        wake = new Date(`2000-01-02T${wakeTime}`);
-      }
-
-      const diff = wake - bed;
-      return diff / (1000 * 60 * 60); // Convert to hours
-    } catch (e) {
-      return 0;
-    }
-  }
-
-  // Format date as YYYY-MM-DD
-  formatDate(date) {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  // ==================== FIREBASE SYNC ====================
-
-  async syncToFirebase() {
+  async syncToCloud(data = null) {
     const auth = getAuth();
     if (!auth.currentUser) return { success: false, error: "Not authenticated" };
 
     try {
-      const data = this.getData();
+      const dataToSync = data || this.getData();
       const docRef = doc(db, "user_health_tracking", auth.currentUser.uid);
       await setDoc(docRef, {
-        ...data,
+        ...dataToSync,
         updatedAt: serverTimestamp(),
       });
-
+      localStorage.setItem(this.LAST_SYNC_KEY, Date.now().toString());
       return { success: true };
     } catch (error) {
-      console.error("Error syncing health tracking data:", error);
       return { success: false, error: error.message };
     }
   }
 
-  async loadFromFirebase() {
+  async loadFromCloud(force = false) {
+    if (!force && !this.shouldFetchFromCloud()) {
+      return { success: true, fromCache: true };
+    }
+
     const auth = getAuth();
     if (!auth.currentUser) return { success: false, error: "Not authenticated" };
 
@@ -272,17 +99,143 @@ class HealthTrackingService {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const data = docSnap.data();
-        delete data.updatedAt; // Remove timestamp
-        this.saveData(data);
-        return { success: true, data };
+        const cloudData = docSnap.data();
+        delete cloudData.updatedAt;
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cloudData));
+        localStorage.setItem(this.LAST_SYNC_KEY, Date.now().toString());
+        window.dispatchEvent(new CustomEvent("healthTrackingUpdated"));
+        return { success: true, data: cloudData };
       }
-
       return { success: false, error: "No data found" };
     } catch (error) {
-      console.error("Error loading health tracking data:", error);
       return { success: false, error: error.message };
     }
+  }
+
+  // Legacy methods
+  async syncToFirebase() { return await this.syncToCloud(); }
+  async loadFromFirebase() { return await this.loadFromCloud(true); }
+
+  // ==================== DATA METHODS ====================
+
+  getEntry(date) {
+    const data = this.getData();
+    const dateKey = this.formatDate(date);
+    return data.dailyEntries[dateKey] || this.getEmptyEntry();
+  }
+
+  getEmptyEntry() {
+    return {
+      meals: {},
+      food: {},
+      sleep: { bedTime: '', wakeTime: '', hours: 0 },
+      gym: { attended: false, duration: 0, exercises: [] },
+    };
+  }
+
+  async saveEntry(date, entry) {
+    const data = this.getData();
+    const dateKey = this.formatDate(date);
+    data.dailyEntries[dateKey] = entry;
+    await this.saveData(data);
+    return { success: true };
+  }
+
+  // ==================== CALCULATIONS ====================
+
+  calculateSleepHours(bedTime, wakeTime) {
+    if (!bedTime || !wakeTime) return 0;
+    try {
+      const [bedH, bedM] = bedTime.split(':').map(Number);
+      const [wakeH, wakeM] = wakeTime.split(':').map(Number);
+
+      let bedMinutes = bedH * 60 + bedM;
+      let wakeMinutes = wakeH * 60 + wakeM;
+
+      if (wakeMinutes < bedMinutes) wakeMinutes += 24 * 60;
+      return Math.round((wakeMinutes - bedMinutes) / 60 * 10) / 10;
+    } catch {
+      return 0;
+    }
+  }
+
+  calculateEatingScore(entry) {
+    let score = 50;
+    const meals = entry.meals || {};
+    const food = entry.food || {};
+
+    // Meals score (+15 each)
+    if (meals.breakfast?.checked) score += 15;
+    if (meals.lunch?.checked) score += 15;
+    if (meals.dinner?.checked) score += 15;
+
+    // Water score (max +10, scaled)
+    const water = food.water || 0;
+    score += Math.min(10, (water / 4) * 10);
+
+    // Junk penalty
+    if (food.junk?.had) score -= 20;
+
+    // Healthy additions
+    if (food.fruits?.had) score += 5;
+    if (food.dry_fruits?.had) score += 5;
+    if (food.protein_shake?.had) score += 5;
+
+    return Math.max(0, Math.min(100, Math.round(score)));
+  }
+
+  // ==================== STATISTICS ====================
+
+  getStats(days = 7) {
+    const data = this.getData();
+    const today = new Date();
+    const stats = {
+      sleepData: [],
+      gymData: [],
+      eatingScoreData: [],
+      averageSleep: 0,
+      averageEatingScore: 0,
+      gymDays: 0,
+      totalGymDuration: 0,
+      avgGymDuration: 0,
+    };
+
+    let totalSleep = 0, sleepDays = 0, totalEatingScore = 0;
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const dateKey = this.formatDate(date);
+      const entry = data.dailyEntries[dateKey] || this.getEmptyEntry();
+
+      const sleepHours = entry.sleep?.hours || 0;
+      const gymDuration = entry.gym?.attended ? (entry.gym.duration || 0) : 0;
+      const eatingScore = this.calculateEatingScore(entry);
+
+      stats.sleepData.push({ date: dateKey, label: this.formatDateLabel(date), value: sleepHours });
+      stats.gymData.push({ date: dateKey, label: this.formatDateLabel(date), value: gymDuration });
+      stats.eatingScoreData.push({ date: dateKey, label: this.formatDateLabel(date), value: eatingScore });
+
+      if (sleepHours > 0) { totalSleep += sleepHours; sleepDays++; }
+      if (entry.gym?.attended) { stats.gymDays++; stats.totalGymDuration += gymDuration; }
+      totalEatingScore += eatingScore;
+    }
+
+    stats.averageSleep = sleepDays > 0 ? Math.round(totalSleep / sleepDays * 10) / 10 : 0;
+    stats.averageEatingScore = Math.round(totalEatingScore / days);
+    stats.avgGymDuration = stats.gymDays > 0 ? Math.round(stats.totalGymDuration / stats.gymDays) : 0;
+
+    return stats;
+  }
+
+  formatDate(date) {
+    const d = new Date(date);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  formatDateLabel(date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}`;
   }
 }
 

@@ -8,6 +8,8 @@ import { getAuth } from "firebase/auth";
 class MoneyTrackingService {
   constructor() {
     this.STORAGE_KEY = "MoneyTrackingData";
+    this.LAST_SYNC_KEY = "MoneyTrackingLastSync";
+    this.SYNC_INTERVAL = 15 * 60 * 1000; // 15 minutes
 
     this.CATEGORIES = [
       { id: "meals", name: "Meals", icon: "🍽️", color: "#ef4444" },
@@ -45,12 +47,61 @@ class MoneyTrackingService {
     }
   }
 
-  // Save spending data
-  saveData(data) {
+  // Save to both cache AND cloud simultaneously
+  async saveData(data) {
+    // Save to cache immediately
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-
-    // Dispatch event to notify components
     window.dispatchEvent(new CustomEvent("moneyTrackingUpdated", { detail: data }));
+
+    // Sync to cloud in background
+    this.syncToCloud(data).catch(err => console.warn('Background sync failed:', err));
+  }
+
+  shouldFetchFromCloud() {
+    const lastSync = localStorage.getItem(this.LAST_SYNC_KEY);
+    if (!lastSync) return true;
+    return Date.now() - parseInt(lastSync) > this.SYNC_INTERVAL;
+  }
+
+  async syncToCloud(data = null) {
+    const auth = getAuth();
+    if (!auth.currentUser) return { success: false, error: "Not authenticated" };
+
+    try {
+      const dataToSync = data || this.getData();
+      const docRef = doc(db, "user_money_tracking", auth.currentUser.uid);
+      await setDoc(docRef, { ...dataToSync, updatedAt: serverTimestamp() });
+      localStorage.setItem(this.LAST_SYNC_KEY, Date.now().toString());
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async loadFromCloud(force = false) {
+    if (!force && !this.shouldFetchFromCloud()) {
+      return { success: true, fromCache: true };
+    }
+
+    const auth = getAuth();
+    if (!auth.currentUser) return { success: false, error: "Not authenticated" };
+
+    try {
+      const docRef = doc(db, "user_money_tracking", auth.currentUser.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const cloudData = docSnap.data();
+        delete cloudData.updatedAt;
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cloudData));
+        localStorage.setItem(this.LAST_SYNC_KEY, Date.now().toString());
+        window.dispatchEvent(new CustomEvent("moneyTrackingUpdated"));
+        return { success: true, data: cloudData };
+      }
+      return { success: false, error: "No data found" };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
   }
 
   // Add/update daily spending with notes
@@ -197,48 +248,9 @@ class MoneyTrackingService {
     return `${d.getMonth() + 1}/${d.getDate()}`;
   }
 
-  // ==================== FIREBASE SYNC ====================
-
-  async syncToFirebase() {
-    const auth = getAuth();
-    if (!auth.currentUser) return { success: false, error: "Not authenticated" };
-
-    try {
-      const data = this.getData();
-      const docRef = doc(db, "user_money_tracking", auth.currentUser.uid);
-      await setDoc(docRef, {
-        ...data,
-        updatedAt: serverTimestamp(),
-      });
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error syncing money tracking data:", error);
-      return { success: false, error: error.message };
-    }
-  }
-
-  async loadFromFirebase() {
-    const auth = getAuth();
-    if (!auth.currentUser) return { success: false, error: "Not authenticated" };
-
-    try {
-      const docRef = doc(db, "user_money_tracking", auth.currentUser.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        delete data.updatedAt; // Remove timestamp
-        this.saveData(data);
-        return { success: true, data };
-      }
-
-      return { success: false, error: "No data found" };
-    } catch (error) {
-      console.error("Error loading money tracking data:", error);
-      return { success: false, error: error.message };
-    }
-  }
+  // Legacy methods for backward compatibility
+  async syncToFirebase() { return await this.syncToCloud(); }
+  async loadFromFirebase() { return await this.loadFromCloud(true); }
 }
 
 const moneyTrackingService = new MoneyTrackingService();

@@ -1,647 +1,324 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Chart } from "chart.js/auto";
-import {
-  FaWallet,
-  FaCalendarAlt,
-  FaSave,
-  FaSync,
-  FaDownload,
-  FaChartPie,
-  FaChartBar,
-  FaStickyNote,
-  FaBrain,
-} from "react-icons/fa";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import { FaWallet, FaCalendarAlt, FaSync, FaCloudDownloadAlt, FaChartPie } from "react-icons/fa";
 import { toast } from "react-toastify";
 import moneyTrackingService from "../services/MoneyTrackingService";
-import aiInsightsService from "../services/AIInsightsService";
 
 const MoneyTracking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showCalendar, setShowCalendar] = useState(false);
   const [dailySpending, setDailySpending] = useState({});
-  const [fixedMonthly, setFixedMonthly] = useState({});
   const [analysis, setAnalysis] = useState(null);
   const [trends, setTrends] = useState([]);
   const [period, setPeriod] = useState(30);
   const [trendPeriod, setTrendPeriod] = useState(7);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [aiInsights, setAiInsights] = useState("");
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
-  const chartRef = useRef(null);
-  const chartInstance = useRef(null);
+  const pieChartRef = useRef(null);
+  const pieChartInstance = useRef(null);
   const trendChartRef = useRef(null);
   const trendChartInstance = useRef(null);
+  const calendarRef = useRef(null);
 
   useEffect(() => {
     loadData();
-  }, [selectedDate]);
-
-  useEffect(() => {
     loadAnalysis();
-  }, [period]);
-
-  useEffect(() => {
     loadTrends();
-  }, [trendPeriod]);
-
-  useEffect(() => {
-    if (analysis) {
-      renderChart();
-    }
-
-    return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
-    };
-  }, [analysis]);
-
-  useEffect(() => {
-    if (trends && trends.length > 0) {
-      renderTrendChart();
-    }
-
-    return () => {
-      if (trendChartInstance.current) {
-        trendChartInstance.current.destroy();
-      }
-    };
-  }, [trends]);
-
-  // Listen for updates
-  useEffect(() => {
-    const handleUpdate = () => {
-      loadData();
-      loadAnalysis();
-      loadTrends();
-    };
-
-    window.addEventListener("moneyTrackingUpdated", handleUpdate);
-    return () => window.removeEventListener("moneyTrackingUpdated", handleUpdate);
   }, [selectedDate, period, trendPeriod]);
 
-  const loadData = () => {
-    const spending = moneyTrackingService.getDailySpending(selectedDate);
-    const data = moneyTrackingService.getData();
-    setDailySpending(spending);
-    setFixedMonthly(data.fixedMonthly || {});
-  };
+  useEffect(() => {
+    if (analysis) renderPieChart();
+    if (trends.length > 0) renderTrendChart();
+    return () => {
+      pieChartInstance.current?.destroy();
+      trendChartInstance.current?.destroy();
+    };
+  }, [analysis, trends]);
 
-  const loadAnalysis = () => {
-    const stats = moneyTrackingService.getSpendingAnalysis(period);
-    setAnalysis(stats);
-  };
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (calendarRef.current && !calendarRef.current.contains(e.target)) setShowCalendar(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const loadTrends = () => {
-    const trendData = moneyTrackingService.getSpendingTrends(trendPeriod);
-    setTrends(trendData);
-  };
+  const loadData = () => setDailySpending(moneyTrackingService.getDailySpending(selectedDate));
+  const loadAnalysis = () => setAnalysis(moneyTrackingService.getSpendingAnalysis(period));
+  const loadTrends = () => setTrends(moneyTrackingService.getSpendingTrends(trendPeriod));
 
-  const handleSpendingChange = (category, field, value) => {
-    setDailySpending(prev => ({
-      ...prev,
-      [category]: {
-        ...(prev[category] || {}),
-        [field]: value,
-      },
-    }));
-  };
-
-  const handleFixedChange = (category, value) => {
-    setFixedMonthly(prev => ({ ...prev, [category]: value }));
-  };
-
-  const saveDailySpending = () => {
-    let savedCount = 0;
-    Object.entries(dailySpending).forEach(([category, value]) => {
-      if (!value) return;
-
+  const handleSave = async () => {
+    let saved = 0;
+    for (const [category, value] of Object.entries(dailySpending)) {
       const amount = typeof value === 'object' ? value.amount : value;
-      const note = typeof value === 'object' ? (value.note || "") : "";
-      const period = typeof value === 'object' ? (value.period || "") : "";
-
-      // Check if amount is a valid number (including 0)
-      const numAmount = parseFloat(amount);
-      if (!isNaN(numAmount) && amount !== "") {
-        if (moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(category)) {
-          // For subscriptions, require period to be selected
-          if (period) {
-            moneyTrackingService.addSubscription(selectedDate, category, numAmount, period, note);
-            savedCount++;
-          }
-        } else {
-          moneyTrackingService.addDailySpending(selectedDate, category, numAmount, note);
-          savedCount++;
-        }
+      if (amount && parseFloat(amount) > 0) {
+        await moneyTrackingService.addDailySpending(selectedDate, category, amount);
+        saved++;
       }
-    });
-
-    if (savedCount > 0) {
-      toast.success(`Saved ${savedCount} expense(s)!`);
-      loadData();
-      loadAnalysis();
-      loadTrends();
-    } else {
-      toast.info("No expenses to save. Add amounts to save.");
     }
-  };
-
-  const saveFixedExpenses = () => {
-    Object.entries(fixedMonthly).forEach(([category, amount]) => {
-      if (amount) {
-        moneyTrackingService.setFixedMonthly(category, amount);
-      }
-    });
-    loadAnalysis(); // Refresh analysis
-    toast.success("Fixed expenses saved!");
+    if (saved > 0) { toast.success(`Saved ${saved} expense(s)!`); loadAnalysis(); loadTrends(); }
+    else toast.info("No expenses to save");
   };
 
   const handleSync = async () => {
     setIsSyncing(true);
-    const result = await moneyTrackingService.syncToFirebase();
-    if (result.success) {
-      toast.success("Money data synced to cloud!");
-    } else {
-      toast.error("Failed to sync: " + result.error);
-    }
+    const result = await moneyTrackingService.loadFromCloud(true);
+    if (result.success) { toast.success("Synced with cloud!"); loadData(); loadAnalysis(); loadTrends(); }
+    else toast.error(result.error || "Sync failed");
     setIsSyncing(false);
   };
 
-  const handleLoad = async () => {
-    setIsSyncing(true);
-    const result = await moneyTrackingService.loadFromFirebase();
-    if (result.success) {
-      toast.success("Money data loaded from cloud!");
-      loadData();
-      loadAnalysis();
-    } else {
-      toast.error("Failed to load: " + result.error);
-    }
-    setIsSyncing(false);
+  const updateSpending = (categoryId, amount) => {
+    setDailySpending(prev => ({
+      ...prev,
+      [categoryId]: { ...(prev[categoryId] || {}), amount: parseFloat(amount) || 0 },
+    }));
   };
 
-  const getAIInsights = async () => {
-    if (!analysis || !trends || trends.length === 0) {
-      toast.error("No spending data available for analysis");
-      return;
-    }
+  const formatDateDisplay = (date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-    setIsLoadingAI(true);
-    try {
-      const insights = await aiInsightsService.analyzeSpending(analysis, trends);
-      setAiInsights(insights);
-      toast.success("AI insights generated!");
-    } catch (error) {
-      toast.error("Failed to get AI insights");
-      setAiInsights(`Error: ${error.message}`);
-    }
-    setIsLoadingAI(false);
-  };
+  const renderPieChart = () => {
+    if (!pieChartRef.current || !analysis?.breakdown?.length) return;
+    pieChartInstance.current?.destroy();
+    const isDark = document.documentElement.classList.contains("dark");
 
-  const renderChart = () => {
-    if (!chartRef.current || !analysis || analysis.breakdown.length === 0) return;
-
-    if (chartInstance.current) {
-      chartInstance.current.destroy();
-    }
-
-    const ctx = chartRef.current.getContext("2d");
-
-    chartInstance.current = new Chart(ctx, {
-      type: "pie",
+    pieChartInstance.current = new Chart(pieChartRef.current, {
+      type: "doughnut",
       data: {
-        labels: analysis.breakdown.map(cat => cat.name),
-        datasets: [
-          {
-            data: analysis.breakdown.map(cat => cat.amount),
-            backgroundColor: analysis.breakdown.map(cat => cat.color),
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-        ],
+        labels: analysis.breakdown.map(c => c.name),
+        datasets: [{ data: analysis.breakdown.map(c => c.amount), backgroundColor: analysis.breakdown.map(c => c.color), borderWidth: 0 }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '65%',
         plugins: {
-          legend: {
-            position: "right",
-            labels: {
-              color: document.documentElement.classList.contains("dark") ? "#e5e7eb" : "#1f2937",
-              generateLabels: (chart) => {
-                const data = chart.data;
-                return data.labels.map((label, i) => ({
-                  text: `${label}: ₹${data.datasets[0].data[i]} (${analysis.breakdown[i].percentage}%)`,
-                  fillStyle: data.datasets[0].backgroundColor[i],
-                  hidden: false,
-                  index: i,
-                }));
-              },
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                const cat = analysis.breakdown[context.dataIndex];
-                return `${cat.name}: ₹${cat.amount} (${cat.percentage}%)`;
-              },
-            },
-          },
+          legend: { position: 'right', labels: { color: isDark ? '#9ca3af' : '#4b5563', font: { size: 11 }, boxWidth: 12, padding: 8 } },
+          tooltip: { callbacks: { label: (ctx) => `₹${ctx.raw} (${analysis.breakdown[ctx.dataIndex].percentage}%)` } },
         },
       },
     });
   };
 
   const renderTrendChart = () => {
-    if (!trendChartRef.current || !trends || trends.length === 0) return;
-
-    if (trendChartInstance.current) {
-      trendChartInstance.current.destroy();
-    }
-
-    const ctx = trendChartRef.current.getContext("2d");
+    if (!trendChartRef.current || !trends.length) return;
+    trendChartInstance.current?.destroy();
     const isDark = document.documentElement.classList.contains("dark");
+    const gridColor = isDark ? "#374151" : "#e5e7eb";
+    const textColor = isDark ? "#9ca3af" : "#4b5563";
 
-    // Create benchmark line at 1200 rs
-    const benchmarkData = trends.map(() => 1200);
-
-    trendChartInstance.current = new Chart(ctx, {
-      type: "bar",
+    trendChartInstance.current = new Chart(trendChartRef.current, {
+      type: "line",
       data: {
         labels: trends.map(t => t.label),
         datasets: [
-          {
-            label: "Daily Spending",
-            data: trends.map(t => t.total),
-            backgroundColor: trends.map(t => t.total > 1200 ? "#ef4444" : "#10b981"),
-            borderColor: trends.map(t => t.total > 1200 ? "#dc2626" : "#059669"),
-            borderWidth: 1,
-          },
-          {
-            label: "Target (₹1200/day)",
-            data: benchmarkData,
-            type: "line",
-            borderColor: "#f59e0b",
-            backgroundColor: "transparent",
-            borderWidth: 2,
-            borderDash: [5, 5],
-            pointRadius: 0,
-            pointHoverRadius: 0,
-          },
+          { label: "Spending", data: trends.map(t => t.total), borderColor: "#3b82f6", backgroundColor: "rgba(59, 130, 246, 0.1)", fill: true, tension: 0.4, pointRadius: 3 },
+          { label: "Limit (₹1200)", data: trends.map(() => 1200), borderColor: "#ef4444", borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 2 },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
         scales: {
-          x: {
-            ticks: {
-              color: isDark ? "#e5e7eb" : "#1f2937",
-            },
-            grid: {
-              color: isDark ? "#374151" : "#e5e7eb",
-            },
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: isDark ? "#e5e7eb" : "#1f2937",
-              callback: (value) => `₹${value}`,
-            },
-            grid: {
-              color: isDark ? "#374151" : "#e5e7eb",
-            },
-          },
-        },
-        plugins: {
-          legend: {
-            labels: {
-              color: isDark ? "#e5e7eb" : "#1f2937",
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                if (context.datasetIndex === 0) {
-                  const amount = context.parsed.y;
-                  const status = amount > 1200 ? "Over budget" : "Within budget";
-                  return `₹${amount} (${status})`;
-                }
-                return `Target: ₹${context.parsed.y}`;
-              },
-            },
-          },
+          x: { ticks: { color: textColor, font: { size: 10 } }, grid: { display: false } },
+          y: { beginAtZero: true, ticks: { color: textColor, font: { size: 10 }, callback: v => `₹${v}` }, grid: { color: gridColor } },
         },
       },
     });
   };
 
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
+  const todayTotal = Object.values(dailySpending).reduce((sum, v) => sum + (typeof v === 'object' ? (v.amount || 0) : v), 0);
+  const isOverBudget = todayTotal > 1200;
 
-  const getValue = (category, field) => {
-    const value = dailySpending[category];
-    if (!value) return "";
-    if (typeof value === 'object') {
-      return value[field] || "";
-    }
-    return field === 'amount' ? value : "";
-  };
+  // Categories grouped by type
+  const regularCategories = moneyTrackingService.CATEGORIES.filter(c => !moneyTrackingService.FIXED_EXPENSES.includes(c.id) && !moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(c.id));
+  const subscriptionCategories = moneyTrackingService.CATEGORIES.filter(c => moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(c.id));
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
-      >
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold dark:text-white flex items-center">
-              <FaWallet className="mr-3 text-green-500" />
-              Money Tracking
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+              <FaWallet className="text-green-500" /> Money Tracker
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Track your spending habits and analyze patterns
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Track your daily expenses</p>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleSync}
-              disabled={isSyncing}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center disabled:opacity-50"
-            >
-              {isSyncing ? <FaSync className="animate-spin mr-2" /> : <FaSave className="mr-2" />}
-              Save to Cloud
+
+          <div className="flex items-center gap-3">
+            <div className="relative" ref={calendarRef}>
+              <button onClick={() => setShowCalendar(prev => !prev)} className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-md border border-gray-200 dark:border-slate-600 hover:shadow-lg transition-all">
+                <FaCalendarAlt className="text-indigo-500" />
+                <span className="text-gray-700 dark:text-gray-200 font-medium">{formatDateDisplay(selectedDate)}</span>
+              </button>
+              <AnimatePresence>
+                {showCalendar && (
+                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 top-12 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-slate-600 p-3">
+                    <input type="date" value={moneyTrackingService.formatDate(selectedDate)} onChange={(e) => { setSelectedDate(new Date(e.target.value)); setShowCalendar(false); }} className="w-full p-2 rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <button onClick={handleSync} disabled={isSyncing} className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50" title="Sync with Cloud">
+              {isSyncing ? <FaSync className="animate-spin" /> : <FaCloudDownloadAlt />}
             </button>
-            <button
-              onClick={handleLoad}
-              disabled={isSyncing}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center disabled:opacity-50"
-            >
-              <FaDownload className="mr-2" />
-              Load from Cloud
-            </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Daily Spending Form */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold dark:text-white flex items-center">
-              <FaCalendarAlt className="mr-2 text-blue-500" />
-              Daily Spending
-            </h2>
-            <input
-              type="date"
-              value={formatDate(selectedDate)}
-              onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              className="px-2 py-1 text-sm border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-700 dark:text-white"
-              style={{ colorScheme: document.documentElement.classList.contains("dark") ? "dark" : "light" }}
-            />
-          </div>
-
-          <div className="space-y-2">
-            {moneyTrackingService.CATEGORIES.filter(
-              cat => !moneyTrackingService.FIXED_EXPENSES.includes(cat.id)
-            ).map((category) => {
-              const isSubscription = moneyTrackingService.SUBSCRIPTION_CATEGORIES.includes(category.id);
-
-              return (
-                <div key={category.id} className="bg-gray-50 dark:bg-slate-700 p-2 rounded border border-gray-200 dark:border-slate-600">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-xl">{category.icon}</span>
-                    <label className="text-xs font-medium dark:text-gray-200 flex-1">{category.name}</label>
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="₹0"
-                      value={getValue(category.id, 'amount')}
-                      onChange={(e) => handleSpendingChange(category.id, 'amount', e.target.value)}
-                      className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white text-right"
-                    />
-                  </div>
-
-                  {isSubscription && (
-                    <div className="ml-7 mb-1">
-                      <select
-                        value={getValue(category.id, 'period')}
-                        onChange={(e) => handleSpendingChange(category.id, 'period', e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white"
-                      >
-                        <option value="">Select period</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="yearly">Yearly</option>
-                      </select>
-                    </div>
-                  )}
-
-                  <div className="ml-7">
-                    <input
-                      type="text"
-                      placeholder="Add note (where you spent)"
-                      value={getValue(category.id, 'note')}
-                      onChange={(e) => handleSpendingChange(category.id, 'note', e.target.value)}
-                      className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <button
-            onClick={saveDailySpending}
-            className="w-full mt-3 px-3 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center"
-          >
-            <FaSave className="mr-2" />
-            Save Today's Spending
-          </button>
-        </div>
-
-        {/* Fixed Monthly Expenses */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <h2 className="text-xl font-bold dark:text-white mb-4">
-            Fixed Monthly Expenses (Auto-distributed)
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            {moneyTrackingService.CATEGORIES.filter(
-              cat => moneyTrackingService.FIXED_EXPENSES.includes(cat.id)
-            ).map((category) => (
-              <div key={category.id} className="bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-200 dark:border-slate-600">
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl">{category.icon}</span>
-                  <label className="text-sm font-medium dark:text-gray-200 flex-1">{category.name}/month</label>
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="₹0"
-                    value={fixedMonthly[category.id] || ""}
-                    onChange={(e) => handleFixedChange(category.id, e.target.value)}
-                    className="w-24 px-2 py-1 border border-gray-300 dark:border-slate-600 rounded dark:bg-slate-800 dark:text-white text-right"
-                  />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left - Input */}
+          <div className="space-y-4">
+            {/* Today's Budget */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-gray-800 dark:text-white">Today's Spending</h3>
+                <div className={`text-2xl font-bold ${isOverBudget ? "text-red-500" : "text-green-500"}`}>
+                  ₹{Math.round(todayTotal)}
+                  <span className="text-xs font-normal text-gray-400 ml-1">/ ₹1200</span>
                 </div>
               </div>
-            ))}
+              <div className="mt-2 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className={`h-full transition-all ${isOverBudget ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${Math.min(100, (todayTotal / 1200) * 100)}%` }} />
+              </div>
+            </motion.div>
+
+            {/* Daily Expenses */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500">
+                <h2 className="text-base font-bold text-white">💸 Daily Expenses</h2>
+              </div>
+              <div className="p-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {regularCategories.map((cat) => {
+                    const value = dailySpending[cat.id];
+                    const amount = typeof value === 'object' ? (value.amount || 0) : (value || 0);
+                    const hasValue = amount > 0;
+
+                    return (
+                      <div key={cat.id} className={`relative p-2 rounded-lg border-2 transition-all ${hasValue ? "border-green-400 bg-green-50 dark:bg-green-900/20" : "border-transparent bg-gray-50 dark:bg-slate-700/50"}`}>
+                        <div className="text-center">
+                          <span className="text-2xl block">{cat.icon}</span>
+                          <span className="text-[10px] font-medium text-gray-600 dark:text-gray-300 block mt-1">{cat.name}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="₹0"
+                            value={amount || ""}
+                            onChange={(e) => updateSpending(cat.id, e.target.value)}
+                            className="w-full mt-1 px-1 py-0.5 text-xs text-center rounded border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Subscriptions */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
+              <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500">
+                <h2 className="text-base font-bold text-white">📱 Subscriptions</h2>
+              </div>
+              <div className="p-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {subscriptionCategories.map((cat) => {
+                    const value = dailySpending[cat.id];
+                    const amount = typeof value === 'object' ? (value.amount || 0) : (value || 0);
+                    const hasValue = amount > 0;
+
+                    return (
+                      <div key={cat.id} className={`p-2 rounded-lg border-2 transition-all ${hasValue ? "border-purple-400 bg-purple-50 dark:bg-purple-900/20" : "border-transparent bg-gray-50 dark:bg-slate-700/50"}`}>
+                        <div className="text-center">
+                          <span className="text-xl block">{cat.icon}</span>
+                          <span className="text-[10px] font-medium text-gray-600 dark:text-gray-300 block mt-1">{cat.name}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="₹0"
+                            value={amount || ""}
+                            onChange={(e) => updateSpending(cat.id, e.target.value)}
+                            className="w-full mt-1 px-1 py-0.5 text-xs text-center rounded border border-gray-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onClick={handleSave} className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
+              Save Expenses
+            </motion.button>
           </div>
 
-          <button
-            onClick={saveFixedExpenses}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
-          >
-            <FaSave className="mr-2" />
-            Save Fixed Expenses
-          </button>
-        </div>
-
-        {/* Daily Spending Trends */}
-        {trends && trends.length > 0 && (
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold dark:text-white flex items-center">
-                <FaChartBar className="mr-2 text-blue-500" />
-                Daily Spending Trends
-              </h2>
-              <select
-                value={trendPeriod}
-                onChange={(e) => setTrendPeriod(parseInt(e.target.value))}
-                className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white"
-              >
-                <option value={7}>Last 7 days</option>
-                <option value={14}>Last 14 days</option>
-                <option value={30}>Last 30 days</option>
-              </select>
-            </div>
-
+          {/* Right - Stats */}
+          <div className="space-y-4">
             {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-sm text-blue-600 dark:text-blue-400">Total Spent</p>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                  ₹{trends.reduce((sum, t) => sum + t.total, 0)}
-                </p>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                <p className="text-sm text-green-600 dark:text-green-400">Daily Average</p>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                  ₹{Math.round(trends.reduce((sum, t) => sum + t.total, 0) / trends.length)}
-                </p>
-              </div>
-              <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg border border-orange-200 dark:border-orange-800">
-                <p className="text-sm text-orange-600 dark:text-orange-400">Daily Target</p>
-                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                  ₹1200
-                </p>
-              </div>
+            {analysis && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-white">Period Summary</h3>
+                  <div className="flex gap-1">
+                    {[7, 30, 90].map((d) => (
+                      <button key={d} onClick={() => setPeriod(d)} className={`px-2 py-0.5 rounded text-xs font-medium ${period === d ? "bg-indigo-600 text-white" : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300"}`}>{d}d</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <p className="text-xs text-blue-600 dark:text-blue-400">Total</p>
+                    <p className="text-lg font-bold text-blue-700 dark:text-blue-300">₹{analysis.total}</p>
+                  </div>
+                  <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <p className="text-xs text-green-600 dark:text-green-400">Daily Avg</p>
+                    <p className="text-lg font-bold text-green-700 dark:text-green-300">₹{analysis.dailyAverage}</p>
+                  </div>
+                  <div className="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <p className="text-xs text-purple-600 dark:text-purple-400">Target</p>
+                    <p className="text-lg font-bold text-purple-700 dark:text-purple-300">₹1200/d</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Trend Period Selector */}
+            <div className="flex gap-2">
+              {[7, 14, 30].map((days) => (
+                <button key={days} onClick={() => setTrendPeriod(days)} className={`flex-1 py-1.5 rounded-lg text-sm font-medium transition-all ${trendPeriod === days ? "bg-indigo-600 text-white" : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-slate-700"}`}>
+                  {days}d
+                </button>
+              ))}
             </div>
 
-            {/* Bar Chart */}
-            <div className="relative h-80 bg-white dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
-              <canvas ref={trendChartRef}></canvas>
-            </div>
-          </div>
-        )}
-
-        {/* Spending Analysis */}
-        {analysis && (
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold dark:text-white flex items-center">
-                <FaChartPie className="mr-2 text-purple-500" />
-                Spending Analysis
-              </h2>
-              <select
-                value={period}
-                onChange={(e) => setPeriod(parseInt(e.target.value))}
-                className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white"
-              >
-                <option value={7}>Last 7 days</option>
-                <option value={30}>Last 30 days</option>
-                <option value={90}>Last 90 days</option>
-              </select>
-            </div>
-
-            {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-sm text-blue-600 dark:text-blue-400">Total Spent</p>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                  ₹{analysis.total}
-                </p>
+            {/* Spending Trend */}
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-3">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xs font-bold text-gray-800 dark:text-white">💰 Spending Trend</h3>
+                <span className="text-xs text-red-500 font-medium">Red = ₹1200 limit</span>
               </div>
-              <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                <p className="text-sm text-green-600 dark:text-green-400">Daily Average</p>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                  ₹{analysis.dailyAverage}
-                </p>
-              </div>
-              <div className="bg-purple-50 dark:bg-purple-900/30 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
-                <p className="text-sm text-purple-600 dark:text-purple-400">Period</p>
-                <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                  {analysis.period} days
-                </p>
-              </div>
-            </div>
+              <div className="h-40"><canvas ref={trendChartRef}></canvas></div>
+            </motion.div>
 
             {/* Pie Chart */}
-            {analysis.breakdown.length > 0 ? (
-              <div className="relative h-96 bg-white dark:bg-slate-900 rounded-lg p-4">
-                <canvas ref={chartRef}></canvas>
-              </div>
-            ) : (
-              <div className="text-center text-gray-500 dark:text-gray-400 py-8 bg-gray-50 dark:bg-slate-900 rounded-lg">
-                No spending data for the selected period
-              </div>
+            {analysis?.breakdown?.length > 0 && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <FaChartPie className="text-purple-500" />
+                  <h3 className="text-xs font-bold text-gray-800 dark:text-white">Spending Breakdown</h3>
+                </div>
+                <div className="h-48"><canvas ref={pieChartRef}></canvas></div>
+              </motion.div>
             )}
           </div>
-        )}
-
-        {/* AI Insights */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold dark:text-white flex items-center">
-              <FaBrain className="mr-2 text-indigo-500" />
-              AI Insights
-            </h2>
-            <button
-              onClick={getAIInsights}
-              disabled={isLoadingAI || !analysis}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoadingAI ? (
-                <>
-                  <FaSync className="animate-spin mr-2" />
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <FaBrain className="mr-2" />
-                  Get AI Insights
-                </>
-              )}
-            </button>
-          </div>
-
-          {aiInsights ? (
-            <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
-              <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-sans">
-                {aiInsights}
-              </pre>
-            </div>
-          ) : (
-            <div className="text-center text-gray-500 dark:text-gray-400 py-8 bg-gray-50 dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
-              <FaBrain className="text-4xl mx-auto mb-3 opacity-50" />
-              <p>Click "Get AI Insights" to analyze your spending patterns</p>
-              <p className="text-xs mt-2">Powered by free AI models via OpenRouter</p>
-            </div>
-          )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
