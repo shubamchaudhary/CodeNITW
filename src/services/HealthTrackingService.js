@@ -14,10 +14,15 @@ class HealthTrackingService {
 
     // Meals configuration
     this.MEALS = [
-      { id: 'breakfast', label: 'Breakfast', icon: '🌅', time: '8:00 AM' },
+      { id: 'breakfast', label: 'Breakfast', icon: '🌅', time: '9:00 AM' },
       { id: 'lunch', label: 'Lunch', icon: '☀️', time: '1:00 PM' },
-      { id: 'dinner', label: 'Dinner', icon: '🌙', time: '8:00 PM' },
+      { id: 'snacks', label: 'Snacks', icon: '🍿', time: '7:00 PM' },
+      { id: 'dinner', label: 'Dinner', icon: '🌙', time: '10:00 PM' },
     ];
+
+    // Sleep expectations
+    this.EXPECTED_SLEEP_TIME = '00:30'; // 12:30 AM
+    this.EXPECTED_WAKE_TIME = '08:00';  // 8:00 AM
 
     // Food items with scoring
     this.FOOD_ITEMS = [
@@ -160,28 +165,92 @@ class HealthTrackingService {
   }
 
   calculateEatingScore(entry) {
-    let score = 50;
+    let score = 0; // Start from 0
     const meals = entry.meals || {};
     const food = entry.food || {};
 
-    // Meals score (+15 each)
-    if (meals.breakfast?.checked) score += 15;
-    if (meals.lunch?.checked) score += 15;
-    if (meals.dinner?.checked) score += 15;
+    // Meals score (+10 each, max 40)
+    if (meals.breakfast?.checked) score += 10;
+    if (meals.lunch?.checked) score += 10;
+    if (meals.snacks?.checked) score += 10;
+    if (meals.dinner?.checked) score += 10;
 
-    // Water score (max +10, scaled)
-    const water = food.water || 0;
-    score += Math.min(10, (water / 4) * 10);
+    // Water score: 2.5 points per liter, max 10 points (up to 4L)
+    const water = this.getWaterValue(food);
+    score += Math.min(10, water * 2.5);
 
-    // Junk penalty
+    // Gym: +20 points
+    if (entry.gym?.attended) score += 20;
+
+    // Fruits: +10 points
+    if (food.fruits?.had) score += 10;
+
+    // Dry Fruits: +10 points
+    if (food.dry_fruits?.had) score += 10;
+
+    // Sleep score: +20 points (with deductions)
+    score += this.calculateSleepScore(entry.sleep);
+
+    // Junk penalty: -20 points
     if (food.junk?.had) score -= 20;
 
-    // Healthy additions
-    if (food.fruits?.had) score += 5;
-    if (food.dry_fruits?.had) score += 5;
-    if (food.protein_shake?.had) score += 5;
-
     return Math.max(0, Math.min(100, Math.round(score)));
+  }
+
+  // Helper to get water value (handles both old and new format)
+  getWaterValue(food) {
+    if (!food.water) return 0;
+    // Handle nested object format {water: {water: value}} or direct value
+    if (typeof food.water === 'object') {
+      return parseFloat(food.water.water) || parseFloat(food.water.value) || 0;
+    }
+    return parseFloat(food.water) || 0;
+  }
+
+  calculateSleepScore(sleep) {
+    if (!sleep?.bedTime || !sleep?.wakeTime) return 0;
+
+    let sleepScore = 20; // Start with full points
+    const sleepHours = this.calculateSleepHours(sleep.bedTime, sleep.wakeTime);
+
+    // Expected: 7.5 hours (12:30 AM to 8:00 AM)
+    const expectedHours = 7.5;
+
+    // Deduct for sleeping less or more than expected
+    const hoursDiff = Math.abs(sleepHours - expectedHours);
+    if (hoursDiff > 2) {
+      sleepScore -= 10; // Major deviation
+    } else if (hoursDiff > 1) {
+      sleepScore -= 5; // Moderate deviation
+    }
+
+    // Parse bed time and check if sleeping late
+    const [bedH, bedM] = sleep.bedTime.split(':').map(Number);
+    const bedMinutes = bedH * 60 + bedM;
+
+    // Expected bed time: 00:30 (12:30 AM) = 30 minutes
+    // Allow some tolerance: 23:30 to 01:30 is okay
+    // Late is after 01:30 (90 minutes)
+    const earlyNightMinutes = bedH < 12 ? bedMinutes : bedMinutes - 24 * 60;
+    if (earlyNightMinutes > 90) { // After 1:30 AM
+      sleepScore -= 5; // Sleeping too late
+    } else if (earlyNightMinutes < -60) { // Before 11:00 PM
+      sleepScore -= 3; // Sleeping too early (unusual)
+    }
+
+    // Parse wake time and check if waking late
+    const [wakeH, wakeM] = sleep.wakeTime.split(':').map(Number);
+    const wakeMinutes = wakeH * 60 + wakeM;
+
+    // Expected wake: 08:00 = 480 minutes
+    // Late wake is after 09:00 (540 minutes)
+    if (wakeMinutes > 540) {
+      sleepScore -= 5; // Waking too late
+    } else if (wakeMinutes < 360) { // Before 6:00 AM
+      sleepScore -= 3; // Waking too early
+    }
+
+    return Math.max(0, sleepScore);
   }
 
   // ==================== STATISTICS ====================
