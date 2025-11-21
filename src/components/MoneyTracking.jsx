@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chart } from "chart.js/auto";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { FaWallet, FaCalendarAlt, FaSync, FaCloudDownloadAlt, FaChartPie, FaPlus, FaTrash } from "react-icons/fa";
+import { FaWallet, FaCalendarAlt, FaSync, FaCloudDownloadAlt, FaChartPie, FaPlus, FaTrash, FaCog, FaPiggyBank } from "react-icons/fa";
 import { toast } from "react-toastify";
 import moneyTrackingService from "../services/MoneyTrackingService";
 
@@ -19,6 +19,12 @@ const MoneyTracking = () => {
   const [subscriptions, setSubscriptions] = useState({});
   const [showSubModal, setShowSubModal] = useState(false);
   const [newSub, setNewSub] = useState({ category: '', amount: '', periodDays: 30, note: '' });
+  const [dailyBudget, setDailyBudget] = useState(1500);
+  const [showBudgetEdit, setShowBudgetEdit] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [bankBalance, setBankBalance] = useState(0);
+  const [showBankModal, setShowBankModal] = useState(false);
+  const [bankAction, setBankAction] = useState({ type: 'add', amount: '', note: '' });
 
   const pieChartRef = useRef(null);
   const pieChartInstance = useRef(null);
@@ -31,6 +37,7 @@ const MoneyTracking = () => {
     loadAnalysis();
     loadTrends();
     loadSubscriptions();
+    loadSettings();
   }, [selectedDate, period, trendPeriod]);
 
   useEffect(() => {
@@ -54,6 +61,16 @@ const MoneyTracking = () => {
   const loadAnalysis = () => setAnalysis(moneyTrackingService.getSpendingAnalysis(period));
   const loadTrends = () => setTrends(moneyTrackingService.getSpendingTrends(trendPeriod));
   const loadSubscriptions = () => setSubscriptions(moneyTrackingService.getAllSubscriptions());
+  const loadSettings = () => {
+    setDailyBudget(moneyTrackingService.getDailyBudget());
+    setBankBalance(moneyTrackingService.getBankBalance());
+  };
+
+  // Filter to only show active subscriptions (not expired)
+  const activeSubscriptions = Object.entries(subscriptions).filter(([_, sub]) => {
+    const today = moneyTrackingService.formatDate(new Date());
+    return today <= sub.endDate;
+  });
 
   const handleAddSubscription = () => {
     if (!newSub.category || !newSub.amount || newSub.amount <= 0) {
@@ -70,11 +87,41 @@ const MoneyTracking = () => {
   };
 
   const handleDeleteSubscription = (category) => {
-    moneyTrackingService.deleteSubscription(category);
-    toast.success("Subscription removed");
-    loadSubscriptions();
-    loadAnalysis();
+    if (deleteConfirm === category) {
+      moneyTrackingService.deleteSubscription(category);
+      toast.success("Subscription removed");
+      setDeleteConfirm(null);
+      loadSubscriptions();
+      loadAnalysis();
+      loadTrends();
+    } else {
+      setDeleteConfirm(category);
+      setTimeout(() => setDeleteConfirm(null), 3000); // Reset after 3s
+    }
+  };
+
+  const handleBudgetSave = () => {
+    moneyTrackingService.setDailyBudget(dailyBudget);
+    setShowBudgetEdit(false);
+    toast.success(`Daily budget set to ₹${dailyBudget}`);
     loadTrends();
+  };
+
+  const handleBankAction = () => {
+    if (!bankAction.amount || bankAction.amount <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    if (bankAction.type === 'add') {
+      moneyTrackingService.addMoney(bankAction.amount, bankAction.note);
+      toast.success(`Added ₹${bankAction.amount} to balance`);
+    } else {
+      moneyTrackingService.deductMoney(bankAction.amount, bankAction.note);
+      toast.success(`Deducted ₹${bankAction.amount} from balance`);
+    }
+    setBankBalance(moneyTrackingService.getBankBalance());
+    setBankAction({ type: 'add', amount: '', note: '' });
+    setShowBankModal(false);
   };
 
   const handleSave = async () => {
@@ -143,7 +190,7 @@ const MoneyTracking = () => {
         labels: trends.map(t => t.label),
         datasets: [
           { label: "Spending", data: trends.map(t => t.total), borderColor: "#3b82f6", backgroundColor: "rgba(59, 130, 246, 0.1)", fill: true, tension: 0.4, pointRadius: 3 },
-          { label: "Limit (₹1200)", data: trends.map(() => 1200), borderColor: "#ef4444", borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 2 },
+          { label: `Limit (₹${dailyBudget})`, data: trends.map(() => dailyBudget), borderColor: "#ef4444", borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 2 },
         ],
       },
       options: {
@@ -165,7 +212,7 @@ const MoneyTracking = () => {
   }, 0);
   const subscriptionDaily = moneyTrackingService.getDailySubscriptionAmount(selectedDate);
   const todayTotal = regularExpenses + subscriptionDaily;
-  const isOverBudget = todayTotal > 1200;
+  const isOverBudget = todayTotal > dailyBudget;
 
   // Categories grouped by type - exclude subscription categories from regular daily input
   const regularCategories = moneyTrackingService.CATEGORIES.filter(c => !moneyTrackingService.SUBSCRIPTION_CATEGORY_IDS.includes(c.id));
@@ -205,17 +252,44 @@ const MoneyTracking = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left - Input */}
           <div className="space-y-4">
+            {/* Bank Balance Card */}
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-4 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FaPiggyBank className="text-2xl" />
+                  <div>
+                    <p className="text-xs opacity-80">Bank Balance</p>
+                    <p className="text-2xl font-bold">₹{Math.round(bankBalance).toLocaleString()}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowBankModal(true)} className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-all">
+                  <FaPlus className="inline mr-1" /> Add/Deduct
+                </button>
+              </div>
+            </motion.div>
+
             {/* Today's Budget */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-gray-800 dark:text-white">Today's Spending</h3>
-                <div className={`text-2xl font-bold ${isOverBudget ? "text-red-500" : "text-green-500"}`}>
-                  ₹{Math.round(todayTotal)}
-                  <span className="text-xs font-normal text-gray-400 ml-1">/ ₹1200</span>
+                <div className="flex items-center gap-2">
+                  <div className={`text-2xl font-bold ${isOverBudget ? "text-red-500" : "text-green-500"}`}>
+                    ₹{Math.round(todayTotal)}
+                    <span className="text-xs font-normal text-gray-400 ml-1">/ ₹{dailyBudget}</span>
+                  </div>
+                  <button onClick={() => setShowBudgetEdit(!showBudgetEdit)} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <FaCog className="text-sm" />
+                  </button>
                 </div>
               </div>
+              {showBudgetEdit && (
+                <div className="mt-2 flex gap-2">
+                  <input type="number" min="100" value={dailyBudget} onChange={(e) => setDailyBudget(parseInt(e.target.value) || 1500)} className="flex-1 px-2 py-1 text-sm rounded border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                  <button onClick={handleBudgetSave} className="px-3 py-1 bg-indigo-600 text-white text-sm rounded font-medium">Save</button>
+                </div>
+              )}
               <div className="mt-2 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div className={`h-full transition-all ${isOverBudget ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${Math.min(100, (todayTotal / 1200) * 100)}%` }} />
+                <div className={`h-full transition-all ${isOverBudget ? "bg-red-500" : "bg-green-500"}`} style={{ width: `${Math.min(100, (todayTotal / dailyBudget) * 100)}%` }} />
               </div>
               {subscriptionDaily > 0 && (
                 <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -268,14 +342,13 @@ const MoneyTracking = () => {
               </div>
               <div className="p-3">
                 {/* Active Subscriptions */}
-                {Object.keys(subscriptions).length > 0 ? (
+                {activeSubscriptions.length > 0 ? (
                   <div className="space-y-2 mb-3">
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Subscriptions:</p>
-                    {Object.entries(subscriptions).map(([catId, sub]) => {
+                    {activeSubscriptions.map(([catId, sub]) => {
                       const cat = moneyTrackingService.CATEGORIES.find(c => c.id === catId);
-                      const isActive = new Date() >= new Date(sub.startDate) && new Date() <= new Date(sub.endDate);
                       return (
-                        <div key={catId} className={`flex items-center justify-between p-2 rounded-lg ${isActive ? 'bg-purple-50 dark:bg-purple-900/20' : 'bg-gray-100 dark:bg-slate-700/50 opacity-60'}`}>
+                        <div key={catId} className="flex items-center justify-between p-2 rounded-lg bg-purple-50 dark:bg-purple-900/20">
                           <div className="flex items-center gap-2">
                             <span className="text-lg">{cat?.icon || '📱'}</span>
                             <div>
@@ -284,8 +357,8 @@ const MoneyTracking = () => {
                               <p className="text-[10px] text-gray-400">{sub.startDate} to {sub.endDate}</p>
                             </div>
                           </div>
-                          <button onClick={() => handleDeleteSubscription(catId)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
-                            <FaTrash className="text-xs" />
+                          <button onClick={() => handleDeleteSubscription(catId)} className={`px-2 py-1 rounded-lg text-xs font-medium transition-all ${deleteConfirm === catId ? 'bg-red-500 text-white' : 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'}`}>
+                            {deleteConfirm === catId ? 'Confirm?' : <FaTrash />}
                           </button>
                         </div>
                       );
@@ -296,7 +369,7 @@ const MoneyTracking = () => {
                 )}
 
                 {/* Daily subscription total */}
-                {Object.keys(subscriptions).length > 0 && (
+                {activeSubscriptions.length > 0 && (
                   <div className="mt-2 p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-center">
                     <p className="text-xs text-purple-600 dark:text-purple-400">Today's subscription cost:</p>
                     <p className="text-lg font-bold text-purple-700 dark:text-purple-300">₹{Math.round(moneyTrackingService.getDailySubscriptionAmount(selectedDate))}</p>
@@ -385,7 +458,7 @@ const MoneyTracking = () => {
                   </div>
                   <div className="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                     <p className="text-xs text-purple-600 dark:text-purple-400">Target</p>
-                    <p className="text-lg font-bold text-purple-700 dark:text-purple-300">₹1200/d</p>
+                    <p className="text-lg font-bold text-purple-700 dark:text-purple-300">₹{dailyBudget}/d</p>
                   </div>
                 </div>
               </motion.div>
@@ -404,7 +477,7 @@ const MoneyTracking = () => {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-3">
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-xs font-bold text-gray-800 dark:text-white">💰 Spending Trend</h3>
-                <span className="text-xs text-red-500 font-medium">Red = ₹1200 limit</span>
+                <span className="text-xs text-red-500 font-medium">Red = ₹{dailyBudget} limit</span>
               </div>
               <div className="h-40"><canvas ref={trendChartRef}></canvas></div>
             </motion.div>
@@ -422,6 +495,45 @@ const MoneyTracking = () => {
           </div>
         </div>
       </div>
+
+      {/* Bank Balance Modal */}
+      <AnimatePresence>
+        {showBankModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowBankModal(false)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-4 max-w-md w-full" onClick={e => e.stopPropagation()}>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Manage Bank Balance</h3>
+              <div className="text-center mb-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                <p className="text-xs text-indigo-600 dark:text-indigo-400">Current Balance</p>
+                <p className="text-3xl font-bold text-indigo-700 dark:text-indigo-300">₹{Math.round(bankBalance).toLocaleString()}</p>
+              </div>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <button onClick={() => setBankAction(prev => ({ ...prev, type: 'add' }))} className={`flex-1 py-2 rounded-lg text-sm font-medium ${bankAction.type === 'add' ? 'bg-green-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300'}`}>
+                    Add Money
+                  </button>
+                  <button onClick={() => setBankAction(prev => ({ ...prev, type: 'deduct' }))} className={`flex-1 py-2 rounded-lg text-sm font-medium ${bankAction.type === 'deduct' ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300'}`}>
+                    Deduct Money
+                  </button>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Amount (₹)</label>
+                  <input type="number" min="0" placeholder="Enter amount" value={bankAction.amount} onChange={e => setBankAction(prev => ({ ...prev, amount: e.target.value }))} className="w-full p-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Note (optional)</label>
+                  <input type="text" placeholder="e.g., Salary, ATM withdrawal" value={bankAction.note} onChange={e => setBankAction(prev => ({ ...prev, note: e.target.value }))} className="w-full p-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button onClick={() => setShowBankModal(false)} className="flex-1 py-2 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 rounded-lg font-medium">Cancel</button>
+                  <button onClick={handleBankAction} className={`flex-1 py-2 text-white rounded-lg font-medium ${bankAction.type === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}>
+                    {bankAction.type === 'add' ? 'Add' : 'Deduct'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

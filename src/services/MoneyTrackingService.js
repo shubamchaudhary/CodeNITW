@@ -51,11 +51,86 @@ class MoneyTrackingService {
   getData() {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
-      return data ? JSON.parse(data) : { dailyEntries: {}, fixedMonthly: {}, subscriptions: {} };
+      const parsed = data ? JSON.parse(data) : {};
+      return {
+        dailyEntries: parsed.dailyEntries || {},
+        fixedMonthly: parsed.fixedMonthly || {},
+        subscriptions: parsed.subscriptions || {},
+        settings: parsed.settings || { dailyBudget: 1500 },
+        bankBalance: parsed.bankBalance || 0,
+        balanceHistory: parsed.balanceHistory || [],
+      };
     } catch (e) {
       console.error("Error reading money data:", e);
-      return { dailyEntries: {}, fixedMonthly: {}, subscriptions: {} };
+      return { dailyEntries: {}, fixedMonthly: {}, subscriptions: {}, settings: { dailyBudget: 1500 }, bankBalance: 0, balanceHistory: [] };
     }
+  }
+
+  // Get/set daily budget
+  getDailyBudget() {
+    const data = this.getData();
+    return data.settings?.dailyBudget || 1500;
+  }
+
+  setDailyBudget(amount) {
+    const data = this.getData();
+    if (!data.settings) data.settings = {};
+    data.settings.dailyBudget = parseFloat(amount) || 1500;
+    this.saveData(data);
+    return data.settings.dailyBudget;
+  }
+
+  // Bank balance methods
+  getBankBalance() {
+    const data = this.getData();
+    return data.bankBalance || 0;
+  }
+
+  setBankBalance(amount) {
+    const data = this.getData();
+    data.bankBalance = parseFloat(amount) || 0;
+    this.saveData(data);
+    return data.bankBalance;
+  }
+
+  addMoney(amount, note = "") {
+    const data = this.getData();
+    const added = parseFloat(amount) || 0;
+    data.bankBalance = (data.bankBalance || 0) + added;
+    if (!data.balanceHistory) data.balanceHistory = [];
+    data.balanceHistory.push({
+      type: 'credit',
+      amount: added,
+      note,
+      date: this.formatDate(new Date()),
+      timestamp: Date.now(),
+      balanceAfter: data.bankBalance,
+    });
+    this.saveData(data);
+    return data.bankBalance;
+  }
+
+  deductMoney(amount, note = "") {
+    const data = this.getData();
+    const deducted = parseFloat(amount) || 0;
+    data.bankBalance = (data.bankBalance || 0) - deducted;
+    if (!data.balanceHistory) data.balanceHistory = [];
+    data.balanceHistory.push({
+      type: 'debit',
+      amount: deducted,
+      note,
+      date: this.formatDate(new Date()),
+      timestamp: Date.now(),
+      balanceAfter: data.bankBalance,
+    });
+    this.saveData(data);
+    return data.bankBalance;
+  }
+
+  getBalanceHistory(limit = 10) {
+    const data = this.getData();
+    const history = data.balanceHistory || [];
+    return history.slice(-limit).reverse();
   }
 
   // Save to both cache AND cloud simultaneously
