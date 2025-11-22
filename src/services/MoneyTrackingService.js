@@ -19,7 +19,7 @@ class MoneyTrackingService {
       { id: "shopping", name: "Shopping", icon: "🛍️", color: "#ec4899" },
       { id: "travel", name: "Travel", icon: "🚗", color: "#8b5cf6" },
       { id: "electricity", name: "Electricity", icon: "⚡", color: "#eab308" },
-      { id: "gifts", name: "Gifts", icon: "🎁", color: "#f59e0b" },
+      { id: "medical", name: "Medical", icon: "💊", color: "#f59e0b" },
       { id: "gym", name: "Gym", icon: "💪", color: "#14b8a6" },
       { id: "entertainment", name: "Entertainment", icon: "🎬", color: "#6366f1" },
       { id: "courses", name: "Courses", icon: "📚", color: "#a855f7" },
