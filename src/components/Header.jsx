@@ -55,6 +55,7 @@ export default function Header() {
   useEffect(() => {
     const pageMap = {
       "/problems": "PROBLEMS",
+      "/most-asked": "MOST ASKED",
       "/personal-plan": "PERSONAL PLAN",
       "/money-tracking": "MONEY TRACKING",
       "/health-tracking": "HEALTH TRACKING",
@@ -299,6 +300,7 @@ export default function Header() {
                         >
                           <ul className="lg:block">
                             {[
+                              { path: "/most-asked", name: "MOST ASKED" },
                               { path: "/personal-plan", name: "PERSONAL PLAN" },
                               { path: "/money-tracking", name: "MONEY TRACKING" },
                               { path: "/health-tracking", name: "HEALTH TRACKING" },
