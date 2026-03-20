@@ -30,6 +30,11 @@ class ProgressSyncService {
       firestoreCollection: "user_progress",
       displayName: "DSA 450",
     },
+    FAQ: {
+      localStorageKey: "FAQSolvedQuestions",
+      firestoreCollection: "user_progress",
+      displayName: "Most Asked Questions",
+    },
   };
 
   /**
@@ -66,6 +71,15 @@ class ProgressSyncService {
         return { solved, starred };
       }
 
+      // Special handling for FAQ to include solved, starred, timestamps, and notes
+      if (sheetType === "FAQ") {
+        const solved = JSON.parse(localStorage.getItem("FAQSolvedQuestions") || "{}");
+        const starred = JSON.parse(localStorage.getItem("FAQStarredQuestions") || "{}");
+        const timestamps = JSON.parse(localStorage.getItem("FAQSolvedTimestamps") || "{}");
+        const notes = JSON.parse(localStorage.getItem("FAQNotes") || "{}");
+        return { solved, starred, timestamps, notes };
+      }
+
       const data = localStorage.getItem(config.localStorageKey);
       return data ? JSON.parse(data) : {};
     } catch (error) {
@@ -90,6 +104,14 @@ class ProgressSyncService {
         const starred = progressData.starred || {};
         localStorage.setItem("PersonalDSASolvedQuestions", JSON.stringify(solved));
         localStorage.setItem("PersonalDSAStarredQuestions", JSON.stringify(starred));
+        return true;
+      }
+
+      if (sheetType === "FAQ") {
+        localStorage.setItem("FAQSolvedQuestions", JSON.stringify(progressData.solved || {}));
+        localStorage.setItem("FAQStarredQuestions", JSON.stringify(progressData.starred || {}));
+        localStorage.setItem("FAQSolvedTimestamps", JSON.stringify(progressData.timestamps || {}));
+        localStorage.setItem("FAQNotes", JSON.stringify(progressData.notes || {}));
         return true;
       }
 
@@ -140,7 +162,7 @@ class ProgressSyncService {
 
       if (showToast) {
         const solvedSource =
-          sheetType === "PERSONAL_DSA"
+          sheetType === "PERSONAL_DSA" || sheetType === "FAQ"
             ? localProgress.solved || {}
             : localProgress || {};
         const solvedCount = Object.values(solvedSource).filter((val) => val).length;
@@ -189,7 +211,7 @@ class ProgressSyncService {
 
         if (showToast) {
           const solvedSource =
-            sheetType === "PERSONAL_DSA"
+            sheetType === "PERSONAL_DSA" || sheetType === "FAQ"
               ? progressData.solved || {}
               : progressData || {};
           const solvedCount = Object.values(solvedSource).filter((val) => val)
@@ -240,7 +262,7 @@ class ProgressSyncService {
           solvedCount: (() => {
             const progress = data.progress || {};
             const solvedSource =
-              sheetType === "PERSONAL_DSA" ? progress.solved || {} : progress;
+              sheetType === "PERSONAL_DSA" || sheetType === "FAQ" ? progress.solved || {} : progress;
             return Object.values(solvedSource).filter((val) => val).length;
           })(),
         };

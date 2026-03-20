@@ -20,6 +20,7 @@ import Discussion from "./pages/Discussion/Discussion";
 import Profile from "./pages/Dashboard/Profile";
 import InterviewExp from "./pages/Resources/InterviewExp";
 import PersonalPlan from "./pages/Resources/PersonalPlan";
+import MostAskedQuestions from "./pages/Resources/MostAskedQuestions";
 import MoneyTracking from "./components/MoneyTracking";
 import HealthTracking from "./components/HealthTracking";
 
@@ -55,6 +56,9 @@ function App() {
           </Route>
           <Route path="/interview-exps" element={<PrivateRoute />}>
             <Route path="/interview-exps" element={<InterviewExp />}></Route>
+          </Route>
+          <Route path="/most-asked" element={<PrivateRoute />}>
+            <Route path="/most-asked" element={<MostAskedQuestions />}></Route>
           </Route>
           <Route path="/personal-plan" element={<PrivateRoute />}>
             <Route path="/personal-plan" element={<PersonalPlan />}></Route>
