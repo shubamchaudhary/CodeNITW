@@ -276,7 +276,8 @@ export default function Header() {
                           isActive("/ot-material") ||
                           isActive("/DSA-450") ||
                           isActive("/cp-sheet") ||
-                          isActive("/interview-exps")
+                          isActive("/interview-exps") ||
+                          isActive("/job-hunt")
                       )} flex items-center gap-1 w-full lg:w-auto max-w-[150px] justify-between lg:justify-center`}
                     >
                       <span className="truncate">{activePage}</span>
@@ -300,6 +301,7 @@ export default function Header() {
                         >
                           <ul className="lg:block">
                             {[
+                              { path: "/job-hunt", name: "JOB HUNT" },
                               { path: "/most-asked", name: "MOST ASKED" },
                               { path: "/personal-plan", name: "PERSONAL PLAN" },
                               { path: "/money-tracking", name: "MONEY TRACKING" },
