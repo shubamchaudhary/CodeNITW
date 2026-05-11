@@ -1,32 +1,47 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { jobHuntPlan, CATEGORY_CONFIG, DIFFICULTY_CONFIG } from "../../Data/JobHuntPlan";
+import { jobHuntPlan, CATEGORY_CONFIG } from "../../Data/JobHuntPlan";
+import mostAskedData from "../../Data/MostAskedQuestions.json";
 
 const ALLOWED_EMAIL = "beshubam@gmail.com";
+
+// ─── Daily DSA round-robin ────────────────────────────────────────────────────
+// Walk across sections one problem at a time (Arrays[0], SlidingWindow[0], ...,
+// Design[0], Arrays[1], SlidingWindow[1], ...). Skips sections that have run out
+// of problems. Covers all 100 problems across the first 100 cards in plan order.
+const DAILY_DSA_SEQUENCE = (() => {
+  const sections = Object.entries(mostAskedData);
+  const seq = [];
+  let round = 0;
+  let added = true;
+  while (added) {
+    added = false;
+    for (const [section, problems] of sections) {
+      if (round < problems.length) {
+        seq.push({ ...problems[round], section });
+        added = true;
+      }
+    }
+    round++;
+  }
+  return seq;
+})();
+
+const CARD_DAILY_DSA = (() => {
+  const map = {};
+  jobHuntPlan.forEach((card, idx) => {
+    if (idx < DAILY_DSA_SEQUENCE.length) {
+      map[card.id] = { ...DAILY_DSA_SEQUENCE[idx], day: idx + 1 };
+    }
+  });
+  return map;
+})();
 
 const STORAGE_KEY_COMPLETED = "JobHuntCompleted";
 const STORAGE_KEY_NOTES = "JobHuntNotes";
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
-
-function getLeetCodeUrl(number) {
-  const slugMap = {
-    11: "container-with-most-water", 15: "3sum", 3: "longest-substring-without-repeating-characters",
-    76: "minimum-window-substring", 1: "two-sum", 49: "group-anagrams",
-    560: "subarray-sum-equals-k", 33: "search-in-rotated-sorted-array",
-    34: "find-first-and-last-position-of-element-in-sorted-array",
-    20: "valid-parentheses", 155: "min-stack", 739: "daily-temperatures",
-    102: "binary-tree-level-order-traversal", 104: "maximum-depth-of-binary-tree",
-    236: "lowest-common-ancestor-of-a-binary-tree", 200: "number-of-islands",
-    207: "course-schedule", 206: "reverse-linked-list", 21: "merge-two-sorted-lists",
-    142: "linked-list-cycle-ii", 347: "top-k-frequent-elements",
-    215: "kth-largest-element-in-an-array", 46: "permutations",
-    70: "climbing-stairs", 198: "house-robber",
-  };
-  const slug = slugMap[number] || String(number);
-  return `https://leetcode.com/problems/${slug}/`;
-}
 
 function calcCategoryStats(completed) {
   return ["AI", "HLD", "LLD", "DSA"].reduce((acc, cat) => {
@@ -504,40 +519,35 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
                 </ul>
               </div>
 
-              {/* DSA Problems */}
-              {item.dsaProblems && item.dsaProblems.length > 0 && (
+              {/* Daily DSA Problem (round-robin across Most Asked sections) */}
+              {CARD_DAILY_DSA[item.id] && (
                 <div className="mb-4">
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <span className="w-1 h-3 rounded-full bg-gradient-to-b from-orange-500 to-amber-500" />
-                    DSA Practice
+                    Daily DSA Problem
                     <span className="text-[10px] font-normal normal-case text-gray-400">
-                      (45 min each · move on after 25 min if stuck)
+                      (Day {CARD_DAILY_DSA[item.id].day} · 45 min · move on after 25 min if stuck)
                     </span>
                   </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {item.dsaProblems.map((prob) => (
-                      <a
-                        key={prob.number}
-                        href={getLeetCodeUrl(prob.number)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors group"
-                      >
-                        <span className="text-[10px] font-bold text-orange-500 dark:text-orange-400">
-                          #{prob.number}
-                        </span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-300 transition-colors">
-                          {prob.name}
-                        </span>
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${DIFFICULTY_CONFIG[prob.difficulty]}`}>
-                          {prob.difficulty}
-                        </span>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500 hidden sm:inline">
-                          · {prob.pattern}
-                        </span>
-                      </a>
-                    ))}
-                  </div>
+                  <a
+                    href={CARD_DAILY_DSA[item.id].Question_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors group"
+                  >
+                    <span className="text-[10px] font-bold text-orange-500 dark:text-orange-400">
+                      #{CARD_DAILY_DSA[item.id].Q_No}
+                    </span>
+                    <span className="text-xs text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-300 transition-colors">
+                      {CARD_DAILY_DSA[item.id].Question}
+                    </span>
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                      {CARD_DAILY_DSA[item.id].section}
+                    </span>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 hidden sm:inline">
+                      · {CARD_DAILY_DSA[item.id].Priority}
+                    </span>
+                  </a>
                 </div>
               )}
 
