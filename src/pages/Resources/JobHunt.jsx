@@ -99,7 +99,6 @@ const JobHunt = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">🎯</span>
                   <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                     Job Hunt
                   </h1>
@@ -107,11 +106,8 @@ const JobHunt = () => {
                     16 Weeks
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-9">
-                  AI / GenAI Engineering + Java Backend · Target: 40 LPA · Sep 2026
-                </p>
               </div>
-              <div className="flex items-center gap-4 ml-9 sm:ml-0">
+              <div className="flex items-center gap-4">
                 <div className="text-right">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Overall Progress</p>
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
@@ -155,35 +151,51 @@ const JobHunt = () => {
             className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5 px-2"
           >
             {["AI", "HLD", "LLD", "DSA"].map((cat) => {
-              const cfg = CATEGORY_CONFIG[cat];
               const stats = categoryStats[cat];
+              const ringColor = {
+                AI: { from: "#a855f7", to: "#7c3aed", text: "text-purple-600 dark:text-purple-400" },
+                HLD: { from: "#3b82f6", to: "#0ea5e9", text: "text-blue-600 dark:text-blue-400" },
+                LLD: { from: "#10b981", to: "#22c55e", text: "text-emerald-600 dark:text-emerald-400" },
+                DSA: { from: "#f97316", to: "#f59e0b", text: "text-orange-600 dark:text-orange-400" },
+              }[cat];
+              const radius = 26;
+              const circumference = 2 * Math.PI * radius;
+              const gradId = `catGrad-${cat}`;
               return (
                 <div
                   key={cat}
-                  className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-600 shadow-sm px-4 py-3"
+                  className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-600 shadow-sm px-4 py-3 flex items-center gap-3"
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-base">{cfg.icon}</span>
-                      <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        {cat}
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                  <div className="relative w-16 h-16 shrink-0">
+                    <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                      <circle cx="32" cy="32" r={radius} fill="none" stroke="currentColor"
+                        className="text-gray-200 dark:text-slate-700" strokeWidth="6" />
+                      <circle cx="32" cy="32" r={radius} fill="none"
+                        stroke={`url(#${gradId})`} strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeDasharray={`${circumference}`}
+                        strokeDashoffset={`${circumference * (1 - stats.pct / 100)}`}
+                        style={{ transition: "stroke-dashoffset 0.8s ease" }}
+                      />
+                      <defs>
+                        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor={ringColor.from} />
+                          <stop offset="100%" stopColor={ringColor.to} />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <span className={`absolute inset-0 flex items-center justify-center text-xs font-bold ${ringColor.text}`}>
                       {stats.pct}%
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${stats.pct}%` }}
-                      transition={{ duration: 0.8, delay: 0.2 }}
-                      className={`h-full rounded-full ${cfg.bar}`}
-                    />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                      {cat}
+                    </span>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                      {stats.done}/{stats.total} sessions
+                    </span>
                   </div>
-                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
-                    {stats.done}/{stats.total} sessions
-                  </p>
                 </div>
               );
             })}
@@ -296,10 +308,24 @@ const JobHunt = () => {
 function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComplete, onNoteChange }) {
   const [copied, setCopied] = useState(false);
   const debounceRef = useRef(null);
+  const cardRef = useRef(null);
   const [localNote, setLocalNote] = useState(note);
 
   useEffect(() => { setLocalNote(note); }, [note]);
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
+
+  useEffect(() => {
+    if (isOpen && cardRef.current) {
+      const t = setTimeout(() => {
+        const el = cardRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const offset = window.scrollY + rect.top - 80;
+        window.scrollTo({ top: offset, behavior: "smooth" });
+      }, 280);
+      return () => clearTimeout(t);
+    }
+  }, [isOpen]);
 
   const handleNoteInput = useCallback(
     (e) => {
@@ -335,6 +361,7 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
 
   return (
     <div
+      ref={cardRef}
       className={`mx-2 my-1.5 rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 ${leftBorder} shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${cardBg} ${
         isComplete ? "opacity-75" : ""
       }`}
@@ -401,7 +428,6 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
           className="text-gray-400 dark:text-gray-500 shrink-0"
-          onClick={onToggleOpen}
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
             <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -505,8 +531,8 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
                     )}
                   </button>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg p-3 max-h-52 overflow-y-auto">
-                  <pre className="text-[11px] text-gray-600 dark:text-gray-400 font-mono whitespace-pre-wrap leading-relaxed">
+                <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                  <pre className="text-[11.5px] text-gray-700 dark:text-gray-300 font-mono whitespace-pre-wrap leading-relaxed">
                     {item.prompt}
                   </pre>
                 </div>
@@ -527,29 +553,36 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
               )}
 
               {/* Notes Section */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <span className="w-1 h-3 rounded-full bg-gradient-to-b from-blue-400 to-cyan-400" />
-                  My Notes
-                  <span className="text-[10px] font-normal normal-case text-gray-400">
-                    (auto-saved · revisit at interview time)
+              <div className="rounded-xl border border-blue-100 dark:border-blue-900/40 bg-gradient-to-br from-blue-50/60 via-white to-cyan-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-4 shadow-inner">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-400 to-cyan-400" />
+                    My Notes
+                  </h4>
+                  <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">
+                    auto-saved · revisit at interview time
                   </span>
-                </h4>
+                </div>
                 <textarea
                   value={localNote}
                   onChange={handleNoteInput}
                   placeholder="Write your notes, key insights, things to remember for the interview..."
-                  rows={4}
-                  className="w-full p-3 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400 dark:focus:border-blue-600 resize-y min-h-[80px] transition-all font-mono leading-relaxed"
+                  rows={8}
+                  className="w-full p-4 text-sm rounded-lg border border-blue-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400 dark:focus:border-blue-500 resize-y min-h-[180px] transition-all leading-relaxed shadow-sm"
                 />
-                {localNote && (
-                  <p className="text-[10px] text-green-500 dark:text-green-400 mt-1 flex items-center gap-1">
-                    <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8">
-                      <circle cx="4" cy="4" r="4" />
-                    </svg>
-                    Notes saved
-                  </p>
-                )}
+                <div className="flex items-center justify-between mt-2 min-h-[16px]">
+                  {localNote ? (
+                    <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8">
+                        <circle cx="4" cy="4" r="4" />
+                      </svg>
+                      Notes saved
+                    </p>
+                  ) : <span />}
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                    {localNote.length} chars
+                  </span>
+                </div>
               </div>
 
               {/* Complete toggle (bottom) */}
