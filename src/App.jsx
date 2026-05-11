@@ -21,6 +21,7 @@ import Profile from "./pages/Dashboard/Profile";
 import InterviewExp from "./pages/Resources/InterviewExp";
 import PersonalPlan from "./pages/Resources/PersonalPlan";
 import MostAskedQuestions from "./pages/Resources/MostAskedQuestions";
+import JobHunt from "./pages/Resources/JobHunt";
 import MoneyTracking from "./components/MoneyTracking";
 import HealthTracking from "./components/HealthTracking";
 
@@ -59,6 +60,9 @@ function App() {
           </Route>
           <Route path="/most-asked" element={<PrivateRoute />}>
             <Route path="/most-asked" element={<MostAskedQuestions />}></Route>
+          </Route>
+          <Route path="/job-hunt" element={<PrivateRoute />}>
+            <Route path="/job-hunt" element={<JobHunt />}></Route>
           </Route>
           <Route path="/personal-plan" element={<PrivateRoute />}>
             <Route path="/personal-plan" element={<PersonalPlan />}></Route>
