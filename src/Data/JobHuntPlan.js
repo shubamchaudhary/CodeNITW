@@ -1,5 +1,5 @@
 // 16-Week GenAI Interview Prep Plan
-// Target: AI/GenAI Engineering + Java Backend roles | 40 LPA | By September 2026
+// Target: AI/GenAI Engineering + Java Backend roles
 
 export const jobHuntPlan = [
   // ═══════════════════════════════════════════
@@ -3761,31 +3761,29 @@ Sunday morning (3h):
     phase: 3,
     week: 12,
     keyTopics: [
-      "STAR story: disagreed with team/manager (Gravitee incident with Shashi)",
-      "STAR story: production issue (Pack Service timeout failures — 10% requests failing)",
-      "STAR story: delivering under pressure (quality dashboard + batch automation in single quarter)",
-      "STAR story: taking ownership (Snowflake sharding: design to feature-flag rollout)",
-      "STAR story: failure and learning (early bugs under Ashis — proactive questioning)",
-      "STAR story: complex technical decision (Gravitee migration: dual-gateway backward compatibility)",
+      "STAR story: disagreed with team/manager — gateway migration incident",
+      "STAR story: production issue — async service timeout failures (10% requests failing)",
+      "STAR story: delivering under pressure — quality dashboard + batch automation in single quarter",
+      "STAR story: taking ownership — Snowflake sharding: design to feature-flag rollout",
+      "STAR story: failure and learning — early career bugs, learned proactive communication",
+      "STAR story: complex technical decision — dual-gateway backward compatibility",
       "STAR story: staying current with AI (building DeepDocAI, RCA, learning LangGraph)",
       "2-3 min structured honest stories showing growth, not perfection",
     ],
     prompt: `Help me prepare behavioral/STAR stories for AI engineering interviews.
 MY BACKGROUND:
-- 2.5 years at Blue Yonder on Cognitive Allocation System
-- Survived difficult year under Ashis (harsh, minimal context, judgmental)
-- Recovered confidence under Kasi in quality stream
-- Shipped: Snowflake sharding, Gravitee migration, async Pack Service, Priority Allocation, quality dashboard
-- Currently building GenAI agents under Shashi (non-technical manager)
-- Pillar Award 2025
-- DeepDocAI and RCA agent as side projects
+- 2.5 years at a large supply chain SaaS company on a cognitive allocation system
+- Survived a difficult period under a demanding manager, recovered and delivered consistently
+- Shipped: Snowflake sharding, API gateway migration, async job processing, priority allocation, quality dashboard
+- Currently building GenAI agents on the side
+- DeepDocAI and RCA agent as portfolio projects
 PREPARE STAR STORIES FOR:
-1. "Tell me about a time you disagreed with team/manager" → Gravitee incident with Shashi
-2. "Tell me about a production issue you handled" → Pack Service timeout failures — 10% requests failing
+1. "Tell me about a time you disagreed with team/manager" → Gateway migration incident where I pushed back on the approach
+2. "Tell me about a production issue you handled" → Async service timeout failures — 10% requests failing
 3. "Tell me about delivering under pressure" → Quality dashboard + batch automation in single quarter
 4. "Tell me about taking ownership" → Snowflake sharding: design to feature-flag rollout
-5. "Tell me about failure and what you learned" → Early bugs under Ashis — learned proactive questioning
-6. "Tell me about a complex technical decision" → Gravitee migration: dual-gateway backward compatibility
+5. "Tell me about failure and what you learned" → Early career bugs — learned proactive questioning and communication
+6. "Tell me about a complex technical decision" → API gateway migration: dual-gateway backward compatibility
 7. "How do you stay current with AI?" → Building projects (DeepDocAI, RCA), learning LangGraph/LangChain
 Make each 2-3 minutes, structured, honest. Show growth, not perfection.`,
     dsaProblems: [
@@ -3840,10 +3838,10 @@ Cover:
       "Production patterns: error handling, scaling, cost optimization",
       "System design discussion: high-level AI system design",
       "Conceptual tradeoffs: when RAG fails, when to use fine-tuning",
-      "Target: Indian product company at 40 LPA level",
+      "Target: senior AI/GenAI engineering role at a product company",
       "Format: ask → answer → rate → ideal answer",
     ],
-    prompt: `Conduct a mock AI engineering interview with me. Ask 10-12 questions for a real GenAI role at Indian product company targeting 40 LPA.
+    prompt: `Conduct a mock AI engineering interview with me. Ask 10-12 questions for a senior GenAI engineering role at an Indian product company.
 MIX:
 - RAG deep dive (2-3 questions on my DeepDocAI)
 - Agent architecture (2-3 questions on RCA agent / LangGraph)
@@ -3855,7 +3853,7 @@ FOR EACH QUESTION:
 2. Wait for my answer
 3. Rate: what was good, what was missing, what would senior interviewer probe further on
 4. Give ideal answer for reference
-Be tough but fair. Indian product company at 40 LPA wants depth, not breadth. Probe where I'm hand-wavy.`,
+Be tough but fair. Senior AI engineering roles want depth, not breadth. Probe where I'm hand-wavy.`,
     dsaProblems: [
       { name: "Merge Intervals", number: 56, difficulty: "Medium", pattern: "Intervals" },
       { name: "Insert Interval", number: 57, difficulty: "Medium", pattern: "Intervals" },
@@ -4279,7 +4277,7 @@ Sunday morning (3h):
     phase: 4,
     week: 14,
     keyTopics: [
-      "Based on Mock Interview Aug 8 — paste weakest topic",
+      "Based on your most recent full mock interview — paste weakest topic",
       "Core concepts from first principles",
       "Common interview questions on this topic",
       "How to structure answers clearly",
@@ -4287,7 +4285,7 @@ Sunday morning (3h):
       "Common follow-up questions",
       "5-question test with rating",
     ],
-    prompt: `Based on Mock Interview Aug 8, teach me my weakest topic from first principles for AI engineering interviews.
+    prompt: `Based on your most recent full mock interview, teach me my weakest topic from first principles for AI engineering interviews.
 I bombed this in mock interview. Specifically I struggled with:
 [describe what you couldn't answer well]
 Cover:
@@ -4342,14 +4340,14 @@ Connect to your quality dashboard at Blue Yonder.`,
     phase: 4,
     week: 14,
     keyTopics: [
-      "Based on Mock Interview Aug 8 — second weakest topic",
+      "Based on your most recent full mock interview — second weakest topic",
       "Same format as Deep Dive #1",
       "First principles explanation",
       "Interview question structure",
       "Trade-offs",
       "5-question test",
     ],
-    prompt: `Based on Mock Interview Aug 8, teach me my second weakest topic from first principles.
+    prompt: `Based on your most recent full mock interview, teach me my second weakest topic from first principles.
 [Based on your mock interview results, paste the second topic you struggled with]
 Same format as Monday — core concepts, interview questions, trade-offs, structure, 5-question test with rating.`,
     dsaProblems: [
@@ -4401,26 +4399,25 @@ This is what HikariCP does. Knowing it deeply impresses interviewers.`,
     keyTopics: [
       "2-minute 'tell me about yourself': AI engineer with strong backend foundations, not Java dev trying AI",
       "Clear answer for 'why AI?'",
-      "Clear answer for 'why are you leaving Blue Yonder?'",
+      "Clear answer for 'why are you leaving your current company?'",
       "Clear answer for 'where do you see yourself in 3 years?'",
-      "Clear answer for 'why 40 LPA with 2 YOE?'",
+      "Clear answer for 'why should we hire you for a senior AI role?'",
       "Authentic builder narrative: learns by doing, ships real things",
-      "NIT Warangal → Blue Yonder → AI engineer transition story",
+      "Engineering grad → backend systems → AI engineer transition story",
     ],
     prompt: `Help me craft my personal narrative for AI engineering interviews.
 MY STORY:
-- Mechanical engineering at NIT Warangal, self-taught CS/DSA
-- Campus placement at Blue Yonder
-- 2+ years building production backend systems at 1200+ tenant scale
-- Survived harsh manager, recovered, delivered consistently
+- Engineering grad, self-taught CS/DSA
+- 2+ years building production backend systems at large-scale SaaS (1200+ tenants)
+- Delivered consistently through challenging periods
 - Now transitioning into AI engineering with real shipped projects: RCA agent, DeepDocAI, Inventory Ops Agent
 CRAFT:
-1. 2-minute "tell me about yourself" positioning me as AI engineer with strong backend foundations (not Java dev "trying AI")
+1. 2-minute "tell me about yourself" positioning me as AI engineer with strong backend foundations (not backend dev "trying AI")
 2. Clear answer for "why AI?"
-3. Clear answer for "why are you leaving Blue Yonder?"
+3. Clear answer for "why are you looking for a change?"
 4. Clear answer for "where do you see yourself in 3 years?"
-5. Clear answer for "why should we hire you at 40 LPA with 2 YOE?"
-Make it authentic. I'm not a polished corporate speaker — I'm a builder who learns by doing and ships real things. That should come through.`,
+5. Clear answer for "why should we hire you for a senior AI engineering role?"
+Make it authentic. I'm a builder who learns by doing and ships real things. That should come through.`,
     dsaProblems: [
       { name: "Pacific Atlantic Water Flow", number: 417, difficulty: "Medium", pattern: "Graph BFS/DFS" },
     ],
@@ -4569,11 +4566,11 @@ Connect to your quality automation experience at Blue Yonder.`,
       "Indian specifics: notice period, buyout, variable payout history",
       "Common mistakes: accepting first offer, quoting too low, CTC vs take-home comparison",
     ],
-    prompt: `Teach me salary negotiation for AI engineering at 35-50 LPA in India.
+    prompt: `Teach me salary negotiation for AI engineering roles in India.
 BEFORE OFFER:
 - "What's your expected CTC?" — how to respond
 - "What's the budget for this role?" — get them to share first
-- Range strategy: "35-50 LPA based on role scope and my skill set"
+- Range strategy: anchor based on role scope and skill set, don't undercut
 - Never lie about current CTC — background checks catch it
 EVALUATING:
 - Fixed vs variable: 80-20 standard, 70-30 worse
@@ -4855,7 +4852,7 @@ After: am I ready? What's the one thing I still need to fix before my next real 
       "Print them on a card to keep near desk",
       "Make sure RCA agent is in pristine shape",
       "Make sure LinkedIn and resume are aligned",
-      "Sunday rest: spend time with girlfriend, reflect on 16 weeks",
+      "Sunday rest: take a break, reflect on the 16 weeks",
       "Journal: how have I changed? What am I now capable of?",
       "Plan first week of September: active interview mode (prep is done)",
     ],
@@ -4868,7 +4865,7 @@ Saturday (5.5h) — Final Polish:
 - Make sure LinkedIn and resume are aligned
 
 Sunday — Rest + Reflect (do something for yourself):
-- Spend time with girlfriend
+- Take time for yourself
 - Reflect on the 16 weeks
 - Journal: how have I changed? What am I now capable of?
 - Plan first week of September: active interview mode
