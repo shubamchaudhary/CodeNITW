@@ -2057,115 +2057,2278 @@ Discuss:
     tags: ["State Pattern", "Vending Machine", "Strategy Pattern", "Java", "OOP Design"],
   },
 
+
   // ── WEEK 7 ──────────────────────────────────────────────────────────────
 
   {
     id: "p2-w7-1",
     categories: ["AI"],
     primaryCategory: "AI",
-    title: "LLM API Management — Retries, Fallbacks, Cost",
+    title: "Prompt Engineering for Agents",
     phase: 2,
     week: 7,
     keyTopics: [
-      "Exponential backoff with jitter: why jitter prevents thundering herd",
-      "Which errors to retry (429, 500, 503) vs not retry (400, 401)",
-      "Fallback chains: primary model → fallback model on timeout/rate limit/cost threshold",
-      "Router pattern: use cheap model first, escalate to expensive if confidence is low",
-      "Token counting before API call: estimate cost",
-      "Prompt caching: Anthropic and OpenAI caching mechanisms",
-      "Semantic caching: cache responses for semantically similar queries",
-      "Batch API: process non-urgent requests at lower cost",
-      "Context pruning: remove unnecessary context to reduce tokens",
-      "Client-side rate limiting with token bucket pattern",
+      "System prompts for agents: role, capabilities, limitations, constraints",
+      "Tool descriptions: how to write so LLM uses tools correctly (bad vs good examples)",
+      "Structured output control: JSON mode, Pydantic, function calling",
+      "Chain-of-thought for agents: scratchpad pattern, ReAct prompting",
+      "Prompt debugging: agent not using tools, wrong tool, wrong params, not stopping",
+      "Few-shot examples in system prompt for tool usage",
+      "Handling malformed outputs: parse, validate, retry with error",
+      "Keep prompts short but complete; XML tags and markdown headers as delimiters",
     ],
-    prompt: `Teach me production patterns for managing LLM API calls.
-
-Cover:
-1. Retry strategies:
-   - Exponential backoff with jitter: why jitter prevents thundering herd
-   - Which errors to retry (429, 500, 503) vs not retry (400, 401)
-   - Max retries: typically 3-5 for LLM APIs
-   - Implementation with tenacity library (Python)
-2. Fallback chains:
-   - Primary model (GPT-4, Claude Sonnet) → fallback model (GPT-3.5, Haiku)
-   - When to fallback: timeout, rate limit, cost threshold
-   - Quality vs cost tradeoff per model
-   - Router pattern: use cheap model first, escalate to expensive if confidence is low
-3. Cost optimization:
-   - Token counting before API call: estimate cost
-   - Prompt caching: Anthropic and OpenAI caching mechanisms
-   - Semantic caching: cache responses for semantically similar queries
-   - Model routing: classify query complexity, route to appropriate model
-   - Batch API: process non-urgent requests at lower cost
-   - Context pruning: remove unnecessary context to reduce tokens
-4. Rate limiting:
-   - Per-model rate limits (TPM, RPM)
-   - Client-side rate limiting to stay under limits
-   - Queue-based processing for high-volume workloads
-   - Token bucket pattern for smooth request distribution
-5. Timeout handling:
-   - Streaming vs non-streaming: timeout implications
-   - Partial response handling: what if LLM times out mid-response
-   - User-facing timeout: "still thinking..." with progress updates
-
-Code examples for each pattern. Python + how it maps to Java patterns I already know (Circuit Breaker, retry with Spring Retry, etc.)`,
-    dsaProblems: null,
-    tags: ["LLM API", "Retry", "Cost Optimization", "Rate Limiting", "Fallback"],
+    prompt: `Teach me prompt engineering specifically for agents.
+SYSTEM PROMPTS FOR AGENTS:
+- Defining role, capabilities, limitations
+- Tool descriptions — how to write so LLM uses tools correctly
+  → Bad: "search tool"
+  → Good: "Search the knowledge base for relevant information. Use when the user asks a factual question. Input: search query string."
+- Constraint specification: what agent should NOT do
+- Output format instructions
+- Examples in system prompt: few-shot for tool usage
+STRUCTURED OUTPUT CONTROL:
+- JSON mode: forcing valid JSON output
+- Pydantic for output validation
+- Function calling as structured output
+- Handling malformed: parse, validate, retry with error
+CHAIN-OF-THOUGHT FOR AGENTS:
+- Making agent reason before acting
+- Scratchpad pattern: agent writes reasoning in state
+- ReAct prompting: explicit Thought/Action/Observation format
+- When CoT helps vs hurts
+PROMPT DEBUGGING:
+- Agent not using tools when it should → description issue
+- Agent using wrong tool → descriptions too similar
+- Agent calling tools with wrong params → param descriptions unclear
+- Agent not stopping → missing stop condition
+- Agent hallucinating → add "only use tool results" constraint
+PRACTICAL TIPS:
+- Keep prompts short as possible while complete
+- Clear delimiters (XML tags, markdown headers)
+- Version control prompts
+- A/B test versions
+Apply to my RCA agent — what's the optimal system prompt?`,
+    dsaProblems: [
+      { name: "Binary Tree Level Order Traversal", number: 102, difficulty: "Medium", pattern: "Tree BFS" },
+      { name: "Binary Tree Right Side View", number: 199, difficulty: "Medium", pattern: "Tree BFS" },
+    ],
+    tags: ["Prompt Engineering", "Agents", "ReAct", "Structured Output", "LangGraph"],
   },
 
   {
     id: "p2-w7-2",
-    categories: ["AI"],
-    primaryCategory: "AI",
-    title: "Observability & Debugging for AI Systems",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design an Async Job Processing System",
     phase: 2,
     week: 7,
     keyTopics: [
-      "Tracing: every LLM call, tool call, retrieval, state transition with spans",
-      "Tools: LangSmith, Phoenix (Arize), Langfuse, custom logging",
-      "LANGCHAIN_TRACING_V2 integration with LangGraph",
-      "What to log: input query, retrieved chunks (IDs, scores), LLM prompt, tool execution",
-      "Structured logging: JSON format with consistent fields",
-      "Metrics: latency per stage, token usage, quality metrics (answer relevance)",
-      "Agent-specific metrics: average steps per query, tool call distribution",
-      "Debugging failed runs: replay using checkpoints, diff successful vs failed",
-      "Alerting: error rate spike, latency degradation",
-      "Root cause categories: retrieval failure, wrong tool, LLM reasoning error",
+      "Job queue: submit → poll → fetch pattern (Blue Yonder Pack Service design)",
+      "Priority queues, job scheduling, retries with exponential backoff",
+      "Worker pool management, auto-scaling based on queue depth",
+      "Dead letter queue: permanently failed jobs",
+      "Idempotency: handling duplicate job submissions",
+      "Feature flags: sync/async routing (your feature-flag-gated pattern)",
+      "Monitoring: job status, failure rates, processing times",
+      "Timeout handling: job runs too long",
     ],
-    prompt: `Teach me how to observe and debug AI/agent systems in production.
-
+    prompt: `Design an Async Job Processing System.
+YOUR EXPERIENCE: Pack Service async integration pattern at Blue Yonder.
 Cover:
-1. Tracing:
-   - What to trace: every LLM call, tool call, retrieval, state transition
-   - Trace structure: spans, parent-child relationships
-   - Tools: LangSmith, Phoenix (Arize), Langfuse, custom logging
-   - How LangSmith integrates with LangGraph (LANGCHAIN_TRACING_V2)
-2. Logging for agents:
-   - What to log at each stage:
-     - Input query and parsed intent
-     - Retrieved chunks (IDs, scores, preview)
-     - LLM prompt (full prompt sent to model)
-     - LLM response (full response including tool calls)
-     - Tool execution (inputs, outputs, duration, errors)
-     - Final answer and confidence
-   - Structured logging: JSON format with consistent fields
-   - Log levels: DEBUG (full prompts), INFO (decisions), WARN (retries), ERROR (failures)
-3. Metrics:
-   - Latency: per-stage (retrieval, LLM, tool execution) and end-to-end
-   - Token usage: per query, per model, cost tracking
-   - Quality metrics: answer relevance, retrieval precision (sampled evaluation)
-   - Error rates: by type (LLM error, tool error, timeout, guardrail triggered)
-   - Agent-specific: average steps per query, tool call distribution
-4. Debugging failed runs:
-   - Replay: use checkpoints to replay agent decisions
-   - Diff: compare successful vs failed runs on similar queries
-   - Root cause categories: retrieval failure, wrong tool, LLM reasoning error
-5. Alerting:
-   - Error rate spike: agent failing more than baseline
-   - Latency degradation and cost anomalies`,
+- Job queue: submit → poll → fetch pattern (YOUR design at Blue Yonder)
+- Priority queues, job scheduling, retries with backoff
+- Worker pool management, auto-scaling based on queue depth
+- Monitoring: job status, failure rates, processing times
+- Feature flags: sync/async routing (YOUR feature-flag-gated pattern)
+- Dead letter queue: permanently failed jobs
+- Idempotency: how to handle duplicate submissions
+- Result storage: where do completed results go?
+- Timeout handling: job runs too long
+This should be one of your strongest HLD answers — you built this.`,
     dsaProblems: null,
-    tags: ["Observability", "LangSmith", "Tracing", "Debugging", "Production AI"],
+    tags: ["Async Processing", "Job Queue", "Blue Yonder", "Pack Service", "System Design"],
   },
+
+  {
+    id: "p2-w7-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Production LLM Error Handling",
+    phase: 2,
+    week: 7,
+    keyTopics: [
+      "Rate limiting (429): exponential backoff with jitter (why jitter prevents thundering herd)",
+      "Which errors to retry (429, 500, 503) vs not retry (400, 401)",
+      "Circuit breaker pattern: stop calling failing service temporarily, half-open state",
+      "Fallback patterns: model fallback, provider fallback, quality fallback",
+      "Wrapper pattern: unified interface with built-in retry, fallback, timeout",
+      "Error classification: retryable vs non-retryable, transient vs permanent",
+      "Graceful degradation: partial answer > no answer",
+      "My DeepDocAI: CompletableFuture async with exponential backoff retry",
+    ],
+    prompt: `Teach me LLM error handling for production.
+API ERROR HANDLING:
+- Rate limiting (429): exponential backoff with jitter (why jitter)
+- Timeout: when to give up, how to retry
+- API downtime: failover between providers
+- Token limit exceeded: truncate or summarize
+- Malformed response: parsing failures, JSON validation
+- Content filtering: safety blocks
+RETRY STRATEGIES:
+- Exponential backoff with jitter (math: base * 2^attempt + random)
+- Max retry limits: when to fail gracefully
+- Retry with modification: change prompt and retry
+- Circuit breaker: stop calling failing service temporarily
+- Half-open state: testing if service recovered
+FALLBACK PATTERNS:
+- Model fallback: primary → backup (cheaper/faster)
+- Provider fallback: OpenAI → Anthropic → Google
+- Quality fallback: cached answer or "I don't know"
+- Graceful degradation: partial answer > no answer
+WRAPPER PATTERN:
+- Unified interface across providers
+- Built-in retry, fallback, timeout
+- Cost tracking, observability
+ERROR CLASSIFICATION:
+- Retryable vs non-retryable
+- Transient vs permanent
+- Client error vs server error
+My DeepDocAI uses CompletableFuture async with exponential backoff retry. Help me extend this pattern for production AI systems.`,
+    dsaProblems: [
+      { name: "Maximum Depth of Binary Tree", number: 104, difficulty: "Easy", pattern: "Tree DFS/BFS" },
+      { name: "Validate Binary Search Tree", number: 98, difficulty: "Medium", pattern: "Tree DFS" },
+    ],
+    tags: ["Error Handling", "Retry", "Circuit Breaker", "Fallback", "Production AI"],
+  },
+
+  {
+    id: "p2-w7-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Task Scheduler / Cron Job System",
+    phase: 2,
+    week: 7,
+    keyTopics: [
+      "Task interface: execute(), id, priority",
+      "Scheduling types: one-time, cron expression, delayed",
+      "Priority queue (min-heap by next execution time)",
+      "Thread pool: concurrent task execution with ScheduledExecutorService",
+      "Retry: failed tasks with exponential backoff",
+      "Task dependencies: task A must complete before B (DAG)",
+      "State pattern: pending → running → completed/failed",
+      "Observer pattern: task completion notifications",
+      "Distributed version: Quartz, distributed scheduling at scale",
+    ],
+    prompt: `Design a task scheduler supporting one-time, recurring, and delayed tasks.
+Cover:
+- Task interface: execute(), id, priority
+- Scheduling: one-time, cron expression, delayed
+- Priority queue (min-heap by next execution time)
+- Thread pool: concurrent task execution
+- Retry: failed tasks with exponential backoff
+- Dependencies: task A must complete before B (DAG)
+- Observer pattern: task completion notifications
+- State pattern: pending → running → completed/failed
+- Java implementation with ScheduledExecutorService
+- Distributed version (briefly): Quartz, distributed scheduling
+Interview follow-up: design at scale (millions of scheduled tasks)`,
+    dsaProblems: null,
+    tags: ["Task Scheduler", "Min-Heap", "Thread Pool", "Java", "OOP Design"],
+  },
+
+  {
+    id: "p2-w7-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Cost Optimization & Model Routing",
+    phase: 2,
+    week: 7,
+    keyTopics: [
+      "Token pricing: input vs output tokens, embedding costs, per-query cost estimation",
+      "Model routing: cheap model for simple, expensive for complex",
+      "Cascade pattern: try cheap first, escalate if low confidence",
+      "Exact caching vs semantic caching: tradeoffs",
+      "Token optimization: shorter prompts, context window management, max_tokens, Batch API",
+      "Embedding cost reduction: batch embedding (DeepDocAI), incremental updates",
+      "LLM classifier for query routing",
+      "Calculate per-query cost for DeepDocAI and RCA agent",
+    ],
+    prompt: `Teach me cost optimization for production AI systems.
+UNDERSTANDING COSTS:
+- Token pricing: input vs output tokens
+- Embedding costs
+- Cost per query: how to estimate for RAG/agent
+- Monthly cost projection by query volume
+MODEL ROUTING:
+- Cheap model for simple, expensive for complex
+- Classification: keyword-based, LLM classifier, heuristic
+- Cascade pattern: try cheap first, escalate if low confidence
+- Prompt routing: different prompts for different models
+- Small local models vs large API models — when?
+CACHING:
+- Exact cache: identical query → response (high hit rate for repeated queries)
+- Semantic cache: similar query → reuse response (embed query, find similar past queries)
+- Similarity threshold: how similar is "enough"? Cache invalidation when data changes
+- LLM cache: same prompt → same response (temperature=0)
+TOKEN OPTIMIZATION:
+- Shorter prompts: remove unnecessary instructions
+- Context window management: only relevant chunks
+- Output length limits: max_tokens
+- Batch API: 50% cheaper for non-real-time (Anthropic, OpenAI)
+EMBEDDING COST REDUCTION:
+- Batch embedding (your DeepDocAI pattern)
+- Incremental updates: only embed new/changed
+- Cheaper embedding models for non-critical
+- Dimensionality reduction
+Calculate cost for DeepDocAI and RCA agent — per-query cost estimate.`,
+    dsaProblems: [
+      { name: "Lowest Common Ancestor of a Binary Tree", number: 236, difficulty: "Medium", pattern: "Tree DFS" },
+    ],
+    tags: ["Cost Optimization", "Model Routing", "Caching", "Token Management", "Production AI"],
+  },
+
+  {
+    id: "p2-w7-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Hotel Booking System",
+    phase: 2,
+    week: 7,
+    keyTopics: [
+      "Hotels, room types, amenities, locations",
+      "Search: location, dates, price range, room type",
+      "Booking: availability check, reserve, confirm, cancel",
+      "Concurrency: double-booking prevention with optimistic locking",
+      "Distributed locking for high contention scenarios",
+      "Chain of Responsibility: booking validation (date, availability, payment, fraud)",
+      "Strategy pattern: dynamic/seasonal/day-of-week pricing strategies",
+      "Observer: notify guests of confirmations, changes",
+    ],
+    prompt: `Design a hotel booking system with focus on concurrency.
+Cover:
+- Hotels, room types, amenities, locations
+- Search: location, dates, price range, room type
+- Booking: availability check, reserve, confirm, cancel
+- Pricing: dynamic, seasonal, day-of-week variations
+- Concurrency: double-booking prevention (CRITICAL)
+  → Optimistic locking with retry
+  → Distributed locking for high contention
+- Chain of Responsibility: booking validation rules
+  → Date validation, availability, payment, fraud check
+- Strategy pattern: pricing strategies
+- Observer: notify guests of confirmations, changes
+- Java implementation focused on correctness under concurrency`,
+    dsaProblems: null,
+    tags: ["Hotel Booking", "Concurrency", "Optimistic Locking", "Strategy Pattern", "OOP Design"],
+  },
+
+  // ═══════════════════════════════════════════
+  // PHASE 2: ADVANCED (Week 8)
+  // ═══════════════════════════════════════════
+
+  // ── WEEK 8 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p2-w8-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Caching Strategies for LLM Apps",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "Why cache LLM calls: slow (1-30s), expensive, same queries don't need re-computation",
+      "Exact caching: hash of (model, prompt, params) → Redis/in-memory, TTL strategy",
+      "Semantic caching: embed query, find similar past queries, similarity threshold 0.95+",
+      "Cache invalidation: time-based TTL, event-based on data update, manual, LRU/LFU eviction",
+      "Cache warm-up: pre-populate with common queries during off-peak hours",
+      "Cache-aside vs write-through vs write-behind patterns",
+      "When it works: deterministic prompts (temperature=0), paraphrased queries",
+      "For DeepDocAI: when and how to add semantic caching",
+    ],
+    prompt: `Teach me caching for LLM applications deeply.
+WHY CACHE:
+- LLM calls are slow (1-30 seconds) and expensive
+- Same/similar queries don't need re-computation
+- Reduces cost, improves latency
+EXACT CACHING:
+- Cache key: hash of (model, prompt, parameters)
+- Cache store: Redis, in-memory, database
+- TTL strategy: long for stable data, short for changing data
+- Cache invalidation: when source data updates
+- When it works: deterministic prompts, temperature=0
+SEMANTIC CACHING:
+- Cache key: embedding of query
+- Lookup: find similar past query, return its response if similar enough
+- Similarity threshold: 0.95+? Tune based on use case
+- Implementation: vector store of (query_embedding, response)
+- Tradeoffs: cache hit rate vs correctness
+- When it works: paraphrased queries with same intent
+CACHE INVALIDATION:
+- Time-based (TTL)
+- Event-based (data update triggers invalidation)
+- Manual (admin endpoint)
+- LRU/LFU eviction within cache
+CACHE WARM-UP:
+- Pre-populate cache with common queries
+- Run during off-peak hours
+PRACTICAL PATTERNS:
+- Cache-aside (most common): app checks cache first
+- Write-through: cache updated on every write
+- Write-behind: cache updated async
+For my DeepDocAI: when would I add semantic caching?`,
+    dsaProblems: [
+      { name: "Number of Islands", number: 200, difficulty: "Medium", pattern: "Graph BFS/DFS" },
+      { name: "Rotting Oranges", number: 994, difficulty: "Medium", pattern: "Graph BFS" },
+    ],
+    tags: ["Caching", "Semantic Cache", "Redis", "LLM Optimization", "Production AI"],
+  },
+
+  {
+    id: "p2-w8-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design an API Gateway",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "YOUR EXPERIENCE: Azure APIM to Gravitee migration",
+      "Routing: path-based, header-based, version-based",
+      "Authentication: OAuth 2.0, API keys, M2M tokens (your Gravitee work)",
+      "Dual-gateway pattern: gateway-aware token generation, UserInfo enrichment, thread-local context",
+      "Rate limiting, throttling, circuit breaking",
+      "Plugin architecture: auth, transform, logging as plugins",
+      "Migration strategy: dual-stack support (your design!)",
+      "Monitoring: per-API metrics, error tracking",
+    ],
+    prompt: `Design an API Gateway.
+YOUR EXPERIENCE: Azure APIM to Gravitee migration — this is YOUR work.
+Cover:
+- Routing: path-based, header-based, version-based
+- Authentication: OAuth 2.0, API keys, M2M tokens (YOUR Gravitee work)
+- Your dual-gateway pattern: backward compatibility across providers
+  → Gateway-aware token generation
+  → UserInfo enrichment filter
+  → Thread-local context propagation
+- Rate limiting, throttling, circuit breaking
+- Monitoring: per-API metrics, error tracking
+- Plugin architecture: auth, transform, logging as plugins
+- Migration strategy: dual-stack support (your design!)
+This is YOUR work — should be a confident, detailed answer.`,
+    dsaProblems: null,
+    tags: ["API Gateway", "Gravitee", "OAuth", "Rate Limiting", "Blue Yonder"],
+  },
+
+  {
+    id: "p2-w8-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Observability & Monitoring for AI Systems",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "Why AI observability differs: quality/hallucination metrics, non-deterministic outputs",
+      "LangSmith: traces every LLM call, tool call, retrieval — setup with LANGCHAIN_TRACING_V2",
+      "Structured logging: JSON with trace_id, step_id; PII handling; log retention",
+      "System metrics: latency (p50/p95/p99), error rate, throughput, cost/query",
+      "Quality metrics: faithfulness, relevance, user feedback (thumbs up/down)",
+      "Agent metrics: avg steps per query, tool error rate, timeout rate",
+      "Drift detection: quality degrading over time",
+      "Minimum viable observability: day 1 vs week 1 vs month 1",
+    ],
+    prompt: `Teach me observability for production AI/LLM systems.
+WHY AI OBSERVABILITY IS DIFFERENT:
+- Traditional monitoring: latency, error rate, throughput
+- AI: answer quality, retrieval quality, hallucination rate
+- Non-deterministic: same input → different output
+- "Correct" is fuzzy — need quality metrics
+TRACING:
+- LangSmith (LangChain's platform)
+  → Traces every LLM call, tool call, retrieval
+  → Visual trace of agent execution
+  → Setup: LANGCHAIN_TRACING_V2, LANGCHAIN_API_KEY
+- Alternatives: Arize Phoenix, Weights & Biases
+- What to trace: inputs, outputs, latency, tokens, cost
+- Trace structure for agents: parent → child spans
+LOGGING:
+- What to log: every LLM call, tool call, retrieval, user query, final response
+- Structured logging: JSON with trace_id, step_id, timestamps
+- PII handling: mask sensitive data
+- Log retention: compliance considerations
+MONITORING METRICS:
+- System: latency (p50/p95/p99), error rate, throughput, cost/query
+- Quality: faithfulness, relevance, user feedback (thumbs)
+- Retrieval: avg chunks retrieved, relevance scores, empty results
+- Agent: avg steps, tool error rate, timeout rate
+- Drift: quality degrading over time
+ALERTING:
+- Latency spike
+- Error rate increase
+- Quality degradation
+- Cost anomaly
+- Setting thresholds without false alarms
+MINIMUM VIABLE OBSERVABILITY for new AI system: What to set up day 1 vs week 1 vs month 1.`,
+    dsaProblems: [
+      { name: "Clone Graph", number: 133, difficulty: "Medium", pattern: "Graph BFS/DFS" },
+    ],
+    tags: ["Observability", "LangSmith", "Monitoring", "Tracing", "Production AI"],
+  },
+
+  {
+    id: "p2-w8-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design an ATM Machine",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "State pattern: Idle → CardInserted → PINVerified → TransactionSelected → Dispensing",
+      "Transactions: withdraw, deposit, check balance, transfer",
+      "Chain of Responsibility: cash dispensing (₹500 → ₹200 → ₹100 → ₹50)",
+      "Security: PIN validation, daily limits, card retention after 3 failures",
+      "Concurrency: multiple ATMs accessing same account (distributed locking or optimistic)",
+      "Observer pattern: bank notification on transactions",
+      "Interview follow-up: design for nationwide ATM network with 10K ATMs",
+    ],
+    prompt: `Design an ATM system using the State pattern.
+States: Idle → CardInserted → PINVerified → TransactionSelected → Dispensing
+Or various error states: WrongPIN, InsufficientFunds, OutOfCash
+Cover:
+- State pattern with proper transitions
+- Transactions: withdraw, deposit, check balance, transfer
+- Chain of Responsibility: cash dispensing (₹500 → ₹200 → ₹100 → ₹50)
+- Security: PIN validation, daily limits, card retention after 3 failures
+- Concurrency: multiple ATMs accessing same account
+  → Distributed locking or optimistic with retry
+- Observer pattern: bank notification on transactions
+- Java implementation — classic State pattern practice
+Interview follow-up: design for nationwide ATM network with 10K ATMs`,
+    dsaProblems: null,
+    tags: ["ATM", "State Pattern", "Chain of Responsibility", "Concurrency", "Java"],
+  },
+
+  {
+    id: "p2-w8-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Guardrails, Safety & Prompt Injection",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "Input guardrails: length limits, format checks, language detection",
+      "Prompt injection: direct ('Ignore previous instructions') vs indirect (malicious retrieved docs)",
+      "Defenses: input sanitization, instruction hierarchy, separate LLM classifier, delimiter-based isolation",
+      "PII detection and masking",
+      "Output guardrails: content filtering, factuality checking, format validation, hallucination detection",
+      "Agent guardrails: SQL injection prevention (read-only, whitelist, AST parsing, row limits)",
+      "Tool restriction, action validation, budget guards, scope guards",
+      "Testing guardrails: red teaming, adversarial test cases, regression testing",
+    ],
+    prompt: `Teach me guardrails and safety for production AI agents.
+INPUT GUARDRAILS:
+- Input validation: length limits, format checks, language detection
+- Prompt injection:
+  → Direct: "Ignore previous instructions and..."
+  → Indirect: malicious content in retrieved documents
+  → How attacks work in detail
+- Defenses:
+  → Input sanitization
+  → Instruction hierarchy: system > user
+  → Separate LLM call to classify injection attempts
+  → Delimiter-based isolation
+- PII detection and masking
+- Topic restriction: off-topic queries → redirect or refuse
+OUTPUT GUARDRAILS:
+- Content filtering: harmful, biased, inappropriate
+- Factuality checking against retrieved context
+- Format validation: schema enforcement
+- Confidence scoring: flag low-confidence for review
+- Hallucination detection: output not grounded in context
+AGENT-SPECIFIC GUARDRAILS:
+- SQL injection prevention in text-to-SQL (CRITICAL for my RCA agent):
+  → Read-only DB access
+  → Whitelist allowed operations (SELECT only)
+  → Table/column restrictions
+  → Row limit enforcement
+  → Execution timeout
+- Tool restriction: limit which tools per context
+- Action validation: check params before execution
+- Budget guards: stop after N iterations or $X cost
+TESTING GUARDRAILS:
+- Red teaming: try to break the system
+- Adversarial test cases
+- Regression testing after changes
+The RCA agent's guardrailed SQL execution is a key design decision — help me articulate it clearly for interviews.`,
+    dsaProblems: [
+      { name: "Course Schedule", number: 207, difficulty: "Medium", pattern: "Topological Sort" },
+    ],
+    tags: ["Guardrails", "Safety", "Prompt Injection", "SQL Security", "Production AI"],
+  },
+
+  {
+    id: "p2-w8-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Notification Service",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "Notification types: email, SMS, push, in-app",
+      "Strategy pattern: different delivery mechanisms per channel",
+      "Observer pattern: subscribers to notification events",
+      "Builder pattern: constructing notifications with templates",
+      "Template pattern: notification templates with variable substitution",
+      "Priority queue: urgent vs normal notifications",
+      "Retry with backoff for failed delivery",
+      "Idempotency: prevent duplicate sends",
+    ],
+    prompt: `Design a notification service at code level.
+- Notification types: email, SMS, push, in-app
+- Strategy pattern: different delivery mechanisms
+- Observer pattern: subscribers to notification events
+- Builder pattern: constructing notifications
+- Template pattern: notification templates with variables
+- Priority queue: urgent vs normal
+- Retry: failed delivery with backoff
+- Idempotency: don't send duplicates
+- Java implementation with clean separation`,
+    dsaProblems: null,
+    tags: ["Notification Service", "Strategy Pattern", "Observer Pattern", "Builder Pattern", "Java"],
+  },
+
+  // ═══════════════════════════════════════════
+  // PHASE 3: ADVANCED TOPICS (Weeks 9–12)
+  // ═══════════════════════════════════════════
+
+  // ── WEEK 9 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p3-w9-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Building Evaluation Pipelines for RAG & Agents",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Golden dataset: question + expected answer + source documents (50-100 basic, 500+ production)",
+      "RAG evaluation: context precision, recall (retrieval), faithfulness, relevance (generation)",
+      "Agent evaluation: task completion rate, step efficiency, tool call accuracy, error recovery",
+      "LLM-as-judge: strong LLM evaluates weaker LLM's output; rubric-based, pairwise comparison",
+      "Continuous evaluation: CI/CD for AI, track metrics over time, auto-alerts",
+      "A/B testing with live traffic",
+      "How to create golden datasets: manual, LLM-generated, user feedback mining",
+      "Build a concrete eval pipeline for the RCA agent",
+    ],
+    prompt: `Teach me how to build practical evaluation pipelines for RAG and agents.
+EVAL PIPELINE ARCHITECTURE:
+- Golden dataset: question + expected answer + source documents
+  → How to create: manual, LLM-generated, user feedback mining
+  → How many test cases: 50-100 basic, 500+ production
+  → Categories: easy/medium/hard, different question types
+RAG EVALUATION:
+- Step 1: Run query through pipeline, capture retrieval + generation
+- Step 2: Evaluate retrieval (right chunks?) → Context precision, recall — code examples
+- Step 3: Evaluate generation (correct answer?) → Faithfulness, relevance — code examples
+- Step 4: Aggregate metrics, compare against baseline
+- Step 5: Regression check — did any past correct answers break?
+AGENT EVALUATION:
+- Task completion rate: did agent achieve the goal?
+- Step efficiency: how many steps? (fewer = better)
+- Tool call accuracy: right tools with right params?
+- Error recovery: handled tool failures well?
+- Cost per task: total tokens used
+LLM-AS-JUDGE:
+- Strong LLM evaluates weaker LLM's output
+- Judge prompt design: rubric-based, pairwise comparison
+- Calibration: ensuring consistency
+- Limitations: judge can have same biases
+CONTINUOUS EVALUATION:
+- Run evals on every code change (CI/CD for AI)
+- Track metrics over time — dashboards
+- Automatic alerts on metric drops
+- A/B testing with live traffic
+Build a concrete eval pipeline for my RCA agent.`,
+    dsaProblems: [
+      { name: "Climbing Stairs", number: 70, difficulty: "Easy", pattern: "1D DP" },
+      { name: "House Robber", number: 198, difficulty: "Medium", pattern: "1D DP" },
+    ],
+    tags: ["Evaluation", "RAG Eval", "LLM-as-Judge", "CI/CD for AI", "Production AI"],
+  },
+
+  {
+    id: "p3-w9-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design a URL Shortener with Analytics",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Hash generation: Base62 encoding, collision handling",
+      "Read-heavy: caching strategy (CDN → Redis → app cache → DB)",
+      "Analytics: click tracking, time-series aggregation",
+      "Scale: millions of URLs, billions of redirects",
+      "Expiration: TTL-based cleanup",
+      "Custom aliases: vanity URLs",
+      "Rate limiting: prevent abuse",
+      "Geographic redirects: routing based on user location",
+    ],
+    prompt: `Design a URL shortener with analytics.
+Cover:
+- Hash generation: Base62, collision handling
+- Read-heavy: caching strategy (CDN → Redis → app cache → DB)
+- Analytics: click tracking, time-series aggregation
+- Scale: millions of URLs, billions of redirects
+- Expiration: TTL-based cleanup
+- Custom aliases: vanity URLs
+- Rate limiting: prevent abuse
+- Geographic redirects: routing based on user location
+This is asked frequently. Practice the full structured 35-minute walkthrough.`,
+    dsaProblems: null,
+    tags: ["URL Shortener", "Base62", "Caching", "Analytics", "System Design"],
+  },
+
+  {
+    id: "p3-w9-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Structured Outputs from LLMs",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "JSON mode: OpenAI response_format, Gemini response_mime_type — simple but no schema guarantee",
+      "Function calling / tool use as structured output: define tool as output schema, more reliable",
+      "Pydantic models with LangChain: with_structured_output(), automatic retry on validation failure",
+      "Instructor library: wraps OpenAI/Anthropic with Pydantic, streaming structured output",
+      "Error handling: invalid JSON retry, valid JSON wrong schema, unexpected values",
+      "Use cases: data extraction, query classification, entity extraction, API response formatting",
+      "When to use each method",
+    ],
+    prompt: `Teach me structured outputs — JSON mode, function calling, Pydantic.
+WHY STRUCTURED OUTPUT:
+- LLM outputs are strings — apps need structured data
+- Parsing free text is fragile
+- Structured = reliable, type-safe, parseable
+METHODS:
+1. JSON Mode:
+   - Tell LLM "respond in JSON"
+   - OpenAI: response_format={"type": "json_object"}, Gemini: response_mime_type="application/json"
+   - Pros: simple. Cons: no schema guarantee
+2. Function Calling / Tool Use:
+   - Define a "tool" that's actually output schema
+   - LLM fills parameters as structured output
+   - More reliable than JSON mode, required fields/types/enums
+3. Pydantic Models (LangChain):
+   - with_structured_output(PydanticModel)
+   - LLM output validated against schema
+   - Automatic retry on validation failure, type checking, nested models
+4. Instructor Library:
+   - Wraps OpenAI/Anthropic with Pydantic
+   - Automatic retry with error fed back to LLM
+   - Streaming structured output
+ERROR HANDLING:
+- Invalid JSON → retry with error message
+- Valid JSON but wrong schema → validation, retry
+- Unexpected values → enum validation, range checks
+USE CASES: data extraction, query classification, entity extraction, agent tool call schemas
+When to use each method in my projects?`,
+    dsaProblems: [
+      { name: "Coin Change", number: 322, difficulty: "Medium", pattern: "1D DP" },
+      { name: "Longest Increasing Subsequence", number: 300, difficulty: "Medium", pattern: "1D DP" },
+    ],
+    tags: ["Structured Output", "Pydantic", "Function Calling", "JSON Mode", "LangChain"],
+  },
+
+  {
+    id: "p3-w9-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design Patterns — Creational & Structural",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Singleton: Bill Pugh, double-checked locking, enum — when to use, testing challenges",
+      "Factory Method: creating objects without specifying class (notification types)",
+      "Abstract Factory: family of related objects (UI components for different platforms)",
+      "Builder: complex object construction (query objects, configuration)",
+      "Adapter: making incompatible interfaces work (integrating new payment provider)",
+      "Decorator: adding behavior without modifying class (logging, caching, retry)",
+      "Composite: tree structures (file system, org chart)",
+      "Facade: simplified interface to complex subsystem",
+    ],
+    prompt: `Deep dive into Creational and Structural design patterns with Java implementations.
+CREATIONAL:
+- Singleton: thread-safe (Bill Pugh, double-checked locking, enum)
+  → When to use, when to avoid, testing challenges
+- Factory Method: creating objects without specifying class
+  → Use case: different notification types
+- Abstract Factory: family of related objects
+  → Use case: UI components for different platforms
+- Builder: complex object construction step by step
+  → Use case: building query objects, configuration
+STRUCTURAL:
+- Adapter: making incompatible interfaces work together
+  → Use case: integrating new payment provider
+- Decorator: adding behavior without modifying class
+  → Use case: logging, caching, retry decorators for service calls
+- Composite: tree structures (file system, org chart)
+- Facade: simplified interface to complex subsystem
+For each: when to use, Java code, example from my Blue Yonder experience. Interview-ready explanations.`,
+    dsaProblems: null,
+    tags: ["Design Patterns", "Creational Patterns", "Structural Patterns", "Java", "OOP"],
+  },
+
+  {
+    id: "p3-w9-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Agentic RAG",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Standard RAG vs Agentic RAG: one-shot retrieve/generate vs agent that decides when/what to retrieve",
+      "Retrieval as a tool: agent decides when to search, multiple searches with different queries",
+      "Query routing: agent classifies query → routes to appropriate knowledge base",
+      "Adaptive retrieval: retrieve, evaluate quality, re-retrieve if insufficient (self-reflection)",
+      "Multi-hop retrieval: first retrieval reveals what to search next",
+      "Multi-source retrieval: vector store + SQL + API — my RCA agent does this",
+      "Corrective RAG (CRAG): evaluate relevance after retrieval, web search if not relevant",
+      "LangGraph implementation: retrieval node, evaluation node, re-retrieval node with conditional routing",
+    ],
+    prompt: `Teach me agentic RAG — using agents for intelligent retrieval.
+WHAT IS AGENTIC RAG:
+- Standard RAG: query → retrieve → generate (one-shot, no reasoning)
+- Agentic RAG: agent decides when/what to retrieve and whether sufficient
+PATTERNS:
+1. Retrieval as a tool:
+   - Agent has "search" tool — decides when to use
+   - Multiple searches with different queries
+   - Decide it has enough info, stop searching
+2. Query routing:
+   - Agent classifies query → routes to appropriate KB
+   - Different retrievers for different question types
+3. Adaptive retrieval:
+   - Retrieve, evaluate quality, re-retrieve if insufficient
+   - Self-reflection: "these chunks don't answer, try different query"
+   - Multi-hop: first retrieval reveals what to search next
+4. Multi-source retrieval:
+   - Vector store + SQL database + API
+   - Synthesize from heterogeneous sources
+   - My RCA agent does this: SQL + log analysis
+5. Corrective RAG (CRAG):
+   - After retrieval, evaluate relevance
+   - If not relevant → web search or alternative
+   - Triggers knowledge refinement
+IMPLEMENTATION IN LANGRAPH:
+- Retrieval node, evaluation node, re-retrieval node
+- Conditional routing: sufficient → generate, insufficient → re-retrieve
+- Max retrieval attempts to prevent loops
+This applies to RCA agent — walk me through the design.`,
+    dsaProblems: [
+      { name: "Word Break", number: 139, difficulty: "Medium", pattern: "1D DP" },
+    ],
+    tags: ["Agentic RAG", "CRAG", "Multi-hop Retrieval", "LangGraph", "RAG"],
+  },
+
+  {
+    id: "p3-w9-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design Patterns — Behavioral",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Strategy: interchangeable algorithms (allocation strategies, pricing models)",
+      "Observer: event notification (stock updates, order status)",
+      "State: behavior changes based on state (order processing, vending machine)",
+      "Command: encapsulate request as object (undo/redo, task queuing, macro recording)",
+      "Chain of Responsibility: pass request along chain (validation, log filtering, middleware)",
+      "Template Method: algorithm skeleton, subclasses override (data processing pipelines)",
+      "Iterator: traverse without exposing internals",
+      "SOLID principles — how each pattern embodies SOLID",
+    ],
+    prompt: `Deep dive into Behavioral design patterns with Java implementations.
+BEHAVIORAL:
+- Strategy: interchangeable algorithms
+  → Use case: allocation strategies, pricing models, sorting
+- Observer: event notification
+  → Use case: stock updates, order status
+- State: behavior changes based on state
+  → Use case: order processing, vending machine, game states
+- Command: encapsulate request as object
+  → Use case: undo/redo, task queuing, macro recording
+- Chain of Responsibility: pass request along chain
+  → Use case: validation, log filtering, middleware
+- Template Method: algorithm skeleton, subclasses override
+  → Use case: data processing pipelines
+- Iterator: traverse without exposing internals
+For each: when to use, Java code, when I've used it at Blue Yonder.
+SOLID principles — how each pattern embodies SOLID.`,
+    dsaProblems: null,
+    tags: ["Design Patterns", "Behavioral Patterns", "Strategy", "Observer", "Java"],
+  },
+
+  // ── WEEK 10 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p3-w10-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Text-to-SQL Agent Design",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "User NL question → agent generates SQL → executes → answers",
+      "Approaches: direct prompting, schema-aware RAG, agentic (my RCA agent)",
+      "Schema representation: CREATE TABLE, table/column descriptions, sample rows, foreign keys",
+      "SQL generation best practices: qualify columns, use CTEs, LIMIT by default",
+      "Error handling: syntax error → feedback → retry; empty results; timeout",
+      "Security: read-only access, table whitelist, AST parsing (reject DML), row limits, PII masking",
+      "My RCA agent: read-only PostgreSQL with guardrailed SQL execution",
+      "Schema-aware RAG: embed table/column descriptions, retrieve relevant schema",
+    ],
+    prompt: `Teach me text-to-SQL agent design — directly my RCA agent.
+OVERVIEW:
+- User natural language question → agent generates SQL → executes → answers
+- Hard parts: schema understanding, joins, ambiguous questions, correctness, security
+APPROACHES:
+1. Direct prompting: Schema in prompt, ask LLM for SQL (simple but fragile on complex schemas)
+2. Schema-aware RAG: Embed table/column descriptions, retrieve relevant schema (good for 100+ tables)
+3. Agentic approach (MY RCA AGENT): Explore schema → describe → generate SQL → execute → verify, iterative refinement
+SCHEMA REPRESENTATION:
+- CREATE TABLE statements in prompt
+- Table/column descriptions + relationships
+- Sample rows: example data helps LLM
+- Foreign keys: critical for correct JOINs
+SQL GENERATION BEST PRACTICES:
+- Always qualify column names with table aliases
+- Use CTEs for readability (LLMs write better CTEs)
+- LIMIT by default (prevent full table scans)
+- Ask LLM to explain query before executing
+ERROR HANDLING:
+- SQL syntax error → feedback → retry
+- Empty results → tell agent, let it adjust
+- Timeout → suggest simpler query
+- Permission denied → inform of accessible tables
+SECURITY (CRITICAL):
+- Read-only DB access — NEVER allow modifications
+- Table whitelist: only approved tables
+- Query AST parsing: reject INSERT/UPDATE/DELETE/DROP
+- Parameter sanitization: prevent SQL injection
+- Row limit enforcement, execution timeout, sensitive column masking (PII)
+My RCA agent uses read-only PostgreSQL with guardrailed SQL execution. Walk me through designing this security layer for interviews.`,
+    dsaProblems: [
+      { name: "Unique Paths", number: 62, difficulty: "Medium", pattern: "2D DP" },
+      { name: "Minimum Path Sum", number: 64, difficulty: "Medium", pattern: "2D DP" },
+    ],
+    tags: ["Text-to-SQL", "RCA Agent", "SQL Security", "Schema RAG", "Agentic AI"],
+  },
+
+  {
+    id: "p3-w10-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design a Distributed Cache",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Cache strategies: cache-aside, write-through, write-behind",
+      "Redis cluster: sharding, replication, failover",
+      "Cache invalidation: TTL, event-based, manual",
+      "Consistency: eventual vs strong consistency tradeoffs",
+      "Hot key handling, thundering herd prevention",
+      "Cache stampede: locking around expensive computation",
+      "Monitoring: hit rate, memory usage, eviction rate",
+      "Multi-tier caching: L1 (in-process) + L2 (Redis) + L3 (DB)",
+    ],
+    prompt: `Design a distributed cache system.
+Cover:
+- Cache strategies: cache-aside, write-through, write-behind — when each
+- Redis cluster: sharding, replication, failover
+- Cache invalidation: TTL, event-based, manual — tradeoffs
+- Consistency: eventual vs strong, how to choose
+- Hot key handling: what happens when one key gets millions of requests
+- Thundering herd prevention: cache stampede problem and solutions (locking around expensive computation)
+- Monitoring: hit rate, memory usage, eviction rate
+- Multi-tier caching: L1 (in-process Caffeine) + L2 (Redis) + L3 (DB) — your Blue Yonder pattern
+Relate to your HikariCP + Caffeine metadata caching at Blue Yonder.`,
+    dsaProblems: null,
+    tags: ["Distributed Cache", "Redis", "Cache Invalidation", "Thundering Herd", "System Design"],
+  },
+
+  {
+    id: "p3-w10-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Context Window Management",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Problem: RAG with many chunks exceeds window; agent conversations grow over time",
+      "Summarization: summarize older turns, retrieved docs; recursive summarization",
+      "Map-Reduce: split long doc, generate answer from each chunk, combine",
+      "Refine: process chunks sequentially, each step refines answer",
+      "Sliding Window: keep most recent N tokens, older dropped or summarized",
+      "Hierarchical Retrieval: L1 summaries → L2 sections → L3 chunks",
+      "Token counting: tiktoken, different models tokenize differently, buffer management",
+      "Practical: token budgeting in RAG, conversation summarization in agents",
+    ],
+    prompt: `Teach me how to handle context window limits in production.
+THE PROBLEM:
+- Every LLM has a context window limit (4K to 200K+ tokens)
+- RAG with many chunks exceeds the window
+- Agent conversations grow over time
+- Stuffing everything = expensive and degrades quality
+STRATEGIES:
+1. Summarization: summarize older conversation turns; summarize retrieved documents; recursive summarization; tradeoff: loses detail, adds latency
+2. Map-Reduce: split long document into chunks, generate answer from each (map), combine into final answer (reduce). Good for: summarization, extraction across long docs
+3. Refine: process chunks sequentially, each step refines answer with new chunk. Better quality than map-reduce but slower
+4. Sliding Window: keep most recent N tokens, older messages dropped or summarized. Simple but loses early context
+5. Hierarchical Retrieval: L1 document summaries → L2 relevant sections → L3 specific chunks. Reduces tokens while maintaining relevance
+TOKEN COUNTING:
+- tiktoken for OpenAI models
+- Different models tokenize differently
+- Estimating count before API call
+- Buffer management: reserve tokens for output
+PRACTICAL:
+- Token budgeting in RAG pipeline
+- Conversation summarization in agent
+- "Too many chunks retrieved" problem`,
+    dsaProblems: [
+      { name: "Longest Common Subsequence", number: 1143, difficulty: "Medium", pattern: "2D DP" },
+      { name: "Edit Distance", number: 72, difficulty: "Medium", pattern: "2D DP" },
+    ],
+    tags: ["Context Window", "Summarization", "Map-Reduce", "Hierarchical RAG", "Token Management"],
+  },
+
+  {
+    id: "p3-w10-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Concurrency Patterns in Java",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Producer-Consumer: BlockingQueue, wait/notify",
+      "Reader-Writer Lock: ReentrantReadWriteLock",
+      "Thread Pool: ExecutorService, ThreadPoolExecutor (core pool, max pool, queue type, rejection policy)",
+      "Future/CompletableFuture: async, chaining, exception handling (my DeepDocAI!)",
+      "Semaphore: limiting concurrent access (connection pool, rate limiting)",
+      "CountDownLatch vs CyclicBarrier: coordination",
+      "volatile vs synchronized vs Atomic: when to use each",
+      "ThreadLocal: per-thread storage (my Gravitee thread-local propagation!)",
+    ],
+    prompt: `LLD focused on Java concurrency (heavily asked in Java interviews).
+PATTERNS:
+- Producer-Consumer: BlockingQueue, wait/notify
+- Reader-Writer Lock: ReentrantReadWriteLock
+- Thread Pool: ExecutorService, ThreadPoolExecutor configuration
+  → Core pool, max pool, queue type, rejection policy
+- Future/CompletableFuture: async, chaining, exception handling
+  → MY DeepDocAI uses this — explain the pattern
+- Semaphore: limiting concurrent access
+  → Use case: connection pool, rate limiting
+- CountDownLatch vs CyclicBarrier: coordination
+- volatile vs synchronized vs Atomic: when to use each
+- ThreadLocal: per-thread storage (MY Gravitee thread-local propagation!)
+CONCURRENCY ISSUES:
+- Race conditions, deadlock, livelock, starvation
+- Visibility issues, instruction reordering
+- How to debug concurrency bugs
+For each pattern: code example, use case from my Blue Yonder experience, common interview questions.`,
+    dsaProblems: null,
+    tags: ["Java Concurrency", "CompletableFuture", "ThreadLocal", "Thread Pool", "Blue Yonder"],
+  },
+
+  {
+    id: "p3-w10-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Fine-Tuning vs RAG vs Prompting — Decision Framework",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Prompting: zero effort, immediate, limited by context window",
+      "RAG: medium effort, for private/current/specific information, retrieval quality bottleneck",
+      "Fine-tuning: high effort, for consistent style/format/behavior, needs hundreds of examples, gets stale",
+      "Decision framework: LLM doesn't know → RAG; knows but does wrong → prompting first, FT if fails",
+      "Need source attribution → RAG; data changes frequently → RAG; reduce latency/cost → FT",
+      "Hybrid: fine-tuned model + RAG; prompting + RAG (most common)",
+      "Why I chose RAG for DeepDocAI and when I'd consider fine-tuning",
+    ],
+    prompt: `Teach me the decision framework for fine-tuning vs RAG vs prompting.
+THREE APPROACHES:
+1. PROMPTING (zero effort, immediate):
+   - System prompt + few-shot examples
+   - When: general tasks, format control, behavior specification
+   - Pros: no training data, instant, model-agnostic
+   - Cons: limited by context window, inconsistent for complex patterns
+2. RAG (medium effort, 1-2 weeks):
+   - Retrieve relevant context, inject into prompt
+   - When: need specific/private/current information
+   - Pros: no training needed, current info, attributable
+   - Cons: retrieval quality bottleneck, latency, vector store needed
+3. FINE-TUNING (high effort, 2-4 weeks):
+   - Train model on specific data/task
+   - When: consistent style/format, domain behavior, shorter prompts, patterns examples can't convey
+   - Pros: shorter prompts, more consistent, better at specialized tasks
+   - Cons: needs training data (hundreds-thousands of examples), training cost, becomes stale
+DECISION FRAMEWORK:
+- LLM doesn't know something → RAG (bring knowledge to model)
+- LLM knows but doesn't do it right → Prompting first, fine-tuning if fails
+- Need consistent format/style → Fine-tuning; Data changes frequently → RAG
+- Need source attribution → RAG; Need to reduce latency/cost → Fine-tuning
+HYBRID: Fine-tuned model + RAG; Prompting + RAG (most common); Fine-tuned router + standard generator
+I should explain why I chose RAG for my projects and when I'd consider fine-tuning instead.`,
+    dsaProblems: [
+      { name: "Partition Equal Subset Sum", number: 416, difficulty: "Medium", pattern: "0/1 Knapsack DP" },
+    ],
+    tags: ["Fine-Tuning", "RAG", "Prompting", "Decision Framework", "ML Strategy"],
+  },
+
+  {
+    id: "p3-w10-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "SOLID Principles with Real Examples",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "SRP: each class one reason to change (separate priority calc from store assignment in allocation)",
+      "OCP: open for extension, closed for modification (adding new allocation mode without modifying existing)",
+      "LSP: subtypes substitutable for base types (Azure vs Gravitee auth providers behind same interface)",
+      "ISP: clients shouldn't depend on unused methods (separate read and write repository interfaces)",
+      "DIP: depend on abstractions, not concretions (service layer depends on repo interface, not PostgreSQL)",
+      "Common interview follow-ups: SOLID violation + fix; when to intentionally violate; Spring DI and DIP",
+      "Real code-level examples from Blue Yonder codebase",
+    ],
+    prompt: `Deep dive into SOLID principles with examples from my Blue Yonder codebase.
+- Single Responsibility: each class one reason to change
+  → Example: separate priority calculation from store assignment in allocation
+- Open/Closed: open for extension, closed for modification
+  → Example: adding new allocation mode without modifying existing
+- Liskov Substitution: subtypes substitutable for base types
+  → Example: different auth providers (Azure, Gravitee) behind same interface
+- Interface Segregation: clients shouldn't depend on unused methods
+  → Example: separate read and write repository interfaces
+- Dependency Inversion: depend on abstractions, not concretions
+  → Example: service layer depends on repo interface, not PostgreSQL impl
+Common interview follow-ups:
+- "Show me a SOLID violation and how you'd fix it"
+- "When would you intentionally violate a SOLID principle?"
+- "How does Spring DI relate to Dependency Inversion?"
+Prepare with real code-level examples I can describe verbally.`,
+    dsaProblems: null,
+    tags: ["SOLID", "OOP Design", "Blue Yonder", "Spring DI", "Java"],
+  },
+
+  // ── WEEK 11 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p3-w11-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "DeepDocAI End-to-End Walkthrough Preparation",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "5-minute project overview: elevator pitch → architecture",
+      "Full query lifecycle: upload → chunk → embed → store → query → retrieve → generate",
+      "Chunking strategy decision: why recursive splitting, what I'd change",
+      "Why pgvector over Pinecone/Weaviate: reasoning and tradeoffs",
+      "Multi-provider LLM routing: weighted round-robin, fallback on failure",
+      "Scaling to 1M documents: sharding, distributed embeddings",
+      "Source attribution design",
+      "Production details: HikariCP, CompletableFuture async, exponential backoff",
+    ],
+    prompt: `Help me prepare an interview-ready walkthrough of DeepDocAI.
+PROJECT DETAILS:
+- RAG-based document intelligence system
+- Eliminates LLM hallucinations by grounding answers in documents
+- 100+ file uploads with parallel batch embedding (50 chunks/call)
+- Multi-provider LLM orchestration with weighted round-robin routing (Gemini, SambaNova, Cerebras, Cohere, Grok)
+- Multi-stage RAG query flow with context aggregation
+- Production: HikariCP connection pooling, CompletableFuture async, exponential backoff retry
+- Tech: Spring Boot 3.2, React 19, PostgreSQL/pgvector, Gemini 2.5 Flash, Apache PDFBox/POI, Tesseract OCR, Docker
+- Deployed: deepdocai.vercel.app
+HELP ME PREPARE:
+1. 5-minute project overview (elevator pitch to architecture)
+2. Deep dive answers:
+   - "Walk me through the full lifecycle of a query"
+   - "How did you decide on chunking strategy?"
+   - "Why pgvector over Pinecone/Weaviate?"
+   - "Explain your multi-provider routing"
+   - "How do you handle source attribution?"
+   - "What happens when an LLM provider goes down?"
+   - "How would you scale this to 1M documents?"
+   - "What would you change if you rebuilt it?"
+3. System design version: draw architecture from scratch
+4. What I learned and would do differently
+Make me sound like someone who genuinely built this. Push back if my answers are hand-wavy.`,
+    dsaProblems: [
+      { name: "Merge K Sorted Lists", number: 23, difficulty: "Hard", pattern: "Heap" },
+      { name: "Find Median from Data Stream", number: 295, difficulty: "Hard", pattern: "Heap" },
+    ],
+    tags: ["DeepDocAI", "Project Walkthrough", "RAG", "System Design", "Interview Prep"],
+  },
+
+  {
+    id: "p3-w11-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design a Multi-Agent System for Code Review",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "Architecture: supervisor → specialized reviewers (style, bug finder, security, performance)",
+      "Code parsing: AST vs raw text, language-specific analysis",
+      "Context: PR diff, full file, related files",
+      "LLM selection: different models for different review types",
+      "False positive reduction: confidence scoring, human feedback loop",
+      "Integration: GitHub/GitLab webhooks, PR comments API",
+      "Scaling: many PRs across multiple repositories",
+      "Evaluation: precision/recall vs human reviewers",
+    ],
+    prompt: `Design a Multi-Agent System for automated code review.
+Requirements: Automated code review agent — style, bugs, security, performance.
+Cover:
+- Architecture: supervisor → specialized reviewers
+- Specialized agents: style, bug finder, security scanner, performance
+- Code parsing: AST vs raw text, language-specific
+- Context: PR diff, full file, related files
+- LLM selection: different models for different review types
+- False positive reduction: confidence scoring, human feedback
+- Integration: GitHub/GitLab webhooks, PR comments
+- Scaling: many PRs across repos
+- Evaluation: precision/recall vs human reviewers`,
+    dsaProblems: null,
+    tags: ["Multi-Agent", "Code Review", "Supervisor Pattern", "LangGraph", "AI System Design"],
+  },
+
+  {
+    id: "p3-w11-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "RCA Agent End-to-End Walkthrough Preparation",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "5-minute project overview: problem, architecture, key design decisions",
+      "LangGraph structure: nodes (investigate, query DB, analyze logs, conclude), edges, state",
+      "Why ReAct over plan-and-execute: interleaved reasoning and action",
+      "HITL implementation: interrupt_before, approval workflow",
+      "SQL injection prevention: read-only, whitelist, AST parsing",
+      "Evaluation framework: 40+ test scenarios, task completion rate",
+      "Agent loop mechanics: getting stuck, max iterations, recovery",
+      "Extension to multi-agent system",
+    ],
+    prompt: `Help me prepare an interview-ready walkthrough of my RCA Agent.
+PROJECT DETAILS:
+- Root Cause Analysis agent for Spring Boot applications
+- Single-agent ReAct loop using LangGraph, LLM: Gemini 2.5 Flash
+- Tools: read-only PostgreSQL access with guardrailed SQL execution
+- Vector store: pgvector for error pattern retrieval
+- HITL: human approval before destructive operations
+- Eval framework with 40+ test scenarios
+- Production features: tracing (LangSmith), structured logging, cost tracking
+HELP ME PREPARE:
+1. 5-minute project overview
+2. Architecture walkthrough: LangGraph structure, nodes, edges, state
+3. Deep dive answers:
+   - "Why ReAct over plan-and-execute?"
+   - "How do you prevent SQL injection?"
+   - "Walk me through how agent investigates a root cause"
+   - "What happens when SQL query returns no results?"
+   - "How do you handle agent getting stuck in a loop?"
+   - "Walk me through HITL implementation"
+   - "How do you evaluate if agent found right root cause?"
+   - "How would you extend to multi-agent system?"
+4. Design decisions I made and why
+5. What I learned building this
+Be a tough interviewer — probe where I'm vague.`,
+    dsaProblems: [
+      { name: "Task Scheduler", number: 621, difficulty: "Medium", pattern: "Greedy + Heap" },
+    ],
+    tags: ["RCA Agent", "LangGraph", "Project Walkthrough", "HITL", "Interview Prep"],
+  },
+
+  {
+    id: "p3-w11-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design an Agent Framework (AI-Specific LLD)",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "Agent (abstract): plan(), execute(), observe(); ReActAgent, PlanAndExecuteAgent",
+      "Tool (interface): name, description, schema, execute(); SQLTool, SearchTool, CalculatorTool",
+      "ToolRegistry: register/lookup tools; ToolExecutor: execute with error handling",
+      "AgentState: messages, current_step, tool_calls, intermediate_results",
+      "StateManager: maintain state across steps",
+      "Router (Strategy): decide next action based on state",
+      "Memory (interface): ConversationMemory, SummaryMemory, VectorMemory",
+      "Guardrail (Chain of Responsibility): validate inputs/outputs",
+    ],
+    prompt: `Design a simple agent framework (like mini LangGraph).
+This is your differentiator — most candidates can't do AI-specific LLD.
+CLASSES:
+- Agent (abstract): plan(), execute(), observe()
+  → ReActAgent, PlanAndExecuteAgent (concrete implementations)
+- Tool (interface): name, description, schema, execute()
+  → SQLTool, SearchTool, CalculatorTool (concrete)
+- ToolRegistry: register/lookup tools by name
+- ToolExecutor: execute tool with parameters, handle errors
+- AgentState: messages, current_step, tool_calls, intermediate_results
+- StateManager: maintain state across steps
+- Router (Strategy pattern): decide next action based on state
+- Memory (interface): store/retrieve past interactions
+  → ConversationMemory, SummaryMemory, VectorMemory
+- Guardrail (Chain of Responsibility): validate inputs/outputs
+PATTERNS USED:
+- Strategy: different agent types, different routing strategies
+- Chain of Responsibility: guardrail validation
+- Observer: logging, tracing each step
+- Factory: creating agents from configuration
+- Builder: configuring complex agent setup
+DEMONSTRATE: Clean OOP, SOLID principles, extensibility (easy to add new tools/agents/memories).`,
+    dsaProblems: null,
+    tags: ["Agent Framework", "LangGraph Design", "OOP", "Strategy Pattern", "AI-Specific LLD"],
+  },
+
+  {
+    id: "p3-w11-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Inventory Ops Agent Walkthrough Preparation",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "Business context: LLM-driven agent for inventory operations at Blue Yonder",
+      "NL interface for BBO strategy and space parameter modification",
+      "Item/location hierarchy resolution via recursive CTE",
+      "Multi-tenancy in agent context (1200+ tenants)",
+      "Guardrails for data modification (unlike RCA agent which is read-only)",
+      "Testing strategy against real tenant data",
+      "Connecting backend experience (multi-tenancy, PostgreSQL, connection pooling) to AI work",
+      "Business impact: how it changes operations team workflow",
+    ],
+    prompt: `Help me prepare an interview-ready walkthrough of the Inventory Ops Agent built at Blue Yonder.
+PROJECT DETAILS:
+- LLM-driven agent for inventory operations
+- Natural language interface for data management
+- BBO strategy and space parameter modification
+- Item/location hierarchy resolution via recursive CTE
+- Built for multi-tenant supply chain platform (1200+ tenants)
+- Tech: LangGraph, LangChain, FastAPI, PostgreSQL
+HELP ME PREPARE:
+1. 5-minute project overview (business context + technical depth)
+2. Deep dive answers:
+   - "What business problem does this solve?"
+   - "How does agent understand tenant-specific data?"
+   - "Explain hierarchy resolution — what's the recursive CTE?"
+   - "How do you handle multi-tenancy in agent context?"
+   - "What guardrails do you have for data modification?"
+   - "How did you test against real tenant data?"
+   - "What was the hardest technical challenge?"
+3. How this connects to my backend experience (multi-tenancy, PostgreSQL, connection pooling — same platform, new interface)
+4. Business impact: how this changes operations team workflow
+I can't show code (proprietary), so help me describe architecture and decisions clearly enough that an interviewer trusts I built it.`,
+    dsaProblems: [
+      { name: "Jump Game", number: 55, difficulty: "Medium", pattern: "Greedy" },
+      { name: "Gas Station", number: 134, difficulty: "Medium", pattern: "Greedy" },
+    ],
+    tags: ["Inventory Ops Agent", "Blue Yonder", "Multi-tenancy", "LangGraph", "Project Walkthrough"],
+  },
+
+  {
+    id: "p3-w11-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a RAG Pipeline (Code-Level LLD)",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "DocumentLoader (interface): PDFLoader, DocxLoader, TextLoader",
+      "TextSplitter (interface): FixedSizeSplitter, RecursiveSplitter, SemanticSplitter — Strategy pattern",
+      "EmbeddingModel (interface): OpenAIEmbedding, GeminiEmbedding",
+      "VectorStore (interface): PgVectorStore, ChromaStore",
+      "Retriever (interface): SimilarityRetriever, HybridRetriever, MMRRetriever",
+      "Reranker (interface): CohereReranker, CrossEncoderReranker",
+      "PromptBuilder: constructs prompt from query + chunks",
+      "RAGPipeline: orchestrates full flow; Builder for pipeline configuration; Observer for logging",
+    ],
+    prompt: `AI-SPECIFIC LLD: Design classes for a RAG pipeline.
+- DocumentLoader (interface): PDFLoader, DocxLoader, TextLoader
+- TextSplitter (interface): FixedSizeSplitter, RecursiveSplitter, SemanticSplitter
+  → Strategy pattern
+- EmbeddingModel (interface): OpenAIEmbedding, GeminiEmbedding
+- VectorStore (interface): PgVectorStore, ChromaStore
+- Retriever (interface): SimilarityRetriever, HybridRetriever, MMRRetriever
+- Reranker (interface): CohereReranker, CrossEncoderReranker
+- PromptBuilder: constructs prompt from query + chunks
+- Generator: calls LLM with constructed prompt
+- RAGPipeline: orchestrates full flow
+PATTERNS:
+- Builder for pipeline configuration
+- Strategy for swappable components
+- Observer for logging/tracing each step
+Java implementation showing clean OOP.`,
+    dsaProblems: null,
+    tags: ["RAG Pipeline LLD", "Strategy Pattern", "Builder Pattern", "AI-Specific LLD", "OOP"],
+  },
+
+  // ── WEEK 12 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p3-w12-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Behavioral STAR Prep for AI Roles",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "STAR story: disagreed with team/manager (Gravitee incident with Shashi)",
+      "STAR story: production issue (Pack Service timeout failures — 10% requests failing)",
+      "STAR story: delivering under pressure (quality dashboard + batch automation in single quarter)",
+      "STAR story: taking ownership (Snowflake sharding: design to feature-flag rollout)",
+      "STAR story: failure and learning (early bugs under Ashis — proactive questioning)",
+      "STAR story: complex technical decision (Gravitee migration: dual-gateway backward compatibility)",
+      "STAR story: staying current with AI (building DeepDocAI, RCA, learning LangGraph)",
+      "2-3 min structured honest stories showing growth, not perfection",
+    ],
+    prompt: `Help me prepare behavioral/STAR stories for AI engineering interviews.
+MY BACKGROUND:
+- 2.5 years at Blue Yonder on Cognitive Allocation System
+- Survived difficult year under Ashis (harsh, minimal context, judgmental)
+- Recovered confidence under Kasi in quality stream
+- Shipped: Snowflake sharding, Gravitee migration, async Pack Service, Priority Allocation, quality dashboard
+- Currently building GenAI agents under Shashi (non-technical manager)
+- Pillar Award 2025
+- DeepDocAI and RCA agent as side projects
+PREPARE STAR STORIES FOR:
+1. "Tell me about a time you disagreed with team/manager" → Gravitee incident with Shashi
+2. "Tell me about a production issue you handled" → Pack Service timeout failures — 10% requests failing
+3. "Tell me about delivering under pressure" → Quality dashboard + batch automation in single quarter
+4. "Tell me about taking ownership" → Snowflake sharding: design to feature-flag rollout
+5. "Tell me about failure and what you learned" → Early bugs under Ashis — learned proactive questioning
+6. "Tell me about a complex technical decision" → Gravitee migration: dual-gateway backward compatibility
+7. "How do you stay current with AI?" → Building projects (DeepDocAI, RCA), learning LangGraph/LangChain
+Make each 2-3 minutes, structured, honest. Show growth, not perfection.`,
+    dsaProblems: [
+      { name: "Reorganize String", number: 767, difficulty: "Medium", pattern: "Heap" },
+      { name: "Top K Frequent Elements", number: 347, difficulty: "Medium", pattern: "Heap" },
+    ],
+    tags: ["Behavioral Interview", "STAR Stories", "Blue Yonder", "Interview Prep", "Soft Skills"],
+  },
+
+  {
+    id: "p3-w12-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design an Evaluation & Monitoring System for Production AI",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "Data collection: traces, logs, user feedback, eval results",
+      "Storage: time-series for metrics, document store for traces",
+      "Evaluation pipeline: auto-eval on sample of production traffic",
+      "Dashboards: quality, cost, latency metrics",
+      "Alerting: quality degradation, cost spikes, latency increases",
+      "A/B testing: model versions, prompt versions",
+      "Annotation tool: human labeling interface",
+      "Feedback loop: eval results → prompt improvement → re-evaluation",
+    ],
+    prompt: `Design an Evaluation and Monitoring System for Production AI.
+Requirements: Monitor quality, latency, cost for production RAG/agent systems.
+Cover:
+- Data collection: traces, logs, user feedback, eval results
+- Storage: time-series for metrics, document store for traces
+- Evaluation pipeline: auto-eval on sample of production traffic
+- Dashboards: quality, cost, latency metrics
+- Alerting: quality degradation, cost spikes, latency increases
+- A/B testing: model versions, prompt versions
+- Annotation tool: human labeling
+- Feedback loop: eval results → prompt improvement → re-evaluation`,
+    dsaProblems: null,
+    tags: ["AI Monitoring", "Evaluation System", "A/B Testing", "Quality Metrics", "AI System Design"],
+  },
+
+  {
+    id: "p3-w12-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Mock AI Interview Round 1",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "RAG deep dive: DeepDocAI architecture, chunking decisions, retrieval strategy",
+      "Agent architecture: RCA agent, LangGraph, ReAct loop",
+      "Production patterns: error handling, scaling, cost optimization",
+      "System design discussion: high-level AI system design",
+      "Conceptual tradeoffs: when RAG fails, when to use fine-tuning",
+      "Target: Indian product company at 40 LPA level",
+      "Format: ask → answer → rate → ideal answer",
+    ],
+    prompt: `Conduct a mock AI engineering interview with me. Ask 10-12 questions for a real GenAI role at Indian product company targeting 40 LPA.
+MIX:
+- RAG deep dive (2-3 questions on my DeepDocAI)
+- Agent architecture (2-3 questions on RCA agent / LangGraph)
+- Production patterns (2-3 questions on error handling, scaling, cost)
+- System design discussion (1 question - high level)
+- Conceptual (1-2 questions on tradeoffs)
+FOR EACH QUESTION:
+1. Ask the question
+2. Wait for my answer
+3. Rate: what was good, what was missing, what would senior interviewer probe further on
+4. Give ideal answer for reference
+Be tough but fair. Indian product company at 40 LPA wants depth, not breadth. Probe where I'm hand-wavy.`,
+    dsaProblems: [
+      { name: "Merge Intervals", number: 56, difficulty: "Medium", pattern: "Intervals" },
+      { name: "Insert Interval", number: 57, difficulty: "Medium", pattern: "Intervals" },
+    ],
+    tags: ["Mock Interview", "RAG", "Agents", "Interview Practice", "AI Engineering"],
+  },
+
+  {
+    id: "p3-w12-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Cab Booking System (Uber/Ola)",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "Entities: Rider, Driver, Trip, Payment, Location, Vehicle types (mini/sedan/SUV)",
+      "Booking flow: request → nearest driver matching → acceptance → trip → payment",
+      "State pattern: trip states (requested, accepted, started, completed, cancelled)",
+      "Strategy pattern: pricing (surge/flat/per-km), matching algorithm",
+      "Observer pattern: real-time trip updates",
+      "Concurrency: multiple riders requesting same driver, lock contention on driver assignment",
+      "Singleton: matching service",
+      "Interview follow-up: surge pricing algorithm, rating system design",
+    ],
+    prompt: `Design a cab booking system (Uber/Ola) — classic LLD for Indian product companies.
+ENTITIES:
+- Rider, Driver, Trip, Payment, Location
+- Vehicle types (mini, sedan, SUV)
+FLOWS:
+- Booking request: rider requests cab
+- Matching algorithm: nearest driver + acceptance
+- Trip: started → in-progress → completed
+- Payment: cash, card, wallet
+PATTERNS:
+- State pattern: trip states (requested, accepted, started, completed, cancelled)
+- Strategy pattern: pricing (surge, flat, per-km), matching algorithm
+- Observer pattern: real-time trip updates
+- Singleton: matching service
+CONCURRENCY:
+- Multiple riders requesting same driver
+- Driver accepting/rejecting requests
+- Lock contention on driver assignment
+INTERVIEW FOLLOW-UP: Design surge pricing algorithm, design rating system`,
+    dsaProblems: null,
+    tags: ["Cab Booking", "Uber Design", "State Pattern", "Concurrency", "LLD"],
+  },
+
+  {
+    id: "p3-w12-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Mock AI Interview Round 2",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "Project walkthrough: RCA agent end-to-end in 5 minutes",
+      "Bridge backend + AI: differentiator question",
+      "Production failure scenario question",
+      "Tricky conceptual: when would RAG NOT work?",
+      "Evaluation and testing question",
+      "Unexpected question you haven't prepared for",
+      "Build on weak areas from Round 1",
+    ],
+    prompt: `Conduct another mock interview, different focus. Build on weak areas from Round 1.
+INCLUDE:
+- "Walk me through your project" question — explain RCA agent end-to-end in 5 min
+- Question bridging backend + AI (your differentiator)
+- Production failure scenario question
+- Tricky conceptual ("when would RAG NOT work?")
+- Evaluation and testing question
+- One question I might not have prepared for
+Same format: ask → answer → rate → ideal answer.
+Push harder this time. Make me uncomfortable.`,
+    dsaProblems: [
+      { name: "Meeting Rooms II", number: 253, difficulty: "Medium", pattern: "Intervals + Heap" },
+      { name: "Non-overlapping Intervals", number: 435, difficulty: "Medium", pattern: "Intervals" },
+    ],
+    tags: ["Mock Interview", "Interview Practice", "RAG", "Agents", "AI Engineering"],
+  },
+
+  {
+    id: "p3-w12-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Food Delivery System (Swiggy/Zomato)",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "Entities: Restaurant, Menu, Order, DeliveryAgent, Customer, Address",
+      "Flow: browse → cart → order → prepare → pickup → deliver → rate",
+      "State pattern: order states (placed, accepted, preparing, ready, picked, delivered, cancelled)",
+      "Strategy pattern: delivery agent assignment, pricing, delivery time estimation",
+      "Observer pattern: order status updates to customer/restaurant/agent",
+      "Chain of Responsibility: order validation rules",
+      "Search: restaurants by location, cuisine, rating, delivery time",
+      "Concurrency: order acceptance, agent assignment, inventory updates",
+    ],
+    prompt: `Design a food delivery system (Swiggy/Zomato) — classic LLD.
+ENTITIES:
+- Restaurant, Menu, Order, DeliveryAgent, Customer, Address
+FLOW:
+- Browse restaurants → add to cart → place order → restaurant prepares → agent picks up → delivers → customer rates
+PATTERNS:
+- State pattern: order states (placed, accepted, preparing, ready, picked, delivered, cancelled)
+- Strategy pattern: delivery agent assignment, pricing, delivery time
+- Observer pattern: order status updates to customer/restaurant/agent
+- Chain of Responsibility: order validation rules
+SEARCH:
+- Restaurants by location, cuisine, rating, delivery time
+- Indexing for fast search
+CONCURRENCY:
+- Order acceptance by restaurant
+- Agent assignment
+- Inventory updates (item out of stock)
+INTERVIEW FOLLOW-UPS: design recommendation system, design rating system`,
+    dsaProblems: null,
+    tags: ["Food Delivery", "Swiggy Design", "State Pattern", "Observer Pattern", "LLD"],
+  },
+
+  // ═══════════════════════════════════════════
+  // PHASE 4: INTERVIEW MODE (Weeks 13–16)
+  // ═══════════════════════════════════════════
+
+  // ── WEEK 13 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p4-w13-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "RAG Comprehensive Revision",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "Chunking strategies: fixed, recursive, semantic, document-structure-aware",
+      "Embedding and vector stores: model selection, HNSW vs IVFFlat, distance metrics",
+      "Retrieval: hybrid search (BM25 + semantic), reranking, MMR",
+      "Prompt construction: context injection, lost-in-the-middle, system prompt structure",
+      "Evaluation metrics: context precision/recall, faithfulness, answer relevance",
+      "Production: scaling, semantic caching, cost optimization, latency",
+      "Failure modes: retrieval failure, hallucination, context overflow",
+      "20 rapid-fire questions to identify remaining gaps",
+    ],
+    prompt: `Test me on EVERYTHING I should know about RAG for interviews.
+Give me 20 rapid-fire questions covering:
+- Chunking strategies (3 Qs)
+- Embedding and vector stores (3 Qs)
+- Retrieval: hybrid search, reranking, MMR (3 Qs)
+- Prompt construction and answer generation (3 Qs)
+- Evaluation metrics (3 Qs)
+- Production patterns: scaling, caching, cost (3 Qs)
+- Failure modes and debugging (2 Qs)
+For each:
+- Ask the question
+- Tell me key points my answer must hit
+- Flag common mistakes candidates make
+Comprehensive revision — identify any remaining gaps.`,
+    dsaProblems: [
+      { name: "Reorder List", number: 143, difficulty: "Medium", pattern: "Linked List" },
+      { name: "Remove Nth Node From End", number: 19, difficulty: "Medium", pattern: "Linked List" },
+    ],
+    tags: ["RAG Revision", "Comprehensive Review", "Interview Prep", "RAG", "AI Engineering"],
+  },
+
+  {
+    id: "p4-w13-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design a Real-Time AI Agent with HITL",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "Agent architecture: LangGraph with checkpointing",
+      "State management: conversation, task, approval state",
+      "HITL triggers: confidence threshold, action severity, user request",
+      "Human interface: agent proposes action, human approves/modifies/rejects",
+      "Handoff: clean transfer from agent to human with full context",
+      "Resume: human resolves, hands back to agent",
+      "SLA: response time guarantees (agent vs human mix)",
+      "Scaling: queue management, load balancing",
+    ],
+    prompt: `Design a Real-Time AI Agent with Human-in-the-Loop (HITL).
+Requirements: Customer-facing AI agent handling complex requests with human escalation.
+Cover:
+- Agent architecture: LangGraph with checkpointing
+- State management: conversation, task, approval state
+- HITL triggers: confidence threshold, action severity, user request
+- Human interface: agent proposes action, human approves/modifies
+- Handoff: clean transfer from agent to human with full context
+- Resume: human resolves, hands back to agent
+- SLA: response time guarantees (agent vs human mix)
+- Scaling: queue management, load balancing`,
+    dsaProblems: null,
+    tags: ["HITL", "LangGraph", "Real-Time Agent", "Checkpointing", "AI System Design"],
+  },
+
+  {
+    id: "p4-w13-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Agents & LangGraph Comprehensive Revision",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "ReAct pattern: Thought → Action → Observation loop",
+      "Tool calling mechanics: function definitions, execution, result injection",
+      "LangGraph: State, Nodes, Edges, conditional routing with add_conditional_edges",
+      "Checkpointing: MemorySaver, SQLite persister, resuming from checkpoint",
+      "HITL patterns: interrupt_before, approval node",
+      "Multi-agent: supervisor, subagraph, handoffs",
+      "Error handling: tool failures, LLM errors, loop detection",
+      "Agent memory: short-term (state), long-term (vector store)",
+    ],
+    prompt: `Test me on everything about agents and LangGraph.
+Give me 20 rapid-fire questions covering:
+- ReAct pattern and agent loop (3 Qs)
+- Tool calling mechanics (3 Qs)
+- LangGraph: state, nodes, edges, conditional routing (3 Qs)
+- Checkpointing and persistence (2 Qs)
+- HITL patterns (2 Qs)
+- Multi-agent architectures (2 Qs)
+- Error handling in agents (2 Qs)
+- Agent memory (2 Qs)
+- Agent evaluation (1 Q)
+Format: ask → tell me key points → common mistakes.
+Flag weak areas clearly.`,
+    dsaProblems: [
+      { name: "LRU Cache", number: 146, difficulty: "Medium", pattern: "HashMap + Doubly Linked List" },
+    ],
+    tags: ["LangGraph", "Agents", "ReAct", "HITL", "Comprehensive Revision"],
+  },
+
+  {
+    id: "p4-w13-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Chess Game",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "Entities: Board, Square, Piece (abstract) with polymorphic movement rules",
+      "Piece subclasses: King, Queen, Rook, Bishop, Knight, Pawn — each with move validation",
+      "Check detection: is king under attack after any move?",
+      "Checkmate detection: no legal move avoids check?",
+      "Stalemate detection",
+      "Special moves: castling, en passant, pawn promotion",
+      "Command pattern: moves (enables undo/replay)",
+      "Strategy pattern: different AI player types (random, minimax)",
+    ],
+    prompt: `Design a Chess game — tests OOP depth.
+ENTITIES:
+- Board, Square
+- Piece (abstract), King, Queen, Rook, Bishop, Knight, Pawn
+- Each piece: different movement rules (polymorphism)
+GAME LOGIC:
+- Move validation: legal moves per piece
+- Check detection: is king under attack?
+- Checkmate detection: any legal move avoids check?
+- Stalemate detection
+- Special moves: castling, en passant, pawn promotion
+PATTERNS:
+- Command pattern: moves (enables undo/replay)
+- MVC: separate game logic from display
+- Strategy: different AI players (random, minimax)
+This tests inheritance and polymorphism deeply. Most candidates struggle with check/checkmate detection — practice this.`,
+    dsaProblems: null,
+    tags: ["Chess", "OOP", "Polymorphism", "Command Pattern", "Complex LLD"],
+  },
+
+  {
+    id: "p4-w13-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Production Patterns Revision",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "Error handling: exponential backoff with jitter, circuit breaker, fallback chains",
+      "Cost optimization: model routing, token budgeting, batch API, semantic caching",
+      "Observability: LangSmith tracing, quality metrics, alerting",
+      "Guardrails: prompt injection defenses, output validation, SQL security for agents",
+      "Structured outputs: Pydantic, function calling, error recovery",
+      "Caching: exact vs semantic, TTL strategy, invalidation",
+      "Trick questions: production experience vs tutorial knowledge",
+    ],
+    prompt: `Test me on production AI patterns.
+Give me 15 questions covering:
+- Error handling and retries (3 Qs)
+- Cost optimization and model routing (3 Qs)
+- Observability and monitoring (2 Qs)
+- Guardrails and safety (3 Qs)
+- Structured outputs (2 Qs)
+- Caching strategies (2 Qs)
+Format: ask → key points → common mistakes.
+Plus 5 "trick questions" interviewers use to test if candidates have production experience vs just tutorial knowledge.`,
+    dsaProblems: [
+      { name: "Random Leetcode Medium", number: null, difficulty: "Medium", pattern: "Timed Practice" },
+    ],
+    tags: ["Production Patterns", "Revision", "Error Handling", "Cost Optimization", "Interview Prep"],
+  },
+
+  {
+    id: "p4-w13-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Workflow Engine",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "Workflow: sequence of steps with conditional branching",
+      "Step: unit of work (like a LangGraph node)",
+      "Transition: connection between steps (like edges)",
+      "WorkflowExecution: tracks progress and current state",
+      "Composite pattern: sub-workflows as steps",
+      "Observer: step completion events",
+      "State: step states (pending, running, completed, failed)",
+      "Persistence: save/resume workflow — parallel execution and retry per step",
+    ],
+    prompt: `Design a Workflow Engine — relevant to your agent work.
+ENTITIES:
+- Workflow: sequence of steps with conditional branching
+- Step: unit of work (like a LangGraph node)
+- Transition: connection between steps (like edges)
+- Condition: determines which transition to follow
+- WorkflowExecution: tracks progress
+PATTERNS:
+- Composite: sub-workflows as steps
+- Observer: step completion events
+- State: step states (pending, running, completed, failed)
+- Strategy: condition evaluation strategies
+- Chain of Responsibility: error handling
+FEATURES:
+- Sequential steps, parallel execution, conditional branching
+- Retry and error handling per step
+- Persistence: save/resume workflow
+Essentially what LangGraph does — show you understand it at code level.`,
+    dsaProblems: null,
+    tags: ["Workflow Engine", "LangGraph Design", "State Machine", "Composite Pattern", "LLD"],
+  },
+
+  // ── WEEK 14 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p4-w14-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Weak Area Deep Dive #1",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "Based on Mock Interview Aug 8 — paste weakest topic",
+      "Core concepts from first principles",
+      "Common interview questions on this topic",
+      "How to structure answers clearly",
+      "Trade-offs to discuss",
+      "Common follow-up questions",
+      "5-question test with rating",
+    ],
+    prompt: `Based on Mock Interview Aug 8, teach me my weakest topic from first principles for AI engineering interviews.
+I bombed this in mock interview. Specifically I struggled with:
+[describe what you couldn't answer well]
+Cover:
+- Core concepts I should know
+- Common interview questions on this topic
+- How to structure answers
+- Trade-offs to discuss
+- Common follow-up questions
+Then test me with 5 questions and rate my answers.`,
+    dsaProblems: [
+      { name: "Number of Connected Components", number: 323, difficulty: "Medium", pattern: "Union Find" },
+    ],
+    tags: ["Weak Area", "Targeted Revision", "Mock Interview Follow-up", "Interview Prep"],
+  },
+
+  {
+    id: "p4-w14-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design a Real-Time Dashboard",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "Data pipeline: events → stream processor → aggregation → storage",
+      "WebSocket for real-time updates to clients",
+      "Pre-aggregation vs on-the-fly computation tradeoffs",
+      "Time-series storage: InfluxDB, TimescaleDB",
+      "Visualization: chart types, refresh rates",
+      "Scale: thousands of concurrent viewers",
+      "Cache hot dashboards",
+      "Your quality dashboard at Blue Yonder — relate real experience",
+    ],
+    prompt: `Design a Real-Time Dashboard system.
+Cover:
+- Data pipeline: events → stream processor → aggregation → storage
+- WebSocket for real-time updates
+- Pre-aggregation vs on-the-fly computation
+- Time-series storage: InfluxDB, TimescaleDB
+- Visualization: chart types, refresh rates
+- Scale: thousands of concurrent viewers
+- Cache hot dashboards
+Connect to your quality dashboard at Blue Yonder.`,
+    dsaProblems: null,
+    tags: ["Real-Time Dashboard", "WebSocket", "Time-Series", "Stream Processing", "System Design"],
+  },
+
+  {
+    id: "p4-w14-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Weak Area Deep Dive #2",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "Based on Mock Interview Aug 8 — second weakest topic",
+      "Same format as Deep Dive #1",
+      "First principles explanation",
+      "Interview question structure",
+      "Trade-offs",
+      "5-question test",
+    ],
+    prompt: `Based on Mock Interview Aug 8, teach me my second weakest topic from first principles.
+[Based on your mock interview results, paste the second topic you struggled with]
+Same format as Monday — core concepts, interview questions, trade-offs, structure, 5-question test with rating.`,
+    dsaProblems: [
+      { name: "Word Ladder", number: 127, difficulty: "Hard", pattern: "BFS on Graph" },
+    ],
+    tags: ["Weak Area", "Targeted Revision", "Mock Interview Follow-up", "Interview Prep"],
+  },
+
+  {
+    id: "p4-w14-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Database Connection Pool",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "Pool interface: getConnection(), releaseConnection()",
+      "Pool management: min/max connections, idle timeout",
+      "Blocking vs non-blocking when pool exhausted",
+      "Health checking: validate connections before giving out",
+      "Thread safety: concurrent access with Semaphore",
+      "Monitoring: active connections, wait time, timeouts",
+      "Connection lifecycle: create, validate, use, return, close",
+      "This is what HikariCP does — relates to your Blue Yonder work",
+    ],
+    prompt: `Design a database connection pool — directly relevant to Blue Yonder (HikariCP, Caffeine).
+Cover:
+- Pool interface: getConnection(), releaseConnection()
+- Pool management: min/max connections, idle timeout
+- Blocking vs non-blocking when pool exhausted
+- Health checking: validate connections before giving out
+- Thread safety: concurrent access
+- Monitoring: active connections, wait time, timeouts
+- Configuration: pool size, timeout, validation query
+- Semaphore-based implementation
+- Connection lifecycle: create, validate, use, return, close
+This is what HikariCP does. Knowing it deeply impresses interviewers.`,
+    dsaProblems: null,
+    tags: ["Connection Pool", "HikariCP", "Thread Safety", "Blue Yonder", "Java Concurrency"],
+  },
+
+  {
+    id: "p4-w14-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Personal Narrative & Tell Me About Yourself",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "2-minute 'tell me about yourself': AI engineer with strong backend foundations, not Java dev trying AI",
+      "Clear answer for 'why AI?'",
+      "Clear answer for 'why are you leaving Blue Yonder?'",
+      "Clear answer for 'where do you see yourself in 3 years?'",
+      "Clear answer for 'why 40 LPA with 2 YOE?'",
+      "Authentic builder narrative: learns by doing, ships real things",
+      "NIT Warangal → Blue Yonder → AI engineer transition story",
+    ],
+    prompt: `Help me craft my personal narrative for AI engineering interviews.
+MY STORY:
+- Mechanical engineering at NIT Warangal, self-taught CS/DSA
+- Campus placement at Blue Yonder
+- 2+ years building production backend systems at 1200+ tenant scale
+- Survived harsh manager, recovered, delivered consistently
+- Now transitioning into AI engineering with real shipped projects: RCA agent, DeepDocAI, Inventory Ops Agent
+CRAFT:
+1. 2-minute "tell me about yourself" positioning me as AI engineer with strong backend foundations (not Java dev "trying AI")
+2. Clear answer for "why AI?"
+3. Clear answer for "why are you leaving Blue Yonder?"
+4. Clear answer for "where do you see yourself in 3 years?"
+5. Clear answer for "why should we hire you at 40 LPA with 2 YOE?"
+Make it authentic. I'm not a polished corporate speaker — I'm a builder who learns by doing and ships real things. That should come through.`,
+    dsaProblems: [
+      { name: "Pacific Atlantic Water Flow", number: 417, difficulty: "Medium", pattern: "Graph BFS/DFS" },
+    ],
+    tags: ["Personal Narrative", "Self Introduction", "Career Story", "Interview Prep", "Soft Skills"],
+  },
+
+  {
+    id: "p4-w14-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design a Feature Flag System",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "Flag types: boolean, percentage rollout, user-segment based",
+      "Evaluation: check if feature enabled for given context (user, tenant, realm)",
+      "Strategy pattern: different evaluation strategies per flag type",
+      "Caching: flag values cached with invalidation on update",
+      "Audit: who changed what flag and when",
+      "Gradual rollout: 1% → 10% → 50% → 100%",
+      "Kill switch: instant disable",
+      "Your real usage at Blue Yonder: Pack Service feature flag, Snowflake sharding feature flag",
+    ],
+    prompt: `Design a feature flag system — directly from your Blue Yonder experience.
+Cover:
+- Flag types: boolean, percentage rollout, user-segment based
+- Evaluation: check if feature enabled for given context (user, tenant, realm)
+- Strategy pattern: different evaluation strategies per flag type
+- Caching: flag values cached, invalidation on update
+- Audit: who changed what flag and when
+- Gradual rollout: 1% → 10% → 50% → 100%
+- Kill switch: instant disable
+- Java implementation with thread-safe evaluation
+- Configuration: targeting rules
+Talk about your real usage at Blue Yonder (Pack Service feature flag, Snowflake sharding feature flag).`,
+    dsaProblems: null,
+    tags: ["Feature Flags", "Strategy Pattern", "Blue Yonder", "Gradual Rollout", "LLD"],
+  },
+
+  // ── WEEK 15 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p4-w15-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Final Full Mock Interview",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "60-minute full structure: intro → project deep dive → AI system design → conceptual → behavioral",
+      "At least one unprepared question",
+      "Probing on every answer — no hand-wavy answers",
+      "Hire / No Hire / Strong Hire assessment",
+      "Top 3 strengths and top 3 areas to improve",
+      "Specific feedback on communication clarity",
+      "Dress rehearsal before real interviews",
+    ],
+    prompt: `Conduct the hardest mock interview yet. 60 minutes, full structure.
+Include at least one question I haven't prepared for.
+Push me on every answer.
+After: detailed feedback, hire/no-hire decision with reasoning.
+This is the dress rehearsal.`,
+    dsaProblems: [
+      { name: "Network Delay Time", number: 743, difficulty: "Medium", pattern: "Dijkstra" },
+    ],
+    tags: ["Final Mock", "Mock Interview", "Full Simulation", "Interview Prep", "Dress Rehearsal"],
+  },
+
+  {
+    id: "p4-w15-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Design a CI/CD Pipeline for AI Systems",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "Model versioning: experiment tracking, model registry",
+      "Data versioning: DVC, dataset snapshots",
+      "Training pipeline: data → preprocess → train → evaluate → deploy",
+      "Evaluation gates: automated quality checks before deployment",
+      "A/B deployment: canary, blue-green for model updates",
+      "Monitoring: model drift, data drift, performance degradation",
+      "Rollback: automatic on quality drop",
+      "Your quality automation experience at Blue Yonder",
+    ],
+    prompt: `Design a CI/CD Pipeline for AI Systems.
+Cover:
+- Model versioning: experiment tracking, model registry
+- Data versioning: DVC, dataset snapshots
+- Training pipeline: data → preprocess → train → evaluate → deploy
+- Evaluation gates: automated quality checks before deployment
+- A/B deployment: canary, blue-green for model updates
+- Monitoring: model drift, data drift, performance degradation
+- Rollback: automatic on quality drop
+Connect to your quality automation experience at Blue Yonder.`,
+    dsaProblems: null,
+    tags: ["CI/CD", "MLOps", "Model Versioning", "Data Drift", "AI System Design"],
+  },
+
+  {
+    id: "p4-w15-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Salary Negotiation & Offer Evaluation",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "How to respond to 'what's your expected CTC?' before an offer",
+      "Evaluating offers: fixed vs variable, ESOPs/RSUs, joining bonus clawback",
+      "Negotiation: never accept on call, using competing offers timing",
+      "Counter-offer from current company — usually don't take",
+      "Negotiating without competing offers: market data approach",
+      "Indian specifics: notice period, buyout, variable payout history",
+      "Common mistakes: accepting first offer, quoting too low, CTC vs take-home comparison",
+    ],
+    prompt: `Teach me salary negotiation for AI engineering at 35-50 LPA in India.
+BEFORE OFFER:
+- "What's your expected CTC?" — how to respond
+- "What's the budget for this role?" — get them to share first
+- Range strategy: "35-50 LPA based on role scope and my skill set"
+- Never lie about current CTC — background checks catch it
+EVALUATING:
+- Fixed vs variable: 80-20 standard, 70-30 worse
+- ESOPs/RSUs: vesting, strike price, liquidity
+- Joining bonus: clawback period, how long
+- Benefits: insurance, WFH policy, learning budget
+- Total comp vs base — which to optimize
+NEGOTIATION:
+- "I'll get back in 24-48 hours" — never accept on call
+- Using competing offers: timing, communication
+- Counter-offer from current company — usually don't take
+- Negotiating without competing offers — still possible with market data
+COMMON MISTAKES:
+- Accepting first offer because desperate
+- Quoting too low from fear
+- Not negotiating because "they might rescind"
+- Comparing CTC-to-CTC instead of take-home
+INDIAN SPECIFICS: Notice period negotiation, buyout, variable pay historical payout, Tier 1 vs Tier 2 at same CTC.
+Scripts for common negotiation scenarios.`,
+    dsaProblems: [
+      { name: "Random Leetcode Medium", number: null, difficulty: "Medium", pattern: "Timed Practice" },
+    ],
+    tags: ["Salary Negotiation", "Offer Evaluation", "Career", "India Job Market", "Interview Prep"],
+  },
+
+  {
+    id: "p4-w15-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "LLD Mock — Random Problem",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "Pick any LLD problem from previous weeks",
+      "Clarify requirements: 2 minutes",
+      "Identify entities and relationships: 3 minutes",
+      "Design class hierarchy: 5 minutes",
+      "Implement core logic: 15 minutes",
+      "Discuss design patterns used: 5 minutes",
+      "Discuss extensibility: 5 minutes",
+      "Target: complete in 35 minutes (real interview pace)",
+    ],
+    prompt: `LLD Mock Interview — Random Problem.
+Pick any LLD problem from previous weeks. Practice as if real interview:
+- Clarify requirements (2 min)
+- Identify entities and relationships (3 min)
+- Design class hierarchy (5 min)
+- Implement core logic (15 min)
+- Discuss design patterns used (5 min)
+- Discuss extensibility (5 min)
+Target: complete in 35 minutes.`,
+    dsaProblems: null,
+    tags: ["LLD Mock", "Interview Practice", "Timed Practice", "OOP", "Design Patterns"],
+  },
+
+  {
+    id: "p4-w15-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Final Mock — AI + HLD Combined",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "20 minutes: rapid fire AI questions targeting weak areas",
+      "40 minutes HLD: design a multi-tenant RAG-as-a-service platform",
+      "Combines: AI depth + system design + multi-tenancy (your strength) + production patterns",
+      "Multi-tenant RAG: tenant isolation, per-tenant knowledge bases, shared vs separate vector stores",
+      "Rate limiting per tenant, cost attribution, monitoring per tenant",
+      "This is the hardest combined question — be ready",
+    ],
+    prompt: `Conduct a final integrated mock — AI concepts + HLD combined.
+20 minutes: pure AI questions (rapid fire on weak areas).
+40 minutes HLD: design a multi-tenant RAG-as-a-service platform.
+This combines everything: AI depth + system design + multi-tenancy (your strength) + production patterns.`,
+    dsaProblems: [
+      { name: "2 Random Mediums in 50 min", number: null, difficulty: "Medium", pattern: "Real Interview Pace" },
+    ],
+    tags: ["Final Mock", "Multi-tenant RAG", "HLD + AI", "Interview Simulation", "Interview Prep"],
+  },
+
+  {
+    id: "p4-w15-6",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "LLD Mock — AI-Specific (Agent Framework or RAG Pipeline)",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "Re-design Agent Framework or RAG Pipeline from scratch",
+      "Error handling at every layer",
+      "Logging and observability hooks (Observer pattern)",
+      "Configuration via dependency injection",
+      "Unit testing strategy: mocking LLM calls, tool responses",
+      "Concurrency handling in agent execution",
+      "This is your differentiator — most candidates can't do AI-specific LLD",
+    ],
+    prompt: `Re-design the Agent Framework or RAG Pipeline LLD from scratch.
+This time add more depth:
+- Error handling at every layer
+- Logging and observability hooks
+- Configuration via dependency injection
+- Unit testing strategy
+- Concurrency handling
+This is your differentiator — most candidates can't do AI-specific LLD.`,
+    dsaProblems: null,
+    tags: ["AI-Specific LLD", "Agent Framework", "RAG Pipeline", "Observability", "LLD"],
+  },
+
+  // ── WEEK 16 ──────────────────────────────────────────────────────────────
+
+  {
+    id: "p4-w16-1",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Gap Analysis & Continued Learning Plan",
+    phase: 4,
+    week: 16,
+    keyTopics: [
+      "Identify remaining gaps after 16 weeks of prep",
+      "Top 10 questions most likely to face and best answers",
+      "Continued learning plan while actively interviewing",
+      "What's diminishing returns at this point",
+      "Review how far I've come from week 1",
+      "Transition from prep mode to execution mode",
+    ],
+    prompt: `Based on 16 weeks of prep, help me:
+1. Identify any remaining gaps
+2. Create continued learning plan while actively interviewing
+3. List top 10 questions I'm most likely to face and best answers
+4. Build confidence: review how far I've come from week 1
+What should I keep learning during my interview pipeline phase?
+What's diminishing returns at this point?`,
+    dsaProblems: [
+      { name: "Random Leetcode Medium", number: null, difficulty: "Medium", pattern: "Weakest Pattern Focus" },
+    ],
+    tags: ["Gap Analysis", "Learning Plan", "Week 16", "Final Prep", "Interview Pipeline"],
+  },
+
+  {
+    id: "p4-w16-2",
+    categories: ["HLD"],
+    primaryCategory: "HLD",
+    title: "Mock HLD Interview",
+    phase: 4,
+    week: 16,
+    keyTopics: [
+      "Pick design topic most likely in your interviews",
+      "Run a real 35-minute HLD as if it's an interview",
+      "Structured walkthrough: requirements → high-level → deep dive → scale",
+      "Get feedback, identify gaps",
+      "Iterate on weak points",
+    ],
+    prompt: `Mock HLD Interview — Week 16.
+Pick the design topic that's most likely in your upcoming interviews.
+Run a real 35-minute HLD as if it's an interview.
+Get feedback, iterate.`,
+    dsaProblems: null,
+    tags: ["HLD Mock", "Mock Interview", "System Design", "Interview Practice", "Week 16"],
+  },
+
+  {
+    id: "p4-w16-3",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Final Revision — Quick Reference Cheat Sheet",
+    phase: 4,
+    week: 16,
+    keyTopics: [
+      "One-line answers to top 30 questions (mental anchors, not interview answers)",
+      "RAG, Agent, ReAct, LangGraph, HITL, Evaluation, Guardrails in 3 sentences each",
+      "Common tradeoffs: RAG vs fine-tuning, HNSW vs IVFFlat, exact vs semantic cache",
+      "Starting every answer with confidence, then expanding based on context",
+      "Reviewing weakest areas one final time",
+    ],
+    prompt: `Create a "quick reference" cheat sheet I can review before interviews.
+ONE-LINE ANSWERS to top 30 questions:
+- "What's RAG?" — 3 sentences max
+- "What's an agent?" — 3 sentences max
+- "ReAct pattern?" — 3 sentences max
+- "LangGraph vs LangChain?" — 3 sentences max
+- (continue for top 30)
+These are NOT for interviews directly — these are mental anchors.
+Knowing the one-line answer cold helps me start every answer with confidence, then expand based on context.`,
+    dsaProblems: [
+      { name: "Random Leetcode Medium", number: null, difficulty: "Medium", pattern: "Weakest Pattern" },
+    ],
+    tags: ["Quick Reference", "Cheat Sheet", "Final Revision", "Week 16", "Mental Anchors"],
+  },
+
+  {
+    id: "p4-w16-4",
+    categories: ["LLD"],
+    primaryCategory: "LLD",
+    title: "Design Patterns Rapid Revision",
+    phase: 4,
+    week: 16,
+    keyTopics: [
+      "15 scenarios, 2 minutes each: identify which pattern and why",
+      "Strategy: interchangeable algorithms",
+      "Observer: event notification",
+      "State: behavior based on state",
+      "Factory: object creation",
+      "Builder: complex construction",
+      "Singleton: single instance",
+      "Decorator, Command, Chain of Responsibility, Composite",
+    ],
+    prompt: `Design Patterns Rapid Revision — Week 16.
+Quick review of all patterns:
+- 15 scenarios, 2 minutes each
+- Given a scenario, identify which pattern to use and why
+- Focus on: Strategy, Observer, State, Factory, Builder, Singleton,
+  Decorator, Command, Chain of Responsibility, Composite`,
+    dsaProblems: null,
+    tags: ["Design Patterns", "Rapid Revision", "Week 16", "Pattern Recognition", "LLD"],
+  },
+
+  {
+    id: "p4-w16-5",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    title: "Final Mock — High Pressure",
+    phase: 4,
+    week: 16,
+    keyTopics: [
+      "Full mock with time pressure and no hints",
+      "Real interview energy — no pauses for thinking aloud",
+      "One more full mock, brutal",
+      "After: am I ready? What's the one thing to fix before next real interview?",
+    ],
+    prompt: `One more full mock. Make it brutal.
+Time pressure. No hints. Real interview energy.
+After: am I ready? What's the one thing I still need to fix before my next real interview?`,
+    dsaProblems: [
+      { name: "Random Leetcode Medium", number: null, difficulty: "Medium", pattern: "Final Practice" },
+    ],
+    tags: ["Final Mock", "High Pressure", "Week 16", "Interview Simulation", "Dress Rehearsal"],
+  },
+
 ];
 
 export const CATEGORIES = ["AI", "HLD", "LLD", "DSA"];
