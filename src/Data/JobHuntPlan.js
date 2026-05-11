@@ -308,6 +308,47 @@ Focus on:
     tags: ["SOLID", "Strategy Pattern", "Factory Pattern", "OOP", "Java"],
   },
 
+
+  {
+    id: "p1-w1-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 1 — Project Setup & Basic ReAct Loop",
+    phase: 1,
+    week: 1,
+    keyTopics: [
+      "Project setup: Python 3.11+, FastAPI, LangGraph, PostgreSQL, pgvector",
+      "Repository structure, dependency management (uv or poetry)",
+      "Define LangGraph StateGraph schema: messages, tool_calls, query_results",
+      "Basic ReAct loop skeleton: agent_node → tools_node → conditional edge",
+      "Connect Gemini 2.5 Flash via langchain-google-genai",
+      "SQL tools with guardrails: list_tables, describe_table, execute_query (SELECT only, table whitelist, row LIMIT, timeout)",
+      "Test end-to-end with one real RCA scenario",
+      "README with architecture diagram (mermaid), Dockerfile, one-command run",
+      "PUSH TO GITHUB — non-negotiable, add to LinkedIn Featured",
+    ],
+    prompt: `RCA Agent Phase 1 — Project Setup & Basic ReAct Loop.
+Saturday (5.5h):
+- Project setup: Python 3.11+, FastAPI, LangGraph, PostgreSQL, pgvector
+- Repository structure, dependency management (uv or poetry)
+- Define LangGraph StateGraph schema: messages, tool_calls, query_results
+- Basic ReAct loop skeleton: agent_node → tools_node → conditional edge
+- Sample database: pick a small PostgreSQL DB to investigate (your own test DB)
+- Connect Gemini 2.5 Flash via langchain-google-genai
+
+Sunday morning (3h):
+- SQL tools with guardrails:
+  → list_tables (read schema metadata)
+  → describe_table (get column info)
+  → execute_query (SELECT only, table whitelist, row LIMIT, timeout)
+- Test end-to-end with one real RCA scenario
+- README with architecture diagram (mermaid)
+- Dockerfile, one-command run instructions
+- PUSH TO GITHUB — non-negotiable today
+- Add to LinkedIn Featured section`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "LangGraph", "Project Setup", "ReAct", "FastAPI"],
+  },
   // ── WEEK 2 ──────────────────────────────────────────────────────────────
 
   {
@@ -653,6 +694,39 @@ Connect to your experience:
     tags: ["Notification System", "Strategy Pattern", "Async", "CompletableFuture", "Java"],
   },
 
+
+  {
+    id: "p1-w2-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 2 — Error Pattern Retrieval (pgvector)",
+    phase: 1,
+    week: 2,
+    keyTopics: [
+      "Add error pattern retrieval using pgvector",
+      "Embed 20 common error patterns and root causes",
+      "Tool: search_similar_errors retrieves top-3 similar past issues",
+      "Integrate with agent: when SQL investigation finds error, search similar",
+      "Test combined flow: SQL investigation + pattern matching",
+      "Polish error retrieval, add more patterns",
+      "Improve agent prompt to use retrieved patterns effectively",
+      "Document Phase 2 in README",
+    ],
+    prompt: `RCA Agent Phase 2 — Error Pattern Retrieval with pgvector.
+Saturday (5.5h):
+- Add error pattern retrieval using pgvector
+- Embed common error patterns and root causes (start with 20 patterns)
+- Tool: search_similar_errors that retrieves top-3 similar past issues
+- Integrate with agent: when SQL investigation finds error, search similar
+- Test combined flow: SQL investigation + pattern matching
+
+Sunday morning (3h):
+- Polish error retrieval, add more patterns
+- Improve agent prompt to use retrieved patterns effectively
+- Document Phase 2 in README`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "pgvector", "Error Patterns", "RAG", "Embeddings"],
+  },
   // ── WEEK 3 ──────────────────────────────────────────────────────────────
 
   {
@@ -1006,6 +1080,39 @@ Discuss:
     tags: ["Logger", "Singleton", "Observer Pattern", "SLF4J", "Java"],
   },
 
+
+  {
+    id: "p1-w3-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 2 Continue — Pattern Library Expansion",
+    phase: 1,
+    week: 3,
+    keyTopics: [
+      "Expand error pattern library to 50 patterns",
+      "Semantic categorization: DB errors, network errors, app errors, etc.",
+      "Improve pattern retrieval with better embeddings",
+      "Tool: analyze_error_trend (count similar errors over time)",
+      "Test with 5 different RCA scenarios end-to-end",
+      "Refine agent prompts based on test results",
+      "Add streaming responses for better UX",
+      "Document Phase 2 architecture in README",
+    ],
+    prompt: `RCA Agent Phase 2 Continue — Pattern Library Expansion.
+Saturday (5.5h):
+- Expand error pattern library to 50 patterns
+- Add semantic categorization (DB errors, network errors, app errors, etc.)
+- Improve pattern retrieval with better embeddings
+- Add tool: analyze_error_trend (count similar errors over time)
+- Test with 5 different RCA scenarios end-to-end
+
+Sunday morning (3h):
+- Refine agent prompts based on test results
+- Add streaming responses for better UX
+- Document Phase 2 architecture in README`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Pattern Library", "Semantic Search", "Streaming", "RAG"],
+  },
   // ── WEEK 4 ──────────────────────────────────────────────────────────────
 
   {
@@ -1359,6 +1466,40 @@ Discuss:
     tags: ["S3", "File Storage", "Java NIO", "Versioning", "Decorator Pattern"],
   },
 
+
+  {
+    id: "p1-w4-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 3 — Evaluation Framework",
+    phase: 1,
+    week: 4,
+    keyTopics: [
+      "Build evaluation framework for RCA agent",
+      "Create 20 test scenarios with known root causes",
+      "Auto-evaluation: did agent identify correct root cause?",
+      "Metrics: accuracy, steps taken, tool calls made",
+      "Run baseline evaluation, document results",
+      "Analyze evaluation results, identify failure patterns",
+      "Iterate on agent prompts based on findings",
+      "Re-run evaluation, compare against baseline",
+    ],
+    prompt: `RCA Agent Phase 3 — Evaluation Framework.
+Saturday (5.5h):
+- Build evaluation framework for RCA agent
+- Create 20 test scenarios with known root causes
+- Auto-evaluation: did agent identify correct root cause?
+- Metrics: accuracy, steps taken, tool calls made
+- Run baseline evaluation, document results
+
+Sunday morning (3h):
+- Analyze evaluation results
+- Identify failure patterns (which scenarios fail and why)
+- Iterate on agent prompts based on findings
+- Re-run evaluation, compare`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Evaluation", "Test Scenarios", "Metrics", "Agent Quality"],
+  },
   // ═══════════════════════════════════════════
   // PHASE 2: DEPTH (Weeks 5–8)
   // ═══════════════════════════════════════════
@@ -1709,6 +1850,41 @@ Discuss:
     tags: ["E-Commerce", "DDD", "Specification Pattern", "JPA", "Spring Boot"],
   },
 
+
+  {
+    id: "p2-w5-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 3 Continue — Eval Suite & First LinkedIn Post",
+    phase: 2,
+    week: 5,
+    keyTopics: [
+      "Add more diverse test cases (40 total)",
+      "Categorize by difficulty (easy/medium/hard root causes)",
+      "Build CLI/script to run full eval suite",
+      "Add metrics: time-to-resolution, cost per investigation",
+      "Document evaluation methodology",
+      "Generate evaluation report (markdown with charts)",
+      "Update README with eval section",
+      "LinkedIn post #1: Built and evaluated an RCA agent with LangGraph",
+    ],
+    prompt: `RCA Agent Phase 3 Continue — Comprehensive Eval Suite.
+Saturday (5.5h):
+- Add more diverse test cases (40 total)
+- Categorize by difficulty (easy/medium/hard root causes)
+- Build CLI/script to run full eval suite
+- Add metrics: time-to-resolution, cost per investigation
+- Document evaluation methodology
+
+Sunday morning (3h):
+- Generate evaluation report (markdown with charts)
+- Update README with eval section
+- LinkedIn post #1: "Built and evaluated an RCA agent with LangGraph"
+  → Include architecture diagram, eval metrics
+  → Tag relevant people, post in AI/Python communities`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Eval Suite", "LinkedIn", "Portfolio", "Public Building"],
+  },
   // ── WEEK 6 ──────────────────────────────────────────────────────────────
 
   {
@@ -2058,6 +2234,39 @@ Discuss:
   },
 
 
+
+  {
+    id: "p2-w6-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 4 — HITL (Human-in-the-Loop)",
+    phase: 2,
+    week: 6,
+    keyTopics: [
+      "Add HITL to agent: interrupt_before tool_node",
+      "Build approval UI/CLI: show proposed SQL, get user input",
+      "Resume with Command pattern after user approval",
+      "Allow user to modify SQL before execution",
+      "Test full HITL flow with sample scenarios",
+      "Polish HITL: handle rejection (skip tool, ask agent to reconsider)",
+      "Add audit log: record all approvals/rejections",
+      "Document HITL flow in README with sequence diagram",
+    ],
+    prompt: `RCA Agent Phase 4 — Human-in-the-Loop (HITL).
+Saturday (5.5h):
+- Add HITL to agent: interrupt_before tool_node
+- Build approval UI/CLI: show proposed SQL, get user input
+- Resume with Command pattern after user approval
+- Allow user to modify SQL before execution
+- Test full HITL flow with sample scenarios
+
+Sunday morning (3h):
+- Polish HITL: handle rejection (skip tool, ask agent to reconsider)
+- Add audit log: record all approvals/rejections
+- Document HITL flow in README with sequence diagram`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "HITL", "Interrupt Before", "Command Pattern", "LangGraph"],
+  },
   // ── WEEK 7 ──────────────────────────────────────────────────────────────
 
   {
@@ -2322,6 +2531,39 @@ Cover:
     tags: ["Hotel Booking", "Concurrency", "Optimistic Locking", "Strategy Pattern", "OOP Design"],
   },
 
+
+  {
+    id: "p2-w7-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent Phase 4 Continue — Observability with LangSmith",
+    phase: 2,
+    week: 7,
+    keyTopics: [
+      "Add observability: integrate LangSmith for tracing",
+      "Log every LLM call, tool call, retrieval",
+      "Metrics: tokens used per investigation, time per step",
+      "Build simple dashboard view (CLI or web)",
+      "Polish dashboard, add cost tracking",
+      "Stress test: run 10 concurrent investigations",
+      "Fix any concurrency issues",
+      "Update README with observability section",
+    ],
+    prompt: `RCA Agent Phase 4 Continue — Observability & Stress Testing.
+Saturday (5.5h):
+- Add observability: integrate LangSmith for tracing
+- Log every LLM call, tool call, retrieval
+- Add metrics: tokens used per investigation, time per step
+- Build simple dashboard view (CLI or web)
+
+Sunday morning (3h):
+- Polish dashboard, add cost tracking
+- Stress test: run 10 concurrent investigations
+- Fix any concurrency issues
+- Update README with observability section`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Observability", "LangSmith", "Cost Tracking", "Stress Testing"],
+  },
   // ═══════════════════════════════════════════
   // PHASE 2: ADVANCED (Week 8)
   // ═══════════════════════════════════════════
@@ -2595,6 +2837,41 @@ The RCA agent's guardrailed SQL execution is a key design decision — help me a
     tags: ["Notification Service", "Strategy Pattern", "Observer Pattern", "Builder Pattern", "Java"],
   },
 
+
+  {
+    id: "p2-w8-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent — Web UI, Demo & Deployment",
+    phase: 2,
+    week: 8,
+    keyTopics: [
+      "Build a simple web UI (Streamlit or React)",
+      "Input: error description / log snippet; output: investigation steps, root cause, suggested fix",
+      "Real-time streaming of agent reasoning",
+      "Add basic authentication to gate access",
+      "Deploy to free tier (Railway, Render, or similar)",
+      "Polish UI, fix bugs",
+      "Add 3 demo scenarios users can try",
+      "Record a 3-minute demo video, update README with demo link",
+    ],
+    prompt: `RCA Agent — Web UI, Demo & Deployment.
+Saturday (5.5h):
+- Build a simple web UI (Streamlit or React)
+  → Input: error description / log snippet
+  → Output: investigation steps, root cause, suggested fix
+  → Real-time streaming of agent reasoning
+- Add authentication (basic, just to gate access)
+- Deploy to a free tier (Railway, Render, or similar)
+
+Sunday morning (3h):
+- Polish UI, fix bugs
+- Add 3 demo scenarios users can try
+- Record a 3-minute demo video
+- Update GitHub README with demo link and video`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Web UI", "Streamlit", "Deployment", "Demo"],
+  },
   // ═══════════════════════════════════════════
   // PHASE 3: ADVANCED TOPICS (Weeks 9–12)
   // ═══════════════════════════════════════════
@@ -2866,6 +3143,39 @@ SOLID principles — how each pattern embodies SOLID.`,
     tags: ["Design Patterns", "Behavioral Patterns", "Strategy", "Observer", "Java"],
   },
 
+
+  {
+    id: "p3-w9-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent — Multi-Step Investigations & Public Sharing",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Add Phase 2 to the agent: handle more complex investigation scenarios",
+      "Multi-step investigations: agent finds clue, investigates further",
+      "Scenario for performance issues (slow queries)",
+      "Scenario for data integrity issues",
+      "Document scenarios in README with screenshots",
+      "LinkedIn post #2: Lessons from building an RCA agent — HITL, evaluation, observability",
+      "Write 800-word blog post for personal blog or Medium",
+      "Share in 2-3 AI communities (Reddit r/LangChain, LinkedIn AI groups)",
+    ],
+    prompt: `RCA Agent — Multi-Step Investigations & Public Sharing.
+Saturday (5.5h):
+- Add Phase 2 to the agent: handle more complex investigation scenarios
+- Multi-step investigations: agent investigates, finds clue, investigates further
+- Add scenario for performance issues (slow queries)
+- Add scenario for data integrity issues
+- Document scenarios in README with screenshots
+
+Sunday morning (3h):
+- LinkedIn post #2: "Lessons from building an RCA agent — HITL, evaluation, observability"
+- Write 800-word blog post for personal blog or Medium
+- Share in 2-3 AI communities (Reddit r/LangChain, LinkedIn AI groups)`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Multi-step", "Public Building", "Blog Post", "LinkedIn"],
+  },
   // ── WEEK 10 ──────────────────────────────────────────────────────────────
 
   {
@@ -3120,6 +3430,39 @@ Prepare with real code-level examples I can describe verbally.`,
     tags: ["SOLID", "OOP Design", "Blue Yonder", "Spring DI", "Java"],
   },
 
+
+  {
+    id: "p3-w10-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent — Demo Prep & Job Applications Begin",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Create 5 polished demo scenarios with sample data",
+      "Improve UI for demo: better formatting, clear step display",
+      "Add screenshots/GIFs to README",
+      "Test demo flow end-to-end",
+      "Practice 3-minute project pitch",
+      "Apply to 5 AI engineering roles using RCA agent as portfolio",
+      "Reach out to 3 referrers, mention the project specifically",
+      "Update resume to feature RCA agent",
+    ],
+    prompt: `RCA Agent — Demo Prep & Job Applications Begin.
+Saturday (5.5h):
+- Create 5 polished demo scenarios with sample data
+- Improve UI for demo: better formatting, clear step display
+- Add screenshots/GIFs to README
+- Test demo flow end-to-end
+- Practice 3-minute project pitch
+
+Sunday morning (3h):
+- Apply to 5 AI engineering roles using RCA agent as portfolio
+- Reach out to 3 referrers, mention the project specifically
+- Update resume to feature RCA agent`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Demo Prep", "Job Search", "Portfolio", "Outreach"],
+  },
   // ── WEEK 11 ──────────────────────────────────────────────────────────────
 
   {
@@ -3375,6 +3718,39 @@ Java implementation showing clean OOP.`,
     tags: ["RAG Pipeline LLD", "Strategy Pattern", "Builder Pattern", "AI-Specific LLD", "OOP"],
   },
 
+
+  {
+    id: "p3-w11-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "RCA Agent — Outreach Push & Final Polish",
+    phase: 3,
+    week: 11,
+    keyTopics: [
+      "Polish RCA agent based on any feedback received",
+      "Add 5 more test scenarios",
+      "Apply to 10 new AI engineering roles",
+      "Send 5 personalized referral requests for AI roles",
+      "Update LinkedIn with latest project metrics",
+      "Run final eval, document metrics",
+      "Make sure GitHub README is impressive (badges, screenshots, demo GIF)",
+      "Write a Twitter/X thread about lessons learned",
+    ],
+    prompt: `RCA Agent — Outreach Push & Final Polish.
+Saturday (5.5h):
+- Polish RCA agent based on any feedback received
+- Add 5 more test scenarios
+- Apply to 10 new AI engineering roles
+- Send 5 personalized referral requests for AI roles
+- Update LinkedIn with latest project metrics
+
+Sunday morning (3h):
+- Run final eval, document metrics
+- Make sure GitHub README is impressive (badges, screenshots, demo GIF)
+- Write a Twitter/X thread about lessons learned`,
+    dsaProblems: null,
+    tags: ["RCA Agent", "Outreach", "Job Applications", "Portfolio Polish", "Twitter"],
+  },
   // ── WEEK 12 ──────────────────────────────────────────────────────────────
 
   {
@@ -3599,6 +3975,37 @@ INTERVIEW FOLLOW-UPS: design recommendation system, design rating system`,
     tags: ["Food Delivery", "Swiggy Design", "State Pattern", "Observer Pattern", "LLD"],
   },
 
+
+  {
+    id: "p3-w12-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "Job Search Active Mode — Outreach + Followups",
+    phase: 3,
+    week: 12,
+    keyTopics: [
+      "Apply to 10 AI engineering roles",
+      "Send 5 referral requests",
+      "Follow up on past applications (1-week, 2-week, 4-week followups)",
+      "Update RCA agent based on any feedback from interviews",
+      "Update LinkedIn with new projects/insights",
+      "Sunday review: what's working, what's not",
+      "Maintain outreach momentum across the week",
+    ],
+    prompt: `Job Search Active Mode — Outreach + Followups.
+Saturday (5.5h):
+- Apply to 10 AI engineering roles
+- Send 5 referral requests
+- Follow up on past applications (1-week, 2-week, 4-week followups)
+- Update RCA agent based on any feedback from interviews
+- Update LinkedIn with new projects/insights
+
+Sunday morning (3h):
+- Same as Saturday — keep outreach momentum
+- Write Sunday review: what's working, what's not`,
+    dsaProblems: null,
+    tags: ["Job Search", "Outreach", "Referrals", "Followups", "Application Mode"],
+  },
   // ═══════════════════════════════════════════
   // PHASE 4: INTERVIEW MODE (Weeks 13–16)
   // ═══════════════════════════════════════════
@@ -3819,6 +4226,49 @@ Essentially what LangGraph does — show you understand it at code level.`,
     tags: ["Workflow Engine", "LangGraph Design", "State Machine", "Composite Pattern", "LLD"],
   },
 
+
+  {
+    id: "p4-w13-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "Full Mock Interview Day + Post-Mock Polish",
+    phase: 4,
+    week: 13,
+    keyTopics: [
+      "Run a complete 60-minute mock AI engineering interview",
+      "Structure: 5 min intro → 15 min project deep dive → 15 min AI system design → 15 min conceptual → 10 min behavioral",
+      "Hire / No Hire / Strong Hire assessment with reasoning",
+      "Top 3 strengths and top 3 areas to improve",
+      "1-hour break, then 30 min revise weakest topic + 30 min redo bombed question + journal entry",
+      "Polish RCA agent based on mock interview learnings",
+      "Apply mock interview answers to README and LinkedIn",
+    ],
+    prompt: `Full Mock Interview Day + Post-Mock Polish.
+Saturday (5.5h with breaks):
+Run a complete 60-minute mock AI engineering interview, then debrief.
+STRUCTURE:
+- 5 min: Introduction and project overview
+- 15 min: Deep dive into one of my projects (interviewer picks)
+- 15 min: AI system design question
+- 15 min: Conceptual questions (RAG, agents, production)
+- 10 min: Behavioral (2 STAR questions)
+After the mock:
+- Hire / No Hire / Strong Hire assessment
+- Top 3 strengths, top 3 areas to improve
+- Specific feedback on communication clarity
+- Specific topics to revise this week
+Then 1-hour break.
+After break:
+- 30 min: revise the weakest topic identified
+- 30 min: redo the question I bombed (with prep)
+- 1 hour: write a journal entry about the mock
+
+Sunday morning (3h):
+- Polish based on mock interview learnings
+- Apply mock interview answers to README and LinkedIn`,
+    dsaProblems: null,
+    tags: ["Mock Interview", "Full Simulation", "Debrief", "Self-Review", "Interview Prep"],
+  },
   // ── WEEK 14 ──────────────────────────────────────────────────────────────
 
   {
@@ -4010,6 +4460,39 @@ Talk about your real usage at Blue Yonder (Pack Service feature flag, Snowflake 
     tags: ["Feature Flags", "Strategy Pattern", "Blue Yonder", "Gradual Rollout", "LLD"],
   },
 
+
+  {
+    id: "p4-w14-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "Heavy Job Search Push",
+    phase: 4,
+    week: 14,
+    keyTopics: [
+      "Apply to 15 AI roles in batch",
+      "Follow up on every past application",
+      "LinkedIn outreach: 10 messages to AI engineers at target companies",
+      "Update GitHub: pin top repos, polish READMEs",
+      "Schedule any interviews coming up",
+      "Continue outreach",
+      "Coffee chats / informational interviews if scheduled",
+      "Review and prepare for any upcoming interviews",
+    ],
+    prompt: `Heavy Job Search Push.
+Saturday (5.5h):
+- Apply to 15 AI roles in batch
+- Follow up on every past application
+- LinkedIn outreach: 10 messages to AI engineers at target companies
+- Update GitHub: pin top repos, polish READMEs
+- Schedule any interviews coming up
+
+Sunday morning (3h):
+- Continue outreach
+- Coffee chats / informational interviews if scheduled
+- Review and prepare for any upcoming interviews`,
+    dsaProblems: null,
+    tags: ["Job Search", "Outreach", "LinkedIn", "Batch Applications", "Interview Scheduling"],
+  },
   // ── WEEK 15 ──────────────────────────────────────────────────────────────
 
   {
@@ -4199,6 +4682,35 @@ This is your differentiator — most candidates can't do AI-specific LLD.`,
     tags: ["AI-Specific LLD", "Agent Framework", "RAG Pipeline", "Observability", "LLD"],
   },
 
+
+  {
+    id: "p4-w15-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "Interview Active Mode — Live Debriefs",
+    phase: 4,
+    week: 15,
+    keyTopics: [
+      "Take any interviews scheduled this week",
+      "Debrief immediately after each (what went well, what didn't)",
+      "Update notes based on real interview questions",
+      "Reach out to recruiters for status updates",
+      "Continue debriefs and prep for next round",
+      "Refine answers based on real interview feedback",
+    ],
+    prompt: `Interview Active Mode — Live Debriefs.
+Saturday (5.5h):
+- Take any interviews scheduled this week
+- Debrief immediately after each (what went well, what didn't)
+- Update notes based on real interview questions
+- Reach out to recruiters for status updates
+
+Sunday morning (3h):
+- Continue debriefs and prep
+- Refine answers based on real interview feedback`,
+    dsaProblems: null,
+    tags: ["Interview Mode", "Live Interviews", "Debrief", "Real Feedback", "Iteration"],
+  },
   // ── WEEK 16 ──────────────────────────────────────────────────────────────
 
   {
@@ -4329,6 +4841,43 @@ After: am I ready? What's the one thing I still need to fix before my next real 
     tags: ["Final Mock", "High Pressure", "Week 16", "Interview Simulation", "Dress Rehearsal"],
   },
 
+
+  {
+    id: "p4-w16-rca",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    title: "Final Polish + Rest & Reflect",
+    phase: 4,
+    week: 16,
+    keyTopics: [
+      "Review all notes from past 16 weeks",
+      "Identify the 5 things to remember mid-interview",
+      "Print them on a card to keep near desk",
+      "Make sure RCA agent is in pristine shape",
+      "Make sure LinkedIn and resume are aligned",
+      "Sunday rest: spend time with girlfriend, reflect on 16 weeks",
+      "Journal: how have I changed? What am I now capable of?",
+      "Plan first week of September: active interview mode (prep is done)",
+    ],
+    prompt: `Final Polish + Rest & Reflect.
+Saturday (5.5h) — Final Polish:
+- Review all notes from past 16 weeks
+- Identify the 5 things I'd want to remember mid-interview
+- Print them on a card to keep near my desk
+- Make sure RCA agent is in pristine shape
+- Make sure LinkedIn and resume are aligned
+
+Sunday — Rest + Reflect (do something for yourself):
+- Spend time with girlfriend
+- Reflect on the 16 weeks
+- Journal: how have I changed? What am I now capable of?
+- Plan first week of September: active interview mode
+
+Sep 1 onwards: Active interview mode. The prep is done.
+The next phase is execution, negotiation, decision-making.`,
+    dsaProblems: null,
+    tags: ["Final Polish", "Rest Day", "Reflection", "Pre-Interview", "16-Week Recap"],
+  },
 ];
 
 export const CATEGORIES = ["AI", "HLD", "LLD", "DSA"];
