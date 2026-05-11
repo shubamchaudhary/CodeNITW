@@ -244,7 +244,13 @@ const JobHunt = () => {
                     <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">
                       Phase {group.phase}:{" "}
                       <span className="font-normal text-gray-500 dark:text-gray-400">
-                        {group.phase === 1 ? "Foundations (Weeks 1–4)" : "Depth (Weeks 5–8)"}
+                        {group.phase === 1
+                          ? "Foundations (Weeks 1–4)"
+                          : group.phase === 2
+                          ? "Depth (Weeks 5–8)"
+                          : group.phase === 3
+                          ? "Advanced Topics (Weeks 9–12)"
+                          : "Interview Mode (Weeks 13–16)"}
                       </span>
                     </h2>
                   </div>
