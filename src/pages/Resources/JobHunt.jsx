@@ -40,14 +40,22 @@ const CARD_DAILY_DSA = (() => {
 
 const STORAGE_KEY_COMPLETED = "JobHuntCompleted";
 const STORAGE_KEY_NOTES = "JobHuntNotes";
+const STORAGE_KEY_DSA_COMPLETED = "JobHuntDSACompleted";
+const STORAGE_KEY_DSA_NOTES = "JobHuntDSANotes";
 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
-function calcCategoryStats(completed) {
+function calcCategoryStats(completed, dsaCompleted) {
   return ["AI", "HLD", "LLD", "DSA"].reduce((acc, cat) => {
-    const items = jobHuntPlan.filter((i) => i.categories.includes(cat));
-    const done = items.filter((i) => completed[i.id]).length;
-    acc[cat] = { total: items.length, done, pct: items.length ? Math.round((done / items.length) * 100) : 0 };
+    if (cat === "DSA") {
+      const items = jobHuntPlan.filter((i) => !!CARD_DAILY_DSA[i.id]);
+      const done = items.filter((i) => dsaCompleted[i.id]).length;
+      acc[cat] = { total: items.length, done, pct: items.length ? Math.round((done / items.length) * 100) : 0 };
+    } else {
+      const items = jobHuntPlan.filter((i) => i.categories.includes(cat));
+      const done = items.filter((i) => completed[i.id]).length;
+      acc[cat] = { total: items.length, done, pct: items.length ? Math.round((done / items.length) * 100) : 0 };
+    }
     return acc;
   }, {});
 }
@@ -72,10 +80,16 @@ const JobHunt = () => {
   const [notes, setNotes] = useState(
     () => JSON.parse(localStorage.getItem(STORAGE_KEY_NOTES)) || {}
   );
+  const [dsaCompleted, setDsaCompleted] = useState(
+    () => JSON.parse(localStorage.getItem(STORAGE_KEY_DSA_COMPLETED)) || {}
+  );
+  const [dsaNotes, setDsaNotes] = useState(
+    () => JSON.parse(localStorage.getItem(STORAGE_KEY_DSA_NOTES)) || {}
+  );
   const [openCardId, setOpenCardId] = useState(null);
   const [filter, setFilter] = useState("ALL");
 
-  const categoryStats = useMemo(() => calcCategoryStats(completed), [completed]);
+  const categoryStats = useMemo(() => calcCategoryStats(completed, dsaCompleted), [completed, dsaCompleted]);
 
   const totalItems = jobHuntPlan.length;
   const totalDone = Object.values(completed).filter(Boolean).length;
@@ -83,6 +97,7 @@ const JobHunt = () => {
 
   const filteredItems = useMemo(() => {
     if (filter === "ALL") return jobHuntPlan;
+    if (filter === "DSA") return jobHuntPlan.filter((i) => !!CARD_DAILY_DSA[i.id]);
     return jobHuntPlan.filter((i) => i.categories.includes(filter));
   }, [filter]);
 
@@ -98,6 +113,22 @@ const JobHunt = () => {
     setNotes((prev) => {
       const updated = { ...prev, [id]: val };
       localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const toggleDsaComplete = useCallback((id) => {
+    setDsaCompleted((prev) => {
+      const updated = { ...prev, [id]: !prev[id] };
+      localStorage.setItem(STORAGE_KEY_DSA_COMPLETED, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const saveDsaNote = useCallback((id, val) => {
+    setDsaNotes((prev) => {
+      const updated = { ...prev, [id]: val };
+      localStorage.setItem(STORAGE_KEY_DSA_NOTES, JSON.stringify(updated));
       return updated;
     });
   }, []);
@@ -336,11 +367,16 @@ const JobHunt = () => {
                             isOpen={openCardId === item.id}
                             isComplete={!!completed[item.id]}
                             note={notes[item.id] || ""}
+                            dsaProblem={CARD_DAILY_DSA[item.id] || null}
+                            isDsaComplete={!!dsaCompleted[item.id]}
+                            dsaNote={dsaNotes[item.id] || ""}
                             onToggleOpen={() =>
                               setOpenCardId((prev) => (prev === item.id ? null : item.id))
                             }
                             onToggleComplete={() => toggleComplete(item.id)}
                             onNoteChange={(val) => saveNote(item.id, val)}
+                            onToggleDsaComplete={() => toggleDsaComplete(item.id)}
+                            onDsaNoteChange={(val) => saveDsaNote(item.id, val)}
                           />
                         </motion.div>
                       ))}
@@ -358,14 +394,20 @@ const JobHunt = () => {
 
 // ─── PlanCard ─────────────────────────────────────────────────────────────────
 
-function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComplete, onNoteChange }) {
+function PlanCard({ item, isOpen, isComplete, note, dsaProblem, isDsaComplete, dsaNote, onToggleOpen, onToggleComplete, onNoteChange, onToggleDsaComplete, onDsaNoteChange }) {
   const [copied, setCopied] = useState(false);
   const debounceRef = useRef(null);
+  const dsaDebounceRef = useRef(null);
   const cardRef = useRef(null);
   const [localNote, setLocalNote] = useState(note);
+  const [localDsaNote, setLocalDsaNote] = useState(dsaNote);
 
   useEffect(() => { setLocalNote(note); }, [note]);
-  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
+  useEffect(() => { setLocalDsaNote(dsaNote); }, [dsaNote]);
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (dsaDebounceRef.current) clearTimeout(dsaDebounceRef.current);
+  }, []);
 
   useEffect(() => {
     if (isOpen && cardRef.current) {
@@ -388,6 +430,16 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
       debounceRef.current = setTimeout(() => onNoteChange(val), 400);
     },
     [onNoteChange]
+  );
+
+  const handleDsaNoteInput = useCallback(
+    (e) => {
+      const val = e.target.value;
+      setLocalDsaNote(val);
+      if (dsaDebounceRef.current) clearTimeout(dsaDebounceRef.current);
+      dsaDebounceRef.current = setTimeout(() => onDsaNoteChange(val), 400);
+    },
+    [onDsaNoteChange]
   );
 
   const copyPrompt = () => {
@@ -434,6 +486,11 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
               {cat}
             </span>
           ))}
+          {dsaProblem && !item.categories.includes("DSA") && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${CATEGORY_CONFIG["DSA"].badge}`}>
+              DSA
+            </span>
+          )}
         </div>
 
         {/* Title */}
@@ -458,6 +515,9 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
         <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
           {localNote && (
             <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>
+          )}
+          {isDsaComplete && (
+            <span title="DSA problem done" className="text-orange-400 dark:text-orange-500 text-[10px] font-bold">DSA✓</span>
           )}
           <button
             onClick={onToggleComplete}
@@ -519,35 +579,85 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
                 </ul>
               </div>
 
-              {/* Daily DSA Problem (round-robin across Most Asked sections) */}
-              {CARD_DAILY_DSA[item.id] && (
+              {/* Daily DSA Problem */}
+              {dsaProblem && (
                 <div className="mb-4">
                   <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <span className="w-1 h-3 rounded-full bg-gradient-to-b from-orange-500 to-amber-500" />
                     Daily DSA Problem
                     <span className="text-[10px] font-normal normal-case text-gray-400">
-                      (Day {CARD_DAILY_DSA[item.id].day} · 45 min · move on after 25 min if stuck)
+                      (Day {dsaProblem.day} · 45 min · move on after 25 min if stuck)
                     </span>
                   </h4>
-                  <a
-                    href={CARD_DAILY_DSA[item.id].Question_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors group"
-                  >
-                    <span className="text-[10px] font-bold text-orange-500 dark:text-orange-400">
-                      #{CARD_DAILY_DSA[item.id].Q_No}
-                    </span>
-                    <span className="text-xs text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-300 transition-colors">
-                      {CARD_DAILY_DSA[item.id].Question}
-                    </span>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-                      {CARD_DAILY_DSA[item.id].section}
-                    </span>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 hidden sm:inline">
-                      · {CARD_DAILY_DSA[item.id].Priority}
-                    </span>
-                  </a>
+                  {/* Problem row with its own checkbox */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <button
+                      onClick={onToggleDsaComplete}
+                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
+                        isDsaComplete
+                          ? "bg-orange-500 border-orange-500"
+                          : "border-orange-300 dark:border-orange-700 hover:border-orange-400"
+                      }`}
+                      title={isDsaComplete ? "Mark DSA incomplete" : "Mark DSA done"}
+                    >
+                      {isDsaComplete && (
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
+                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                    <a
+                      href={dsaProblem.Question_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/10 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors group"
+                    >
+                      <span className="text-[10px] font-bold text-orange-500 dark:text-orange-400">
+                        #{dsaProblem.Q_No}
+                      </span>
+                      <span className={`text-xs transition-colors ${isDsaComplete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-300"}`}>
+                        {dsaProblem.Question}
+                      </span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                        {dsaProblem.section}
+                      </span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 hidden sm:inline">
+                        · {dsaProblem.Priority}
+                      </span>
+                    </a>
+                  </div>
+                  {/* DSA-specific notes */}
+                  <div className="rounded-xl border border-orange-100 dark:border-orange-900/40 bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-4 shadow-inner">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1 h-4 rounded-full bg-gradient-to-b from-orange-400 to-amber-400" />
+                        DSA Solution Notes
+                      </h4>
+                      <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">
+                        auto-saved
+                      </span>
+                    </div>
+                    <textarea
+                      value={localDsaNote}
+                      onChange={handleDsaNoteInput}
+                      placeholder="Approach, time/space complexity, key insight, edge cases..."
+                      rows={5}
+                      className="w-full p-4 text-sm rounded-lg border border-orange-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 dark:focus:border-orange-500 resize-y min-h-[120px] transition-all leading-relaxed shadow-sm"
+                    />
+                    <div className="flex items-center justify-between mt-2 min-h-[16px]">
+                      {localDsaNote ? (
+                        <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1.5">
+                          <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8">
+                            <circle cx="4" cy="4" r="4" />
+                          </svg>
+                          Saved
+                        </p>
+                      ) : <span />}
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                        {localDsaNote.length} chars
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
 
