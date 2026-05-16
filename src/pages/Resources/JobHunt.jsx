@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { jobHuntPlan, CATEGORY_CONFIG, AI_PRIORITY, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
+import { jobHuntPlan, CATEGORY_CONFIG, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
 import mostAskedData from "../../Data/MostAskedQuestions.json";
 
 const ALLOWED_EMAIL = "beshubam@gmail.com";
@@ -479,7 +479,7 @@ function PlanCard({ item, isOpen, isComplete, note, dsaProblem, isDsaComplete, d
         {/* Priority + Category badges */}
         <div className="flex items-center gap-1 shrink-0">
           {(() => {
-            const pr = item.priority || AI_PRIORITY[item.id];
+            const pr = item.priority;
             return pr ? (
               <span
                 title={`GenAI priority ${pr} (P0 = highest)`}
