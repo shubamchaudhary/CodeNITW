@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { jobHuntPlan, CATEGORY_CONFIG } from "../../Data/JobHuntPlan";
+import { jobHuntPlan, CATEGORY_CONFIG, AI_PRIORITY, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
 import mostAskedData from "../../Data/MostAskedQuestions.json";
 
 const ALLOWED_EMAIL = "beshubam@gmail.com";
@@ -476,8 +476,19 @@ function PlanCard({ item, isOpen, isComplete, note, dsaProblem, isDsaComplete, d
         className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none"
         onClick={onToggleOpen}
       >
-        {/* Category badges */}
+        {/* Priority + Category badges */}
         <div className="flex items-center gap-1 shrink-0">
+          {(() => {
+            const pr = item.priority || AI_PRIORITY[item.id];
+            return pr ? (
+              <span
+                title={`GenAI priority ${pr} (P0 = highest)`}
+                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${PRIORITY_CONFIG[pr]}`}
+              >
+                {pr}
+              </span>
+            ) : null;
+          })()}
           {item.categories.map((cat) => (
             <span
               key={cat}
