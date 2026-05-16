@@ -12,6 +12,7 @@ export const jobHuntPlan = [
     id: "p1-w1-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Document Loading & Chunking Strategies",
     phase: 1,
     week: 1,
@@ -111,6 +112,7 @@ Minutes 25-35: Scale, monitoring, tradeoffs
     id: "p1-w1-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Embedding Models & Vector Stores",
     phase: 1,
     week: 1,
@@ -214,6 +216,7 @@ Discuss:
     id: "p1-w1-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Retrieval Strategies & Query Processing",
     phase: 1,
     week: 1,
@@ -313,6 +316,7 @@ Focus on:
     id: "p1-w1-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RCA Agent Phase 1 — Project Setup & Basic ReAct Loop",
     phase: 1,
     week: 1,
@@ -355,6 +359,7 @@ Sunday morning (3h):
     id: "p1-w2-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Reranking & Cross-Encoder Models",
     phase: 1,
     week: 2,
@@ -468,6 +473,7 @@ Minutes 25-35: Scale & monitoring
     id: "p1-w2-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Prompt Engineering for RAG & LLM Applications",
     phase: 1,
     week: 2,
@@ -586,6 +592,7 @@ Discuss:
     id: "p1-w2-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RAG Failure Modes & Debugging",
     phase: 1,
     week: 2,
@@ -699,6 +706,7 @@ Connect to your experience:
     id: "p1-w2-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RCA Agent Phase 2 — Error Pattern Retrieval (pgvector)",
     phase: 1,
     week: 2,
@@ -733,6 +741,7 @@ Sunday morning (3h):
     id: "p1-w3-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "What Are Agents — ReAct Pattern Deep Dive",
     phase: 1,
     week: 3,
@@ -850,6 +859,7 @@ THIS IS YOUR RCA AGENT SYSTEM DESIGN. Practice until flawless.`,
     id: "p1-w3-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Tool Calling — How LLMs Use Tools",
     phase: 1,
     week: 3,
@@ -965,6 +975,7 @@ Discuss:
     id: "p1-w3-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Agent Memory Systems",
     phase: 1,
     week: 3,
@@ -1085,6 +1096,7 @@ Discuss:
     id: "p1-w3-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "RCA Agent Phase 2 Continue — Pattern Library Expansion",
     phase: 1,
     week: 3,
@@ -1119,6 +1131,7 @@ Sunday morning (3h):
     id: "p1-w4-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Plan-and-Execute & Multi-Agent Architectures",
     phase: 1,
     week: 4,
@@ -1241,6 +1254,7 @@ Minutes 25-35: Scale & reliability
     id: "p1-w4-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Error Handling & Resilience in AI Agents",
     phase: 1,
     week: 4,
@@ -1354,6 +1368,7 @@ Connect to your experience:
     id: "p1-w4-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Guardrails & Safety for AI Agents",
     phase: 1,
     week: 4,
@@ -1471,6 +1486,7 @@ Discuss:
     id: "p1-w4-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RCA Agent Phase 3 — Evaluation Framework",
     phase: 1,
     week: 4,
@@ -1510,6 +1526,7 @@ Sunday morning (3h):
     id: "p2-w5-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "LangGraph Fundamentals — StateGraph, Nodes, Edges",
     phase: 2,
     week: 5,
@@ -1621,6 +1638,7 @@ Minutes 25-35: Scale
     id: "p2-w5-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "LangGraph Checkpointing & Persistence",
     phase: 2,
     week: 5,
@@ -1738,6 +1756,7 @@ Advanced:
     id: "p2-w5-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "LangGraph Tool Nodes & Advanced Routing",
     phase: 2,
     week: 5,
@@ -1855,6 +1874,7 @@ Discuss:
     id: "p2-w5-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "RCA Agent Phase 3 Continue — Eval Suite & First LinkedIn Post",
     phase: 2,
     week: 5,
@@ -1891,6 +1911,7 @@ Sunday morning (3h):
     id: "p2-w6-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "HITL — interrupt, Command, Human Approval Flows",
     phase: 2,
     week: 6,
@@ -2007,6 +2028,7 @@ Minutes 25-35: Scale, reliability
     id: "p2-w6-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Subgraphs, Parallel Execution & Map-Reduce in LangGraph",
     phase: 2,
     week: 6,
@@ -2121,6 +2143,7 @@ Discuss:
     id: "p2-w6-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Building a Complete Agent End-to-End in LangGraph",
     phase: 2,
     week: 6,
@@ -2239,6 +2262,7 @@ Discuss:
     id: "p2-w6-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RCA Agent Phase 4 — HITL (Human-in-the-Loop)",
     phase: 2,
     week: 6,
@@ -2273,6 +2297,7 @@ Sunday morning (3h):
     id: "p2-w7-1",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Prompt Engineering for Agents",
     phase: 2,
     week: 7,
@@ -2362,6 +2387,7 @@ This should be one of your strongest HLD answers — you built this.`,
     id: "p2-w7-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Production LLM Error Handling",
     phase: 2,
     week: 7,
@@ -2449,6 +2475,7 @@ Interview follow-up: design at scale (millions of scheduled tasks)`,
     id: "p2-w7-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Cost Optimization & Model Routing",
     phase: 2,
     week: 7,
@@ -2536,6 +2563,7 @@ Cover:
     id: "p2-w7-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RCA Agent Phase 4 Continue — Observability with LangSmith",
     phase: 2,
     week: 7,
@@ -2574,6 +2602,7 @@ Sunday morning (3h):
     id: "p2-w8-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Caching Strategies for LLM Apps",
     phase: 2,
     week: 8,
@@ -2664,6 +2693,7 @@ This is YOUR work — should be a confident, detailed answer.`,
     id: "p2-w8-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Observability & Monitoring for AI Systems",
     phase: 2,
     week: 8,
@@ -2752,6 +2782,7 @@ Interview follow-up: design for nationwide ATM network with 10K ATMs`,
     id: "p2-w8-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Guardrails, Safety & Prompt Injection",
     phase: 2,
     week: 8,
@@ -2842,6 +2873,7 @@ The RCA agent's guardrailed SQL execution is a key design decision — help me a
     id: "p2-w8-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "RCA Agent — Web UI, Demo & Deployment",
     phase: 2,
     week: 8,
@@ -2882,6 +2914,7 @@ Sunday morning (3h):
     id: "p3-w9-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Building Evaluation Pipelines for RAG & Agents",
     phase: 3,
     week: 9,
@@ -2967,6 +3000,7 @@ This is asked frequently. Practice the full structured 35-minute walkthrough.`,
     id: "p3-w9-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Structured Outputs from LLMs",
     phase: 3,
     week: 9,
@@ -3057,6 +3091,7 @@ For each: when to use, Java code, example from my Blue Yonder experience. Interv
     id: "p3-w9-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Agentic RAG",
     phase: 3,
     week: 9,
@@ -3143,11 +3178,117 @@ SOLID principles — how each pattern embodies SOLID.`,
     tags: ["Design Patterns", "Behavioral Patterns", "Strategy", "Observer", "Java"],
   },
 
+  {
+    id: "p3-w9-7",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    priority: "P1",
+    title: "GraphRAG & Knowledge-Graph Retrieval",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Why vector RAG fails: multi-hop questions, global/summarization questions, entity-relationship queries",
+      "Knowledge graph basics: entities (nodes), relationships (edges), properties — vs vector index",
+      "Graph construction with an LLM: entity + relation extraction, deduplication, schema/ontology design",
+      "Microsoft GraphRAG: community detection (Leiden), hierarchical community summaries, global vs local search",
+      "Hybrid retrieval: vector search to find entry nodes, then graph traversal to expand context",
+      "Storage options: Neo4j, property graphs in PostgreSQL (Apache AGE), in-memory graphs",
+      "Cost/latency tradeoff: graph build is expensive and slow — when it's worth it vs plain RAG",
+      "When NOT to use GraphRAG: small corpora, simple lookup Q&A, tight latency budgets",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. Context: I built DeepDocAI (vector RAG with pgvector/HNSW) and I'm building an RCA agent that does multi-source retrieval. Teach me GraphRAG & knowledge-graph retrieval thoroughly.
+
+Cover, with depth:
+1. THE PROBLEM: concretely show 3 query types where pure vector RAG fails (multi-hop reasoning, global/"summarize the whole corpus" questions, entity-relationship questions). Give a worked failing example for each.
+2. KNOWLEDGE GRAPH FUNDAMENTALS: nodes/edges/properties, ontology vs schema-free, how this differs from a vector index — with a small diagram described in text.
+3. GRAPH CONSTRUCTION PIPELINE: LLM-based entity + relationship extraction, deduplication/entity resolution, chunk→triple flow. Give a concrete Python sketch using an LLM to extract (entity, relation, entity) triples.
+4. MICROSOFT GraphRAG: explain community detection (Leiden), hierarchical community summaries, and the difference between global search and local search. When each is used.
+5. HYBRID RETRIEVAL: vector search to locate entry nodes, then k-hop graph expansion. Show how I'd combine this with my existing pgvector setup.
+6. STORAGE: compare Neo4j vs PostgreSQL+Apache AGE vs in-memory. Pros/cons table.
+7. TRADEOFFS: build cost, indexing latency, freshness/incremental updates, when GraphRAG is NOT worth it.
+8. INTERVIEW PREP: 8 likely follow-up questions with crisp model answers, and one system-design-style prompt: "design a RAG system for a 10K-document enterprise wiki where users ask cross-document analytical questions."
+End with: how I would pitch adding a graph layer to DeepDocAI as a v2 — what I'd say in an interview and what I'd actually build first.`,
+    dsaProblems: [
+      { name: "Course Schedule", number: 207, difficulty: "Medium", pattern: "Graph / Topological Sort" },
+      { name: "Number of Islands", number: 200, difficulty: "Medium", pattern: "Graph / BFS-DFS" },
+    ],
+    tags: ["GraphRAG", "Knowledge Graph", "Neo4j", "Multi-hop", "RAG"],
+  },
+
+  {
+    id: "p3-w9-8",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    priority: "P2",
+    title: "Multimodal RAG & Vision",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Why text-only RAG drops information: charts, diagrams, scanned tables, screenshots, photos",
+      "Three approaches: (a) caption images with a VLM then embed text, (b) multimodal embeddings (CLIP/SigLIP), (c) feed page images directly to a vision LLM",
+      "ColPali / ColQwen: late-interaction retrieval over page images — skip OCR entirely",
+      "Table extraction: why tables break naive chunking; structured extraction strategies",
+      "Multimodal embedding models: CLIP, SigLIP, Cohere Embed v3 multimodal, Voyage multimodal — tradeoffs",
+      "Index design: storing image refs + bounding boxes + page metadata alongside vectors",
+      "Generation: passing retrieved images to a vision model (Gemini, GPT-4o-class) with grounded prompting",
+      "Cost/latency: vision tokens are expensive — when caption-then-embed beats direct image RAG",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. Context: my DeepDocAI currently does text-only RAG over PDFs/DOCX and loses information in tables, charts and scanned pages. Teach me multimodal RAG & vision in depth.
+
+Deliver:
+1. THE GAP: with concrete document examples (a financial report with charts, a scanned invoice, an architecture diagram), explain exactly what text-only extraction loses and why answers degrade.
+2. THE THREE ARCHITECTURES, each with a diagram-in-text, pros/cons, cost profile, and Python sketch:
+   a. Caption-then-embed (VLM generates description → embed text)
+   b. Multimodal embeddings (CLIP/SigLIP shared space, image+text in one index)
+   c. Direct vision LLM over page images (and the ColPali/ColQwen late-interaction approach)
+3. TABLES specifically: why they break chunking, and 2-3 robust extraction strategies (layout models, VLM-to-markdown, structured output).
+4. MODEL CHOICES: compare CLIP vs SigLIP vs Cohere Embed v3 multimodal vs Voyage multimodal — accuracy/cost/latency table.
+5. INDEX & METADATA design: how to store image references, page numbers, bounding boxes alongside pgvector rows so retrieval can return the right visual.
+6. GENERATION: how to ground a vision model on retrieved images + text and cite the source page.
+7. INTERVIEW PREP: 6 follow-up Q&A and a design prompt: "make DeepDocAI answer questions about charts in 100-page PDFs." Give the staged plan I'd present (v1 cheap caption-then-embed → v2 ColPali) and the tradeoffs I'd defend.`,
+    dsaProblems: null,
+    tags: ["Multimodal RAG", "Vision", "CLIP", "ColPali", "DeepDocAI"],
+  },
+
+  {
+    id: "p3-w9-9",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    priority: "P0",
+    title: "Rigorous Evaluation — RAGAS, LLM-as-Judge & Regression Suites",
+    phase: 3,
+    week: 9,
+    keyTopics: [
+      "Why 'it looks good in the demo' fails: no regression safety net, silent quality drift on prompt/model changes",
+      "RAG metrics: faithfulness, answer relevancy, context precision, context recall — what each catches",
+      "RAGAS framework: how it computes metrics, what it needs (questions, contexts, answers, ground truth)",
+      "Agent/trajectory evaluation: tool-selection correctness, step efficiency, final-task success",
+      "LLM-as-judge: pairwise vs pointwise, rubric design, position/verbosity/self-enhancement bias and mitigations",
+      "Building a golden dataset: sizing, stratifying by query type, who labels, how to keep it fresh",
+      "CI gating: eval as a regression suite that blocks prompt/model PRs (ties to my Blue Yonder PR-gating mindset)",
+      "Online eval: production sampling, user feedback signals, drift detection",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. Context: at Blue Yonder I built a PR-gating integration test framework, and I have an RCA agent + DeepDocAI. I want to bring that same regression-safety rigor to LLM systems. Teach me LLM/RAG/agent evaluation properly — this is a P0 senior-signal topic.
+
+Deliver:
+1. WHY EVAL: show how a prompt tweak or model upgrade silently regresses quality with no safety net; frame eval as the LLM equivalent of my CI integration tests.
+2. RAG METRICS: define faithfulness, answer relevancy, context precision, context recall — for each, the exact failure it catches and a worked example. Explain how to compute them.
+3. RAGAS: what it is, the data it needs, a runnable Python example evaluating a small RAG set, and how to read the scores.
+4. AGENT EVALUATION: trajectory/tool-selection correctness, step efficiency, task success rate — how to evaluate my RCA agent end-to-end, not just final answer.
+5. LLM-AS-JUDGE: pointwise vs pairwise, how to write a good rubric, the known biases (position, verbosity, self-enhancement) and concrete mitigations; when to trust it vs human labels.
+6. GOLDEN DATASET: how to build one for the RCA agent — size, stratification by scenario type, labeling process, refresh cadence.
+7. CI INTEGRATION: design an eval suite that runs on every prompt/model-config PR and blocks merge on regression — describe the pipeline like I'd present my Blue Yonder framework.
+8. ONLINE EVAL: production sampling, capturing user thumbs, drift detection.
+9. INTERVIEW PREP: 8 follow-up Q&A and a design prompt "how do you know your RAG system is good and stays good?" with a structured model answer.`,
+    dsaProblems: null,
+    tags: ["Evaluation", "RAGAS", "LLM-as-Judge", "Regression", "Observability"],
+  },
 
   {
     id: "p3-w9-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "RCA Agent — Multi-Step Investigations & Public Sharing",
     phase: 3,
     week: 9,
@@ -3182,6 +3323,7 @@ Sunday morning (3h):
     id: "p3-w10-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Text-to-SQL Agent Design",
     phase: 3,
     week: 10,
@@ -3268,6 +3410,7 @@ Relate to your HikariCP + Caffeine metadata caching at Blue Yonder.`,
     id: "p3-w10-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Context Window Management",
     phase: 3,
     week: 10,
@@ -3352,6 +3495,7 @@ For each pattern: code example, use case from my Blue Yonder experience, common 
     id: "p3-w10-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Fine-Tuning vs RAG vs Prompting — Decision Framework",
     phase: 3,
     week: 10,
@@ -3430,11 +3574,147 @@ Prepare with real code-level examples I can describe verbally.`,
     tags: ["SOLID", "OOP Design", "Blue Yonder", "Spring DI", "Java"],
   },
 
+  {
+    id: "p3-w10-7",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    priority: "P0",
+    title: "MCP — Model Context Protocol (Tool & Context Exposure)",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "What MCP is: an open standard for exposing tools, resources and prompts to any LLM client (the 'USB-C for AI tools')",
+      "Why it exists: before MCP every agent re-implemented bespoke tool integrations (N×M problem)",
+      "Architecture: MCP host/client ↔ MCP server; transports (stdio, Streamable HTTP); JSON-RPC messages",
+      "Primitives: tools (model-invoked actions), resources (readable context), prompts (reusable templates)",
+      "Building an MCP server: defining tools, schemas, auth, returning structured results",
+      "Connecting MCP to LangGraph/agents: tools discovered at runtime, not hardcoded",
+      "Security: tool poisoning, confused-deputy, prompt injection via tool descriptions, scoping & approval",
+      "MCP vs plain function-calling vs a tool registry: when the standard actually buys you something",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. MCP (Model Context Protocol) is now commonly asked at this level and my plan had a gap here. Context: my RCA agent has hardcoded tools (SQL runner, log search) wired into a LangGraph graph. Teach me MCP thoroughly and practically.
+
+Deliver:
+1. MENTAL MODEL: what MCP is and the exact problem it solves (the N×M bespoke-integration problem) — analogy + before/after diagram in text.
+2. ARCHITECTURE: host vs client vs server, the stdio and Streamable HTTP transports, the JSON-RPC message lifecycle (initialize → list tools → call tool). Walk one full request/response.
+3. PRIMITIVES: tools vs resources vs prompts — when to use each, with concrete examples from my RCA agent (e.g. 'run_sql' as a tool, 'incident_runbook' as a resource).
+4. BUILD IT: a minimal Python MCP server exposing a read-only SQL tool with an input schema and structured result; then how a client/agent discovers and calls it.
+5. INTEGRATION: how to plug MCP tools into a LangGraph agent so tools are discovered at runtime instead of hardcoded — show the wiring.
+6. SECURITY: tool poisoning, confused-deputy, prompt injection through tool descriptions, over-broad scopes — and the concrete mitigations (allow-lists, human approval, schema validation, sandboxing). Tie to my existing read-only/guardrailed SQL approach.
+7. WHEN NOT TO: MCP vs plain function-calling vs an internal tool registry — be honest about overhead.
+8. INTERVIEW PREP: 8 follow-up Q&A and a design prompt: "expose your RCA agent's capabilities to other teams' agents safely." Give the structured answer I'd deliver and how I'd talk about retrofitting MCP into my RCA agent as a concrete next step.`,
+    dsaProblems: [
+      { name: "Implement Trie (Prefix Tree)", number: 208, difficulty: "Medium", pattern: "Design / Trie" },
+    ],
+    tags: ["MCP", "Tool Calling", "Agents", "Protocol", "RCA Agent"],
+  },
+
+  {
+    id: "p3-w10-8",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    priority: "P1",
+    title: "Multi-Agent Frameworks Compared — LangGraph vs CrewAI vs AutoGen vs OpenAI Agents SDK vs A2A",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "The framework landscape: LangGraph, CrewAI, AutoGen / AG2, OpenAI Agents SDK, LlamaIndex Workflows",
+      "Orchestration models: explicit graph/state machine vs role-based crews vs conversational group chat",
+      "Control vs convenience: how much the framework hides, and why production teams pick explicit control",
+      "A2A (Agent-to-Agent protocol): agents as services discovering and delegating to each other — vs MCP (tools)",
+      "Orchestration topologies: supervisor/orchestrator-worker, hierarchical, sequential, group chat, swarm",
+      "State, memory and handoffs across agents; failure isolation and retries in multi-agent systems",
+      "Cost/latency blow-up of naive multi-agent; when a single well-prompted agent beats a crew",
+      "Defending 'why LangGraph' for my RCA agent against each alternative",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. I built my RCA agent on LangGraph; interviewers increasingly ask "why this framework, not X?" Teach me the multi-agent framework landscape so I can answer with authority.
+
+Deliver:
+1. LANDSCAPE TABLE: LangGraph, CrewAI, AutoGen/AG2, OpenAI Agents SDK, LlamaIndex Workflows — for each: orchestration model, abstraction level, state/memory handling, streaming/HITL support, production-readiness, best-fit use case.
+2. ORCHESTRATION MODELS explained: explicit graph/state machine vs role-based crew vs conversational group chat — diagram-in-text for each and the failure modes of each.
+3. TOPOLOGIES: supervisor/orchestrator-worker, hierarchical, sequential pipeline, group chat, swarm/handoff — when each is appropriate, with a concrete example mapped to a real problem.
+4. PROTOCOLS: explain A2A (agent-to-agent) and how it differs from and complements MCP (tools/context). Where each fits in a larger system.
+5. CONTROL vs CONVENIENCE: why many production teams choose explicit graphs; the hidden costs (debuggability, cost explosion, non-determinism) of high-abstraction crews.
+6. COST/LATENCY: show how naive multi-agent multiplies tokens and latency, and the heuristic for "do I even need multiple agents?"
+7. DEFEND MY CHOICE: a crisp, interview-ready argument for why LangGraph fits my RCA agent (control over state, checkpointing, HITL, observability) — and an honest case for when I'd reach for CrewAI or OpenAI Agents SDK instead.
+8. INTERVIEW PREP: 8 follow-up Q&A and a design prompt: "design a multi-agent system for automated incident response" with the structured answer I'd give.`,
+    dsaProblems: null,
+    tags: ["Multi-Agent", "LangGraph", "CrewAI", "AutoGen", "A2A"],
+  },
+
+  {
+    id: "p3-w10-9",
+    categories: ["AI"],
+    primaryCategory: "AI",
+    priority: "P2",
+    title: "Fine-Tuning Deep Dive — SFT, LoRA/QLoRA & DPO/RLHF Intuition",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Decision recap: prompt → RAG → fine-tune ladder, and the real triggers to fine-tune (format/style/latency/cost, not knowledge)",
+      "Full fine-tuning vs parameter-efficient (PEFT); why LoRA works (low-rank adapters), rank/alpha intuition",
+      "QLoRA: 4-bit quantized base + LoRA adapters — how it makes single-GPU tuning feasible",
+      "SFT data: instruction/response format, dataset size rules of thumb, quality > quantity, contamination",
+      "Preference tuning intuition: RLHF (reward model + PPO) vs DPO (direct, no reward model) — at a conceptual level",
+      "Evaluation of a fine-tune: held-out set, regression vs base, catastrophic forgetting",
+      "Serving fine-tuned models: adapter hot-swapping, multi-LoRA serving, cost model",
+      "Interview framing: as a backend SDE2, when I'd push back on 'just fine-tune it'",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. I'm a backend engineer (not an ML researcher) — interviewers expect tradeoff fluency on fine-tuning, not that I train models daily. The plan had a decision-framework card but not the depth. Teach me fine-tuning at the right depth.
+
+Deliver:
+1. THE LADDER: prompt engineering → RAG → fine-tuning. The concrete triggers that actually justify fine-tuning (output format/style consistency, domain tone, latency/cost from shorter prompts, tool-use reliability) vs the common mistake of fine-tuning to "add knowledge" (and why RAG wins there).
+2. PEFT INTUITION: full fine-tune vs LoRA — explain low-rank adapters simply (why a small ΔW works), what rank and alpha control, and the memory math at a high level. Then QLoRA: 4-bit base + adapters, why this enables single-GPU tuning.
+3. SFT DATA: the instruction/response format, dataset size rules of thumb, why quality and dedup beat volume, and train/eval contamination pitfalls. Give a tiny worked dataset example.
+4. PREFERENCE TUNING (intuition only, no heavy math): RLHF (reward model + PPO loop) vs DPO (skip the reward model, optimize directly on preference pairs) — when each is used and why DPO became popular.
+5. EVALUATION: how to prove a fine-tune helped — held-out eval, regression vs the base model, detecting catastrophic forgetting.
+6. SERVING: LoRA adapter hot-swap / multi-LoRA serving and the cost implications vs a hosted API model.
+7. SDE2 FRAMING: a crisp script for pushing back in an interview when someone says "just fine-tune it" — the questions I'd ask and the cheaper alternatives I'd propose first.
+8. INTERVIEW PREP: 8 follow-up Q&A and a scenario: "support wants the model to always answer in our house format and cite policy IDs — fine-tune or not?" with my structured reasoning.`,
+    dsaProblems: null,
+    tags: ["Fine-Tuning", "LoRA", "QLoRA", "DPO", "RLHF"],
+  },
+
+  {
+    id: "p3-w10-11",
+    categories: ["AI", "DSA"],
+    primaryCategory: "AI",
+    priority: "P2",
+    title: "LLM Inference & Serving — Latency, Throughput & Cost",
+    phase: 3,
+    week: 10,
+    keyTopics: [
+      "Inference anatomy: prefill vs decode, why decode is memory-bandwidth bound, the KV cache",
+      "Latency metrics that matter: TTFT (time to first token), TPOT (time per output token), p95/p99",
+      "Throughput techniques: continuous batching, PagedAttention (vLLM), why naive batching wastes GPU",
+      "Quantization (INT8/INT4/FP8) and distillation: quality vs cost/latency tradeoffs",
+      "Streaming responses (SSE/token streaming) and why it transforms perceived latency in agents/RAG",
+      "Speculative decoding and prompt/prefix caching for repeated system prompts (ties to my caching work)",
+      "Hosted API vs self-hosted (vLLM/TGI): cost model, when each makes sense at SDE2 scale",
+      "Designing latency budgets for a RAG/agent request: where the milliseconds actually go",
+    ],
+    prompt: `You are a senior GenAI engineer mentoring me for SDE2 GenAI interviews. At Blue Yonder I owned latency/timeout work (async routing, connection pooling) — interviewers expect me to own LLM latency and cost SLAs too. Teach me LLM inference & serving at SDE2 depth (systems-level, not GPU-kernel level).
+
+Deliver:
+1. INFERENCE ANATOMY: prefill vs decode phases, why decode is memory-bandwidth bound, and what the KV cache is and why it dominates memory. Explain simply with a diagram-in-text.
+2. THE METRICS: TTFT, TPOT, end-to-end p95/p99, throughput (tokens/sec, requests/sec) — define each and which one the user actually feels.
+3. THROUGHPUT: continuous (in-flight) batching and PagedAttention (vLLM) — explain why naive request batching wastes the GPU and how these fix it.
+4. MODEL-SIDE LEVERS: quantization (INT8/INT4/FP8) and distillation — the quality/latency/cost tradeoff and how to decide.
+5. SYSTEM-SIDE LEVERS: token streaming (SSE) and its effect on perceived latency in agents/RAG; prefix/prompt caching for repeated system prompts (connect to the caching strategies I already studied); speculative decoding intuition.
+6. BUILD vs BUY: hosted API vs self-hosted vLLM/TGI — a cost model with example numbers and the break-even reasoning at startup/SDE2 scale.
+7. LATENCY BUDGET EXERCISE: take a RAG request (embed query → vector search → rerank → LLM generate, streamed) and walk through where every chunk of the latency budget goes and what I'd optimize first.
+8. INTERVIEW PREP: 8 follow-up Q&A and a design prompt: "your agent's p95 latency is 9s, target is 3s — what do you do?" with a prioritized, structured answer.`,
+    dsaProblems: [
+      { name: "LRU Cache", number: 146, difficulty: "Medium", pattern: "Design / Hash + DLL" },
+    ],
+    tags: ["Inference", "vLLM", "Latency", "Quantization", "Serving"],
+  },
 
   {
     id: "p3-w10-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "RCA Agent — Demo Prep & Job Applications Begin",
     phase: 3,
     week: 10,
@@ -3469,6 +3749,7 @@ Sunday morning (3h):
     id: "p3-w11-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "DeepDocAI End-to-End Walkthrough Preparation",
     phase: 3,
     week: 11,
@@ -3550,6 +3831,7 @@ Cover:
     id: "p3-w11-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "RCA Agent End-to-End Walkthrough Preparation",
     phase: 3,
     week: 11,
@@ -3640,6 +3922,7 @@ DEMONSTRATE: Clean OOP, SOLID principles, extensibility (easy to add new tools/a
     id: "p3-w11-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P0",
     title: "Inventory Ops Agent Walkthrough Preparation",
     phase: 3,
     week: 11,
@@ -3723,6 +4006,7 @@ Java implementation showing clean OOP.`,
     id: "p3-w11-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "RCA Agent — Outreach Push & Final Polish",
     phase: 3,
     week: 11,
@@ -3757,6 +4041,7 @@ Sunday morning (3h):
     id: "p3-w12-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Behavioral STAR Prep for AI Roles",
     phase: 3,
     week: 12,
@@ -3829,6 +4114,7 @@ Cover:
     id: "p3-w12-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Mock AI Interview Round 1",
     phase: 3,
     week: 12,
@@ -3905,6 +4191,7 @@ INTERVIEW FOLLOW-UP: Design surge pricing algorithm, design rating system`,
     id: "p3-w12-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Mock AI Interview Round 2",
     phase: 3,
     week: 12,
@@ -3978,6 +4265,7 @@ INTERVIEW FOLLOW-UPS: design recommendation system, design rating system`,
     id: "p3-w12-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "Job Search Active Mode — Outreach + Followups",
     phase: 3,
     week: 12,
@@ -4014,6 +4302,7 @@ Sunday morning (3h):
     id: "p4-w13-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "RAG Comprehensive Revision",
     phase: 4,
     week: 13,
@@ -4084,6 +4373,7 @@ Cover:
     id: "p4-w13-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Agents & LangGraph Comprehensive Revision",
     phase: 4,
     week: 13,
@@ -4157,6 +4447,7 @@ This tests inheritance and polymorphism deeply. Most candidates struggle with ch
     id: "p4-w13-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Production Patterns Revision",
     phase: 4,
     week: 13,
@@ -4229,6 +4520,7 @@ Essentially what LangGraph does — show you understand it at code level.`,
     id: "p4-w13-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Full Mock Interview Day + Post-Mock Polish",
     phase: 4,
     week: 13,
@@ -4273,6 +4565,7 @@ Sunday morning (3h):
     id: "p4-w14-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Weak Area Deep Dive #1",
     phase: 4,
     week: 14,
@@ -4336,6 +4629,7 @@ Connect to your quality dashboard at Blue Yonder.`,
     id: "p4-w14-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Weak Area Deep Dive #2",
     phase: 4,
     week: 14,
@@ -4393,6 +4687,7 @@ This is what HikariCP does. Knowing it deeply impresses interviewers.`,
     id: "p4-w14-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Personal Narrative & Tell Me About Yourself",
     phase: 4,
     week: 14,
@@ -4462,6 +4757,7 @@ Talk about your real usage at Blue Yonder (Pack Service feature flag, Snowflake 
     id: "p4-w14-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "Heavy Job Search Push",
     phase: 4,
     week: 14,
@@ -4496,6 +4792,7 @@ Sunday morning (3h):
     id: "p4-w15-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Final Full Mock Interview",
     phase: 4,
     week: 15,
@@ -4554,6 +4851,7 @@ Connect to your quality automation experience at Blue Yonder.`,
     id: "p4-w15-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "Salary Negotiation & Offer Evaluation",
     phase: 4,
     week: 15,
@@ -4630,6 +4928,7 @@ Target: complete in 35 minutes.`,
     id: "p4-w15-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Final Mock — AI + HLD Combined",
     phase: 4,
     week: 15,
@@ -4684,6 +4983,7 @@ This is your differentiator — most candidates can't do AI-specific LLD.`,
     id: "p4-w15-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Interview Active Mode — Live Debriefs",
     phase: 4,
     week: 15,
@@ -4714,6 +5014,7 @@ Sunday morning (3h):
     id: "p4-w16-1",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P3",
     title: "Gap Analysis & Continued Learning Plan",
     phase: 4,
     week: 16,
@@ -4764,6 +5065,7 @@ Get feedback, iterate.`,
     id: "p4-w16-3",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P2",
     title: "Final Revision — Quick Reference Cheat Sheet",
     phase: 4,
     week: 16,
@@ -4820,6 +5122,7 @@ Quick review of all patterns:
     id: "p4-w16-5",
     categories: ["AI", "DSA"],
     primaryCategory: "AI",
+    priority: "P1",
     title: "Final Mock — High Pressure",
     phase: 4,
     week: 16,
@@ -4843,6 +5146,7 @@ After: am I ready? What's the one thing I still need to fix before my next real 
     id: "p4-w16-rca",
     categories: ["AI"],
     primaryCategory: "AI",
+    priority: "P4",
     title: "Final Polish + Rest & Reflect",
     phase: 4,
     week: 16,
@@ -4914,4 +5218,15 @@ export const DIFFICULTY_CONFIG = {
   Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
   Medium: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
   Hard: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+};
+
+// GenAI (AI) card priority lives inline on each card as `priority`.
+// P0 = highest (asked in nearly every SDE2 GenAI loop or core to my project
+// narrative) … P4 = lowest (process/rest).
+export const PRIORITY_CONFIG = {
+  P0: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800",
+  P1: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-200 dark:border-orange-800",
+  P2: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800",
+  P3: "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600",
+  P4: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700",
 };
