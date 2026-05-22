@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CATEGORY_CONFIG } from "../../Data/JobHuntPlan";
 import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
+import { InterviewCardDetail, DsaProblemDetail } from "../../components/cardDetails";
 import {
   INTERVIEW_CARDS,
   DSA_PROBLEMS,
@@ -10,8 +11,10 @@ import {
   loadJSON,
   setSourceComplete,
   setSourceNote,
-  isSourceComplete,
-  getSourceNote,
+  getInterviewCard,
+  getDsaProblem,
+  setDsaStarred,
+  dsaDaysLeft,
   getDay,
   setDay,
   getAllDayKeys,
@@ -51,6 +54,7 @@ const Planning = () => {
   const [dsaCompleted, setDsaCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
   const [ipNotes, setIpNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
   const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
+  const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [pickerOpen, setPickerOpen] = useState(false);
   const [openItem, setOpenItem] = useState(null);
 
@@ -63,8 +67,18 @@ const Planning = () => {
         if (key === KEYS.DSA_COMPLETED) setDsaCompleted(loadJSON(KEYS.DSA_COMPLETED, {}));
         if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
         if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
+        if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
       }),
     []
+  );
+
+  const toggleStar = useCallback(
+    (id) => {
+      const next = !dsaStarred[id];
+      setDsaStarred(id, next);
+      setDsaStarredMap((m) => ({ ...m, [id]: next }));
+    },
+    [dsaStarred]
   );
 
   const persist = useCallback(
@@ -288,6 +302,9 @@ const Planning = () => {
                             onToggleComplete={() => toggleComplete(item)}
                             onNoteChange={(val) => changeNote(item, val)}
                             onRemove={() => removeItem(item.uid)}
+                            isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
+                            onToggleStar={item.source === "dsa" ? toggleStar : undefined}
+                            daysLeft={item.source === "dsa" && complete ? dsaDaysLeft(item.refId) : null}
                           />
                         </motion.div>
                       );
@@ -328,7 +345,7 @@ const SOURCE_META = {
   custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
 };
 
-function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete, onNoteChange, onRemove }) {
+function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete, onNoteChange, onRemove, isStarred, onToggleStar, daysLeft }) {
   const meta = SOURCE_META[item.source];
   const debounceRef = useRef(null);
   const [localNote, setLocalNote] = useState(note);
@@ -346,7 +363,8 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
     [onNoteChange]
   );
 
-  const syncLabel = item.source === "custom" ? "saved on this day" : `synced with ${meta.label} Prep`;
+  const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
+  const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
 
   return (
     <div className={`rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 ${complete ? "border-l-green-400" : meta.border} bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-80" : ""}`}>
@@ -369,10 +387,7 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
         </div>
 
         <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {localNote && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
-          {item.link && (
-            <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold px-2 py-1 rounded-md border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 transition-colors" title="Open link">↗</a>
-          )}
+          {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
           <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove from this day">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>
@@ -387,23 +402,42 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
             <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-indigo-400" />
-                  Notes
-                </h4>
-                <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved · {syncLabel}</span>
-              </div>
-              <textarea
-                value={localNote}
-                onChange={handleNoteInput}
-                placeholder="What did you work on, key takeaways, blockers..."
-                rows={5}
-                className="w-full p-4 text-sm rounded-lg border border-violet-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 dark:focus:border-violet-500 resize-y min-h-[120px] transition-all leading-relaxed shadow-sm"
-              />
-              <div className="flex items-center justify-end mt-2">
-                <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
-              </div>
+              {item.source === "interview" && (
+                <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />
+              )}
+
+              {item.source === "dsa" && (
+                <DsaProblemDetail
+                  problem={dsaProblem}
+                  note={note}
+                  onNoteChange={onNoteChange}
+                  isStarred={isStarred}
+                  onToggleStar={onToggleStar}
+                  daysLeft={daysLeft}
+                />
+              )}
+
+              {item.source === "custom" && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-indigo-400" />
+                      Notes
+                    </h4>
+                    <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved · saved on this day</span>
+                  </div>
+                  <textarea
+                    value={localNote}
+                    onChange={handleNoteInput}
+                    placeholder="What did you work on, key takeaways, blockers..."
+                    rows={5}
+                    className="w-full p-4 text-sm rounded-lg border border-violet-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 dark:focus:border-violet-500 resize-y min-h-[120px] transition-all leading-relaxed shadow-sm"
+                  />
+                  <div className="flex items-center justify-end mt-2">
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
