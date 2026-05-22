@@ -7,6 +7,10 @@ import {
   loadJSON,
   setSourceComplete,
   setSourceNote,
+  setDsaStarred,
+  pruneExpiredDsaSolves,
+  dsaDaysLeft,
+  DSA_REVISIT_DAYS,
   subscribe,
 } from "../../Data/planStore";
 
@@ -24,56 +28,59 @@ const DSAPrep = () => {
     return unsubscribe;
   }, []);
 
-  const [completed, setCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
+  // Expire any solves older than the revisit window before reading state.
+  useEffect(() => { pruneExpiredDsaSolves(); }, []);
+
+  const [solved, setSolved] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
   const [notes, setNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
-  const [openId, setOpenId] = useState(null);
+  const [starred, setStarred] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
+  const [selectedTopic, setSelectedTopic] = useState(null);
   const [filter, setFilter] = useState("ALL");
 
   useEffect(
     () =>
       subscribe((key) => {
-        if (key === KEYS.DSA_COMPLETED) setCompleted(loadJSON(KEYS.DSA_COMPLETED, {}));
+        if (key === KEYS.DSA_COMPLETED) setSolved(loadJSON(KEYS.DSA_COMPLETED, {}));
         if (key === KEYS.DSA_NOTES) setNotes(loadJSON(KEYS.DSA_NOTES, {}));
+        if (key === KEYS.DSA_STARRED) setStarred(loadJSON(KEYS.DSA_STARRED, {}));
       }),
     []
   );
 
-  const counts = useMemo(() => {
-    let medium = 0, hard = 0, medDone = 0, hardDone = 0;
-    DSA_TOPICS.forEach((t) =>
-      t.problems.forEach((p) => {
-        if (p.difficulty === "Hard") { hard++; if (completed[p.id]) hardDone++; }
-        else { medium++; if (completed[p.id]) medDone++; }
-      })
-    );
-    return { medium, hard, medDone, hardDone };
-  }, [completed]);
-
-  const totalDone = counts.medDone + counts.hardDone;
-  const totalPct = DSA_TOTAL ? Math.round((totalDone / DSA_TOTAL) * 100) : 0;
+  const totalSolved = useMemo(
+    () => DSA_TOPICS.reduce((a, t) => a + t.problems.filter((p) => solved[p.id]).length, 0),
+    [solved]
+  );
+  const totalPct = DSA_TOTAL ? Math.round((totalSolved / DSA_TOTAL) * 100) : 0;
+  const starredCount = useMemo(() => Object.values(starred).filter(Boolean).length, [starred]);
 
   const visibleTopics = useMemo(() => {
     if (filter === "ALL") return DSA_TOPICS;
     return DSA_TOPICS.map((t) => ({
       ...t,
-      problems: t.problems.filter((p) => p.difficulty === filter),
+      problems: t.problems.filter((p) =>
+        filter === "Starred" ? starred[p.id] : p.difficulty === filter
+      ),
     })).filter((t) => t.problems.length);
-  }, [filter]);
+  }, [filter, starred]);
 
-  const toggleComplete = useCallback((id) => {
-    setCompleted((prev) => {
-      const updated = { ...prev, [id]: !prev[id] };
-      setSourceComplete("dsa", id, updated[id]);
-      return updated;
-    });
+  const toggleSolved = useCallback((id, checked) => {
+    setSourceComplete("dsa", id, checked);
+    setSolved((m) => ({ ...m, [id]: checked }));
   }, []);
 
+  const toggleStar = useCallback(
+    (id) => {
+      const next = !starred[id];
+      setDsaStarred(id, next);
+      setStarred((m) => ({ ...m, [id]: next }));
+    },
+    [starred]
+  );
+
   const saveNote = useCallback((id, val) => {
-    setNotes((prev) => {
-      const updated = { ...prev, [id]: val };
-      setSourceNote("dsa", id, val);
-      return updated;
-    });
+    setSourceNote("dsa", id, val);
+    setNotes((m) => ({ ...m, [id]: val }));
   }, []);
 
   if (!authReady) return null;
@@ -100,19 +107,24 @@ const DSAPrep = () => {
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
 
           {/* ── Header ── */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6 mb-5 px-2">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6 mb-4 px-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">DSA Prep</h1>
-                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-200 dark:border-orange-800">
-                  {DSA_TOTAL} most-asked
-                </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">DSA Prep</h1>
+                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-200 dark:border-orange-800">
+                    {DSA_TOTAL} most-asked
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                  Medium &amp; Hard · {DSA_REVISIT_DAYS}-day spaced repetition (solved problems reopen after {DSA_REVISIT_DAYS} days)
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
                   <p className="text-xs text-gray-500 dark:text-gray-400">Solved</p>
                   <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    {totalDone}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">/{DSA_TOTAL}</span>
+                    {totalSolved}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">/{DSA_TOTAL}</span>
                   </p>
                 </div>
                 <div className="relative w-14 h-14">
@@ -135,12 +147,13 @@ const DSAPrep = () => {
             </div>
           </motion.div>
 
-          {/* ── Difficulty summary + filter ── */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.15 }} className="flex flex-wrap items-center gap-2 mb-5 px-2">
+          {/* ── Filter ── */}
+          <div className="flex flex-wrap items-center gap-2 mb-4 px-2">
             {[
               { key: "ALL", label: `All (${DSA_TOTAL})` },
-              { key: "Medium", label: `Medium (${counts.medDone}/${counts.medium})` },
-              { key: "Hard", label: `Hard (${counts.hardDone}/${counts.hard})` },
+              { key: "Medium", label: "Medium" },
+              { key: "Hard", label: "Hard" },
+              { key: "Starred", label: `★ Starred (${starredCount})` },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -154,46 +167,82 @@ const DSAPrep = () => {
                 {tab.label}
               </button>
             ))}
-          </motion.div>
+          </div>
 
-          {/* ── Topics ── */}
-          {visibleTopics.map((topic) => {
-            const done = topic.problems.filter((p) => completed[p.id]).length;
-            return (
-              <div key={topic.topic} className="mb-5">
-                <div className="flex items-center gap-3 mb-2 px-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-orange-500 to-amber-500" />
-                    <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">{topic.topic}</h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{done}/{topic.problems.length}</span>
-                </div>
-                {topic.problems.map((p, idx) => (
-                  <motion.div key={p.id} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, delay: idx * 0.02 }}>
-                    <ProblemCard
-                      problem={p}
-                      isOpen={openId === p.id}
-                      isComplete={!!completed[p.id]}
-                      note={notes[p.id] || ""}
-                      onToggleOpen={() => setOpenId((prev) => (prev === p.id ? null : p.id))}
-                      onToggleComplete={() => toggleComplete(p.id)}
-                      onNoteChange={(val) => saveNote(p.id, val)}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            );
-          })}
+          {/* ── Topic cards ── */}
+          {visibleTopics.length === 0 ? (
+            <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-12">No problems match this filter.</p>
+          ) : (
+            visibleTopics.map((topic) => (
+              <TopicCard
+                key={topic.topic}
+                topic={topic}
+                isOpen={selectedTopic === topic.topic}
+                onToggle={() => setSelectedTopic((p) => (p === topic.topic ? null : topic.topic))}
+                solved={solved}
+                starred={starred}
+                notes={notes}
+                onToggleSolved={toggleSolved}
+                onToggleStar={toggleStar}
+                onNoteChange={saveNote}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-function ProblemCard({ problem, isOpen, isComplete, note, onToggleOpen, onToggleComplete, onNoteChange }) {
-  const debounceRef = useRef(null);
+function TopicCard({ topic, isOpen, onToggle, solved, starred, notes, onToggleSolved, onToggleStar, onNoteChange }) {
+  const done = topic.problems.filter((p) => solved[p.id]).length;
+  const pct = topic.problems.length ? (100 * done) / topic.problems.length : 0;
+
+  return (
+    <div className="mx-2 my-1.5 rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 border-l-orange-300 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all overflow-hidden">
+      <div className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none" onClick={onToggle}>
+        <div className="flex-1 min-w-0">
+          <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 truncate">{topic.topic}</h2>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-[11px] text-gray-500 dark:text-gray-400">{done}/{topic.problems.length}</span>
+          <div className="w-20 h-2 rounded-full bg-slate-200 dark:bg-slate-600 overflow-hidden">
+            <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500" style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
+          </div>
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </motion.div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
+            <div className="border-t border-gray-100 dark:border-slate-700 px-2 sm:px-3 py-3" onClick={(e) => e.stopPropagation()}>
+              {topic.problems.map((p) => (
+                <QuestionRow
+                  key={p.id}
+                  problem={p}
+                  isSolved={!!solved[p.id]}
+                  isStarred={!!starred[p.id]}
+                  note={notes[p.id] || ""}
+                  onToggleSolved={onToggleSolved}
+                  onToggleStar={onToggleStar}
+                  onNoteChange={onNoteChange}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function QuestionRow({ problem, isSolved, isStarred, note, onToggleSolved, onToggleStar, onNoteChange }) {
+  const [showNotes, setShowNotes] = useState(false);
   const [localNote, setLocalNote] = useState(note);
+  const debounceRef = useRef(null);
 
   useEffect(() => { setLocalNote(note); }, [note]);
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
@@ -203,85 +252,97 @@ function ProblemCard({ problem, isOpen, isComplete, note, onToggleOpen, onToggle
       const val = e.target.value;
       setLocalNote(val);
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => onNoteChange(val), 400);
+      debounceRef.current = setTimeout(() => onNoteChange(problem.id, val), 500);
     },
-    [onNoteChange]
+    [problem.id, onNoteChange]
   );
 
-  return (
-    <div className={`mx-2 my-1.5 rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 ${isComplete ? "border-l-green-400" : "border-l-orange-300"} bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all overflow-hidden ${isComplete ? "opacity-80" : ""}`}>
-      <div className="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
-        <button
-          onClick={(e) => { e.stopPropagation(); onToggleComplete(); }}
-          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${isComplete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"}`}
-          title={isComplete ? "Mark unsolved" : "Mark solved"}
-        >
-          {isComplete && (
-            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
-              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-        </button>
+  const daysLeft = isSolved ? dsaDaysLeft(problem.id) : null;
 
+  return (
+    <div className="mb-1.5">
+      <div
+        className={`flex items-center gap-2 rounded-lg px-2.5 py-2 shadow-sm transition-all ${
+          isSolved
+            ? "bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-800"
+            : "bg-slate-50 dark:bg-slate-700/60 border border-transparent"
+        }`}
+      >
         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[problem.difficulty]}`}>
-          {problem.difficulty}
+          {problem.difficulty === "Hard" ? "Hard" : "Med"}
         </span>
 
-        <div className="flex-1 min-w-0">
-          <h3 className={`text-sm font-semibold truncate ${isComplete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>
-            {problem.title}
-          </h3>
-        </div>
+        <span className={`text-[13px] font-semibold truncate min-w-0 flex-1 ${isSolved ? "text-gray-500 dark:text-gray-400" : "text-gray-800 dark:text-gray-200"}`}>
+          {problem.title}
+        </span>
 
-        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {localNote && <span title="Has notes" className="text-orange-400 dark:text-orange-500 text-xs">✎</span>}
-          <a
-            href={problem.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-semibold px-2 py-1 rounded-md border border-orange-200 dark:border-orange-900/50 bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/20 transition-colors"
-            title="Open on LeetCode"
+        <a
+          href={problem.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="text-blue-500 dark:text-blue-400 hover:underline text-xs shrink-0 hidden sm:inline max-w-[230px] truncate"
+          title={problem.link}
+        >
+          {problem.link.replace(/^https?:\/\//, "")}
+        </a>
+        <a
+          href={problem.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="text-blue-500 dark:text-blue-400 hover:underline text-xs shrink-0 sm:hidden"
+        >
+          link
+        </a>
+
+        <div className="flex items-center gap-1.5 shrink-0">
+          {daysLeft != null && (
+            <span
+              title={`Reopens for re-attempt in ${daysLeft} day(s)`}
+              className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-300 font-semibold whitespace-nowrap"
+            >
+              {Math.max(daysLeft, 0)}d
+            </span>
+          )}
+
+          <button
+            onClick={() => setShowNotes((s) => !s)}
+            title="Notes"
+            className={`text-base leading-none hover:text-blue-500 hover:scale-110 transition-all ${localNote ? "text-blue-500" : "text-gray-400 opacity-60"}`}
           >
-            Solve ↗
-          </a>
-        </div>
+            {"✎"}
+          </button>
 
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 shrink-0">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </motion.div>
+          <button
+            onClick={() => onToggleStar(problem.id)}
+            title={isStarred ? "Unstar" : "Star"}
+            className={`text-lg leading-none text-yellow-500 hover:scale-110 transition-transform ${isStarred ? "" : "opacity-40"}`}
+          >
+            {isStarred ? "★" : "☆"}
+          </button>
+
+          <input
+            type="checkbox"
+            className="form-checkbox h-4 w-4 accent-green-500 cursor-pointer"
+            checked={isSolved}
+            onChange={(e) => onToggleSolved(problem.id, e.target.checked)}
+            title={isSolved ? "Mark unsolved" : "Mark solved (starts 45-day timer)"}
+          />
+        </div>
       </div>
 
       <AnimatePresence>
-        {isOpen && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-            <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
-              <div className="rounded-xl border border-orange-100 dark:border-orange-900/40 bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-4 shadow-inner">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="w-1 h-4 rounded-full bg-gradient-to-b from-orange-400 to-amber-400" />
-                    Solution Notes
-                  </h4>
-                  <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved</span>
-                </div>
-                <textarea
-                  value={localNote}
-                  onChange={handleNoteInput}
-                  placeholder="Approach, pattern, time/space complexity, key insight, edge cases..."
-                  rows={6}
-                  className="w-full p-4 text-sm rounded-lg border border-orange-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 dark:focus:border-orange-500 resize-y min-h-[140px] transition-all leading-relaxed shadow-sm"
-                />
-                <div className="flex items-center justify-between mt-2 min-h-[16px]">
-                  {localNote ? (
-                    <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1.5">
-                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
-                      Saved
-                    </p>
-                  ) : <span />}
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
-                </div>
-              </div>
+        {showNotes && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+            <div className="mx-1 mt-1 mb-1">
+              <textarea
+                value={localNote}
+                onChange={handleNoteInput}
+                placeholder="Approach, pattern, time/space complexity, key insight, edge cases..."
+                rows={4}
+                className="w-full p-3 text-xs rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-400 resize-y min-h-[80px]"
+              />
             </div>
           </motion.div>
         )}
