@@ -13,8 +13,14 @@ export const KEYS = {
   IP_NOTES: "InterviewPrepNotes",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
+  DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
+  DSA_STARRED: "DSAPrepStarred",
   PLAN_DAYS: "PlanningDays",
 };
+
+// Solved DSA problems revert to unsolved after this window (spaced repetition).
+export const DSA_REVISIT_DAYS = 45;
+const DSA_REVISIT_MS = DSA_REVISIT_DAYS * 24 * 60 * 60 * 1000;
 
 // ─── Low-level JSON storage with a change event for live cross-page sync ──────
 const listeners = new Set();
@@ -84,6 +90,54 @@ export function setSourceComplete(source, id, value) {
   const map = loadJSON(key, {});
   map[id] = value;
   saveJSON(key, map);
+  // Solving a DSA problem starts (or clears) its 45-day revisit timer.
+  if (source === "dsa") {
+    const ts = loadJSON(KEYS.DSA_TIMESTAMPS, {});
+    if (value) ts[id] = Date.now();
+    else delete ts[id];
+    saveJSON(KEYS.DSA_TIMESTAMPS, ts);
+  }
+}
+
+// ─── DSA spaced-repetition + starring ─────────────────────────────────────────
+export function getDsaTimestamps() {
+  return loadJSON(KEYS.DSA_TIMESTAMPS, {});
+}
+
+export function dsaDaysLeft(id) {
+  const ts = loadJSON(KEYS.DSA_TIMESTAMPS, {})[id];
+  if (!ts) return null;
+  return DSA_REVISIT_DAYS - Math.floor((Date.now() - ts) / (24 * 60 * 60 * 1000));
+}
+
+export function isDsaStarred(id) {
+  return !!loadJSON(KEYS.DSA_STARRED, {})[id];
+}
+
+export function setDsaStarred(id, value) {
+  const map = loadJSON(KEYS.DSA_STARRED, {});
+  map[id] = value;
+  saveJSON(KEYS.DSA_STARRED, map);
+}
+
+// Auto-revert solves older than the revisit window so they can be re-attempted.
+export function pruneExpiredDsaSolves() {
+  const now = Date.now();
+  const completed = loadJSON(KEYS.DSA_COMPLETED, {});
+  const ts = loadJSON(KEYS.DSA_TIMESTAMPS, {});
+  let changed = false;
+  for (const [id, t] of Object.entries(ts)) {
+    if (now - t >= DSA_REVISIT_MS) {
+      completed[id] = false;
+      delete ts[id];
+      changed = true;
+    }
+  }
+  if (changed) {
+    saveJSON(KEYS.DSA_COMPLETED, completed);
+    saveJSON(KEYS.DSA_TIMESTAMPS, ts);
+  }
+  return changed;
 }
 
 export function setSourceNote(source, id, value) {
