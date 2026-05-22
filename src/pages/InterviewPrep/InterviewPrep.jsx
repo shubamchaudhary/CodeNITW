@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CATEGORY_CONFIG, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
+import { InterviewCardDetail } from "../../components/cardDetails";
 import {
   INTERVIEW_CARDS,
   KEYS,
@@ -307,13 +308,7 @@ const InterviewPrep = () => {
 };
 
 function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComplete, onNoteChange }) {
-  const [copied, setCopied] = useState(false);
-  const debounceRef = useRef(null);
   const cardRef = useRef(null);
-  const [localNote, setLocalNote] = useState(note);
-
-  useEffect(() => { setLocalNote(note); }, [note]);
-  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
 
   useEffect(() => {
     if (isOpen && cardRef.current) {
@@ -327,24 +322,6 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
     }
   }, [isOpen]);
 
-  const handleNoteInput = useCallback(
-    (e) => {
-      const val = e.target.value;
-      setLocalNote(val);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => onNoteChange(val), 400);
-    },
-    [onNoteChange]
-  );
-
-  const copyPrompt = () => {
-    navigator.clipboard.writeText(item.prompt).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  const primaryCfg = CATEGORY_CONFIG[item.primaryCategory];
   const leftBorder = {
     AI: "border-l-purple-400",
     HLD: "border-l-blue-400",
@@ -380,7 +357,7 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
         </div>
 
         <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {localNote && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
+          {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
           <button
             onClick={onToggleComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isComplete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"}`}
@@ -406,82 +383,7 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
             <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
 
-              <div className="mb-4">
-                <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <span className={`w-1 h-3 rounded-full ${primaryCfg.bar}`} />
-                  What to Study
-                </h4>
-                <ul className="space-y-1">
-                  {item.keyTopics.map((topic, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
-                      <span className="mt-1 w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-slate-600 shrink-0" />
-                      {topic}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <span className={`w-1 h-3 rounded-full ${primaryCfg.bar}`} />
-                    Prompt for Claude
-                  </h4>
-                  <button
-                    onClick={copyPrompt}
-                    className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md border transition-all ${copied ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800" : "bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-gray-400 dark:border-slate-600 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300"}`}
-                  >
-                    {copied ? <>✓ Copied!</> : (
-                      <>
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16">
-                          <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                          <path d="M3 11V3.5A1.5 1.5 0 0 1 4.5 2H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                        Copy Prompt
-                      </>
-                    )}
-                  </button>
-                </div>
-                <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                  <pre className="text-[11.5px] text-gray-700 dark:text-gray-300 font-mono whitespace-pre-wrap leading-relaxed">{item.prompt}</pre>
-                </div>
-              </div>
-
-              {item.tags && item.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {item.tags.map((tag) => (
-                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-600">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="rounded-xl border border-blue-100 dark:border-blue-900/40 bg-gradient-to-br from-blue-50/60 via-white to-cyan-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-4 shadow-inner">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-400 to-cyan-400" />
-                    My Notes
-                  </h4>
-                  <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved · revisit at interview time</span>
-                </div>
-                <textarea
-                  value={localNote}
-                  onChange={handleNoteInput}
-                  placeholder="Write your notes, key insights, things to remember for the interview..."
-                  rows={8}
-                  className="w-full p-4 text-sm rounded-lg border border-blue-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400 dark:focus:border-blue-500 resize-y min-h-[180px] transition-all leading-relaxed shadow-sm"
-                />
-                <div className="flex items-center justify-between mt-2 min-h-[16px]">
-                  {localNote ? (
-                    <p className="text-[11px] text-green-600 dark:text-green-400 flex items-center gap-1.5">
-                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
-                      Notes saved
-                    </p>
-                  ) : <span />}
-                  <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
-                </div>
-              </div>
+              <InterviewCardDetail item={item} note={note} onNoteChange={onNoteChange} />
 
               <div className="mt-4 flex justify-end">
                 <button
