@@ -182,7 +182,7 @@ const Planning = () => {
           {/* ── Header ── */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6 mb-4 px-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Planning &amp; Tracking</h1>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Planning</h1>
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <p className="text-xs text-gray-500 dark:text-gray-400">{relativeLabel(current)}</p>
