@@ -15,6 +15,7 @@ import {
   getDay,
   setDay,
   getAllDayKeys,
+  pruneExpiredDsaSolves,
   dateKey,
   addDays,
   prettyDate,
@@ -39,6 +40,8 @@ const Planning = () => {
     });
     return unsubscribe;
   }, []);
+
+  useEffect(() => { pruneExpiredDsaSolves(); }, []);
 
   const today = dateKey();
   const [current, setCurrent] = useState(today);
@@ -250,46 +253,59 @@ const Planning = () => {
             })}
           </div>
 
-          {/* ── Add button ── */}
+          {/* ── Day plan box (grows as cards are added) ── */}
           <div className="px-2 mb-4">
-            <button
-              onClick={() => setPickerOpen(true)}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-violet-300 dark:border-violet-800 text-violet-600 dark:text-violet-400 font-semibold text-sm hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all"
+            <motion.div
+              layout
+              className="rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-800 bg-violet-50/40 dark:bg-violet-900/10 p-3 sm:p-4 transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-              Add to {isToday ? "today's" : "this day's"} plan
-            </button>
-          </div>
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+                  Tasks for {relativeLabel(current)}
+                </h3>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                  {doneCount}/{items.length} done
+                </span>
+              </div>
 
-          {/* ── Plan items ── */}
-          {items.length === 0 ? (
-            <div className="text-center py-12 px-4">
-              <p className="text-sm text-gray-400 dark:text-gray-500">Nothing planned {isToday ? "for today" : "for this day"} yet.</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Add cards from Interview Prep, DSA, or create a custom one.</p>
-            </div>
-          ) : (
-            <div className="px-2 space-y-2">
-              <AnimatePresence>
-                {items.map((item) => {
-                  const { complete, note } = resolve(item);
-                  return (
-                    <motion.div key={item.uid} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }}>
-                      <DayCard
-                        item={item}
-                        complete={complete}
-                        note={note}
-                        isOpen={openItem === item.uid}
-                        onToggleOpen={() => setOpenItem((p) => (p === item.uid ? null : item.uid))}
-                        onToggleComplete={() => toggleComplete(item)}
-                        onNoteChange={(val) => changeNote(item, val)}
-                        onRemove={() => removeItem(item.uid)}
-                      />
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
+              {items.length === 0 ? (
+                <p className="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
+                  Nothing planned yet — add cards from Interview Prep, DSA, or create a custom one.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  <AnimatePresence>
+                    {items.map((item) => {
+                      const { complete, note } = resolve(item);
+                      return (
+                        <motion.div key={item.uid} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }}>
+                          <DayCard
+                            item={item}
+                            complete={complete}
+                            note={note}
+                            isOpen={openItem === item.uid}
+                            onToggleOpen={() => setOpenItem((p) => (p === item.uid ? null : item.uid))}
+                            onToggleComplete={() => toggleComplete(item)}
+                            onNoteChange={(val) => changeNote(item, val)}
+                            onRemove={() => removeItem(item.uid)}
+                          />
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Add button — pinned to the bottom, inside the box */}
+              <button
+                onClick={() => setPickerOpen(true)}
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                Add to {isToday ? "today's" : "this day's"} plan
+              </button>
+            </motion.div>
+          </div>
         </div>
       </div>
 

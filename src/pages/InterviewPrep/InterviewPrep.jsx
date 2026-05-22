@@ -163,7 +163,7 @@ const InterviewPrep = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 px-2"
+            className="grid grid-cols-3 gap-2 mb-4 px-2"
           >
             {CATEGORIES.map((cat) => {
               const stats = categoryStats[cat];
@@ -172,15 +172,15 @@ const InterviewPrep = () => {
                 HLD: { from: "#3b82f6", to: "#0ea5e9", text: "text-blue-600 dark:text-blue-400" },
                 LLD: { from: "#10b981", to: "#22c55e", text: "text-emerald-600 dark:text-emerald-400" },
               }[cat];
-              const radius = 26;
+              const radius = 16;
               const circumference = 2 * Math.PI * radius;
               const gradId = `ipCatGrad-${cat}`;
               return (
-                <div key={cat} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-600 shadow-sm px-4 py-3 flex items-center gap-3">
-                  <div className="relative w-16 h-16 shrink-0">
-                    <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                      <circle cx="32" cy="32" r={radius} fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="6" />
-                      <circle cx="32" cy="32" r={radius} fill="none" stroke={`url(#${gradId})`} strokeWidth="6" strokeLinecap="round"
+                <div key={cat} className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-600 shadow-sm px-2.5 py-2 flex items-center gap-2">
+                  <div className="relative w-11 h-11 shrink-0">
+                    <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+                      <circle cx="22" cy="22" r={radius} fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="5" />
+                      <circle cx="22" cy="22" r={radius} fill="none" stroke={`url(#${gradId})`} strokeWidth="5" strokeLinecap="round"
                         strokeDasharray={`${circumference}`}
                         strokeDashoffset={`${circumference * (1 - stats.pct / 100)}`}
                         style={{ transition: "stroke-dashoffset 0.8s ease" }} />
@@ -191,13 +191,13 @@ const InterviewPrep = () => {
                         </linearGradient>
                       </defs>
                     </svg>
-                    <span className={`absolute inset-0 flex items-center justify-center text-xs font-bold ${ringColor.text}`}>
+                    <span className={`absolute inset-0 flex items-center justify-center text-[9px] font-bold ${ringColor.text}`}>
                       {stats.pct}%
                     </span>
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{CATEGORY_CONFIG[cat].label}</span>
-                    <span className="text-[11px] text-gray-500 dark:text-gray-400">{stats.done}/{stats.total} sessions</span>
+                  <div className="flex flex-col min-w-0 leading-tight">
+                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{cat}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400">{stats.done}/{stats.total}</span>
                   </div>
                 </div>
               );
