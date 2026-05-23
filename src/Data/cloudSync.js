@@ -1,13 +1,17 @@
 // Cloud persistence: mirrors all progress (interview/DSA completion, notes,
 // stars, timestamps and the planning days) to Firestore so it follows the
-// account across devices. localStorage stays as a fast local cache; Firestore
-// is the cross-device source of truth.
+// account across devices and survives a refresh / re-login.
 //
-// Flow:
-//   • startCloudSync(uid) on sign-in → live onSnapshot listener pulls remote
-//     changes into localStorage (and the UI).
-//   • Any local change (via planStore.saveJSON → subscribe) schedules a
-//     debounced push of the full progress document to Firestore.
+// Design:
+//   • localStorage (namespaced per uid) is the instant local cache — on refresh
+//     the UI shows the last known state immediately, no waiting on the network.
+//   • Firestore is the durable, cross-device store. Writes are optimistic: the
+//     UI updates synchronously, and the full document is pushed in the
+//     background (debounced), so saving never blocks the UI.
+//   • Loads use document-level last-write-wins (a numeric `updatedAt` rev): we
+//     only overwrite the local cache when the cloud copy is strictly newer than
+//     what this device last synced — so a refresh never clobbers in-session
+//     edits, while another device's newer changes are pulled in live.
 //
 // NOTE: lock this down in the Firebase console with a security rule so only the
 // owner's uid can read/write its document, e.g.
@@ -37,6 +41,20 @@ function userDocRef(uid) {
   return doc(db, "userProgress", uid);
 }
 
+// The highest doc revision this device has already incorporated (pushed or
+// pulled). Persisted so a refresh knows its local cache is already current.
+function revKey(uid) {
+  return `sync:rev:${uid}`;
+}
+function getLocalRev(uid) {
+  return Number(localStorage.getItem(revKey(uid))) || 0;
+}
+function setLocalRev(uid, rev) {
+  try {
+    localStorage.setItem(revKey(uid), String(rev));
+  } catch (_) {}
+}
+
 function collectLocal() {
   const out = {};
   SYNC_KEYS.forEach((k) => {
@@ -49,17 +67,16 @@ function schedulePush() {
   if (applyingRemote || !currentUid) return;
   if (pushTimer) clearTimeout(pushTimer);
   pushTimer = setTimeout(async () => {
-    if (!currentUid) return;
+    const uid = currentUid;
+    if (!uid) return;
+    const rev = Date.now();
     try {
-      await setDoc(
-        userDocRef(currentUid),
-        { ...collectLocal(), updatedAt: Date.now() },
-        { merge: true }
-      );
+      await setDoc(userDocRef(uid), { ...collectLocal(), updatedAt: rev }, { merge: true });
+      setLocalRev(uid, rev);
     } catch (err) {
       console.error("[cloudSync] push failed:", err);
     }
-  }, 1200);
+  }, 1000);
 }
 
 // Attach the local-change listener exactly once for the app's lifetime.
@@ -76,25 +93,39 @@ export function startCloudSync(uid) {
   currentUid = uid;
   // Scope all local reads/writes to this account before touching storage.
   setActiveUid(uid);
+
   unsubscribeSnapshot = onSnapshot(
     userDocRef(uid),
     (snap) => {
+      if (currentUid !== uid) return;
+
       if (!snap.exists()) {
-        // First sign-in on a fresh account → seed the cloud with local data.
+        // Fresh account → seed the cloud from whatever this account has locally.
         schedulePush();
         return;
       }
+
+      // Ignore our own not-yet-acknowledged write echoes; we already have them.
+      if (snap.metadata.hasPendingWrites) return;
+
       const data = snap.data() || {};
+      const remoteRev = Number(data.updatedAt) || 0;
+      // Only apply if the cloud is strictly newer than what we last synced —
+      // this keeps an ordinary refresh from overwriting fresh local edits.
+      if (remoteRev <= getLocalRev(uid)) return;
+
       const remote = {};
       SYNC_KEYS.forEach((k) => {
         if (data[k] !== undefined) remote[k] = data[k];
       });
+
       applyingRemote = true;
       try {
         applyRemote(remote);
       } finally {
         applyingRemote = false;
       }
+      setLocalRev(uid, remoteRev);
     },
     (err) => console.error("[cloudSync] listener failed:", err)
   );
