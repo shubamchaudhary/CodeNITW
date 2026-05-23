@@ -11,14 +11,14 @@ import PrivateRoute from "./components/PrivateRoute";
 import InterviewPrep from "./pages/InterviewPrep/InterviewPrep";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
-import { ALLOWED_EMAIL } from "./Data/planStore";
+import SignUp from "./pages/SignInUp/SignUp";
 import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
 
 function App() {
-  // Keep progress synced to Firestore for the owner account across devices.
+  // Each signed-in account syncs its own progress to Firestore (scoped by uid).
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (user) => {
-      if (user && user.email === ALLOWED_EMAIL) startCloudSync(user.uid);
+      if (user) startCloudSync(user.uid);
       else stopCloudSync();
     });
     return unsub;
@@ -42,6 +42,7 @@ function App() {
           </Route>
 
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           <Route path="*" element={<Navigate to="/interview-prep" replace />} />

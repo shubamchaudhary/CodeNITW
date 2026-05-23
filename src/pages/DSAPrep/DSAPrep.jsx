@@ -15,17 +15,11 @@ import {
   subscribe,
 } from "../../Data/planStore";
 
-const ALLOWED_EMAIL = "beshubam@gmail.com";
-
 const DSAPrep = () => {
   const [authReady, setAuthReady] = useState(false);
-  const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
-      setUserEmail(user ? user.email : null);
-      setAuthReady(true);
-    });
+    const unsubscribe = onAuthStateChanged(getAuth(), () => setAuthReady(true));
     return unsubscribe;
   }, []);
 
@@ -85,22 +79,6 @@ const DSAPrep = () => {
   }, []);
 
   if (!authReady) return null;
-
-  if (userEmail !== ALLOWED_EMAIL) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
-        <div className="text-center px-6 py-12 max-w-sm">
-          <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-5V9m0 0V7m0 2h2m-2 0H10M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z" />
-            </svg>
-          </div>
-          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Access Restricted</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">This page is private. Please sign in with the authorised account.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">

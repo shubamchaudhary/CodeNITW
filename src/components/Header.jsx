@@ -71,7 +71,7 @@ export default function Header() {
   `;
 
   // The auth screens are full-bleed and immersive — no app chrome there.
-  if (location.pathname === "/sign-in" || location.pathname === "/forgot-password") {
+  if (["/sign-in", "/sign-up", "/forgot-password"].includes(location.pathname)) {
     return null;
   }
 
