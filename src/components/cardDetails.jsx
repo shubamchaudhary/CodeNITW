@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { CATEGORY_CONFIG } from "../Data/JobHuntPlan";
+import { GLASS_PANEL } from "./glass";
 
 // Shared expandable body for an Interview Prep card. Rendered identically on the
 // Interview Prep page and inside the Planning page so a planned card shows the
@@ -74,7 +75,7 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
               )}
             </button>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+          <div className={`${GLASS_PANEL} rounded-lg p-4`}>
             <pre className="text-[11.5px] text-gray-700 dark:text-gray-300 font-mono whitespace-pre-wrap leading-relaxed">{item.prompt}</pre>
           </div>
         </div>
