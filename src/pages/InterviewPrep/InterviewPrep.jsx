@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CATEGORY_CONFIG, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
 import { InterviewCardDetail } from "../../components/cardDetails";
+import { GLASS } from "../../components/glass";
 import {
   INTERVIEW_CARDS,
   KEYS,
@@ -177,7 +178,7 @@ const InterviewPrep = () => {
               const circumference = 2 * Math.PI * radius;
               const gradId = `ipCatGrad-${cat}`;
               return (
-                <div key={cat} className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-600 shadow-sm px-2.5 py-2 flex items-center gap-2">
+                <div key={cat} className={`${GLASS} rounded-lg shadow-sm px-2.5 py-2 flex items-center gap-2`}>
                   <div className="relative w-11 h-11 shrink-0">
                     <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
                       <circle cx="22" cy="22" r={radius} fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="5" />
@@ -331,7 +332,7 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
   return (
     <div
       ref={cardRef}
-      className={`mx-2 my-1.5 rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 ${leftBorder} bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${isComplete ? "opacity-75" : ""}`}
+      className={`mx-2 my-1.5 rounded-xl ${GLASS} border-l-4 ${leftBorder} shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${isComplete ? "opacity-75" : ""}`}
     >
       <div className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none" onClick={onToggleOpen}>
         <div className="flex items-center gap-1 shrink-0">
