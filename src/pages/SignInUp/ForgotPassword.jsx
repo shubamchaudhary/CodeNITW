@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { HiOutlineMail } from "react-icons/hi";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import PulseLoader from "react-spinners/PulseLoader";
 import { ALLOWED_EMAIL } from "../../Data/planStore";
+import AuthShell from "../../components/AuthShell";
 
 export default function PasswordReset() {
   const [email, setEmail] = useState(ALLOWED_EMAIL);
@@ -34,41 +37,36 @@ export default function PasswordReset() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300">
-            Reset password
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">We'll email you a reset link</p>
+    <AuthShell title="Reset password" taglines="We'll email you a secure reset link">
+      <form onSubmit={handleResetPassword} className="space-y-3">
+        <div className="flex items-center gap-2 h-11 px-3 rounded-xl bg-white/5 border border-white/10 focus-within:border-indigo-400/70 focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all">
+          <HiOutlineMail className="text-lg text-slate-400 shrink-0" />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            required
+            className="flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
+          />
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-xl p-6">
-          <form onSubmit={handleResetPassword} className="space-y-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email address"
-              required
-              className="w-full h-11 px-4 text-sm bg-gray-50 dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
-            />
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-11 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-all disabled:opacity-50"
-            >
-              {isLoading ? <PulseLoader color="#fff" size={10} /> : "Send reset email"}
-            </button>
-          </form>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          type="submit"
+          disabled={isLoading}
+          className="w-full h-11 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-shadow disabled:opacity-60"
+        >
+          {isLoading ? <PulseLoader color="#fff" size={9} /> : "Send reset email"}
+        </motion.button>
+      </form>
 
-          <div className="text-center mt-4">
-            <a href="/sign-in" className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
-              Back to sign in
-            </a>
-          </div>
-        </div>
+      <div className="text-center mt-4">
+        <a href="/sign-in" className="text-xs text-indigo-300 hover:text-indigo-200 hover:underline font-medium">
+          Back to sign in
+        </a>
       </div>
-    </div>
+    </AuthShell>
   );
 }

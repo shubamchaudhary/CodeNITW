@@ -70,6 +70,11 @@ export default function Header() {
     }
   `;
 
+  // The auth screens are full-bleed and immersive — no app chrome there.
+  if (location.pathname === "/sign-in" || location.pathname === "/forgot-password") {
+    return null;
+  }
+
   return (
     <header>
       <nav className="bg-white dark:bg-slate-900 shadow-lg border-b border-gray-200 dark:border-slate-700 px-3 lg:px-5 py-3 sticky top-0 z-50">
