@@ -4,7 +4,6 @@ import { FcGoogle } from "react-icons/fc";
 import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
 import { motion } from "framer-motion";
 import {
-  signOut,
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
@@ -13,36 +12,24 @@ import {
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import PulseLoader from "react-spinners/PulseLoader";
-import { ALLOWED_EMAIL } from "../../Data/planStore";
 import AuthShell from "../../components/AuthShell";
 
 export default function SignIn() {
-  const [email, setEmail] = useState(ALLOWED_EMAIL);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function enforceOwner(auth, user) {
-    if (user.email !== ALLOWED_EMAIL) {
-      await signOut(auth);
-      toast.error("This is a private app.");
-      return false;
-    }
-    return true;
-  }
-
   async function onSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
     try {
       const auth = getAuth();
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      if (await enforceOwner(auth, user)) {
-        toast.success("Welcome back!");
-        navigate("/interview-prep");
-      }
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      toast.success("Welcome back!");
+      navigate("/interview-prep");
     } catch (error) {
       toast.error("Email and password didn't match");
     } finally {
@@ -54,11 +41,9 @@ export default function SignIn() {
     setIsGoogleLoading(true);
     try {
       const auth = getAuth();
-      const result = await signInWithPopup(auth, new GoogleAuthProvider());
-      if (await enforceOwner(auth, result.user)) {
-        toast.success("Welcome back!");
-        navigate("/interview-prep");
-      }
+      await signInWithPopup(auth, new GoogleAuthProvider());
+      toast.success("Welcome back!");
+      navigate("/interview-prep");
     } catch (error) {
       toast.error("Failed to sign in with Google. Please try again.");
     } finally {
@@ -143,7 +128,12 @@ export default function SignIn() {
         {isGoogleLoading ? <PulseLoader color="#a5b4fc" size={9} /> : (<><FcGoogle className="text-xl" /> Sign in with Google</>)}
       </motion.button>
 
-      <p className="text-center text-[11px] text-slate-500 mt-4">Private workspace · single account</p>
+      <p className="text-center text-xs text-slate-400 mt-4">
+        Don't have an account?{" "}
+        <a href="/sign-up" className="text-indigo-300 hover:text-indigo-200 hover:underline font-medium">
+          Register
+        </a>
+      </p>
     </AuthShell>
   );
 }
