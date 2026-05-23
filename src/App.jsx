@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
 import SignIn from "./pages/SignInUp/SignIn";
-import SignUp from "./pages/SignInUp/SignUp";
 import ForgotPassword from "./pages/SignInUp/ForgotPassword";
 import Header from "./components/Header";
 import { ToastContainer } from "react-toastify";
@@ -10,8 +11,19 @@ import PrivateRoute from "./components/PrivateRoute";
 import InterviewPrep from "./pages/InterviewPrep/InterviewPrep";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
+import { ALLOWED_EMAIL } from "./Data/planStore";
+import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
 
 function App() {
+  // Keep progress synced to Firestore for the owner account across devices.
+  useEffect(() => {
+    const unsub = onAuthStateChanged(getAuth(), (user) => {
+      if (user && user.email === ALLOWED_EMAIL) startCloudSync(user.uid);
+      else stopCloudSync();
+    });
+    return unsub;
+  }, []);
+
   return (
     <>
       <Router>
@@ -30,7 +42,6 @@ function App() {
           </Route>
 
           <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           <Route path="*" element={<Navigate to="/interview-prep" replace />} />
