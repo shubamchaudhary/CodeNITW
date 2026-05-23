@@ -174,6 +174,71 @@ export function setSourceNote(source, id, value) {
   saveJSON(key, map);
 }
 
+// ─── One-time migration from the old Personal Plan progress ───────────────────
+// The DSA set was curated from the Personal Plan, so titles match exactly. We
+// map the old (device-local, name-keyed) solved/starred maps onto the new DSA
+// slug ids and merge them into the signed-in account (so they then cloud-sync).
+const LEGACY_SOLVED_KEY = "PersonalDSASolvedQuestions";
+const LEGACY_STARRED_KEY = "PersonalDSAStarredQuestions";
+const MIGRATED_FLAG = "PersonalPlanMigrated";
+
+function rawGet(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+export function hasLegacyPersonalPlanData() {
+  const solved = rawGet(LEGACY_SOLVED_KEY) || {};
+  const starred = rawGet(LEGACY_STARRED_KEY) || {};
+  return Object.values(solved).some(Boolean) || Object.values(starred).some(Boolean);
+}
+
+export function isPersonalPlanMigrated() {
+  return !!loadJSON(MIGRATED_FLAG, false);
+}
+
+export function dismissPersonalPlanImport() {
+  saveJSON(MIGRATED_FLAG, true);
+}
+
+export function migratePersonalPlanProgress() {
+  const oldSolved = rawGet(LEGACY_SOLVED_KEY) || {};
+  const oldStarred = rawGet(LEGACY_STARRED_KEY) || {};
+  const byTitle = {};
+  DSA_PROBLEMS.forEach((p) => {
+    byTitle[p.title] = p.id;
+  });
+
+  const completed = loadJSON(KEYS.DSA_COMPLETED, {});
+  const timestamps = loadJSON(KEYS.DSA_TIMESTAMPS, {});
+  const starred = loadJSON(KEYS.DSA_STARRED, {});
+  const now = Date.now();
+  let count = 0;
+
+  Object.entries(oldSolved).forEach(([title, val]) => {
+    const id = byTitle[title];
+    if (val && id && !completed[id]) {
+      completed[id] = true;
+      timestamps[id] = now;
+      count += 1;
+    }
+  });
+  Object.entries(oldStarred).forEach(([title, val]) => {
+    const id = byTitle[title];
+    if (val && id) starred[id] = true;
+  });
+
+  saveJSON(KEYS.DSA_COMPLETED, completed);
+  saveJSON(KEYS.DSA_TIMESTAMPS, timestamps);
+  saveJSON(KEYS.DSA_STARRED, starred);
+  saveJSON(MIGRATED_FLAG, true);
+  return count;
+}
+
 // ─── Date helpers for the planning timeline ───────────────────────────────────
 export function dateKey(d = new Date()) {
   const y = d.getFullYear();
