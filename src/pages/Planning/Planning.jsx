@@ -4,6 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CATEGORY_CONFIG } from "../../Data/JobHuntPlan";
 import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
 import { InterviewCardDetail, DsaProblemDetail } from "../../components/cardDetails";
+import { GLASS } from "../../components/glass";
 import {
   INTERVIEW_CARDS,
   DSA_PROBLEMS,
@@ -228,7 +229,7 @@ const Planning = () => {
 
           {/* ── Date stepper ── */}
           <div className="flex items-center justify-between gap-2 mb-3 px-2">
-            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all" title="Previous day">‹ Prev</button>
+            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all" title="Previous day">‹ Prev</button>
             <div className="text-center">
               <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{relativeLabel(current)}</p>
               <p className="text-[11px] text-gray-500 dark:text-gray-400">{prettyDate(current)}</p>
@@ -237,7 +238,7 @@ const Planning = () => {
               {!isToday && (
                 <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-semibold transition-all">Today</button>
               )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all" title="Next day">Next ›</button>
+              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all" title="Next day">Next ›</button>
             </div>
           </div>
 
@@ -256,7 +257,7 @@ const Planning = () => {
                   className={`shrink-0 w-16 rounded-xl border px-2 py-2 text-center transition-all ${
                     sel
                       ? "border-violet-500 bg-violet-600 text-white shadow-md"
-                      : "border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:border-violet-400"
+                      : "border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400"
                   }`}
                 >
                   <p className={`text-[10px] font-semibold ${sel ? "text-violet-100" : "text-gray-400 dark:text-gray-500"}`}>
@@ -275,7 +276,7 @@ const Planning = () => {
           <div className="px-2 mb-4">
             <motion.div
               layout
-              className="rounded-2xl border-2 border-dashed border-violet-300 dark:border-violet-800 bg-violet-50/40 dark:bg-violet-900/10 p-3 sm:p-4 transition-colors"
+              className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md p-3 sm:p-4 transition-colors"
             >
               <div className="flex items-center justify-between mb-3 px-1">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">
@@ -371,7 +372,7 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
   const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
 
   return (
-    <div className={`rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 ${complete ? "border-l-green-400" : meta.border} bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-80" : ""}`}>
+    <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-80" : ""}`}>
       <div className="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
         <button
           onClick={(e) => { e.stopPropagation(); onToggleComplete(); }}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { DSA_TOPICS, DSA_TOTAL } from "../../Data/DSAPrep";
+import { GLASS } from "../../components/glass";
 import {
   KEYS,
   loadJSON,
@@ -199,7 +200,7 @@ function TopicCard({ topic, isOpen, onToggle, solved, starred, notes, onToggleSo
   const pct = topic.problems.length ? (100 * done) / topic.problems.length : 0;
 
   return (
-    <div className="mx-2 my-1.5 rounded-xl border border-gray-200 dark:border-slate-600 border-l-4 border-l-orange-300 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all overflow-hidden">
+    <div className={`mx-2 my-1.5 rounded-xl ${GLASS} border-l-4 border-l-orange-300 shadow-sm hover:shadow-md transition-all overflow-hidden`}>
       <div className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none" onClick={onToggle}>
         <div className="flex-1 min-w-0">
           <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 truncate">{topic.topic}</h2>
@@ -268,10 +269,10 @@ function QuestionRow({ problem, isSolved, isStarred, note, onToggleSolved, onTog
     <div className="mb-2">
       <div
         onClick={() => setShowNotes((s) => !s)}
-        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 cursor-pointer border transition-all ${
+        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 cursor-pointer border backdrop-blur-md transition-all ${
           isSolved
-            ? "bg-green-50/70 dark:bg-green-900/15 border-green-200 dark:border-green-800/60"
-            : "bg-white dark:bg-slate-800/80 border-gray-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-700/70 hover:shadow-sm"
+            ? "bg-green-50/60 dark:bg-green-900/20 border-green-300/70 dark:border-green-800/50"
+            : "bg-white/50 dark:bg-slate-800/40 border-gray-200/70 dark:border-white/10 hover:border-orange-300 dark:hover:border-orange-700/70 hover:shadow-sm"
         }`}
       >
         {/* Difficulty */}
