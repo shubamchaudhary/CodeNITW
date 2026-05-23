@@ -58,6 +58,9 @@ const Planning = () => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [openItem, setOpenItem] = useState(null);
 
+  const currentRef = useRef(current);
+  useEffect(() => { currentRef.current = current; }, [current]);
+
   useEffect(() => setItems(getDay(current)), [current]);
 
   useEffect(
@@ -68,6 +71,7 @@ const Planning = () => {
         if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
         if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
         if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
+        if (key === KEYS.PLAN_DAYS) setItems(getDay(currentRef.current));
       }),
     []
   );
