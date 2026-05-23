@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL } from "../../Data/DSAPrep";
 import { GLASS } from "../../components/glass";
 import {
@@ -13,6 +14,10 @@ import {
   dsaDaysLeft,
   DSA_REVISIT_DAYS,
   subscribe,
+  hasLegacyPersonalPlanData,
+  isPersonalPlanMigrated,
+  migratePersonalPlanProgress,
+  dismissPersonalPlanImport,
 } from "../../Data/planStore";
 
 const DSAPrep = () => {
@@ -31,6 +36,24 @@ const DSAPrep = () => {
   const [starred, setStarred] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [filter, setFilter] = useState("ALL");
+  const [bannerHidden, setBannerHidden] = useState(false);
+
+  const handleImportPlan = useCallback(() => {
+    const n = migratePersonalPlanProgress();
+    setSolved(loadJSON(KEYS.DSA_COMPLETED, {}));
+    setStarred(loadJSON(KEYS.DSA_STARRED, {}));
+    setBannerHidden(true);
+    toast.success(
+      n > 0
+        ? `Imported ${n} solved problem${n === 1 ? "" : "s"} from your Personal Plan`
+        : "Personal Plan progress imported"
+    );
+  }, []);
+
+  const handleDismissPlan = useCallback(() => {
+    dismissPersonalPlanImport();
+    setBannerHidden(true);
+  }, []);
 
   useEffect(
     () =>
@@ -80,6 +103,8 @@ const DSAPrep = () => {
 
   if (!authReady) return null;
 
+  const showImport = !bannerHidden && hasLegacyPersonalPlanData() && !isPersonalPlanMigrated();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
       <div className="min-h-screen flex justify-center px-2">
@@ -125,6 +150,35 @@ const DSAPrep = () => {
               </div>
             </div>
           </motion.div>
+
+          {/* ── Import old Personal Plan progress ── */}
+          {showImport && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mx-2 mb-4 rounded-xl border border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/70 dark:bg-indigo-900/20 backdrop-blur-md px-4 py-3 flex items-center gap-3"
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Continue from your Personal Plan</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Found earlier progress on this device — import your solved &amp; starred problems into this account.
+                </p>
+              </div>
+              <button
+                onClick={handleImportPlan}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shrink-0"
+              >
+                Import
+              </button>
+              <button
+                onClick={handleDismissPlan}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0"
+                title="Dismiss"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              </button>
+            </motion.div>
+          )}
 
           {/* ── Filter ── */}
           <div className="flex flex-wrap items-center gap-2 mb-4 px-2">
