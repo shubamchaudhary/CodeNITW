@@ -15,7 +15,7 @@
 
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { KEYS, loadJSON, applyRemote, subscribe } from "./planStore";
+import { KEYS, loadJSON, applyRemote, subscribe, setActiveUid } from "./planStore";
 
 const SYNC_KEYS = [
   KEYS.IP_COMPLETED,
@@ -74,6 +74,8 @@ export function startCloudSync(uid) {
   if (currentUid === uid && unsubscribeSnapshot) return;
   stopCloudSync();
   currentUid = uid;
+  // Scope all local reads/writes to this account before touching storage.
+  setActiveUid(uid);
   unsubscribeSnapshot = onSnapshot(
     userDocRef(uid),
     (snap) => {
@@ -108,4 +110,5 @@ export function stopCloudSync() {
     pushTimer = null;
   }
   currentUid = null;
+  setActiveUid(null);
 }

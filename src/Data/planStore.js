@@ -22,8 +22,19 @@ export const KEYS = {
 export const DSA_REVISIT_DAYS = 45;
 const DSA_REVISIT_MS = DSA_REVISIT_DAYS * 24 * 60 * 60 * 1000;
 
-// This is a private, single-user app — only this account may sign in / sync.
-export const ALLOWED_EMAIL = "beshubam@gmail.com";
+// ─── Per-account namespacing ──────────────────────────────────────────────────
+// Every persisted value is stored under a key prefixed with the signed-in user's
+// uid, so one account can never read another account's cached data on a shared
+// browser. Set by the cloud-sync layer on sign-in; "anon" before login.
+let activeUid = "anon";
+
+export function setActiveUid(uid) {
+  activeUid = uid || "anon";
+}
+
+function nsKey(base) {
+  return `u:${activeUid}:${base}`;
+}
 
 // ─── Low-level JSON storage with a change event for live cross-page sync ──────
 const listeners = new Set();
@@ -43,7 +54,7 @@ function emit(key) {
 
 export function loadJSON(key, fallback) {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(nsKey(key));
     return raw ? JSON.parse(raw) : fallback;
   } catch (_) {
     return fallback;
@@ -51,7 +62,7 @@ export function loadJSON(key, fallback) {
 }
 
 export function saveJSON(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  localStorage.setItem(nsKey(key), JSON.stringify(value));
   emit(key);
 }
 
@@ -62,7 +73,7 @@ export function applyRemote(data) {
   Object.entries(data).forEach(([key, value]) => {
     if (value === undefined) return;
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      localStorage.setItem(nsKey(key), JSON.stringify(value));
     } catch (_) {}
     emit(key);
   });

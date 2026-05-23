@@ -5,11 +5,10 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import PulseLoader from "react-spinners/PulseLoader";
-import { ALLOWED_EMAIL } from "../../Data/planStore";
 import AuthShell from "../../components/AuthShell";
 
 export default function PasswordReset() {
-  const [email, setEmail] = useState(ALLOWED_EMAIL);
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
