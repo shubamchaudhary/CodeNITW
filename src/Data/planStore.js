@@ -22,6 +22,9 @@ export const KEYS = {
 export const DSA_REVISIT_DAYS = 45;
 const DSA_REVISIT_MS = DSA_REVISIT_DAYS * 24 * 60 * 60 * 1000;
 
+// This is a private, single-user app — only this account may sign in / sync.
+export const ALLOWED_EMAIL = "beshubam@gmail.com";
+
 // ─── Low-level JSON storage with a change event for live cross-page sync ──────
 const listeners = new Set();
 
@@ -50,6 +53,19 @@ export function loadJSON(key, fallback) {
 export function saveJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
   emit(key);
+}
+
+// Write a batch of remote (cloud) values into local storage and notify the UI.
+// Used by the Firestore sync layer when another device pushes changes.
+export function applyRemote(data) {
+  if (!data) return;
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === undefined) return;
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_) {}
+    emit(key);
+  });
 }
 
 // ─── Interview Prep cards (DSA decoupled — topics only) ───────────────────────
