@@ -570,7 +570,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                     <button
                       disabled={added}
                       onClick={() =>
-                        onAdd({ uid: uid(), source: "interview", refId: c.id, title: c.title, meta: `${c.primaryCategory} · Wk ${c.week}` })
+                        onAdd({ uid: uid(), source: "interview", refId: c.id, title: c.title, meta: c.primaryCategory })
                       }
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/10"}`}
                     >
