@@ -114,8 +114,24 @@ const Planning = () => {
 
   const removeItem = useCallback((id) => persist(items.filter((i) => i.uid !== id)), [items, persist]);
 
+  // Move a card off the shown day onto another day (today / tomorrow).
+  const moveItem = useCallback(
+    (item, targetKey) => {
+      if (targetKey === current) return;
+      persist(items.filter((i) => i.uid !== item.uid));
+      const targetItems = getDay(targetKey);
+      const dup =
+        item.source !== "custom" &&
+        targetItems.some((i) => i.source === item.source && i.refId === item.refId);
+      if (!dup) setDay(targetKey, [...targetItems, item]);
+    },
+    [items, current, persist]
+  );
+
   const toggleComplete = useCallback(
     (item) => {
+      // Completion can only happen on today — past/future cards must be moved first.
+      if (current !== today) return;
       if (item.source === "custom") {
         persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: !i.completed } : i)));
         return;
@@ -125,7 +141,7 @@ const Planning = () => {
       if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
       else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
     },
-    [items, persist, resolve]
+    [items, current, today, persist, resolve]
   );
 
   const changeNote = useCallback(
@@ -144,14 +160,21 @@ const Planning = () => {
   const doneCount = items.filter((i) => resolve(i).complete).length;
   const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
 
-  // Timeline: last 14 days + today + any day that has a saved plan.
+  // Timeline: a window of ~7 days before/after today (today centred), plus any
+  // day that has a saved plan. Sorted chronologically (past → left, future → right).
   const timeline = useMemo(() => {
     const set = new Set();
-    for (let i = 0; i < 14; i++) set.add(addDays(today, -i));
+    for (let i = -7; i <= 7; i++) set.add(addDays(today, i));
     getAllDayKeys().forEach((k) => set.add(k));
     set.add(current);
-    return [...set].sort().reverse();
+    return [...set].sort();
   }, [today, current, items]);
+
+  // Keep the selected day centred in the horizontal strip.
+  const selectedChipRef = useRef(null);
+  useEffect(() => {
+    selectedChipRef.current?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+  }, [current, timeline.length]);
 
   const dayDoneCount = useCallback(
     (key) => {
@@ -231,10 +254,13 @@ const Planning = () => {
               return (
                 <button
                   key={key}
+                  ref={sel ? selectedChipRef : null}
                   onClick={() => setCurrent(key)}
                   className={`shrink-0 w-16 rounded-xl border px-2 py-2 text-center transition-all ${
                     sel
                       ? "border-violet-500 bg-violet-600 text-white shadow-md"
+                      : isT
+                      ? "border-violet-400/70 dark:border-violet-500/40 bg-violet-50/60 dark:bg-violet-900/20 backdrop-blur-md text-gray-700 dark:text-gray-200 hover:border-violet-400"
                       : "border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400"
                   }`}
                 >
@@ -288,6 +314,9 @@ const Planning = () => {
                             isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
                             onToggleStar={item.source === "dsa" ? toggleStar : undefined}
                             daysLeft={item.source === "dsa" && complete ? dsaDaysLeft(item.refId) : null}
+                            canComplete={isToday}
+                            moveLabel={isToday ? "Tomorrow" : "Today"}
+                            onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
                           />
                         </motion.div>
                       );
@@ -328,7 +357,7 @@ const SOURCE_META = {
   custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
 };
 
-function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete, onNoteChange, onRemove, isStarred, onToggleStar, daysLeft }) {
+function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete, onNoteChange, onRemove, isStarred, onToggleStar, daysLeft, canComplete, moveLabel, onMove }) {
   const meta = SOURCE_META[item.source];
   const debounceRef = useRef(null);
   const [localNote, setLocalNote] = useState(note);
@@ -353,9 +382,14 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
     <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-80" : ""}`}>
       <div className="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
         <button
-          onClick={(e) => { e.stopPropagation(); onToggleComplete(); }}
-          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${complete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"}`}
-          title={complete ? "Mark incomplete" : "Mark complete"}
+          onClick={(e) => { e.stopPropagation(); if (canComplete) onToggleComplete(); }}
+          disabled={!canComplete}
+          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
+            complete
+              ? "bg-green-500 border-green-500"
+              : "border-gray-300 dark:border-slate-500 hover:border-green-400"
+          } ${!canComplete ? "opacity-50 cursor-not-allowed" : ""}`}
+          title={canComplete ? (complete ? "Mark incomplete" : "Mark complete") : `Move to today to mark complete`}
         >
           {complete && (
             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -371,6 +405,16 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
 
         <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
           {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
+          {onMove && (
+            <button
+              onClick={onMove}
+              title={`Move to ${moveLabel}`}
+              className="flex items-center gap-0.5 text-[10px] font-semibold px-2 py-1 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 transition-colors"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              {moveLabel}
+            </button>
+          )}
           <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove from this day">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           </button>
