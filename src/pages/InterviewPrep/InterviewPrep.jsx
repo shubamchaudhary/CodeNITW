@@ -13,7 +13,8 @@ import {
   subscribe,
 } from "../../Data/planStore";
 
-const CATEGORIES = ["AI", "HLD", "LLD"];
+const CATEGORIES = ["AI", "HLD", "LLD", "Spring Boot"];
+const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3, P4: 4 };
 
 function calcCategoryStats(completed) {
   return CATEGORIES.reduce((acc, cat) => {
@@ -78,14 +79,13 @@ const InterviewPrep = () => {
     });
   }, []);
 
-  const groupedByPhase = useMemo(() => {
-    const groups = {};
-    filteredItems.forEach((item) => {
-      const key = `phase-${item.phase}`;
-      if (!groups[key]) groups[key] = { phase: item.phase, items: [] };
-      groups[key].items.push(item);
-    });
-    return Object.values(groups);
+  const groupedByCategory = useMemo(() => {
+    return CATEGORIES.map((cat) => ({
+      cat,
+      items: filteredItems
+        .filter((i) => i.primaryCategory === cat)
+        .sort((a, b) => (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9)),
+    })).filter((g) => g.items.length);
   }, [filteredItems]);
 
   if (!authReady) return null;
@@ -144,7 +144,7 @@ const InterviewPrep = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-3 gap-2 mb-4 px-2"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 px-2"
           >
             {CATEGORIES.map((cat) => {
               const stats = categoryStats[cat];
@@ -152,10 +152,11 @@ const InterviewPrep = () => {
                 AI: { from: "#a855f7", to: "#7c3aed", text: "text-purple-600 dark:text-purple-400" },
                 HLD: { from: "#3b82f6", to: "#0ea5e9", text: "text-blue-600 dark:text-blue-400" },
                 LLD: { from: "#10b981", to: "#22c55e", text: "text-emerald-600 dark:text-emerald-400" },
+                "Spring Boot": { from: "#14b8a6", to: "#06b6d4", text: "text-teal-600 dark:text-teal-400" },
               }[cat];
               const radius = 16;
               const circumference = 2 * Math.PI * radius;
-              const gradId = `ipCatGrad-${cat}`;
+              const gradId = `ipCatGrad-${cat.replace(/\s+/g, "")}`;
               return (
                 <div key={cat} className={`${GLASS} rounded-lg shadow-sm px-2.5 py-2 flex items-center gap-2`}>
                   <div className="relative w-11 h-11 shrink-0">
@@ -197,6 +198,7 @@ const InterviewPrep = () => {
               { key: "AI", label: `AI (${categoryStats.AI.total})` },
               { key: "HLD", label: `HLD (${categoryStats.HLD.total})` },
               { key: "LLD", label: `LLD (${categoryStats.LLD.total})` },
+              { key: "Spring Boot", label: `Spring Boot (${categoryStats["Spring Boot"].total})` },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -212,74 +214,50 @@ const InterviewPrep = () => {
             ))}
           </motion.div>
 
-          {/* ── Phases / Weeks / Cards ── */}
+          {/* ── Category Sections / Cards ── */}
           <AnimatePresence>
-            {groupedByPhase.map((group) => (
-              <div key={`phase-${group.phase}`}>
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center gap-3 mb-3 px-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-indigo-500 to-purple-500" />
-                    <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                      Phase {group.phase}:{" "}
-                      <span className="font-normal text-gray-500 dark:text-gray-400">
-                        {group.phase === 1
-                          ? "Foundations (Weeks 1–4)"
-                          : group.phase === 2
-                          ? "Depth (Weeks 5–8)"
-                          : group.phase === 3
-                          ? "Advanced Topics (Weeks 9–12)"
-                          : "Interview Mode (Weeks 13–16)"}
-                      </span>
-                    </h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {group.items.filter((i) => completed[i.id]).length}/{group.items.length} done
-                  </span>
-                </motion.div>
-
-                {(() => {
-                  const byWeek = {};
-                  group.items.forEach((item) => {
-                    if (!byWeek[item.week]) byWeek[item.week] = [];
-                    byWeek[item.week].push(item);
-                  });
-                  return Object.entries(byWeek).map(([week, items]) => (
-                    <div key={`w${week}`} className="mb-4">
-                      <div className="flex items-center gap-2 mb-2 px-2">
-                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                          Week {week}
-                        </span>
-                        <div className="flex-1 h-px bg-gray-100 dark:bg-slate-700/50" />
-                      </div>
-                      {items.map((item, idx) => (
-                        <motion.div
-                          key={item.id}
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.3, delay: idx * 0.04 }}
-                        >
-                          <PlanCard
-                            item={item}
-                            isOpen={openCardId === item.id}
-                            isComplete={!!completed[item.id]}
-                            note={notes[item.id] || ""}
-                            onToggleOpen={() => setOpenCardId((prev) => (prev === item.id ? null : item.id))}
-                            onToggleComplete={() => toggleComplete(item.id)}
-                            onNoteChange={(val) => saveNote(item.id, val)}
-                          />
-                        </motion.div>
-                      ))}
+            {groupedByCategory.map((group) => {
+              const cfg = CATEGORY_CONFIG[group.cat];
+              const done = group.items.filter((i) => completed[i.id]).length;
+              return (
+                <div key={group.cat} className="mb-5">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-3 mb-3 px-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`w-1.5 h-6 rounded-full ${cfg.bar}`} />
+                      <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                        {cfg.icon} {cfg.label}
+                      </h2>
                     </div>
-                  ));
-                })()}
-              </div>
-            ))}
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{done}/{group.items.length} done</span>
+                  </motion.div>
+
+                  {group.items.map((item, idx) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3, delay: idx * 0.03 }}
+                    >
+                      <PlanCard
+                        item={item}
+                        isOpen={openCardId === item.id}
+                        isComplete={!!completed[item.id]}
+                        note={notes[item.id] || ""}
+                        onToggleOpen={() => setOpenCardId((prev) => (prev === item.id ? null : item.id))}
+                        onToggleComplete={() => toggleComplete(item.id)}
+                        onNoteChange={(val) => saveNote(item.id, val)}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              );
+            })}
           </AnimatePresence>
         </div>
       </div>
@@ -306,6 +284,7 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
     AI: "border-l-purple-400",
     HLD: "border-l-blue-400",
     LLD: "border-l-emerald-400",
+    "Spring Boot": "border-l-teal-400",
   }[item.primaryCategory] || "border-l-indigo-400";
 
   return (
