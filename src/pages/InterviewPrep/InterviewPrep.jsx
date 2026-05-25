@@ -316,7 +316,13 @@ function PlanCard({ item, isOpen, isComplete, note, onToggleOpen, onToggleComple
         </div>
 
         <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
+          {note && (
+            <span title="Has notes" className="text-blue-400 dark:text-blue-500">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+                <path d="M11 2.5l2.5 2.5M3 13l8.5-8.5 2.5 2.5L5.5 15.5 2.5 16l.5-3z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          )}
           <button
             onClick={onToggleComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isComplete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"}`}

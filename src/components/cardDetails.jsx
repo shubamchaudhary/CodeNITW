@@ -64,7 +64,14 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
               onClick={copyPrompt}
               className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md border transition-all ${copied ? "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800" : "bg-gray-100 text-gray-600 border-gray-200 dark:bg-slate-700 dark:text-gray-400 dark:border-slate-600 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-300"}`}
             >
-              {copied ? <>✓ Copied!</> : (
+              {copied ? (
+                <>
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16">
+                    <path d="M3 8.5l3.5 3.5L13 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
                 <>
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16">
                     <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
