@@ -8,13 +8,20 @@ import {
   INTERVIEW_CARDS,
   KEYS,
   loadJSON,
+  saveJSON,
   setSourceComplete,
   setSourceNote,
   subscribe,
 } from "../../Data/planStore";
+import { fetchIPCompletions } from "../../Data/cloudSync";
 
 const CATEGORIES = ["AI", "HLD", "LLD", "Spring Boot"];
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3, P4: 4 };
+
+const VALID_IDS = new Set(INTERVIEW_CARDS.map((c) => c.id));
+function filterByPlan(raw) {
+  return Object.fromEntries(Object.entries(raw).filter(([id, v]) => v && VALID_IDS.has(id)));
+}
 
 function calcCategoryStats(completed) {
   return CATEGORIES.reduce((acc, cat) => {
@@ -32,21 +39,32 @@ function calcCategoryStats(completed) {
 const InterviewPrep = () => {
   const [authReady, setAuthReady] = useState(false);
 
+  // Start empty — source of truth is Firestore, not the browser cache.
+  const [completed, setCompleted] = useState({});
+  const [notes, setNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(), () => setAuthReady(true));
+    const unsubscribe = onAuthStateChanged(getAuth(), async (user) => {
+      setAuthReady(true);
+      if (!user) return;
+      const raw = await fetchIPCompletions(user.uid);
+      // Drop IDs that no longer exist in the current plan, then write the
+      // cleaned map back so localStorage and Firestore also lose the stale IDs.
+      const filtered = filterByPlan(raw);
+      saveJSON(KEYS.IP_COMPLETED, filtered);
+      setCompleted(filtered);
+    });
     return unsubscribe;
   }, []);
-
-  const [completed, setCompleted] = useState(() => loadJSON(KEYS.IP_COMPLETED, {}));
-  const [notes, setNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
   const [openCardId, setOpenCardId] = useState(null);
   const [filter, setFilter] = useState("ALL");
 
-  // Keep in sync if the Planning page mutates the same stores.
+  // Keep in sync if the Planning page or cloudSync mutates the same stores.
   useEffect(
     () =>
       subscribe((key) => {
-        if (key === KEYS.IP_COMPLETED) setCompleted(loadJSON(KEYS.IP_COMPLETED, {}));
+        if (key === KEYS.IP_COMPLETED)
+          setCompleted(filterByPlan(loadJSON(KEYS.IP_COMPLETED, {})));
         if (key === KEYS.IP_NOTES) setNotes(loadJSON(KEYS.IP_NOTES, {}));
       }),
     []
