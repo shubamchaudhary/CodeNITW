@@ -1,11 +1,18 @@
 // Interview Prep plan — consolidated topic cards (AI / HLD / LLD / Spring Boot).
 // Refined for SDE-2 switch: 70% Java SDE-2, 20% backend+AI hybrid, 10% pure GenAI funnel.
-// Changes from previous version:
+//
+// Round 1 changes (HLD/SB rebalance):
 //   - HLD rebalanced from AI-heavy → canonical SDE-2 (chat, geo, payments, content)
 //   - Added Microservices patterns + Distributed Systems/Kafka in Spring Boot
 //   - Added AI production-grade gaps (idempotency, Store API, streaming, async, determinism)
 //   - Dropped: lld-games (low ROI), hld-ai-platform (consolidated into hld-ai-systems)
 //   - Trimmed: ai-rag-advanced (no Multimodal), ai-finetuning (decision framework only)
+//
+// Round 2 changes (hit-rate optimisation):
+//   - Added hld-fundamentals (P0) — load balancing, caching, sharding, DB choice tree, capacity math
+//   - Split sb-security-jvm → sb-jvm (P0) + sb-security (P2) so JVM gets proper depth
+//   - Promoted lld-concurrency from P1 → P0 (thread-safe follow-ups asked every loop)
+//   - Swapped lld-storage → lld-expense-graph (Splitwise + Library Management) — higher hit-rate
 
 export const jobHuntPlan = [
   {
@@ -613,7 +620,7 @@ export const jobHuntPlan = [
       "AI"
     ],
     "primaryCategory": "AI",
-    "priority": "P1",
+    "priority": "P2",
     "title": "Fine-Tuning vs RAG vs Prompting — Decision Framework",
     "keyTopics": [
       "Prompting: zero effort, immediate, limited by context window",
@@ -674,6 +681,63 @@ export const jobHuntPlan = [
       "Personal Narrative",
       "Self Introduction",
       "Career Story"
+    ]
+  },
+  {
+    "id": "hld-fundamentals",
+    "categories": [
+      "HLD"
+    ],
+    "primaryCategory": "HLD",
+    "priority": "P0",
+    "title": "System Design Fundamentals: Load Balancing, Caching, Sharding, DB Choice, Capacity Math",
+    "keyTopics": [
+      "L4 (transport) vs L7 (application) load balancing — what each can route on",
+      "Load balancer algorithms: round-robin, least-connections, weighted, consistent hashing, ip-hash",
+      "Consistent hashing: why naive hash modulo fails when nodes added/removed; virtual nodes",
+      "Health checks: active vs passive; how a node gets removed from rotation",
+      "Sticky sessions: when needed (in-memory state) vs when avoided (most modern designs)",
+      "CACHING TIERS: browser → CDN → API gateway cache → app cache → DB cache",
+      "Cache patterns: cache-aside, write-through, write-behind, refresh-ahead — tradeoffs",
+      "Cache invalidation strategies: TTL, event-based, write-through, manual",
+      "Cache eviction: LRU, LFU, FIFO, TTL — when each makes sense",
+      "Thundering herd / cache stampede: lock-on-miss, request coalescing, soft TTL with async refresh",
+      "Cache penetration (missing keys), cache breakdown (hot key expiry), cache avalanche (mass expiry)",
+      "CDN essentials: edge POPs, origin pull vs push, cache headers, signed URLs",
+      "SHARDING strategies: range-based, hash-based, geo-based, directory-based",
+      "Range sharding: easy range queries, but hot-spots on sequential keys (timestamps)",
+      "Hash sharding: even distribution, but range queries scatter across shards",
+      "Geo sharding: low latency for geographic users, but hard to rebalance",
+      "Shard key choice: high cardinality, low skew, query-pattern alignment",
+      "Resharding pain: why this is hard (live migration, dual-writes, cutover)",
+      "DATABASE CHOICE TREE: SQL vs NoSQL vs columnar vs time-series vs graph vs in-memory",
+      "When SQL (relational): ACID needed, complex joins, mature ecosystem, strong consistency — PostgreSQL, MySQL",
+      "When document NoSQL: schemaless, hierarchical data, high write throughput — MongoDB, DynamoDB",
+      "When wide-column: massive scale, write-heavy, time-series-ish — Cassandra, HBase",
+      "When columnar/OLAP: analytics, aggregations over large data — Snowflake, BigQuery, Redshift, ClickHouse",
+      "When time-series: metrics/IoT/events with time-based queries — InfluxDB, TimescaleDB",
+      "When graph: relationship-heavy queries (friend-of-friend, fraud detection) — Neo4j",
+      "When in-memory: sub-ms latency, ephemeral or cache-like data — Redis, Memcached",
+      "CAPACITY MATH: 1 KB = small JSON, 1 MB = image, 1 GB = HD video — orders of magnitude matter",
+      "QPS estimation: DAU × actions-per-day-per-user / 86400 → average QPS; ×3 for peak",
+      "Storage estimation: items × avg-size × replication-factor × retention",
+      "Bandwidth: QPS × payload size; ingress vs egress",
+      "Latency budget: client → LB → service → DB → service → LB → client; what eats time",
+      "Read:Write ratio drives architecture: 100:1 means optimise reads (replicas, caches); 1:1 means optimise writes",
+      "ACID vs BASE: when each fits; eventual consistency tradeoffs"
+    ],
+    "prompt": "Teach me the system design BUILDING BLOCKS used by every HLD problem. Without this card, every other HLD card is slower and shallower. With it, I can attack any new problem from first principles.\n\nCover, with depth and diagrams in text:\n\n1. LOAD BALANCING:\n- L4 vs L7: what each can route on, when each is appropriate (L4 for raw TCP/TLS, L7 for path-based and header-based routing)\n- Algorithms: round-robin, least-connections, weighted, consistent hashing, ip-hash — when each shines\n- CONSISTENT HASHING: walk through why hash(key) % N breaks when N changes (90% of keys remap), then how the ring with virtual nodes fixes it. This is asked verbatim.\n- Health checks: active probes vs passive; how unhealthy nodes get removed; flap detection\n- Sticky sessions: necessary for in-memory state, avoided in modern stateless designs\n\n2. CACHING (the layer-by-layer model):\n- Tier hierarchy: browser → CDN → API gateway → application cache (in-process or Redis) → database cache\n- Each tier's hit ratio compounds; the goal is to shed load before it reaches expensive layers\n- PATTERNS: cache-aside (app checks cache, then DB on miss, populates cache) — most common; write-through (writes go to cache and DB synchronously); write-behind (writes to cache, async to DB — fast but risky); refresh-ahead (proactive refresh before expiry)\n- INVALIDATION (the hard problem): TTL (simple, can be stale); event-based (precise, complex); write-through (consistent but slower)\n- EVICTION: LRU (recency), LFU (frequency), FIFO (simple), TTL-based\n- FAILURE MODES — you need to know these by name:\n  * Cache stampede / thundering herd: many requests miss simultaneously, all hit DB. Fix: lock-on-miss, request coalescing, soft TTL with async refresh.\n  * Cache penetration: queries for non-existent keys bypass cache. Fix: cache the negative result, bloom filter in front.\n  * Cache breakdown: hot key expires, traffic floods through. Fix: never expire hot keys, mutex on rebuild.\n  * Cache avalanche: many keys expire simultaneously. Fix: jittered TTLs.\n- CDN: edge POPs, origin pull vs push, what to cache (immutable assets yes, dynamic API no by default), signed URLs for access control\n\n3. SHARDING / PARTITIONING:\n- RANGE-based: easy range scans, hot-spots on sequential keys (a timestamp shard key collapses to one shard for current writes)\n- HASH-based: even distribution, kills range queries, default for most KV stores\n- GEO-based: low latency for nearby users, ugly to rebalance, used by Uber-style systems\n- DIRECTORY-based: lookup service maps key → shard, flexible but adds a hop\n- SHARD KEY CHOICE — interview probe: high cardinality (so distribution is even), low skew (no celebrity shard), aligned with query patterns (don't shard by user_id if you query by tenant_id)\n- RESHARDING pain: live migration, dual-write phase, cutover risk. Why we should choose right the first time.\n\n4. DATABASE CHOICE TREE (the decision interviewers love):\n- SQL (PostgreSQL, MySQL): need ACID, complex joins, strong consistency, transactions across rows. Default unless proven otherwise.\n- Document NoSQL (MongoDB, DynamoDB): schemaless or rapidly evolving, hierarchical, very high write throughput, simple access patterns by key.\n- Wide-column (Cassandra, HBase): massive horizontal scale, write-heavy, predictable query patterns, eventual consistency acceptable.\n- Columnar OLAP (Snowflake, BigQuery, Redshift, ClickHouse): analytics on huge data, aggregations across columns, NOT for transactional workloads.\n- Time-series (InfluxDB, TimescaleDB): metrics, IoT, events with time-based queries and retention policies.\n- Graph (Neo4j): friend-of-friend, fraud detection, recommendation traversals.\n- In-memory (Redis, Memcached): sub-millisecond latency, ephemeral or cache.\n- INTERVIEW MOVE: when asked 'what DB would you use', name 2-3 candidates and the deciding factor, not just one.\n\n5. CAPACITY ESTIMATION (back-of-the-envelope) — this gets you to a credible answer in the first 5 minutes:\n- Reference sizes: 1 KB small JSON, 100 KB document, 1 MB image, 1 GB HD video minute\n- QPS: DAU × actions-per-day / 86400 → avg, ×3 for peak\n- Storage: items × size × replication factor (typically 3) × retention duration\n- Bandwidth: QPS × payload size; remember ingress + egress\n- Practice on every HLD card: estimate the numbers BEFORE designing\n\n6. LATENCY ANATOMY:\n- Walk the request path: client → DNS → LB → service → DB → service → LB → client\n- Typical numbers: in-memory ~100ns, SSD read ~150μs, intra-DC RTT ~500μs, cross-region RTT ~50-200ms\n- This is what justifies caching layers and read replicas\n\n7. READ:WRITE RATIO drives architecture:\n- 100:1 (Twitter, YouTube) → optimise reads: replicas, caches, denormalisation, fan-out on write\n- 1:1 (chat, IoT) → balance: minimise round-trips, simple writes\n- 1:100 (logs, metrics) → optimise writes: append-only, batch ingestion, time-partitioned\n\n8. ACID vs BASE — when each fits, eventual consistency tradeoffs (this links into the Distributed Systems card on consistency models).\n\nSTUDY APPROACH: don't just read this card — for every HLD card I do later, come back and check whether I applied the right building blocks. The first 5 minutes of every HLD interview should be: clarify, estimate (capacity math), pick a DB tree, pick a cache tier, pick a sharding strategy. This card gives me the menu.",
+    "tags": [
+      "System Design",
+      "Load Balancing",
+      "Consistent Hashing",
+      "Caching",
+      "Sharding",
+      "Database Choice",
+      "Capacity Estimation",
+      "CDN",
+      "ACID",
+      "BASE"
     ]
   },
   {
@@ -1144,7 +1208,7 @@ export const jobHuntPlan = [
       "LLD"
     ],
     "primaryCategory": "LLD",
-    "priority": "P1",
+    "priority": "P0",
     "title": "Concurrency Patterns in Java",
     "keyTopics": [
       "Producer-Consumer: BlockingQueue, wait/notify",
@@ -1414,6 +1478,49 @@ export const jobHuntPlan = [
     ]
   },
   {
+    "id": "lld-expense-graph",
+    "categories": [
+      "LLD"
+    ],
+    "primaryCategory": "LLD",
+    "priority": "P1",
+    "title": "Splitwise (Expense Sharing) & Library Management",
+    "keyTopics": [
+      "SPLITWISE — entities: User, Group, Expense, Split, Balance, Settlement",
+      "Split types: EQUAL, EXACT, PERCENTAGE, SHARES — Strategy pattern (interchangeable algorithms)",
+      "Expense creation: payer pays X, split among participants, each owes a share to payer",
+      "Balance representation: per-pair (A owes B) vs net balance (each user's net amount)",
+      "Per-pair balance: stored as map<(user_a, user_b), amount>; addition is straightforward",
+      "Net balance simplification: minimise transactions across a group — greedy max-flow approach",
+      "Algorithm: repeatedly settle highest creditor with highest debtor until all balances = 0",
+      "Multi-currency expenses: store amount + currency code; never convert on write; show in user's pref",
+      "Concurrent expense additions: optimistic locking on balance row OR event-sourced ledger",
+      "Group expense vs 1-on-1: same model, group is just users + shared context",
+      "Splitwise interview probes: simplify balances, handle settlements, partial payments, expense edit/delete",
+      "LIBRARY MANAGEMENT — entities: Book, BookItem (physical copy), Member, Loan, Reservation, Fine",
+      "Book vs BookItem: Book is the abstract title (ISBN, title, author), BookItem is each physical copy with barcode",
+      "Member states: ACTIVE, SUSPENDED, BLACKLISTED — state pattern or simple enum + rules",
+      "Loan state machine: REQUESTED → ISSUED → RETURNED (or OVERDUE → FINED → RETURNED)",
+      "Reservation queue: FIFO per book; when a copy returns, top of queue gets notified",
+      "Fine calculation: days_overdue × rate_per_day; cap; auto-suspend if unpaid beyond N days",
+      "Search: by title, author, ISBN, category — index on each; Composite pattern for category trees",
+      "Concurrency: two members reserving the last copy — atomic compare-and-set, or DB row lock",
+      "Audit log: every issue/return/fine is an append-only event for reporting",
+      "Extensibility: e-books (no physical copy), inter-library loans (cross-library reservations)"
+    ],
+    "prompt": "Two canonical LLD problems that get asked frequently and are missing from my current set. Both test entity modelling, state, and concurrency — the bread-and-butter of LLD interviews.\n\n════════════════════ Design Splitwise ════════════════════\n\nRequirements:\n- Users can be in groups\n- Add expenses with multiple split types (equal, exact amount, percentage, shares)\n- Track who owes whom\n- Settlement: simplify balances so minimum transactions are needed\n- Multi-currency support (optional follow-up)\n\nStructure (45 min):\n\n5 min — CLARIFY:\n- Groups required? (yes, but 1-on-1 is a group of 2)\n- Multi-currency? (yes, but each expense is in one currency)\n- Real-time settlement or batch?\n- Edit/delete expenses allowed?\n\n10 min — ENTITY MODEL:\n- User { id, name, email }\n- Group { id, name, members: List<User> }\n- Expense { id, group_id, paid_by: User, amount, currency, splits: List<Split>, created_at }\n- Split { user_id, amount } (or shares/percentage depending on split type)\n- Balance { user_a, user_b, amount } (a owes b this amount; signed)\n- Transaction { from: User, to: User, amount, timestamp }\n\n15 min — KEY DECISIONS & PATTERNS:\n\n(a) SPLIT STRATEGY (this is the Strategy pattern in action — bring it up explicitly):\n```\ninterface SplitStrategy {\n  List<Split> split(double total, List<User> users, params);\n}\nclass EqualSplit implements SplitStrategy { ... }\nclass ExactSplit implements SplitStrategy { ... }\nclass PercentageSplit implements SplitStrategy { ... }\nclass SharesSplit implements SplitStrategy { ... }\n```\nValidation invariant: sum of splits == total amount.\n\n(b) BALANCE STORAGE: per-pair map<(min(a,b), max(a,b)), signed_amount>. Reading 'how much does A owe B' is O(1). Updates on each expense are O(participants).\n\n(c) SIMPLIFY DEBTS (the algorithm question they will ask):\n- Compute each user's NET balance (sum of all their pair-balances)\n- Two heaps: max-heap of creditors (positive net), max-heap of debtors (negative net by magnitude)\n- Greedy: pop top creditor and top debtor, settle min(creditor.amount, |debtor.amount|), push back the remainder if any\n- Continue until both heaps empty\n- Result: at most N-1 transactions for N people\n\n10 min — CONCURRENCY & EDGE CASES:\n- Two users add expenses simultaneously: optimistic locking on balance row (version column) OR event-sourced ledger (each expense is an event, balances projected from event log)\n- Edit/delete expense: subtract old splits before applying new ones (must be atomic)\n- Multi-currency: store amount + currency code; only convert on display; never silent FX\n- Settlement of part of a balance: just an inverse expense\n\n5 min — EXTENSIBILITY:\n- Recurring expenses (rent, subscriptions)\n- Receipt attachment, comments\n- Notifications (Observer pattern on Expense)\n\n\n════════════════════ Design Library Management System ════════════════════\n\nRequirements:\n- Members can borrow, return, reserve books\n- Multiple copies of a book (BookItem)\n- Fines for overdue\n- Search by title/author/category\n- Reservation queue when no copies available\n\nStructure (40 min):\n\n5 min — CLARIFY: max loans per member, max loan duration, fine policy, e-books?\n\n10 min — ENTITY MODEL — note the Book vs BookItem distinction (interviewer will probe this):\n- Book (abstract): id, isbn, title, author, category — represents the TITLE\n- BookItem (concrete): id, book_id, barcode, status (AVAILABLE, ISSUED, RESERVED, LOST), shelf_location\n- Member: id, name, email, status (ACTIVE, SUSPENDED, BLACKLISTED), active_loans: int\n- Loan: id, member_id, book_item_id, issued_at, due_at, returned_at\n- Reservation: id, member_id, book_id, reserved_at, status (WAITING, READY, EXPIRED)\n- Fine: id, loan_id, amount, paid: bool\n- Catalog: index for search (by title, author, ISBN, category)\n\n15 min — DESIGN DECISIONS:\n\n(a) BORROW FLOW (the state machine — interviewer will draw with you):\n- Check member status (ACTIVE only)\n- Check active_loans < max_allowed\n- If no AVAILABLE BookItem of this Book: create Reservation, return early\n- Pick an AVAILABLE BookItem, mark ISSUED, create Loan, set due_at = now + max_duration\n- Atomic operation — DB transaction or compare-and-set on BookItem.status\n\n(b) RETURN FLOW:\n- Mark BookItem AVAILABLE, set Loan.returned_at\n- If overdue: compute fine = (now - due_at).days × rate_per_day, create Fine\n- Check Reservation queue for this Book; if any WAITING, mark BookItem RESERVED, notify first reservation\n- If member's fines exceed threshold → status = SUSPENDED\n\n(c) SEARCH:\n- Indexes on (title), (author), (isbn), (category)\n- Category hierarchy (Fiction > Mystery > Detective) → Composite pattern, traverse tree\n- For interview: don't over-engineer, an index per field is fine\n\n(d) CONCURRENCY — last copy race:\n- Two members request the last AVAILABLE copy simultaneously\n- DB: SELECT FOR UPDATE on BookItem, then UPDATE — pessimistic\n- OR: UPDATE BookItem SET status='ISSUED' WHERE id=? AND status='AVAILABLE' — atomic check-and-set; if 0 rows updated, lost the race, fall back to reservation\n\n10 min — EXTENSIBILITY & FOLLOWUPS:\n- E-books: BookItem with no physical copy, max concurrent licences instead of single-copy lock\n- Inter-library loans: BookItem belongs to a Library entity; transfers via inter-library protocol\n- Recommendations: separate service, not coupled\n- Audit log: every issue/return/fine is an append-only event — useful for fraud and reporting\n\nINTERVIEW MOVE: lead with the Book/BookItem distinction in minute 1. Most candidates miss it and use a single Book entity with a quantity counter, which falls apart when you need to track which physical copy went to which member.",
+    "tags": [
+      "LLD",
+      "Splitwise",
+      "Library Management",
+      "Strategy Pattern",
+      "State Machine",
+      "Concurrency",
+      "Graph",
+      "Greedy Algorithm"
+    ]
+  },
+  {
     "id": "lld-ai-specific",
     "categories": [
       "LLD"
@@ -1448,35 +1555,6 @@ export const jobHuntPlan = [
       "AI-Specific LLD",
       "RAG Pipeline LLD",
       "Builder Pattern"
-    ]
-  },
-  {
-    "id": "lld-storage",
-    "categories": [
-      "LLD"
-    ],
-    "primaryCategory": "LLD",
-    "priority": "P2",
-    "title": "File Storage System (S3-style)",
-    "keyTopics": [
-      "Upload/download/delete by bucket/key path",
-      "List files in bucket/prefix with pagination",
-      "Object metadata: content-type, upload timestamp, custom key-values",
-      "Versioning: keep previous versions of files",
-      "Access control: read/write permissions per user per bucket",
-      "Repository pattern: abstract storage backend",
-      "Decorator: add encryption, compression, logging as layers",
-      "Java NIO Files API for file operations",
-      "MessageDigest for checksum calculation (MD5, SHA-256)",
-      "Streaming large files: InputStream/OutputStream, not loading full file in memory"
-    ],
-    "prompt": "Implement a simplified File Storage System in Java.\n\nRequirements:\n- Upload file to a path (bucket/key structure)\n- Download file by path\n- Delete file\n- List files in a bucket/prefix\n- Support metadata (content-type, upload timestamp, custom key-values)\n- Versioning: keep previous versions of files\n- Access control: read/write permissions per user per bucket\n\nKey classes:\n- StorageService (interface)\n- LocalStorageService (file system based)\n- Bucket, StorageObject, ObjectMetadata\n- AccessPolicy, Permission enum (READ, WRITE, DELETE)\n- VersionedObject (stores version history)\n\nPatterns:\n- Repository pattern: abstract storage backend\n- Decorator: add encryption, compression, logging as layers\n- Factory: create different storage backends\n- Iterator: list objects with pagination\n\nJava specifics:\n- Java NIO Files API for file operations\n- MessageDigest for checksum calculation (MD5, SHA-256)\n- GZIP compression with GZIPOutputStream\n- ConcurrentHashMap for metadata store\n- Streaming large files: InputStream/OutputStream, not loading full file in memory\n\nDiscuss:\n- How S3 actually stores objects (consistent hashing, replication)\n- Content-addressable storage (CAS) — store by hash of content\n- Multi-part upload for large files",
-    "tags": [
-      "S3",
-      "File Storage",
-      "Java NIO",
-      "Versioning",
-      "Decorator Pattern"
     ]
   },
   {
@@ -1601,6 +1679,56 @@ export const jobHuntPlan = [
     ]
   },
   {
+    "id": "sb-jvm",
+    "categories": [
+      "Spring Boot"
+    ],
+    "primaryCategory": "Spring Boot",
+    "priority": "P0",
+    "title": "JVM Internals: Memory Model, GC, Class Loading, OOM Debugging",
+    "keyTopics": [
+      "JVM memory layout: heap, stack (per-thread method frames), metaspace, code cache, native stack",
+      "Heap structure: young generation (Eden + 2 Survivor spaces) + old generation (tenured)",
+      "Object allocation flow: Eden → survivor on minor GC → tenured after N survivals",
+      "Why generational hypothesis: most objects die young; cheap to collect young gen",
+      "GC ALGORITHMS:",
+      "G1 (default in Java 9+): heap divided into regions, prioritises regions with most garbage, low-pause target",
+      "ZGC (Java 11+): sub-10ms pause times, scalable to TB heaps; tradeoff is throughput",
+      "Parallel GC (older default): throughput-focused, stop-the-world during collection",
+      "Serial GC: single-threaded, only for small heaps / single-core",
+      "Minor GC (young gen): frequent, fast, stop-the-world but small pause",
+      "Major / Full GC (old gen + sometimes young): infrequent, expensive — pause can hurt latency-sensitive apps",
+      "Triggers for full GC: old gen full, metaspace full, explicit System.gc() (avoid!)",
+      "CLASS LOADING hierarchy: bootstrap (rt.jar) → platform/extension → application/system → custom",
+      "Parent delegation model: child asks parent first, only loads if parent can't",
+      "Why parent delegation matters: prevents core class spoofing (no one can override java.lang.String)",
+      "Custom class loaders: hot reload, plugin systems, isolated modules",
+      "OOM SCENARIOS — each has different root cause:",
+      "java.lang.OutOfMemoryError: Java heap space — true memory leak or undersized heap",
+      "Metaspace OOM — class loader leak (apps that load classes repeatedly without unload, e.g. hot reload bugs)",
+      "Unable to create native thread — hit OS thread limit or each thread's stack is too large",
+      "GC overhead limit exceeded — GC running constantly but reclaiming < 2%",
+      "Direct buffer OOM — off-heap allocations exhausted (NIO, Netty)",
+      "DEBUGGING tools: jmap (heap dump), jstack (thread dump), jstat (GC stats), jconsole/VisualVM, async-profiler",
+      "Reading a heap dump in Eclipse MAT: dominator tree, leak suspects report, finding the retained set",
+      "Common production OOM cause: ThreadLocal leak in a thread pool — every request adds entry, never cleared",
+      "JVM flags to know: -Xms / -Xmx (heap), -XX:MaxMetaspaceSize, -XX:+UseG1GC, -XX:+HeapDumpOnOutOfMemoryError"
+    ],
+    "prompt": "Teach me JVM internals at the depth that a senior Java interviewer probes.\n\nThis card is P0 because JVM gets asked in nearly every Java SDE-2 loop and most candidates fumble it.\n\n1. MEMORY LAYOUT — draw it out:\n- HEAP: young gen (Eden + 2 Survivor regions, S0/S1) + old gen (tenured)\n- METASPACE (replaces PermGen since Java 8): class metadata, not in heap, in native memory\n- STACK: per thread, method call frames, local variables, references to heap objects\n- CODE CACHE: JIT-compiled native code\n- NATIVE STACK: JNI calls, native allocations\n\n2. OBJECT LIFE-CYCLE in the heap:\n- new Object() → allocated in Eden\n- Eden fills up → MINOR GC: live objects copied to one Survivor; Eden cleared\n- Surviving objects bounce between S0 and S1 on each minor GC; age counter increments\n- Once age > tenuring threshold (~15) → promoted to old gen\n- Old gen fills up → MAJOR GC (or full GC) — much more expensive\n- INTERVIEW: this 'generational hypothesis' is why GC is cheap most of the time and expensive occasionally\n\n3. GC ALGORITHMS — know when each is the right answer:\n- SERIAL GC: single-threaded; only for small heaps / single-core; client apps\n- PARALLEL GC: throughput-focused; stop-the-world; older batch workloads\n- G1 (Garbage First, default since Java 9): heap divided into ~2000 regions, GC prioritises regions with most garbage, target pause time configurable (-XX:MaxGCPauseMillis). Most common modern default.\n- ZGC (Java 11+, production-ready Java 15+): pause times <10ms even on TB heaps, uses coloured pointers + load barriers. Choose for latency-critical apps.\n- SHENANDOAH (Red Hat): similar low-pause goal to ZGC, different mechanism\n- INTERVIEW PROBE: 'why would you switch from G1 to ZGC?' — answer: pause-time-critical workload (trading, real-time APIs) where even 200ms G1 pauses hurt SLA.\n\n4. CLASS LOADING:\n- HIERARCHY: bootstrap (loads java.lang.*) → platform (Java 9+) / extension (Java 8) → application/system (your code) → custom\n- PARENT DELEGATION: child loader asks parent first; only if parent can't find the class does the child try. Why? Security — no one can load a fake java.lang.String.\n- CUSTOM CLASSLOADER use cases: hot reload (Tomcat reloading webapps), plugin systems (OSGi), Java agents, isolated module systems\n- INTERVIEW: 'how does Spring Boot DevTools hot-reload work?' — uses a custom classloader for app classes; restart only reinitialises that loader, not the JVM.\n\n5. OOM SCENARIOS — each has a SPECIFIC root cause, do not lump them:\n\n(a) 'java.lang.OutOfMemoryError: Java heap space'\n- True heap exhaustion. Either you have a memory leak OR the heap is genuinely undersized for the workload.\n- Debug: capture heap dump (-XX:+HeapDumpOnOutOfMemoryError), analyse in Eclipse MAT, find the retained set.\n- Common cause: collections that grow without bound (caches without eviction), ThreadLocals in thread pools without cleanup.\n\n(b) 'Metaspace' / 'PermGen' OOM\n- Class loader leak. App keeps loading classes but never unloads them.\n- Common cause: hot-reload frameworks with leaked references; libraries that hold strong references to classloaders.\n\n(c) 'unable to create native thread'\n- Hit OS thread limit (ulimit -u) OR each thread's stack (-Xss) is too large × thread count exceeds available native memory.\n- Common cause: unbounded thread pools (SimpleAsyncTaskExecutor in Spring without configuration).\n\n(d) 'GC overhead limit exceeded'\n- JVM is spending >98% of time in GC and reclaiming <2% of heap. Effectively heap-full but JVM gives up before true OOM.\n\n(e) Direct buffer OOM\n- ByteBuffer.allocateDirect() exhausts off-heap memory. Common in Netty / NIO-heavy apps.\n- Tune with -XX:MaxDirectMemorySize.\n\n6. DEBUGGING TOOLKIT:\n- jmap -dump:live,format=b,file=heap.hprof <pid> — capture heap dump\n- jstack <pid> — thread dump; look for BLOCKED, deadlocks\n- jstat -gc <pid> 1000 — GC stats every second\n- jcmd <pid> GC.heap_info — quick heap stats\n- async-profiler — production-safe sampling profiler\n- Eclipse Memory Analyzer Tool (MAT): dominator tree, leak suspects, retained set\n- INTERVIEW: walk through diagnosing 'my service runs fine for hours then suddenly OOMs' — likely a slow leak; capture heap dumps at intervals, diff them, find growing retained set.\n\n7. CONNECT TO YOUR BLUE YONDER WORK:\n- Your HikariCP connection pool: bounded; if leaks happen they show up as 'too many connections' not OOM, but thread dumps reveal blocked threads\n- Your Caffeine cache: bounded with size/expiry; without that it would be a memory leak waiting to happen\n- Your async pack service: CompletableFuture chains, each requiring thread pool sizing — unbounded would risk 'unable to create native thread'\n\nMUST be able to answer:\n- 'What happens during a minor GC?'\n- 'Why is your prod app sometimes slow? (jstat / GC logs analysis)'\n- 'What causes an OOM error and how do you debug it?'\n- 'Explain class loading hierarchy and why parent delegation exists.'\n- 'You see latency spikes every 5 minutes — how do you investigate?' (likely full GC, check GC logs)",
+    "tags": [
+      "JVM",
+      "GC",
+      "G1",
+      "ZGC",
+      "OOM",
+      "Class Loading",
+      "Heap",
+      "Metaspace",
+      "Memory Debugging",
+      "jmap"
+    ]
+  },
+  {
     "id": "sb-threadpools",
     "categories": [
       "Spring Boot"
@@ -1698,83 +1826,6 @@ export const jobHuntPlan = [
     ]
   },
   {
-    "id": "sb-string-generics",
-    "categories": [
-      "Spring Boot"
-    ],
-    "primaryCategory": "Spring Boot",
-    "priority": "P2",
-    "title": "String Internals + Generics + Exception Handling",
-    "keyTopics": [
-      "String pool (intern()), immutability — why String is immutable (security, caching, thread-safety)",
-      "String vs StringBuilder vs StringBuffer",
-      "Generics — type erasure, bounded types (<T extends Comparable>), wildcards (? extends / ? super)",
-      "PECS principle: Producer Extends, Consumer Super",
-      "Checked vs unchecked exceptions — when to use custom exceptions",
-      "How Spring @ControllerAdvice handles exceptions globally"
-    ],
-    "prompt": "Teach me \"String Internals + Generics + Exception Handling\" in depth for an SDE-2 Java + Spring Boot interview.\n\nCover each of these:\n- String pool (intern()), immutability — why String is immutable (security, caching, thread-safety)\n- String vs StringBuilder vs StringBuffer\n- Generics — type erasure, bounded types (<T extends Comparable>), wildcards (? extends / ? super)\n- PECS principle: Producer Extends, Consumer Super\n- Checked vs unchecked exceptions — when to use custom exceptions\n- How Spring @ControllerAdvice handles exceptions globally\n\nMake sure I can answer these interview questions crisply:\n- Why can't you do new T() in Java?\n- Explain PECS with an example.\n\nFor each point give me: the underlying mechanism, a short code example, the common gotchas, and how it shows up in a real Java/Spring backend (e.g. a multi-tenant Blue Yonder service).",
-    "tags": [
-      "String",
-      "Generics",
-      "Type Erasure",
-      "Exceptions",
-      "@ControllerAdvice"
-    ]
-  },
-  {
-    "id": "sb-pooling-cache-rest",
-    "categories": [
-      "Spring Boot"
-    ],
-    "primaryCategory": "Spring Boot",
-    "priority": "P2",
-    "title": "Connection Pooling + Caching + REST Fundamentals",
-    "keyTopics": [
-      "HikariCP — how pooling works, sizing (cores × 2 + effective_spindle_count), timeout config",
-      "Multiple datasource configuration (relevant to sharding work)",
-      "@Cacheable, @CacheEvict, @CachePut — how the proxy intercepts and checks cache",
-      "Cache eviction strategies: LRU, LFU, TTL — when each makes sense",
-      "Caffeine cache internals",
-      "REST: HTTP method usage, idempotency (GET/PUT/DELETE idempotent, POST not), status codes, API versioning"
-    ],
-    "prompt": "Teach me \"Connection Pooling + Caching + REST Fundamentals\" in depth for an SDE-2 Java + Spring Boot interview.\n\nCover each of these:\n- HikariCP — how pooling works, sizing (cores × 2 + effective_spindle_count), timeout config\n- Multiple datasource configuration (relevant to sharding work)\n- @Cacheable, @CacheEvict, @CachePut — how the proxy intercepts and checks cache\n- Cache eviction strategies: LRU, LFU, TTL — when each makes sense\n- Caffeine cache internals\n- REST: HTTP method usage, idempotency (GET/PUT/DELETE idempotent, POST not), status codes, API versioning\n\nMake sure I can answer these interview questions crisply:\n- How do you size a connection pool?\n- Explain cache-aside pattern.\n\nFor each point give me: the underlying mechanism, a short code example, the common gotchas, and how it shows up in a real Java/Spring backend (e.g. a multi-tenant Blue Yonder service).",
-    "tags": [
-      "HikariCP",
-      "Caching",
-      "Caffeine",
-      "REST",
-      "Idempotency"
-    ]
-  },
-  {
-    "id": "sb-security-jvm",
-    "categories": [
-      "Spring Boot"
-    ],
-    "primaryCategory": "Spring Boot",
-    "priority": "P2",
-    "title": "Spring Security + JVM Basics",
-    "keyTopics": [
-      "Spring Security filter chain — how requests flow through filters before the controller",
-      "OncePerRequestFilter — how to write custom filters",
-      "Authentication (who are you) vs Authorization (what can you do)",
-      "Connect to Gravitee/OAuth work — same concepts, different layer",
-      "JVM memory: heap (young: Eden + Survivor, old gen) vs stack (per thread, method frames)",
-      "GC: G1 (default Java 17), minor vs major GC, what triggers full GC",
-      "Class loading: bootstrap → extension → application",
-      "Common OOM scenarios: heap space, metaspace, unable to create native thread"
-    ],
-    "prompt": "Teach me \"Spring Security + JVM Basics\" in depth for an SDE-2 Java + Spring Boot interview.\n\nCover each of these:\n- Spring Security filter chain — how requests flow through filters before the controller\n- OncePerRequestFilter — how to write custom filters\n- Authentication (who are you) vs Authorization (what can you do)\n- Connect to Gravitee/OAuth work — same concepts, different layer\n- JVM memory: heap (young: Eden + Survivor, old gen) vs stack (per thread, method frames)\n- GC: G1 (default Java 17), minor vs major GC, what triggers full GC\n- Class loading: bootstrap → extension → application\n- Common OOM scenarios: heap space, metaspace, unable to create native thread\n\nMake sure I can answer these interview questions crisply:\n- Explain Spring Security filter chain.\n- What causes an OOM error and how do you debug it?\n\nFor each point give me: the underlying mechanism, a short code example, the common gotchas, and how it shows up in a real Java/Spring backend (e.g. a multi-tenant Blue Yonder service).",
-    "tags": [
-      "Spring Security",
-      "Filter Chain",
-      "JVM",
-      "GC",
-      "OOM"
-    ]
-  },
-  {
     "id": "sb-microservices",
     "categories": [
       "Spring Boot"
@@ -1864,6 +1915,91 @@ export const jobHuntPlan = [
     ]
   },
   {
+    "id": "sb-string-generics",
+    "categories": [
+      "Spring Boot"
+    ],
+    "primaryCategory": "Spring Boot",
+    "priority": "P2",
+    "title": "String Internals + Generics + Exception Handling",
+    "keyTopics": [
+      "String pool (intern()), immutability — why String is immutable (security, caching, thread-safety)",
+      "String vs StringBuilder vs StringBuffer",
+      "Generics — type erasure, bounded types (<T extends Comparable>), wildcards (? extends / ? super)",
+      "PECS principle: Producer Extends, Consumer Super",
+      "Checked vs unchecked exceptions — when to use custom exceptions",
+      "How Spring @ControllerAdvice handles exceptions globally"
+    ],
+    "prompt": "Teach me \"String Internals + Generics + Exception Handling\" in depth for an SDE-2 Java + Spring Boot interview.\n\nCover each of these:\n- String pool (intern()), immutability — why String is immutable (security, caching, thread-safety)\n- String vs StringBuilder vs StringBuffer\n- Generics — type erasure, bounded types (<T extends Comparable>), wildcards (? extends / ? super)\n- PECS principle: Producer Extends, Consumer Super\n- Checked vs unchecked exceptions — when to use custom exceptions\n- How Spring @ControllerAdvice handles exceptions globally\n\nMake sure I can answer these interview questions crisply:\n- Why can't you do new T() in Java?\n- Explain PECS with an example.\n\nFor each point give me: the underlying mechanism, a short code example, the common gotchas, and how it shows up in a real Java/Spring backend (e.g. a multi-tenant Blue Yonder service).",
+    "tags": [
+      "String",
+      "Generics",
+      "Type Erasure",
+      "Exceptions",
+      "@ControllerAdvice"
+    ]
+  },
+  {
+    "id": "sb-pooling-cache-rest",
+    "categories": [
+      "Spring Boot"
+    ],
+    "primaryCategory": "Spring Boot",
+    "priority": "P2",
+    "title": "Connection Pooling + Caching + REST Fundamentals",
+    "keyTopics": [
+      "HikariCP — how pooling works, sizing (cores × 2 + effective_spindle_count), timeout config",
+      "Multiple datasource configuration (relevant to sharding work)",
+      "@Cacheable, @CacheEvict, @CachePut — how the proxy intercepts and checks cache",
+      "Cache eviction strategies: LRU, LFU, TTL — when each makes sense",
+      "Caffeine cache internals",
+      "REST: HTTP method usage, idempotency (GET/PUT/DELETE idempotent, POST not), status codes, API versioning"
+    ],
+    "prompt": "Teach me \"Connection Pooling + Caching + REST Fundamentals\" in depth for an SDE-2 Java + Spring Boot interview.\n\nCover each of these:\n- HikariCP — how pooling works, sizing (cores × 2 + effective_spindle_count), timeout config\n- Multiple datasource configuration (relevant to sharding work)\n- @Cacheable, @CacheEvict, @CachePut — how the proxy intercepts and checks cache\n- Cache eviction strategies: LRU, LFU, TTL — when each makes sense\n- Caffeine cache internals\n- REST: HTTP method usage, idempotency (GET/PUT/DELETE idempotent, POST not), status codes, API versioning\n\nMake sure I can answer these interview questions crisply:\n- How do you size a connection pool?\n- Explain cache-aside pattern.\n\nFor each point give me: the underlying mechanism, a short code example, the common gotchas, and how it shows up in a real Java/Spring backend (e.g. a multi-tenant Blue Yonder service).",
+    "tags": [
+      "HikariCP",
+      "Caching",
+      "Caffeine",
+      "REST",
+      "Idempotency"
+    ]
+  },
+  {
+    "id": "sb-security",
+    "categories": [
+      "Spring Boot"
+    ],
+    "primaryCategory": "Spring Boot",
+    "priority": "P2",
+    "title": "Spring Security: Filter Chain, Authentication & Authorization",
+    "keyTopics": [
+      "Spring Security filter chain — order matters: SecurityContextPersistenceFilter, AuthenticationFilter, AuthorizationFilter, etc.",
+      "How a request flows: enters filter chain BEFORE reaching DispatcherServlet/Controller",
+      "OncePerRequestFilter — custom filter base; runs exactly once per request even on async dispatch",
+      "Authentication: who you are — UsernamePasswordAuthenticationFilter, JWT filters, OAuth2 resource server",
+      "Authorization: what you can do — method-level (@PreAuthorize, @PostAuthorize) vs URL-level",
+      "SecurityContextHolder: ThreadLocal-based storage of current Authentication",
+      "AuthenticationManager and AuthenticationProvider — how custom auth is plugged in",
+      "UserDetailsService: how user data is loaded for authentication",
+      "Password encoding: BCryptPasswordEncoder, never plain text",
+      "CSRF: when needed (form-based stateful sessions) vs when disabled (stateless JWT APIs)",
+      "CORS configuration in Spring Security",
+      "OAuth 2.0 flows: authorization_code, client_credentials (M2M), refresh_token",
+      "Connect to your Gravitee/OAuth migration work — same concepts at the gateway layer"
+    ],
+    "prompt": "Teach me Spring Security at the SDE-2 level — enough to answer questions without claiming security specialist depth.\n\n1. FILTER CHAIN — THE CORE MENTAL MODEL:\n- Spring Security is implemented as a chain of servlet filters that runs BEFORE your controller\n- Order of common filters: SecurityContextPersistenceFilter (loads context from session) → CSRF filter → AuthenticationFilter (username/password, JWT, etc.) → AuthorizationFilter (final check) → controller\n- Interview test: 'walk me through what happens between a request hitting the server and reaching your @RestController method'\n\n2. OncePerRequestFilter — the base class for custom filters:\n- Runs exactly once per request, even on internal forward / async dispatch\n- Used for: adding correlation IDs, custom auth, request logging, tenant context propagation\n- Connect to your work: you used filter-like patterns in the Gravitee migration for UserInfo enrichment\n\n3. AUTHENTICATION vs AUTHORIZATION:\n- Authentication (AuthN): WHO are you? Verified via credentials, JWT validation, OAuth tokens\n- Authorization (AuthZ): WHAT can you do? Checked via roles, permissions, ABAC rules\n- Separating these cleanly is a senior signal\n\n4. KEY CLASSES:\n- SecurityContextHolder — ThreadLocal that stores the current Authentication object\n- Authentication — represents the authenticated principal with credentials and authorities\n- AuthenticationManager — orchestrates AuthenticationProviders\n- AuthenticationProvider — one strategy per auth type (DAO, JWT, OAuth)\n- UserDetailsService — loads user details from your store (DB, LDAP, external API)\n\n5. METHOD-LEVEL SECURITY:\n- @PreAuthorize(\"hasRole('ADMIN')\") on service methods\n- @PreAuthorize(\"#userId == authentication.principal.id\") for resource-owner checks\n- @PostAuthorize — check return value (e.g. only return doc if user has access)\n- Backed by AOP proxies (same mechanism as @Transactional)\n\n6. CSRF — when to enable vs disable:\n- ENABLE for: server-rendered forms with cookies/sessions\n- DISABLE for: stateless REST APIs using JWT in Authorization header (most modern APIs)\n- Common interview mistake: disabling CSRF on a stateful app — exposes to attacks\n\n7. OAUTH 2.0 — connect to your Gravitee work:\n- authorization_code flow: user-facing apps; user logs in, gets code, exchanges for token\n- client_credentials flow: machine-to-machine (M2M) — exactly what you implemented for Gravitee gateway token generation\n- Spring Security as OAuth2 Resource Server: validates incoming JWTs from the gateway\n- This is your interview ammo — you've built M2M auth in production\n\n8. PASSWORD STORAGE — should be obvious but is still asked:\n- BCryptPasswordEncoder (or Argon2 / PBKDF2)\n- NEVER plain text, NEVER MD5, NEVER SHA-1\n- Salt is built into BCrypt\n\nPRIORITY NOTE: this card is P2 — Spring Security is asked but rarely deep at SDE-2 unless the role is security-focused. Read this once, do not over-invest. The OAuth/M2M part is the most likely probe given your Gravitee experience.",
+    "tags": [
+      "Spring Security",
+      "Filter Chain",
+      "Authentication",
+      "Authorization",
+      "OAuth 2.0",
+      "JWT",
+      "CSRF",
+      "Method Security"
+    ]
+  },
+  {
     "id": "sb-sql",
     "categories": [
       "Spring Boot"
@@ -1885,31 +2021,6 @@ export const jobHuntPlan = [
       "Indexing",
       "Query Optimization",
       "Window Functions"
-    ]
-  },
-  {
-    "id": "sb-design-patterns",
-    "categories": [
-      "Spring Boot"
-    ],
-    "primaryCategory": "Spring Boot",
-    "priority": "P3",
-    "title": "Design Patterns in Practice",
-    "keyTopics": [
-      "Patterns you already use: Factory, Builder, Strategy, Observer, Singleton, Template Method",
-      "Identify where each is used in your codebase (don't memorize definitions)",
-      "Factory: how Spring uses it for BeanFactory",
-      "Strategy: FeatureToggle routing",
-      "Observer: event-driven patterns in Spring (@EventListener)",
-      "Template Method: JdbcTemplate, RestTemplate",
-      "Builder: entity builders, query builders"
-    ],
-    "prompt": "Teach me \"Design Patterns in Practice\" in depth for an SDE-2 Java + Spring Boot interview.\n\nCover each of these:\n- Patterns you already use: Factory, Builder, Strategy, Observer, Singleton, Template Method\n- Identify where each is used in your codebase (don't memorize definitions)\n- Factory: how Spring uses it for BeanFactory\n- Strategy: FeatureToggle routing\n- Observer: event-driven patterns in Spring (@EventListener)\n- Template Method: JdbcTemplate, RestTemplate\n- Builder: entity builders, query builders\n\nMake sure I can answer these interview questions crisply:\n- Give me a real example of Strategy pattern from your project.\n\nFor each point give me: the underlying mechanism, a short code example, the common gotchas, and how it shows up in a real Java/Spring backend (e.g. a multi-tenant Blue Yonder service).",
-    "tags": [
-      "Design Patterns",
-      "Strategy",
-      "Factory",
-      "Template Method"
     ]
   }
 
