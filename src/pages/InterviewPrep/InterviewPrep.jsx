@@ -229,7 +229,7 @@ const InterviewPrep = () => {
                     <div className="flex items-center gap-2">
                       <div className={`w-1.5 h-6 rounded-full ${cfg.bar}`} />
                       <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                        {cfg.icon} {cfg.label}
+                        {cfg.label}
                       </h2>
                     </div>
                     <div className="flex-1 h-px bg-gray-200 dark:bg-slate-700" />
