@@ -17,7 +17,7 @@
 // owner's uid can read/write its document, e.g.
 //   match /userProgress/{uid} { allow read, write: if request.auth.uid == uid; }
 
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { KEYS, loadJSON, applyRemote, subscribe, setActiveUid } from "./planStore";
 
@@ -142,4 +142,18 @@ export function stopCloudSync() {
   }
   currentUid = null;
   setActiveUid(null);
+}
+
+// One-shot fetch of interview prep completions from Firestore.
+// Used by InterviewPrep to hydrate from DB on load instead of browser cache.
+export async function fetchIPCompletions(uid) {
+  if (!uid) return {};
+  try {
+    const snap = await getDoc(userDocRef(uid));
+    if (!snap.exists()) return {};
+    return snap.data()?.[KEYS.IP_COMPLETED] || {};
+  } catch (err) {
+    console.error("[cloudSync] fetchIPCompletions:", err);
+    return {};
+  }
 }
