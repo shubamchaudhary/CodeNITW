@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 const NAV_ITEMS = [
   { path: "/interview-prep", label: "INTERVIEW PREP" },
   { path: "/dsa-prep", label: "DSA" },
+  { path: "/most-asked-dsa", label: "MOST ASKED" },
   { path: "/planning", label: "PLANNING" },
 ];
 
