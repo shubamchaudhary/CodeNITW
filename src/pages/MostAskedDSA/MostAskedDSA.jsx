@@ -108,17 +108,17 @@ const MostAskedDSA = () => {
             </div>
           </motion.div>
 
-          {/* ── Cvent call-out ── */}
+          {/* ── How to use ── */}
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mx-2 mb-4 rounded-xl border border-amber-300 dark:border-amber-700/50 bg-amber-50/80 dark:bg-amber-900/20 backdrop-blur-md px-4 py-3"
+            className="mx-2 mb-4 rounded-xl border border-orange-200 dark:border-orange-800/50 bg-orange-50/70 dark:bg-orange-900/20 backdrop-blur-md px-4 py-3"
           >
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
-              🎯 Cvent interview — flagged below
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+              How to use this list
             </p>
-            <p className="text-xs text-amber-700/90 dark:text-amber-300/80 mt-0.5">
-              A previous candidate was asked <span className="font-semibold">3Sum</span> and <span className="font-semibold">LRU Cache</span>. Both are in Tier 1 with a <span className="font-semibold">Cvent</span> tag — do those first.
+            <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+              Pick the tier that matches your remaining time and work top-to-bottom — each tier is ordered by importance, so the most valuable problems come first. Star anything you want to revisit.
             </p>
           </motion.div>
 
@@ -216,16 +216,9 @@ function QuestionRow({ problem, isSolved, isStarred, onToggleSolved, onToggleSta
 
       {/* Title + pattern */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`text-sm font-semibold ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
-            {problem.title}
-          </span>
-          {problem.asked && (
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-800 dark:bg-amber-800/60 dark:text-amber-200 uppercase tracking-wide">
-              {problem.asked}
-            </span>
-          )}
-        </div>
+        <span className={`text-sm font-semibold ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
+          {problem.title}
+        </span>
         <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
           <span className="font-medium text-gray-600 dark:text-gray-300">{problem.topic}</span>
           {problem.pattern ? ` · ${problem.pattern}` : ""}
