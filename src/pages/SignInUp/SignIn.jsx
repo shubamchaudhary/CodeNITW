@@ -58,8 +58,8 @@ export default function SignIn() {
 
   return (
     <AuthShell
-      title="InterviewPrep"
-      taglines={["Crack the interview.", "Master the patterns.", "Stay consistent.", "Track every win."]}
+      title="Learning Resources"
+      taglines={["Keep learning.", "Master the patterns.", "Stay consistent.", "Track every win."]}
     >
       <form onSubmit={onSubmit} className="space-y-3">
         <div className={inputWrap}>

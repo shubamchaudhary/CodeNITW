@@ -104,12 +104,12 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
             <span className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-400 to-cyan-400" />
             My Notes
           </h4>
-          <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved · revisit at interview time</span>
+          <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved · revisit later</span>
         </div>
         <textarea
           value={localNote}
           onChange={handleNoteInput}
-          placeholder="Write your notes, key insights, things to remember for the interview..."
+          placeholder="Write your notes, key insights, things to remember..."
           rows={8}
           className="w-full p-4 text-sm rounded-lg border border-blue-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400 dark:focus:border-blue-500 resize-y min-h-[180px] transition-all leading-relaxed shadow-sm"
         />
