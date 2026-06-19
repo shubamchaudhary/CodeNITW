@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 const NAV_ITEMS = [
-  { path: "/interview-prep", label: "INTERVIEW PREP" },
+  { path: "/interview-prep", label: "TOPICS" },
   { path: "/dsa-prep", label: "DSA" },
   { path: "/most-asked-dsa", label: "MOST ASKED" },
   { path: "/planning", label: "PLANNING" },
@@ -86,7 +86,7 @@ export default function Header() {
             className="flex items-center gap-1 group"
           >
             <span className="text-lg sm:text-xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 group-hover:scale-105 transition-transform">
-              InterviewPrep
+              Learning Resources
             </span>
           </button>
 

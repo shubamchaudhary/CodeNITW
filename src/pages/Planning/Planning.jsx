@@ -244,7 +244,7 @@ const Planning = () => {
           </div>
 
           {/* ── Timeline strip ── */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-4 px-2 scrollbar-thin">
+          <div className="flex gap-2 overflow-x-auto pb-2 mb-4 px-2 no-scrollbar">
             {timeline.map((key) => {
               const { done, total } = dayDoneCount(key);
               const sel = key === current;
@@ -293,7 +293,7 @@ const Planning = () => {
 
               {items.length === 0 ? (
                 <p className="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
-                  Nothing planned yet — add cards from Interview Prep, DSA, or create a custom one.
+                  Nothing planned yet — add cards from Topics, DSA, or create a custom one.
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -352,7 +352,7 @@ const Planning = () => {
 };
 
 const SOURCE_META = {
-  interview: { label: "Interview", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
+  interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
   dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300", border: "border-l-orange-400" },
   custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
 };
@@ -530,7 +530,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
 
         <div className="flex gap-1 px-4 pt-3">
           {[
-            { key: "interview", label: "Interview Prep" },
+            { key: "interview", label: "Topics" },
             { key: "dsa", label: "DSA" },
             { key: "custom", label: "Custom" },
           ].map((t) => (
@@ -618,7 +618,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }}
-                  placeholder="e.g. Mock interview with friend, update resume..."
+                  placeholder="e.g. Pair session with friend, update notes..."
                   className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                 />
               </div>

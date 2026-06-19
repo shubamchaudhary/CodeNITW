@@ -55,3 +55,12 @@
 .modal-content::-webkit-scrollbar-thumb {
   background: #2b6cb0;
 }
+
+/* Hide the native scrollbar but keep scrolling functional. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -122,9 +122,9 @@ const InterviewPrep = () => {
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Interview Prep</h1>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Learning Resources</h1>
                 <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                  AI · HLD · LLD
+                  AI · HLD · LLD · Spring Boot
                 </span>
               </div>
               <div className="flex items-center gap-4">
