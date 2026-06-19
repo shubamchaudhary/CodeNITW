@@ -56,7 +56,7 @@ export default function SignUp() {
   return (
     <AuthShell
       title="Create account"
-      taglines={["Start your prep journey.", "Your private workspace.", "Track every win."]}
+      taglines={["Start learning.", "Your private workspace.", "Track every win."]}
     >
       <form onSubmit={onSubmit} className="space-y-3">
         <div className={inputWrap}>
