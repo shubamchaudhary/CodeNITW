@@ -2,6 +2,12 @@ name: ATS coverage probe
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - claude/job-application-tracker-nqpn76
+    paths:
+      - scripts/atsProbe.mjs
+      - .github/workflows/ats-probe.yml
 
 permissions:
   contents: write
