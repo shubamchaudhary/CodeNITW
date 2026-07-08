@@ -16,6 +16,7 @@ export const KEYS = {
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
   DSA_STARRED: "DSAPrepStarred",
   PLAN_DAYS: "PlanningDays",
+  JOB_TRACKER: "JobTrackerState",
 };
 
 // Solved DSA problems revert to unsolved after this window (spaced repetition).
