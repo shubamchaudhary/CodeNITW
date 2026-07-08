@@ -6,6 +6,7 @@ import { BsBrightnessHigh } from "react-icons/bs";
 import { HiUser, HiLogout } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
+import { isOwner } from "./OwnerRoute";
 
 const NAV_ITEMS = [
   { path: "/interview-prep", label: "TOPICS" },
@@ -13,6 +14,10 @@ const NAV_ITEMS = [
   { path: "/most-asked-dsa", label: "MOST ASKED" },
   { path: "/planning", label: "PLANNING" },
 ];
+
+// Owner-only pages: rendered in the nav ONLY for the owner account, so other
+// users never see any hint these pages exist.
+const OWNER_NAV_ITEMS = [{ path: "/job-tracker", label: "JOBS" }];
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -150,7 +155,7 @@ export default function Header() {
                 `}
               >
                 <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-2 lg:mt-0 lg:items-center">
-                  {NAV_ITEMS.map((item) => (
+                  {[...NAV_ITEMS, ...(isOwner(user) ? OWNER_NAV_ITEMS : [])].map((item) => (
                     <li key={item.path}>
                       <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path))}>
                         {item.label}
