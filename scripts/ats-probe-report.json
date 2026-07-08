@@ -1,18 +1,30 @@
 {
  "summary": {
-  "probedAt": "2026-07-08T20:51:35.864Z",
+  "probedAt": "2026-07-08T20:57:44.079Z",
   "totalCompanies": 475,
-  "apiCoverage": 475,
-  "sniffedOnly": 0,
-  "undetected": 0,
-  "relevantOpeningsToday": 317,
+  "apiCoverage": 141,
+  "sniffedOnly": 88,
+  "undetected": 246,
+  "relevantOpeningsToday": 352,
   "highValueCompanies": 173,
-  "highValueWithApi": 173,
+  "highValueWithApi": 61,
   "byAts": {
-   "smartrecruiters": 321,
-   "lever": 23,
-   "greenhouse": 88,
-   "ashby": 43
+   "recruitee": 5,
+   "workday": 33,
+   "phenom": 9,
+   "greenhouse": 90,
+   "ashby": 44,
+   "icims": 4,
+   "eightfold": 9,
+   "successfactors": 1,
+   "smartrecruiters": 1,
+   "lever": 17,
+   "darwinbox": 8,
+   "freshteam": 2,
+   "bamboohr": 1,
+   "taleo": 2,
+   "zohorecruit": 1,
+   "keka": 2
   }
  },
  "results": [
@@ -23,12 +35,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://careers.google.com",
-   "ats": "smartrecruiters",
-   "slug": "google",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "microsoft",
@@ -37,12 +48,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://careers.microsoft.com",
-   "ats": "smartrecruiters",
-   "slug": "microsoft",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "amazon",
@@ -51,12 +61,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://amazon.jobs",
-   "ats": "smartrecruiters",
-   "slug": "amazon",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "meta",
@@ -65,10 +74,10 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://careers.meta.com",
-   "ats": "smartrecruiters",
+   "ats": "recruitee",
    "slug": "meta",
    "api": true,
-   "totalJobs": 0,
+   "totalJobs": 1,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -79,12 +88,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://jobs.apple.com",
-   "ats": "smartrecruiters",
-   "slug": "apple",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "netflix",
@@ -93,12 +101,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://jobs.netflix.com",
-   "ats": "smartrecruiters",
-   "slug": "netflix",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "atlassian",
@@ -107,12 +114,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://atlassian.com/company/careers",
-   "ats": "lever",
-   "slug": "atlassian",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "adobe",
@@ -121,12 +127,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://adobe.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "adobe",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "salesforce",
@@ -135,10 +140,10 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://salesforce.com/company/careers",
-   "ats": "smartrecruiters",
+   "ats": "recruitee",
    "slug": "salesforce",
    "api": true,
-   "totalJobs": 0,
+   "totalJobs": 1,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -149,12 +154,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://jobs.sap.com",
-   "ats": "smartrecruiters",
-   "slug": "sap-labs",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "intuit",
@@ -163,12 +167,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://jobs.intuit.com",
-   "ats": "smartrecruiters",
-   "slug": "intuit",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "autodesk",
@@ -177,12 +180,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://autodesk.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "autodesk",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "servicenow",
@@ -191,12 +193,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://careers.servicenow.com",
-   "ats": "smartrecruiters",
-   "slug": "servicenow",
-   "api": true,
-   "totalJobs": 100,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "workday",
@@ -205,12 +206,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://workday.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "workday",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "splunk-cisco",
@@ -219,12 +219,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://splunk.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "splunk-cisco",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mongodb",
@@ -315,12 +314,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://hashicorp.com/jobs",
-   "ats": "smartrecruiters",
-   "slug": "hashicorp-ibm",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "github",
@@ -329,12 +327,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://github.careers",
-   "ats": "smartrecruiters",
-   "slug": "github",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "icims",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gitlab",
@@ -408,12 +405,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://cohesity.com/company/careers",
-   "ats": "smartrecruiters",
-   "slug": "cohesity",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "veeam",
@@ -422,12 +418,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.veeam.com",
-   "ats": "smartrecruiters",
-   "slug": "veeam",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pure-storage",
@@ -436,14 +431,12 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://purestorage.com/company/careers",
-   "ats": "greenhouse",
-   "slug": "purestorage",
+   "ats": "ashby",
+   "slug": "pure",
    "api": true,
-   "totalJobs": 330,
-   "relevantJobs": 1,
-   "sampleRelevant": [
-    "Software Engineer - DDI Solution, ISS "
-   ]
+   "totalJobs": 3,
+   "relevantJobs": 0,
+   "sampleRelevant": []
   },
   {
    "id": "oracle-oci",
@@ -452,12 +445,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://oracle.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "oracle-oci",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "vmware-broadcom",
@@ -466,12 +458,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.broadcom.com",
-   "ats": "smartrecruiters",
-   "slug": "vmware-broadcom",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "nutanix",
@@ -480,12 +471,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://nutanix.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "nutanix",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "arista-networks",
@@ -494,12 +484,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://arista.com/en/careers",
-   "ats": "smartrecruiters",
-   "slug": "arista-networks",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "netapp",
@@ -508,12 +497,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://netapp.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "netapp",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "dell-technologies",
@@ -522,12 +510,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://jobs.dell.com",
-   "ats": "smartrecruiters",
-   "slug": "dell-technologies",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "hpe",
@@ -536,12 +523,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.hpe.com",
-   "ats": "smartrecruiters",
-   "slug": "hpe",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cisco",
@@ -550,12 +536,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://cisco.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "cisco",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "juniper-networks",
@@ -564,12 +549,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://juniper.net/careers",
-   "ats": "smartrecruiters",
-   "slug": "juniper-networks",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "palo-alto-networks",
@@ -578,12 +562,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://paloaltonetworks.com/company/careers",
-   "ats": "smartrecruiters",
-   "slug": "palo-alto-networks",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "fortinet",
@@ -592,12 +575,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://fortinet.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "fortinet",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "akamai",
@@ -606,12 +588,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://akamai.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "akamai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "f5-networks",
@@ -620,12 +601,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://f5.com/company/careers",
-   "ats": "smartrecruiters",
-   "slug": "f5-networks",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "citrix",
@@ -634,12 +614,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://citrix.com/about/careers",
-   "ats": "smartrecruiters",
-   "slug": "citrix",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "red-hat-ibm",
@@ -648,12 +627,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://redhat.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "red-hat-ibm",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ibm-research",
@@ -662,12 +640,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://research.ibm.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ibm-research",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cloudera",
@@ -676,12 +653,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://cloudera.com/about/careers",
-   "ats": "smartrecruiters",
-   "slug": "cloudera",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "teradata",
@@ -690,12 +666,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://teradata.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "teradata",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "informatica",
@@ -704,12 +679,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://informatica.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "informatica",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "opentext",
@@ -718,12 +692,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://opentext.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "opentext",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pega-systems",
@@ -732,12 +705,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://pega.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "pega-systems",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zscaler",
@@ -764,12 +736,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://crowdstrike.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "crowdstrike",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "okta",
@@ -781,7 +752,7 @@
    "ats": "greenhouse",
    "slug": "okta",
    "api": true,
-   "totalJobs": 353,
+   "totalJobs": 354,
    "relevantJobs": 11,
    "sampleRelevant": [
     "Senior Data Platform Engineer (Bengaluru)",
@@ -796,12 +767,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://auth0.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "auth0-okta",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cyberark",
@@ -810,12 +780,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://cyberark.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "cyberark",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sentinelone",
@@ -824,12 +793,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://sentinelone.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "sentinelone",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "wiz",
@@ -838,12 +806,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://wiz.io/careers",
-   "ats": "ashby",
-   "slug": "wiz",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "snyk",
@@ -852,12 +819,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://snyk.io/careers",
-   "ats": "ashby",
-   "slug": "snyk",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "tenable",
@@ -866,12 +832,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://tenable.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "tenable",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "qualys",
@@ -880,12 +845,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://qualys.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "qualys",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "rapid7",
@@ -894,12 +858,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://rapid7.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "rapid7",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "trellix",
@@ -908,12 +871,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://trellix.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "trellix",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "trend-micro",
@@ -922,12 +884,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://trendmicro.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "trend-micro",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "check-point",
@@ -936,12 +897,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://checkpoint.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "check-point",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "datadog",
@@ -986,12 +946,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.dynatrace.com",
-   "ats": "smartrecruiters",
-   "slug": "dynatrace",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "appdynamics-splunk",
@@ -1000,12 +959,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://appdynamics.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "appdynamics-splunk",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "honeycomb",
@@ -1077,12 +1035,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://optimizely.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "optimizely",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "successfactors",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "twilio",
@@ -1109,12 +1066,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://segment.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "segment-twilio",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "visa",
@@ -1123,12 +1079,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://visa.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "visa",
-   "api": true,
-   "totalJobs": 2,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mastercard",
@@ -1137,12 +1092,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://careers.mastercard.com",
-   "ats": "smartrecruiters",
-   "slug": "mastercard",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "paypal",
@@ -1151,12 +1105,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://paypal.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "paypal",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "goldman-sachs-eng",
@@ -1165,12 +1118,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://goldmansachs.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "goldman-sachs-eng",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "jp-morgan-chase",
@@ -1179,12 +1131,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://jpmorganchase.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "jp-morgan-chase",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "wells-fargo",
@@ -1193,12 +1144,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://wellsfargo.com/about/careers",
-   "ats": "smartrecruiters",
-   "slug": "wells-fargo",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bank-of-america",
@@ -1207,12 +1157,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.bankofamerica.com",
-   "ats": "smartrecruiters",
-   "slug": "bank-of-america",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ubs",
@@ -1221,12 +1170,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://ubs.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ubs",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "standard-chartered",
@@ -1235,10 +1183,10 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://scb.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "standard-chartered",
+   "ats": "recruitee",
+   "slug": "standard",
    "api": true,
-   "totalJobs": 0,
+   "totalJobs": 2,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -1249,12 +1197,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://hsbc.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "hsbc",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "fis-global",
@@ -1263,12 +1210,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://fisglobal.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "fis-global",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "fiserv",
@@ -1277,12 +1223,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.fiserv.com",
-   "ats": "smartrecruiters",
-   "slug": "fiserv",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "stripe",
@@ -1337,12 +1282,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://klarna.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "klarna",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "affirm",
@@ -1415,12 +1359,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://wise.jobs",
-   "ats": "smartrecruiters",
-   "slug": "wise",
-   "api": true,
-   "totalJobs": 100,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "plaid",
@@ -1429,10 +1372,10 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://plaid.com/careers",
-   "ats": "lever",
+   "ats": "ashby",
    "slug": "plaid",
    "api": true,
-   "totalJobs": 0,
+   "totalJobs": 107,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -1505,12 +1448,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://careersatbooking.com",
-   "ats": "smartrecruiters",
-   "slug": "booking-com",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "expedia",
@@ -1519,12 +1461,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://careers.expediagroup.com",
-   "ats": "smartrecruiters",
-   "slug": "expedia",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "airbnb",
@@ -1551,12 +1492,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://uber.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "uber",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "lyft",
@@ -1568,7 +1508,7 @@
    "ats": "greenhouse",
    "slug": "lyft",
    "api": true,
-   "totalJobs": 157,
+   "totalJobs": 158,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -1579,12 +1519,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://careers.walmart.com",
-   "ats": "smartrecruiters",
-   "slug": "walmart-global-tech",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "target-india",
@@ -1593,15 +1532,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://india.target.com/careers",
-   "ats": "greenhouse",
-   "slug": "india",
-   "api": true,
-   "totalJobs": 11,
-   "relevantJobs": 2,
-   "sampleRelevant": [
-    "Engineering - Portfolio Analytics - Java Developer - Analyst ",
-    "Engineering - Quant Research Development - PI - Java Developer - Associate"
-   ]
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "lowe-s",
@@ -1610,10 +1545,10 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://talent.lowes.com",
-   "ats": "greenhouse",
+   "ats": "recruitee",
    "slug": "talent",
    "api": true,
-   "totalJobs": 2,
+   "totalJobs": 5,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -1624,12 +1559,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://careers.homedepot.com",
-   "ats": "smartrecruiters",
-   "slug": "home-depot",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ebay",
@@ -1638,12 +1572,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.ebayinc.com",
-   "ats": "smartrecruiters",
-   "slug": "ebay",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "shopify",
@@ -1652,12 +1585,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://shopify.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "shopify",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bigcommerce",
@@ -1666,12 +1598,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://careers.bigcommerce.com",
-   "ats": "smartrecruiters",
-   "slug": "bigcommerce",
-   "api": true,
-   "totalJobs": 2,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "commercetools",
@@ -1680,12 +1611,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://commercetools.com/careers",
-   "ats": "greenhouse",
-   "slug": "commercetools",
-   "api": true,
-   "totalJobs": 17,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "wayfair",
@@ -1694,12 +1624,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://wayfair.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "wayfair",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "tesco",
@@ -1708,12 +1637,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://tesco.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "tesco",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sainsbury-s",
@@ -1722,12 +1650,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://sainsburys.jobs",
-   "ats": "smartrecruiters",
-   "slug": "sainsbury-s",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "best-buy",
@@ -1736,12 +1663,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://bestbuy.jobs",
-   "ats": "smartrecruiters",
-   "slug": "best-buy",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "walgreens",
@@ -1750,12 +1676,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://jobs.walgreens.com",
-   "ats": "smartrecruiters",
-   "slug": "walgreens",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mcdonald-s-global-tech",
@@ -1764,12 +1689,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.mcdonalds.com",
-   "ats": "smartrecruiters",
-   "slug": "mcdonald-s-global-tech",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "chick-fil-a",
@@ -1778,12 +1702,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://chick-fil-a.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "chick-fil-a",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "electronic-arts-ea",
@@ -1792,12 +1715,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://ea.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "electronic-arts-ea",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ubisoft",
@@ -1806,12 +1728,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://jobs.ubisoft.com",
-   "ats": "smartrecruiters",
-   "slug": "ubisoft",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zynga-take-two",
@@ -1820,12 +1741,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://zynga.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "zynga-take-two",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "rockstar-games",
@@ -1848,12 +1768,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://nianticlabs.com/careers",
-   "ats": "ashby",
-   "slug": "niantic",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "playstation-sony",
@@ -1862,12 +1781,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://sonyplaystation.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "playstation-sony",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "freshworks",
@@ -1876,12 +1794,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://freshworks.com/company/careers",
-   "ats": "lever",
-   "slug": "freshworks",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "smartrecruiters",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zoho",
@@ -1890,12 +1807,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://zoho.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "zoho",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "chargebee",
@@ -1904,12 +1820,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://chargebee.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "chargebee",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zeta",
@@ -1946,12 +1861,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://icertis.com/company/careers",
-   "ats": "smartrecruiters",
-   "slug": "icertis",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "browserstack",
@@ -1960,12 +1874,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://browserstack.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "browserstack",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "hasura",
@@ -1974,12 +1887,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://hasura.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "hasura",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gainsight",
@@ -2002,12 +1914,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://whatfix.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "whatfix",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "leadsquared",
@@ -2016,12 +1927,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://leadsquared.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "leadsquared",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "darwinbox",
@@ -2030,12 +1940,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://darwinbox.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "darwinbox",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "capillary-tech",
@@ -2044,12 +1953,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://capillarytech.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "capillary-tech",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "eightfold-ai",
@@ -2058,12 +1966,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://eightfold.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "eightfold-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "locus-sh",
@@ -2072,12 +1979,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://locus.sh/careers",
-   "ats": "smartrecruiters",
-   "slug": "locus-sh",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "freshteam",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "fareye",
@@ -2086,12 +1992,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://fareye.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "fareye",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "moengage",
@@ -2100,12 +2005,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://moengage.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "moengage",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "webengage",
@@ -2114,12 +2018,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://webengage.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "webengage",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "clevertap",
@@ -2128,12 +2031,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://clevertap.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "clevertap",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mindtickle",
@@ -2158,12 +2060,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://flipkartcareers.com",
-   "ats": "smartrecruiters",
-   "slug": "flipkart",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "myntra-flipkart",
@@ -2172,12 +2073,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://careers.myntra.com",
-   "ats": "smartrecruiters",
-   "slug": "myntra-flipkart",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "swiggy",
@@ -2186,12 +2086,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://careers.swiggy.com",
-   "ats": "smartrecruiters",
-   "slug": "swiggy",
-   "api": true,
-   "totalJobs": 2,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zomato-eternal",
@@ -2200,12 +2099,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://zomato.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "zomato-eternal",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "phonepe",
@@ -2230,12 +2128,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://razorpay.com/jobs",
-   "ats": "smartrecruiters",
-   "slug": "razorpay",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cred",
@@ -2274,12 +2171,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://makemytrip.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "makemytrip",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "nykaa",
@@ -2288,12 +2184,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://nykaa.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "nykaa",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "policybazaar",
@@ -2302,12 +2197,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://policybazaar.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "policybazaar",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "paytm",
@@ -2334,12 +2228,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://olacabs.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ola",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "dream11",
@@ -2348,12 +2241,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://dream11.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "dream11",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "games24x7",
@@ -2362,12 +2254,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://games24x7.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "games24x7",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mpl",
@@ -2376,12 +2267,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://mpl.live/careers",
-   "ats": "smartrecruiters",
-   "slug": "mpl",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "upgrad",
@@ -2390,12 +2280,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://upgrad.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "upgrad",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "physicswallah",
@@ -2404,12 +2293,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://pw.live/careers",
-   "ats": "smartrecruiters",
-   "slug": "physicswallah",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "clear-cleartax",
@@ -2432,12 +2320,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://angelone.in/careers",
-   "ats": "lever",
-   "slug": "angel",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "kreditbee",
@@ -2446,12 +2333,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://kreditbee.in/careers",
-   "ats": "smartrecruiters",
-   "slug": "kreditbee",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "lenskart",
@@ -2460,12 +2346,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://lenskart.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "lenskart",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ofbusiness",
@@ -2474,12 +2359,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://ofbusiness.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ofbusiness",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "udaan",
@@ -2488,12 +2372,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://udaan.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "udaan",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "manhattan-associates",
@@ -2502,12 +2385,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://manh.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "manhattan-associates",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "kinaxis",
@@ -2516,12 +2398,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://kinaxis.com/en/careers",
-   "ats": "smartrecruiters",
-   "slug": "kinaxis",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "o9-solutions",
@@ -2530,12 +2411,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://o9solutions.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "o9-solutions",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "coupa",
@@ -2544,16 +2424,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://coupa.com/careers",
-   "ats": "lever",
-   "slug": "coupa",
-   "api": true,
-   "totalJobs": 96,
-   "relevantJobs": 6,
-   "sampleRelevant": [
-    "Lead Cloud Software Engineer - 11625",
-    "Lead Cloud Software Engineer - 11626",
-    "Lead Software Engineer - 11522"
-   ]
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gep",
@@ -2562,12 +2437,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://gep.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "gep",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ivalua",
@@ -2636,12 +2510,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://e2open.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "e2open",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "infor",
@@ -2650,12 +2523,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://infor.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "infor",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "epicor",
@@ -2664,12 +2536,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://epicor.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "epicor",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "delhivery",
@@ -2678,12 +2549,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://delhivery.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "delhivery",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "shiprocket",
@@ -2692,12 +2562,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://shiprocket.in/careers",
-   "ats": "smartrecruiters",
-   "slug": "shiprocket",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "blackbuck",
@@ -2706,12 +2575,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://blackbuck.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "blackbuck",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "edgeverve-finacle",
@@ -2720,12 +2588,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://edgeverve.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "edgeverve-finacle",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "nvidia",
@@ -2734,12 +2601,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://nvidia.com/en-us/about-nvidia/careers",
-   "ats": "smartrecruiters",
-   "slug": "nvidia",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "intel",
@@ -2748,12 +2614,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://intel.com/content/www/us/en/jobs",
-   "ats": "smartrecruiters",
-   "slug": "intel",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "qualcomm",
@@ -2762,12 +2627,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://qualcomm.com/company/careers",
-   "ats": "smartrecruiters",
-   "slug": "qualcomm",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "amd",
@@ -2776,12 +2640,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://careers.amd.com",
-   "ats": "smartrecruiters",
-   "slug": "amd",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "icims",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "samsung-research",
@@ -2790,12 +2653,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://research.samsung.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "samsung-research",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "texas-instruments",
@@ -2804,12 +2666,11 @@
    "match": "Low",
    "javaFit": "Low",
    "careers": "https://careers.ti.com",
-   "ats": "smartrecruiters",
-   "slug": "texas-instruments",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "micron",
@@ -2818,12 +2679,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://micron.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "micron",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "western-digital",
@@ -2832,12 +2692,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://jobs.wd.com",
-   "ats": "smartrecruiters",
-   "slug": "western-digital",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "broadcom",
@@ -2846,12 +2705,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://broadcom.com/company/careers",
-   "ats": "smartrecruiters",
-   "slug": "broadcom",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "marvell",
@@ -2860,12 +2718,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://marvell.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "marvell",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mediatek",
@@ -2874,12 +2731,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://mediatek.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "mediatek",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "synopsys",
@@ -2888,12 +2744,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://synopsys.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "synopsys",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cadence",
@@ -2902,12 +2757,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://cadence.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "cadence",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ansys",
@@ -2916,12 +2770,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://ansys.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ansys",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "disney-hotstar",
@@ -2930,12 +2783,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://jiohotstar.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "disney-hotstar",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sony-liv",
@@ -2944,12 +2796,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://sonyliv.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "sony-liv",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "jiocinema",
@@ -2958,12 +2809,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://jiohotstar.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "jiocinema",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "spotify",
@@ -3014,12 +2864,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://innovaccer.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "innovaccer",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "practo",
@@ -3028,12 +2877,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://practo.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "practo",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pharmeasy",
@@ -3042,12 +2890,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://pharmeasy.in/careers",
-   "ats": "smartrecruiters",
-   "slug": "pharmeasy",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "tata-1mg",
@@ -3056,12 +2903,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://1mg.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "tata-1mg",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pristyn-care",
@@ -3070,12 +2916,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://pristyncare.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "pristyn-care",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cure-fit",
@@ -3084,12 +2929,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://cure.fit/careers",
-   "ats": "smartrecruiters",
-   "slug": "cure-fit",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "rippling",
@@ -3098,12 +2942,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://rippling.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "rippling",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "deel",
@@ -3113,11 +2956,10 @@
    "javaFit": "Medium",
    "careers": "https://deel.com/careers",
    "ats": "ashby",
-   "slug": "deel",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "remote-com",
@@ -3144,10 +2986,10 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://bamboohr.com/careers",
-   "ats": "smartrecruiters",
+   "ats": "recruitee",
    "slug": "bamboohr",
    "api": true,
-   "totalJobs": 0,
+   "totalJobs": 2,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -3172,12 +3014,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://lever.co/careers",
-   "ats": "lever",
-   "slug": "lever",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "linear",
@@ -3246,12 +3087,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://coda.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "coda",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "calendly",
@@ -3274,12 +3114,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://docusign.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "docusign",
-   "api": true,
-   "totalJobs": 4,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "icims",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "box",
@@ -3288,12 +3127,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://box.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "box",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ge-digital",
@@ -3302,12 +3140,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://ge.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ge-digital",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "siemens-digital",
@@ -3316,12 +3153,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://siemens.com/global/en/company/jobs",
-   "ats": "smartrecruiters",
-   "slug": "siemens-digital",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bosch",
@@ -3330,12 +3166,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://bosch.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "bosch",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "philips-innovation",
@@ -3344,12 +3179,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://philips.com/a-w/about/careers",
-   "ats": "smartrecruiters",
-   "slug": "philips-innovation",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "honeywell",
@@ -3358,12 +3192,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.honeywell.com",
-   "ats": "smartrecruiters",
-   "slug": "honeywell",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "schneider-electric",
@@ -3372,12 +3205,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://se.com/ww/en/about-us/careers",
-   "ats": "smartrecruiters",
-   "slug": "schneider-electric",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "abb",
@@ -3386,12 +3218,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://global.abb/group/en/careers",
-   "ats": "smartrecruiters",
-   "slug": "abb",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ericsson",
@@ -3400,12 +3231,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://ericsson.com/en/careers",
-   "ats": "smartrecruiters",
-   "slug": "ericsson",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "nokia",
@@ -3414,12 +3244,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://nokia.com/about-us/careers",
-   "ats": "smartrecruiters",
-   "slug": "nokia",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "lufthansa-systems",
@@ -3428,12 +3257,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://lhsystems.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "lufthansa-systems",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "airbus",
@@ -3442,12 +3270,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://airbus.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "airbus",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "rolls-royce",
@@ -3456,12 +3283,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.rolls-royce.com",
-   "ats": "smartrecruiters",
-   "slug": "rolls-royce",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "caterpillar",
@@ -3470,12 +3296,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://caterpillar.com/en/careers",
-   "ats": "smartrecruiters",
-   "slug": "caterpillar",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "john-deere",
@@ -3484,12 +3309,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://jobs.deere.com",
-   "ats": "smartrecruiters",
-   "slug": "john-deere",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "allstate-india",
@@ -3498,12 +3322,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://allstate.jobs",
-   "ats": "smartrecruiters",
-   "slug": "allstate-india",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "nationwide",
@@ -3512,12 +3335,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://nationwide.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "nationwide",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "progressive",
@@ -3526,12 +3348,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://progressive.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "progressive",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "liberty-mutual",
@@ -3540,12 +3361,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://libertymutualgroup.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "liberty-mutual",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "metlife",
@@ -3568,12 +3388,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://jobs.prudential.com",
-   "ats": "smartrecruiters",
-   "slug": "prudential",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cummins",
@@ -3582,12 +3401,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://cummins.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "cummins",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "thermo-fisher",
@@ -3596,12 +3414,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://jobs.thermofisher.com",
-   "ats": "smartrecruiters",
-   "slug": "thermo-fisher",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "phenom",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "merck-msd",
@@ -3610,12 +3427,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://jobs.merck.com",
-   "ats": "smartrecruiters",
-   "slug": "merck-msd",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pfizer-digital",
@@ -3624,12 +3440,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://pfizer.com/about/careers",
-   "ats": "smartrecruiters",
-   "slug": "pfizer-digital",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "novartis",
@@ -3638,12 +3453,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://novartis.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "novartis",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "astrazeneca",
@@ -3652,12 +3466,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.astrazeneca.com",
-   "ats": "smartrecruiters",
-   "slug": "astrazeneca",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "comcast",
@@ -3666,12 +3479,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://jobs.comcast.com",
-   "ats": "smartrecruiters",
-   "slug": "comcast",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "verizon",
@@ -3680,12 +3492,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://mycareer.verizon.com",
-   "ats": "smartrecruiters",
-   "slug": "verizon",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "at-t",
@@ -3694,12 +3505,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://att.jobs",
-   "ats": "smartrecruiters",
-   "slug": "at-t",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "vodafone-vois",
@@ -3708,12 +3518,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://vois.vodafone.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "vodafone-vois",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "t-mobile",
@@ -3722,12 +3531,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://t-mobile.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "t-mobile",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "continental-tech",
@@ -3736,12 +3544,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://continental.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "continental-tech",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mercedes-benz-r-d",
@@ -3750,12 +3557,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://mbrdi.co.in/careers",
-   "ats": "smartrecruiters",
-   "slug": "mercedes-benz-r-d",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bmw-tech-india",
@@ -3764,12 +3570,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://bmwgroup.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "bmw-tech-india",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "volvo-group",
@@ -3778,12 +3583,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://volvogroup.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "volvo-group",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "stellantis",
@@ -3792,12 +3596,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://stellantis.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "stellantis",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ather-energy",
@@ -3806,12 +3609,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://ather.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ather-energy",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ola-electric",
@@ -3820,12 +3622,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://olaelectric.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ola-electric",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "coursera",
@@ -3862,12 +3663,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://pearson.jobs",
-   "ats": "smartrecruiters",
-   "slug": "pearson",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "quizizz",
@@ -3876,12 +3676,11 @@
    "match": "Low",
    "javaFit": "Medium",
    "careers": "https://quizizz.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "quizizz",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "vedantu",
@@ -3890,12 +3689,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://vedantu.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "vedantu",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mulesoft-salesforce",
@@ -3904,12 +3702,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://mulesoft.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "mulesoft-salesforce",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "boomi",
@@ -3918,12 +3715,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://boomi.com/company/careers",
-   "ats": "ashby",
-   "slug": "boomi",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "workato",
@@ -3946,12 +3742,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://tray.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "tray-io",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "ashby",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "n8n",
@@ -4022,12 +3817,11 @@
    "match": "High",
    "javaFit": "Low",
    "careers": "https://getdbt.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "dbt-labs",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "airbyte",
@@ -4066,12 +3860,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://estuary.dev/careers",
-   "ats": "smartrecruiters",
-   "slug": "estuary",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "hightouch",
@@ -4098,12 +3891,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://getcensus.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "census",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "monte-carlo",
@@ -4144,12 +3936,11 @@
    "match": "Low",
    "javaFit": "Low",
    "careers": "https://automattic.com/work-with-us",
-   "ats": "smartrecruiters",
-   "slug": "automattic-wordpress",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "doist",
@@ -4158,12 +3949,11 @@
    "match": "Low",
    "javaFit": "Low",
    "careers": "https://doist.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "doist",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "buffer",
@@ -4203,7 +3993,7 @@
    "ats": "greenhouse",
    "slug": "uberfreight",
    "api": true,
-   "totalJobs": 78,
+   "totalJobs": 77,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -4214,12 +4004,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://doordash.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "doordash",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "corover-bharatgpt",
@@ -4228,12 +4017,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://corover.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "corover-bharatgpt",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "llamaindex",
@@ -4256,12 +4044,11 @@
    "match": "Very High",
    "javaFit": "Low",
    "careers": "https://crewai.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "crewai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "composio",
@@ -4284,12 +4071,11 @@
    "match": "Very High",
    "javaFit": "Medium",
    "careers": "https://lyzr.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "lyzr-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "vellum-ai",
@@ -4312,12 +4098,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://humanloop.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "humanloop",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "portkey",
@@ -4326,12 +4111,11 @@
    "match": "Very High",
    "javaFit": "Medium",
    "careers": "https://portkey.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "portkey",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "langfuse",
@@ -4354,12 +4138,11 @@
    "match": "High",
    "javaFit": "Low",
    "careers": "https://helicone.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "helicone",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "arize-ai",
@@ -4398,12 +4181,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://patronus.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "patronus-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "braintrust",
@@ -4440,12 +4222,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://wandb.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "weights-biases",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "truera",
@@ -4454,12 +4235,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://truera.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "truera",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pinecone",
@@ -4496,12 +4276,11 @@
    "match": "Very High",
    "javaFit": "Low",
    "careers": "https://qdrant.tech/careers",
-   "ats": "smartrecruiters",
-   "slug": "qdrant",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "chroma",
@@ -4538,12 +4317,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://vespa.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "vespa-ai-yahoo",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "bamboohr",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "glean",
@@ -4552,12 +4330,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://glean.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "glean",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "writer-com",
@@ -4580,12 +4357,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://jasper.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "jasper",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "ashby",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "copy-ai",
@@ -4594,12 +4370,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://copy.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "copy-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "eightfold-ai-hr",
@@ -4608,12 +4383,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://eightfold.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "eightfold-ai-hr",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "yellow-ai",
@@ -4622,12 +4396,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://yellow.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "yellow-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "haptik-jio",
@@ -4636,12 +4409,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://haptik.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "haptik-jio",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "freshteam",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "uniphore",
@@ -4650,12 +4422,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://uniphore.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "uniphore",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "observe-ai",
@@ -4680,12 +4451,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://gnani.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "gnani-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "verloop-io",
@@ -4694,12 +4464,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://verloop.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "verloop-io",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ema-unlimited",
@@ -4726,12 +4495,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://wati.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "wati",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "codeium",
@@ -4740,12 +4508,11 @@
    "match": "High",
    "javaFit": "Low",
    "careers": "https://codeium.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "codeium",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "ashby",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sourcegraph-cody",
@@ -4754,12 +4521,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://sourcegraph.com/jobs",
-   "ats": "smartrecruiters",
-   "slug": "sourcegraph-cody",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "replit",
@@ -4796,12 +4562,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://pieces.app/careers",
-   "ats": "smartrecruiters",
-   "slug": "pieces-for-devs",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "wysa",
@@ -4810,12 +4575,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://wysa.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "wysa",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cashapp-setu",
@@ -4824,12 +4588,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://setu.co/careers",
-   "ats": "smartrecruiters",
-   "slug": "cashapp-setu",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "linear-ai-features",
@@ -4852,12 +4615,11 @@
    "match": "Low",
    "javaFit": "Low",
    "careers": "https://tome.app/careers",
-   "ats": "smartrecruiters",
-   "slug": "tome",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gamma",
@@ -4866,10 +4628,10 @@
    "match": "Low",
    "javaFit": "Low",
    "careers": "https://gamma.app/careers",
-   "ats": "lever",
+   "ats": "ashby",
    "slug": "gamma",
    "api": true,
-   "totalJobs": 0,
+   "totalJobs": 39,
    "relevantJobs": 0,
    "sampleRelevant": []
   },
@@ -4894,12 +4656,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://fireflies.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "fireflies-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cockroachdb",
@@ -4909,11 +4670,10 @@
    "javaFit": "High",
    "careers": "https://cockroachlabs.com/careers",
    "ats": "greenhouse",
-   "slug": "cockroachlabs",
-   "api": true,
-   "totalJobs": 33,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "yugabyte",
@@ -4940,12 +4700,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://pingcap.com/careers",
-   "ats": "greenhouse",
-   "slug": "pingcap",
-   "api": true,
-   "totalJobs": 20,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "scylladb",
@@ -4954,12 +4713,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://scylladb.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "scylladb",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "clickhouse",
@@ -4968,12 +4726,16 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://clickhouse.com/company/careers",
-   "ats": "ashby",
+   "ats": "greenhouse",
    "slug": "clickhouse",
    "api": true,
    "totalJobs": 160,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "relevantJobs": 45,
+   "sampleRelevant": [
+    "Cloud Software Engineer - Observability Platform",
+    "Cloud Software Engineer - Observability Platform",
+    "Core Software Engineer (C++) - Remote"
+   ]
   },
   {
    "id": "redis-inc",
@@ -5045,12 +4807,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://convex.dev/careers",
-   "ats": "smartrecruiters",
-   "slug": "convex",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "vercel",
@@ -5123,12 +4884,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://fly.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "fly-io",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "grafana-labs",
@@ -5169,12 +4929,11 @@
    "match": "High",
    "javaFit": "Medium",
    "careers": "https://timescale.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "timescale",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "couchbase",
@@ -5183,12 +4942,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://couchbase.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "couchbase",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "aerospike",
@@ -5243,11 +5001,10 @@
    "javaFit": "Low",
    "careers": "https://clerk.com/careers",
    "ats": "ashby",
-   "slug": "clerk",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "frontegg",
@@ -5256,12 +5013,11 @@
    "match": "Very High",
    "javaFit": "Medium",
    "careers": "https://frontegg.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "frontegg",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "algolia",
@@ -5286,12 +5042,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://typesense.org/careers",
-   "ats": "smartrecruiters",
-   "slug": "typesense",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "meilisearch",
@@ -5300,12 +5055,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://meilisearch.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "meilisearch",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "lever",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zenoti",
@@ -5346,12 +5100,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://mindbowser.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "mindbowser",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bizongo",
@@ -5360,12 +5113,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://bizongo.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "bizongo",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "khatabook",
@@ -5374,12 +5126,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://khatabook.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "khatabook",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "lendingkart",
@@ -5388,14 +5139,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://lendingkart.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "lendingkart",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 1,
-   "sampleRelevant": [
-    "Backend Developer"
-   ]
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "pine-labs",
@@ -5418,12 +5166,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://bharatpe.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "bharatpe",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mobikwik",
@@ -5432,12 +5179,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://mobikwik.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "mobikwik",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "oyo",
@@ -5446,12 +5192,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://oyo.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "oyo",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ariba-sap",
@@ -5460,12 +5205,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://jobs.sap.com",
-   "ats": "smartrecruiters",
-   "slug": "ariba-sap",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "shipsy",
@@ -5474,15 +5218,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://shipsy.in/careers",
-   "ats": "smartrecruiters",
-   "slug": "shipsy",
-   "api": true,
-   "totalJobs": 5,
-   "relevantJobs": 2,
-   "sampleRelevant": [
-    "Senior Software Engineer",
-    "Software Engineer (Fullstack/NodeJs/ReactJs)"
-   ]
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "locobuzz",
@@ -5491,12 +5231,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://locobuzz.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "locobuzz",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "datarobot",
@@ -5505,12 +5244,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://datarobot.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "datarobot",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "h2o-ai",
@@ -5519,12 +5257,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://h2o.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "h2o-ai",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "dataiku",
@@ -5597,12 +5334,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://heap.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "heap",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "toast",
@@ -5614,7 +5350,7 @@
    "ats": "greenhouse",
    "slug": "toast",
    "api": true,
-   "totalJobs": 293,
+   "totalJobs": 294,
    "relevantJobs": 9,
    "sampleRelevant": [
     "Senior Software Engineer, AI & Strategy",
@@ -5629,12 +5365,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://block.xyz/careers",
-   "ats": "greenhouse",
-   "slug": "block",
-   "api": true,
-   "totalJobs": 205,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bill-com",
@@ -5657,12 +5392,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://tipalti.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "tipalti",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "hubspot",
@@ -5671,12 +5405,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://hubspot.com/careers",
-   "ats": "greenhouse",
-   "slug": "hubspot",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "zendesk",
@@ -5685,12 +5418,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://zendesk.com/jobs",
-   "ats": "smartrecruiters",
-   "slug": "zendesk",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "coindcx",
@@ -5699,12 +5431,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://coindcx.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "coindcx",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "wazirx",
@@ -5713,12 +5444,11 @@
    "match": "Low",
    "javaFit": "High",
    "careers": "https://wazirx.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "wazirx",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "opentelemetry-contributors-lightstep-servicenow",
@@ -5727,12 +5457,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://servicenow.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "opentelemetry-contributors-lightstep-servicenow",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cvent",
@@ -5741,12 +5470,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://careers.cvent.com",
-   "ats": "smartrecruiters",
-   "slug": "cvent",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "icims",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sprinklr",
@@ -5755,12 +5483,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.sprinklr.com/careers/",
-   "ats": "smartrecruiters",
-   "slug": "sprinklr",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "agoda",
@@ -5785,12 +5512,14 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.tower-research.com",
-   "ats": "smartrecruiters",
-   "slug": "tower-research-capital",
+   "ats": "greenhouse",
+   "slug": "towerresearchcapital",
    "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "totalJobs": 77,
+   "relevantJobs": 1,
+   "sampleRelevant": [
+    "Software Engineer"
+   ]
   },
   {
    "id": "quadeye",
@@ -5799,12 +5528,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://quadeye.com",
-   "ats": "smartrecruiters",
-   "slug": "quadeye",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sumo-logic",
@@ -5846,12 +5574,11 @@
    "match": "Very High",
    "javaFit": "Very High",
    "careers": "https://www.sirion.ai",
-   "ats": "smartrecruiters",
-   "slug": "sirion",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "optum-unitedhealth",
@@ -5860,12 +5587,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.unitedhealthgroup.com",
-   "ats": "smartrecruiters",
-   "slug": "optum-unitedhealth",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "taleo",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "airtel-digital",
@@ -5874,12 +5600,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.airtel.com",
-   "ats": "smartrecruiters",
-   "slug": "airtel-digital",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "urban-company",
@@ -5888,12 +5613,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://careers.urbancompany.com",
-   "ats": "smartrecruiters",
-   "slug": "urban-company",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "blinkit-eternal",
@@ -5902,12 +5626,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://blinkit.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "blinkit-eternal",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cars24",
@@ -5916,12 +5639,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.cars24.com/careers/",
-   "ats": "smartrecruiters",
-   "slug": "cars24",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "spinny",
@@ -5930,12 +5652,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.spinny.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "spinny",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "darwinbox",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "ixigo",
@@ -5944,12 +5665,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.ixigo.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "ixigo",
-   "api": true,
-   "totalJobs": 10,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "info-edge-naukri",
@@ -5958,12 +5678,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.infoedge.in",
-   "ats": "smartrecruiters",
-   "slug": "info-edge-naukri",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "times-internet",
@@ -5972,12 +5691,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://timesinternet.in/careers",
-   "ats": "smartrecruiters",
-   "slug": "times-internet",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "junglee-games",
@@ -5986,12 +5704,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.jungleegames.com",
-   "ats": "smartrecruiters",
-   "slug": "junglee-games",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gartner",
@@ -6000,12 +5717,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://jobs.gartner.com",
-   "ats": "smartrecruiters",
-   "slug": "gartner",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "highlevel",
@@ -6032,12 +5748,14 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://careers.linkedin.com",
-   "ats": "greenhouse",
+   "ats": "lever",
    "slug": "linkedin",
    "api": true,
-   "totalJobs": 53,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "totalJobs": 20,
+   "relevantJobs": 1,
+   "sampleRelevant": [
+    "Software Engineer IV"
+   ]
   },
   {
    "id": "de-shaw-india",
@@ -6046,12 +5764,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.deshawindia.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "de-shaw-india",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "graviton-research-capital",
@@ -6092,12 +5809,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.mlp.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "millennium-management",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "worldquant",
@@ -6120,12 +5836,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.jpmorgan.com",
-   "ats": "smartrecruiters",
-   "slug": "jpmorgan-chase",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "media-net",
@@ -6134,12 +5849,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.media.net/careers",
-   "ats": "smartrecruiters",
-   "slug": "media-net",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "navi",
@@ -6162,12 +5876,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.zeptonow.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "zepto",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "juspay",
@@ -6176,12 +5889,11 @@
    "match": "Medium",
    "javaFit": "Low",
    "careers": "https://juspay.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "juspay",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sprinto",
@@ -6190,12 +5902,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://sprinto.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "sprinto",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "increff",
@@ -6204,12 +5915,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://www.increff.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "increff",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "zohorecruit",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "unicommerce",
@@ -6218,12 +5928,11 @@
    "match": "Very High",
    "javaFit": "High",
    "careers": "https://unicommerce.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "unicommerce",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "keka",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "maersk-gcc",
@@ -6232,12 +5941,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://www.maersk.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "maersk-gcc",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "lowe-s-india",
@@ -6246,12 +5954,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://careers.lowes.com",
-   "ats": "smartrecruiters",
-   "slug": "lowe-s-india",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "turing",
@@ -6274,12 +5981,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://jobs.bytedance.com",
-   "ats": "smartrecruiters",
-   "slug": "bytedance",
-   "api": true,
-   "totalJobs": 2,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "flow-traders",
@@ -6302,12 +6008,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.davincitradinggroup.com",
-   "ats": "smartrecruiters",
-   "slug": "da-vinci",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "imc-trading",
@@ -6332,12 +6037,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "",
-   "ats": "smartrecruiters",
-   "slug": "nk-securities",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sharechat",
@@ -6346,12 +6050,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://sharechat.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "sharechat",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gojek",
@@ -6360,12 +6063,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.gojek.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "gojek",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "morgan-stanley",
@@ -6374,12 +6076,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://www.morganstanley.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "morgan-stanley",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "goldman-sachs",
@@ -6388,12 +6089,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://www.goldmansachs.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "goldman-sachs",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "bny-mellon",
@@ -6402,12 +6102,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://www.bnymellon.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "bny-mellon",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "american-express",
@@ -6416,12 +6115,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://www.americanexpress.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "american-express",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "eightfold",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "citi",
@@ -6430,12 +6128,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://jobs.citi.com",
-   "ats": "smartrecruiters",
-   "slug": "citi",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "deutsche-bank",
@@ -6444,12 +6141,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://careers.db.com",
-   "ats": "smartrecruiters",
-   "slug": "deutsche-bank",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "barclays",
@@ -6458,12 +6154,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://home.barclays/careers",
-   "ats": "smartrecruiters",
-   "slug": "barclays",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "cashfree",
@@ -6472,12 +6167,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.cashfree.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "cashfree",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "payu",
@@ -6486,12 +6180,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://corporate.payu.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "payu",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "groww",
@@ -6514,12 +6207,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://zerodha.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "zerodha",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "jupiter",
@@ -6528,12 +6220,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://jupiter.money/careers",
-   "ats": "smartrecruiters",
-   "slug": "jupiter",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "keka",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "myntra",
@@ -6542,12 +6233,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.myntra.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "myntra",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "harness",
@@ -6556,12 +6246,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.harness.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "harness",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "greenhouse",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "thoughtspot",
@@ -6570,12 +6259,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.thoughtspot.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "thoughtspot",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "blackrock",
@@ -6584,12 +6272,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.blackrock.com",
-   "ats": "smartrecruiters",
-   "slug": "blackrock",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "fidelity",
@@ -6598,12 +6285,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://www.fidelitycareers.com",
-   "ats": "smartrecruiters",
-   "slug": "fidelity",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "samsung-r-d",
@@ -6612,12 +6298,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://research.samsung.com/sri-n",
-   "ats": "smartrecruiters",
-   "slug": "samsung-r-d",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "societe-generale",
@@ -6626,12 +6311,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.societegenerale.com",
-   "ats": "smartrecruiters",
-   "slug": "societe-generale",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "taleo",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "publicis-sapient",
@@ -6640,12 +6324,11 @@
    "match": "High",
    "javaFit": "Very High",
    "careers": "https://www.publicissapient.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "publicis-sapient",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "amdocs",
@@ -6654,12 +6337,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://www.amdocs.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "amdocs",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "commvault",
@@ -6685,12 +6367,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://careers.zoom.us",
-   "ats": "smartrecruiters",
-   "slug": "zoom",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "plivo",
@@ -6699,12 +6380,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.plivo.com/careers",
-   "ats": "lever",
-   "slug": "plivo",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "exotel",
@@ -6713,12 +6393,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://exotel.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "exotel",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "gupshup",
@@ -6727,12 +6406,11 @@
    "match": "High",
    "javaFit": "High",
    "careers": "https://www.gupshup.io/careers",
-   "ats": "smartrecruiters",
-   "slug": "gupshup",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "mindtickle-2",
@@ -6757,12 +6435,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://fractal.ai/careers",
-   "ats": "smartrecruiters",
-   "slug": "fractal-analytics",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "acko",
@@ -6771,12 +6448,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.acko.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "acko",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "rapido",
@@ -6785,12 +6461,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://www.rapido.bike/careers",
-   "ats": "smartrecruiters",
-   "slug": "rapido",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "upstox",
@@ -6799,12 +6474,11 @@
    "match": "Medium",
    "javaFit": "Medium",
    "careers": "https://upstox.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "upstox",
-   "api": true,
-   "totalJobs": 1,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "elevance-health",
@@ -6813,12 +6487,11 @@
    "match": "Medium",
    "javaFit": "Very High",
    "careers": "https://careers.elevancehealth.com",
-   "ats": "smartrecruiters",
-   "slug": "elevance-health",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": "workday",
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "trimble",
@@ -6827,12 +6500,11 @@
    "match": "Medium",
    "javaFit": "High",
    "careers": "https://www.trimble.com/careers",
-   "ats": "smartrecruiters",
-   "slug": "trimble",
-   "api": true,
-   "totalJobs": 0,
-   "relevantJobs": 0,
-   "sampleRelevant": []
+   "ats": null,
+   "slug": null,
+   "api": false,
+   "totalJobs": null,
+   "relevantJobs": null
   },
   {
    "id": "sophos",
