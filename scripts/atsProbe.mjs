@@ -83,41 +83,60 @@ function slugCandidates(c) {
   return [...out].filter((s) => s && s.length > 1);
 }
 
-// ── Per-provider probes: return { slug, jobs:[{title,location,url}] } or null ─
+// Names must roughly agree before we trust a slug hit on a name-exposing API,
+// otherwise "target" or "neon" style slugs match unrelated boards.
+function nameMatches(companyName, boardName) {
+  if (!boardName) return false;
+  const norm = (s) => s.toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, "");
+  const a = norm(companyName);
+  const b = norm(boardName);
+  if (!a || !b) return false;
+  return a.includes(b) || b.includes(a);
+}
+
+// ── Per-provider probes: return jobs[] or null ────────────────────────────────
+// Every provider returns 200 + an empty list for some unknown slugs, so an
+// empty board is treated as "no hit" — these companies are all hiring at
+// scale, a genuinely 0-job board is indistinguishable from a false positive.
 const providers = {
-  async greenhouse(slug) {
+  async greenhouse(slug, company) {
+    const board = await get(`https://boards-api.greenhouse.io/v1/boards/${slug}`);
+    if (!board || !nameMatches(company.name, board.name)) return null;
     const d = await get(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`);
-    if (!d || !Array.isArray(d.jobs)) return null;
+    if (!d || !Array.isArray(d.jobs) || d.jobs.length === 0) return null;
     return d.jobs.map((j) => ({ title: j.title, location: j.location?.name || "", url: j.absolute_url }));
   },
   async lever(slug) {
     const d = await get(`https://api.lever.co/v0/postings/${slug}?mode=json`);
-    if (!Array.isArray(d)) return null;
+    if (!Array.isArray(d) || d.length === 0) return null;
     return d.map((j) => ({ title: j.text, location: j.categories?.location || "", url: j.hostedUrl }));
   },
   async ashby(slug) {
     const d = await get(`https://api.ashbyhq.com/posting-api/job-board/${slug}`);
-    if (!d || !Array.isArray(d.jobs)) return null;
+    if (!d || !Array.isArray(d.jobs) || d.jobs.length === 0) return null;
     return d.jobs.map((j) => ({ title: j.title, location: j.location || "", url: j.jobUrl }));
   },
-  async smartrecruiters(slug) {
+  async workable(slug) {
+    const d = await get(`https://apply.workable.com/api/v1/widget/accounts/${slug}`);
+    if (!d || !Array.isArray(d.jobs) || d.jobs.length === 0) return null;
+    return d.jobs.map((j) => ({ title: j.title, location: `${j.city || ""} ${j.country || ""}`, url: j.shortlink }));
+  },
+  async recruitee(slug) {
+    const d = await get(`https://${slug}.recruitee.com/api/offers/`);
+    if (!d || !Array.isArray(d.offers) || d.offers.length === 0) return null;
+    return d.offers.map((j) => ({ title: j.title, location: j.location || "", url: j.careers_url }));
+  },
+  // Last: its API answers 200 for any slug, so it needs the name check.
+  async smartrecruiters(slug, company) {
+    const info = await get(`https://api.smartrecruiters.com/v1/companies/${slug}`);
+    if (!info || !nameMatches(company.name, info.name)) return null;
     const d = await get(`https://api.smartrecruiters.com/v1/companies/${slug}/postings?limit=100`);
-    if (!d || !Array.isArray(d.content)) return null;
+    if (!d || !Array.isArray(d.content) || d.content.length === 0) return null;
     return d.content.map((j) => ({
       title: j.name,
       location: `${j.location?.city || ""} ${j.location?.country || ""}`,
       url: `https://jobs.smartrecruiters.com/${slug}/${j.id}`,
     }));
-  },
-  async workable(slug) {
-    const d = await get(`https://apply.workable.com/api/v1/widget/accounts/${slug}`);
-    if (!d || !Array.isArray(d.jobs)) return null;
-    return d.jobs.map((j) => ({ title: j.title, location: `${j.city || ""} ${j.country || ""}`, url: j.shortlink }));
-  },
-  async recruitee(slug) {
-    const d = await get(`https://${slug}.recruitee.com/api/offers/`);
-    if (!d || !Array.isArray(d.offers)) return null;
-    return d.offers.map((j) => ({ title: j.title, location: j.location || "", url: j.careers_url }));
   },
 };
 
@@ -157,7 +176,7 @@ async function probeCompany(c) {
   const slugs = slugCandidates(c);
   for (const [name, fn] of Object.entries(providers)) {
     for (const slug of slugs) {
-      const jobs = await fn(slug);
+      const jobs = await fn(slug, c);
       if (jobs) {
         const relevant = jobs.filter((j) => isRelevant(j.title, j.location));
         return {
