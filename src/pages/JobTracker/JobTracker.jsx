@@ -172,7 +172,7 @@ function HRContactsEditor({ contacts, onChange }) {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Name (e.g. Priya - HR)"
+          placeholder="Name / role (e.g. HR, Recruiter)"
           className={`${inputCls} w-44`}
         />
         <input
@@ -728,169 +728,171 @@ export default function JobTracker() {
   ];
 
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
-        <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300">
-          Job Application Tracker
-        </h1>
-        <button
-          onClick={() => setAdding((a) => !a)}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md"
-        >
-          <HiPlus /> Add company
-        </button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
-        {statTiles.map((s) => (
-          <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2.5 text-center`}>
-            <div className={`text-2xl font-extrabold ${s.cls}`}>{s.value}</div>
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
-              {s.label}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <AnimatePresence>
-        {adding && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-            <AddCompanyForm onAdd={addCustom} onClose={() => setAdding(false)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Filters */}
-      <div className={`${GLASS} rounded-xl p-3 mb-4 flex flex-wrap items-center gap-2`}>
-        <div className="relative flex-1 min-w-[200px]">
-          <HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setLimit(PAGE_SIZE);
-            }}
-            placeholder="Search company, category, location…"
-            className="w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
-          />
-        </div>
-        <select value={tierFilter} onChange={(e) => { setTierFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
-          <option value="all">All tiers</option>
-          {tiers.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-        <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
-          <option value="all">All statuses</option>
-          <option value="none">Not Started</option>
-          <option value="toApply">To Apply</option>
-          <option value="applied">Applied</option>
-          <option value="inProcess">OA / Interview</option>
-          <option value="offer">Offer</option>
-          <option value="rejected">Rejected</option>
-          <option value="skip">Skipped</option>
-        </select>
-        <select value={fitFilter} onChange={(e) => { setFitFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
-          <option value="all">Any fit</option>
-          <option value="Very High">Very High fit</option>
-          <option value="High">High fit</option>
-          <option value="Medium">Medium fit</option>
-        </select>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectCls}>
-          <option value="composite">Sort: Best Fit</option>
-          <option value="score">Sort: Priority</option>
-          <option value="pay">Sort: Pay</option>
-          <option value="culture">Sort: Culture</option>
-          <option value="name">Sort: Name</option>
-        </select>
-        <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
-          {filtered.length} shown
-        </span>
-      </div>
-
-      {/* Table */}
-      <div className={`${GLASS} rounded-xl overflow-hidden mb-8`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-50/80 dark:bg-slate-800/80">
-              <tr>
-                <th className="px-4 py-3">Company</th>
-                <th className="px-4 py-3 hidden sm:table-cell">Pay (LPA)</th>
-                <th className="px-4 py-3 hidden lg:table-cell">Tier</th>
-                <th className="px-4 py-3 hidden xl:table-cell">Category</th>
-                <th className="px-4 py-3 hidden lg:table-cell">Location</th>
-                <th className="px-4 py-3 hidden md:table-cell">Culture</th>
-                <th className="px-4 py-3 hidden md:table-cell">Java Fit</th>
-                <th className="px-4 py-3 hidden md:table-cell">Match</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-center" title="Applied / total openings">Apps</th>
-                <th className="px-2 py-3"></th>
-              </tr>
-            </thead>
-            <tbody className="text-[15px]">
-              {visible.map((c) => (
-                <CompanyRow
-                  key={c.id}
-                  company={c}
-                  entry={entryOf(c.id)}
-                  expanded={expandedId === c.id}
-                  onToggle={() => setExpandedId((e) => (e === c.id ? null : c.id))}
-                  onPatch={(patch) => patchCompany(c.id, patch)}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {visible.length === 0 && (
-          <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">No companies match these filters.</p>
-        )}
-        {filtered.length > limit && (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
+      <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
+        {/* Header */}
+        <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300">
+            Job Application Tracker
+          </h1>
           <button
-            onClick={() => setLimit((l) => l + PAGE_SIZE)}
-            className="w-full py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700/60 border-t border-gray-200/60 dark:border-slate-700/60"
+            onClick={() => setAdding((a) => !a)}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md"
           >
-            Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
+            <HiPlus /> Add company
           </button>
-        )}
-      </div>
+        </div>
 
-      {/* Bottom summaries */}
-      <div className="grid md:grid-cols-2 gap-5">
-        <section>
-          <h2 className="text-lg font-bold text-amber-600 dark:text-amber-300 mb-2">
-            To Apply Queue ({toApplyList.length})
-          </h2>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-            Companies marked "To Apply" or with pending openings — knock these out first.
-          </p>
-          <div className="space-y-2">
-            {toApplyList.length === 0 && (
-              <p className="text-sm text-gray-400 dark:text-gray-500">Nothing queued. Mark companies "To Apply" or add openings above.</p>
-            )}
-            {toApplyList.map((c) => (
-              <SummaryCompany key={c.id} company={c} entry={entryOf(c.id)} onJump={() => jumpTo(c)} />
-            ))}
-          </div>
-        </section>
+        {/* Stats */}
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+          {statTiles.map((s) => (
+            <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2.5 text-center`}>
+              <div className={`text-2xl font-extrabold ${s.cls}`}>{s.value}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
 
-        <section>
-          <h2 className="text-lg font-bold text-emerald-600 dark:text-emerald-300 mb-2">
-            Applied Companies ({appliedList.length})
-          </h2>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-            Everything in flight — applied, OA, interviews and offers, with the openings per company.
-          </p>
-          <div className="space-y-2">
-            {appliedList.length === 0 && (
-              <p className="text-sm text-gray-400 dark:text-gray-500">No applications yet — the queue on the left is waiting.</p>
-            )}
-            {appliedList.map((c) => (
-              <SummaryCompany key={c.id} company={c} entry={entryOf(c.id)} onJump={() => jumpTo(c)} />
-            ))}
+        <AnimatePresence>
+          {adding && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+              <AddCompanyForm onAdd={addCustom} onClose={() => setAdding(false)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Filters */}
+        <div className={`${GLASS} rounded-xl p-3 mb-4 flex flex-wrap items-center gap-2`}>
+          <div className="relative flex-1 min-w-[200px]">
+            <HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setLimit(PAGE_SIZE);
+              }}
+              placeholder="Search company, category, location…"
+              className="w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
+            />
           </div>
-        </section>
+          <select value={tierFilter} onChange={(e) => { setTierFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
+            <option value="all">All tiers</option>
+            {tiers.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
+            <option value="all">All statuses</option>
+            <option value="none">Not Started</option>
+            <option value="toApply">To Apply</option>
+            <option value="applied">Applied</option>
+            <option value="inProcess">OA / Interview</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+            <option value="skip">Skipped</option>
+          </select>
+          <select value={fitFilter} onChange={(e) => { setFitFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
+            <option value="all">Any fit</option>
+            <option value="Very High">Very High fit</option>
+            <option value="High">High fit</option>
+            <option value="Medium">Medium fit</option>
+          </select>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectCls}>
+            <option value="composite">Sort: Best Fit</option>
+            <option value="score">Sort: Priority</option>
+            <option value="pay">Sort: Pay</option>
+            <option value="culture">Sort: Culture</option>
+            <option value="name">Sort: Name</option>
+          </select>
+          <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
+            {filtered.length} shown
+          </span>
+        </div>
+
+        {/* Table */}
+        <div className={`${GLASS} rounded-xl overflow-hidden mb-8`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-50/80 dark:bg-slate-800/80">
+                <tr>
+                  <th className="px-4 py-3">Company</th>
+                  <th className="px-4 py-3 hidden sm:table-cell">Pay (LPA)</th>
+                  <th className="px-4 py-3 hidden lg:table-cell">Tier</th>
+                  <th className="px-4 py-3 hidden xl:table-cell">Category</th>
+                  <th className="px-4 py-3 hidden lg:table-cell">Location</th>
+                  <th className="px-4 py-3 hidden md:table-cell">Culture</th>
+                  <th className="px-4 py-3 hidden md:table-cell">Java Fit</th>
+                  <th className="px-4 py-3 hidden md:table-cell">Match</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-center" title="Applied / total openings">Apps</th>
+                  <th className="px-2 py-3"></th>
+                </tr>
+              </thead>
+              <tbody className="text-[15px]">
+                {visible.map((c) => (
+                  <CompanyRow
+                    key={c.id}
+                    company={c}
+                    entry={entryOf(c.id)}
+                    expanded={expandedId === c.id}
+                    onToggle={() => setExpandedId((e) => (e === c.id ? null : c.id))}
+                    onPatch={(patch) => patchCompany(c.id, patch)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {visible.length === 0 && (
+            <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">No companies match these filters.</p>
+          )}
+          {filtered.length > limit && (
+            <button
+              onClick={() => setLimit((l) => l + PAGE_SIZE)}
+              className="w-full py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700/60 border-t border-gray-200/60 dark:border-slate-700/60"
+            >
+              Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
+            </button>
+          )}
+        </div>
+
+        {/* Bottom summaries */}
+        <div className="grid md:grid-cols-2 gap-5">
+          <section>
+            <h2 className="text-lg font-bold text-amber-600 dark:text-amber-300 mb-2">
+              To Apply Queue ({toApplyList.length})
+            </h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+              Companies marked "To Apply" or with pending openings — knock these out first.
+            </p>
+            <div className="space-y-2">
+              {toApplyList.length === 0 && (
+                <p className="text-sm text-gray-400 dark:text-gray-500">Nothing queued. Mark companies "To Apply" or add openings above.</p>
+              )}
+              {toApplyList.map((c) => (
+                <SummaryCompany key={c.id} company={c} entry={entryOf(c.id)} onJump={() => jumpTo(c)} />
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-emerald-600 dark:text-emerald-300 mb-2">
+              Applied Companies ({appliedList.length})
+            </h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+              Everything in flight — applied, OA, interviews and offers, with the openings per company.
+            </p>
+            <div className="space-y-2">
+              {appliedList.length === 0 && (
+                <p className="text-sm text-gray-400 dark:text-gray-500">No applications yet — the queue on the left is waiting.</p>
+              )}
+              {appliedList.map((c) => (
+                <SummaryCompany key={c.id} company={c} entry={entryOf(c.id)} onJump={() => jumpTo(c)} />
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );
