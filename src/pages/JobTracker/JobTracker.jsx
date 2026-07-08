@@ -10,37 +10,39 @@ import {
   HiOutlineSearch,
   HiStar,
   HiX,
+  HiPhone,
+  HiMail,
 } from "react-icons/hi";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
 import { KEYS, loadJSON, saveJSON, subscribe } from "../../Data/planStore";
 import {
   COMPANIES,
   REFERRAL_TEMPLATES,
-  TOP_PICKS,
 } from "../../Data/jobTrackerCompanies";
 
-// ─── Status model ─────────────────────────────────────────────────────────────
 const STATUSES = {
-  none: { label: "Not Started", cls: "bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-400" },
-  toApply: { label: "To Apply", cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  applied: { label: "Applied", cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
-  oa: { label: "OA / Test", cls: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300" },
-  interview: { label: "Interview", cls: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
-  offer: { label: "Offer 🎉", cls: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  rejected: { label: "Rejected", cls: "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300" },
-  skip: { label: "Skipped", cls: "bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-gray-500" },
+  none: { label: "Not Started", cls: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300" },
+  toApply: { label: "To Apply", cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200" },
+  applied: { label: "Applied", cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200" },
+  oa: { label: "OA / Test", cls: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-200" },
+  interview: { label: "Interview", cls: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200" },
+  offer: { label: "Offer", cls: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200" },
+  rejected: { label: "Rejected", cls: "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200" },
+  skip: { label: "Skipped", cls: "bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-gray-500" },
 };
-// Statuses meaning "I have an application in flight (or done) with them".
+
 const APPLIED_SET = new Set(["applied", "oa", "interview", "offer", "rejected"]);
 
 const FIT_CLS = {
-  "Very High": "text-emerald-600 dark:text-emerald-400 font-bold",
-  High: "text-green-600 dark:text-green-400 font-semibold",
-  Medium: "text-amber-600 dark:text-amber-400",
+  "Very High": "text-emerald-600 dark:text-emerald-300 font-bold",
+  High: "text-green-600 dark:text-green-300 font-semibold",
+  Medium: "text-amber-600 dark:text-amber-300",
   Low: "text-gray-400 dark:text-gray-500",
 };
 
-const TOP_PICK_BY_NAME = Object.fromEntries(TOP_PICKS.map((p) => [p.company, p]));
+const FIT_RANK = { "Very High": 4, High: 3, Medium: 2, Low: 1 };
+
+const APPLIED_HIGHLIGHT_DAYS = 10;
 
 const PAGE_SIZE = 60;
 
@@ -48,9 +50,6 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-// State shape (persisted + cloud-synced under KEYS.JOB_TRACKER):
-//   { companies: { [id]: { status, links: [{id,label,url,applied}], note, jrId } },
-//     custom: [ {id, name, tier, category, location, pay, careers, ...} ] }
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
   return { companies: s.companies || {}, custom: s.custom || [] };
@@ -69,11 +68,23 @@ function copyText(text, msg) {
     .catch(() => toast.error("Copy failed"));
 }
 
-// ─── Small building blocks ────────────────────────────────────────────────────
+function daysSince(timestamp) {
+  if (!timestamp) return Infinity;
+  return Math.floor((Date.now() - timestamp) / (24 * 60 * 60 * 1000));
+}
+
+function isRecentlyApplied(entry) {
+  if (!entry.appliedAt) return false;
+  const status = entry.status || "none";
+  if (!APPLIED_SET.has(status)) return false;
+  return daysSince(entry.appliedAt) <= APPLIED_HIGHLIGHT_DAYS;
+}
+
+// ── Small building blocks ────────────────────────────────────────────────────
 function CultureStars({ n }) {
-  if (!n) return <span className="text-gray-400">—</span>;
+  if (!n) return <span className="text-gray-400 dark:text-gray-500">—</span>;
   return (
-    <span className="inline-flex items-center gap-0.5 text-amber-500" title={`Culture ${n}/5`}>
+    <span className="inline-flex items-center gap-0.5 text-amber-500 dark:text-amber-400" title={`Culture ${n}/5`}>
       {n}
       <HiStar className="inline" />
     </span>
@@ -87,7 +98,7 @@ function StatusSelect({ value, onChange }) {
       value={v}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => onChange(e.target.value)}
-      className={`text-xs font-semibold rounded-lg px-2 py-1 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-400 ${STATUSES[v].cls}`}
+      className={`text-xs font-semibold rounded-lg px-2 py-1.5 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-400 ${STATUSES[v].cls}`}
     >
       {Object.entries(STATUSES).map(([k, s]) => (
         <option key={k} value={k}>
@@ -98,7 +109,97 @@ function StatusSelect({ value, onChange }) {
   );
 }
 
-// ─── Apply-links manager (inside the expanded row) ────────────────────────────
+// ── HR Contacts manager ──────────────────────────────────────────────────────
+function HRContactsEditor({ contacts, onChange }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+
+  const add = () => {
+    if (!name.trim() && !phone.trim() && !email.trim()) {
+      toast.warn("Enter at least a name, phone or email");
+      return;
+    }
+    onChange([
+      ...contacts,
+      { id: uid(), name: name.trim(), phone: phone.trim(), email: email.trim() },
+    ]);
+    setName("");
+    setPhone("");
+    setEmail("");
+  };
+
+  const inputCls =
+    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
+
+  return (
+    <div>
+      <div className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+        HR / Recruiter Contacts
+      </div>
+      {contacts.length === 0 && (
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+          No contacts added yet — add recruiters, HRs, or referrers below.
+        </p>
+      )}
+      <ul className="space-y-1.5 mb-3">
+        {contacts.map((c) => (
+          <li key={c.id} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+            <span className="font-medium">{c.name || "—"}</span>
+            {c.phone && (
+              <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <HiPhone className="text-emerald-500" />
+                <a href={`tel:${c.phone}`} className="hover:underline">{c.phone}</a>
+              </span>
+            )}
+            {c.email && (
+              <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <HiMail className="text-blue-500" />
+                <a href={`mailto:${c.email}`} className="hover:underline">{c.email}</a>
+              </span>
+            )}
+            <button
+              onClick={() => onChange(contacts.filter((x) => x.id !== c.id))}
+              className="text-gray-400 hover:text-red-500 shrink-0 ml-auto"
+              title="Remove contact"
+            >
+              <HiTrash />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap gap-2">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name (e.g. Priya - HR)"
+          className={`${inputCls} w-44`}
+        />
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone number"
+          className={`${inputCls} w-40`}
+        />
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && add()}
+          placeholder="Email"
+          className={`${inputCls} flex-1 min-w-[180px]`}
+        />
+        <button
+          onClick={add}
+          className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+        >
+          <HiPlus /> Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Apply-links manager ──────────────────────────────────────────────────────
 function LinksEditor({ links, onChange }) {
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
@@ -113,6 +214,9 @@ function LinksEditor({ links, onChange }) {
     setLabel("");
     setUrl("");
   };
+
+  const inputCls =
+    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
 
   return (
     <div>
@@ -142,7 +246,7 @@ function LinksEditor({ links, onChange }) {
               rel="noreferrer"
               className={`truncate max-w-[380px] hover:underline ${
                 l.applied
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-emerald-600 dark:text-emerald-300"
                   : "text-indigo-600 dark:text-indigo-400"
               }`}
               title={l.url}
@@ -152,8 +256,8 @@ function LinksEditor({ links, onChange }) {
             <span
               className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                 l.applied
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
-                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200"
+                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200"
               }`}
             >
               {l.applied ? "APPLIED" : "PENDING"}
@@ -173,14 +277,14 @@ function LinksEditor({ links, onChange }) {
           value={label}
           onChange={(e) => setLabel(e.target.value)}
           placeholder="Role (e.g. SDE-2 Backend)"
-          className="text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-200 w-44"
+          className={`${inputCls} w-44`}
         />
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder="https://… job opening link"
-          className="text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-200 flex-1 min-w-[200px]"
+          className={`${inputCls} flex-1 min-w-[200px]`}
         />
         <button
           onClick={add}
@@ -193,7 +297,6 @@ function LinksEditor({ links, onChange }) {
   );
 }
 
-// Notes with a local draft — saved on blur so typing doesn't re-render the table.
 function NoteEditor({ note, onSave }) {
   const [draft, setDraft] = useState(note || "");
   useEffect(() => setDraft(note || ""), [note]);
@@ -208,31 +311,21 @@ function NoteEditor({ note, onSave }) {
         onBlur={() => draft !== (note || "") && onSave(draft)}
         rows={3}
         placeholder="e.g. JR-12345 · referred by X · OA on 15th"
-        className="w-full text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-200 resize-y"
+        className="w-full text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 resize-y"
       />
     </div>
   );
 }
 
-// ─── Expanded row detail ──────────────────────────────────────────────────────
+// ── Expanded row detail ──────────────────────────────────────────────────────
 function CompanyDetail({ company, entry, onPatch }) {
-  const pick = TOP_PICK_BY_NAME[company.name];
   const template = REFERRAL_TEMPLATES[company.template];
   const [showTemplate, setShowTemplate] = useState(false);
 
   return (
-    <div className={`${GLASS_PANEL} rounded-xl p-4 space-y-4`}>
-      {pick && (
-        <div className="text-sm bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800/40 rounded-lg p-3">
-          <span className="font-bold text-pink-600 dark:text-pink-400">
-            ⭐ Top Pick #{pick.rank}:
-          </span>{" "}
-          <span className="text-gray-700 dark:text-gray-300">{pick.why}</span>
-          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 italic">{pick.hook}</p>
-        </div>
-      )}
-
+    <div className={`${GLASS_PANEL} rounded-xl p-5 space-y-5`}>
       <LinksEditor links={entry.links || []} onChange={(links) => onPatch({ links })} />
+      <HRContactsEditor contacts={entry.hrContacts || []} onChange={(hrContacts) => onPatch({ hrContacts })} />
       <NoteEditor note={entry.note} onSave={(note) => onPatch({ note })} />
 
       {template && (
@@ -246,13 +339,13 @@ function CompanyDetail({ company, entry, onPatch }) {
             </button>
             <button
               onClick={() => copyText(template.message, "Referral message copied")}
-              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700"
+              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
             >
               <HiOutlineClipboardCopy /> Copy message
             </button>
           </div>
           {showTemplate && (
-            <pre className="mt-2 text-xs whitespace-pre-wrap text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-900/50 rounded-lg p-3 border border-gray-200 dark:border-slate-700">
+            <pre className="mt-2 text-xs whitespace-pre-wrap text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-slate-800 rounded-lg p-3 border border-gray-200 dark:border-slate-600">
               {template.message}
             </pre>
           )}
@@ -268,32 +361,37 @@ function CompanyDetail({ company, entry, onPatch }) {
   );
 }
 
-// ─── One table row ────────────────────────────────────────────────────────────
+// ── One table row ────────────────────────────────────────────────────────────
 const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle, onPatch }) {
   const links = entry.links || [];
   const pending = links.filter((l) => !l.applied).length;
   const status = entry.status || "none";
-  const pick = TOP_PICK_BY_NAME[company.name];
+  const recentlyApplied = isRecentlyApplied(entry);
+
+  let rowBg = "";
+  if (status === "skip") {
+    rowBg = "opacity-45";
+  } else if (recentlyApplied) {
+    rowBg = "bg-blue-50/70 dark:bg-blue-900/20";
+  }
 
   return (
     <>
       <tr
         onClick={onToggle}
-        className={`cursor-pointer border-b border-gray-100 dark:border-slate-800 hover:bg-indigo-50/50 dark:hover:bg-slate-800/50 transition-colors ${
-          status === "skip" ? "opacity-45" : ""
-        }`}
+        className={`cursor-pointer border-b border-gray-200/60 dark:border-slate-700/60 hover:bg-indigo-50/60 dark:hover:bg-slate-700/40 transition-colors ${rowBg}`}
       >
-        <td className="px-3 py-2.5">
+        <td className="px-4 py-3">
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-gray-800 dark:text-gray-200">{company.name}</span>
-            {pick && (
-              <span title={`Top pick #${pick.rank}`} className="text-pink-500 text-xs font-bold">
-                ⭐{pick.rank}
-              </span>
-            )}
+            <span className="font-semibold text-gray-800 dark:text-gray-100 text-[15px]">{company.name}</span>
             {company.customEntry && (
               <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300">
                 MINE
+              </span>
+            )}
+            {recentlyApplied && (
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-800/50 text-blue-600 dark:text-blue-200" title={`Applied ${daysSince(entry.appliedAt)}d ago — highlight fades after ${APPLIED_HIGHLIGHT_DAYS}d`}>
+                RECENT
               </span>
             )}
             {company.careers && (
@@ -302,45 +400,45 @@ const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300"
+                className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
                 title="Careers page"
               >
                 <HiOutlineExternalLink />
               </a>
             )}
           </div>
-          <div className="text-[11px] text-gray-400 dark:text-gray-500 lg:hidden">
+          <div className="text-xs text-gray-400 dark:text-gray-500 lg:hidden mt-0.5">
             {company.pay && `₹${company.pay} LPA · `}
             {company.location}
           </div>
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap font-semibold text-gray-700 dark:text-gray-300 hidden sm:table-cell">
+        <td className="px-4 py-3 whitespace-nowrap font-semibold text-gray-700 dark:text-gray-200 hidden sm:table-cell text-[15px]">
           {company.pay ? `₹${company.pay}` : "—"}
         </td>
-        <td className="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 hidden lg:table-cell">{company.tier}</td>
-        <td className="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 hidden xl:table-cell">{company.category}</td>
-        <td className="px-3 py-2.5 text-xs text-gray-500 dark:text-gray-400 hidden lg:table-cell max-w-[160px] truncate" title={company.location}>
+        <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">{company.tier}</td>
+        <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 hidden xl:table-cell">{company.category}</td>
+        <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell max-w-[180px] truncate" title={company.location}>
           {company.location}
         </td>
-        <td className="px-3 py-2.5 text-sm hidden md:table-cell">
+        <td className="px-4 py-3 text-sm hidden md:table-cell">
           <CultureStars n={company.culture} />
         </td>
-        <td className={`px-3 py-2.5 text-xs hidden md:table-cell ${FIT_CLS[company.javaFit] || "text-gray-400"}`}>
+        <td className={`px-4 py-3 text-sm hidden md:table-cell ${FIT_CLS[company.javaFit] || "text-gray-400 dark:text-gray-500"}`}>
           {company.javaFit || "—"}
         </td>
-        <td className={`px-3 py-2.5 text-xs hidden md:table-cell ${FIT_CLS[company.match] || "text-gray-400"}`}>
+        <td className={`px-4 py-3 text-sm hidden md:table-cell ${FIT_CLS[company.match] || "text-gray-400 dark:text-gray-500"}`}>
           {company.match || "—"}
         </td>
-        <td className="px-3 py-2.5">
+        <td className="px-4 py-3">
           <StatusSelect value={status} onChange={(v) => onPatch({ status: v })} />
         </td>
-        <td className="px-3 py-2.5 text-center">
+        <td className="px-4 py-3 text-center">
           {links.length > 0 ? (
             <span
               className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${
                 pending
-                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
-                  : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                  ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200"
+                  : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200"
               }`}
               title={`${links.length} openings, ${pending} pending`}
             >
@@ -350,13 +448,13 @@ const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle
             <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>
           )}
         </td>
-        <td className="px-2 py-2.5 text-gray-400">
+        <td className="px-2 py-3 text-gray-400 dark:text-gray-500">
           <HiChevronDown className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
         </td>
       </tr>
       {expanded && (
-        <tr className="border-b border-gray-100 dark:border-slate-800">
-          <td colSpan={11} className="px-3 pb-4 pt-1 bg-gray-50/50 dark:bg-slate-900/30">
+        <tr className="border-b border-gray-200/60 dark:border-slate-700/60">
+          <td colSpan={11} className="px-4 pb-4 pt-2 bg-gray-50/60 dark:bg-slate-800/40">
             <CompanyDetail company={company} entry={entry} onPatch={onPatch} />
           </td>
         </tr>
@@ -365,7 +463,7 @@ const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle
   );
 });
 
-// ─── Add-your-own-company form ────────────────────────────────────────────────
+// ── Add-your-own-company form ────────────────────────────────────────────────
 function AddCompanyForm({ onAdd, onClose }) {
   const [form, setForm] = useState({ name: "", pay: "", location: "", careers: "", category: "" });
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -397,11 +495,11 @@ function AddCompanyForm({ onAdd, onClose }) {
   };
 
   const inputCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-200";
+    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
   return (
     <div className={`${GLASS} rounded-xl p-4 mb-4`}>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-gray-800 dark:text-gray-200">Add a company</h3>
+        <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base">Add a company</h3>
         <button onClick={onClose} className="text-gray-400 hover:text-red-500">
           <HiX />
         </button>
@@ -419,14 +517,14 @@ function AddCompanyForm({ onAdd, onClose }) {
           <HiPlus /> Add company
         </button>
       </div>
-      <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
+      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
         Use this for any company not in the list — it gets the same status + apply-links tracking.
       </p>
     </div>
   );
 }
 
-// ─── Bottom summary sections ──────────────────────────────────────────────────
+// ── Bottom summary sections ──────────────────────────────────────────────────
 function SummaryCompany({ company, entry, onJump }) {
   const links = entry.links || [];
   return (
@@ -434,7 +532,7 @@ function SummaryCompany({ company, entry, onJump }) {
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <button
           onClick={onJump}
-          className="font-semibold text-gray-800 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
+          className="font-semibold text-gray-800 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 text-left"
         >
           {company.name}
         </button>
@@ -464,24 +562,23 @@ function SummaryCompany({ company, entry, onJump }) {
           ))}
         </ul>
       )}
-      {entry.note && <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500 truncate">{entry.note}</p>}
+      {entry.note && <p className="mt-1 text-xs text-gray-400 dark:text-gray-500 truncate">{entry.note}</p>}
     </div>
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ── Page ─────────────────────────────────────────────────────────────────────
 export default function JobTracker() {
   const [state, setState] = useState(loadState);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [fitFilter, setFitFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("score");
+  const [sortBy, setSortBy] = useState("composite");
   const [limit, setLimit] = useState(PAGE_SIZE);
   const [expandedId, setExpandedId] = useState(null);
   const [adding, setAdding] = useState(false);
 
-  // Live-sync with cloud pushes from other devices.
   useEffect(
     () =>
       subscribe((key) => {
@@ -498,9 +595,22 @@ export default function JobTracker() {
   const patchCompany = useCallback(
     (id, patch) => {
       setState((prev) => {
+        const existing = prev.companies[id] || {};
+        const merged = { ...existing, ...patch };
+        if (
+          patch.status &&
+          APPLIED_SET.has(patch.status) &&
+          !APPLIED_SET.has(existing.status || "none") &&
+          !existing.appliedAt
+        ) {
+          merged.appliedAt = Date.now();
+        }
+        if (patch.status && !APPLIED_SET.has(patch.status)) {
+          delete merged.appliedAt;
+        }
         const next = {
           ...prev,
-          companies: { ...prev.companies, [id]: { ...(prev.companies[id] || {}), ...patch } },
+          companies: { ...prev.companies, [id]: merged },
         };
         saveJSON(KEYS.JOB_TRACKER, next);
         return next;
@@ -543,16 +653,32 @@ export default function JobTracker() {
       const m = String(c.pay).match(/(\d+)(?!.*\d)/);
       return m ? Number(m[1]) : 0;
     };
-    if (sortBy === "score") list.sort((a, b) => b.score - a.score);
-    else if (sortBy === "culture") list.sort((a, b) => (b.culture || 0) - (a.culture || 0) || b.score - a.score);
-    else if (sortBy === "pay") list.sort((a, b) => payMax(b) - payMax(a));
-    else if (sortBy === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+    const fitRank = (v) => FIT_RANK[v] || 0;
+
+    if (sortBy === "composite") {
+      list.sort((a, b) => {
+        const matchDiff = fitRank(b.match) - fitRank(a.match);
+        if (matchDiff !== 0) return matchDiff;
+        const fitDiff = fitRank(b.javaFit) - fitRank(a.javaFit);
+        if (fitDiff !== 0) return fitDiff;
+        const cultureDiff = (b.culture || 0) - (a.culture || 0);
+        if (cultureDiff !== 0) return cultureDiff;
+        return payMax(b) - payMax(a);
+      });
+    } else if (sortBy === "score") {
+      list.sort((a, b) => b.score - a.score);
+    } else if (sortBy === "culture") {
+      list.sort((a, b) => (b.culture || 0) - (a.culture || 0) || b.score - a.score);
+    } else if (sortBy === "pay") {
+      list.sort((a, b) => payMax(b) - payMax(a));
+    } else if (sortBy === "name") {
+      list.sort((a, b) => a.name.localeCompare(b.name));
+    }
     return list;
   }, [allCompanies, state.companies, search, tierFilter, statusFilter, fitFilter, sortBy]);
 
   const visible = filtered.slice(0, limit);
 
-  // Bottom sections + stats derive from the SAME state, so they always agree.
   const { toApplyList, appliedList, stats } = useMemo(() => {
     const toApply = [];
     const applied = [];
@@ -579,7 +705,6 @@ export default function JobTracker() {
     };
   }, [allCompanies, state.companies]);
 
-  // Searching by name guarantees the row is on the first page before expanding.
   const jumpTo = useCallback((company) => {
     setSearch(company.name);
     setTierFilter("all");
@@ -591,29 +716,24 @@ export default function JobTracker() {
   }, []);
 
   const selectCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-200 cursor-pointer";
+    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer";
 
   const statTiles = [
-    { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-200" },
-    { label: "To Apply", value: stats.toApply, cls: "text-amber-600 dark:text-amber-400" },
-    { label: "Pending Openings", value: stats.pendingOpenings, cls: "text-orange-600 dark:text-orange-400" },
-    { label: "Applied", value: stats.applied, cls: "text-blue-600 dark:text-blue-400" },
-    { label: "In Process", value: stats.inProcess, cls: "text-violet-600 dark:text-violet-400" },
-    { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-400" },
+    { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },
+    { label: "To Apply", value: stats.toApply, cls: "text-amber-600 dark:text-amber-300" },
+    { label: "Pending Openings", value: stats.pendingOpenings, cls: "text-orange-600 dark:text-orange-300" },
+    { label: "Applied", value: stats.applied, cls: "text-blue-600 dark:text-blue-300" },
+    { label: "In Process", value: stats.inProcess, cls: "text-violet-600 dark:text-violet-300" },
+    { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-300" },
   ];
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-3 lg:px-6 py-6">
+    <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
       {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
-        <div>
-          <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300">
-            Job Application Tracker
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            SDE-2 hunt · target ₹40–50 LPA · sorted by fit for your Java/Spring + Snowflake profile
-          </p>
-        </div>
+        <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300">
+          Job Application Tracker
+        </h1>
         <button
           onClick={() => setAdding((a) => !a)}
           className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md"
@@ -625,9 +745,9 @@ export default function JobTracker() {
       {/* Stats */}
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
         {statTiles.map((s) => (
-          <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2 text-center`}>
-            <div className={`text-xl font-extrabold ${s.cls}`}>{s.value}</div>
-            <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+          <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2.5 text-center`}>
+            <div className={`text-2xl font-extrabold ${s.cls}`}>{s.value}</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
               {s.label}
             </div>
           </div>
@@ -653,7 +773,7 @@ export default function JobTracker() {
               setLimit(PAGE_SIZE);
             }}
             placeholder="Search company, category, location…"
-            className="w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-200"
+            className="w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
           />
         </div>
         <select value={tierFilter} onChange={(e) => { setTierFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
@@ -679,6 +799,7 @@ export default function JobTracker() {
           <option value="Medium">Medium fit</option>
         </select>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={selectCls}>
+          <option value="composite">Sort: Best Fit</option>
           <option value="score">Sort: Priority</option>
           <option value="pay">Sort: Pay</option>
           <option value="culture">Sort: Culture</option>
@@ -692,23 +813,23 @@ export default function JobTracker() {
       {/* Table */}
       <div className={`${GLASS} rounded-xl overflow-hidden mb-8`}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-50/80 dark:bg-slate-900/60">
+          <table className="w-full text-left">
+            <thead className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 bg-gray-50/80 dark:bg-slate-800/80">
               <tr>
-                <th className="px-3 py-2.5">Company</th>
-                <th className="px-3 py-2.5 hidden sm:table-cell">Pay (LPA)</th>
-                <th className="px-3 py-2.5 hidden lg:table-cell">Tier</th>
-                <th className="px-3 py-2.5 hidden xl:table-cell">Category</th>
-                <th className="px-3 py-2.5 hidden lg:table-cell">Location</th>
-                <th className="px-3 py-2.5 hidden md:table-cell">Culture</th>
-                <th className="px-3 py-2.5 hidden md:table-cell">Java Fit</th>
-                <th className="px-3 py-2.5 hidden md:table-cell">Match</th>
-                <th className="px-3 py-2.5">Status</th>
-                <th className="px-3 py-2.5 text-center" title="Applied / total openings">Apps</th>
-                <th className="px-2 py-2.5"></th>
+                <th className="px-4 py-3">Company</th>
+                <th className="px-4 py-3 hidden sm:table-cell">Pay (LPA)</th>
+                <th className="px-4 py-3 hidden lg:table-cell">Tier</th>
+                <th className="px-4 py-3 hidden xl:table-cell">Category</th>
+                <th className="px-4 py-3 hidden lg:table-cell">Location</th>
+                <th className="px-4 py-3 hidden md:table-cell">Culture</th>
+                <th className="px-4 py-3 hidden md:table-cell">Java Fit</th>
+                <th className="px-4 py-3 hidden md:table-cell">Match</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-center" title="Applied / total openings">Apps</th>
+                <th className="px-2 py-3"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-[15px]">
               {visible.map((c) => (
                 <CompanyRow
                   key={c.id}
@@ -723,12 +844,12 @@ export default function JobTracker() {
           </table>
         </div>
         {visible.length === 0 && (
-          <p className="text-center text-sm text-gray-400 py-10">No companies match these filters.</p>
+          <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">No companies match these filters.</p>
         )}
         {filtered.length > limit && (
           <button
             onClick={() => setLimit((l) => l + PAGE_SIZE)}
-            className="w-full py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800/60 border-t border-gray-100 dark:border-slate-800"
+            className="w-full py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700/60 border-t border-gray-200/60 dark:border-slate-700/60"
           >
             Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
           </button>
@@ -738,15 +859,15 @@ export default function JobTracker() {
       {/* Bottom summaries */}
       <div className="grid md:grid-cols-2 gap-5">
         <section>
-          <h2 className="text-lg font-bold text-amber-600 dark:text-amber-400 mb-2">
-            📌 To Apply Queue ({toApplyList.length})
+          <h2 className="text-lg font-bold text-amber-600 dark:text-amber-300 mb-2">
+            To Apply Queue ({toApplyList.length})
           </h2>
           <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
             Companies marked "To Apply" or with pending openings — knock these out first.
           </p>
           <div className="space-y-2">
             {toApplyList.length === 0 && (
-              <p className="text-sm text-gray-400">Nothing queued. Mark companies "To Apply" or add openings above.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">Nothing queued. Mark companies "To Apply" or add openings above.</p>
             )}
             {toApplyList.map((c) => (
               <SummaryCompany key={c.id} company={c} entry={entryOf(c.id)} onJump={() => jumpTo(c)} />
@@ -755,15 +876,15 @@ export default function JobTracker() {
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 mb-2">
-            ✅ Applied Companies ({appliedList.length})
+          <h2 className="text-lg font-bold text-emerald-600 dark:text-emerald-300 mb-2">
+            Applied Companies ({appliedList.length})
           </h2>
           <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
             Everything in flight — applied, OA, interviews and offers, with the openings per company.
           </p>
           <div className="space-y-2">
             {appliedList.length === 0 && (
-              <p className="text-sm text-gray-400">No applications yet — the queue on the left is waiting.</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">No applications yet — the queue on the left is waiting.</p>
             )}
             {appliedList.map((c) => (
               <SummaryCompany key={c.id} company={c} entry={entryOf(c.id)} onJump={() => jumpTo(c)} />
