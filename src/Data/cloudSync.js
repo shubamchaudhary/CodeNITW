@@ -29,6 +29,7 @@ const SYNC_KEYS = [
   KEYS.DSA_TIMESTAMPS,
   KEYS.DSA_STARRED,
   KEYS.PLAN_DAYS,
+  KEYS.JOB_TRACKER,
 ];
 
 let currentUid = null;
