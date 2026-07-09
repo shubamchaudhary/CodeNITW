@@ -1,11 +1,11 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T15:04:52.591Z",
+  "updatedAt": "2026-07-09T15:08:53.363Z",
   "boards": 184,
   "boardsFailed": 2,
-  "liveRelevantOpenings": 661,
-  "newThisRun": 3,
-  "linkedinOpenings": 7,
+  "liveRelevantOpenings": 659,
+  "newThisRun": 0,
+  "linkedinOpenings": 6,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -193,36 +193,6 @@
  },
  "openings": [
   {
-   "key": "29a962482dfa9fa8",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4436702583",
-   "firstSeen": "2026-07-09T15:04:52.591Z"
-  },
-  {
-   "key": "963cb6315e7c45db",
-   "companyId": "docusign",
-   "company": "DocuSign",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-docusign-4418554747",
-   "firstSeen": "2026-07-09T15:04:52.591Z"
-  },
-  {
-   "key": "d0b45e8d69a38576",
-   "companyId": "mastercard",
-   "company": "Mastercard",
-   "ats": "linkedin",
-   "title": "Software Engineer I",
-   "location": "Pune/Pimpri-Chinchwad Area",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-i-at-mastercard-4433962800",
-   "firstSeen": "2026-07-09T15:04:52.591Z"
-  },
-  {
    "key": "6666d00ef0843602",
    "companyId": "american-express",
    "company": "American Express",
@@ -240,6 +210,16 @@
    "title": "Middleware Platform Engineer",
    "location": "Bengaluru, Karnataka, India",
    "url": "https://in.linkedin.com/jobs/view/middleware-platform-engineer-at-american-express-global-business-travel-4434855466",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "bdc75a17f90582f5",
+   "companyId": "cashapp-setu",
+   "company": "CashApp/Setu",
+   "ats": "linkedin",
+   "title": "SDE II",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/sde-ii-at-setu-4434843562",
    "firstSeen": "2026-07-09T14:59:52.419Z"
   },
   {
@@ -270,6 +250,16 @@
    "title": "Senior Software Engineer",
    "location": "Pune, India",
    "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer_R-282432",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "fc5dd4868e019ec6",
+   "companyId": "urban-company",
+   "company": "Urban Company",
+   "ats": "linkedin",
+   "title": "Software Development Engineer III - Backend",
+   "location": "Gurugram, Haryana, India",
+   "url": "https://in.linkedin.com/jobs/view/software-development-engineer-iii-backend-at-urban-company-4435673050",
    "firstSeen": "2026-07-09T14:59:52.419Z"
   },
   {
@@ -3550,16 +3540,6 @@
    "title": "AI/ML Software Development Engineer III",
    "location": "Hyderabad (SEZ)",
    "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Sr-ServiceNow-Engineer_RP1035768",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "71f4228380da7fe3",
-   "companyId": "f5-networks",
-   "company": "F5 Networks",
-   "ats": "workday",
-   "title": "Network Platform Engineer",
-   "location": "Hyderabad (SEZ)",
-   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Network-Platform-Engineer_RP1037203",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
