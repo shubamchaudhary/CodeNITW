@@ -90,23 +90,29 @@ const OVERRIDES = {
   amazon: { type: "amazon" },
   google: { type: "google" },
   uber: { type: "uber" },
-  netflix: { type: "netflix" },
-  apple: { type: "apple" },
-  paypal: { type: "eightfold", host: "paypal.eightfold.ai", domain: "paypal.com" },
+  netflix: { type: "eightfold", host: "explore.jobs.netflix.net", domain: "netflix.com" },
   "jp-morgan-chase": { type: "oraclecloud", host: "jpmc.fa.oraclecloud.com", site: "CX_1001" },
-  "goldman-sachs-eng": { type: "gs" },
-  "walmart-global-tech": { type: "walmart" },
   atlassian: { type: "atlassian" },
   nvidia: { type: "workdayUrl", url: "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite" },
   adobe: { type: "workdayUrl", url: "https://adobe.wd5.myworkdayjobs.com/external_experienced" },
   salesforce: { type: "workdayUrl", url: "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site" },
   "target-india": { type: "workdayUrl", url: "https://target.wd5.myworkdayjobs.com/targetcareers" },
-  "booking-com": { type: "workdayUrl", url: "https://booking.wd3.myworkdayjobs.com/Booking_com" },
+  caterpillar: { type: "workdayUrl", url: "https://cat.wd5.myworkdayjobs.com/CaterpillarCareers" },
   servicenow: { type: "smartrecruiters", slug: "ServiceNow" },
   intuit: { type: "phenom", host: "jobs.intuit.com" },
   razorpay: { type: "greenhouse", slug: "razorpaysoftwareprivatelimited" },
+  // Boards that verifiably block server-side fetches (Cloudflare/Akamai/bot
+  // TLS filters) or whose public APIs are gone — skipped so a fake slug hit
+  // can't pollute the bucket. Apply to these via LinkedIn/manually for now:
+  // PayPal, Goldman Sachs, Walmart, Apple, Booking.com, Bank of America.
   meta: { type: "none" },
   linkedin: { type: "none" },
+  paypal: { type: "none" },
+  "goldman-sachs-eng": { type: "none" },
+  "walmart-global-tech": { type: "none" },
+  apple: { type: "none" },
+  "booking-com": { type: "none" },
+  "bank-of-america": { type: "none" },
 };
 
 // ── API adapters: mapping entry → [{id,title,location,url}] ──────────────────
@@ -153,9 +159,9 @@ const customAdapters = {
   async microsoft() {
     const out = [];
     for (let pg = 1; pg <= 5; pg++) {
-      const d = await get(
-        `https://gcsservices.careers.microsoft.com/search/api/v1/search?q=software%20engineer&lc=India&pg=${pg}&pgSz=20&o=Relevance&flt=true`
-      );
+      const url = `https://gcsservices.careers.microsoft.com/search/api/v1/search?q=software%20engineer&lc=India&pg=${pg}&pgSz=20&o=Relevance&flt=true`;
+      // This host intermittently rejects non-browser TLS — one retry helps.
+      const d = (await get(url)) || (await get(url));
       const jobs = d?.operationResult?.result?.jobs;
       if (!Array.isArray(jobs) || jobs.length === 0) break;
       for (const j of jobs) {
@@ -181,17 +187,28 @@ const customAdapters = {
       url: `https://www.amazon.jobs${j.job_path}`,
     }));
   },
+  // The v3 JSON API is gone (404); the results page is server-rendered, so job
+  // links (with slugged titles) can be pulled straight out of the HTML. The
+  // query is already India-filtered, so location is trusted to be India.
   async google() {
-    const d = await get(
-      "https://careers.google.com/api/v3/search/?q=%22software%20engineer%22&location=India&page_size=100"
+    const html = await get(
+      "https://www.google.com/about/careers/applications/jobs/results?q=%22software%20engineer%22&location=India",
+      { text: true, accept: "text/html" }
     );
-    if (!Array.isArray(d?.jobs) || d.jobs.length === 0) return null;
-    return d.jobs.map((j) => ({
-      id: String(j.id || "").replace(/\D/g, "") || j.id,
-      title: j.title,
-      location: (j.locations || []).map((l) => l.display).join("; "),
-      url: j.apply_url || `https://www.google.com/about/careers/applications/${j.id}`,
-    }));
+    if (!html) return null;
+    const seen = new Set();
+    const out = [];
+    for (const m of html.matchAll(/jobs\/results\/(\d+)-([a-z0-9-]+)/g)) {
+      if (seen.has(m[1])) continue;
+      seen.add(m[1]);
+      out.push({
+        id: m[1],
+        title: m[2].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+        location: "India",
+        url: `https://www.google.com/about/careers/applications/jobs/results/${m[1]}-${m[2]}`,
+      });
+    }
+    return out.length ? out : null;
   },
   async uber() {
     const d = await get("https://www.uber.com/api/loadSearchJobsResults?localeCode=en", {
@@ -212,31 +229,6 @@ const customAdapters = {
       url: `https://www.uber.com/global/en/careers/list/${j.id}/`,
     }));
   },
-  async netflix() {
-    const d = await get("https://jobs.netflix.com/api/search?q=software%20engineer&location=India");
-    const postings = d?.records?.postings;
-    if (!Array.isArray(postings) || postings.length === 0) return null;
-    return postings.map((j) => ({
-      id: String(j.external_id || j.id),
-      title: j.text,
-      location: j.location || (j.locations || []).join("; "),
-      url: `https://jobs.netflix.com/jobs/${j.external_id || j.id}`,
-    }));
-  },
-  async apple() {
-    const d = await get("https://jobs.apple.com/api/role/search", {
-      method: "POST",
-      body: { query: "software engineer", filters: { locations: ["postLocation-IND"] }, page: 1, locale: "en-us" },
-    });
-    const jobs = d?.searchResults;
-    if (!Array.isArray(jobs) || jobs.length === 0) return null;
-    return jobs.map((j) => ({
-      id: String(j.positionId || j.id),
-      title: j.postingTitle || j.title,
-      location: (j.locations || []).map((l) => l.name).join("; "),
-      url: `https://jobs.apple.com/en-in/details/${j.positionId || j.id}`,
-    }));
-  },
   async eightfold(cfg) {
     const d = await get(
       `https://${cfg.host}/api/apply/v2/jobs?domain=${cfg.domain}&query=software%20engineer&location=India&num=100&start=0`
@@ -252,7 +244,7 @@ const customAdapters = {
   },
   async oraclecloud(cfg) {
     const d = await get(
-      `https://${cfg.host}/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&finder=findReqs;siteNumber=${cfg.site},keyword=%22software%20engineer%22&limit=100`
+      `https://${cfg.host}/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList&finder=findReqs%3BsiteNumber%3D${cfg.site}%2Ckeyword%3Dengineer&limit=100`
     );
     const list = d?.items?.[0]?.requisitionList;
     if (!Array.isArray(list) || list.length === 0) return null;
@@ -261,30 +253,6 @@ const customAdapters = {
       title: j.Title,
       location: j.PrimaryLocation || "",
       url: `https://${cfg.host}/hcmUI/CandidateExperience/en/sites/${cfg.site}/job/${j.Id}`,
-    }));
-  },
-  async gs() {
-    const d = await get("https://higher.gs.com/api/search?limit=100&offset=0&query=software%20engineer");
-    const items = d?.results || d?.items || d?.jobs;
-    if (!Array.isArray(items) || items.length === 0) return null;
-    return items.map((j) => ({
-      id: String(j.id || j.jobId || j.reference),
-      title: j.title || j.name || j.role,
-      location: j.location || j.city || (j.locations || []).join("; "),
-      url: j.url || `https://higher.gs.com/roles/${j.id || j.jobId}`,
-    }));
-  },
-  async walmart() {
-    const d = await get(
-      "https://careers.walmart.com/api/search?q=software%20engineer&page=1&sort=rank&expand=department,brand,type,rate"
-    );
-    const jobs = d?.jobs || d?.data?.jobs;
-    if (!Array.isArray(jobs) || jobs.length === 0) return null;
-    return jobs.map((j) => ({
-      id: String(j.id || j.requisitionId),
-      title: j.title,
-      location: j.location || (j.locations || []).map((l) => l.name || l).join("; "),
-      url: j.url ? (j.url.startsWith("http") ? j.url : `https://careers.walmart.com${j.url}`) : "",
     }));
   },
   async atlassian() {
@@ -297,19 +265,42 @@ const customAdapters = {
       url: j.applyUrl || `https://www.atlassian.com/company/careers/details/${j.id}`,
     }));
   },
+  // Phenom sites answer their search widget's POST API, not a REST GET.
   async phenom(cfg) {
-    const d = await get(`https://${cfg.host}/api/jobs?keywords=software%20engineer&location=India&page=1`);
-    const jobs = d?.jobs || d?.data?.jobs || d?.listData?.jobs;
-    if (!Array.isArray(jobs) || jobs.length === 0) return null;
-    return jobs.map((j) => {
-      const job = j.data || j;
-      return {
-        id: String(job.req_id || job.jobId || job.id),
-        title: job.title,
-        location: job.full_location || job.location || (job.locations || []).join("; "),
-        url: job.apply_url || job.canonical_url || `https://${cfg.host}${job.job_url || ""}`,
-      };
+    const d = await get(`https://${cfg.host}/widgets`, {
+      method: "POST",
+      body: {
+        lang: "en_us",
+        deviceType: "desktop",
+        country: "us",
+        pageName: "search-results",
+        ddoKey: "refineSearch",
+        sortBy: "",
+        subsearch: "",
+        from: 0,
+        jobs: true,
+        counts: true,
+        all_fields: ["category", "country", "state", "city"],
+        size: 100,
+        clearAll: false,
+        jdsource: "facets",
+        isSliderEnable: false,
+        pageId: "page10",
+        siteType: "external",
+        keywords: "software engineer",
+        global: true,
+        selected_fields: {},
+        locationData: {},
+      },
     });
+    const jobs = d?.refineSearch?.data?.jobs;
+    if (!Array.isArray(jobs) || jobs.length === 0) return null;
+    return jobs.map((j) => ({
+      id: String(j.jobId || j.reqId || j.jobSeqNo),
+      title: j.title,
+      location: j.cityStateCountry || [j.city, j.state, j.country].filter(Boolean).join(", "),
+      url: j.applyUrl || `https://${cfg.host}/job/${j.jobSeqNo}`,
+    }));
   },
   async smartrecruiters(cfg) {
     return adapters.smartrecruiters(cfg.slug);
@@ -339,10 +330,14 @@ async function fetchWorkday(board) {
   const base = `https://${tenant}.${wd}.myworkdayjobs.com`;
   const out = [];
   for (let offset = 0; offset < 160; offset += 20) {
-    const d = await get(`${base}/wday/cxs/${tenant}/${site}/jobs`, {
+    const opts = {
       method: "POST",
       body: { appliedFacets: {}, limit: 20, offset, searchText: "engineer" },
-    });
+    };
+    // Workday rate-limits burst traffic across tenants — one retry per page.
+    const d =
+      (await get(`${base}/wday/cxs/${tenant}/${site}/jobs`, opts)) ||
+      (await get(`${base}/wday/cxs/${tenant}/${site}/jobs`, opts));
     const postings = d?.jobPostings;
     if (!Array.isArray(postings) || postings.length === 0) break;
     for (const j of postings) {
