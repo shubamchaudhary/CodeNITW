@@ -22,23 +22,24 @@ import { createHash } from "crypto";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RADAR_DIR = join(__dirname, "../radar");
 
-// ── Relevance filter (kept in sync with scripts/atsProbe.mjs) ────────────────
+// ── Relevance filter ─────────────────────────────────────────────────────────
+// Tuned for a ~2 YoE backend/GenAI SDE-2 profile (Java/Spring, Kafka,
+// Kubernetes, LangChain-style GenAI work):
+//   • backend/Java/SDE titles plus Kafka/Kubernetes/GenAI/LLM/agentic roles
+//   • excludes seniority far above SDE-2 (staff/principal/lead/architect),
+//     new-grad/PhD pipelines, and non-backend disciplines
+//   • locations: India, or remote anywhere (foreign remote is fine; only
+//     foreign onsite is dropped)
 const TITLE_RX =
-  /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems)\b/i;
+  /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems|kafka|kubernetes|k8s|gen\s?ai|genai|llm|agentic|ai engineer)\b/i;
 const TITLE_EXCLUDE_RX =
-  /\b(intern|staff|principal|director|manager|vp|head of|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded)\b/i;
+  /\b(intern|staff|principal|director|manager|vp|head of|lead|architect|phd|early career|campus|university|new grad|graduate|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded|firmware|computer vision)\b/i;
 const INDIA_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai)\b/i;
-// "Remote" pinned to another country is not applicable (e.g. "Remote, USA").
-const FOREIGN_RX =
-  /\b(usa|u\.s\.a?|united states|america|canada|mexico|uk|united kingdom|england|germany|france|poland|netherlands|spain|portugal|ireland|emea|europe|australia|new zealand|singapore|japan|korea|china|vietnam|philippines|brazil|latam|argentina|colombia|israel|dubai|uae|africa)\b/i;
 
 function isRelevant(title, location) {
   if (!TITLE_RX.test(title || "")) return false;
   if (TITLE_EXCLUDE_RX.test(title || "")) return false;
-  if (location && !INDIA_RX.test(location)) {
-    if (FOREIGN_RX.test(location)) return false;
-    if (!/remote/i.test(location)) return false;
-  }
+  if (location && !INDIA_RX.test(location) && !/remote/i.test(location)) return false;
   return true;
 }
 
