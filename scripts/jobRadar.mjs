@@ -346,7 +346,6 @@ const LINKEDIN_QUERIES = [
 const LINKEDIN_GEOS = [{ location: "India" }, { location: "Worldwide", remoteOnly: true }];
 const LINKEDIN_EXPERIENCE = "2,3"; // LinkedIn facet: Entry level + Associate
 const LINKEDIN_WINDOW_SECONDS = 604800; // 7 days — URL-based dedup handles overlap with prior runs
-let linkedinDumped = false; // TEMP: gate the one-time HTML sample dump below
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -379,7 +378,7 @@ function parseLinkedInCards(html) {
   for (const block of blocks) {
     const id = block.match(/^(\d+)"/)?.[1];
     const title = block.match(/base-search-card__title">\s*([^<]+?)\s*</)?.[1];
-    const company = block.match(/base-search-card__subtitle"[\s\S]{0,120}?>([^<]+?)<\/a>/)?.[1];
+    const company = block.match(/base-search-card__subtitle">\s*<a[^>]*>\s*([^<]+?)\s*<\/a>/)?.[1];
     const location = block.match(/job-search-card__location">\s*([^<]+?)\s*</)?.[1];
     const url = block.match(/href="(https:\/\/[a-z.]*linkedin\.com\/jobs\/view\/[^"?]+)/)?.[1];
     if (!id || !title || !company || !url) continue;
@@ -420,13 +419,6 @@ async function fetchLinkedInPage(keywords, geo) {
     const html = await res.text();
     const cards = res.ok ? parseLinkedInCards(html) : [];
     console.log(`LinkedIn ${label}: HTTP ${res.status}, ${html.length}B, ${cards.length} cards`);
-    // TEMP: dump a sample once so the real markup can be inspected from the CI
-    // log — the assumed class names are producing 0 cards despite 200s with
-    // real body sizes, so the actual structure needs to be seen, not guessed.
-    if (!linkedinDumped && html.length > 200) {
-      linkedinDumped = true;
-      console.log(`LinkedIn HTML sample (${label}):\n${html.slice(0, 3000)}`);
-    }
     return cards;
   } catch (e) {
     console.log(`LinkedIn ${label}: request failed (${e.message})`);
