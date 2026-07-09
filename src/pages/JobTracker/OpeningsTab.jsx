@@ -77,6 +77,7 @@ export default function OpeningsTab({
 }) {
   const [openIds, setOpenIds] = useState(() => new Set());
   const [addingManual, setAddingManual] = useState(false);
+  const [onlyRemaining, setOnlyRemaining] = useState(false);
 
   if (!radarVisible) {
     return (
@@ -105,10 +106,33 @@ export default function OpeningsTab({
 
   const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
-  // Tracked openings (already queued as links) are hidden from the list and
-  // excluded from counts, but their company group stays visible.
-  const active = radar.openings.filter((o) => !o.tracked && !rejectedKeys[o.uKey]);
-  const newCount = active.filter(isNew).length;
+
+  // Single source of truth per company: `visibleList` = untracked rows shown in
+  // the list; `remaining` = untracked AND not-dismissed (the actionable count on
+  // the badge). The header total is the SUM of these, so it can never disagree
+  // with the badges.
+  const meta = new Map();
+  let totalRemaining = 0;
+  let newCount = 0;
+  for (const cid of groups) {
+    const list = byCompany.get(cid);
+    const visibleList = list.filter((o) => !o.tracked);
+    const remainingList = visibleList.filter((o) => !rejectedKeys[o.uKey]);
+    const hasNew = remainingList.some(isNew);
+    newCount += remainingList.filter(isNew).length;
+    totalRemaining += remainingList.length;
+    meta.set(cid, {
+      list,
+      visibleList,
+      remaining: remainingList.length,
+      queuedCount: list.length - visibleList.length,
+      hasNew,
+    });
+  }
+
+  // Optional filter: only show companies that still have openings to apply to.
+  const shownGroups = onlyRemaining ? groups.filter((cid) => meta.get(cid).remaining > 0) : groups;
+
   const watched = radar.summary.coveredCompanyIds?.length ?? radar.summary.boards;
 
   const toggle = (cid) =>
@@ -123,22 +147,36 @@ export default function OpeningsTab({
       <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
         <div>
           <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300">
-            📡 Discovered Openings ({active.length})
+            📡 Discovered Openings ({totalRemaining})
           </h2>
           <span className="text-xs text-gray-400 dark:text-gray-500">
             {newCount > 0 && (
               <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{newCount} new</span>
             )}
-            {groups.length} companies · {watched} boards auto-watched · scanned{" "}
+            {shownGroups.length} companies · {watched} boards auto-watched · scanned{" "}
             {new Date(radar.summary.updatedAt).toLocaleString()}
           </span>
         </div>
-        <button
-          onClick={() => setAddingManual((s) => !s)}
-          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
-        >
-          + Add opening manually
-        </button>
+        <div className="flex items-center gap-3 shrink-0">
+          <label
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 cursor-pointer select-none"
+            title="Hide companies whose openings are all queued or dismissed"
+          >
+            <input
+              type="checkbox"
+              checked={onlyRemaining}
+              onChange={(e) => setOnlyRemaining(e.target.checked)}
+              className="w-4 h-4 accent-indigo-600 cursor-pointer"
+            />
+            Only with openings left
+          </label>
+          <button
+            onClick={() => setAddingManual((s) => !s)}
+            className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+          >
+            + Add opening manually
+          </button>
+        </div>
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
         "To Apply" saves the link under that company. Dismiss (×) crosses it out until it leaves the next scan.
@@ -152,13 +190,9 @@ export default function OpeningsTab({
 
       {/* Two-column grid of company accordions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-        {groups.map((cid) => {
+        {shownGroups.map((cid) => {
           const c = companiesById[cid];
-          const list = byCompany.get(cid);
-          const visibleList = list.filter((o) => !o.tracked);
-          const liveCount = visibleList.filter((o) => !rejectedKeys[o.uKey]).length;
-          const hasNew = visibleList.some((o) => isNew(o) && !rejectedKeys[o.uKey]);
-          const queuedCount = list.length - visibleList.length;
+          const { list, visibleList, remaining: liveCount, queuedCount, hasNew } = meta.get(cid);
           const open = openIds.has(cid);
           return (
             <div key={cid} className={`${GLASS} rounded-xl overflow-hidden`}>
@@ -265,10 +299,12 @@ export default function OpeningsTab({
         })}
       </div>
 
-      {groups.length === 0 && (
+      {shownGroups.length === 0 && (
         <div className={`${GLASS} rounded-xl p-10 text-center`}>
           <p className="text-sm text-gray-400 dark:text-gray-500">
-            No unhandled openings — everything is tracked, dismissed, or the radar found no matches.
+            {onlyRemaining
+              ? "No companies with openings left to apply — everything is queued or dismissed."
+              : "No unhandled openings — everything is tracked, dismissed, or the radar found no matches."}
           </p>
         </div>
       )}
