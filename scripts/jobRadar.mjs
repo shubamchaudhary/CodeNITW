@@ -384,6 +384,37 @@ const LINKEDIN_GEOS = [{ location: "India" }, { location: "Worldwide", remoteOnl
 const LINKEDIN_EXPERIENCE = "2,3"; // LinkedIn facet: Entry level + Associate
 const LINKEDIN_WINDOW_SECONDS = 604800; // 7 days — URL-based dedup handles overlap with prior runs
 
+// ── Targeted sweep for companies no board adapter can read ────────────────────
+// ~290 of the tracked companies have no readable board: bot-blocked career
+// sites (PayPal, Goldman Sachs, Walmart, Apple, Meta, Booking.com, BofA),
+// flaky adapters (Microsoft, Intuit), and companies with no detectable ATS.
+// For the high-match ones, query LinkedIn by company name so their postings
+// still land in the bucket. A rotating daily slice keeps the request count
+// small; the rotation period matching the f_TPR posting window means a
+// company swept once per cycle still sees everything it posted in between.
+// The Medium-tier names here are force-included because their boards are
+// verifiably unscrapable — LinkedIn is the ONLY automated path to them.
+const SWEEP_ROTATION_DAYS = 7;
+const FORCE_SWEEP_IDS = new Set([
+  "meta", "apple", "bank-of-america", "paypal", "goldman-sachs-eng",
+  "walmart-global-tech", "booking-com", "microsoft", "intuit",
+]);
+
+function sweepTargets(companies, coveredIds) {
+  const pool = companies
+    .filter(
+      (c) =>
+        !coveredIds.has(c.id) &&
+        c.id !== "linkedin" && // searching LinkedIn for "LinkedIn engineer" drowns in noise
+        (FORCE_SWEEP_IDS.has(c.id) || ["Very High", "High"].includes(c.match))
+    )
+    .sort((a, b) => a.id.localeCompare(b.id));
+  if (pool.length === 0) return [];
+  const per = Math.ceil(pool.length / SWEEP_ROTATION_DAYS);
+  const day = Math.floor(Date.now() / 86400000) % SWEEP_ROTATION_DAYS;
+  return pool.slice(day * per, (day + 1) * per);
+}
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -489,7 +520,7 @@ async function fetchLinkedInPage(keywords, geo) {
   }
 }
 
-async function linkedinScan(companies) {
+async function linkedinScan(companies, coveredIds) {
   const exactIndex = new Map();
   for (const c of companies) {
     const n = normName(c.name);
@@ -498,6 +529,30 @@ async function linkedinScan(companies) {
   const seenIds = new Set();
   const results = [];
   let requests = 0;
+
+  // A card from any query is kept the same way: dedupe by posting id, pass the
+  // title/location relevance filter, and resolve to a tracked company (a
+  // targeted query can legitimately surface a different list company — that's
+  // still a valid catch, credited to whoever it really belongs to).
+  const collect = (cards, fallbackLocation) => {
+    for (const card of cards) {
+      if (seenIds.has(card.id)) continue;
+      seenIds.add(card.id);
+      const location = card.location || fallbackLocation;
+      if (!isRelevant(card.title, location)) continue;
+      const company = matchCompany(card.company, companies, exactIndex);
+      if (!company) continue;
+      results.push({
+        id: card.id,
+        title: card.title,
+        location,
+        url: card.url,
+        companyId: company.id,
+        companyName: company.name,
+      });
+    }
+  };
+
   for (const kw of LINKEDIN_QUERIES) {
     for (const geo of LINKEDIN_GEOS) {
       let cards = [];
@@ -507,24 +562,27 @@ async function linkedinScan(companies) {
         cards = [];
       }
       requests += 1;
-      for (const card of cards) {
-        if (seenIds.has(card.id)) continue;
-        seenIds.add(card.id);
-        const location = card.location || (geo.remoteOnly ? "Remote" : geo.location);
-        if (!isRelevant(card.title, location)) continue;
-        const company = matchCompany(card.company, companies, exactIndex);
-        if (!company) continue;
-        results.push({
-          id: card.id,
-          title: card.title,
-          location,
-          url: card.url,
-          companyId: company.id,
-          companyName: company.name,
-        });
-      }
+      collect(cards, geo.remoteOnly ? "Remote" : geo.location);
       await sleep(1500);
     }
+  }
+
+  // Targeted by-name sweep of today's slice of unautomatable companies.
+  const targets = sweepTargets(companies, coveredIds || new Set());
+  if (targets.length) {
+    console.log(`LinkedIn sweep: ${targets.length} uncovered boards targeted today (${targets.map((c) => c.id).join(", ")})`);
+  }
+  for (const c of targets) {
+    const q = `${c.name.replace(/\(.*?\)/g, " ").replace(/\s+/g, " ").trim()} engineer`;
+    let cards = [];
+    try {
+      cards = await fetchLinkedInPage(q, { location: "India" });
+    } catch {
+      cards = [];
+    }
+    requests += 1;
+    collect(cards, "India");
+    await sleep(1500);
   }
 
   // The search cards carry no JD, so every LinkedIn opening would otherwise be
@@ -729,7 +787,7 @@ async function main() {
   let linkedinCount = 0;
   try {
     const existingUrls = new Set(openings.map((o) => o.url));
-    const linkedinJobs = await linkedinScan(report.results);
+    const linkedinJobs = await linkedinScan(report.results, new Set(covered));
     for (const j of linkedinJobs) {
       if (existingUrls.has(j.url)) continue; // already surfaced via that company's own board
       const key = jobKey("linkedin", j.id, j.url);
