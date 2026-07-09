@@ -105,7 +105,9 @@ export default function OpeningsTab({
 
   const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
-  const active = radar.openings.filter((o) => !rejectedKeys[o.key]);
+  // Tracked openings (already queued as links) are hidden from the list and
+  // excluded from counts, but their company group stays visible.
+  const active = radar.openings.filter((o) => !o.tracked && !rejectedKeys[o.uKey]);
   const newCount = active.filter(isNew).length;
   const watched = radar.summary.coveredCompanyIds?.length ?? radar.summary.boards;
 
@@ -153,8 +155,10 @@ export default function OpeningsTab({
         {groups.map((cid) => {
           const c = companiesById[cid];
           const list = byCompany.get(cid);
-          const liveCount = list.filter((o) => !rejectedKeys[o.key]).length;
-          const hasNew = list.some((o) => isNew(o) && !rejectedKeys[o.key]);
+          const visibleList = list.filter((o) => !o.tracked);
+          const liveCount = visibleList.filter((o) => !rejectedKeys[o.uKey]).length;
+          const hasNew = visibleList.some((o) => isNew(o) && !rejectedKeys[o.uKey]);
+          const queuedCount = list.length - visibleList.length;
           const open = openIds.has(cid);
           return (
             <div key={cid} className={`${GLASS} rounded-xl overflow-hidden`}>
@@ -174,6 +178,14 @@ export default function OpeningsTab({
                     NEW
                   </span>
                 )}
+                {queuedCount > 0 && (
+                  <span
+                    className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100/70 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 shrink-0"
+                    title={`${queuedCount} opening${queuedCount > 1 ? "s" : ""} already queued in To Apply`}
+                  >
+                    ✓{queuedCount} queued
+                  </span>
+                )}
                 <span className="ml-auto flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 shrink-0">
                   {c?.pay && <span>₹{c.pay} LPA</span>}
                   {c?.match && <span className={FIT_CLS[c.match] || ""}>{c.match}</span>}
@@ -181,11 +193,16 @@ export default function OpeningsTab({
               </button>
               {open && (
                 <ul className="px-3 pb-2.5 space-y-0.5">
-                  {list.map((o) => {
-                    const rejected = !!rejectedKeys[o.key];
+                  {visibleList.length === 0 && (
+                    <li className="text-xs text-gray-400 dark:text-gray-500 italic px-2 py-1.5">
+                      All openings queued in To Apply — nothing left to action here.
+                    </li>
+                  )}
+                  {visibleList.map((o) => {
+                    const rejected = !!rejectedKeys[o.uKey];
                     return (
                       <li
-                        key={o.key}
+                        key={o.uKey}
                         className="flex items-center gap-1.5 text-sm rounded-lg px-2 py-1.5 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors"
                       >
                         {isNew(o) && !rejected && (
