@@ -1,10 +1,10 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T08:16:53.525Z",
+  "updatedAt": "2026-07-09T08:59:38.095Z",
   "boards": 184,
   "boardsFailed": 2,
-  "liveRelevantOpenings": 626,
-  "newThisRun": 38,
+  "liveRelevantOpenings": 627,
+  "newThisRun": 2,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -191,6 +191,26 @@
   ]
  },
  "openings": [
+  {
+   "key": "5848891d65e022ce",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Sr Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Sr-Software-Engineer_R0004758",
+   "firstSeen": "2026-07-09T08:59:38.095Z"
+  },
+  {
+   "key": "5a7d7b27d1c20c99",
+   "companyId": "salesforce",
+   "company": "Salesforce",
+   "ats": "workdayUrl",
+   "title": "Software Engineering (SMTS / MTS) – Platform Engineering (Distributed Systems & Infrastructure)",
+   "location": "India - Bangalore",
+   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Bangalore/Software-Engineering-SMTS---MTS----Platform-Engineering--Backend--Kubernetes---Cloud-_JR347341",
+   "firstSeen": "2026-07-09T08:59:38.095Z"
+  },
   {
    "key": "fd87bbe26566d8cb",
    "companyId": "allstate-india",
@@ -489,16 +509,6 @@
    "title": "Agentic Solution Engineer",
    "location": "Remote - India",
    "url": "https://jobs.lever.co/netomi/b4d9ce2b-479e-47f2-a9c0-52827e94e129",
-   "firstSeen": "2026-07-09T08:16:53.525Z"
-  },
-  {
-   "key": "e47595ba1452c899",
-   "companyId": "salesforce",
-   "company": "Salesforce",
-   "ats": "workdayUrl",
-   "title": "MTS/SMTS/LMTS - Software Engineer",
-   "location": "India - Hyderabad",
-   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/SMTS--Senior-Software-Backend-Engineer_JR312327",
    "firstSeen": "2026-07-09T08:16:53.525Z"
   },
   {
@@ -4892,13 +4902,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "c762f4c625c50db4",
+   "key": "114ecffd63cd3545",
    "companyId": "okta",
    "company": "Okta",
    "ats": "greenhouse",
    "title": "Senior Software Engineer",
    "location": "Bengaluru, India",
-   "url": "https://www.okta.com/company/careers/opportunity/8021050?gh_jid=8021050",
+   "url": "https://www.okta.com/company/careers/opportunity/7599312?gh_jid=7599312",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -4912,13 +4922,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "114ecffd63cd3545",
+   "key": "c762f4c625c50db4",
    "companyId": "okta",
    "company": "Okta",
    "ats": "greenhouse",
    "title": "Senior Software Engineer",
    "location": "Bengaluru, India",
-   "url": "https://www.okta.com/company/careers/opportunity/7599312?gh_jid=7599312",
+   "url": "https://www.okta.com/company/careers/opportunity/8021050?gh_jid=8021050",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -5362,16 +5372,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "89a99533a3454bcb",
-   "companyId": "remote-com",
-   "company": "Remote.com",
-   "ats": "greenhouse",
-   "title": "Senior Backend Engineer",
-   "location": "Remote-Iberia",
-   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778860003",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "6f7292112f1ca4a2",
    "companyId": "remote-com",
    "company": "Remote.com",
@@ -5379,16 +5379,6 @@
    "title": "Senior Backend Engineer",
    "location": "Remote-APAC",
    "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778854003",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "c977abf79fdd2f69",
-   "companyId": "remote-com",
-   "company": "Remote.com",
-   "ats": "greenhouse",
-   "title": "Senior Backend Engineer",
-   "location": "Remote-Northeast Asia",
-   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778855003",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -5462,6 +5452,16 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
+   "key": "89a99533a3454bcb",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Iberia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778860003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
    "key": "e455f15f0c8460ce",
    "companyId": "remote-com",
    "company": "Remote.com",
@@ -5469,6 +5469,26 @@
    "title": "Senior Backend Engineer",
    "location": "Remote-Southern Europe",
    "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778853003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c977abf79fdd2f69",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Northeast Asia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778855003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "43c08a1ec75efcc8",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Austria",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774714003",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -5489,16 +5509,6 @@
    "title": "Senior Backend Engineer (Elixir)",
    "location": "Remote-APAC",
    "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774715003",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "43c08a1ec75efcc8",
-   "companyId": "remote-com",
-   "company": "Remote.com",
-   "ats": "greenhouse",
-   "title": "Senior Backend Engineer (Elixir)",
-   "location": "Remote-Austria",
-   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774714003",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -6092,16 +6102,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "7371556f22302556",
-   "companyId": "twilio",
-   "company": "Twilio",
-   "ats": "greenhouse",
-   "title": "Software Engineer",
-   "location": "Remote - Estonia",
-   "url": "https://job-boards.greenhouse.io/twilio/jobs/7647708",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "d1c18962f6a6993f",
    "companyId": "twilio",
    "company": "Twilio",
@@ -6109,6 +6109,16 @@
    "title": "Software Engineer",
    "location": "Remote - US",
    "url": "https://job-boards.greenhouse.io/twilio/jobs/7605743",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7371556f22302556",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer",
+   "location": "Remote - Estonia",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7647708",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -6152,16 +6162,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "8d9a58a445812b33",
-   "companyId": "twilio",
-   "company": "Twilio",
-   "ats": "greenhouse",
-   "title": "Software Engineer (L3)",
-   "location": "Remote - US",
-   "url": "https://job-boards.greenhouse.io/twilio/jobs/7926883",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "27b084ffd10016d9",
    "companyId": "twilio",
    "company": "Twilio",
@@ -6169,6 +6169,16 @@
    "title": "Software Engineer (L3)",
    "location": "Remote - India",
    "url": "https://job-boards.greenhouse.io/twilio/jobs/7996779",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8d9a58a445812b33",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer (L3)",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7926883",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
