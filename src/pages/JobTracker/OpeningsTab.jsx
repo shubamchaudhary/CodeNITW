@@ -98,6 +98,11 @@ export default function OpeningsTab({
     byCompany.get(o.companyId).push(o);
   }
 
+  // Sort company groups strictly by name so a company's position never shifts
+  // when openings are tracked/dismissed (the feed order is otherwise unstable).
+  const nameOf = (cid) => companiesById[cid]?.name || byCompany.get(cid)?.[0]?.company || "";
+  groups.sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+
   const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
   const active = radar.openings.filter((o) => !rejectedKeys[o.key]);
