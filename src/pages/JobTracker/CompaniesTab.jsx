@@ -253,8 +253,8 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
         </span>
       </div>
 
-      {/* Company cards — 2-column grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+      {/* Company cards — one per row */}
+      <div className="space-y-3">
         {visible.map((c) => (
           <CompanyCard
             key={c.id}
