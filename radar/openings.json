@@ -1,11 +1,11 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T14:56:32.482Z",
+  "updatedAt": "2026-07-09T14:59:52.419Z",
   "boards": 184,
   "boardsFailed": 2,
-  "liveRelevantOpenings": 653,
-  "newThisRun": 0,
-  "linkedinOpenings": 0,
+  "liveRelevantOpenings": 661,
+  "newThisRun": 8,
+  "linkedinOpenings": 7,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -192,6 +192,86 @@
   ]
  },
  "openings": [
+  {
+   "key": "6666d00ef0843602",
+   "companyId": "american-express",
+   "company": "American Express",
+   "ats": "linkedin",
+   "title": "Software Engineer I",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-i-at-american-express-4436508608",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "57f6a3d13b6603fe",
+   "companyId": "american-express",
+   "company": "American Express",
+   "ats": "linkedin",
+   "title": "Middleware Platform Engineer",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/middleware-platform-engineer-at-american-express-global-business-travel-4434855466",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "0235c19db2f5dce5",
+   "companyId": "ariba-sap",
+   "company": "Ariba (SAP)",
+   "ats": "linkedin",
+   "title": "Java Backend Developer",
+   "location": "Chennai, Tamil Nadu, India",
+   "url": "https://in.linkedin.com/jobs/view/java-backend-developer-at-bnp-paribas-4429535316",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "bdc75a17f90582f5",
+   "companyId": "cashapp-setu",
+   "company": "CashApp/Setu",
+   "ats": "linkedin",
+   "title": "SDE II",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/sde-ii-at-setu-4434843562",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "d96da828cf139c22",
+   "companyId": "cure-fit",
+   "company": "Cure.fit",
+   "ats": "linkedin",
+   "title": "SDE 2",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/sde-2-at-curefit-4433153578",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "f6cecc743c455f70",
+   "companyId": "ebay",
+   "company": "eBay",
+   "ats": "linkedin",
+   "title": "AI Platform Engineer",
+   "location": "Bangalore Urban, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/ai-platform-engineer-at-ebay-4435475159",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "91928caa07dccc03",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer_R-282432",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "fc5dd4868e019ec6",
+   "companyId": "urban-company",
+   "company": "Urban Company",
+   "ats": "linkedin",
+   "title": "Software Development Engineer III - Backend",
+   "location": "Gurugram, Haryana, India",
+   "url": "https://in.linkedin.com/jobs/view/software-development-engineer-iii-backend-at-urban-company-4435673050",
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
   {
    "key": "9339540d33148a0d",
    "companyId": "citi",
@@ -973,6 +1053,26 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
+   "key": "e3ac3c35261c2d66",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software development Engineer",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10448660/software-development-engineer",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "b624c80df22e1409",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software development Engineer",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10448634/software-development-engineer",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
    "key": "bf4e9c83c2cca407",
    "companyId": "amazon",
    "company": "Amazon",
@@ -1000,26 +1100,6 @@
    "title": "Software Development Engineer",
    "location": "Bengaluru, Karnataka, IND",
    "url": "https://www.amazon.jobs/en/jobs/10454329/software-development-engineer",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "e3ac3c35261c2d66",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software development Engineer",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10448660/software-development-engineer",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "b624c80df22e1409",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software development Engineer",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10448634/software-development-engineer",
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
@@ -1083,26 +1163,6 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "3247c349f496b44a",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Andiamo",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10412191/software-development-engineer-andiamo",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "805bf95663263216",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Sr. Software Development Engineer",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/3046667/sr-software-development-engineer",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
    "key": "fcba077f9dd4fc65",
    "companyId": "amazon",
    "company": "Amazon",
@@ -1120,6 +1180,26 @@
    "title": "Software Development Engineer, CAM",
    "location": "Bengaluru, Karnataka, IND",
    "url": "https://www.amazon.jobs/en/jobs/3179551/software-development-engineer-cam",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "3247c349f496b44a",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Andiamo",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10412191/software-development-engineer-andiamo",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "805bf95663263216",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Sr. Software Development Engineer",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/3046667/sr-software-development-engineer",
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
@@ -1273,6 +1353,56 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
+   "key": "e3f3654f7be398cd",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Fintech, TFAW",
+   "location": "Hyderabad, Telangana, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10426888/software-development-engineer-fintech-tfaw",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "b981947f7d7ac1fd",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, AFFS, Amazon",
+   "location": "Pune, Maharashtra, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10456887/software-development-engineer-affs-amazon",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "44b9b75b903d42dc",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, RBS Tech",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10454695/software-development-engineer-rbs-tech",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "5ade2eca9644f702",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer II, DA",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10426400/software-development-engineer-ii-da",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "71fb340e417d0890",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Amazon Books",
+   "location": "Chennai, Tamil Nadu, IND",
+   "url": "https://www.amazon.jobs/en/jobs/3193935/software-development-engineer-amazon-books",
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
    "key": "4908d665c9341bc6",
    "companyId": "amazon",
    "company": "Amazon",
@@ -1340,56 +1470,6 @@
    "title": "Software Development Engineer II, Amazon",
    "location": "Hyderabad, Telangana, IND",
    "url": "https://www.amazon.jobs/en/jobs/3123331/software-development-engineer-ii-amazon",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "e3f3654f7be398cd",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Fintech, TFAW",
-   "location": "Hyderabad, Telangana, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10426888/software-development-engineer-fintech-tfaw",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "b981947f7d7ac1fd",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, AFFS, Amazon",
-   "location": "Pune, Maharashtra, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10456887/software-development-engineer-affs-amazon",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "44b9b75b903d42dc",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, RBS Tech",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10454695/software-development-engineer-rbs-tech",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "5ade2eca9644f702",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer II, DA",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10426400/software-development-engineer-ii-da",
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "71fb340e417d0890",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Amazon Books",
-   "location": "Chennai, Tamil Nadu, IND",
-   "url": "https://www.amazon.jobs/en/jobs/3193935/software-development-engineer-amazon-books",
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
@@ -5183,6 +5263,16 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
+   "key": "c762f4c625c50db4",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/8021050?gh_jid=8021050",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
    "key": "114ecffd63cd3545",
    "companyId": "okta",
    "company": "Okta",
@@ -5200,16 +5290,6 @@
    "title": "Senior Software Engineer",
    "location": "Bengaluru, India",
    "url": "https://www.okta.com/company/careers/opportunity/7783585?gh_jid=7783585",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "c762f4c625c50db4",
-   "companyId": "okta",
-   "company": "Okta",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer",
-   "location": "Bengaluru, India",
-   "url": "https://www.okta.com/company/careers/opportunity/8021050?gh_jid=8021050",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
