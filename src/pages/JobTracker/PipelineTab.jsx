@@ -1,9 +1,61 @@
 import React from "react";
-import { HiOutlineExternalLink, HiCheck, HiArrowRight } from "react-icons/hi";
-import { GLASS, GLASS_PANEL } from "../../components/glass";
-import { STATUSES, APPLIED_SET, StatusSelect, daysSince } from "./shared";
+import { HiOutlineExternalLink, HiCheck } from "react-icons/hi";
+import { GLASS_PANEL } from "../../components/glass";
+import { APPLIED_SET, StatusSelect, daysSince } from "./shared";
+
+// Toggle a single opening's applied flag. When an opening is marked applied and
+// the company is still in an un-applied state, bump it to "applied" so it starts
+// showing in the Applied column (and records appliedAt via patchCompany).
+function makeToggle(entryOf, patchCompany) {
+  return (companyId, linkId, applied) => {
+    const entry = entryOf(companyId);
+    const links = (entry.links || []).map((l) => (l.id === linkId ? { ...l, applied } : l));
+    const patch = { links };
+    if (applied && !APPLIED_SET.has(entry.status || "none")) patch.status = "applied";
+    patchCompany(companyId, patch);
+  };
+}
+
+// One opening row with its own Applied button on the right.
+function OpeningRow({ link, onToggle }) {
+  return (
+    <li className="flex items-center gap-2 text-sm rounded-lg px-1.5 py-1 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors">
+      <span className={`shrink-0 ${link.applied ? "text-emerald-500" : "text-amber-500"}`}>
+        {link.applied ? "✓" : "○"}
+      </span>
+      <a
+        href={link.url}
+        target="_blank"
+        rel="noreferrer"
+        className={`hover:underline truncate ${
+          link.applied
+            ? "text-emerald-600 dark:text-emerald-300"
+            : "text-indigo-600 dark:text-indigo-400"
+        }`}
+        title={link.url}
+      >
+        {link.label}
+      </a>
+      <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
+      <button
+        onClick={() => onToggle(!link.applied)}
+        className={`ml-auto shrink-0 inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-colors ${
+          link.applied
+            ? "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-900"
+            : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+        }`}
+        title={link.applied ? "Mark as not applied" : "Mark this opening as applied"}
+      >
+        <HiCheck className="w-3.5 h-3.5" />
+        {link.applied ? "Applied" : "Applied?"}
+      </button>
+    </li>
+  );
+}
 
 export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCompany }) {
+  const toggleLink = makeToggle(entryOf, patchCompany);
+
   return (
     <div className="grid lg:grid-cols-2 gap-6 items-start">
       {/* ── To Apply Queue ─────────────────────────────────────────────── */}
@@ -17,7 +69,7 @@ export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCo
           </span>
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-          Companies marked "To Apply" or with pending openings — knock these out first.
+          Companies with pending openings — hit "Applied?" on each opening as you apply.
         </p>
         <div className="space-y-3">
           {toApplyList.length === 0 && (
@@ -58,42 +110,27 @@ export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCo
                       <p className="text-[11px] text-gray-400 dark:text-gray-500">{c.location}</p>
                     )}
                   </div>
-                  <button
-                    onClick={() => patchCompany(c.id, { status: "applied" })}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors shrink-0 shadow-sm"
-                    title="Move to Applied"
-                  >
-                    <HiCheck className="w-4 h-4" /> Applied
-                  </button>
+                  {links.length > 0 && (
+                    <span
+                      className={`shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                        pending
+                          ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200"
+                          : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200"
+                      }`}
+                    >
+                      {links.length - pending}/{links.length} applied
+                    </span>
+                  )}
                 </div>
-                {links.length > 0 && (
-                  <ul className="space-y-1 mt-1">
+                {links.length > 0 ? (
+                  <ul className="space-y-0.5 mt-1">
                     {links.map((l) => (
-                      <li key={l.id} className="flex items-center gap-2 text-sm">
-                        <span className={`shrink-0 ${l.applied ? "text-emerald-500" : "text-amber-500"}`}>
-                          {l.applied ? "✓" : "○"}
-                        </span>
-                        <a
-                          href={l.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`hover:underline truncate ${
-                            l.applied
-                              ? "text-emerald-600 dark:text-emerald-300"
-                              : "text-indigo-600 dark:text-indigo-400"
-                          }`}
-                          title={l.url}
-                        >
-                          {l.label}
-                        </a>
-                        <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
-                      </li>
+                      <OpeningRow key={l.id} link={l} onToggle={(v) => toggleLink(c.id, l.id, v)} />
                     ))}
                   </ul>
-                )}
-                {pending > 0 && links.length > 1 && (
-                  <p className="text-[11px] text-amber-600 dark:text-amber-300 mt-1.5 font-semibold">
-                    {pending} pending application{pending > 1 ? "s" : ""}
+                ) : (
+                  <p className="text-xs text-gray-400 dark:text-gray-500 italic">
+                    Marked "To Apply" — add openings from the Companies tab.
                   </p>
                 )}
                 {entry.note && (
@@ -122,7 +159,7 @@ export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCo
           {appliedList.length === 0 && (
             <div className={`${GLASS_PANEL} rounded-xl p-8 text-center`}>
               <p className="text-sm text-gray-400 dark:text-gray-500">
-                No applications yet — hit "Applied" on companies in the To Apply queue to start tracking.
+                No applications yet — hit "Applied?" on an opening in the To Apply queue to start tracking.
               </p>
             </div>
           )}
@@ -167,33 +204,12 @@ export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCo
                       </p>
                     )}
                   </div>
-                  <StatusSelect
-                    value={status}
-                    onChange={(v) => patchCompany(c.id, { status: v })}
-                  />
+                  <StatusSelect value={status} onChange={(v) => patchCompany(c.id, { status: v })} />
                 </div>
                 {links.length > 0 && (
-                  <ul className="space-y-1 mt-1">
+                  <ul className="space-y-0.5 mt-1">
                     {links.map((l) => (
-                      <li key={l.id} className="flex items-center gap-2 text-sm">
-                        <span className={`shrink-0 ${l.applied ? "text-emerald-500" : "text-amber-500"}`}>
-                          {l.applied ? "✓" : "○"}
-                        </span>
-                        <a
-                          href={l.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`hover:underline truncate ${
-                            l.applied
-                              ? "text-emerald-600 dark:text-emerald-300"
-                              : "text-indigo-600 dark:text-indigo-400"
-                          }`}
-                          title={l.url}
-                        >
-                          {l.label}
-                        </a>
-                        <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
-                      </li>
+                      <OpeningRow key={l.id} link={l} onToggle={(v) => toggleLink(c.id, l.id, v)} />
                     ))}
                   </ul>
                 )}
