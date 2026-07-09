@@ -175,11 +175,14 @@ export default function OpeningsTab({
                 </span>
               </button>
               {open && (
-                <ul className="px-3 pb-2.5 space-y-1.5">
+                <ul className="px-3 pb-2.5 space-y-0.5">
                   {list.map((o) => {
                     const rejected = !!rejectedKeys[o.key];
                     return (
-                      <li key={o.key} className="flex items-center gap-1.5 text-sm">
+                      <li
+                        key={o.key}
+                        className="flex items-center gap-1.5 text-sm rounded-lg px-2 py-1.5 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors"
+                      >
                         {isNew(o) && !rejected && (
                           <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
                             NEW
@@ -198,8 +201,11 @@ export default function OpeningsTab({
                         >
                           {o.title}
                         </a>
-                        {/* Buttons right next to the title — no ml-auto gap */}
-                        <span className="flex items-center gap-1 shrink-0">
+                        <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0 hidden sm:inline" title={o.location}>
+                          {o.location}
+                        </span>
+                        {/* Actions pushed to the far right of the row */}
+                        <span className="ml-auto flex items-center gap-1 shrink-0">
                           {rejected ? (
                             <button
                               onClick={() => onUnreject(o)}
@@ -226,9 +232,6 @@ export default function OpeningsTab({
                               </button>
                             </>
                           )}
-                        </span>
-                        <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0 hidden sm:inline" title={o.location}>
-                          {o.location}
                         </span>
                       </li>
                     );
