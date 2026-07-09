@@ -375,7 +375,7 @@ function CompanyDetail({ company, entry, onPatch }) {
 }
 
 // ── One table row ────────────────────────────────────────────────────────────
-const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle, onPatch }) {
+const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle, onPatch, autoCovered }) {
   const links = entry.links || [];
   const pending = links.filter((l) => !l.applied).length;
   const status = entry.status || "none";
@@ -400,6 +400,14 @@ const CompanyRow = memo(function CompanyRow({ company, entry, expanded, onToggle
             {company.customEntry && (
               <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300">
                 MINE
+              </span>
+            )}
+            {autoCovered && (
+              <span
+                className="text-[9px] font-bold px-1 py-0.5 rounded bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300"
+                title="Job board watched automatically — new relevant openings land in Discovered Openings daily, no need to check this careers page manually"
+              >
+                📡 AUTO
               </span>
             )}
             {recentlyApplied && (
@@ -611,7 +619,8 @@ function RadarBucket({ radar, companiesById, onTrack, onDismiss }) {
           {newCount > 0 && (
             <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{newCount} new</span>
           )}
-          scanned {new Date(radar.summary.updatedAt).toLocaleString()} · {radar.summary.boards} boards
+          scanned {new Date(radar.summary.updatedAt).toLocaleString()} ·{" "}
+          {radar.summary.coveredCompanyIds?.length ?? radar.summary.boards} companies auto-watched
         </span>
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
@@ -776,6 +785,11 @@ export default function JobTracker() {
   const entryOf = useCallback((id) => state.companies[id] || {}, [state.companies]);
 
   const companiesById = useMemo(() => Object.fromEntries(allCompanies.map((c) => [c.id, c])), [allCompanies]);
+
+  const radarCoveredIds = useMemo(
+    () => new Set(radar?.summary?.coveredCompanyIds || []),
+    [radar]
+  );
 
   // Radar minus everything already handled: dismissed keys and URLs that are
   // already tracked as links on any company.
@@ -1025,6 +1039,7 @@ export default function JobTracker() {
                     expanded={expandedId === c.id}
                     onToggle={() => setExpandedId((e) => (e === c.id ? null : c.id))}
                     onPatch={(patch) => patchCompany(c.id, patch)}
+                    autoCovered={radarCoveredIds.has(c.id)}
                   />
                 ))}
               </tbody>
