@@ -180,7 +180,7 @@ const customAdapters = {
     const d = await get(
       "https://www.amazon.jobs/en/search.json?base_query=software%20engineer&country=IND&result_limit=100&offset=0"
     );
-    if (!Array.isArray(d?.jobs) || d.jobs.length === 0) return null;
+    if (!Array.isArray(d?.jobs)) return null;
     return d.jobs.map((j) => ({
       id: String(j.id_icims || j.id),
       title: j.title,
@@ -222,7 +222,7 @@ const customAdapters = {
       headers: { "x-csrf-token": "x" },
     });
     const results = d?.data?.results;
-    if (!Array.isArray(results) || results.length === 0) return null;
+    if (!Array.isArray(results)) return null;
     return results.map((j) => ({
       id: String(j.id),
       title: j.title,
@@ -235,7 +235,7 @@ const customAdapters = {
       `https://${cfg.host}/api/apply/v2/jobs?domain=${cfg.domain}&query=software%20engineer&location=India&num=100&start=0`
     );
     const positions = d?.positions;
-    if (!Array.isArray(positions) || positions.length === 0) return null;
+    if (!Array.isArray(positions)) return null;
     return positions.map((j) => ({
       id: String(j.id),
       title: j.name,
@@ -248,7 +248,7 @@ const customAdapters = {
       `https://${cfg.host}/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList&finder=findReqs%3BsiteNumber%3D${cfg.site}%2Ckeyword%3Dengineer&limit=100`
     );
     const list = d?.items?.[0]?.requisitionList;
-    if (!Array.isArray(list) || list.length === 0) return null;
+    if (!Array.isArray(list)) return null;
     return list.map((j) => ({
       id: String(j.Id),
       title: j.Title,
@@ -258,7 +258,7 @@ const customAdapters = {
   },
   async atlassian() {
     const d = await get("https://www.atlassian.com/endpoint/careers/listings");
-    if (!Array.isArray(d) || d.length === 0) return null;
+    if (!Array.isArray(d)) return null;
     return d.map((j) => ({
       id: String(j.id),
       title: j.title,
@@ -295,7 +295,7 @@ const customAdapters = {
       },
     });
     const jobs = d?.refineSearch?.data?.jobs;
-    if (!Array.isArray(jobs) || jobs.length === 0) return null;
+    if (!Array.isArray(jobs)) return null;
     return jobs.map((j) => ({
       id: String(j.jobId || j.reqId || j.jobSeqNo),
       title: j.title,
