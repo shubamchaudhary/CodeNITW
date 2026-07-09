@@ -316,6 +316,132 @@ const customAdapters = {
   },
 };
 
+// ── LinkedIn: keyword search across ALL companies, not just tracked boards ───
+// LinkedIn has no public jobs API; this hits the unauthenticated "guest" HTML
+// search endpoint the public jobs page itself uses. It's best-effort — a
+// blocked/rate-limited request just yields fewer LinkedIn openings that day,
+// it never fails the run. This is the one source that can surface openings at
+// companies our per-board adapters can't reach (PayPal, Goldman Sachs,
+// Walmart, Apple, Booking.com, Bank of America — all marked "none" above
+// because they block server-side fetches) as well as any of the 475 tracked
+// companies whose board just isn't auto-detected.
+//
+// Gating, per the requested profile: title/location reuse the same
+// isRelevant() filter as every other source (Java/Spring/backend/Kafka/
+// Kubernetes/GenAI/LLM, India or remote). Experience is restricted
+// server-side via LinkedIn's own f_E facet (Entry level + Associate, i.e.
+// roughly 0-3 YoE) so senior postings never reach the filter. Company is
+// gated to a fuzzy match against the curated 475-company list (already
+// screened for solid comp/reputation) — LinkedIn surfaces postings from
+// staffing agencies and unknown shell companies we have no salary signal
+// for, so anything that doesn't match a tracked company is dropped rather
+// than guessed at.
+const LINKEDIN_QUERIES = [
+  "backend software engineer",
+  "java spring boot developer",
+  "kafka kubernetes engineer",
+  "genai llm engineer",
+  "agentic ai backend engineer",
+];
+const LINKEDIN_GEOS = [{ location: "India" }, { location: "Worldwide", remoteOnly: true }];
+const LINKEDIN_EXPERIENCE = "2,3"; // LinkedIn facet: Entry level + Associate
+const LINKEDIN_WINDOW_SECONDS = 604800; // 7 days — URL-based dedup handles overlap with prior runs
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function normName(s) {
+  return (s || "")
+    .toLowerCase()
+    .replace(/\(.*?\)/g, "")
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function matchCompany(rawName, companies, exactIndex) {
+  const n = normName(rawName);
+  if (!n) return null;
+  const exact = exactIndex.get(n);
+  if (exact) return exact;
+  if (n.length < 4) return null; // too short to substring-match without false positives
+  for (const c of companies) {
+    const cn = normName(c.name);
+    if (cn.length < 4) continue;
+    if (n.includes(cn) || cn.includes(n)) return c;
+  }
+  return null;
+}
+
+function parseLinkedInCards(html) {
+  const out = [];
+  const blocks = html.split('data-entity-urn="urn:li:jobPosting:').slice(1);
+  for (const block of blocks) {
+    const id = block.match(/^(\d+)"/)?.[1];
+    const title = block.match(/base-search-card__title">\s*([^<]+?)\s*</)?.[1];
+    const company = block.match(/base-search-card__subtitle"[\s\S]{0,120}?>([^<]+?)<\/a>/)?.[1];
+    const location = block.match(/job-search-card__location">\s*([^<]+?)\s*</)?.[1];
+    const url = block.match(/href="(https:\/\/[a-z.]*linkedin\.com\/jobs\/view\/[^"?]+)/)?.[1];
+    if (!id || !title || !company || !url) continue;
+    out.push({ id, title: title.trim(), company: company.trim(), location: (location || "").trim(), url });
+  }
+  return out;
+}
+
+async function fetchLinkedInPage(keywords, geo) {
+  const params = new URLSearchParams({
+    keywords,
+    location: geo.location,
+    f_E: LINKEDIN_EXPERIENCE,
+    f_TPR: `r${LINKEDIN_WINDOW_SECONDS}`,
+    start: "0",
+  });
+  if (geo.remoteOnly) params.set("f_WT", "2");
+  const url = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?${params.toString()}`;
+  const html = await get(url, { text: true, accept: "text/html", timeout: 12000 });
+  return html ? parseLinkedInCards(html) : [];
+}
+
+async function linkedinScan(companies) {
+  const exactIndex = new Map();
+  for (const c of companies) {
+    const n = normName(c.name);
+    if (n && !exactIndex.has(n)) exactIndex.set(n, c);
+  }
+  const seenIds = new Set();
+  const results = [];
+  let requests = 0;
+  for (const kw of LINKEDIN_QUERIES) {
+    for (const geo of LINKEDIN_GEOS) {
+      let cards = [];
+      try {
+        cards = await fetchLinkedInPage(kw, geo);
+      } catch {
+        cards = [];
+      }
+      requests += 1;
+      for (const card of cards) {
+        if (seenIds.has(card.id)) continue;
+        seenIds.add(card.id);
+        const location = card.location || (geo.remoteOnly ? "Remote" : geo.location);
+        if (!isRelevant(card.title, location)) continue;
+        const company = matchCompany(card.company, companies, exactIndex);
+        if (!company) continue;
+        results.push({
+          id: card.id,
+          title: card.title,
+          location,
+          url: card.url,
+          companyId: company.id,
+          companyName: company.name,
+        });
+      }
+      await sleep(1500);
+    }
+  }
+  console.log(`LinkedIn: ${requests} requests, ${results.length} matched relevant openings`);
+  return results;
+}
+
 // ── Workday: resolve board URL from the careers page, then use the CxS API ───
 const WORKDAY_URL_RX = /https?:\/\/([a-z0-9-]+)\.(wd\d+)\.myworkdayjobs\.com\/(?:[a-z]{2}-[A-Z]{2}\/)?([A-Za-z0-9_-]+)/;
 
@@ -429,6 +555,33 @@ async function main() {
     })
   );
 
+  // LinkedIn keyword scan runs after the per-board fetches: it's a separate,
+  // best-effort source that can surface openings at companies no board
+  // adapter reaches at all.
+  let linkedinCount = 0;
+  try {
+    const existingUrls = new Set(openings.map((o) => o.url));
+    const linkedinJobs = await linkedinScan(report.results);
+    for (const j of linkedinJobs) {
+      if (existingUrls.has(j.url)) continue; // already surfaced via that company's own board
+      const key = jobKey("linkedin", j.id, j.url);
+      if (!seen[key]) seen[key] = now;
+      openings.push({
+        key,
+        companyId: j.companyId,
+        company: j.companyName,
+        ats: "linkedin",
+        title: j.title,
+        location: j.location,
+        url: j.url,
+        firstSeen: seen[key],
+      });
+      linkedinCount += 1;
+    }
+  } catch (e) {
+    console.log("LinkedIn scan failed:", e.message);
+  }
+
   openings.sort((a, b) => b.firstSeen.localeCompare(a.firstSeen) || a.company.localeCompare(b.company));
 
   covered.sort();
@@ -439,6 +592,7 @@ async function main() {
     boardsFailed: errors.length,
     liveRelevantOpenings: openings.length,
     newThisRun: newToday,
+    linkedinOpenings: linkedinCount,
     coveredCompanyIds: covered,
   };
   console.log(JSON.stringify(summary, null, 2));
