@@ -138,9 +138,23 @@ export default function JobTracker() {
     Object.values(state.companies).forEach((e) =>
       (e.links || []).forEach((l) => trackedUrls.add(normUrl(l.url)))
     );
-    const openings = radar.openings.map((o) => ({
+    // Dedupe by uKey (the posting URL). Some boards emit several distinct-titled
+    // rows that point at the exact same apply URL — those are the same
+    // application, so collapse them to one row. Without this, tracking one would
+    // mark every sibling `tracked` (same URL) and hide them while queuing only
+    // one, making the others look "lost". Keep the earliest firstSeen.
+    const byKey = new Map();
+    for (const o of radar.openings) {
+      const uKey = uKeyOf(o);
+      const existing = byKey.get(uKey);
+      if (!existing) {
+        byKey.set(uKey, { ...o, uKey });
+      } else if (new Date(o.firstSeen) < new Date(existing.firstSeen)) {
+        byKey.set(uKey, { ...existing, firstSeen: o.firstSeen });
+      }
+    }
+    const openings = [...byKey.values()].map((o) => ({
       ...o,
-      uKey: uKeyOf(o),
       tracked: trackedUrls.has(normUrl(o.url)),
     }));
     return { ...radar, openings };
@@ -173,7 +187,6 @@ export default function JobTracker() {
       };
       if (!entry.status || entry.status === "none") patch.status = "toApply";
       patchCompany(o.companyId, patch);
-      toast.success(`Queued in To Apply — ${o.company}`);
     },
     [state.companies, patchCompany]
   );
@@ -186,7 +199,6 @@ export default function JobTracker() {
       };
       if (!entry.status || entry.status === "none") patch.status = "toApply";
       patchCompany(company.id, patch);
-      toast.success(`Queued in To Apply — ${company.name}`);
     },
     [state.companies, patchCompany]
   );
