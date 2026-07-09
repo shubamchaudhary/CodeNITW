@@ -526,9 +526,57 @@ async function linkedinScan(companies) {
       await sleep(1500);
     }
   }
-  console.log(`LinkedIn: ${requests} requests, ${results.length} matched relevant openings`);
+
+  // The search cards carry no JD, so every LinkedIn opening would otherwise be
+  // scored title-only. Fetch the full description per matched opening from the
+  // guest job-posting endpoint (sequential + spaced to respect rate limits) so
+  // the scorer sees real skills. Best-effort: a miss just leaves it title-only.
+  let withDesc = 0;
+  for (const r of results) {
+    const desc = await fetchLinkedInDesc(r.id);
+    if (desc) {
+      r.desc = desc;
+      withDesc += 1;
+    }
+    await sleep(800);
+  }
+  console.log(`LinkedIn: ${requests} requests, ${results.length} matched relevant openings, ${withDesc} with descriptions`);
   return results;
 }
+
+// Fetch a single LinkedIn posting's full description HTML from the guest
+// job-posting endpoint (same one the public "See more" job pane uses). Returns
+// plain-ish HTML (the caller strips it) or "" on any failure.
+async function fetchLinkedInDesc(jobId) {
+  const url = `https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/${jobId}`;
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        Referer: "https://www.linkedin.com/jobs/search",
+      },
+    });
+    if (!res.ok) return "";
+    const html = await res.text();
+    // The JD sits inside the description markup container; fall back to the
+    // whole document if the class name shifts (LinkedIn tweaks markup often).
+    const m = html.match(/description__text[^>]*>([\s\S]*?)<\/section>/i) ||
+      html.match(/show-more-less-html__markup[^>]*>([\s\S]*?)<\/div>/i);
+    return m ? m[1] : html;
+  } catch {
+    return "";
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 
 // ── Workday: resolve board URL from the careers page, then use the CxS API ───
 const WORKDAY_URL_RX = /https?:\/\/([a-z0-9-]+)\.(wd\d+)\.myworkdayjobs\.com\/(?:[a-z]{2}-[A-Z]{2}\/)?([A-Za-z0-9_-]+)/;
@@ -686,10 +734,11 @@ async function main() {
       if (existingUrls.has(j.url)) continue; // already surfaced via that company's own board
       const key = jobKey("linkedin", j.id, j.url);
       if (!seen[key]) seen[key] = now;
-      // LinkedIn's guest search is title-only (no JD), so this scores via the
-      // scorer's title fallback — a low but real number, so these openings rank
-      // and show a fit badge instead of appearing unscored.
-      const { score, matched } = scorer.score({ title: j.title, desc: "", location: j.location });
+      // Score on the full JD fetched by linkedinScan when available; otherwise
+      // the scorer's title fallback gives a low-but-real number so the opening
+      // still ranks and shows a fit badge.
+      const fullDesc = stripHtml(j.desc);
+      const { score, matched } = scorer.score({ title: j.title, desc: fullDesc, location: j.location });
       openings.push({
         key,
         companyId: j.companyId,
@@ -698,7 +747,7 @@ async function main() {
         title: j.title,
         location: j.location,
         url: j.url,
-        desc: "",
+        desc: clip(fullDesc),
         matchScore: score,
         matched,
         firstSeen: seen[key],
