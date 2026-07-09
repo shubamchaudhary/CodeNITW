@@ -22,23 +22,24 @@ import { createHash } from "crypto";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RADAR_DIR = join(__dirname, "../radar");
 
-// ── Relevance filter (kept in sync with scripts/atsProbe.mjs) ────────────────
+// ── Relevance filter ─────────────────────────────────────────────────────────
+// Tuned for a ~2 YoE backend/GenAI SDE-2 profile (Java/Spring, Kafka,
+// Kubernetes, LangChain-style GenAI work):
+//   • backend/Java/SDE titles plus Kafka/Kubernetes/GenAI/LLM/agentic roles
+//   • excludes seniority far above SDE-2 (staff/principal/lead/architect),
+//     new-grad/PhD pipelines, and non-backend disciplines
+//   • locations: India, or remote anywhere (foreign remote is fine; only
+//     foreign onsite is dropped)
 const TITLE_RX =
-  /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems)\b/i;
+  /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems|kafka|kubernetes|k8s|gen\s?ai|genai|llm|agentic|ai engineer)\b/i;
 const TITLE_EXCLUDE_RX =
-  /\b(intern|staff|principal|director|manager|vp|head of|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded)\b/i;
+  /\b(intern|staff|principal|director|manager|vp|head of|lead|architect|phd|early career|campus|university|new grad|graduate|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded|firmware|computer vision)\b/i;
 const INDIA_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai)\b/i;
-// "Remote" pinned to another country is not applicable (e.g. "Remote, USA").
-const FOREIGN_RX =
-  /\b(usa|u\.s\.a?|united states|america|canada|mexico|uk|united kingdom|england|germany|france|poland|netherlands|spain|portugal|ireland|emea|europe|australia|new zealand|singapore|japan|korea|china|vietnam|philippines|brazil|latam|argentina|colombia|israel|dubai|uae|africa)\b/i;
 
 function isRelevant(title, location) {
   if (!TITLE_RX.test(title || "")) return false;
   if (TITLE_EXCLUDE_RX.test(title || "")) return false;
-  if (location && !INDIA_RX.test(location)) {
-    if (FOREIGN_RX.test(location)) return false;
-    if (!/remote/i.test(location)) return false;
-  }
+  if (location && !INDIA_RX.test(location) && !/remote/i.test(location)) return false;
   return true;
 }
 
@@ -180,7 +181,7 @@ const customAdapters = {
     const d = await get(
       "https://www.amazon.jobs/en/search.json?base_query=software%20engineer&country=IND&result_limit=100&offset=0"
     );
-    if (!Array.isArray(d?.jobs) || d.jobs.length === 0) return null;
+    if (!Array.isArray(d?.jobs)) return null;
     return d.jobs.map((j) => ({
       id: String(j.id_icims || j.id),
       title: j.title,
@@ -222,7 +223,7 @@ const customAdapters = {
       headers: { "x-csrf-token": "x" },
     });
     const results = d?.data?.results;
-    if (!Array.isArray(results) || results.length === 0) return null;
+    if (!Array.isArray(results)) return null;
     return results.map((j) => ({
       id: String(j.id),
       title: j.title,
@@ -235,7 +236,7 @@ const customAdapters = {
       `https://${cfg.host}/api/apply/v2/jobs?domain=${cfg.domain}&query=software%20engineer&location=India&num=100&start=0`
     );
     const positions = d?.positions;
-    if (!Array.isArray(positions) || positions.length === 0) return null;
+    if (!Array.isArray(positions)) return null;
     return positions.map((j) => ({
       id: String(j.id),
       title: j.name,
@@ -248,7 +249,7 @@ const customAdapters = {
       `https://${cfg.host}/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList&finder=findReqs%3BsiteNumber%3D${cfg.site}%2Ckeyword%3Dengineer&limit=100`
     );
     const list = d?.items?.[0]?.requisitionList;
-    if (!Array.isArray(list) || list.length === 0) return null;
+    if (!Array.isArray(list)) return null;
     return list.map((j) => ({
       id: String(j.Id),
       title: j.Title,
@@ -258,7 +259,7 @@ const customAdapters = {
   },
   async atlassian() {
     const d = await get("https://www.atlassian.com/endpoint/careers/listings");
-    if (!Array.isArray(d) || d.length === 0) return null;
+    if (!Array.isArray(d)) return null;
     return d.map((j) => ({
       id: String(j.id),
       title: j.title,
@@ -295,7 +296,7 @@ const customAdapters = {
       },
     });
     const jobs = d?.refineSearch?.data?.jobs;
-    if (!Array.isArray(jobs) || jobs.length === 0) return null;
+    if (!Array.isArray(jobs)) return null;
     return jobs.map((j) => ({
       id: String(j.jobId || j.reqId || j.jobSeqNo),
       title: j.title,
