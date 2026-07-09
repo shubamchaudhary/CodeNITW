@@ -54,13 +54,42 @@ export function normUrl(url) {
   return (url || "").replace(/^https?:\/\//, "").replace(/[?#].*$/, "").replace(/\/$/, "").toLowerCase();
 }
 
-// Stable per-opening identity. The radar's `key` can collide (e.g. Workday
-// boards emit the same id for several distinct postings), which would make
-// dismissing one opening dismiss all its siblings. The URL is unique per
-// posting, so fold it in — falling back to the raw key when no URL exists.
+// Stable per-opening identity used to persist dismissals. Based purely on the
+// posting URL (unique per opening and stable across scans/redeploys), so a
+// dismissal survives new deployments and transient feed gaps. The radar's `key`
+// is deliberately NOT used — it can collide (Workday emits one id for several
+// postings) and its format isn't guaranteed stable. Falls back to `key` only
+// when an opening has no URL.
 export function uKeyOf(o) {
-  const u = normUrl(o.url);
-  return u ? `${o.key || ""}|${u}` : o.key;
+  return normUrl(o.url) || o.key;
+}
+
+// Dismissed openings are retained for this long (6 months) regardless of
+// deployments or transient feed gaps, then purged by age so the map can't grow
+// forever.
+export const DISMISS_TTL_DAYS = 180;
+
+// One-time, idempotent migration of the dismissedOpenings map to the current
+// format: URL-only keys with numeric-timestamp values. Handles both legacy
+// shapes so crosses made before this change survive the deploy:
+//   • value `true`               → Date.now() (starts the 6-month clock now)
+//   • key `"<hash>|<normurl>"`    → "<normurl>" (drop the volatile hash prefix)
+//   • key `"<normurl>"`           → kept as-is
+//   • key `"<hash>"` (no url)     → kept as-is (can't recover a URL; harmless)
+// Returns { map, changed } so callers can persist only when something moved.
+export function migrateDismissals(dismissed) {
+  const out = {};
+  let changed = false;
+  for (const [rawKey, rawVal] of Object.entries(dismissed || {})) {
+    // A "<hash>|<url>" key: everything after the first "|" is the normalized URL.
+    const pipe = rawKey.indexOf("|");
+    const key = pipe === -1 ? rawKey : rawKey.slice(pipe + 1);
+    const val = typeof rawVal === "number" ? rawVal : Date.now();
+    if (key !== rawKey || val !== rawVal) changed = true;
+    // If two legacy keys collapse to the same URL, keep the newest timestamp.
+    out[key] = out[key] ? Math.max(out[key], val) : val;
+  }
+  return { map: out, changed };
 }
 
 export function normalizeUrl(url) {
