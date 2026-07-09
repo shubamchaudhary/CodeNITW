@@ -1,10 +1,10 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T07:25:32.311Z",
+  "updatedAt": "2026-07-09T07:28:32.646Z",
   "boards": 184,
-  "boardsFailed": 3,
+  "boardsFailed": 2,
   "liveRelevantOpenings": 433,
-  "newThisRun": 25,
+  "newThisRun": 0,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -112,6 +112,7 @@
    "n8n",
    "navi",
    "neon",
+   "netflix",
    "netlify",
    "netomi",
    "new-relic",
