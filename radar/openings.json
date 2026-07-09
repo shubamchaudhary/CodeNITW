@@ -1,11 +1,11 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T15:53:11.609Z",
+  "updatedAt": "2026-07-09T15:59:10.238Z",
   "boards": 184,
-  "boardsFailed": 2,
-  "liveRelevantOpenings": 657,
-  "newThisRun": 1,
-  "linkedinOpenings": 4,
+  "boardsFailed": 4,
+  "liveRelevantOpenings": 650,
+  "newThisRun": 0,
+  "linkedinOpenings": 3,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -44,7 +44,6 @@
    "cloudflare",
    "coinbase",
    "comcast",
-   "comet-ml",
    "commvault",
    "composio",
    "confluent",
@@ -64,7 +63,6 @@
    "expedia",
    "f5-networks",
    "fastly",
-   "fivetran",
    "flexport",
    "flow-traders",
    "fourkites",
@@ -227,30 +225,30 @@
    "firstSeen": "2026-07-09T15:53:11.609Z"
   },
   {
-   "key": "57f6a3d13b6603fe",
-   "companyId": "american-express",
-   "company": "American Express",
+   "key": "29a962482dfa9fa8",
+   "companyId": "cisco",
+   "company": "Cisco",
    "ats": "linkedin",
-   "title": "Middleware Platform Engineer",
+   "title": "Software Engineer",
    "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/middleware-platform-engineer-at-american-express-global-business-travel-4434855466",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4436702583",
    "desc": "",
    "matchScore": 30,
    "matched": [],
-   "firstSeen": "2026-07-09T14:59:52.419Z"
+   "firstSeen": "2026-07-09T15:04:52.591Z"
   },
   {
-   "key": "bdc75a17f90582f5",
-   "companyId": "cashapp-setu",
-   "company": "CashApp/Setu",
+   "key": "963cb6315e7c45db",
+   "companyId": "docusign",
+   "company": "DocuSign",
    "ats": "linkedin",
-   "title": "SDE II",
+   "title": "Software Engineer",
    "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/sde-ii-at-setu-4434843562",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-docusign-4418554747",
    "desc": "",
    "matchScore": 30,
    "matched": [],
-   "firstSeen": "2026-07-09T14:59:52.419Z"
+   "firstSeen": "2026-07-09T15:04:52.591Z"
   },
   {
    "key": "d96da828cf139c22",
@@ -260,19 +258,6 @@
    "title": "SDE 2",
    "location": "Bengaluru, Karnataka, India",
    "url": "https://in.linkedin.com/jobs/view/sde-2-at-curefit-4433153578",
-   "desc": "",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-09T14:59:52.419Z"
-  },
-  {
-   "key": "f6cecc743c455f70",
-   "companyId": "ebay",
-   "company": "eBay",
-   "ats": "linkedin",
-   "title": "AI Platform Engineer",
-   "location": "Bangalore Urban, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/ai-platform-engineer-at-ebay-4435475159",
    "desc": "",
    "matchScore": 30,
    "matched": [],
@@ -619,40 +604,6 @@
    "firstSeen": "2026-07-09T14:51:29.386Z"
   },
   {
-   "key": "dd02e68e35e79c66",
-   "companyId": "fivetran",
-   "company": "Fivetran",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer - Semantic Layer",
-   "location": "Bengaluru, Karnataka, India, APAC",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7787911003",
-   "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
-   "matchScore": 100,
-   "matched": [
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "Snowflake",
-     "type": "have"
-    },
-    {
-     "skill": "REST",
-     "type": "have"
-    },
-    {
-     "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T14:51:29.386Z"
-  },
-  {
    "key": "c1d9a4701f0603be",
    "companyId": "adobe",
    "company": "Adobe",
@@ -709,48 +660,6 @@
    "matched": [
     {
      "skill": "AWS",
-     "type": "want"
-    }
-   ],
-   "firstSeen": "2026-07-09T11:46:19.863Z"
-  },
-  {
-   "key": "76eef96c0035af7a",
-   "companyId": "fivetran",
-   "company": "Fivetran",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer - Infrastructure",
-   "location": "Bangalore, India",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7790605003",
-   "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
-   "matchScore": 79,
-   "matched": [
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "want"
-    },
-    {
-     "skill": "Terraform",
      "type": "want"
     }
    ],
@@ -12970,182 +12879,6 @@
     },
     {
      "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "c8ed6e156254e978",
-   "companyId": "fivetran",
-   "company": "Fivetran",
-   "ats": "greenhouse",
-   "title": "Senior Platform Software Engineer, Transport",
-   "location": "Remote, Colorado, United States, AMER",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7787903003",
-   "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
-   "matchScore": 77,
-   "matched": [
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "want"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "a17f9652430e0283",
-   "companyId": "fivetran",
-   "company": "Fivetran",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer",
-   "location": "Bengaluru, Karnataka, India, APAC",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7531626003",
-   "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
-   "matchScore": 88,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "c7973745b0430517",
-   "companyId": "fivetran",
-   "company": "Fivetran",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer",
-   "location": "Bengaluru, Karnataka, India, APAC",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7687229003",
-   "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
-   "matchScore": 86,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "want"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "Data Structures",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "a00761910d6479e9",
-   "companyId": "fivetran",
-   "company": "Fivetran",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer",
-   "location": "Bengaluru, Karnataka, India, APAC",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7780075003",
-   "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
-   "matchScore": 88,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "want"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
      "type": "have"
     }
    ],
