@@ -37,6 +37,18 @@ let unsubscribeSnapshot = null;
 let applyingRemote = false;
 let pushTimer = null;
 let localListenerAttached = false;
+// Single-device durability bookkeeping:
+//   dirty       — there are local changes not yet acknowledged by a push.
+//   pushing     — a push is currently in flight (avoid overlapping writes).
+//   retryTimer  — backoff timer for a failed push.
+//   retryDelay  — current backoff delay, grows on each consecutive failure.
+let dirty = false;
+let pushing = false;
+let retryTimer = null;
+let retryDelay = 0;
+const PUSH_DEBOUNCE_MS = 800;
+const RETRY_MIN_MS = 1000;
+const RETRY_MAX_MS = 30000;
 
 function userDocRef(uid) {
   return doc(db, "userProgress", uid);
@@ -64,20 +76,79 @@ function collectLocal() {
   return out;
 }
 
+// Core write. Resolves once Firestore has ACCEPTED the write. With offline
+// persistence enabled the write is durably queued in IndexedDB even when
+// offline, so this resolving means the change will reach the server (now or on
+// reconnect) and cannot be lost on this device. Returns true on success.
+async function doPush(uid) {
+  if (!uid) return false;
+  const rev = Date.now();
+  await setDoc(userDocRef(uid), { ...collectLocal(), updatedAt: rev }, { merge: true });
+  setLocalRev(uid, rev);
+  return true;
+}
+
+// Attempt a push now. On failure, schedule a backoff retry instead of dropping
+// the change silently — so a transient error can't leave the DB stale forever.
+async function pushNow() {
+  if (applyingRemote || !currentUid || pushing) return;
+  if (pushTimer) {
+    clearTimeout(pushTimer);
+    pushTimer = null;
+  }
+  if (retryTimer) {
+    clearTimeout(retryTimer);
+    retryTimer = null;
+  }
+  const uid = currentUid;
+  pushing = true;
+  dirty = false; // optimistic; re-set on failure
+  try {
+    await doPush(uid);
+    retryDelay = 0; // success resets backoff
+  } catch (err) {
+    console.error("[cloudSync] push failed, will retry:", err);
+    dirty = true; // still have unsynced changes
+    retryDelay = Math.min(retryDelay ? retryDelay * 2 : RETRY_MIN_MS, RETRY_MAX_MS);
+    if (currentUid) {
+      retryTimer = setTimeout(() => {
+        retryTimer = null;
+        pushNow();
+      }, retryDelay);
+    }
+  } finally {
+    pushing = false;
+  }
+}
+
 function schedulePush() {
   if (applyingRemote || !currentUid) return;
+  dirty = true;
   if (pushTimer) clearTimeout(pushTimer);
-  pushTimer = setTimeout(async () => {
-    const uid = currentUid;
-    if (!uid) return;
-    const rev = Date.now();
-    try {
-      await setDoc(userDocRef(uid), { ...collectLocal(), updatedAt: rev }, { merge: true });
-      setLocalRev(uid, rev);
-    } catch (err) {
-      console.error("[cloudSync] push failed:", err);
-    }
-  }, 1000);
+  pushTimer = setTimeout(pushNow, PUSH_DEBOUNCE_MS);
+}
+
+// Flush any pending debounced change immediately. Called when the page is being
+// hidden/closed so a change made in the debounce window still reaches the
+// durable write queue before the tab goes away.
+function flushPending() {
+  if (!currentUid) return;
+  if (dirty || pushTimer) {
+    pushNow();
+  }
+}
+
+// Fire a synchronous-as-possible flush on the events that precede a tab
+// closing, navigating away, or backgrounding. `pagehide`/`visibilitychange`
+// are the reliable ones on mobile; `beforeunload` covers desktop refresh.
+function attachUnloadFlush() {
+  if (typeof window === "undefined") return;
+  const onHide = () => flushPending();
+  window.addEventListener("pagehide", onHide);
+  window.addEventListener("beforeunload", onHide);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushPending();
+  });
 }
 
 // Attach the local-change listener exactly once for the app's lifetime.
@@ -85,6 +156,7 @@ function ensureLocalListener() {
   if (localListenerAttached) return;
   localListenerAttached = true;
   subscribe(() => schedulePush());
+  attachUnloadFlush();
 }
 
 export function startCloudSync(uid) {
@@ -133,6 +205,9 @@ export function startCloudSync(uid) {
 }
 
 export function stopCloudSync() {
+  // Try to flush any pending change before tearing down (e.g. on sign-out) so a
+  // last-moment edit isn't stranded in the debounce window.
+  flushPending();
   if (unsubscribeSnapshot) {
     unsubscribeSnapshot();
     unsubscribeSnapshot = null;
@@ -141,6 +216,11 @@ export function stopCloudSync() {
     clearTimeout(pushTimer);
     pushTimer = null;
   }
+  if (retryTimer) {
+    clearTimeout(retryTimer);
+    retryTimer = null;
+  }
+  retryDelay = 0;
   currentUid = null;
   setActiveUid(null);
 }
