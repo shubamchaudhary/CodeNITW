@@ -200,6 +200,9 @@ const customAdapters = {
           title: j.title,
           location: (j.properties?.locations || []).join("; "),
           url: `https://jobs.careers.microsoft.com/global/en/job/${j.jobId}`,
+          desc: [j.properties?.description, j.properties?.responsibilities, j.properties?.qualifications]
+            .filter(Boolean)
+            .join(" "),
         });
       }
     }
@@ -215,6 +218,7 @@ const customAdapters = {
       title: j.title,
       location: j.normalized_location || j.location || "",
       url: `https://www.amazon.jobs${j.job_path}`,
+      desc: [j.description, j.basic_qualifications, j.preferred_qualifications].filter(Boolean).join(" "),
     }));
   },
   // The v3 JSON API is gone (404); the results page is server-rendered, so job
@@ -257,6 +261,7 @@ const customAdapters = {
       title: j.title,
       location: (j.allLocations || []).map((l) => `${l.city || ""} ${l.countryName || l.country || ""}`).join("; "),
       url: `https://www.uber.com/global/en/careers/list/${j.id}/`,
+      desc: j.description || "",
     }));
   },
   async eightfold(cfg) {
@@ -270,6 +275,7 @@ const customAdapters = {
       title: j.name,
       location: j.location || (j.locations || []).join("; "),
       url: j.canonicalPositionUrl || `https://${cfg.host}/careers/job/${j.id}`,
+      desc: j.job_description || j.description || "",
     }));
   },
   async oraclecloud(cfg) {
@@ -283,6 +289,7 @@ const customAdapters = {
       title: j.Title,
       location: j.PrimaryLocation || "",
       url: `https://${cfg.host}/hcmUI/CandidateExperience/en/sites/${cfg.site}/job/${j.Id}`,
+      desc: j.ShortDescriptionStr || j.ExternalDescriptionStr || "",
     }));
   },
   async atlassian() {
@@ -293,6 +300,7 @@ const customAdapters = {
       title: j.title,
       location: Array.isArray(j.locations) ? j.locations.join("; ") : j.location || "",
       url: j.applyUrl || `https://www.atlassian.com/company/careers/details/${j.id}`,
+      desc: [j.overview, j.responsibilities, j.qualifications, j.content].filter(Boolean).join(" "),
     }));
   },
   // Phenom sites answer their search widget's POST API, not a REST GET.
@@ -330,6 +338,7 @@ const customAdapters = {
       title: j.title,
       location: j.cityStateCountry || [j.city, j.state, j.country].filter(Boolean).join(", "),
       url: j.applyUrl || `https://${cfg.host}/job/${j.jobSeqNo}`,
+      desc: j.description || j.descriptionTeaser || j.jobDescription || "",
     }));
   },
   async smartrecruiters(cfg) {
@@ -553,11 +562,30 @@ async function fetchWorkday(board) {
         title: j.title,
         location: j.locationsText || "",
         url: `${base}/${site}${j.externalPath}`,
+        externalPath: j.externalPath,
       });
     }
     if (postings.length < 20) break;
   }
-  return out.length ? out : null;
+  if (!out.length) return null;
+
+  // The list API carries no job description. Fetch it per-posting from the CxS
+  // job endpoint — but ONLY for postings that already pass the relevance filter,
+  // so a company adds at most a handful of extra calls (not one per posting).
+  // Best-effort: a failed/absent description just leaves the opening title-only.
+  const relevant = out.filter((o) => isRelevant(o.title, o.location) && o.externalPath);
+  let ri = 0;
+  await Promise.all(
+    Array.from({ length: 4 }, async () => {
+      while (ri < relevant.length) {
+        const o = relevant[ri++];
+        const jd = await get(`${base}/wday/cxs/${tenant}/${site}${o.externalPath}`);
+        const info = jd?.jobPostingInfo;
+        if (info) o.desc = info.jobDescription || info.jobDescriptionSummary || "";
+      }
+    })
+  );
+  return out;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
