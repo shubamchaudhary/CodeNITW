@@ -1,10 +1,10 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T07:02:12.247Z",
-  "boards": 190,
-  "boardsFailed": 13,
-  "liveRelevantOpenings": 410,
-  "newThisRun": 86,
+  "updatedAt": "2026-07-09T07:25:32.311Z",
+  "boards": 184,
+  "boardsFailed": 3,
+  "liveRelevantOpenings": 433,
+  "newThisRun": 25,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -35,6 +35,7 @@
    "browserstack",
    "buffer",
    "calendly",
+   "caterpillar",
    "chroma",
    "citi",
    "clear-cleartax",
@@ -71,6 +72,7 @@
    "galileo-ai",
    "gamma",
    "gitlab",
+   "google",
    "grafana-labs",
    "granola",
    "graviton-research-capital",
@@ -84,6 +86,7 @@
    "imc-trading",
    "influxdata",
    "ivalua",
+   "jp-morgan-chase",
    "juniper-networks",
    "langfuse",
    "launchdarkly",
@@ -113,6 +116,7 @@
    "netomi",
    "new-relic",
    "novartis",
+   "nvidia",
    "observe-ai",
    "okta",
    "pagerduty",
@@ -186,6 +190,256 @@
   ]
  },
  "openings": [
+  {
+   "key": "ad221b8c930830df",
+   "companyId": "caterpillar",
+   "company": "Caterpillar",
+   "ats": "workdayUrl",
+   "title": "Lead Software Engineer - Data Engineering",
+   "location": "Chennai, Tamil Nadu",
+   "url": "https://cat.wd5.myworkdayjobs.com/CaterpillarCareers/job/Chennai-Tamil-Nadu/Lead-Software-Engineer---Data-Engineering_R0000379685",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "5434039a17385147",
+   "companyId": "caterpillar",
+   "company": "Caterpillar",
+   "ats": "workdayUrl",
+   "title": "Software Engineer",
+   "location": "Chennai, Tamil Nadu",
+   "url": "https://cat.wd5.myworkdayjobs.com/CaterpillarCareers/job/Chennai-Tamil-Nadu/Software-Engineer_R0000379147",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "06962084a97b1af3",
+   "companyId": "caterpillar",
+   "company": "Caterpillar",
+   "ats": "workdayUrl",
+   "title": "Software Engineer",
+   "location": "Chennai, Tamil Nadu",
+   "url": "https://cat.wd5.myworkdayjobs.com/CaterpillarCareers/job/Chennai-Tamil-Nadu/Software-Engineer_R0000378326",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "b252a4650dce32de",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer Control Plane Network",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/143775524936655558-senior-software-engineer-control-plane-network",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "bdb0e91e9dc391ff",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Phd Early Career Networking 2026 Start",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/126485952255140550-software-engineer-phd-early-career-networking-2026-start",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "b23b9f77fbc9b7f7",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Phd Early Career 2026",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/108281679147082438-software-engineer-phd-early-career-2026",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "27b0189cdfa54f22",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Phd Early Career 2026",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/107018346561446598-software-engineer-phd-early-career-2026",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "3fbc2e5d4f7fb234",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Persistent Disk Phd Early Career 2026",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/95785531123606214-software-engineer-persistent-disk-phd-early-career-2026",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "e3a9fa720d8df8e3",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Fleet Analytics Phd Early Career 2026",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/141496697866855110-software-engineer-fleet-analytics-phd-early-career-2026",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "4b4e629741fc887f",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Phd Early Career Campus 2025 Start",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/141544156919931590-software-engineer-phd-early-career-campus-2025-start",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "214f2b528050ceb6",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Engprod Google One And Google Photos",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/123693083568022214-software-engineer-engprod-google-one-and-google-photos",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "46a9352d5a0a886d",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Firmware",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/133637066729628358-software-engineer-firmware",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "6fc72d735bfb5dc6",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Aiml",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/139285558508561094-software-engineer-aiml",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "a93977407306f01f",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer Server Ai Foundations Core",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/138698860607218374-senior-software-engineer-server-ai-foundations-core",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "dd6cb2b657a43a24",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/132530161214988998-senior-software-engineer",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "d14cb97f8241efb3",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Iii Security And Privacy",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/74635314278081222-software-engineer-iii-security-and-privacy",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "d4ce82fc850e0d92",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer Corp Eng",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/116642863512462022-senior-software-engineer-corp-eng",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "d3f30f38abfb5fc7",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer Google Cloud",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/141387972648805062-senior-software-engineer-google-cloud",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "0eded5bc817420fa",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Software Engineer Iii Search",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/93859175578116806-software-engineer-iii-search",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "24565c6f0faefb7c",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer Aiml Computer Vision Google Cloud",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/133462330280157894-senior-software-engineer-aiml-computer-vision-google-cloud",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "6138b1ff7b9f8ca2",
+   "companyId": "jp-morgan-chase",
+   "company": "JP Morgan Chase",
+   "ats": "oraclecloud",
+   "title": "Software Engineer - Engineering Operations",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210766963",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "95ab8b1ffd01a7d7",
+   "companyId": "jp-morgan-chase",
+   "company": "JP Morgan Chase",
+   "ats": "oraclecloud",
+   "title": "Software Engineer III",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210763318",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "4d3e134b2fecc2d8",
+   "companyId": "jp-morgan-chase",
+   "company": "JP Morgan Chase",
+   "ats": "oraclecloud",
+   "title": "Lead Software Engineer - Cloud Platform Engineer",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210685393",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "675b425f960dd655",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer_R-278536",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
+  {
+   "key": "be41fef424f9ffad",
+   "companyId": "target-india",
+   "company": "Target India",
+   "ats": "workdayUrl",
+   "title": "Sr Engineer- Backend",
+   "location": "Tower 02, Manyata Embassy Business Park, Racenahali & Nagawara Villages. Outer Ring Rd, Bangalore 540065",
+   "url": "https://target.wd5.myworkdayjobs.com/targetcareers/job/Tower-02-Manyata-Embassy-Business-Park-Racenahali--Nagawara-Villages-Outer-Ring-Rd-Bangalore-540065/Sr-Engineer--Backend_R0000387032",
+   "firstSeen": "2026-07-09T07:25:32.311Z"
+  },
   {
    "key": "8b83af6c1a715183",
    "companyId": "adobe",
@@ -1244,16 +1498,6 @@
    "title": "Software Engineer - Full-Stack & Cloud Systems",
    "location": "Bangalore Area",
    "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Software-Engineer---Full-Stack---Cloud-Systems_JR10427005",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "95dcebc8072aee6c",
-   "companyId": "airbus",
-   "company": "Airbus",
-   "ats": "workday",
-   "title": "Software Engineer",
-   "location": "Bangalore Area",
-   "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Software-Engineer_JR10426789",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -2814,16 +3058,6 @@
    "title": "Senior Software Engineer - File Transfer Services",
    "location": "Pune, India",
    "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer---File-Transfer-Services_R-281842-1",
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "bec3225685aae912",
-   "companyId": "mastercard",
-   "company": "Mastercard",
-   "ats": "workday",
-   "title": "Software Engineer II (Full stack developer)-2",
-   "location": "Pune, India",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II--Full-stack-developer--2_R-280827",
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
