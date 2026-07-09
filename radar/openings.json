@@ -1,0 +1,5231 @@
+{
+ "summary": {
+  "updatedAt": "2026-07-09T06:38:33.022Z",
+  "boards": 174,
+  "boardsFailed": 2,
+  "liveRelevantOpenings": 522,
+  "newThisRun": 522
+ },
+ "openings": [
+  {
+   "key": "3eaff3de198596a3",
+   "companyId": "acceldata",
+   "company": "Acceldata",
+   "ats": "lever",
+   "title": "Senior Software Engineer - Backend",
+   "location": "Bengaluru",
+   "url": "https://jobs.lever.co/acceldata/9c037a7b-4d1a-4c97-a05c-7948072e13e1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "18f46e177009f430",
+   "companyId": "acceldata",
+   "company": "Acceldata",
+   "ats": "lever",
+   "title": "Senior Software Engineer - Open Data Platform (ODP)",
+   "location": "Bengaluru",
+   "url": "https://jobs.lever.co/acceldata/d2f5cb2d-fb99-46a8-9694-d66400b516bf",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "826f341c76cd0da3",
+   "companyId": "acceldata",
+   "company": "Acceldata",
+   "ats": "lever",
+   "title": "Software Engineer - Open Data Platform (ODP)",
+   "location": "Bengaluru",
+   "url": "https://jobs.lever.co/acceldata/0c47e882-83ff-471e-ba75-5543796aa34a",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8bb33e20422ed09f",
+   "companyId": "aerospike",
+   "company": "Aerospike",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Control Plane",
+   "location": "Remote, USA",
+   "url": "https://job-boards.greenhouse.io/aerospike/jobs/8466999002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4fc2f320385c7b70",
+   "companyId": "aerospike",
+   "company": "Aerospike",
+   "ats": "greenhouse",
+   "title": "SSE/ SDE II, DB Server   ",
+   "location": "Bangalore, India",
+   "url": "https://job-boards.greenhouse.io/aerospike/jobs/8476720002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8c2315e421842b7e",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior CIAM Software Engineer",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7671388003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2ec7dcaa089e5a86",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior CIAM Software Engineer",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7671390003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8f3b1b9c705e03c1",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Continuous Delivery)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7703207003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0be950fb5a63c5f9",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Continuous Delivery)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7703209003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "69099b605b81d0de",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Growth Platform)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7491437003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "feb7511e1fe40656",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Infrastructure)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7708921003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e2db71978b9a7095",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Infrastructure) ",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7708923003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "06fc3efd635c2b25",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Merchant Data Platform EU)",
+   "location": "Remote Spain",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7651525003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "99497aa89b06232b",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Merchant Data Platform EU)",
+   "location": "Remote Poland",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7651523003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3dbfae0a7d5964c9",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Merchant & Partner Lifecycle)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7636414003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c74918e7ca407716",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Merchant & Partner Lifecycle)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7636416003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2f6c49412aae1ec5",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Payments)",
+   "location": "Remote UK",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7737155003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a8e7f420a39ebb97",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Fullstack (Consumer Engineering)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7663434003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c7b59fa85bc956c6",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Fullstack (Consumer Engineering)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7663436003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "190013938a2112f0",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Fullstack (Servicing International)",
+   "location": "Remote Spain",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7118739003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0ee3c10ee4d379ea",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Fullstack (Servicing International)",
+   "location": "Remote Poland",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7118737003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0dd30ad725499488",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Full Stack (Zero to One Labs)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7686804003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4b07e033fd411b32",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Full Stack (Zero to One Labs)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7793217003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "191f01ca906ba64d",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software engineer (Furnishing Platform)",
+   "location": "Remote Spain",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/6922636003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dbe0d03f94cf9d50",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software engineer (Furnishing Platform)",
+   "location": "Remote Poland",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/6922638003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8fb6fb341d860baa",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (Capital Orchestration)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7749755003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "cbe16aa78dde94fd",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Back-end (Card Mgmt & Transaction Processing)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7777094003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "37579cac55a251f9",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Back-end (Card Mgmt & Transaction Processing)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7766277003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7f46748f1553376b",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (Merchant & Partner Lifecycle)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7708927003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3a5133f638bde1d1",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (Merchant & Partner Lifecycle)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7708925003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bdfd747dc09f8eea",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (ML Training & Serving)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7762568003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4dae73b47be64c8d",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (ML Training & Serving)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7762570003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d1a157ff85b3e19f",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (PMI Integrations)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7590373003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "92b5347d2b098bbc",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (Reliability Platform)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7764836003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b66640c94ec7ed8f",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Backend (Reliability Platform)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7764834003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dfcb59f102279b5d",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Full-Stack (Card Acquisition)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7618869003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3e94b2347c05b74b",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, Full-Stack (Marketplace Performance)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7678887003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8b1b8fe09d211098",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Software Engineer II (Money Movement & Card Ledger)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7779962003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c26056d0f9657d8c",
+   "companyId": "agoda",
+   "company": "Agoda",
+   "ats": "greenhouse",
+   "title": "Lead Software Engineer | BackEnd (Gurugram based)",
+   "location": "Gurugram",
+   "url": "https://job-boards.greenhouse.io/agoda/jobs/8036127",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1637aa8fb18ee878",
+   "companyId": "airbnb",
+   "company": "Airbnb",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Quality), Payments",
+   "location": "Bangalore, India",
+   "url": "https://careers.airbnb.com/positions/7668022?gh_jid=7668022",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "39af92a6107f4176",
+   "companyId": "airbnb",
+   "company": "Airbnb",
+   "ats": "greenhouse",
+   "title": "Software Engineer, BizTech(Python, LLM, GenAI, MCP)",
+   "location": "Bangalore, India",
+   "url": "https://careers.airbnb.com/positions/7902817?gh_jid=7902817",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "80e207582a950876",
+   "companyId": "airbnb",
+   "company": "Airbnb",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Cloud Networking",
+   "location": "Remote - USA or Canada",
+   "url": "https://careers.airbnb.com/positions/8037090?gh_jid=8037090",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1fe8c3084811a6c2",
+   "companyId": "airbus",
+   "company": "Airbus",
+   "ats": "workday",
+   "title": "Lead Avionics Software Engineer",
+   "location": "Bangalore Area",
+   "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Lead-Avionics-Software-Developer_JR10409900-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3053889bbcb02880",
+   "companyId": "airbus",
+   "company": "Airbus",
+   "ats": "workday",
+   "title": "Software Engineer - Full-Stack & Cloud Systems",
+   "location": "Bangalore Area",
+   "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Software-Engineer---Full-Stack---Cloud-Systems_JR10427005",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "95dcebc8072aee6c",
+   "companyId": "airbus",
+   "company": "Airbus",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Bangalore Area",
+   "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Software-Engineer_JR10426789",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f38f46eac5a32f97",
+   "companyId": "algolia",
+   "company": "Algolia",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Growth (Fullstack)",
+   "location": "Remote - United States",
+   "url": "https://job-boards.greenhouse.io/algolia/jobs/5820186004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d889e87dbd2be36e",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "AI Software Engineer",
+   "location": "USA - IL (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/USA---IL-Remote/AI-Software-Engineer_R32187-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "543f36466a8111a1",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Software Engineer (All Levels)",
+   "location": "US - Remote",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/US---Remote/Software-Engineer--All-Levels-_R32116-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "53b3d08f0ba12893",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Mexico (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/Mexico-Remote/Senior-Software-Engineer_R32521",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "76e75d489d806edb",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Lead AI Cloud Platform Engineer",
+   "location": "USA - IL (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/USA---IL-Remote/Lead-AI-Cloud-Platform-Engineer_R27019",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e5419ababffb42bf",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Senior AI Cloud Platform Engineer",
+   "location": "USA - IL (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/USA---IL-Remote/Senior-AI-Cloud-Platform-Engineer_R27021",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b609fd683e347f71",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Senior Product Engineer (Software/Java)",
+   "location": "USA - IL (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/USA---IL-Remote/Senior-Product-Engineer--Software-Java-_R31980",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d3cc9dda8ba22d75",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Product Engineer Senior Java Springboot",
+   "location": "USA - IL (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/USA---IL-Remote/Product-Engineer-Senior-Java-Springboot_R31924",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "505f13630faa43cb",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Azure Cloud Platform Engineer (Remote - US)",
+   "location": "US - Remote",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/US---Remote/Azure-Cloud-Platform-Engineer--Remote---US-_R29966-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "29ad7e346497c055",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Product Engineer – Java Spring Boot w/ Full Stack Option",
+   "location": "US - Remote",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/US---Remote/Product-Engineer---Java-Spring-Boot-w--Full-Stack-Option_R31310",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0037f256b9491a96",
+   "companyId": "allstate-india",
+   "company": "Allstate India",
+   "ats": "workday",
+   "title": "Software Engineer Senior Consultant - Dallas, TX or Chicago, IL- (Hybrid)",
+   "location": "USA - TX (Remote)",
+   "url": "https://allstate.wd5.myworkdayjobs.com/allstate_careers/job/USA---TX-Remote/Software-Engineer-Senior-Consultant---Dallas--TX----Hybrid-_R27958-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "25e7721682568968",
+   "companyId": "arize-ai",
+   "company": "Arize AI",
+   "ats": "greenhouse",
+   "title": "Senior AI Product Engineer, Backend",
+   "location": "Remote (United States)",
+   "url": "https://job-boards.greenhouse.io/arizeai/jobs/5396396004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b22b5e9972e3822b",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Bengaluru, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Bengaluru-IND/Software-Engineer_26WD99323-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "62645e5adf65cba5",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Senior-Software-Engineer_25WD93636-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3a322a92645560be",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Bengaluru-IND/Senior-Software-Engineer_26WD96742-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dd73ec68ecf35bc4",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Software Engineer, C++",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Software-Engineer--C--_26WD99403",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a2f4f0d585920496",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Development Engineer",
+   "location": "California, USA - Remote",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/California-USA---Remote/Senior-Software-Development-Engineer_26WD95189-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2ec6c014f0fcf0e9",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer (C++ )",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Senior-Software-Engineer--C----_26WD99601-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "85da16c067fbd86e",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Software Engineer (Java, AWS)",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Software-Engineer--Java--AWS-_26WD99569",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "03e82e40796121cf",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Agentic AI",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Senior-Software-Engineer---Agentic-AI_26WD94547-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8dbe2523a8915792",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Full-Stack Software Engineer",
+   "location": "Portugal - Remote",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Portugal---Remote/Senior-Full-Stack-Software-Engineer_26WD96668-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9398c48fee791f7e",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer (C++,QT)",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Senior-Software-Engineer--C---QT-_25WD93935",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3defb5ba695acf77",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Software Engineer – Electronics Systems & PCB Solutions",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Software-Engineer---Electronics-Systems---PCB-Solutions_26WD98658-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b10ea076e6c76f1d",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer(AI/ML Platform)",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Senior-Software-Engineer-AI-ML-Platform-_26WD96776-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4b88aded17684f4b",
+   "companyId": "bigcommerce",
+   "company": "BigCommerce",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Backend",
+   "location": "United States - Remote",
+   "url": "https://bigcommerce.wd12.myworkdayjobs.com/Commerce/job/United-States---Remote/Senior-Software-Engineer---Backend_JR102660",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1f6db7851969c54c",
+   "companyId": "bigcommerce",
+   "company": "BigCommerce",
+   "ats": "workday",
+   "title": "Lead Software Engineer - Remote",
+   "location": "United States - Remote",
+   "url": "https://bigcommerce.wd12.myworkdayjobs.com/Commerce/job/United-States---Remote/Lead-Infrastructure-Engineer---Remote_JR101994",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "02657eb29d0d530e",
+   "companyId": "bigcommerce",
+   "company": "BigCommerce",
+   "ats": "workday",
+   "title": "Senior Software Engineer (Full Stack)",
+   "location": "United States - Remote",
+   "url": "https://bigcommerce.wd12.myworkdayjobs.com/Commerce/job/United-States---Remote/Senior-Software-Engineer--Full-Stack-_JR102665-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f9904c4a8d6f7f11",
+   "companyId": "bigcommerce",
+   "company": "BigCommerce",
+   "ats": "workday",
+   "title": "Software Engineer II - Infrastructure - Remote",
+   "location": "United States - Remote",
+   "url": "https://bigcommerce.wd12.myworkdayjobs.com/Commerce/job/United-States---Remote/Infrastructure-Engineer-II_JR102166",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6ca642d56f9a6daa",
+   "companyId": "branch-deeplinking",
+   "company": "Branch (deeplinking)",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Platform",
+   "location": "Remote, US",
+   "url": "https://job-boards.greenhouse.io/branch/jobs/7771615003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5edcc48fa977c559",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Senior Java Engineer - Modern Engineering Team",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Senior-Data-Engineer---Modern-Engineering-Team_26961390",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "df56a6836f248070",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java Backend Engineer",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Java-Backend-Engineer_26941915",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c695de618aee8ec6",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java Fullstack Engineer",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Java-Fullstack-Engineer_26949780",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1360fc042cf741d0",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java Backend (Cybersecurity) - Assistant Vice President",
+   "location": "Chennai Tamil Nadu India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Chennai-Tamil-Nadu-India/Engineer-Sr-Analyst---C12---CHENNAI_26967341",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8e2cddfde6cd50c5",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java Backend (Cybersecurity) - Assistant Vice President",
+   "location": "Chennai Tamil Nadu India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Chennai-Tamil-Nadu-India/Engineer-Sr-Analyst---C12---CHENNAI_26967338",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dd7205529fe775a8",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Fullstack Engineer Java and C++",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Fullstack-Engineer-Java-and-C--_26953692-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b33692f559d99fd0",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java Microservices Engineering - Vice President",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Java-Microservices-Engineering---Vice-President_26958520",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d2b985fc2f542917",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java and Python Engineering Lead",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Java-and-Python-Engineering-Lead_26958533",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0c724753c9895131",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Data Platform Engineer (AI-Enabled)",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Data-Platform-Engineer--AI-Enabled-_26974385",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f96a1e573231030d",
+   "companyId": "citi",
+   "company": "Citi",
+   "ats": "workday",
+   "title": "Java Full stack Developer and Testing Engineer",
+   "location": "Pune Maharashtra India",
+   "url": "https://citi.wd5.myworkdayjobs.com/2/job/Pune-Maharashtra-India/Java-Full-stack-Developer-and-Testing-Engineer_26965009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "45a305e1ac97be69",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Cloud Software Engineer - Observability Platform",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5658009004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7c326ea8d9f5ed0a",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Cloud Software Engineer - Observability Platform",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5686805004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8a0f8bbfdea84f58",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Core Software Engineer (C++) - Remote",
+   "location": "India (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5767816004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0b209f60ab012141",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Core Software Engineer (C++) - Remote",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755090004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "25d105e794381b91",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Core Software Engineer (C++) - Remote",
+   "location": "United Kingdom (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755091004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "abfef2bea13be7f2",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Core Software Engineer (C++) - Remote",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755093004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2903a013cad65f78",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Core Software Engineer (C++) - Remote",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755092004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2ad972afaa71e9e3",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Billing Team",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5395374004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "522b6466afdb36ed",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Billing Team",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5584382004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5fb171bb56e14c18",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Billing Team",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5584386004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "febe55e09cc425d9",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Control Plane",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587666004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e2449b7d61fa300a",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Control Plane",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587665004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5806d1cf3e0c78aa",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Control Plane",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587664004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2d489237950d2c24",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - ClickStack",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5838217004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "33d33889df0a0f67",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - ClickStack",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5838221004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c46ce4023862e733",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - ClickStack",
+   "location": "United Kingdom (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5838218004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "952a1fe6dfc79c5f",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - ClickStack",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5838220004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4e188d1665f0dfd7",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - ClickStack",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5838219004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2f85e99db1f6e4db",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Infrastructure (ClickPipes)",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5776994004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3969f758d74a73a8",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Full Stack Software Engineer - ClickPipes Platform",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5777062004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e9842abfbff77493",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Full Stack Software Engineer - ClickPipes Platform",
+   "location": "United Kingdom (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5777061004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d90f7a67aa7bc2d4",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Backend) - AI/ML",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6009092004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "312f9b76449c775b",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "Canada(Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819679004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5ad50d18f7f28336",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "Amsterdam(Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819678004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a98957d251adc1bb",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "Singapore (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819676004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4d0f075f5c498a87",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "London(Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819677004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "af21c8550bb8251b",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "United States(Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819674004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6652a0196f920fa7",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Identity & Authorization Platform",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6018901004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "074547c524429b49",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Identity & Authorization Platform",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6018899004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5f08bdfbf9dc1ccd",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Java Streaming - Connectors",
+   "location": "Canada (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6000799004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9d73e0c60d5f9acd",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Java Streaming - Connectors",
+   "location": "United States (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6000796004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "82f4631e2ec74871",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Java Streaming - Connectors",
+   "location": "The Netherlands (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6000798004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "de2df52178ff5048",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Java Streaming - Connectors",
+   "location": "United Kingdom (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6000803004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "95f221e0f267c787",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Java Streaming - Connectors",
+   "location": "Israel (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6000804004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1b9d1830d1b8e89c",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Java Streaming - Connectors",
+   "location": "Germany (Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6000805004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "78056a16fa9581a1",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - JVM Language Clients",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5973223004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "509e5a1d1c859b66",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - JVM Language Clients",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5973224004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "597a8c2c8550f674",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - JVM Language Clients",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5973225004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fe71f01d25cf283f",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - JVM Language Clients",
+   "location": "Spain (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6097167004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d0edd71842d03b16",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Postgres",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5989607004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "59cd9fb823f2d7e1",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Postgres",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5989605004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "063a5a010dc601c2",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Postgres",
+   "location": "India (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5989606004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "64e05dd8a4e96374",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Database Integrations",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5765671004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "cd7e50c7dd81c9db",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Database Integrations",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5765673004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7e628d210ec3e947",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Database Integrations",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5765672004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "86dad61758ae5196",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7961318?gh_jid=7961318",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "aad4f9e61227dfc2",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/8021647?gh_jid=8021647",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8459bcb26d8b0790",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - AI Platform Team",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7997420?gh_jid=7997420",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f8b8b182769e3249",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Consumer - Prediction Markets)",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7997836?gh_jid=7997836",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b7f631eb60d75398",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Consumer - Risk)",
+   "location": "Remote - Canada",
+   "url": "https://www.coinbase.com/careers/positions/7930686?gh_jid=7930686",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a457ab99f0b5dacc",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend - Identity",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7746190?gh_jid=7746190",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "011b05a8773feacb",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Blockchain Network",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7967649?gh_jid=7967649",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "881538497b471081",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, CDP - Money Movement ",
+   "location": "Remote - Canada",
+   "url": "https://www.coinbase.com/careers/positions/8013129?gh_jid=8013129",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d40486c96851afe2",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Data Platform ",
+   "location": "Remote - Canada",
+   "url": "https://www.coinbase.com/careers/positions/7812407?gh_jid=7812407",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b43bf68008d5c3df",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Data Platform ",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7851231?gh_jid=7851231",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c5a5ac0ad774f630",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Developer Infrastructure",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7964402?gh_jid=7964402",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "90bfdcaa3c967316",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (EAA)",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7483221?gh_jid=7483221",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e6e8d71f5039cb68",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer,  Infrastructure - Compute Platform",
+   "location": "Remote - Canada",
+   "url": "https://www.coinbase.com/careers/positions/7701645?gh_jid=7701645",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "00836736d57183dc",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Infrastructure - Compute Platform",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7701651?gh_jid=7701651",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f71afe0996e77ec5",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Infrastructure - Core Infra Systems",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/8026678?gh_jid=8026678",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3cf10469884dfa5e",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Trading",
+   "location": "Remote - Singapore",
+   "url": "https://www.coinbase.com/careers/positions/7866674?gh_jid=7866674",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c9b7560ae05bfd92",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Software Engineer",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/8022068?gh_jid=8022068",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8147680d812d8226",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Software Engineer, EAA Integrations",
+   "location": "Remote - India",
+   "url": "https://www.coinbase.com/careers/positions/7558051?gh_jid=7558051",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "37c8f1107fa16c3f",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Enterprise Apps",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7958901?gh_jid=7958901",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a25d9d81cbbb7096",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Enterprise Apps",
+   "location": "Remote - Brazil",
+   "url": "https://www.coinbase.com/careers/positions/8024814?gh_jid=8024814",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "40a578bf868d8b5a",
+   "companyId": "coinbase",
+   "company": "Coinbase",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Salesforce Platform (EAA)",
+   "location": "Remote - USA",
+   "url": "https://www.coinbase.com/careers/positions/7652048?gh_jid=7652048",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fc2aaf06303b84ca",
+   "companyId": "commvault",
+   "company": "Commvault",
+   "ats": "greenhouse",
+   "title": "Senior Engineer- AI & Automation",
+   "location": "Bangalore, India; Hyderbad, India; Pune, India",
+   "url": "https://job-boards.greenhouse.io/commvault/jobs/5272311008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "77a9b3055edc07f0",
+   "companyId": "commvault",
+   "company": "Commvault",
+   "ats": "greenhouse",
+   "title": "Software Engineer – Automation & ServiceNow",
+   "location": "Bangalore, India; Hyderbad, India",
+   "url": "https://job-boards.greenhouse.io/commvault/jobs/5275524008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f0803f6c9482b6e1",
+   "companyId": "confluent",
+   "company": "Confluent",
+   "ats": "ashby",
+   "title": "Senior Software Engineer - Infrastructure",
+   "location": "CA Remote Ontario",
+   "url": "https://jobs.ashbyhq.com/confluent/4218f1c2-3679-4aff-a458-20ef09817fc4",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e2b92333354d0acf",
+   "companyId": "confluent",
+   "company": "Confluent",
+   "ats": "ashby",
+   "title": "Senior Software Engineer",
+   "location": "GB Remote United Kingdom",
+   "url": "https://jobs.ashbyhq.com/confluent/8b41454a-1025-418b-b7eb-642dd8408219",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c8100a5c4479b60a",
+   "companyId": "confluent",
+   "company": "Confluent",
+   "ats": "ashby",
+   "title": "Senior Software Engineer II, Kora Compute",
+   "location": "CA Remote Ontario",
+   "url": "https://jobs.ashbyhq.com/confluent/a24f234c-08a3-4184-a357-763ce5e69454",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0cac9518301ace96",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "AI Platform Engineer (Remote)",
+   "location": "USA - Remote",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/USA---Remote/AI-Platforms-Manager--Remote-_R26362",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c8d0d144ea206467",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Sr. Software Engineer, Vendor Semantics and Developer Experience (Remote)",
+   "location": "USA - Remote",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/USA---Remote/Sr-Software-Engineer--Vendor-Semantics-and-Developer-Experience--Remote-_R29267",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "63e946cef3ed0ece",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Backend Engineer III (Hybrid, IND)",
+   "location": "India - Bangalore",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/India---Bangalore/Backend-Engineer-III--Hybrid--IND-_R29207",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c577e972e69c9f8d",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Backend Engineer III (Hybrid)",
+   "location": "India - Pune",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/India---Pune/Backend-Engineer-III--Hybrid-_R28420",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3eac36017c561624",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Senior Engineer - Data (Remote, ROU)",
+   "location": "Romania - Remote",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/Romania---Remote/Manager--Data-Science--Remote--ESP-_R25800-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "be7b868492bf74f3",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Backend Engineer III (Hybrid, NYC)",
+   "location": "USA - Remote, NY",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/USA---Remote-NY/Backend-Engineer-III--Hybrid--NYC-_R28991",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d4aff3dd3bd0a366",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Sr. Backend Engineer (Hybrid)",
+   "location": "USA - Remote, NY",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/USA---Remote-NY/Sr-Backend-Engineer--Hybrid--Austin-_R28425",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b93a115ff8b6f92a",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Sr. Backend Engineer (Hybrid, NYC)",
+   "location": "USA - Remote, NY",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/USA---Remote-NY/Sr-Backend-Engineer--Hybrid--NYC-_R28993",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "010faff04b116c5b",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Sr. Backend Engineer",
+   "location": "India - Bangalore",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/India---Bangalore/Sr-Backend-Engineer_R29136",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9f49cb54dea7f32e",
+   "companyId": "databricks",
+   "company": "Databricks",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Money)",
+   "location": "Bengaluru, India",
+   "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=7654347002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b4b6cd7a9dab6000",
+   "companyId": "databricks",
+   "company": "Databricks",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Multi Cloud Efficiency",
+   "location": "Bengaluru, India",
+   "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8602402002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b5d2c5384e870615",
+   "companyId": "databricks",
+   "company": "Databricks",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer- Networking",
+   "location": "Bengaluru, India",
+   "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=7647353002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "10dea71388bcf3e9",
+   "companyId": "databricks",
+   "company": "Databricks",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Observability",
+   "location": "Bengaluru, India",
+   "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=7619811002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f5cced576bbb689f",
+   "companyId": "datadog",
+   "company": "Datadog",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Linux/eBPF",
+   "location": "Denmark, Remote; France, Remote; Germany, Remote; Ireland, Remote; Italy, Remote; Poland, Remote; Spain, Remote; Sweden, Remote; Switzerland, Remote; United Kingdom, Remote",
+   "url": "https://careers.datadoghq.com/detail/7957460/?gh_jid=7957460",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bdd46d52e45f9dc7",
+   "companyId": "datadog",
+   "company": "Datadog",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Linux/eBPF",
+   "location": "Portugal, Remote",
+   "url": "https://careers.datadoghq.com/detail/7957461/?gh_jid=7957461",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6a80d5ed2315a05a",
+   "companyId": "datadog",
+   "company": "Datadog",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Linux Kernel/eBPF",
+   "location": "Alabama, USA, Remote; Arizona, USA, Remote; Arkansas, USA, Remote; California, USA, Remote; Colorado, USA, Remote; Connecticut, USA, Remote; Delaware, USA, Remote; District of Columbia, USA, Remote; Florida, USA, Remote; Georgia, USA, Remote; Idaho, USA, Remote; Illinois, USA, Remote; Indiana, USA, Remote; Iowa, USA, Remote; Kansas, USA, Remote; Kentucky, USA, Remote; Louisiana, USA, Remote; Maine, USA, Remote; Maryland, USA, Remote; Massachusetts, USA, Remote; Michigan, USA, Remote; Minnesota, USA, Remote; Missouri, USA, Remote; Montana, USA, Remote; Nebraska, USA, Remote; Nevada, USA, Remote; New Hampshire, USA, Remote; New Jersey, USA, Remote; New Mexico, USA, Remote; New York, USA, Remote; North Carolina, USA, Remote; Ohio, USA, Remote; Oklahoma, USA, Remote; Oregon, USA, Remote; Pennsylvania, USA, Remote; Rhode Island, USA, Remote; South Carolina, USA, Remote; South Dakota, USA, Remote; Tennessee, USA, Remote; Texas, USA, Remote; Utah, USA, Remote; Vermont, USA, Remote; Virginia, USA, Remote; Washington, USA, Remote; Wisconsin, USA, Remote",
+   "url": "https://careers.datadoghq.com/detail/7983548/?gh_jid=7983548",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a6c8a725af56dfb2",
+   "companyId": "datadog",
+   "company": "Datadog",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - REDAPL Graph Engine",
+   "location": "France, Remote; Germany, Remote; Spain, Remote",
+   "url": "https://careers.datadoghq.com/detail/7959966/?gh_jid=7959966",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "253de7d9d211bbdc",
+   "companyId": "dataiku",
+   "company": "Dataiku",
+   "ats": "greenhouse",
+   "title": "Fullstack Software Engineer - Business Solutions",
+   "location": "France, Remote; Netherlands, Remote; Spain, Remote; United Kingdom, Remote",
+   "url": "https://job-boards.greenhouse.io/dataiku/jobs/5963977004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "98ed573ced1f3bd6",
+   "companyId": "dataiku",
+   "company": "Dataiku",
+   "ats": "greenhouse",
+   "title": "Fullstack Software Engineer - Core",
+   "location": "France, Remote; Germany, Remote; Netherlands, Remote; Spain, Remote; United Kingdom, Remote",
+   "url": "https://job-boards.greenhouse.io/dataiku/jobs/5420293004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3a26d192868ee87b",
+   "companyId": "dataiku",
+   "company": "Dataiku",
+   "ats": "greenhouse",
+   "title": "Fullstack Software Engineer - Core",
+   "location": "Netherlands, Amsterdam; Netherlands, Remote",
+   "url": "https://job-boards.greenhouse.io/dataiku/jobs/5420296004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "157790eda20105d6",
+   "companyId": "dataiku",
+   "company": "Dataiku",
+   "ats": "greenhouse",
+   "title": "Fullstack Software Engineer - Core ",
+   "location": "United Kingdom, London; United Kingdom, Remote",
+   "url": "https://job-boards.greenhouse.io/dataiku/jobs/5420295004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a30f86d4d2334c9c",
+   "companyId": "ema-unlimited",
+   "company": "Ema Unlimited",
+   "ats": "ashby",
+   "title": "Platform Engineer",
+   "location": "India - Bengaluru",
+   "url": "https://jobs.ashbyhq.com/ema/748c829c-cb1d-48cf-90da-780593e89bea",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "07c1896ca421a3f8",
+   "companyId": "ema-unlimited",
+   "company": "Ema Unlimited",
+   "ats": "ashby",
+   "title": "Software Engineer, Full Stack - UK",
+   "location": "United Kingdom (Remote)",
+   "url": "https://jobs.ashbyhq.com/ema/8207a75e-2762-4f5f-bb40-1fa168b918e0",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5db07ab551d2305a",
+   "companyId": "ema-unlimited",
+   "company": "Ema Unlimited",
+   "ats": "ashby",
+   "title": "Software Engineer, Machine Learning",
+   "location": "Bengaluru office",
+   "url": "https://jobs.ashbyhq.com/ema/88d004d9-50a9-41ee-a618-03855001a9be",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "33506d8a5d9019e6",
+   "companyId": "ema-unlimited",
+   "company": "Ema Unlimited",
+   "ats": "ashby",
+   "title": "Software Engineer, Backend - India",
+   "location": "Bengaluru office",
+   "url": "https://jobs.ashbyhq.com/ema/eb62df31-0370-447f-8cc6-707e79cbc9fa",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6a5a9d0e6f89acd6",
+   "companyId": "expedia",
+   "company": "Expedia",
+   "ats": "workday",
+   "title": "Senior Software Development Engineer",
+   "location": "India - Gurgaon",
+   "url": "https://expedia.wd108.myworkdayjobs.com/search/job/India---Gurgaon/Senior-Software-Development-Engineer_R-107384",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "792c6fcdb34e3066",
+   "companyId": "expedia",
+   "company": "Expedia",
+   "ats": "workday",
+   "title": "Senior Software Development Engineer",
+   "location": "India - Gurgaon",
+   "url": "https://expedia.wd108.myworkdayjobs.com/search/job/India---Gurgaon/Senior-Software-Development-Engineer_R-106678",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4338eaf2ddad03ab",
+   "companyId": "expedia",
+   "company": "Expedia",
+   "ats": "workday",
+   "title": "Senior Software Development Engineer",
+   "location": "India - Gurgaon",
+   "url": "https://expedia.wd108.myworkdayjobs.com/search/job/India---Gurgaon/Senior-Software-Development-Engineer_R-107460",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Sr. Software Development Engineer- Full Stack",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Sr-Systems-Analyst---Oracle-Finance_RP1035766-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "AI/ML Software Development Engineer III",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Sr-ServiceNow-Engineer_RP1035768",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Network Platform Engineer",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Network-Platform-Engineer_RP1037203",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III_RP1037686",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Sr Software Development Engineer",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Sr-Software-Development-Engineer_RP1034915",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Sr Software Development Engineer",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Sr-Software-Development-Engineer_RP1035565",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III_RP1034540",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer II",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Software-Development-Engineer-II_RP1037515-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer - II",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Software-Development-Engineer---II_RP1037321-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer - II",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Software-Development-Engineer---II_RP1037320",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037735",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037734",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037733",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer II",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Software-Development-Engineer-II_RP1037722",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Sr Software Development Engineer - Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Sr-Software-Development-Engineer---Firewall_RP1037669-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Sr Software Development Engineer - Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Sr-Software-Development-Engineer---Firewall_RP1037668",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III---Firewall_RP1037726",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037727",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037728-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Software-Development-Engineer-III_RP1037721",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037729",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III---Firewall_RP1037725",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037732-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037731-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Development Engineer III  — Firewall",
+   "location": "Bangalore (Non-SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Bangalore-Non-SEZ/Software-Development-Engineer-III----Firewall_RP1037730",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Sr Software Development Engineer",
+   "location": "Hyderabad",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad/Sr-Software-Development-Engineer_RP1037718",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Software Engineer III (C++ with SSL)",
+   "location": "Hyderabad (SEZ)",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad-SEZ/Software-Engineer-III--C---with-SSL-_RP1036595",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71f4228380da7fe3",
+   "companyId": "f5-networks",
+   "company": "F5 Networks",
+   "ats": "workday",
+   "title": "Senior Engineer – IPSec, Kubernetes, Networking",
+   "location": "Hyderabad",
+   "url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/Hyderabad/Senior-Engineer---IPSec--Kubernetes--Networking_RP1037717",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c8ed6e156254e978",
+   "companyId": "fivetran",
+   "company": "Fivetran",
+   "ats": "greenhouse",
+   "title": "Senior Platform Software Engineer, Transport",
+   "location": "Remote, Colorado, United States, AMER",
+   "url": "https://www.fivetran.com/careers/job?gh_jid=7787903003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a17f9652430e0283",
+   "companyId": "fivetran",
+   "company": "Fivetran",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, Karnataka, India, APAC",
+   "url": "https://www.fivetran.com/careers/job?gh_jid=7531626003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c7973745b0430517",
+   "companyId": "fivetran",
+   "company": "Fivetran",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, Karnataka, India, APAC",
+   "url": "https://www.fivetran.com/careers/job?gh_jid=7687229003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a00761910d6479e9",
+   "companyId": "fivetran",
+   "company": "Fivetran",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, Karnataka, India, APAC",
+   "url": "https://www.fivetran.com/careers/job?gh_jid=7780075003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ae897f5b71009c68",
+   "companyId": "fractal-analytics",
+   "company": "Fractal Analytics",
+   "ats": "workday",
+   "title": "AWS Engineer and Senior Engineer",
+   "location": "",
+   "url": "https://fractal.wd1.myworkdayjobs.com/Careers/job/AWS-Data-Engineer_SR-15059",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0488b8f1f3f07c97",
+   "companyId": "fractal-analytics",
+   "company": "Fractal Analytics",
+   "ats": "workday",
+   "title": "Fullstack React Engineer /Senior Engineer-ReBoot",
+   "location": "",
+   "url": "https://fractal.wd1.myworkdayjobs.com/Careers/job/Fullstack-React-Engineer--Senior-Engineer_SR-18097-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "83c8be04d216b5f4",
+   "companyId": "fractal-analytics",
+   "company": "Fractal Analytics",
+   "ats": "workday",
+   "title": "Full Stack Senior Engineer (React+Python)",
+   "location": "Bengaluru",
+   "url": "https://fractal.wd1.myworkdayjobs.com/Careers/job/Bengaluru/Full-Stack-Senior-Engineer--React-Python-_SR-27908",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "086bd59ea4aec0ef",
+   "companyId": "fractal-analytics",
+   "company": "Fractal Analytics",
+   "ats": "workday",
+   "title": "Data Governance Senior Engineer/ Architect- ReBoot",
+   "location": "",
+   "url": "https://fractal.wd1.myworkdayjobs.com/Careers/job/Data-Governance-Senior-Engineer--Architect_SR-18096-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f894aa66795b0697",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Backend Engineer (Ruby), AI Engineering: Agent Observability",
+   "location": "Remote, Canada",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8620720002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "71cee5deda491ce2",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Backend Engineer (Ruby), AI Engineering: Duo Agent Platform Tools",
+   "location": "Remote, Canada; Remote, United Kingdom",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8605283002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2847eb7e15a4906a",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Intermediate Backend Engineer (C), Tenant Scale: Git ",
+   "location": "Remote, India",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8497793002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4e77fb22e9131bc3",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer, Analytics Instrumentation (Golang)",
+   "location": "Remote, Canada; Remote, US",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8451512002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7b53499106ffcc26",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer, Gitlab Delivery: Zero Downtime Upgrades",
+   "location": "Remote, India",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8463925002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ecbe6fc73d734b25",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer(Go), Continuous Delivery",
+   "location": "Remote, India",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8488966002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7495f15f9771ba7c",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Ruby), AI Engineering: Duo Agent Platform Tools",
+   "location": "Remote, Canada; Remote, United Kingdom",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8603839002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5a00fc3bffb6bd1a",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer,  SSCS: Supply Chain",
+   "location": "Remote, India",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8480580002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "68fe40beccef276c",
+   "companyId": "gitlab",
+   "company": "GitLab",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (RoR/Go), SSCS: Authentication",
+   "location": "Remote, Canada",
+   "url": "https://job-boards.greenhouse.io/gitlab/jobs/8614945002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d4a59673ef66e241",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Databases Pyroscope | Canada | Remote",
+   "location": "Canada (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5807088004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e1d0f980d5d0a405",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Databases Pyroscope | US | Remote",
+   "location": "United States (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5807096004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e3dac628ed3a53a1",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Grafana Backend Services | Germany | Remote",
+   "location": "Germany (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6019652004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "23146dabdbbfa49e",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Grafana Backend Services | Ireland | Remote",
+   "location": "Republic of Ireland (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6019651004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "48f443289a2c1a8d",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Grafana Backend Services | Spain | Remote",
+   "location": "Spain (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6019653004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fa7bf6a8fc783882",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Grafana Backend Services | Sweden | Remote",
+   "location": "Sweden (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6019654004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3240a81728ed78cd",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Grafana Backend Services | UK | Remote",
+   "location": "United Kingdom (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6019656004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0dce6f56e3d3ebce",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Application Core Services | Spain | Remote ",
+   "location": "Spain (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5984599004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a7f7d6ada5ef2ff3",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Cloud Observability Provider | Germany | Remote",
+   "location": "Germany (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6101645004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8485f6da40448f72",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Cloud Observability Provider | Spain | Remote",
+   "location": "Spain (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6101648004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "138f7b5e9f4c82c9",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Cloud Observability Provider | Sweden | Remote",
+   "location": "Sweden (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6101649004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1ee0e15a6c2b108c",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Cloud Observability Provider | UK | Remote",
+   "location": "United Kingdom (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6101597004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "33a8344c5c5f9414",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Databases, Managed Services | Germany | Remote",
+   "location": "Germany (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/6099850004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "650c57db1c38518b",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Databases, Managed Services | Ireland | Remote",
+   "location": "Republic of Ireland (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5989632004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "666f9b319bc7883d",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Databases, Managed Services | Spain | Remote",
+   "location": "Spain (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5989629004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f15348031055cdc9",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Grafana Databases, Managed Services | UK | Remote",
+   "location": "United Kingdom (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5989631004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6558c27d102c0e4a",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Observability Real User Monitoring (RUM) | Canada | Remote",
+   "location": "Canada (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5979016004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7ac62aa09490d575",
+   "companyId": "grafana-labs",
+   "company": "Grafana Labs",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Observability Real User Monitoring (RUM) | US | Remote",
+   "location": "United States (Remote)",
+   "url": "https://job-boards.greenhouse.io/grafanalabs/jobs/5979012004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "928d39284bbc923b",
+   "companyId": "graviton-research-capital",
+   "company": "Graviton Research Capital",
+   "ats": "greenhouse",
+   "title": "Software Engineer",
+   "location": "Gurugram, Haryana, India",
+   "url": "https://boards.greenhouse.io/gravitonresearchcapital/jobs/5099344002?gh_jid=5099344002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4f529d9dbe5f309d",
+   "companyId": "graviton-research-capital",
+   "company": "Graviton Research Capital",
+   "ats": "greenhouse",
+   "title": "Software Engineer (C++)",
+   "location": "Gurugram, Haryana, India",
+   "url": "https://boards.greenhouse.io/gravitonresearchcapital/jobs/4004920002?gh_jid=4004920002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "12264ad9ecdab090",
+   "companyId": "graviton-research-capital",
+   "company": "Graviton Research Capital",
+   "ats": "greenhouse",
+   "title": "Software Engineer- Python",
+   "location": "Gurugram, Haryana, India",
+   "url": "https://boards.greenhouse.io/gravitonresearchcapital/jobs/8147013002?gh_jid=8147013002",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "174f5eab955d0e5e",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Lead Software Engineer - Platform Data Team",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/456ce06e-9d25-42e6-9723-4f3ed458199f",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fb2625e685f38b5a",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer - Platform Data Team",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/ab7a9f29-0a75-4ff3-8f7b-1e38e9a307b4",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e26337673d10518b",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Backend (Builder)",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/58bdc166-56bb-4446-95ed-1e967b59513a",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b05489a544db7b8c",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Backend Developer (Courses)",
+   "location": "Delhi",
+   "url": "https://jobs.lever.co/gohighlevel/414de866-aaa5-47e4-a011-0a5f3e67d6cf",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2ce469082b775b2d",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Conversations",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/4ec92bca-2593-4081-85fb-c8288147939d",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "13643219cc4d41c4",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Core CRM",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/8d7aa8e6-5bcf-4e8a-90cd-6cad197bff31",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1dba4a06daa0dcaf",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Custom Objects (Backend)",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/b497d5c0-1f46-4862-a814-5f4969675712",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c489da20de15cc4d",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Full Stack Development (Social Planner)",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/e748460e-6da2-48f5-b927-30caf0d1634d",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "372487df15161dce",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Fullstack",
+   "location": "Delhi",
+   "url": "https://jobs.lever.co/gohighlevel/45f691c4-d958-4bed-9038-e4b5a69d57d7",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "719d62b273aaccd0",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Platform",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/1defaa0e-0937-45b8-8c21-edaf75cb5683",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bcce8d6cc7856c37",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Users",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/d541f10d-0202-4327-a229-625f95843189",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "34a208a0bd2bda7d",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III - Workflow AI",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/8529412e-dd5e-4e04-b0af-0c980f16c623",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ae0c2bba57a08f5a",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III (Backend) - Contacts",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/5581b367-4b76-41e2-b426-ce55cf66c5a6",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a7ffeb49fc7b3657",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III (CRM - Bulk Import)",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/de3dc199-6eb6-4dfa-8c1e-1d993446fecb",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "62e50b95d9465d90",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III (Full Stack) - Agency Experience",
+   "location": "Delhi",
+   "url": "https://jobs.lever.co/gohighlevel/bb0904cb-fd12-42ec-be1d-c64deb7ea6ef",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0dfa6b62ff617554",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III (Fullstack ) - Workflows",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/aa1ac843-c6a4-471f-8783-de8089e9d325",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8b97381118747a7d",
+   "companyId": "highlevel",
+   "company": "HighLevel",
+   "ats": "lever",
+   "title": "Software Development Engineer III (Fullstack) - Contacts",
+   "location": "India",
+   "url": "https://jobs.lever.co/gohighlevel/d56c64b7-dd9a-4660-8ac6-1e380b9538f3",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4716906f27f25c69",
+   "companyId": "highradius",
+   "company": "Highradius",
+   "ats": "greenhouse",
+   "title": "Java Architect",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://www.highradius.com/about/careers-list/?gh_jid=7676819003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0587d2e1da4a98b2",
+   "companyId": "highradius",
+   "company": "Highradius",
+   "ats": "greenhouse",
+   "title": "Java Architect",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://www.highradius.com/about/careers-list/?gh_jid=7490280003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f6749bd912a7e545",
+   "companyId": "highradius",
+   "company": "Highradius",
+   "ats": "greenhouse",
+   "title": "Java Developer III",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://www.highradius.com/about/careers-list/?gh_jid=6652241003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "faf947dcbb93d03d",
+   "companyId": "highradius",
+   "company": "Highradius",
+   "ats": "greenhouse",
+   "title": "Java Developer IV",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://www.highradius.com/about/careers-list/?gh_jid=7608628003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fa5f1d577cb83841",
+   "companyId": "highradius",
+   "company": "Highradius",
+   "ats": "greenhouse",
+   "title": "Python SDE-III",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://www.highradius.com/about/careers-list/?gh_jid=7490263003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "21afb0bd1667f99a",
+   "companyId": "highradius",
+   "company": "Highradius",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Java) ",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://www.highradius.com/about/careers-list/?gh_jid=6529471003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c3c14050ce9a1faa",
+   "companyId": "hightouch",
+   "company": "Hightouch",
+   "ats": "greenhouse",
+   "title": "Software Engineer, AI Agents",
+   "location": "Remote (North America)",
+   "url": "https://job-boards.greenhouse.io/hightouch/jobs/5542602004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "35ac4f9918c891d3",
+   "companyId": "hightouch",
+   "company": "Hightouch",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Control Plane",
+   "location": "Remote (North America)",
+   "url": "https://job-boards.greenhouse.io/hightouch/jobs/5983891004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7434e9cd494196ef",
+   "companyId": "hightouch",
+   "company": "Hightouch",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Customer Studio Backend",
+   "location": "Remote (North America)",
+   "url": "https://job-boards.greenhouse.io/hightouch/jobs/5983811004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c1e7db4aae888810",
+   "companyId": "hightouch",
+   "company": "Hightouch",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Distributed Systems",
+   "location": "Remote (North America)",
+   "url": "https://job-boards.greenhouse.io/hightouch/jobs/4782632004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9f6a2892a4eb5d98",
+   "companyId": "hightouch",
+   "company": "Hightouch",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Native Delivery",
+   "location": "Remote (North America)",
+   "url": "https://job-boards.greenhouse.io/hightouch/jobs/6004706004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "06ed6e32f7d137e9",
+   "companyId": "hightouch",
+   "company": "Hightouch",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Streaming Systems",
+   "location": "Remote (North America)",
+   "url": "https://job-boards.greenhouse.io/hightouch/jobs/5983863004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f8d1022b0832da44",
+   "companyId": "honeycomb",
+   "company": "Honeycomb",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer II - App Observability",
+   "location": "Remote - Canada",
+   "url": "https://job-boards.greenhouse.io/honeycomb/jobs/5132852008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c0a26c5fa18cb7b4",
+   "companyId": "honeycomb",
+   "company": "Honeycomb",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer II - App Observability",
+   "location": "Remote - United States",
+   "url": "https://job-boards.greenhouse.io/honeycomb/jobs/5132850008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fc781c9107aead78",
+   "companyId": "imc-trading",
+   "company": "IMC Trading",
+   "ats": "greenhouse",
+   "title": "C++ Software Engineer",
+   "location": "Mumbai, India",
+   "url": "https://job-boards.eu.greenhouse.io/imc/jobs/4282973101",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a9224b8df003dde5",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Software Engineer 3 (Forwarding Engineer)",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-3_1200908-3",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9a36b4c1579aab1f",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer_1191892-3",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1e1b7e77b215d6fc",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer_1197826",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "917c8ff92d9f4aa9",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer_1202005-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a9eff023eb288da9",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Software Engineer- Networking",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer--Networking_1198269",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "123941c87656ba90",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Senior-Software-Engineer_1205282-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "50a4164a04c62d29",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "DAOS Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/DAOS-Software-Engineer_1205967-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3818b577e688581f",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Software Engineer - SASE",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer---SASE_1207728-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "168d86646459d1cd",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Senior-Software-Engineer_1207572-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4bc86db073a600c7",
+   "companyId": "juniper-networks",
+   "company": "Juniper Networks",
+   "ats": "workday",
+   "title": "Principle Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Principle-Software-Engineer_1206800-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "28e698ce18a8cdb1",
+   "companyId": "launchdarkly",
+   "company": "LaunchDarkly",
+   "ats": "greenhouse",
+   "title": "Backend Engineer, Flag Delivery",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/launchdarkly/jobs/7767461003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d73cbc3b879d4f77",
+   "companyId": "launchdarkly",
+   "company": "LaunchDarkly",
+   "ats": "greenhouse",
+   "title": "SDK Software Engineer, AI",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/launchdarkly/jobs/7647797003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ad8c4ee7ea777165",
+   "companyId": "launchdarkly",
+   "company": "LaunchDarkly",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer, Data Platform",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/launchdarkly/jobs/7791926003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "688188cb8c1aae9b",
+   "companyId": "linkedin",
+   "company": "LinkedIn",
+   "ats": "lever",
+   "title": "Software Engineer IV",
+   "location": "Bangalore",
+   "url": "https://jobs.lever.co/linkedin/31cb9434-6fc3-4ab8-8998-e878d0742ad7",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3d76728d6d0540b8",
+   "companyId": "manhattan-associates",
+   "company": "Manhattan Associates",
+   "ats": "workday",
+   "title": "Senior Engineer - AI",
+   "location": "Bangalore",
+   "url": "https://manh.wd5.myworkdayjobs.com/External/job/Bangalore/Senior-Engineer---AI_16887",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2fba38b782879efa",
+   "companyId": "manhattan-associates",
+   "company": "Manhattan Associates",
+   "ats": "workday",
+   "title": "Senior Engineer - SharePoint Administration",
+   "location": "Bangalore",
+   "url": "https://manh.wd5.myworkdayjobs.com/External/job/Bangalore/Senior-Lead-SharePoint-Administration_16848",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "055364a7f99cf198",
+   "companyId": "manhattan-associates",
+   "company": "Manhattan Associates",
+   "ats": "workday",
+   "title": "Senior Engineer - IT Infrastructure & Storage",
+   "location": "Bangalore",
+   "url": "https://manh.wd5.myworkdayjobs.com/External/job/Bangalore/Principal-Engineer_16422",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "303485678dc244ca",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer I",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-I_R-281042",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ec3a62f77acf322f",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer - Development (Java Full stack developer)",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer---Development-in-Java--micro-services--RESTful-APIs--Angular--Cloud-Kubernetes-and-Docker_R-280848",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b898a9dd960bac16",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer (Java Full stack, Python)",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer--Java-Full-stack---AI--Python---PyTorch---TensorFlow--Hugging-Face-_R-278862-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fe5a5e70170b6b1c",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer-2",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer-2_R-275122",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b44bdfe8edc2a853",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II - Java Full stack",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II---Java-Full-stack_R-276490",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b9dc5d413da0fd09",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer - Agentic Systems",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer---Agentic-Systems_R-279158-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "32edc27e5d0d1939",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II_R-280085-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "03eaa7ef5194fe98",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II (C, C++ on Unix, Experience with socket programming, IPC)",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer--C---Developer---Unix-Linux---ISO-8583---Payment-Domain-_R-280086-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b1a3dc74fea184de",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II_R-281554",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b5db5b5ab61660b0",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer - C/C++, Unix/Linux, ARQC, ARPC, HSM",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer---C-C----Unix-Linux--ARQC--ARPC--HSM_R-281192",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "eebb2ea20a31f024",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Platform Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Platform-Engineer_R-275263",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f6790ee80e5ab35b",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer I",
+   "location": "Vadodara, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Vadodara-India/Software-Engineer-I_R-280898",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "831c0c82ce145aee",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II",
+   "location": "Navi Mumbai, India (Finicity)",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Navi-Mumbai-India-Finicity/Software-Engineer-II_R-275092",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "824eabc1a3d0a269",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Java Backend",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer---Java-Backend_R-282235",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "217f28e40b5651b3",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II_R-281363",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c1dd960415e896d3",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer (Java full stack, mcp servers, AI engineering technologies)",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer--Java-full-stack--mcp-servers--AI-engineering-technologies-_R-280156-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "417a20382fafaa24",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer - Java, Spring, Springboot, Kafka, Cryptography, Session Key Derivation,  HSM",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer---Java--Spring--Springboot--Kafka--Cryptography--Session-Key-Derivation---HSM_R-281270",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d9ec938a279cbe58",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer_R-281537",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bfb36ed6b120220c",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Platform Engineer II",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Platform-Engineer-II_R-279214-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "473e20be050a3b33",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II (Mainframe Developer)",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II--Mainframe-Developer-_R-274163",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "31c18b23d0269454",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer_R-278493-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ccf6f5ab32943bdc",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer_R-256860-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a4956879b934f2e8",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Lead Software Engineer - Java Backend",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Lead-Software-Engineer---Java-Backend_R-273738",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b2f49d600c682385",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer-2",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer-2_R-270947",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9f98af545b3d1a27",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer_R-277729-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "370639abaea85987",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer - File Transfer Services",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer---File-Transfer-Services_R-281842-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bec3225685aae912",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Software Engineer II (Full stack developer)-2",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II--Full-stack-developer--2_R-280827",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "344f82a2d701d013",
+   "companyId": "meesho",
+   "company": "Meesho",
+   "ats": "lever",
+   "title": "Software Development Engineer III Data",
+   "location": "Bangalore, Karnataka",
+   "url": "https://jobs.lever.co/meesho/7bb1de7e-8756-412b-8c71-0ba40863edc8",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3aff50fcd619b017",
+   "companyId": "merck-msd",
+   "company": "Merck (MSD)",
+   "ats": "workday",
+   "title": "Specialist, Data Streaming Platform Engineer",
+   "location": "IND - Telangana - Hyderabad (Gachibowli Village)",
+   "url": "https://msd.wd5.myworkdayjobs.com/SearchJobs/job/IND---Telangana---Hyderabad-Gachibowli-Village/Specialist--Data-Streaming-Platform-Engineer_R402227-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c37b07d63be257f3",
+   "companyId": "mercury",
+   "company": "Mercury",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer - Product",
+   "location": "San Francisco, CA, New York, NY, Portland, OR, or Remote within Canada or United States",
+   "url": "https://job-boards.greenhouse.io/mercury/jobs/6101148004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ad4fd8eae8d5d458",
+   "companyId": "mercury",
+   "company": "Mercury",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - AI Engineering",
+   "location": "San Francisco, CA, New York, NY, Portland, OR, or Remote within Canada or United States",
+   "url": "https://job-boards.greenhouse.io/mercury/jobs/5850044004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d0feb1fec626d1c1",
+   "companyId": "mercury",
+   "company": "Mercury",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Investments",
+   "location": "San Francisco, CA, New York, NY, Portland, OR, or Remote within Canada or United States",
+   "url": "https://job-boards.greenhouse.io/mercury/jobs/5990652004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "34f1f28b36b3183e",
+   "companyId": "mercury",
+   "company": "Mercury",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Mercury Command",
+   "location": "San Francisco, CA, New York, NY, Portland, OR, or Remote within Canada or United States",
+   "url": "https://job-boards.greenhouse.io/mercury/jobs/5803347004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f28307c6a7312355",
+   "companyId": "mercury",
+   "company": "Mercury",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Product",
+   "location": "San Francisco, CA, New York, NY, Portland, OR, or Remote within Canada or United States",
+   "url": "https://job-boards.greenhouse.io/mercury/jobs/6101145004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fcca2a7fc843a27e",
+   "companyId": "mindtickle",
+   "company": "Mindtickle",
+   "ats": "lever",
+   "title": "Software Development Engineer - I",
+   "location": "Pune, Maharashtra",
+   "url": "https://jobs.lever.co/mindtickle/477ff38c-f0d4-4655-b714-ed6205975c11",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fcca2a7fc843a27e",
+   "companyId": "mindtickle-2",
+   "company": "MindTickle",
+   "ats": "lever",
+   "title": "Software Development Engineer - I",
+   "location": "Pune, Maharashtra",
+   "url": "https://jobs.lever.co/mindtickle/477ff38c-f0d4-4655-b714-ed6205975c11",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8774e1fa346b4c8a",
+   "companyId": "mixpanel",
+   "company": "Mixpanel",
+   "ats": "greenhouse",
+   "title": "Software Engineer, DevInfra",
+   "location": "San Francisco, US (Remote)",
+   "url": "https://job-boards.greenhouse.io/mixpanel/jobs/7941929",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3bd2d16945b3532c",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Senior Engineer",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7993981",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bbef0fc99ad1e935",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Senior Engineer - Business Systems (FP&A)",
+   "location": "Bengaluru; Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7942613",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9ba58dab8cdb4925",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Senior Engineer - Business Systems (Integrations)",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7778978",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "cc7d3a373612379b",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Senior Engineer - GTM Tech",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=8018423",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5627dbd5ab229f8a",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Senior Platform Engineer",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7924987",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "996f1c05729b3713",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7590644",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "43cd01443294d581",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Software Engineer 3",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7993984",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6452158b4719a177",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Software Engineer 3",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7908785",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5b9f2af424d8b42c",
+   "companyId": "netomi",
+   "company": "Netomi",
+   "ats": "lever",
+   "title": "SDE I - Backend",
+   "location": "Remote - India",
+   "url": "https://jobs.lever.co/netomi/d61510b5-44ea-44c9-8441-097a48bf5e77",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "67a59745e070002a",
+   "companyId": "netomi",
+   "company": "Netomi",
+   "ats": "lever",
+   "title": "SDE I (FullStack)",
+   "location": "Remote - India",
+   "url": "https://jobs.lever.co/netomi/5dfe7149-e3e7-4063-be6f-440081b188b5",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b57c8e0a691c5dc9",
+   "companyId": "new-relic",
+   "company": "New Relic",
+   "ats": "greenhouse",
+   "title": "Lead Fullstack Engineer - Backend focused",
+   "location": "Hyderabad, India",
+   "url": "https://job-boards.greenhouse.io/newrelic/jobs/5216986008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f422dad69f6a34f2",
+   "companyId": "new-relic",
+   "company": "New Relic",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Hyderabad, India",
+   "url": "https://job-boards.greenhouse.io/newrelic/jobs/5211279008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e8a8691628d99150",
+   "companyId": "new-relic",
+   "company": "New Relic",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Backend)",
+   "location": "Hyderabad, India",
+   "url": "https://job-boards.greenhouse.io/newrelic/jobs/5212673008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6211ed23f0912049",
+   "companyId": "new-relic",
+   "company": "New Relic",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Networking",
+   "location": "Bangalore, India",
+   "url": "https://job-boards.greenhouse.io/newrelic/jobs/5210053008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "98ca5dfc3202cda8",
+   "companyId": "observe-ai",
+   "company": "Observe.AI",
+   "ats": "greenhouse",
+   "title": "Software Development Engineer III - Backend",
+   "location": "Bengaluru",
+   "url": "https://www.observe.ai/position?gh_jid=4173623008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "00ad3f9a24709f37",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Data Platform Engineer (Bengaluru)",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7648977?gh_jid=7648977",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8722142a98f124ac",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Engineer, FGA Developer Tooling",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7780942?gh_jid=7780942",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c762f4c625c50db4",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/8021050?gh_jid=8021050",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e6ac0afe0319344c",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7783585?gh_jid=7783585",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "114ecffd63cd3545",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7599312?gh_jid=7599312",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c711b0337eedd10f",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, AI and Automation",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7486638?gh_jid=7486638",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "721a968e54b1eab4",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Core Frontier)",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7894398?gh_jid=7894398",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6626e84762c2e17b",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer Fullstack",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/8018803?gh_jid=8018803",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "00f8a43a224e6d20",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Salesforce",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7995191?gh_jid=7995191",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "57de30ea4e76ded5",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Software Architect, Java Backend",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7882676?gh_jid=7882676",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f4172980da352f6a",
+   "companyId": "okta",
+   "company": "Okta",
+   "ats": "greenhouse",
+   "title": "Software Engineer-Full Stack",
+   "location": "Bengaluru, India",
+   "url": "https://www.okta.com/company/careers/opportunity/7984479?gh_jid=7984479",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "beb1b83c2b0d7b6d",
+   "companyId": "paytm",
+   "company": "Paytm",
+   "ats": "lever",
+   "title": "Senior Software Engineer- Backend(Gold)",
+   "location": "Noida, Uttar Pradesh",
+   "url": "https://jobs.lever.co/paytm/2ae1f365-46d1-46da-acac-a0e9e892dee6",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "819e5c3f917065a4",
+   "companyId": "paytm",
+   "company": "Paytm",
+   "ats": "lever",
+   "title": "Technical Lead - Backend",
+   "location": "Noida, Uttar Pradesh",
+   "url": "https://jobs.lever.co/paytm/3c729acc-5905-4dfa-8362-75cba28b9f40",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "076fbf45d7ea4e0f",
+   "companyId": "paytm",
+   "company": "Paytm",
+   "ats": "lever",
+   "title": "Technical Lead -Backend (Gold)",
+   "location": "Noida, Uttar Pradesh",
+   "url": "https://jobs.lever.co/paytm/f57625b4-c512-446e-84bd-b2d3fe9f5dc3",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a2fc696eaa4c8a8a",
+   "companyId": "phonepe",
+   "company": "PhonePe",
+   "ats": "greenhouse",
+   "title": "Software Engineer, React Native",
+   "location": "Bangalore",
+   "url": "https://job-boards.greenhouse.io/phonepe/jobs/7795782003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "83d286faea3fd61a",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Information Security",
+   "location": "San Francisco Bay Area or Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4009938009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c10530e6c7372c4b",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Insights",
+   "location": "San Francisco Bay Area or Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4107018009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "78b5acb6d927af6d",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Neki Orchestration",
+   "location": "San Francisco Bay Area or Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4280570009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "70d4e51aedea03d0",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - PlanetScale Postgres",
+   "location": "Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4251150009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "28742db143d6d92a",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - PlanetScale Vitess",
+   "location": "EMEA - Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4009746009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "be7b02ab3a2c16bf",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Platform",
+   "location": "EMEA Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4036240009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "70b0b13e37a15322",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer -  Postgres Internals",
+   "location": "San Francisco Bay Area or Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4257174009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f260202f3291631f",
+   "companyId": "planetscale",
+   "company": "PlanetScale",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Sharded Postgres (Neki)",
+   "location": "San Francisco Bay Area or Remote",
+   "url": "https://job-boards.greenhouse.io/planetscale/jobs/4009936009",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "770b4643e7fb95a6",
+   "companyId": "postman",
+   "company": "Postman",
+   "ats": "greenhouse",
+   "title": "Senior Engineer, Client Distribution",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://job-boards.greenhouse.io/postman/jobs/7793471003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2a525b1e7fc6d301",
+   "companyId": "postman",
+   "company": "Postman",
+   "ats": "greenhouse",
+   "title": "Senior Engineer, Messaging Platform",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://job-boards.greenhouse.io/postman/jobs/7774448003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bc3a6f54b875ac07",
+   "companyId": "project44",
+   "company": "Project44",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer 1",
+   "location": "Bangalore",
+   "url": "https://job-boards.greenhouse.io/project44/jobs/7767843",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7cd570280600d8c3",
+   "companyId": "project44",
+   "company": "Project44",
+   "ats": "greenhouse",
+   "title": "Software Engineer 2",
+   "location": "Bangalore",
+   "url": "https://job-boards.greenhouse.io/project44/jobs/7771208",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f1028b66062b9a96",
+   "companyId": "project44",
+   "company": "Project44",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Backend",
+   "location": "Bangalore",
+   "url": "https://job-boards.greenhouse.io/project44/jobs/7179793",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "261c50777a0c5217",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Front End Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Front-End-Software-Engineer_R0004839",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "314d5ceae2ebfeb9",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004798",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "73690f9c42028887",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004793",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0fc301a68f685af3",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004652-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1fa1d5154a165536",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004768",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ce6ea3e67d483a47",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Software-Engineer_R0004358",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "79adf9b23c0e1bab",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0003906",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e02890cbe23fd6aa",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0003666",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c96404086f3e861a",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0003494",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b6472c9a26f9e078",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Sr Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Sr-Software-Engineer_R0002473",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "54038218e3ae558a",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0004649",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "741865cb443e66b2",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0004585",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "064a1738ade74015",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Architect Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Architect-Software-Engineer_R0004287",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9edaeb8755edf8ba",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0003362",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ec1c7362c5e40d0d",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0004412",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bcbb10ec002689d2",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0004432-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1aa5e58d5f88eacb",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer_R0004647",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "750266fb9ba3fb93",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0003598",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "38c75cdb1ab5692b",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004373",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7a8d9cb4e756fbf4",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004374",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "52bd9dc891a283af",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004433",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8e7b3978b12ca8cf",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004688",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "56fd11468bf154e9",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0004770",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "45fcdf817462233a",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Software-Engineer_R0003953",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f701ce7006cbc5bb",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Lead Software Engineer - Performance",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Lead-Software-Engineer---Performance_R0003288",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4e5d5dd8ff726b99",
+   "companyId": "ramp",
+   "company": "Ramp",
+   "ats": "ashby",
+   "title": "Software Engineer, Argentina",
+   "location": "Remote (Buenos Aires, Argentina)",
+   "url": "https://jobs.ashbyhq.com/ramp/9320454f-f2ca-4c19-82d2-b51b8d75fd3a",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0c7b816d1bd542e5",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Linux, Filesystems & Storage",
+   "location": "Bangalore - Carina",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Bangalore---Carina/Senior-Software-Engineer_R-052567-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "920d43c9d6604a67",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Pune/Senior-Software-Engineer_R-054691-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e4448606df9fdc22",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Pune/Senior-Software-Engineer_R-055145-2",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3a44ef5b72255f1a",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer- Cloud Infrastructure, Kubernetes, Golang/Python",
+   "location": "Pune",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Pune/Senior-Software-Engineer--Cloud-Infrastructure--Kubernetes--Golang-Python_R-057038-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "0bc4f8eaded5957e",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Observability UI",
+   "location": "Pune",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Pune/Senior-Software-Engineer_R-057017-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7cfee4d2b8ec98e6",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Virtualization Cloud Team",
+   "location": "Bangalore - Carina",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Bangalore---Carina/Senior-Software-Engineer---Virtualization-Cloud-Team_R-055425-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4187f2318c3a5e8e",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Networking",
+   "location": "Bangalore - Carina",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Bangalore---Carina/Senior-Software-Engineer---Networking_R-055630",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "89a99533a3454bcb",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Iberia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778860003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6f7292112f1ca4a2",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-APAC",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778854003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c977abf79fdd2f69",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Northeast Asia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778855003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6418c411af342086",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-UK&I",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778856003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "684b60d81f2cd71c",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Southeast Asia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778858003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9b7ea8f95cd8e7dd",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-LATAM",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778859003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d745d9d30bde7aff",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Southern Europe",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778866003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "655d95fdf8d172d8",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Northern Europe",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778864003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "03c69bd46cf3241c",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-EMEA",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778863003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fc05ada81c7e8de2",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Canada",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778861003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e455f15f0c8460ce",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer",
+   "location": "Remote-Southern Europe",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7778853003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "22fb797451fdafb3",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Africa",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774716003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d743a04049d097d7",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-APAC",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774715003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "43c08a1ec75efcc8",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Austria",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774714003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c30e9fe56184707b",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Netherlands",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774712003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "21f0f03987189b56",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Germany",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774713003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dc6d28974d883920",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Canada",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774710003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "969b5d1980db63e8",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Brazil",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774709003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a14befd1d9f19732",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Eastern Europe",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774708003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2ceb937eb25d02b3",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Iberia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774706003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f23a4a55c1973fe4",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-UK&I",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774704003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9861956955d9d381",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-South America",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774705003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "386ca71fcfa83e49",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-France",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774702003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6fd2bfee7c516a51",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Nordics",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774701003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b8d07dea01d8a8a8",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Northern Europe",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774700003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "47d6419f93973bd9",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Southern Europe",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774697003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f4f0513db34fddeb",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-EMEA",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774695003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "617c27b0fb452f05",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Northeast Asia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774694003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d7934b62de846680",
+   "companyId": "remote-com",
+   "company": "Remote.com",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer (Elixir)",
+   "location": "Remote-Southeast Asia",
+   "url": "https://job-boards.greenhouse.io/remotecom/jobs/7774669003",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2064aba2faa6845d",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Product (all levels)",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/c7d896f2-20a9-4b44-9f7d-13929a0fe453",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b8f473982027158f",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Security (all levels)",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/226a1b3b-5937-4880-817b-4beb1f72ecc6",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8785e285fe2c2b82",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Infrastructure (all levels)",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/d52dc923-1641-4386-b8ba-5c15e1d7028d",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fe171c1939f59650",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Billing (all levels)",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/57a61c00-fa74-402d-89cd-1a1b936e14d5",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2bd3723d804bdf67",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Growth (all levels)",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/62ea10c7-ad69-444f-9632-dd4b50b8c805",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "daf91cbc276834ba",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Network Infrastructure",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/88cb74a4-bc28-40b1-b792-d3041e3e17d3",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "02f99a60dbe6ca70",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Dev Velocity (all levels)",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/a3f88090-5e37-43a7-b392-04b02056db6d",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "270fade67822632c",
+   "companyId": "render",
+   "company": "Render",
+   "ats": "ashby",
+   "title": "Software Engineer, Compute Infrastructure",
+   "location": "Remote: United States",
+   "url": "https://jobs.ashbyhq.com/render/af5b6699-2e4a-47de-99f7-664baa738190",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "632e4666aba6cca7",
+   "companyId": "rubrik",
+   "company": "Rubrik",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Enterprise AI",
+   "location": "Bangalore",
+   "url": "https://www.rubrik.com/company/careers/departments/job.7849713?gh_jid=7849713",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8ad79d9a76ecd61b",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer I - Finance Systems (Remote Eligible)",
+   "location": " -REMOTE, USA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7588854",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dc12148884a4363b",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer II - AI Engineering (Remote Eligible)",
+   "location": " -REMOTE, USA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/8027418",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9574722faa55f9de",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer II - Applied AI (Remote Eligible)",
+   "location": " -REMOTE, USA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7849785",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ea0b6c4df57b59f3",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Software Engineer II - App Core (Remote Eligible)",
+   "location": " -REMOTE, USA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/8007934",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ec8a73988858664a",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Software Engineer II, FedRamp (Remote Eligible)",
+   "location": " -REMOTE, USA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7712828",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4e5af8227ba92239",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Sr. Software Engineer I - Automation Experience (Remote Eligible in Bulgaria)",
+   "location": " -REMOTE, BULGARIA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7941862",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "08b41441f2cb32df",
+   "companyId": "smartsheet",
+   "company": "Smartsheet",
+   "ats": "greenhouse",
+   "title": "Sr. Software Engineer I - Platform Security (Remote Eligible in Bulgaria)",
+   "location": " -REMOTE, BULGARIA-",
+   "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7388435",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "db76a8fe387dc1a8",
+   "companyId": "sophos",
+   "company": "Sophos",
+   "ats": "lever",
+   "title": "Senior Software Engineer",
+   "location": "India",
+   "url": "https://jobs.lever.co/sophos/570c151e-d2ea-45d6-bc32-416a419cc724",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "46b98c18bcbd5469",
+   "companyId": "sophos",
+   "company": "Sophos",
+   "ats": "lever",
+   "title": "Senior Software Engineer (AI and Networking)",
+   "location": "India",
+   "url": "https://jobs.lever.co/sophos/d9fb6c69-02d0-462a-8b10-5bbad4b7b714",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "375b869ccc82c6d4",
+   "companyId": "sophos",
+   "company": "Sophos",
+   "ats": "lever",
+   "title": "Senior Software Engineer (C/C++ and Networking)",
+   "location": "India",
+   "url": "https://jobs.lever.co/sophos/76367a37-a0ba-424e-b284-93b50a0503ee",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b7292a219f7e5aac",
+   "companyId": "sophos",
+   "company": "Sophos",
+   "ats": "lever",
+   "title": "Senior Software Engineer (Kernel Programming)",
+   "location": "Ahmedabad, India",
+   "url": "https://jobs.lever.co/sophos/587edca8-d2b9-4c60-9d99-efeea15a1523",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "91e8dd439fa58521",
+   "companyId": "sprinklr",
+   "company": "Sprinklr",
+   "ats": "workday",
+   "title": "Senior Lead Software Engineer",
+   "location": "India - Haryana - Gurgaon",
+   "url": "https://sprinklr.wd1.myworkdayjobs.com/careers/job/India---Haryana---Gurgaon/Lead-Product-Engineer_111232-JOB",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "10f5befdfe4aec22",
+   "companyId": "starburst",
+   "company": "Starburst",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "India",
+   "url": "https://job-boards.greenhouse.io/starburst/jobs/5218575008",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "695afc82180c8709",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Backend Engineer, AI Security",
+   "location": "New York, San Francisco, Seattle, or Remote (US/Canada)",
+   "url": "https://stripe.com/jobs/search?gh_jid=7826765",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "11729099585e8039",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Backend Engineer, Core Tech, Canada",
+   "location": "Toronto, CAN-Remote",
+   "url": "https://stripe.com/jobs/search?gh_jid=6567253",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1b1930e94559cc88",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Backend Engineer, Core Technology",
+   "location": "US-Remote, Chicago, Seattle, San Francisco",
+   "url": "https://stripe.com/jobs/search?gh_jid=6042172",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "11be2d794c3a9794",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Backend Engineer, Financial Connections",
+   "location": "NYC, Toronto, Remote in Canada",
+   "url": "https://stripe.com/jobs/search?gh_jid=8047083",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "78d38197f62b3d07",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Data & AI",
+   "location": "Bengaluru",
+   "url": "https://stripe.com/jobs/search?gh_jid=7529428",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9127261fe4cdc61a",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Internal Systems",
+   "location": "Bengaluru, India",
+   "url": "https://stripe.com/jobs/search?gh_jid=7543868",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bca54f80bb1ff8b3",
+   "companyId": "stripe",
+   "company": "Stripe",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Security Analytics Infrastructure",
+   "location": "US - Remote",
+   "url": "https://stripe.com/jobs/search?gh_jid=7826761",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "95605d8a6322817b",
+   "companyId": "sumo-logic",
+   "company": "Sumo Logic",
+   "ats": "greenhouse",
+   "title": "Senior Backend Engineer — Distributed Systems & Agentic AI",
+   "location": "Noida, Uttar Pradesh, India",
+   "url": "https://job-boards.greenhouse.io/sumologic/jobs/7882141",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4b0643af7ce7b5db",
+   "companyId": "supabase",
+   "company": "Supabase",
+   "ats": "ashby",
+   "title": "Software Engineer - Auth",
+   "location": "Remote",
+   "url": "https://jobs.ashbyhq.com/supabase/e569b7f7-fa8f-4139-86f6-4f52b456882d",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1bc522e68a6a56d2",
+   "companyId": "supabase",
+   "company": "Supabase",
+   "ats": "ashby",
+   "title": "Software Engineer: IaC Platform Experience",
+   "location": "Remote",
+   "url": "https://jobs.ashbyhq.com/supabase/b7206c22-979f-444a-809b-e70d9ee23c7f",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "23b8413a0626fdf5",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, AI & Strategy",
+   "location": "Remote, USA",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7716303",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ab3144e9a8607ed9",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Care Experience",
+   "location": "Remote, US",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7590046",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bfc799e1d1910d06",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Care & Onboarding",
+   "location": "Bangalore",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7912223",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "181df79176e37c49",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Core Frameworks",
+   "location": "Remote, US",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=8015731",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7525e8919cad224c",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Enterprise",
+   "location": "Remote, Canada",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7587088",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "9c4b68843fc4b682",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer (Fullstack), New Ventures",
+   "location": "Remote, US",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7701507",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "6f9e1bded16eea46",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Retail ",
+   "location": "Remote, US",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7592643",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "1aedd359cc6d3b08",
+   "companyId": "toast",
+   "company": "Toast",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Voice AI",
+   "location": "Remote, US",
+   "url": "https://careers.toasttab.com/jobs?gh_jid=7701541",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "b6e87ca4d7482fd3",
+   "companyId": "tower-research-capital",
+   "company": "Tower Research Capital",
+   "ats": "greenhouse",
+   "title": "Software Engineer",
+   "location": "Gurgaon",
+   "url": "https://www.tower-research.com/open-positions/?gh_jid=6656773",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f18ca0b681a9078b",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Senior Cloud Software Engineer",
+   "location": "Remote - Spain",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7807419",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2f5df6a6419a545b",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer",
+   "location": "Remote - Estonia",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7993530",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "43993f4eedc0a650",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer ",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7595407",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e93f5979feb857d7",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer- Video Signalling ",
+   "location": "Remote - Ireland",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7394811",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7371556f22302556",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer",
+   "location": "Remote - Estonia",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7647708",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d1c18962f6a6993f",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7605743",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "793f48d8c0b7b66c",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer ",
+   "location": "Remote - Ireland",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7785202",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "a17e77309f0ad71e",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer (L2)",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7188174",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bacd632c0f927315",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer, (L2) CDP",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7602727",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2ef9fb122f5e3a37",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer L3",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/8009057",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "8d9a58a445812b33",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer (L3)",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7926883",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "27b084ffd10016d9",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer (L3)",
+   "location": "Remote - India",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7996779",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "e9333d813cf8d86b",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer (L3) Data Substrate",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7954715",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "01c0e7ce879dc294",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer P2",
+   "location": "Remote - India",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/8009055",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "844baabb1a87ba2a",
+   "companyId": "twilio",
+   "company": "Twilio",
+   "ats": "greenhouse",
+   "title": "Software Engineer - Video",
+   "location": "Remote - US",
+   "url": "https://job-boards.greenhouse.io/twilio/jobs/7661919",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4e971d115d28e047",
+   "companyId": "vercel",
+   "company": "Vercel",
+   "ats": "greenhouse",
+   "title": "Security Software Engineer, IAM",
+   "location": "Remote - United States",
+   "url": "https://job-boards.greenhouse.io/vercel/jobs/6093255004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "35783a850dd677d9",
+   "companyId": "vercel",
+   "company": "Vercel",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Trust & Safety",
+   "location": "Remote - United States",
+   "url": "https://job-boards.greenhouse.io/vercel/jobs/5788954004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "c4ee6d189de9d146",
+   "companyId": "vercel",
+   "company": "Vercel",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Backend",
+   "location": "Remote - United States",
+   "url": "https://job-boards.greenhouse.io/vercel/jobs/5430088004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5e1d53bc5ca455df",
+   "companyId": "vercel",
+   "company": "Vercel",
+   "ats": "greenhouse",
+   "title": "Software Engineer, Compute",
+   "location": "Remote - United States",
+   "url": "https://job-boards.greenhouse.io/vercel/jobs/5551619004",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "ebfc355b1c0f0dd8",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Software Engineer - Sr. Consultant level",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Software-Engineer---Sr-Consultant-level_REF077927W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "da986ca29f31d725",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Lead Software Engineer - (14-18 years - Java, Distributed Systems, Microservices, Cloud, Security, Platform Engineering, Gen AI)",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Lead-Software-Engineer_REF077434W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "fefe711bc6a7eb6c",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Sr. Software Engineer",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Sr-Software-Engineer_REF082485W-1",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "2185f358df9fe420",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Sr Software Engineer",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Sr-Software-Engineer_REF078405W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3e1fd2d741d04c3f",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Sr. Software Engineer (3-6 years of experience in Agentic AI / GenAI / LLM / RAG, Python)",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Sr-Software-Engineer--3-6-years-of-experience-in-Agentic-AI---GenAI---LLM---RAG--Python-_REF083442W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "205c804ec3c5f50e",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Senior Software Engineer - Python, React, Langraph/Langchain",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Senior-Software-Engineer_REF083346W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "98d78f3ba4c4aef0",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Software Engineer - Sr.Consultant Level - Python, React, GenAI Architecture",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Software-Engineer---SrConsultant-Level---Python--React--GenAI-Architecture_REF080421W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "734e45d59c618c9c",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Sr. Software Engineer (3 - 6 years of experience in Oracle EBS, R12 development)",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Sr-Software-Engineer--3---6-years-of-experience-in-Oracle-EBS--R12-development-_REF083128W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "f6d4bfc72009efac",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Software Engineer - Sr. Consultant",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Software-Engineer---Sr-Consultant_REF084620W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "795dcbc603036bdc",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Sr. SW Engineer - Agentic Developer (Java/Python, 3-5 yrs of experience)",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Sr-SW-Engineer---Agentic-Developer--Java-Python--3-5-yrs-of-experience-_REF083019W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "743ae5842c3922a0",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Software Engineer - Sr. Consultant level",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Software-Engineer---Sr-Consultant-level_REF081952W",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4a2be9510a10da3f",
+   "companyId": "workday",
+   "company": "Workday",
+   "ats": "workday",
+   "title": "Senior Software Development Engineer - Data Security and Protection",
+   "location": "IND.Chennai",
+   "url": "https://workday.wd5.myworkdayjobs.com/Workday/job/INDChennai/Senior-Software-Development-Engineer---Data-Security-and-Protection_JR-0107858",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "45fcbcec1da859b9",
+   "companyId": "yugabyte",
+   "company": "Yugabyte",
+   "ats": "greenhouse",
+   "title": " Software Engineer ",
+   "location": "India",
+   "url": "https://job-boards.greenhouse.io/yugabyte/jobs/4596483006",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d6b2121f9952853f",
+   "companyId": "yugabyte",
+   "company": "Yugabyte",
+   "ats": "greenhouse",
+   "title": "Sr Software Engineer",
+   "location": "India",
+   "url": "https://job-boards.greenhouse.io/yugabyte/jobs/4668680006",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7acf08a0b3103d02",
+   "companyId": "yugabyte",
+   "company": "Yugabyte",
+   "ats": "greenhouse",
+   "title": "Sr Software Engineer",
+   "location": "India",
+   "url": "https://job-boards.greenhouse.io/yugabyte/jobs/4679058006",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3fc9fa31c748fd72",
+   "companyId": "zapier",
+   "company": "Zapier",
+   "ats": "ashby",
+   "title": "Software Engineer, Release Engineering",
+   "location": "India",
+   "url": "https://jobs.ashbyhq.com/zapier/6948a0e6-a580-4e9d-b109-20652d9a1507",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "d45b3e8426d07146",
+   "companyId": "zendesk",
+   "company": "Zendesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer (Backend -Fullstack)",
+   "location": "Pune, India",
+   "url": "https://zendesk.wd1.myworkdayjobs.com/zendesk/job/Pune-India/Senior-Software-Engineer--Backend-_R33978",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "3bdc3d1088631812",
+   "companyId": "zendesk",
+   "company": "Zendesk",
+   "ats": "workday",
+   "title": "Senior Software Engineer (Backend -Ruby on Rails)",
+   "location": "Pune, India",
+   "url": "https://zendesk.wd1.myworkdayjobs.com/zendesk/job/Pune-India/Senior-Software-Engineer--Backend--Ruby-on-Rails-_R34937",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "bbaeca3865544fff",
+   "companyId": "zscaler",
+   "company": "Zscaler",
+   "ats": "greenhouse",
+   "title": "Senior Software Development Engineer",
+   "location": "Hyderabad, IND",
+   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5140603007",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4bd604b5302193a8",
+   "companyId": "zscaler",
+   "company": "Zscaler",
+   "ats": "greenhouse",
+   "title": "Software Development Engineer (DevSecOps)",
+   "location": "Bangalore, IND",
+   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5177398007",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "dfdc455e42011df2",
+   "companyId": "zscaler",
+   "company": "Zscaler",
+   "ats": "greenhouse",
+   "title": "Sr. Software Development Engineer",
+   "location": "Bangalore, IND",
+   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5165699007",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "7316a35c87d16caf",
+   "companyId": "zscaler",
+   "company": "Zscaler",
+   "ats": "greenhouse",
+   "title": "Sr. Software Development Engineer - Python Automation / Kubernetes / Networking",
+   "location": "Bangalore, IND",
+   "url": "https://job-boards.greenhouse.io/zscaler/jobs/5128594007",
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  }
+ ]
+}
