@@ -202,10 +202,6 @@ export default function OpeningsTab({
           </button>
         </div>
       </div>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-        The <span className="font-semibold text-emerald-600 dark:text-emerald-300">fit</span> badge ranks each opening by how well its job description matches your skills (edit <span className="font-mono">radar/skills.json</span>). "To Apply" saves the link under that company; dismiss (×) crosses it out.
-      </p>
-
       {addingManual && (
         <div className={`${GLASS_PANEL} rounded-xl p-3 mb-3`}>
           <ManualOpeningForm allCompanies={allCompanies} onAdd={onManualAdd} onClose={() => setAddingManual(false)} />
