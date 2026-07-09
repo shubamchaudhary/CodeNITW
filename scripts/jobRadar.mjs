@@ -358,16 +358,40 @@ function normName(s) {
     .replace(/[^a-z0-9]/g, "");
 }
 
+// Common corporate-suffix words stripped before token comparison, so
+// "Walmart Global Tech India" still lines up with "Walmart Global Tech".
+const NAME_STOPWORDS = new Set([
+  "india", "global", "tech", "technologies", "technology", "inc", "incorporated",
+  "ltd", "limited", "pvt", "private", "llc", "llp", "corp", "corporation", "group",
+  "labs", "lab", "solutions", "systems", "software", "services", "co", "company",
+  "the", "and", "holdings", "international",
+]);
+
+function coreTokens(s) {
+  return (s || "")
+    .toLowerCase()
+    .replace(/\(.*?\)/g, "")
+    .split(/[^a-z0-9]+/)
+    .filter((t) => t.length >= 3 && !NAME_STOPWORDS.has(t));
+}
+
 function matchCompany(rawName, companies, exactIndex) {
   const n = normName(rawName);
   if (!n) return null;
   const exact = exactIndex.get(n);
   if (exact) return exact;
-  if (n.length < 4) return null; // too short to substring-match without false positives
+  // Whole-word token overlap, not character-substring containment — plain
+  // substring matching let "Ariba" false-match inside "BNP Paribas" (their
+  // normalized forms happen to share the character run "ariba"). Comparing
+  // tokenized words instead means only a real shared word counts.
+  const cardTokens = coreTokens(rawName);
+  if (cardTokens.length === 0) return null;
   for (const c of companies) {
-    const cn = normName(c.name);
-    if (cn.length < 4) continue;
-    if (n.includes(cn) || cn.includes(n)) return c;
+    const listTokens = coreTokens(c.name);
+    if (listTokens.length === 0) continue;
+    const shorter = cardTokens.length <= listTokens.length ? cardTokens : listTokens;
+    const longerSet = new Set(cardTokens.length <= listTokens.length ? listTokens : cardTokens);
+    if (shorter.every((t) => longerSet.has(t))) return c;
   }
   return null;
 }
