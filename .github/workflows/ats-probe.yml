@@ -1,0 +1,35 @@
+name: ATS coverage probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/job-application-tracker-nqpn76
+    paths:
+      - scripts/atsProbe.mjs
+      - .github/workflows/ats-probe.yml
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run probe
+        run: node scripts/atsProbe.mjs
+
+      - name: Commit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/ats-probe-report.json
+          git diff --cached --quiet || git commit -m "Add ATS probe coverage report"
+          git push

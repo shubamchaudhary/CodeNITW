@@ -1,0 +1,163 @@
+{
+ "https://workday.com/careers": {
+  "tenant": "workday",
+  "wd": "wd5",
+  "site": "Workday"
+ },
+ "https://redhat.com/careers": {
+  "tenant": "redhat",
+  "wd": "wd5",
+  "site": "jobs"
+ },
+ "https://paloaltonetworks.com/company/careers": {
+  "tenant": "paloaltonetworks",
+  "wd": "wd5",
+  "site": "panwexternalcareers"
+ },
+ "https://crowdstrike.com/careers": {
+  "tenant": "crowdstrike",
+  "wd": "wd5",
+  "site": "crowdstrikecareers"
+ },
+ "https://f5.com/company/careers": {
+  "tenant": "ffive",
+  "wd": "wd5",
+  "site": "f5jobs"
+ },
+ "https://cyberark.com/careers": {
+  "tenant": "paloaltonetworks",
+  "wd": "wd5",
+  "site": "panwexternalcareers"
+ },
+ "https://qualys.com/careers": {
+  "tenant": "qualys",
+  "wd": "wd5",
+  "site": "Careers"
+ },
+ "https://autodesk.com/careers": {
+  "tenant": "autodesk",
+  "wd": "wd1",
+  "site": "Ext"
+ },
+ "https://trendmicro.com/careers": {
+  "tenant": "trendmicro",
+  "wd": "wd3",
+  "site": "External"
+ },
+ "https://visa.com/careers": {
+  "tenant": "visa",
+  "wd": "wd5",
+  "site": "Visa"
+ },
+ "https://careers.mastercard.com": {
+  "tenant": "mastercard",
+  "wd": "wd1",
+  "site": "CorporateCareers"
+ },
+ "https://careers.bankofamerica.com": {
+  "tenant": "ghr",
+  "wd": "wd1",
+  "site": "en-us"
+ },
+ "https://careers.expediagroup.com": {
+  "tenant": "expedia",
+  "wd": "wd108",
+  "site": "search"
+ },
+ "https://careers.homedepot.com": {
+  "tenant": "homedepot",
+  "wd": "wd5",
+  "site": "CareerDepot"
+ },
+ "https://browserstack.com/careers": {
+  "tenant": "browserstack",
+  "wd": "wd3",
+  "site": "External"
+ },
+ "https://careers.bigcommerce.com": {
+  "tenant": "bigcommerce",
+  "wd": "wd12",
+  "site": "Commerce"
+ },
+ "https://juniper.net/careers": {
+  "tenant": "hpe",
+  "wd": "wd5",
+  "site": "Jobsathpe"
+ },
+ "https://manh.com/careers": {
+  "tenant": "manh",
+  "wd": "wd5",
+  "site": "External"
+ },
+ "https://epicor.com/careers": {
+  "tenant": "epicorsoftware",
+  "wd": "wd5",
+  "site": "epicorjobs"
+ },
+ "https://caterpillar.com/en/careers": null,
+ "https://airbus.com/careers": {
+  "tenant": "ag",
+  "wd": "wd3",
+  "site": "Airbus"
+ },
+ "https://allstate.jobs": {
+  "tenant": "allstate",
+  "wd": "wd5",
+  "site": "allstate_careers"
+ },
+ "https://research.samsung.com/careers": {
+  "tenant": "sec",
+  "wd": "wd3",
+  "site": "Samsung_Careers"
+ },
+ "https://jobs.merck.com": {
+  "tenant": "msd",
+  "wd": "wd5",
+  "site": "SearchJobs"
+ },
+ "https://novartis.com/careers": {
+  "tenant": "novartis",
+  "wd": "wd3",
+  "site": "Internal_Careers_for_Acquired_Entities"
+ },
+ "https://jobs.comcast.com": {
+  "tenant": "comcast",
+  "wd": "wd5",
+  "site": "Comcast_Careers"
+ },
+ "https://t-mobile.com/careers": {
+  "tenant": "tmobile",
+  "wd": "wd1",
+  "site": "External"
+ },
+ "https://uniphore.com/careers": {
+  "tenant": "uniphore",
+  "wd": "wd503",
+  "site": "Uniphore"
+ },
+ "https://www.sprinklr.com/careers/": {
+  "tenant": "sprinklr",
+  "wd": "wd1",
+  "site": "careers"
+ },
+ "https://zendesk.com/jobs": {
+  "tenant": "zendesk",
+  "wd": "wd1",
+  "site": "zendesk"
+ },
+ "https://jobs.citi.com": {
+  "tenant": "citi",
+  "wd": "wd5",
+  "site": "2"
+ },
+ "https://fractal.ai/careers": {
+  "tenant": "fractal",
+  "wd": "wd1",
+  "site": "Careers"
+ },
+ "https://careers.elevancehealth.com": {
+  "tenant": "elevancehealth",
+  "wd": "wd1",
+  "site": "ANT"
+ }
+}
