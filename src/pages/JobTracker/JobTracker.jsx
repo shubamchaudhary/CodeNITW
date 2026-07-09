@@ -9,6 +9,8 @@ import {
   uid,
   normUrl,
   uKeyOf,
+  DISMISS_TTL_DAYS,
+  migrateDismissals,
 } from "./shared";
 import PipelineTab from "./PipelineTab";
 import OpeningsTab from "./OpeningsTab";
@@ -16,7 +18,10 @@ import CompaniesTab from "./CompaniesTab";
 
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
-  return { companies: s.companies || {}, custom: s.custom || [], dismissedOpenings: s.dismissedOpenings || {} };
+  // Upgrade any legacy dismissal entries so crosses made before the identity
+  // format changed keep working across this (and future) deployments.
+  const { map: dismissedOpenings } = migrateDismissals(s.dismissedOpenings || {});
+  return { companies: s.companies || {}, custom: s.custom || [], dismissedOpenings };
 }
 
 const TABS = [
@@ -38,6 +43,18 @@ export default function JobTracker() {
       }),
     []
   );
+
+  // Persist the migrated dismissal map once on mount so the upgraded format is
+  // written back to storage (and pushed to cloud sync), not just held in memory.
+  useEffect(() => {
+    const raw = loadJSON(KEYS.JOB_TRACKER, {});
+    const { map, changed } = migrateDismissals(raw.dismissedOpenings || {});
+    if (changed) {
+      const next = { ...raw, companies: raw.companies || {}, custom: raw.custom || [], dismissedOpenings: map };
+      saveJSON(KEYS.JOB_TRACKER, next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load the daily radar output (first source that answers wins).
   useEffect(() => {
@@ -129,12 +146,16 @@ export default function JobTracker() {
     return { ...radar, openings };
   }, [radar, state.companies]);
 
-  // Drop stale dismissed keys that left the scan.
+  // Purge dismissals only by age — NOT by whether the opening is in the current
+  // scan. This keeps a crossed-out opening dismissed across redeploys and
+  // transient feed gaps; it only expires after DISMISS_TTL_DAYS.
   useEffect(() => {
     if (!radar) return;
-    const feedKeys = new Set(radar.openings.map((o) => uKeyOf(o)));
+    const cutoff = Date.now() - DISMISS_TTL_DAYS * 24 * 60 * 60 * 1000;
     setState((prev) => {
-      const stale = Object.keys(prev.dismissedOpenings).filter((k) => !feedKeys.has(k));
+      const stale = Object.entries(prev.dismissedOpenings)
+        .filter(([, v]) => typeof v === "number" && v < cutoff)
+        .map(([k]) => k);
       if (stale.length === 0) return prev;
       const dismissedOpenings = { ...prev.dismissedOpenings };
       stale.forEach((k) => delete dismissedOpenings[k]);
@@ -170,11 +191,12 @@ export default function JobTracker() {
     [state.companies, patchCompany]
   );
 
-  // No confirmation dialog — direct dismiss per user request
+  // No confirmation dialog — direct dismiss per user request. Store the dismiss
+  // time so the map can be aged out later without resurrecting recent crosses.
   const rejectOpening = useCallback((o) => {
     const k = o.uKey || uKeyOf(o);
     setState((prev) => {
-      const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [k]: true } };
+      const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [k]: Date.now() } };
       saveJSON(KEYS.JOB_TRACKER, next);
       return next;
     });
