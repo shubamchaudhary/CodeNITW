@@ -387,6 +387,10 @@ function parseLinkedInCards(html) {
   return out;
 }
 
+// Bypasses the shared get() helper: LinkedIn's bot detection cares about a
+// realistic browser fingerprint (UA/Accept-Language/Referer), and diagnosing
+// a scrape that can't be run locally needs the actual status/body size in
+// the CI logs rather than a flattened null on any non-2xx.
 async function fetchLinkedInPage(keywords, geo) {
   const params = new URLSearchParams({
     keywords,
@@ -397,8 +401,31 @@ async function fetchLinkedInPage(keywords, geo) {
   });
   if (geo.remoteOnly) params.set("f_WT", "2");
   const url = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?${params.toString()}`;
-  const html = await get(url, { text: true, accept: "text/html", timeout: 12000 });
-  return html ? parseLinkedInCards(html) : [];
+  const label = `${geo.location}${geo.remoteOnly ? " (remote)" : ""} "${keywords}"`;
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        Referer: "https://www.linkedin.com/jobs/search",
+      },
+    });
+    const html = await res.text();
+    const cards = res.ok ? parseLinkedInCards(html) : [];
+    console.log(`LinkedIn ${label}: HTTP ${res.status}, ${html.length}B, ${cards.length} cards`);
+    return cards;
+  } catch (e) {
+    console.log(`LinkedIn ${label}: request failed (${e.message})`);
+    return [];
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 async function linkedinScan(companies) {
