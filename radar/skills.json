@@ -1,0 +1,43 @@
+{
+  "_readme": "Edit these two lists to control how openings are ranked. 'have' = skills you already have (full match weight). 'want' = skills you want to grow into (counted as a partial match, shown as a blue 'grow' chip). Names are matched case-insensitively against each opening's FULL job description. Known skills (Java, Kafka, Kubernetes, GenAI, ...) use smart aliases automatically (e.g. 'Kubernetes' also matches 'k8s'); any other name you add is matched literally. After editing, re-run the 'Job openings radar' action (or wait for the daily run) to re-score.",
+  "have": [
+    "Java",
+    "Python",
+    "C++",
+    "Spring",
+    "Hibernate",
+    "FastAPI",
+    "LangChain",
+    "LangGraph",
+    "Kafka",
+    "PostgreSQL",
+    "Snowflake",
+    "Redis",
+    "pgvector",
+    "Vector DB",
+    "Docker",
+    "CI/CD",
+    "Azure",
+    "Microservices",
+    "Distributed Systems",
+    "System Design",
+    "REST",
+    "GenAI",
+    "LLM",
+    "RAG",
+    "Backend",
+    "SQL",
+    "Data Structures"
+  ],
+  "want": [
+    "Go",
+    "Kubernetes",
+    "AWS",
+    "GCP",
+    "gRPC",
+    "GraphQL",
+    "Terraform",
+    "Spark",
+    "Kotlin"
+  ]
+}

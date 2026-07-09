@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { HiChevronDown, HiPlus, HiX } from "react-icons/hi";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
-import { FIT_CLS, RADAR_NEW_DAYS, normalizeUrl } from "./shared";
+import { FIT_CLS, RADAR_NEW_DAYS, normalizeUrl, ScoreBadge } from "./shared";
 
 // ── Manual opening form ──────────────────────────────────────────────────────
 function ManualOpeningForm({ allCompanies, onAdd, onClose }) {
@@ -78,6 +78,7 @@ export default function OpeningsTab({
   const [openIds, setOpenIds] = useState(() => new Set());
   const [addingManual, setAddingManual] = useState(false);
   const [onlyRemaining, setOnlyRemaining] = useState(false);
+  const [sortMode, setSortMode] = useState("match");
 
   if (!radarVisible) {
     return (
@@ -99,26 +100,28 @@ export default function OpeningsTab({
     byCompany.get(o.companyId).push(o);
   }
 
-  // Sort company groups strictly by name so a company's position never shifts
-  // when openings are tracked/dismissed (the feed order is otherwise unstable).
   const nameOf = (cid) => companiesById[cid]?.name || byCompany.get(cid)?.[0]?.company || "";
-  groups.sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
+  const scoreOf = (o) => (typeof o.matchScore === "number" ? o.matchScore : -1);
+  // Highest-match opening first within a company (unscored rows sink to the end).
+  const byScore = (a, b) => scoreOf(b) - scoreOf(a) || (a.title || "").localeCompare(b.title || "");
 
   const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
 
   // Single source of truth per company: `visibleList` = untracked rows shown in
-  // the list; `remaining` = untracked AND not-dismissed (the actionable count on
-  // the badge). The header total is the SUM of these, so it can never disagree
-  // with the badges.
+  // the list (sorted best-match first); `remaining` = untracked AND
+  // not-dismissed (the actionable count on the badge); `topScore` = the best
+  // actionable match, used to rank company groups. The header total is the SUM
+  // of `remaining`, so it can never disagree with the badges.
   const meta = new Map();
   let totalRemaining = 0;
   let newCount = 0;
   for (const cid of groups) {
     const list = byCompany.get(cid);
-    const visibleList = list.filter((o) => !o.tracked);
+    const visibleList = list.filter((o) => !o.tracked).sort(byScore);
     const remainingList = visibleList.filter((o) => !rejectedKeys[o.uKey]);
     const hasNew = remainingList.some(isNew);
+    const topScore = remainingList.reduce((m, o) => Math.max(m, scoreOf(o)), -1);
     newCount += remainingList.filter(isNew).length;
     totalRemaining += remainingList.length;
     meta.set(cid, {
@@ -127,7 +130,16 @@ export default function OpeningsTab({
       remaining: remainingList.length,
       queuedCount: list.length - visibleList.length,
       hasNew,
+      topScore,
     });
+  }
+
+  // Rank company groups by best match (default) or by name. Best-match keeps the
+  // most relevant companies at the top; name keeps positions perfectly stable.
+  if (sortMode === "match") {
+    groups.sort((a, b) => meta.get(b).topScore - meta.get(a).topScore || nameOf(a).localeCompare(nameOf(b)));
+  } else {
+    groups.sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
   }
 
   // Optional filter: only show companies that still have openings to apply to.
@@ -158,6 +170,18 @@ export default function OpeningsTab({
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
+          <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 select-none">
+            Sort
+            <select
+              value={sortMode}
+              onChange={(e) => setSortMode(e.target.value)}
+              className="text-xs font-semibold px-2 py-1 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer"
+              title="Best match ranks companies by their highest résumé-fit opening"
+            >
+              <option value="match">Best match</option>
+              <option value="name">Name (A–Z)</option>
+            </select>
+          </label>
           <label
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 cursor-pointer select-none"
             title="Hide companies whose openings are all queued or dismissed"
@@ -179,7 +203,7 @@ export default function OpeningsTab({
         </div>
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-        "To Apply" saves the link under that company. Dismiss (×) crosses it out until it leaves the next scan.
+        The <span className="font-semibold text-emerald-600 dark:text-emerald-300">fit</span> badge ranks each opening by how well its job description matches your skills (edit <span className="font-mono">radar/skills.json</span>). "To Apply" saves the link under that company; dismiss (×) crosses it out.
       </p>
 
       {addingManual && (
@@ -192,7 +216,7 @@ export default function OpeningsTab({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
         {shownGroups.map((cid) => {
           const c = companiesById[cid];
-          const { list, visibleList, remaining: liveCount, queuedCount, hasNew } = meta.get(cid);
+          const { list, visibleList, remaining: liveCount, queuedCount, hasNew, topScore } = meta.get(cid);
           const open = openIds.has(cid);
           return (
             <div key={cid} className={`${GLASS} rounded-xl overflow-hidden`}>
@@ -204,6 +228,7 @@ export default function OpeningsTab({
                 <span className="font-semibold text-gray-800 dark:text-gray-100">
                   {c?.name || list[0].company}
                 </span>
+                {topScore >= 0 && <ScoreBadge score={topScore} basis="skills" />}
                 <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 shrink-0">
                   {liveCount}
                 </span>
@@ -244,6 +269,7 @@ export default function OpeningsTab({
                             NEW
                           </span>
                         )}
+                        {!rejected && <ScoreBadge score={o.matchScore} matched={o.matched} basis={o.matched?.length ? "skills" : o.desc ? "skills" : "title"} />}
                         <a
                           href={o.url}
                           target="_blank"
@@ -260,6 +286,24 @@ export default function OpeningsTab({
                         <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0 hidden sm:inline" title={o.location}>
                           {o.location}
                         </span>
+                        {!rejected && o.matched?.length > 0 && (
+                          <span className="hidden md:flex items-center gap-1 shrink-0">
+                            {o.matched.slice(0, 3).map((m) => (
+                              <span
+                                key={m.skill}
+                                className={`text-[9px] font-semibold px-1 py-0.5 rounded ${
+                                  m.type === "want"
+                                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                    : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                                }`}
+                                title={m.type === "want" ? "A skill you want to grow into" : "A skill you have"}
+                              >
+                                {m.skill}
+                                {m.type === "want" ? " ↗" : ""}
+                              </span>
+                            ))}
+                          </span>
+                        )}
                         {/* Actions pushed to the far right of the row */}
                         <span className="ml-auto flex items-center gap-1 shrink-0">
                           {rejected ? (
