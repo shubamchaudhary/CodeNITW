@@ -589,8 +589,72 @@ function SummaryCompany({ company, entry, onJump }) {
 }
 
 // ── Radar bucket: openings discovered by the daily CI radar ─────────────────
-function RadarBucket({ radar, companiesById, onTrack, onDismiss }) {
-  const [showAll, setShowAll] = useState(false);
+// Compact accordion: one row per company (name + openings count), expand to
+// see openings. "To Apply" tracks the link on that company; "Reject" (with a
+// confirm) crosses the opening out — it stays visible, struck through, until
+// it stops appearing in the radar feed.
+function ManualOpeningForm({ allCompanies, onAdd, onClose }) {
+  const [companyName, setCompanyName] = useState("");
+  const [role, setRole] = useState("");
+  const [url, setUrl] = useState("");
+
+  const submit = () => {
+    const company = allCompanies.find((c) => c.name.toLowerCase() === companyName.trim().toLowerCase());
+    if (!company) {
+      toast.warn("Company not found in your list — add it via 'Add company' first");
+      return;
+    }
+    const u = normalizeUrl(url);
+    if (!u) {
+      toast.warn("Paste the job opening URL");
+      return;
+    }
+    onAdd(company, role.trim() || "Opening", u);
+    setRole("");
+    setUrl("");
+  };
+
+  const inputCls =
+    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
+  return (
+    <div className="flex flex-wrap items-center gap-2 mt-2">
+      <input
+        list="radar-company-names"
+        value={companyName}
+        onChange={(e) => setCompanyName(e.target.value)}
+        placeholder="Company"
+        className={`${inputCls} w-48`}
+        autoFocus
+      />
+      <datalist id="radar-company-names">
+        {allCompanies.map((c) => (
+          <option key={c.id} value={c.name} />
+        ))}
+      </datalist>
+      <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role (e.g. SDE-2 Backend)" className={`${inputCls} w-44`} />
+      <input
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && submit()}
+        placeholder="https://… job opening link"
+        className={`${inputCls} flex-1 min-w-[200px]`}
+      />
+      <button
+        onClick={submit}
+        className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+      >
+        <HiPlus /> To Apply
+      </button>
+      <button onClick={onClose} className="text-gray-400 hover:text-red-500" title="Close">
+        <HiX />
+      </button>
+    </div>
+  );
+}
+
+function RadarBucket({ radar, companiesById, allCompanies, rejectedKeys, onTrack, onReject, onUnreject, onManualAdd }) {
+  const [openIds, setOpenIds] = useState(() => new Set());
+  const [addingManual, setAddingManual] = useState(false);
   if (!radar) return null;
 
   const groups = [];
@@ -602,94 +666,150 @@ function RadarBucket({ radar, companiesById, onTrack, onDismiss }) {
     }
     byCompany.get(o.companyId).push(o);
   }
-  if (groups.length === 0) return null;
 
   const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
-  const newCount = radar.openings.filter(isNew).length;
-  const visibleGroups = showAll ? groups : groups.slice(0, 10);
+  const active = radar.openings.filter((o) => !rejectedKeys[o.key]);
+  const newCount = active.filter(isNew).length;
+  const watched = radar.summary.coveredCompanyIds?.length ?? radar.summary.boards;
+
+  const toggle = (cid) =>
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      next.has(cid) ? next.delete(cid) : next.add(cid);
+      return next;
+    });
 
   return (
     <div className={`${GLASS} rounded-xl p-4 mb-5`}>
-      <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300">
-          📡 Discovered Openings ({radar.openings.length})
+          📡 Discovered Openings ({active.length})
         </h2>
         <span className="text-xs text-gray-400 dark:text-gray-500">
           {newCount > 0 && (
             <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{newCount} new</span>
           )}
-          scanned {new Date(radar.summary.updatedAt).toLocaleString()} ·{" "}
-          {radar.summary.coveredCompanyIds?.length ?? radar.summary.boards} companies auto-watched
+          {groups.length} companies with matches · {watched} boards auto-watched · scanned{" "}
+          {new Date(radar.summary.updatedAt).toLocaleString()}
         </span>
       </div>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-        Relevant SDE/backend roles found automatically on company job boards. Track adds the link to that
-        company's openings; dismiss hides it permanently.
-      </p>
-      <div className="grid md:grid-cols-2 gap-2">
-        {visibleGroups.map((cid) => {
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          "To Apply" saves the link under that company. Reject crosses an opening out — it disappears for
+          good once it leaves the next scan.
+        </p>
+        <button
+          onClick={() => setAddingManual((s) => !s)}
+          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
+        >
+          + Add opening manually
+        </button>
+      </div>
+      {addingManual && (
+        <div className={`${GLASS_PANEL} rounded-xl p-3 mb-3`}>
+          <ManualOpeningForm allCompanies={allCompanies} onAdd={onManualAdd} onClose={() => setAddingManual(false)} />
+        </div>
+      )}
+
+      <div className="divide-y divide-gray-200/60 dark:divide-slate-700/60 rounded-xl overflow-hidden border border-gray-200/60 dark:border-slate-700/60">
+        {groups.map((cid) => {
           const c = companiesById[cid];
           const list = byCompany.get(cid);
+          const liveCount = list.filter((o) => !rejectedKeys[o.key]).length;
+          const hasNew = list.some((o) => isNew(o) && !rejectedKeys[o.key]);
+          const open = openIds.has(cid);
           return (
-            <div key={cid} className={`${GLASS_PANEL} rounded-xl p-3`}>
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className="font-semibold text-gray-800 dark:text-gray-100">{c?.name || list[0].company}</span>
-                {c?.pay && <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">₹{c.pay} LPA</span>}
-                {c?.match && (
-                  <span className={`text-xs ${FIT_CLS[c.match] || ""}`}>{c.match}</span>
+            <div key={cid} className="bg-white/40 dark:bg-slate-800/40">
+              <button
+                onClick={() => toggle(cid)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-indigo-50/60 dark:hover:bg-slate-700/40"
+              >
+                <HiChevronDown className={`text-gray-400 transition-transform shrink-0 ${open ? "" : "-rotate-90"}`} />
+                <span className="font-semibold text-gray-800 dark:text-gray-100">
+                  {c?.name || list[0].company}
+                </span>
+                <span className="text-xs font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 shrink-0">
+                  {liveCount}
+                </span>
+                {hasNew && (
+                  <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
+                    NEW
+                  </span>
                 )}
-              </div>
-              <ul className="space-y-1">
-                {list.map((o) => (
-                  <li key={o.key} className="flex items-center gap-2 text-sm">
-                    {isNew(o) && (
-                      <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
-                        NEW
-                      </span>
-                    )}
-                    <a
-                      href={o.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline truncate"
-                      title={`${o.title} — ${o.location}`}
-                    >
-                      {o.title}
-                    </a>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0" title={o.location}>
-                      {o.location}
-                    </span>
-                    <span className="ml-auto flex items-center gap-1 shrink-0">
-                      <button
-                        onClick={() => onTrack(o)}
-                        className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
-                        title="Add to this company's openings"
-                      >
-                        + Track
-                      </button>
-                      <button
-                        onClick={() => onDismiss(o)}
-                        className="text-gray-400 hover:text-red-500 text-xs px-1"
-                        title="Dismiss"
-                      >
-                        <HiX />
-                      </button>
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                <span className="ml-auto flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 shrink-0">
+                  {c?.pay && <span>₹{c.pay} LPA</span>}
+                  {c?.match && <span className={FIT_CLS[c.match] || ""}>{c.match}</span>}
+                </span>
+              </button>
+              {open && (
+                <ul className="px-4 pb-2 space-y-1">
+                  {list.map((o) => {
+                    const rejected = !!rejectedKeys[o.key];
+                    return (
+                      <li key={o.key} className="flex items-center gap-2 text-sm">
+                        {isNew(o) && !rejected && (
+                          <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
+                            NEW
+                          </span>
+                        )}
+                        <a
+                          href={o.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`hover:underline truncate ${
+                            rejected
+                              ? "line-through text-gray-400 dark:text-gray-500"
+                              : "text-indigo-600 dark:text-indigo-400"
+                          }`}
+                          title={`${o.title} — ${o.location}`}
+                        >
+                          {o.title}
+                        </a>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[160px] shrink-0" title={o.location}>
+                          {o.location}
+                        </span>
+                        <span className="ml-auto flex items-center gap-1 shrink-0">
+                          {rejected ? (
+                            <button
+                              onClick={() => onUnreject(o)}
+                              className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500"
+                              title="Restore this opening"
+                            >
+                              Undo
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => onTrack(o)}
+                                className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
+                                title="Save under this company and queue it in To Apply"
+                              >
+                                → To Apply
+                              </button>
+                              <button
+                                onClick={() => onReject(o)}
+                                className="text-gray-400 hover:text-red-500 text-xs px-1"
+                                title="Reject this opening"
+                              >
+                                <HiX />
+                              </button>
+                            </>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           );
         })}
       </div>
-      {groups.length > 10 && (
-        <button
-          onClick={() => setShowAll((s) => !s)}
-          className="mt-3 w-full py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700/60 rounded-lg"
-        >
-          {showAll ? "Show less" : `Show all ${groups.length} companies`}
-        </button>
+      {groups.length === 0 && (
+        <p className="text-sm text-gray-400 dark:text-gray-500 py-4 text-center">
+          No unhandled openings right now — everything is tracked, rejected, or the radar found no matches.
+        </p>
       )}
     </div>
   );
@@ -791,41 +911,78 @@ export default function JobTracker() {
     [radar]
   );
 
-  // Radar minus everything already handled: dismissed keys and URLs that are
-  // already tracked as links on any company.
+  // Radar minus openings already saved as links (tracked/applied ones never
+  // reappear). Rejected keys stay in the feed — rendered crossed-out.
   const radarVisible = useMemo(() => {
     if (!radar) return null;
     const trackedUrls = new Set();
     Object.values(state.companies).forEach((e) =>
       (e.links || []).forEach((l) => trackedUrls.add(normUrl(l.url)))
     );
-    const openings = radar.openings.filter(
-      (o) => !state.dismissedOpenings[o.key] && !trackedUrls.has(normUrl(o.url))
-    );
+    const openings = radar.openings.filter((o) => !trackedUrls.has(normUrl(o.url)));
     return { ...radar, openings };
-  }, [radar, state.companies, state.dismissedOpenings]);
+  }, [radar, state.companies]);
+
+  // A rejected opening that no longer appears in the scan is gone for good —
+  // drop its key so the map doesn't grow forever.
+  useEffect(() => {
+    if (!radar) return;
+    const feedKeys = new Set(radar.openings.map((o) => o.key));
+    setState((prev) => {
+      const stale = Object.keys(prev.dismissedOpenings).filter((k) => !feedKeys.has(k));
+      if (stale.length === 0) return prev;
+      const dismissedOpenings = { ...prev.dismissedOpenings };
+      stale.forEach((k) => delete dismissedOpenings[k]);
+      const next = { ...prev, dismissedOpenings };
+      saveJSON(KEYS.JOB_TRACKER, next);
+      return next;
+    });
+  }, [radar]);
 
   const trackOpening = useCallback(
     (o) => {
       const entry = state.companies[o.companyId] || {};
-      patchCompany(o.companyId, {
+      const patch = {
         links: [...(entry.links || []), { id: uid(), label: o.title, url: o.url, applied: false }],
-      });
-      toast.success(`Added to ${o.company}`);
+      };
+      if (!entry.status || entry.status === "none") patch.status = "toApply";
+      patchCompany(o.companyId, patch);
+      toast.success(`Queued in To Apply — ${o.company}`);
     },
     [state.companies, patchCompany]
   );
 
-  const dismissOpening = useCallback(
-    (o) => {
-      setState((prev) => {
-        const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [o.key]: true } };
-        saveJSON(KEYS.JOB_TRACKER, next);
-        return next;
-      });
+  const manualAddOpening = useCallback(
+    (company, label, url) => {
+      const entry = state.companies[company.id] || {};
+      const patch = {
+        links: [...(entry.links || []), { id: uid(), label, url, applied: false }],
+      };
+      if (!entry.status || entry.status === "none") patch.status = "toApply";
+      patchCompany(company.id, patch);
+      toast.success(`Queued in To Apply — ${company.name}`);
     },
-    []
+    [state.companies, patchCompany]
   );
+
+  const rejectOpening = useCallback((o) => {
+    if (!window.confirm(`Reject "${o.title}" at ${o.company}? It will be crossed out and dropped after it leaves the scan.`)) return;
+    setState((prev) => {
+      const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [o.key]: true } };
+      saveJSON(KEYS.JOB_TRACKER, next);
+      return next;
+    });
+  }, []);
+
+  const unrejectOpening = useCallback((o) => {
+    setState((prev) => {
+      const dismissedOpenings = { ...prev.dismissedOpenings };
+      delete dismissedOpenings[o.key];
+      const next = { ...prev, dismissedOpenings };
+      saveJSON(KEYS.JOB_TRACKER, next);
+      return next;
+    });
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -951,8 +1108,12 @@ export default function JobTracker() {
         <RadarBucket
           radar={radarVisible}
           companiesById={companiesById}
+          allCompanies={allCompanies}
+          rejectedKeys={state.dismissedOpenings}
           onTrack={trackOpening}
-          onDismiss={dismissOpening}
+          onReject={rejectOpening}
+          onUnreject={unrejectOpening}
+          onManualAdd={manualAddOpening}
         />
 
         <AnimatePresence>
