@@ -18,6 +18,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createHash } from "crypto";
+import { buildScorer } from "./scoreOpening.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const RADAR_DIR = join(__dirname, "../radar");
@@ -82,6 +83,32 @@ function jobKey(ats, id, url) {
   return createHash("sha1").update(raw).digest("hex").slice(0, 16);
 }
 
+// Turn an ATS job description (HTML or plain text) into clean plain text for the
+// skills scorer. Strips tags/entities; capped generously so a long JD still
+// yields plenty of skill keywords without keeping megabytes in memory.
+function stripHtml(s, max = 8000) {
+  if (!s) return "";
+  const text = String(s)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&#39;|&rsquo;|&lsquo;/gi, "'")
+    .replace(/&quot;|&ldquo;|&rdquo;/gi, '"')
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length > max ? text.slice(0, max) : text;
+}
+
+// Short snippet stored on each opening for a UI "why" tooltip (the full JD is
+// only used transiently for scoring, never committed).
+function clip(s, max = 220) {
+  const t = s || "";
+  return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
+}
+
 // ── Manual overrides for big custom boards + probe false-positive fixes ──────
 // The probe can't detect custom career sites (FAANG etc.) and providers that
 // don't expose a board name can hit an unrelated org with the same slug
@@ -120,29 +147,30 @@ const OVERRIDES = {
 // ── API adapters: mapping entry → [{id,title,location,url}] ──────────────────
 const adapters = {
   async greenhouse(slug) {
-    const d = await get(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`);
+    // content=true returns the (HTML) job description inline — one call, no N+1.
+    const d = await get(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`);
     if (!d || !Array.isArray(d.jobs)) return null;
-    return d.jobs.map((j) => ({ id: String(j.id), title: j.title, location: j.location?.name || "", url: j.absolute_url }));
+    return d.jobs.map((j) => ({ id: String(j.id), title: j.title, location: j.location?.name || "", url: j.absolute_url, desc: j.content }));
   },
   async lever(slug) {
     const d = await get(`https://api.lever.co/v0/postings/${slug}?mode=json`);
     if (!Array.isArray(d)) return null;
-    return d.map((j) => ({ id: j.id, title: j.text, location: j.categories?.location || "", url: j.hostedUrl }));
+    return d.map((j) => ({ id: j.id, title: j.text, location: j.categories?.location || "", url: j.hostedUrl, desc: j.descriptionPlain || j.description }));
   },
   async ashby(slug) {
     const d = await get(`https://api.ashbyhq.com/posting-api/job-board/${slug}`);
     if (!d || !Array.isArray(d.jobs)) return null;
-    return d.jobs.map((j) => ({ id: j.id, title: j.title, location: j.location || "", url: j.jobUrl }));
+    return d.jobs.map((j) => ({ id: j.id, title: j.title, location: j.location || "", url: j.jobUrl, desc: j.descriptionPlain || j.descriptionHtml }));
   },
   async workable(slug) {
     const d = await get(`https://apply.workable.com/api/v1/widget/accounts/${slug}`);
     if (!d || !Array.isArray(d.jobs)) return null;
-    return d.jobs.map((j) => ({ id: j.shortcode || j.id, title: j.title, location: `${j.city || ""} ${j.country || ""}`.trim(), url: j.shortlink }));
+    return d.jobs.map((j) => ({ id: j.shortcode || j.id, title: j.title, location: `${j.city || ""} ${j.country || ""}`.trim(), url: j.shortlink, desc: j.description }));
   },
   async recruitee(slug) {
     const d = await get(`https://${slug}.recruitee.com/api/offers/`);
     if (!d || !Array.isArray(d.offers)) return null;
-    return d.offers.map((j) => ({ id: String(j.id), title: j.title, location: j.location || "", url: j.careers_url }));
+    return d.offers.map((j) => ({ id: String(j.id), title: j.title, location: j.location || "", url: j.careers_url, desc: j.description }));
   },
   async smartrecruiters(slug) {
     const d = await get(`https://api.smartrecruiters.com/v1/companies/${slug}/postings?limit=100`);
@@ -542,6 +570,12 @@ async function main() {
   const atsCache = loadJSON(join(RADAR_DIR, "atsCache.json"), {});
   const now = new Date().toISOString();
 
+  // Build the résumé-match scorer from your editable skills list. If the file is
+  // missing/empty, openings are still emitted — just without a matchScore.
+  const skills = loadJSON(join(RADAR_DIR, "skills.json"), { have: [], want: [] });
+  const scorer = buildScorer({ have: skills.have || [], want: skills.want || [] });
+  console.log(`Scoring against ${skills.have?.length || 0} have + ${skills.want?.length || 0} want skills`);
+
   // Route every company to its best fetcher: manual override > probe API
   // mapping > sniffed-Workday resolution. Everything else stays uncovered.
   const jobsSources = [];
@@ -583,6 +617,10 @@ async function main() {
       if (!isRelevant(j.title, j.location)) continue;
       const key = jobKey(c.ats, j.id, j.url);
       if (!seen[key]) seen[key] = now;
+      // Score on the FULL job description, then store only the score + matched
+      // skills + a short snippet (the full JD is never committed).
+      const fullDesc = stripHtml(j.desc);
+      const { score, matched } = scorer.score({ title: j.title, desc: fullDesc, location: j.location });
       openings.push({
         key,
         companyId: c.id,
@@ -591,6 +629,9 @@ async function main() {
         title: j.title,
         location: j.location,
         url: j.url,
+        desc: clip(fullDesc),
+        matchScore: score,
+        matched,
         firstSeen: seen[key],
       });
     }

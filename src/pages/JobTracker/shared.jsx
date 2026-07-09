@@ -128,6 +128,45 @@ export function CultureStars({ n }) {
   );
 }
 
+// ── Résumé-match score badge ─────────────────────────────────────────────────
+// `matchScore` (0–100) is precomputed by the radar (scripts/scoreOpening.mjs)
+// from your radar/skills.json against each opening's full job description.
+export function scoreBand(score) {
+  if (score == null) return "none";
+  if (score >= 75) return "high";
+  if (score >= 50) return "mid";
+  if (score >= 25) return "low";
+  return "min";
+}
+
+const SCORE_BAND_CLS = {
+  high: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200",
+  mid: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200",
+  low: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200",
+  min: "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400",
+};
+
+export function ScoreBadge({ score, matched, basis }) {
+  if (score == null) return null;
+  const band = scoreBand(score);
+  const title =
+    basis === "title"
+      ? "Estimate from title only (no job description available)"
+      : matched?.length
+      ? "Match: " + matched.map((m) => (m.type === "want" ? `${m.skill} (grow)` : m.skill)).join(", ")
+      : "No overlap with your skills list";
+  return (
+    <span
+      className={`shrink-0 inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded ${SCORE_BAND_CLS[band]}`}
+      title={title}
+    >
+      {score}
+      <span className="ml-0.5 font-semibold opacity-70">fit</span>
+    </span>
+  );
+}
+
+
 export function StatusSelect({ value, onChange }) {
   const v = value || "none";
   return (
