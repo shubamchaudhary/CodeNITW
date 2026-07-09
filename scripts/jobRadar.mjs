@@ -1,4 +1,5 @@
-// Daily job-openings radar.
+// Daily job-openings radar. (Manual refresh: push a change to this file, or
+// use the Actions "Run workflow" button — workflow_dispatch is enabled.)
 //
 // Reads the ATS mapping discovered by atsProbe (scripts/ats-probe-report.json),
 // fetches every readable job board, filters for SDE-2/backend/Java roles in
