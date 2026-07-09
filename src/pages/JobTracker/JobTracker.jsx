@@ -46,13 +46,26 @@ const APPLIED_HIGHLIGHT_DAYS = 10;
 
 const PAGE_SIZE = 60;
 
+// Daily-radar output committed by .github/workflows/job-radar.yml. Fetched at
+// runtime so new openings appear without a redeploy; main is tried first, the
+// feature branch is the fallback until the PR merges.
+const RADAR_SOURCES = [
+  "https://raw.githubusercontent.com/shubamchaudhary/CodeNITW/main/radar/openings.json",
+  "https://raw.githubusercontent.com/shubamchaudhary/CodeNITW/claude/job-application-tracker-nqpn76/radar/openings.json",
+];
+const RADAR_NEW_DAYS = 3;
+
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
-  return { companies: s.companies || {}, custom: s.custom || [] };
+  return { companies: s.companies || {}, custom: s.custom || [], dismissedOpenings: s.dismissedOpenings || {} };
+}
+
+function normUrl(url) {
+  return (url || "").replace(/^https?:\/\//, "").replace(/[?#].*$/, "").replace(/\/$/, "").toLowerCase();
 }
 
 function normalizeUrl(url) {
@@ -567,6 +580,112 @@ function SummaryCompany({ company, entry, onJump }) {
   );
 }
 
+// ── Radar bucket: openings discovered by the daily CI radar ─────────────────
+function RadarBucket({ radar, companiesById, onTrack, onDismiss }) {
+  const [showAll, setShowAll] = useState(false);
+  if (!radar) return null;
+
+  const groups = [];
+  const byCompany = new Map();
+  for (const o of radar.openings) {
+    if (!byCompany.has(o.companyId)) {
+      byCompany.set(o.companyId, []);
+      groups.push(o.companyId);
+    }
+    byCompany.get(o.companyId).push(o);
+  }
+  if (groups.length === 0) return null;
+
+  const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
+  const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
+  const newCount = radar.openings.filter(isNew).length;
+  const visibleGroups = showAll ? groups : groups.slice(0, 10);
+
+  return (
+    <div className={`${GLASS} rounded-xl p-4 mb-5`}>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+        <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300">
+          📡 Discovered Openings ({radar.openings.length})
+        </h2>
+        <span className="text-xs text-gray-400 dark:text-gray-500">
+          {newCount > 0 && (
+            <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{newCount} new</span>
+          )}
+          scanned {new Date(radar.summary.updatedAt).toLocaleString()} · {radar.summary.boards} boards
+        </span>
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+        Relevant SDE/backend roles found automatically on company job boards. Track adds the link to that
+        company's openings; dismiss hides it permanently.
+      </p>
+      <div className="grid md:grid-cols-2 gap-2">
+        {visibleGroups.map((cid) => {
+          const c = companiesById[cid];
+          const list = byCompany.get(cid);
+          return (
+            <div key={cid} className={`${GLASS_PANEL} rounded-xl p-3`}>
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span className="font-semibold text-gray-800 dark:text-gray-100">{c?.name || list[0].company}</span>
+                {c?.pay && <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">₹{c.pay} LPA</span>}
+                {c?.match && (
+                  <span className={`text-xs ${FIT_CLS[c.match] || ""}`}>{c.match}</span>
+                )}
+              </div>
+              <ul className="space-y-1">
+                {list.map((o) => (
+                  <li key={o.key} className="flex items-center gap-2 text-sm">
+                    {isNew(o) && (
+                      <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
+                        NEW
+                      </span>
+                    )}
+                    <a
+                      href={o.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline truncate"
+                      title={`${o.title} — ${o.location}`}
+                    >
+                      {o.title}
+                    </a>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0" title={o.location}>
+                      {o.location}
+                    </span>
+                    <span className="ml-auto flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => onTrack(o)}
+                        className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
+                        title="Add to this company's openings"
+                      >
+                        + Track
+                      </button>
+                      <button
+                        onClick={() => onDismiss(o)}
+                        className="text-gray-400 hover:text-red-500 text-xs px-1"
+                        title="Dismiss"
+                      >
+                        <HiX />
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+      {groups.length > 10 && (
+        <button
+          onClick={() => setShowAll((s) => !s)}
+          className="mt-3 w-full py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700/60 rounded-lg"
+        >
+          {showAll ? "Show less" : `Show all ${groups.length} companies`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function JobTracker() {
   const [state, setState] = useState(loadState);
@@ -578,6 +697,7 @@ export default function JobTracker() {
   const [limit, setLimit] = useState(PAGE_SIZE);
   const [expandedId, setExpandedId] = useState(null);
   const [adding, setAdding] = useState(false);
+  const [radar, setRadar] = useState(null);
 
   useEffect(
     () =>
@@ -586,6 +706,27 @@ export default function JobTracker() {
       }),
     []
   );
+
+  // Load the daily radar output (first source that answers wins).
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      for (const src of RADAR_SOURCES) {
+        try {
+          const res = await fetch(`${src}?t=${Date.now()}`);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (alive && Array.isArray(data.openings)) {
+            setRadar(data);
+            return;
+          }
+        } catch (_) {}
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const persist = useCallback((next) => {
     setState(next);
@@ -633,6 +774,44 @@ export default function JobTracker() {
   const tiers = useMemo(() => [...new Set(allCompanies.map((c) => c.tier).filter(Boolean))].sort(), [allCompanies]);
 
   const entryOf = useCallback((id) => state.companies[id] || {}, [state.companies]);
+
+  const companiesById = useMemo(() => Object.fromEntries(allCompanies.map((c) => [c.id, c])), [allCompanies]);
+
+  // Radar minus everything already handled: dismissed keys and URLs that are
+  // already tracked as links on any company.
+  const radarVisible = useMemo(() => {
+    if (!radar) return null;
+    const trackedUrls = new Set();
+    Object.values(state.companies).forEach((e) =>
+      (e.links || []).forEach((l) => trackedUrls.add(normUrl(l.url)))
+    );
+    const openings = radar.openings.filter(
+      (o) => !state.dismissedOpenings[o.key] && !trackedUrls.has(normUrl(o.url))
+    );
+    return { ...radar, openings };
+  }, [radar, state.companies, state.dismissedOpenings]);
+
+  const trackOpening = useCallback(
+    (o) => {
+      const entry = state.companies[o.companyId] || {};
+      patchCompany(o.companyId, {
+        links: [...(entry.links || []), { id: uid(), label: o.title, url: o.url, applied: false }],
+      });
+      toast.success(`Added to ${o.company}`);
+    },
+    [state.companies, patchCompany]
+  );
+
+  const dismissOpening = useCallback(
+    (o) => {
+      setState((prev) => {
+        const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [o.key]: true } };
+        saveJSON(KEYS.JOB_TRACKER, next);
+        return next;
+      });
+    },
+    []
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -754,6 +933,13 @@ export default function JobTracker() {
             </div>
           ))}
         </div>
+
+        <RadarBucket
+          radar={radarVisible}
+          companiesById={companiesById}
+          onTrack={trackOpening}
+          onDismiss={dismissOpening}
+        />
 
         <AnimatePresence>
           {adding && (
