@@ -686,6 +686,10 @@ async function main() {
       if (existingUrls.has(j.url)) continue; // already surfaced via that company's own board
       const key = jobKey("linkedin", j.id, j.url);
       if (!seen[key]) seen[key] = now;
+      // LinkedIn's guest search is title-only (no JD), so this scores via the
+      // scorer's title fallback — a low but real number, so these openings rank
+      // and show a fit badge instead of appearing unscored.
+      const { score, matched } = scorer.score({ title: j.title, desc: "", location: j.location });
       openings.push({
         key,
         companyId: j.companyId,
@@ -694,6 +698,9 @@ async function main() {
         title: j.title,
         location: j.location,
         url: j.url,
+        desc: "",
+        matchScore: score,
+        matched,
         firstSeen: seen[key],
       });
       linkedinCount += 1;
