@@ -5,39 +5,57 @@ import {
   HiPlus,
   HiChevronDown,
   HiOutlineSearch,
+  HiCheck,
 } from "react-icons/hi";
 import { GLASS } from "../../components/glass";
 import {
-  STATUSES,
   FIT_CLS,
   FIT_RANK,
   PAGE_SIZE,
   APPLIED_HIGHLIGHT_DAYS,
-  CultureStars,
   StatusSelect,
   CompanyDetail,
   AddCompanyForm,
-  isRecentlyApplied,
   daysSince,
 } from "./shared";
 
 // ── Company card (accordion) ─────────────────────────────────────────────────
 const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onToggle, onPatch, autoCovered }) {
   const status = entry.status || "none";
-  const recentlyApplied = isRecentlyApplied(entry);
   const links = entry.links || [];
   const pending = links.filter((l) => !l.applied).length;
 
+  // Direct-apply model for the Companies tab: one click marks the company as
+  // applied (stamps appliedAt = now). The "applied" look only holds for
+  // APPLIED_HIGHLIGHT_DAYS days; after that it reverts to "Not Applied" as a
+  // nudge to re-apply, while still showing when it was last applied.
+  const appliedAt = entry.appliedAt;
+  const appliedDays = daysSince(appliedAt);
+  const hasApplied = appliedAt != null && appliedDays !== Infinity;
+  const activeApplied = hasApplied && appliedDays <= APPLIED_HIGHLIGHT_DAYS;
+
+  const agoLabel = hasApplied
+    ? appliedDays === 0
+      ? "applied today"
+      : `applied ${appliedDays}d ago`
+    : null;
+
+  const toggleApplied = (e) => {
+    e.stopPropagation();
+    if (activeApplied) onPatch({ status: "none" });
+    else onPatch({ status: "applied", appliedAt: Date.now() });
+  };
+
   let cardExtra = "";
   if (status === "skip") cardExtra = "opacity-45";
-  else if (recentlyApplied) cardExtra = "ring-2 ring-blue-400/50";
+  else if (activeApplied) cardExtra = "ring-2 ring-emerald-400/50";
 
   return (
     <div className={`${GLASS} rounded-xl overflow-hidden ${cardExtra}`}>
       {/* Header — clickable to expand */}
       <div
         onClick={onToggle}
-        className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-indigo-50/60 dark:hover:bg-slate-700/40 transition-colors"
+        className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-indigo-50/60 dark:hover:bg-slate-700/40 transition-colors"
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -55,14 +73,6 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
                 📡 AUTO
               </span>
             )}
-            {recentlyApplied && (
-              <span
-                className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-800/50 text-blue-600 dark:text-blue-200"
-                title={`Applied ${daysSince(entry.appliedAt)}d ago — highlight fades after ${APPLIED_HIGHLIGHT_DAYS}d`}
-              >
-                RECENT
-              </span>
-            )}
             {company.careers && (
               <a
                 href={company.careers}
@@ -75,23 +85,6 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
                 <HiOutlineExternalLink />
               </a>
             )}
-          </div>
-          <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-            {company.tier && <span>{company.tier} · </span>}
-            {company.pay ? `₹${company.pay} LPA` : "—"}
-            {company.location ? ` · ${company.location}` : ""}
-          </div>
-          <div className="flex items-center gap-3 text-xs mt-1 flex-wrap">
-            <span className="inline-flex items-center gap-0.5">
-              <span className="text-gray-500 dark:text-gray-400">Culture:</span>{" "}
-              <CultureStars n={company.culture} />
-            </span>
-            <span className={FIT_CLS[company.javaFit] || "text-gray-400 dark:text-gray-500"}>
-              Java: {company.javaFit || "—"}
-            </span>
-            <span className={FIT_CLS[company.match] || "text-gray-400 dark:text-gray-500"}>
-              Match: {company.match || "—"}
-            </span>
             {links.length > 0 && (
               <span
                 className={`font-bold px-1.5 py-0.5 rounded-full text-[10px] ${
@@ -101,12 +94,54 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
                 }`}
                 title={`${links.length} openings, ${pending} pending`}
               >
-                {links.length - pending}/{links.length} applied
+                {links.length - pending}/{links.length}
               </span>
             )}
           </div>
+          {/* One compact meta line */}
+          <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
+            {company.tier && <span>{company.tier} · </span>}
+            {company.pay ? `₹${company.pay} LPA` : "—"}
+            {company.location ? ` · ${company.location}` : ""}
+            <span className="mx-1 text-gray-300 dark:text-gray-600">|</span>
+            <span className="text-amber-500 dark:text-amber-400">★{company.culture || "—"}</span>
+            <span className="mx-1 text-gray-300 dark:text-gray-600">·</span>
+            <span className={FIT_CLS[company.javaFit] || ""}>Java {company.javaFit || "—"}</span>
+            <span className="mx-1 text-gray-300 dark:text-gray-600">·</span>
+            <span className={FIT_CLS[company.match] || ""}>Match {company.match || "—"}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0 pt-1">
+
+        {/* Right: quick Applied toggle + full status + chevron */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-col items-end gap-0.5">
+            <button
+              onClick={toggleApplied}
+              className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
+                activeApplied
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                  : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600"
+              }`}
+              title={activeApplied ? "Click to un-mark applied" : "Mark this company as applied"}
+            >
+              {activeApplied ? (
+                <>
+                  <HiCheck className="w-3.5 h-3.5" /> Applied
+                </>
+              ) : (
+                "Not Applied"
+              )}
+            </button>
+            {agoLabel && (
+              <span
+                className={`text-[10px] ${
+                  activeApplied ? "text-emerald-600 dark:text-emerald-300" : "text-gray-400 dark:text-gray-500"
+                }`}
+              >
+                {agoLabel}
+              </span>
+            )}
+          </div>
           <StatusSelect value={status} onChange={(v) => onPatch({ status: v })} />
           <HiChevronDown className={`text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`} />
         </div>
