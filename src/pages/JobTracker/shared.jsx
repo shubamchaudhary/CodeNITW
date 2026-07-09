@@ -54,6 +54,15 @@ export function normUrl(url) {
   return (url || "").replace(/^https?:\/\//, "").replace(/[?#].*$/, "").replace(/\/$/, "").toLowerCase();
 }
 
+// Stable per-opening identity. The radar's `key` can collide (e.g. Workday
+// boards emit the same id for several distinct postings), which would make
+// dismissing one opening dismiss all its siblings. The URL is unique per
+// posting, so fold it in — falling back to the raw key when no URL exists.
+export function uKeyOf(o) {
+  const u = normUrl(o.url);
+  return u ? `${o.key || ""}|${u}` : o.key;
+}
+
 export function normalizeUrl(url) {
   const u = url.trim();
   if (!u) return "";

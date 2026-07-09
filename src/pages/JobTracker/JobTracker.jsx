@@ -8,6 +8,7 @@ import {
   RADAR_SOURCES,
   uid,
   normUrl,
+  uKeyOf,
 } from "./shared";
 import PipelineTab from "./PipelineTab";
 import OpeningsTab from "./OpeningsTab";
@@ -110,21 +111,28 @@ export default function JobTracker() {
     [radar]
   );
 
-  // Radar minus openings already saved as links.
+  // Radar with each opening stamped with a collision-proof `uKey` and a
+  // `tracked` flag (already saved as a link). Tracked openings are kept in the
+  // data — not filtered out — so a company's group stays visible even after its
+  // last opening is queued; OpeningsTab just hides tracked rows from the list.
   const radarVisible = useMemo(() => {
     if (!radar) return null;
     const trackedUrls = new Set();
     Object.values(state.companies).forEach((e) =>
       (e.links || []).forEach((l) => trackedUrls.add(normUrl(l.url)))
     );
-    const openings = radar.openings.filter((o) => !trackedUrls.has(normUrl(o.url)));
+    const openings = radar.openings.map((o) => ({
+      ...o,
+      uKey: uKeyOf(o),
+      tracked: trackedUrls.has(normUrl(o.url)),
+    }));
     return { ...radar, openings };
   }, [radar, state.companies]);
 
   // Drop stale dismissed keys that left the scan.
   useEffect(() => {
     if (!radar) return;
-    const feedKeys = new Set(radar.openings.map((o) => o.key));
+    const feedKeys = new Set(radar.openings.map((o) => uKeyOf(o)));
     setState((prev) => {
       const stale = Object.keys(prev.dismissedOpenings).filter((k) => !feedKeys.has(k));
       if (stale.length === 0) return prev;
@@ -164,17 +172,19 @@ export default function JobTracker() {
 
   // No confirmation dialog — direct dismiss per user request
   const rejectOpening = useCallback((o) => {
+    const k = o.uKey || uKeyOf(o);
     setState((prev) => {
-      const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [o.key]: true } };
+      const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [k]: true } };
       saveJSON(KEYS.JOB_TRACKER, next);
       return next;
     });
   }, []);
 
   const unrejectOpening = useCallback((o) => {
+    const k = o.uKey || uKeyOf(o);
     setState((prev) => {
       const dismissedOpenings = { ...prev.dismissedOpenings };
-      delete dismissedOpenings[o.key];
+      delete dismissedOpenings[k];
       const next = { ...prev, dismissedOpenings };
       saveJSON(KEYS.JOB_TRACKER, next);
       return next;
@@ -208,7 +218,7 @@ export default function JobTracker() {
     };
   }, [allCompanies, state.companies]);
 
-  const activeOpeningsCount = radarVisible?.openings.filter((o) => !state.dismissedOpenings[o.key]).length || 0;
+  const activeOpeningsCount = radarVisible?.openings.filter((o) => !o.tracked && !state.dismissedOpenings[o.uKey]).length || 0;
 
   const statTiles = [
     { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },
