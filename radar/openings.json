@@ -1,11 +1,11 @@
 {
  "summary": {
-  "updatedAt": "2026-07-09T15:39:48.156Z",
+  "updatedAt": "2026-07-09T15:53:11.609Z",
   "boards": 184,
   "boardsFailed": 2,
   "liveRelevantOpenings": 657,
-  "newThisRun": 0,
-  "linkedinOpenings": 5,
+  "newThisRun": 1,
+  "linkedinOpenings": 4,
   "coveredCompanyIds": [
    "acceldata",
    "adobe",
@@ -193,24 +193,38 @@
  },
  "openings": [
   {
-   "key": "29a962482dfa9fa8",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4436702583",
-   "firstSeen": "2026-07-09T15:04:52.591Z"
-  },
-  {
-   "key": "963cb6315e7c45db",
-   "companyId": "docusign",
-   "company": "DocuSign",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-docusign-4418554747",
-   "firstSeen": "2026-07-09T15:04:52.591Z"
+   "key": "b58926620b105754",
+   "companyId": "red-hat-ibm",
+   "company": "Red Hat (IBM)",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune - Tower 6",
+   "url": "https://redhat.wd5.myworkdayjobs.com/jobs/job/Pune---Tower-6/Senior-Software-Engineer_R-057247-1",
+   "desc": "About the Job The Red Hat Customer Content Services (CCS) Engineering team is looking for a Senior Software Engineer to join us in Pune, India (office flex). In this role, you will work in an agile team and contribute to…",
+   "matchScore": 35,
+   "matched": [
+    {
+     "skill": "Kubernetes",
+     "type": "want"
+    },
+    {
+     "skill": "GraphQL",
+     "type": "want"
+    },
+    {
+     "skill": "Docker",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T15:53:11.609Z"
   },
   {
    "key": "57f6a3d13b6603fe",
@@ -220,6 +234,22 @@
    "title": "Middleware Platform Engineer",
    "location": "Bengaluru, Karnataka, India",
    "url": "https://in.linkedin.com/jobs/view/middleware-platform-engineer-at-american-express-global-business-travel-4434855466",
+   "desc": "",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-09T14:59:52.419Z"
+  },
+  {
+   "key": "bdc75a17f90582f5",
+   "companyId": "cashapp-setu",
+   "company": "CashApp/Setu",
+   "ats": "linkedin",
+   "title": "SDE II",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/sde-ii-at-setu-4434843562",
+   "desc": "",
+   "matchScore": 30,
+   "matched": [],
    "firstSeen": "2026-07-09T14:59:52.419Z"
   },
   {
@@ -230,6 +260,9 @@
    "title": "SDE 2",
    "location": "Bengaluru, Karnataka, India",
    "url": "https://in.linkedin.com/jobs/view/sde-2-at-curefit-4433153578",
+   "desc": "",
+   "matchScore": 30,
+   "matched": [],
    "firstSeen": "2026-07-09T14:59:52.419Z"
   },
   {
@@ -240,6 +273,9 @@
    "title": "AI Platform Engineer",
    "location": "Bangalore Urban, Karnataka, India",
    "url": "https://in.linkedin.com/jobs/view/ai-platform-engineer-at-ebay-4435475159",
+   "desc": "",
+   "matchScore": 30,
+   "matched": [],
    "firstSeen": "2026-07-09T14:59:52.419Z"
   },
   {
@@ -3700,111 +3736,6 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "e3f3654f7be398cd",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Fintech, TFAW",
-   "location": "Hyderabad, Telangana, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10426888/software-development-engineer-fintech-tfaw",
-   "desc": "Do you want to be part of a team building big data and machine learning applications that process and analyze transactions worth billions of dollars a day using the latest technology? Do you want to make a tangible impac…",
-   "matchScore": 71,
-   "matched": [
-    {
-     "skill": "GenAI",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "b981947f7d7ac1fd",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, AFFS, Amazon",
-   "location": "Pune, Maharashtra, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10456887/software-development-engineer-affs-amazon",
-   "desc": "Amazon Financials Foundation Services (AFFS), a division within Amazon’s eCommerce Services Organization (eCS) is leading innovation in business systems integration and defining the future of financial accounting at Amaz…",
-   "matchScore": 67,
-   "matched": [
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "44b9b75b903d42dc",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, RBS Tech",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10454695/software-development-engineer-rbs-tech",
-   "desc": "Are you interested in designing and delivering solutions for complex and high impact business problems? Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) S…",
-   "matchScore": 71,
-   "matched": [
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "LLM",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "5ade2eca9644f702",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer II, DA",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10426400/software-development-engineer-ii-da",
-   "desc": "Amazon Digital Acceleration powers ordering, subscriptions, and device management for Prime, Amazon Video, Music, Audible, Alexa, and Kindle, amongst other digital businesses. We process billions of digital purchases eve…",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "71fb340e417d0890",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Amazon Books",
-   "location": "Chennai, Tamil Nadu, IND",
-   "url": "https://www.amazon.jobs/en/jobs/3193935/software-development-engineer-amazon-books",
-   "desc": "Amazon Kindle is a revolutionary reading device and one of the most innovative devices at Amazon. Our Organization is looking for an inventive and technically skilled Software Development Engineer to join our diverse tea…",
-   "matchScore": 60,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
    "key": "4908d665c9341bc6",
    "companyId": "amazon",
    "company": "Amazon",
@@ -3980,6 +3911,111 @@
     },
     {
      "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "e3f3654f7be398cd",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Fintech, TFAW",
+   "location": "Hyderabad, Telangana, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10426888/software-development-engineer-fintech-tfaw",
+   "desc": "Do you want to be part of a team building big data and machine learning applications that process and analyze transactions worth billions of dollars a day using the latest technology? Do you want to make a tangible impac…",
+   "matchScore": 71,
+   "matched": [
+    {
+     "skill": "GenAI",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "b981947f7d7ac1fd",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, AFFS, Amazon",
+   "location": "Pune, Maharashtra, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10456887/software-development-engineer-affs-amazon",
+   "desc": "Amazon Financials Foundation Services (AFFS), a division within Amazon’s eCommerce Services Organization (eCS) is leading innovation in business systems integration and defining the future of financial accounting at Amaz…",
+   "matchScore": 67,
+   "matched": [
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "44b9b75b903d42dc",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, RBS Tech",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10454695/software-development-engineer-rbs-tech",
+   "desc": "Are you interested in designing and delivering solutions for complex and high impact business problems? Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) S…",
+   "matchScore": 71,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "5ade2eca9644f702",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer II, DA",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10426400/software-development-engineer-ii-da",
+   "desc": "Amazon Digital Acceleration powers ordering, subscriptions, and device management for Prime, Amazon Video, Music, Audible, Alexa, and Kindle, amongst other digital businesses. We process billions of digital purchases eve…",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "71fb340e417d0890",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Amazon Books",
+   "location": "Chennai, Tamil Nadu, IND",
+   "url": "https://www.amazon.jobs/en/jobs/3193935/software-development-engineer-amazon-books",
+   "desc": "Amazon Kindle is a revolutionary reading device and one of the most innovative devices at Amazon. Our Organization is looking for an inventive and technically skilled Software Development Engineer to join our diverse tea…",
+   "matchScore": 60,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "C++",
      "type": "have"
     }
    ],
@@ -12986,13 +13022,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "a00761910d6479e9",
+   "key": "a17f9652430e0283",
    "companyId": "fivetran",
    "company": "Fivetran",
    "ats": "greenhouse",
    "title": "Senior Software Engineer",
    "location": "Bengaluru, Karnataka, India, APAC",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7780075003",
+   "url": "https://www.fivetran.com/careers/job?gh_jid=7531626003",
    "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
    "matchScore": 88,
    "matched": [
@@ -13009,14 +13045,6 @@
      "type": "want"
     },
     {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "want"
-    },
-    {
      "skill": "SQL",
      "type": "have"
     },
@@ -13025,7 +13053,7 @@
      "type": "have"
     },
     {
-     "skill": "Distributed Systems",
+     "skill": "System Design",
      "type": "have"
     }
    ],
@@ -13078,13 +13106,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "a17f9652430e0283",
+   "key": "a00761910d6479e9",
    "companyId": "fivetran",
    "company": "Fivetran",
    "ats": "greenhouse",
    "title": "Senior Software Engineer",
    "location": "Bengaluru, Karnataka, India, APAC",
-   "url": "https://www.fivetran.com/careers/job?gh_jid=7531626003",
+   "url": "https://www.fivetran.com/careers/job?gh_jid=7780075003",
    "desc": "<div class=\"content-intro\"><p>From Fivetran’s founding until now, our mission has remained the same: to make access to data as simple and reliable as electricity. With Fivetran, customer data arrives in their warehouses,…",
    "matchScore": 88,
    "matched": [
@@ -13101,6 +13129,14 @@
      "type": "want"
     },
     {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "want"
+    },
+    {
      "skill": "SQL",
      "type": "have"
     },
@@ -13109,7 +13145,7 @@
      "type": "have"
     },
     {
-     "skill": "System Design",
+     "skill": "Distributed Systems",
      "type": "have"
     }
    ],
