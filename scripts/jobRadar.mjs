@@ -26,12 +26,18 @@ const TITLE_RX =
   /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems)\b/i;
 const TITLE_EXCLUDE_RX =
   /\b(intern|staff|principal|director|manager|vp|head of|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded)\b/i;
-const LOCATION_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai|remote)\b/i;
+const INDIA_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai)\b/i;
+// "Remote" pinned to another country is not applicable (e.g. "Remote, USA").
+const FOREIGN_RX =
+  /\b(usa|u\.s\.a?|united states|america|canada|mexico|uk|united kingdom|england|germany|france|poland|netherlands|spain|portugal|ireland|emea|europe|australia|new zealand|singapore|japan|korea|china|vietnam|philippines|brazil|latam|argentina|colombia|israel|dubai|uae|africa)\b/i;
 
 function isRelevant(title, location) {
   if (!TITLE_RX.test(title || "")) return false;
   if (TITLE_EXCLUDE_RX.test(title || "")) return false;
-  if (location && !LOCATION_RX.test(location)) return false;
+  if (location && !INDIA_RX.test(location)) {
+    if (FOREIGN_RX.test(location)) return false;
+    if (!/remote/i.test(location)) return false;
+  }
   return true;
 }
 
