@@ -267,19 +267,44 @@ const customAdapters = {
       desc: j.description || "",
     }));
   },
+  // Eightfold's public `/api/apply/v2/jobs` now 403s ("Not authorized for
+  // PCSX"). The careers SPA instead calls `/api/pcsx/search`, which works for
+  // anonymous clients IF they carry the `_vs`/`_vscid` cookies the shell sets.
+  // So: GET the careers page for a Set-Cookie, then hit pcsx/search with it.
+  // (Verified live in CI against jobs.twilio.com — real positions returned.)
   async eightfold(cfg) {
-    const d = await get(
-      `https://${cfg.host}/api/apply/v2/jobs?domain=${cfg.domain}&query=software%20engineer&location=India&num=100&start=0`
-    );
-    const positions = d?.positions;
-    if (!Array.isArray(positions)) return null;
-    return positions.map((j) => ({
-      id: String(j.id),
-      title: j.name,
-      location: j.location || (j.locations || []).join("; "),
-      url: j.canonicalPositionUrl || `https://${cfg.host}/careers/job/${j.id}`,
-      desc: j.job_description || j.description || "",
-    }));
+    let cookie = "";
+    try {
+      const shell = await fetch(`https://${cfg.host}/careers`, {
+        redirect: "follow",
+        headers: { "User-Agent": "Mozilla/5.0 (job-radar)", Accept: "text/html" },
+      });
+      const setC = shell.headers.getSetCookie?.() || [];
+      cookie = setC.map((c) => c.split(";")[0]).join("; ");
+    } catch {
+      /* fall through — some tenants don't gate pcsx on a cookie */
+    }
+    const headers = { Accept: "application/json", ...(cookie ? { Cookie: cookie } : {}) };
+    const out = [];
+    for (let start = 0; start < 200; start += 50) {
+      const d = await get(
+        `https://${cfg.host}/api/pcsx/search?domain=${cfg.domain}&query=engineer&location=India&num=50&start=${start}&sort_by=relevance`,
+        { headers }
+      );
+      const positions = d?.data?.positions || d?.positions;
+      if (!Array.isArray(positions) || positions.length === 0) break;
+      for (const j of positions) {
+        out.push({
+          id: String(j.id || j.pid || j.displayJobId),
+          title: j.name,
+          location: j.location || (j.locations || []).join("; "),
+          url: j.canonicalPositionUrl || `https://${cfg.host}/careers/job/${j.id}`,
+          desc: j.job_description || j.description || "",
+        });
+      }
+      if (positions.length < 50) break;
+    }
+    return out.length ? out : null;
   },
   async oraclecloud(cfg) {
     const d = await get(
@@ -419,6 +444,31 @@ const boardMapAdapters = {
         (j.isRemote ? " Remote" : ""),
       url: `https://${cfg.host}/careers/${j.id}`,
     }));
+  },
+  // Keka career sites render into a static HTML fragment the shell fetches
+  // from /ats/documents/<guid>/careerportal/<hash>.html. The path is emitted
+  // inline in a fetch() call on the shell; the fragment carries anchor tags to
+  // each posting (…/careers/<jobId>). Grab the shell, follow the fragment,
+  // pull the job links out.
+  async keka(cfg) {
+    const shell = await get(`https://${cfg.host}/careers/`, { text: true, accept: "text/html" });
+    if (!shell) return null;
+    const frag = shell.match(/fetch\(\s*['"](\/ats\/documents\/[^'"]+careerportal\/[^'"]+\.html)['"]/i)?.[1];
+    const html = frag ? await get(`https://${cfg.host}${frag}`, { text: true, accept: "text/html" }) : shell;
+    if (!html) return null;
+    const seen = new Set();
+    const out = [];
+    // Each posting links to /careers/<jobId>; the visible anchor text is the
+    // role title. Capture id + inner text.
+    for (const m of html.matchAll(/href=["'](?:https?:\/\/[^"']+)?\/careers\/([0-9]+)[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const title = m[2].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      if (!title) continue;
+      out.push({ id, title, location: "", url: `https://${cfg.host}/careers/${id}` });
+    }
+    return out.length ? out : null;
   },
   // Generic fallback: schema.org JobPosting JSON-LD embedded in the careers
   // page (usually only a handful of postings, but they're real).
