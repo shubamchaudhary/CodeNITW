@@ -129,6 +129,9 @@ const OVERRIDES = {
   caterpillar: { type: "workdayUrl", url: "https://cat.wd5.myworkdayjobs.com/CaterpillarCareers" },
   servicenow: { type: "smartrecruiters", slug: "ServiceNow" },
   intuit: { type: "phenom", host: "jobs.intuit.com" },
+  // Verified via lead probe: rest searchjobs answers with requisitionList for
+  // this portal id (the careersection UI path is 10000).
+  "societe-generale": { type: "taleo", host: "socgen.taleo.net", portal: "101430233", cs: "10000" },
   razorpay: { type: "greenhouse", slug: "razorpaysoftwareprivatelimited" },
   // Boards that verifiably block server-side fetches (Cloudflare/Akamai/bot
   // TLS filters) or whose public APIs are gone — skipped so a fake slug hit
@@ -264,19 +267,44 @@ const customAdapters = {
       desc: j.description || "",
     }));
   },
+  // Eightfold's public `/api/apply/v2/jobs` now 403s ("Not authorized for
+  // PCSX"). The careers SPA instead calls `/api/pcsx/search`, which works for
+  // anonymous clients IF they carry the `_vs`/`_vscid` cookies the shell sets.
+  // So: GET the careers page for a Set-Cookie, then hit pcsx/search with it.
+  // (Verified live in CI against jobs.twilio.com — real positions returned.)
   async eightfold(cfg) {
-    const d = await get(
-      `https://${cfg.host}/api/apply/v2/jobs?domain=${cfg.domain}&query=software%20engineer&location=India&num=100&start=0`
-    );
-    const positions = d?.positions;
-    if (!Array.isArray(positions)) return null;
-    return positions.map((j) => ({
-      id: String(j.id),
-      title: j.name,
-      location: j.location || (j.locations || []).join("; "),
-      url: j.canonicalPositionUrl || `https://${cfg.host}/careers/job/${j.id}`,
-      desc: j.job_description || j.description || "",
-    }));
+    let cookie = "";
+    try {
+      const shell = await fetch(`https://${cfg.host}/careers`, {
+        redirect: "follow",
+        headers: { "User-Agent": "Mozilla/5.0 (job-radar)", Accept: "text/html" },
+      });
+      const setC = shell.headers.getSetCookie?.() || [];
+      cookie = setC.map((c) => c.split(";")[0]).join("; ");
+    } catch {
+      /* fall through — some tenants don't gate pcsx on a cookie */
+    }
+    const headers = { Accept: "application/json", ...(cookie ? { Cookie: cookie } : {}) };
+    const out = [];
+    for (let start = 0; start < 200; start += 50) {
+      const d = await get(
+        `https://${cfg.host}/api/pcsx/search?domain=${cfg.domain}&query=engineer&location=India&num=50&start=${start}&sort_by=relevance`,
+        { headers }
+      );
+      const positions = d?.data?.positions || d?.positions;
+      if (!Array.isArray(positions) || positions.length === 0) break;
+      for (const j of positions) {
+        out.push({
+          id: String(j.id || j.pid || j.displayJobId),
+          title: j.name,
+          location: j.location || (j.locations || []).join("; "),
+          url: j.canonicalPositionUrl || `https://${cfg.host}/careers/job/${j.id}`,
+          desc: j.job_description || j.description || "",
+        });
+      }
+      if (positions.length < 50) break;
+    }
+    return out.length ? out : null;
   },
   async oraclecloud(cfg) {
     const d = await get(
@@ -351,6 +379,132 @@ const customAdapters = {
     const m = cfg.url.match(WORKDAY_URL_RX);
     return m ? fetchWorkday({ tenant: m[1], wd: m[2], site: m[3] }) : null;
   },
+  // Taleo career sections: the rest/jobboard/searchjobs endpoint returns
+  // requisitionList JSON when called with the tenant's portal id (verified for
+  // SocGen in CI: 24 requisitions). Titles live in column[0]; locations are
+  // often absent, so those pass the location filter as unknown.
+  async taleo(cfg) {
+    const d = await get(`https://${cfg.host}/careersection/rest/jobboard/searchjobs?lang=en&portal=${cfg.portal}`, {
+      method: "POST",
+      headers: { tz: "GMT+05:30" },
+      body: {
+        multilineEnabled: false,
+        sortingSelection: { sortBySelectionParam: "3", ascendingSortingOrder: "false" },
+        fieldData: { fields: {}, valid: true },
+        filterSelectionParam: { searchFilterSelections: [] },
+        advancedSearchFiltersSelectionParam: { searchFilterSelections: [] },
+        pageNo: 1,
+      },
+    });
+    if (!Array.isArray(d?.requisitionList)) return null;
+    return d.requisitionList.map((j) => ({
+      id: String(j.contestNo || j.jobId),
+      title: Array.isArray(j.column) ? j.column[0] : "",
+      location: (j.locationsColumns || []).flat().filter(Boolean).join("; "),
+      url: `https://${cfg.host}/careersection/${cfg.cs}/jobdetail.ftl?job=${encodeURIComponent(j.contestNo || j.jobId)}&lang=en`,
+    }));
+  },
+};
+
+// ── Board-map adapters (configs discovered + verified by deepProbe.mjs) ──────
+// scripts/board-map.json holds fetch configs the deep probe extracted from
+// each company's own careers pages and verified against the live endpoint —
+// so slugs/hosts here can't be name collisions. Standard providers reuse the
+// adapters above; the rest are small ATS-specific fetchers.
+const boardMapAdapters = {
+  greenhouse: (cfg) => adapters.greenhouse(cfg.slug),
+  lever: (cfg) => adapters.lever(cfg.slug),
+  ashby: (cfg) => adapters.ashby(cfg.slug),
+  workable: (cfg) => adapters.workable(cfg.slug),
+  recruitee: (cfg) => adapters.recruitee(cfg.slug),
+  smartrecruiters: (cfg) => adapters.smartrecruiters(cfg.slug),
+  workdayUrl: (cfg) => customAdapters.workdayUrl(cfg),
+  eightfold: (cfg) => customAdapters.eightfold(cfg),
+  phenom: (cfg) => customAdapters.phenom(cfg),
+  async freshteam(cfg) {
+    const d = await get(`https://${cfg.host}/hire/widgets/jobs.json`);
+    const list = Array.isArray(d?.jobs) ? d.jobs : Array.isArray(d) ? d : null;
+    if (!list) return null;
+    return list.map((j) => ({
+      id: String(j.id),
+      title: j.title,
+      location: [j.branch?.city, j.branch?.state, j.branch?.country_code].filter(Boolean).join(", ") || (j.remote ? "Remote" : ""),
+      url: j.url || `https://${cfg.host}/jobs/${j.id}`,
+      desc: j.description,
+    }));
+  },
+  async bamboohr(cfg) {
+    const d = await get(`https://${cfg.host}/careers/list`);
+    if (!Array.isArray(d?.result)) return null;
+    return d.result.map((j) => ({
+      id: String(j.id),
+      title: j.jobOpeningName,
+      location:
+        [j.location?.city, j.location?.state, j.location?.country].filter(Boolean).join(", ") +
+        (j.isRemote ? " Remote" : ""),
+      url: `https://${cfg.host}/careers/${j.id}`,
+    }));
+  },
+  // Keka career sites render into a static HTML fragment the shell fetches
+  // from /ats/documents/<guid>/careerportal/<hash>.html. The path is emitted
+  // inline in a fetch() call on the shell; the fragment carries anchor tags to
+  // each posting (…/careers/<jobId>). Grab the shell, follow the fragment,
+  // pull the job links out.
+  async keka(cfg) {
+    const shell = await get(`https://${cfg.host}/careers/`, { text: true, accept: "text/html" });
+    if (!shell) return null;
+    const frag = shell.match(/fetch\(\s*['"](\/ats\/documents\/[^'"]+careerportal\/[^'"]+\.html)['"]/i)?.[1];
+    const html = frag ? await get(`https://${cfg.host}${frag}`, { text: true, accept: "text/html" }) : shell;
+    if (!html) return null;
+    const seen = new Set();
+    const out = [];
+    // Each posting links to /careers/<jobId>; the visible anchor text is the
+    // role title. Capture id + inner text.
+    for (const m of html.matchAll(/href=["'](?:https?:\/\/[^"']+)?\/careers\/([0-9]+)[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+      const id = m[1];
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const title = m[2].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+      if (!title) continue;
+      out.push({ id, title, location: "", url: `https://${cfg.host}/careers/${id}` });
+    }
+    return out.length ? out : null;
+  },
+  // Generic fallback: schema.org JobPosting JSON-LD embedded in the careers
+  // page (usually only a handful of postings, but they're real).
+  async jsonld(cfg) {
+    const html = await get(cfg.url, { text: true, accept: "text/html" });
+    if (!html) return null;
+    const out = [];
+    for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+      let data;
+      try {
+        data = JSON.parse(m[1]);
+      } catch {
+        continue;
+      }
+      const nodes = Array.isArray(data) ? data : data["@graph"] || [data];
+      for (const n of nodes) {
+        const t = n?.["@type"];
+        if (t !== "JobPosting" && !(Array.isArray(t) && t.includes("JobPosting"))) continue;
+        const locNodes = Array.isArray(n.jobLocation) ? n.jobLocation : [n.jobLocation];
+        const location =
+          locNodes
+            .filter(Boolean)
+            .map((l) => [l.address?.addressLocality, l.address?.addressCountry].filter(Boolean).join(", "))
+            .filter(Boolean)
+            .join("; ") || (n.jobLocationType === "TELECOMMUTE" ? "Remote" : "");
+        out.push({
+          id: String(n.identifier?.value || n.url || n.title),
+          title: n.title,
+          location,
+          url: n.url || cfg.url,
+          desc: typeof n.description === "string" ? n.description : "",
+        });
+      }
+    }
+    return out.length ? out : null;
+  },
 };
 
 // ── LinkedIn: keyword search across ALL companies, not just tracked boards ───
@@ -398,6 +552,19 @@ const SWEEP_ROTATION_DAYS = 7;
 const FORCE_SWEEP_IDS = new Set([
   "meta", "apple", "bank-of-america", "paypal", "goldman-sachs-eng",
   "walmart-global-tech", "booking-com", "microsoft", "intuit",
+  // iCIMS boards sit behind an AWS WAF human-verification wall (deep probe,
+  // round 1) — LinkedIn is the only automated path to these too.
+  "github", "amd", "docusign",
+  // Confirmed dead ends from the lead probes: eightfold tenants that 403 the
+  // public API (CSRF-gated), darwinbox SPAs behind Cloudflare Turnstile,
+  // bot-gated shells, and boards that moved to unknown slugs. Medium tier,
+  // so they'd never enter the sweep pool on match alone — force them since
+  // no board adapter can reach them. Any that later verify via the deep
+  // probe drop out automatically (sweep only targets uncovered companies).
+  "honeywell", "morgan-stanley", "millennium-management", "john-deere",
+  "astrazeneca", "micron", "optum-unitedhealth", "segment-twilio",
+  "weights-biases", "coda", "clevertap", "pharmeasy", "bharatpe", "spinny",
+  "leadsquared", "lendingkart", "upgrad", "physicswallah",
 ]);
 
 function sweepTargets(companies, coveredIds) {
@@ -710,15 +877,26 @@ async function main() {
   const scorer = buildScorer({ have: skills.have || [], want: skills.want || [] });
   console.log(`Scoring against ${skills.have?.length || 0} have + ${skills.want?.length || 0} want skills`);
 
-  // Route every company to its best fetcher: manual override > probe API
-  // mapping > sniffed-Workday resolution. Everything else stays uncovered.
+  // Verified board configs from the deep probe (extracted from each company's
+  // own careers pages, so no slug collisions).
+  const boardMap = loadJSON(join(__dirname, "board-map.json"), {}).boardMap || {};
+
+  // Route every company to its best fetcher: manual override > deep-probe
+  // board map > probe API mapping > sniffed-Workday resolution. Everything
+  // else stays uncovered (and the LinkedIn sweep picks up the high-match ones).
   const jobsSources = [];
   for (const r of report.results) {
     const ov = OVERRIDES[r.id];
+    const bm = boardMap[r.id];
     if (ov) {
       if (ov.type !== "none") {
         jobsSources.push({ c: { ...r, ats: ov.type }, fetch: () => customAdapters[ov.type](ov) });
       }
+    } else if (bm && boardMapAdapters[bm.type]) {
+      jobsSources.push({
+        c: { ...r, ats: bm.type === "workdayUrl" ? "workday" : bm.type },
+        fetch: () => boardMapAdapters[bm.type](bm),
+      });
     } else if (r.api && adapters[r.ats]) {
       jobsSources.push({ c: r, fetch: () => adapters[r.ats](r.slug) });
     } else if (r.ats === "workday") {
