@@ -61,12 +61,17 @@ async function req(url, opts = {}) {
         Accept: opts.accept || "text/html,application/xhtml+xml,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         ...(opts.body ? { "Content-Type": "application/json" } : {}),
+        ...(opts.headers || {}),
       },
     });
     const text = await res.text();
-    return { ok: res.ok, status: res.status, url: res.url, text };
+    let cookies = [];
+    try {
+      cookies = res.headers.getSetCookie();
+    } catch {}
+    return { ok: res.ok, status: res.status, url: res.url, text, cookies };
   } catch (e) {
-    return { ok: false, status: 0, url, text: "", error: e.message };
+    return { ok: false, status: 0, url, text: "", error: e.message, cookies: [] };
   } finally {
     clearTimeout(t);
   }
@@ -134,7 +139,8 @@ function extractCandidates(html, pageUrl) {
   try {
     const host = new URL(pageUrl).host;
     if (/phenompeople|phenom-?platform|ph-?widgets|refineSearch/i.test(html)) push({ type: "phenom", host });
-    if (/eightfold\.ai|pcsx?\/api\/apply/i.test(html)) push({ type: "eightfold", host, domain: regDomain(host).replace(/^careers\./, "") });
+    if (/eightfold\.ai|static\.vscdn\.net|\/api\/pcsx\/|pcsx?\/api\/apply/i.test(html))
+      push({ type: "eightfold", host, domain: regDomain(host).replace(/^careers\./, "") });
   } catch {}
 
   // Generic fallback signal: schema.org JobPosting JSON-LD on the page.
@@ -182,10 +188,19 @@ const verifiers = {
     return Array.isArray(d?.jobPostings) ? { jobs: d.total ?? d.jobPostings.length } : null;
   },
   async eightfold(c) {
+    // v2/jobs 403s now; the SPA's /api/pcsx/search works with the shell's
+    // _vs/_vscid cookies. Grab them, then verify pcsx returns positions.
+    let cookie = "";
+    const shell = await req(`https://${c.host}/careers`, { accept: "text/html" });
+    for (const sc of shell.cookies || []) cookie += (cookie ? "; " : "") + sc.split(";")[0];
     const d = asJSON(
-      await req(`https://${c.host}/api/apply/v2/jobs?domain=${c.domain}&num=10&start=0`, { accept: "application/json" })
+      await req(`https://${c.host}/api/pcsx/search?domain=${c.domain}&num=5&start=0`, {
+        accept: "application/json",
+        headers: cookie ? { Cookie: cookie } : {},
+      })
     );
-    return Array.isArray(d?.positions) ? { jobs: d.count ?? d.positions.length } : null;
+    const positions = d?.data?.positions || d?.positions;
+    return Array.isArray(positions) ? { jobs: d?.data?.count ?? positions.length } : null;
   },
   async phenom(c) {
     const d = asJSON(
@@ -227,9 +242,14 @@ const verifiers = {
     return Array.isArray(list) ? { jobs: list.length } : null;
   },
   async keka(c) {
-    const d = asJSON(await req(`https://${c.host}/careers/api/embedjobs/active`, { accept: "application/json" }));
-    const list = d?.data || d;
-    return Array.isArray(list) ? { jobs: list.length } : null;
+    // Keka renders into a static /ats/documents/<guid>/careerportal/<hash>.html
+    // fragment the shell fetches; the fragment links to /careers/<jobId>.
+    const shell = await req(`https://${c.host}/careers/`, { accept: "text/html" });
+    if (!shell.ok) return null;
+    const frag = shell.text.match(/fetch\(\s*['"](\/ats\/documents\/[^'"]+careerportal\/[^'"]+\.html)['"]/i)?.[1];
+    const html = frag ? (await req(`https://${c.host}${frag}`, { accept: "text/html" })).text : shell.text;
+    const ids = new Set([...(html || "").matchAll(/\/careers\/(\d+)/g)].map((m) => m[1]));
+    return ids.size > 0 ? { jobs: ids.size } : null;
   },
   async bamboohr(c) {
     const d = asJSON(await req(`https://${c.host}/careers/list`, { accept: "application/json" }));
