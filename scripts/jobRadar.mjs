@@ -353,6 +353,82 @@ const customAdapters = {
   },
 };
 
+// ── Board-map adapters (configs discovered + verified by deepProbe.mjs) ──────
+// scripts/board-map.json holds fetch configs the deep probe extracted from
+// each company's own careers pages and verified against the live endpoint —
+// so slugs/hosts here can't be name collisions. Standard providers reuse the
+// adapters above; the rest are small ATS-specific fetchers.
+const boardMapAdapters = {
+  greenhouse: (cfg) => adapters.greenhouse(cfg.slug),
+  lever: (cfg) => adapters.lever(cfg.slug),
+  ashby: (cfg) => adapters.ashby(cfg.slug),
+  workable: (cfg) => adapters.workable(cfg.slug),
+  recruitee: (cfg) => adapters.recruitee(cfg.slug),
+  smartrecruiters: (cfg) => adapters.smartrecruiters(cfg.slug),
+  workdayUrl: (cfg) => customAdapters.workdayUrl(cfg),
+  eightfold: (cfg) => customAdapters.eightfold(cfg),
+  phenom: (cfg) => customAdapters.phenom(cfg),
+  async freshteam(cfg) {
+    const d = await get(`https://${cfg.host}/hire/widgets/jobs.json`);
+    const list = Array.isArray(d?.jobs) ? d.jobs : Array.isArray(d) ? d : null;
+    if (!list) return null;
+    return list.map((j) => ({
+      id: String(j.id),
+      title: j.title,
+      location: [j.branch?.city, j.branch?.state, j.branch?.country_code].filter(Boolean).join(", ") || (j.remote ? "Remote" : ""),
+      url: j.url || `https://${cfg.host}/jobs/${j.id}`,
+      desc: j.description,
+    }));
+  },
+  async bamboohr(cfg) {
+    const d = await get(`https://${cfg.host}/careers/list`);
+    if (!Array.isArray(d?.result)) return null;
+    return d.result.map((j) => ({
+      id: String(j.id),
+      title: j.jobOpeningName,
+      location:
+        [j.location?.city, j.location?.state, j.location?.country].filter(Boolean).join(", ") +
+        (j.isRemote ? " Remote" : ""),
+      url: `https://${cfg.host}/careers/${j.id}`,
+    }));
+  },
+  // Generic fallback: schema.org JobPosting JSON-LD embedded in the careers
+  // page (usually only a handful of postings, but they're real).
+  async jsonld(cfg) {
+    const html = await get(cfg.url, { text: true, accept: "text/html" });
+    if (!html) return null;
+    const out = [];
+    for (const m of html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+      let data;
+      try {
+        data = JSON.parse(m[1]);
+      } catch {
+        continue;
+      }
+      const nodes = Array.isArray(data) ? data : data["@graph"] || [data];
+      for (const n of nodes) {
+        const t = n?.["@type"];
+        if (t !== "JobPosting" && !(Array.isArray(t) && t.includes("JobPosting"))) continue;
+        const locNodes = Array.isArray(n.jobLocation) ? n.jobLocation : [n.jobLocation];
+        const location =
+          locNodes
+            .filter(Boolean)
+            .map((l) => [l.address?.addressLocality, l.address?.addressCountry].filter(Boolean).join(", "))
+            .filter(Boolean)
+            .join("; ") || (n.jobLocationType === "TELECOMMUTE" ? "Remote" : "");
+        out.push({
+          id: String(n.identifier?.value || n.url || n.title),
+          title: n.title,
+          location,
+          url: n.url || cfg.url,
+          desc: typeof n.description === "string" ? n.description : "",
+        });
+      }
+    }
+    return out.length ? out : null;
+  },
+};
+
 // ── LinkedIn: keyword search across ALL companies, not just tracked boards ───
 // LinkedIn has no public jobs API; this hits the unauthenticated "guest" HTML
 // search endpoint the public jobs page itself uses. It's best-effort — a
@@ -710,15 +786,26 @@ async function main() {
   const scorer = buildScorer({ have: skills.have || [], want: skills.want || [] });
   console.log(`Scoring against ${skills.have?.length || 0} have + ${skills.want?.length || 0} want skills`);
 
-  // Route every company to its best fetcher: manual override > probe API
-  // mapping > sniffed-Workday resolution. Everything else stays uncovered.
+  // Verified board configs from the deep probe (extracted from each company's
+  // own careers pages, so no slug collisions).
+  const boardMap = loadJSON(join(__dirname, "board-map.json"), {}).boardMap || {};
+
+  // Route every company to its best fetcher: manual override > deep-probe
+  // board map > probe API mapping > sniffed-Workday resolution. Everything
+  // else stays uncovered (and the LinkedIn sweep picks up the high-match ones).
   const jobsSources = [];
   for (const r of report.results) {
     const ov = OVERRIDES[r.id];
+    const bm = boardMap[r.id];
     if (ov) {
       if (ov.type !== "none") {
         jobsSources.push({ c: { ...r, ats: ov.type }, fetch: () => customAdapters[ov.type](ov) });
       }
+    } else if (bm && boardMapAdapters[bm.type]) {
+      jobsSources.push({
+        c: { ...r, ats: bm.type === "workdayUrl" ? "workday" : bm.type },
+        fetch: () => boardMapAdapters[bm.type](bm),
+      });
     } else if (r.api && adapters[r.ats]) {
       jobsSources.push({ c: r, fetch: () => adapters[r.ats](r.slug) });
     } else if (r.ats === "workday") {
