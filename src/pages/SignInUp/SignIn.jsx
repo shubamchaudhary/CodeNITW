@@ -52,16 +52,16 @@ export default function SignIn() {
   }
 
   const inputWrap =
-    "flex items-center gap-2 h-11 px-3 rounded-xl bg-white/5 border border-white/10 focus-within:border-indigo-400/70 focus-within:ring-2 focus-within:ring-indigo-500/30 transition-all";
+    "flex items-center gap-3 h-12 px-4 rounded-xl bg-white/5 border border-white/10 focus-within:border-indigo-400/70 focus-within:ring-2 focus-within:ring-indigo-500/30 focus-within:bg-white/[0.07] transition-all";
   const inputBase =
-    "flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none";
+    "flex-1 bg-transparent text-[15px] text-slate-100 placeholder-slate-500 focus:outline-none";
 
   return (
     <AuthShell
       title="Learning Resources"
       taglines={["Keep learning.", "Master the patterns.", "Stay consistent.", "Track every win."]}
     >
-      <form onSubmit={onSubmit} className="space-y-3">
+      <form onSubmit={onSubmit} className="space-y-4">
         <div className={inputWrap}>
           <HiOutlineMail className="text-lg text-slate-400 shrink-0" />
           <input
@@ -96,7 +96,7 @@ export default function SignIn() {
         </div>
 
         <div className="flex justify-end">
-          <a href="/forgot-password" className="text-xs text-indigo-300 hover:text-indigo-200 hover:underline font-medium">
+          <a href="/forgot-password" className="text-[13px] text-indigo-300 hover:text-indigo-200 hover:underline font-medium">
             Forgot password?
           </a>
         </div>
@@ -106,13 +106,13 @@ export default function SignIn() {
           whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={isLoading}
-          className="w-full h-11 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-shadow disabled:opacity-60"
+          className="w-full h-12 text-[15px] font-semibold text-white rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 bg-[length:200%_100%] bg-left hover:bg-right shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-[background-position,box-shadow] duration-500 disabled:opacity-60"
         >
           {isLoading ? <PulseLoader color="#fff" size={9} /> : "Sign In"}
         </motion.button>
       </form>
 
-      <div className="flex items-center my-4">
+      <div className="flex items-center my-5">
         <div className="flex-grow border-t border-white/10" />
         <span className="px-3 text-xs text-slate-500">OR</span>
         <div className="flex-grow border-t border-white/10" />
@@ -123,12 +123,12 @@ export default function SignIn() {
         whileTap={{ scale: 0.98 }}
         onClick={signInWithGoogle}
         disabled={isGoogleLoading}
-        className="w-full flex items-center justify-center gap-2 h-11 text-sm font-medium text-slate-200 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-60"
+        className="w-full flex items-center justify-center gap-2.5 h-12 text-[15px] font-medium text-slate-200 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors disabled:opacity-60"
       >
         {isGoogleLoading ? <PulseLoader color="#a5b4fc" size={9} /> : (<><FcGoogle className="text-xl" /> Sign in with Google</>)}
       </motion.button>
 
-      <p className="text-center text-xs text-slate-400 mt-4">
+      <p className="text-center text-[13px] text-slate-400 mt-5">
         Don't have an account?{" "}
         <a href="/sign-up" className="text-indigo-300 hover:text-indigo-200 hover:underline font-medium">
           Register
