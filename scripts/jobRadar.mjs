@@ -474,6 +474,9 @@ const SWEEP_ROTATION_DAYS = 7;
 const FORCE_SWEEP_IDS = new Set([
   "meta", "apple", "bank-of-america", "paypal", "goldman-sachs-eng",
   "walmart-global-tech", "booking-com", "microsoft", "intuit",
+  // iCIMS boards sit behind an AWS WAF human-verification wall (deep probe,
+  // round 1) — LinkedIn is the only automated path to these too.
+  "github", "amd", "docusign",
 ]);
 
 function sweepTargets(companies, coveredIds) {
