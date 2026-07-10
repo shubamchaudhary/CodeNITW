@@ -1,14 +1,15 @@
 {
  "summary": {
-  "probedAt": "2026-07-10T11:11:03.137Z",
+  "probedAt": "2026-07-10T11:48:09.069Z",
   "targets": 283,
-  "resolved": 33,
-  "unresolvedWithLeads": 30,
+  "resolved": 37,
+  "unresolvedWithLeads": 26,
   "dark": 220,
   "byType": {
-   "workdayUrl": 8,
+   "workdayUrl": 7,
+   "phenom": 6,
    "greenhouse": 4,
-   "phenom": 5,
+   "eightfold": 4,
    "jsonld": 3,
    "smartrecruiters": 1,
    "freshteam": 2,
@@ -23,7 +24,12 @@
   "splunk-cisco": {
    "type": "workdayUrl",
    "url": "https://cisco.wd5.myworkdayjobs.com/Cisco_Careers",
-   "jobs": 984
+   "jobs": 985
+  },
+  "cisco": {
+   "type": "phenom",
+   "host": "careers.cisco.com",
+   "jobs": 979
   },
   "tenable": {
    "type": "greenhouse",
@@ -35,6 +41,12 @@
    "host": "careers.hpe.com",
    "jobs": 1133
   },
+  "segment-twilio": {
+   "type": "eightfold",
+   "host": "jobs.twilio.com",
+   "domain": "twilio.com",
+   "jobs": 151
+  },
   "commercetools": {
    "type": "jsonld",
    "url": "https://commercetools.com/careers/jobs",
@@ -45,30 +57,36 @@
    "host": "careers.fiserv.com",
    "jobs": 373
   },
-  "zynga-take-two": {
-   "type": "greenhouse",
-   "slug": "zyngacareers",
-   "jobs": 48
+  "ebay": {
+   "type": "phenom",
+   "host": "jobs.ebayinc.com",
+   "jobs": 524
   },
   "freshworks": {
    "type": "smartrecruiters",
    "slug": "Freshworks",
    "jobs": 121
   },
-  "ebay": {
-   "type": "phenom",
-   "host": "jobs.ebayinc.com",
-   "jobs": 524
+  "locus-sh": {
+   "type": "freshteam",
+   "host": "locus.freshteam.com",
+   "jobs": 13
+  },
+  "eightfold-ai": {
+   "type": "eightfold",
+   "host": "app.eightfold.ai",
+   "domain": "eightfold.ai",
+   "jobs": 64
   },
   "niantic": {
    "type": "phenom",
    "host": "careers.scopely.com",
    "jobs": 144
   },
-  "locus-sh": {
-   "type": "freshteam",
-   "host": "locus.freshteam.com",
-   "jobs": 13
+  "zynga-take-two": {
+   "type": "greenhouse",
+   "slug": "zyngaearlycareers",
+   "jobs": 0
   },
   "o9-solutions": {
    "type": "workdayUrl",
@@ -85,20 +103,15 @@
    "slug": "Deel",
    "jobs": 0
   },
+  "prudential": {
+   "type": "workdayUrl",
+   "url": "https://pru.wd5.myworkdayjobs.com/Careers",
+   "jobs": 140
+  },
   "abb": {
    "type": "workdayUrl",
    "url": "https://abb.wd3.myworkdayjobs.com/External_Career_Page",
    "jobs": 2000
-  },
-  "prudential": {
-   "type": "workdayUrl",
-   "url": "https://pru.wd5.myworkdayjobs.com/Careers",
-   "jobs": 141
-  },
-  "nationwide": {
-   "type": "workdayUrl",
-   "url": "https://nationwide.wd1.myworkdayjobs.com/Nationwide_Career",
-   "jobs": 174
   },
   "tray-io": {
    "type": "ashby",
@@ -125,20 +138,26 @@
    "host": "jobs.thermofisher.com",
    "jobs": 3159
   },
-  "sourcegraph-cody": {
-   "type": "greenhouse",
-   "slug": "sourcegraph91",
-   "jobs": 10
+  "haptik-jio": {
+   "type": "freshteam",
+   "host": "haptik.freshteam.com",
+   "jobs": 16
   },
   "codeium": {
    "type": "ashby",
    "slug": "cognition",
    "jobs": 74
   },
-  "haptik-jio": {
-   "type": "freshteam",
-   "host": "haptik.freshteam.com",
-   "jobs": 16
+  "eightfold-ai-hr": {
+   "type": "eightfold",
+   "host": "app.eightfold.ai",
+   "domain": "eightfold.ai",
+   "jobs": 64
+  },
+  "sourcegraph-cody": {
+   "type": "greenhouse",
+   "slug": "sourcegraph91",
+   "jobs": 10
   },
   "clerk": {
    "type": "ashby",
@@ -176,15 +195,21 @@
    "slug": "harnessinc",
    "jobs": 110
   },
+  "thoughtspot": {
+   "type": "workdayUrl",
+   "url": "https://thoughtspot.wd5.myworkdayjobs.com/careers",
+   "jobs": 0
+  },
   "samsung-r-d": {
    "type": "workdayUrl",
    "url": "https://sec.wd3.myworkdayjobs.com/Samsung_Careers",
    "jobs": 559
   },
-  "thoughtspot": {
-   "type": "workdayUrl",
-   "url": "https://thoughtspot.wd5.myworkdayjobs.com/careers",
-   "jobs": 0
+  "amdocs": {
+   "type": "eightfold",
+   "host": "jobs.amdocs.com",
+   "domain": "amdocs.com",
+   "jobs": 1
   }
  },
  "leads": {
@@ -194,29 +219,10 @@
     "host": "careers-githubinc.icims.com"
    }
   ],
-  "segment-twilio": [
-   {
-    "type": "eightfold",
-    "host": "jobs.twilio.com",
-    "domain": "twilio.com"
-   }
-  ],
   "leadsquared": [
    {
     "type": "darwinbox",
     "host": "leadsquaredhrms.darwinbox.in"
-   }
-  ],
-  "eightfold-ai": [
-   {
-    "type": "eightfold",
-    "host": "eightfold.ai",
-    "domain": "eightfold.ai"
-   },
-   {
-    "type": "eightfold",
-    "host": "app.eightfold.ai",
-    "domain": "eightfold.ai"
    }
   ],
   "clevertap": [
@@ -231,64 +237,16 @@
     "host": "fareye.darwinbox.in"
    }
   ],
-  "physicswallah": [
-   {
-    "type": "darwinbox",
-    "host": "pwhr.darwinbox.in"
-   }
-  ],
   "upgrad": [
    {
     "type": "darwinbox",
     "host": "upgrad.darwinbox.in"
    }
   ],
-  "gep": [
+  "physicswallah": [
    {
     "type": "darwinbox",
-    "host": "geppeoplecentral.darwinbox.com"
-   }
-  ],
-  "amd": [
-   {
-    "type": "icims",
-    "host": "careers-amd.icims.com"
-   }
-  ],
-  "micron": [
-   {
-    "type": "eightfold",
-    "host": "www.micron.com",
-    "domain": "micron.com"
-   },
-   {
-    "type": "eightfold",
-    "host": "in.micron.com",
-    "domain": "micron.com"
-   },
-   {
-    "type": "eightfold",
-    "host": "sg.micron.com",
-    "domain": "micron.com"
-   }
-  ],
-  "pharmeasy": [
-   {
-    "type": "darwinbox",
-    "host": "myhr.darwinbox.in"
-   }
-  ],
-  "coda": [
-   {
-    "type": "greenhouse",
-    "slug": "grammarly"
-   }
-  ],
-  "john-deere": [
-   {
-    "type": "eightfold",
-    "host": "jobs.deere.com",
-    "domain": "deere.com"
+    "host": "pwhr.darwinbox.in"
    }
   ],
   "darwinbox": [
@@ -317,11 +275,52 @@
     "host": "newsroom.darwinbox.com"
    }
   ],
-  "astrazeneca": [
+  "gep": [
+   {
+    "type": "darwinbox",
+    "host": "geppeoplecentral.darwinbox.com"
+   }
+  ],
+  "micron": [
    {
     "type": "eightfold",
-    "host": "careers.astrazeneca.com",
-    "domain": "astrazeneca.com"
+    "host": "www.micron.com",
+    "domain": "micron.com"
+   },
+   {
+    "type": "eightfold",
+    "host": "in.micron.com",
+    "domain": "micron.com"
+   },
+   {
+    "type": "eightfold",
+    "host": "sg.micron.com",
+    "domain": "micron.com"
+   }
+  ],
+  "amd": [
+   {
+    "type": "icims",
+    "host": "careers-amd.icims.com"
+   }
+  ],
+  "pharmeasy": [
+   {
+    "type": "darwinbox",
+    "host": "myhr.darwinbox.in"
+   }
+  ],
+  "coda": [
+   {
+    "type": "greenhouse",
+    "slug": "grammarly"
+   }
+  ],
+  "john-deere": [
+   {
+    "type": "eightfold",
+    "host": "jobs.deere.com",
+    "domain": "deere.com"
    }
   ],
   "honeywell": [
@@ -330,22 +329,17 @@
     "host": "careers.honeywell.com"
    }
   ],
+  "astrazeneca": [
+   {
+    "type": "eightfold",
+    "host": "careers.astrazeneca.com",
+    "domain": "astrazeneca.com"
+   }
+  ],
   "weights-biases": [
    {
     "type": "lever",
     "slug": "wandb"
-   }
-  ],
-  "eightfold-ai-hr": [
-   {
-    "type": "eightfold",
-    "host": "eightfold.ai",
-    "domain": "eightfold.ai"
-   },
-   {
-    "type": "eightfold",
-    "host": "app.eightfold.ai",
-    "domain": "eightfold.ai"
    }
   ],
   "bharatpe": [
@@ -379,17 +373,17 @@
     "domain": "mlp.com"
    }
   ],
-  "unicommerce": [
-   {
-    "type": "keka",
-    "host": "unicommerce.keka.com"
-   }
-  ],
   "morgan-stanley": [
    {
     "type": "eightfold",
     "host": "www.morganstanley.com",
     "domain": "morganstanley.com"
+   }
+  ],
+  "unicommerce": [
+   {
+    "type": "keka",
+    "host": "unicommerce.keka.com"
    }
   ],
   "american-express": [
@@ -409,13 +403,6 @@
    {
     "type": "keka",
     "host": "jupiter.keka.com"
-   }
-  ],
-  "amdocs": [
-   {
-    "type": "eightfold",
-    "host": "jobs.amdocs.com",
-    "domain": "amdocs.com"
    }
   ]
  }
