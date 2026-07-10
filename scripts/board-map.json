@@ -1,14 +1,14 @@
 {
  "summary": {
-  "probedAt": "2026-07-10T11:11:03.137Z",
+  "probedAt": "2026-07-10T11:14:44.203Z",
   "targets": 283,
-  "resolved": 33,
+  "resolved": 34,
   "unresolvedWithLeads": 30,
-  "dark": 220,
+  "dark": 219,
   "byType": {
+   "phenom": 6,
    "workdayUrl": 8,
    "greenhouse": 4,
-   "phenom": 5,
    "jsonld": 3,
    "smartrecruiters": 1,
    "freshteam": 2,
@@ -20,20 +20,25 @@
   }
  },
  "boardMap": {
+  "cisco": {
+   "type": "phenom",
+   "host": "careers.cisco.com",
+   "jobs": 979
+  },
   "splunk-cisco": {
    "type": "workdayUrl",
    "url": "https://cisco.wd5.myworkdayjobs.com/Cisco_Careers",
    "jobs": 984
   },
-  "tenable": {
-   "type": "greenhouse",
-   "slug": "tenableinc",
-   "jobs": 53
-  },
   "hpe": {
    "type": "phenom",
    "host": "careers.hpe.com",
    "jobs": 1133
+  },
+  "tenable": {
+   "type": "greenhouse",
+   "slug": "tenableinc",
+   "jobs": 53
   },
   "commercetools": {
    "type": "jsonld",
@@ -45,6 +50,11 @@
    "host": "careers.fiserv.com",
    "jobs": 373
   },
+  "ebay": {
+   "type": "phenom",
+   "host": "jobs.ebayinc.com",
+   "jobs": 524
+  },
   "zynga-take-two": {
    "type": "greenhouse",
    "slug": "zyngacareers",
@@ -54,11 +64,6 @@
    "type": "smartrecruiters",
    "slug": "Freshworks",
    "jobs": 121
-  },
-  "ebay": {
-   "type": "phenom",
-   "host": "jobs.ebayinc.com",
-   "jobs": 524
   },
   "niantic": {
    "type": "phenom",
@@ -85,6 +90,11 @@
    "slug": "Deel",
    "jobs": 0
   },
+  "nationwide": {
+   "type": "workdayUrl",
+   "url": "https://nationwide.wd1.myworkdayjobs.com/Nationwide_Career",
+   "jobs": 174
+  },
   "abb": {
    "type": "workdayUrl",
    "url": "https://abb.wd3.myworkdayjobs.com/External_Career_Page",
@@ -94,11 +104,6 @@
    "type": "workdayUrl",
    "url": "https://pru.wd5.myworkdayjobs.com/Careers",
    "jobs": 141
-  },
-  "nationwide": {
-   "type": "workdayUrl",
-   "url": "https://nationwide.wd1.myworkdayjobs.com/Nationwide_Career",
-   "jobs": 174
   },
   "tray-io": {
    "type": "ashby",
@@ -110,20 +115,25 @@
    "slug": "crewai",
    "jobs": 9
   },
-  "vespa-ai-yahoo": {
-   "type": "bamboohr",
-   "host": "vespaai.bamboohr.com",
-   "jobs": 3
+  "thermo-fisher": {
+   "type": "phenom",
+   "host": "jobs.thermofisher.com",
+   "jobs": 3159
   },
   "jasper": {
    "type": "ashby",
    "slug": "Jasper AI",
    "jobs": 2
   },
-  "thermo-fisher": {
-   "type": "phenom",
-   "host": "jobs.thermofisher.com",
-   "jobs": 3159
+  "vespa-ai-yahoo": {
+   "type": "bamboohr",
+   "host": "vespaai.bamboohr.com",
+   "jobs": 3
+  },
+  "haptik-jio": {
+   "type": "freshteam",
+   "host": "haptik.freshteam.com",
+   "jobs": 16
   },
   "sourcegraph-cody": {
    "type": "greenhouse",
@@ -134,11 +144,6 @@
    "type": "ashby",
    "slug": "cognition",
    "jobs": 74
-  },
-  "haptik-jio": {
-   "type": "freshteam",
-   "host": "haptik.freshteam.com",
-   "jobs": 16
   },
   "clerk": {
    "type": "ashby",
@@ -160,31 +165,31 @@
    "url": "https://www.shipsy.ai/careers/senior-director-customer-solutions",
    "jobs": 1
   },
-  "sprinto": {
-   "type": "lever",
-   "slug": "Sprinto",
-   "jobs": 26
-  },
   "increff": {
    "type": "zohorecruit",
    "host": "increff.zohorecruit.com",
    "jobs": null,
    "htmlOnly": true
   },
+  "sprinto": {
+   "type": "lever",
+   "slug": "Sprinto",
+   "jobs": 26
+  },
   "harness": {
    "type": "greenhouse",
    "slug": "harnessinc",
    "jobs": 110
   },
-  "samsung-r-d": {
-   "type": "workdayUrl",
-   "url": "https://sec.wd3.myworkdayjobs.com/Samsung_Careers",
-   "jobs": 559
-  },
   "thoughtspot": {
    "type": "workdayUrl",
    "url": "https://thoughtspot.wd5.myworkdayjobs.com/careers",
    "jobs": 0
+  },
+  "samsung-r-d": {
+   "type": "workdayUrl",
+   "url": "https://sec.wd3.myworkdayjobs.com/Samsung_Careers",
+   "jobs": 559
   }
  },
  "leads": {
@@ -201,12 +206,6 @@
     "domain": "twilio.com"
    }
   ],
-  "leadsquared": [
-   {
-    "type": "darwinbox",
-    "host": "leadsquaredhrms.darwinbox.in"
-   }
-  ],
   "eightfold-ai": [
    {
     "type": "eightfold",
@@ -219,10 +218,10 @@
     "domain": "eightfold.ai"
    }
   ],
-  "clevertap": [
+  "leadsquared": [
    {
     "type": "darwinbox",
-    "host": "clevertap.darwinbox.in"
+    "host": "leadsquaredhrms.darwinbox.in"
    }
   ],
   "fareye": [
@@ -231,16 +230,22 @@
     "host": "fareye.darwinbox.in"
    }
   ],
-  "physicswallah": [
+  "clevertap": [
    {
     "type": "darwinbox",
-    "host": "pwhr.darwinbox.in"
+    "host": "clevertap.darwinbox.in"
    }
   ],
   "upgrad": [
    {
     "type": "darwinbox",
     "host": "upgrad.darwinbox.in"
+   }
+  ],
+  "physicswallah": [
+   {
+    "type": "darwinbox",
+    "host": "pwhr.darwinbox.in"
    }
   ],
   "gep": [
@@ -272,25 +277,6 @@
     "domain": "micron.com"
    }
   ],
-  "pharmeasy": [
-   {
-    "type": "darwinbox",
-    "host": "myhr.darwinbox.in"
-   }
-  ],
-  "coda": [
-   {
-    "type": "greenhouse",
-    "slug": "grammarly"
-   }
-  ],
-  "john-deere": [
-   {
-    "type": "eightfold",
-    "host": "jobs.deere.com",
-    "domain": "deere.com"
-   }
-  ],
   "darwinbox": [
    {
     "type": "darwinbox",
@@ -315,6 +301,25 @@
    {
     "type": "darwinbox",
     "host": "newsroom.darwinbox.com"
+   }
+  ],
+  "pharmeasy": [
+   {
+    "type": "darwinbox",
+    "host": "myhr.darwinbox.in"
+   }
+  ],
+  "coda": [
+   {
+    "type": "greenhouse",
+    "slug": "grammarly"
+   }
+  ],
+  "john-deere": [
+   {
+    "type": "eightfold",
+    "host": "jobs.deere.com",
+    "domain": "deere.com"
    }
   ],
   "astrazeneca": [
@@ -354,22 +359,16 @@
     "host": "bharatpe.darwinbox.in"
    }
   ],
-  "optum-unitedhealth": [
-   {
-    "type": "taleo",
-    "host": "uhg.taleo.net"
-   }
-  ],
   "lendingkart": [
    {
     "type": "darwinbox",
     "host": "hrlendingkart.darwinbox.in"
    }
   ],
-  "spinny": [
+  "optum-unitedhealth": [
    {
-    "type": "darwinbox",
-    "host": "spinzone.darwinbox.in"
+    "type": "taleo",
+    "host": "uhg.taleo.net"
    }
   ],
   "millennium-management": [
@@ -377,6 +376,12 @@
     "type": "eightfold",
     "host": "www.mlp.com",
     "domain": "mlp.com"
+   }
+  ],
+  "spinny": [
+   {
+    "type": "darwinbox",
+    "host": "spinzone.darwinbox.in"
    }
   ],
   "unicommerce": [
