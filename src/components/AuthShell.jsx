@@ -363,10 +363,6 @@ export default function AuthShell({ title, taglines, children }) {
           </div>
         </motion.div>
 
-        {/* Footer hint */}
-        <motion.p variants={rise} className="mt-5 text-center font-mono text-[11px] text-slate-600 select-none">
-          {"// built for the grind — one pattern at a time"}
-        </motion.p>
       </motion.div>
     </div>
   );
