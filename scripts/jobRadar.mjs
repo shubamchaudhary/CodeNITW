@@ -129,6 +129,9 @@ const OVERRIDES = {
   caterpillar: { type: "workdayUrl", url: "https://cat.wd5.myworkdayjobs.com/CaterpillarCareers" },
   servicenow: { type: "smartrecruiters", slug: "ServiceNow" },
   intuit: { type: "phenom", host: "jobs.intuit.com" },
+  // Verified via lead probe: rest searchjobs answers with requisitionList for
+  // this portal id (the careersection UI path is 10000).
+  "societe-generale": { type: "taleo", host: "socgen.taleo.net", portal: "101430233", cs: "10000" },
   razorpay: { type: "greenhouse", slug: "razorpaysoftwareprivatelimited" },
   // Boards that verifiably block server-side fetches (Cloudflare/Akamai/bot
   // TLS filters) or whose public APIs are gone — skipped so a fake slug hit
@@ -351,6 +354,31 @@ const customAdapters = {
     const m = cfg.url.match(WORKDAY_URL_RX);
     return m ? fetchWorkday({ tenant: m[1], wd: m[2], site: m[3] }) : null;
   },
+  // Taleo career sections: the rest/jobboard/searchjobs endpoint returns
+  // requisitionList JSON when called with the tenant's portal id (verified for
+  // SocGen in CI: 24 requisitions). Titles live in column[0]; locations are
+  // often absent, so those pass the location filter as unknown.
+  async taleo(cfg) {
+    const d = await get(`https://${cfg.host}/careersection/rest/jobboard/searchjobs?lang=en&portal=${cfg.portal}`, {
+      method: "POST",
+      headers: { tz: "GMT+05:30" },
+      body: {
+        multilineEnabled: false,
+        sortingSelection: { sortBySelectionParam: "3", ascendingSortingOrder: "false" },
+        fieldData: { fields: {}, valid: true },
+        filterSelectionParam: { searchFilterSelections: [] },
+        advancedSearchFiltersSelectionParam: { searchFilterSelections: [] },
+        pageNo: 1,
+      },
+    });
+    if (!Array.isArray(d?.requisitionList)) return null;
+    return d.requisitionList.map((j) => ({
+      id: String(j.contestNo || j.jobId),
+      title: Array.isArray(j.column) ? j.column[0] : "",
+      location: (j.locationsColumns || []).flat().filter(Boolean).join("; "),
+      url: `https://${cfg.host}/careersection/${cfg.cs}/jobdetail.ftl?job=${encodeURIComponent(j.contestNo || j.jobId)}&lang=en`,
+    }));
+  },
 };
 
 // ── Board-map adapters (configs discovered + verified by deepProbe.mjs) ──────
@@ -477,6 +505,16 @@ const FORCE_SWEEP_IDS = new Set([
   // iCIMS boards sit behind an AWS WAF human-verification wall (deep probe,
   // round 1) — LinkedIn is the only automated path to these too.
   "github", "amd", "docusign",
+  // Confirmed dead ends from the lead probes: eightfold tenants that 403 the
+  // public API (CSRF-gated), darwinbox SPAs behind Cloudflare Turnstile,
+  // bot-gated shells, and boards that moved to unknown slugs. Medium tier,
+  // so they'd never enter the sweep pool on match alone — force them since
+  // no board adapter can reach them. Any that later verify via the deep
+  // probe drop out automatically (sweep only targets uncovered companies).
+  "honeywell", "morgan-stanley", "millennium-management", "john-deere",
+  "astrazeneca", "micron", "optum-unitedhealth", "segment-twilio",
+  "weights-biases", "coda", "clevertap", "pharmeasy", "bharatpe", "spinny",
+  "leadsquared", "lendingkart", "upgrad", "physicswallah",
 ]);
 
 function sweepTargets(companies, coveredIds) {
