@@ -1,14 +1,14 @@
 {
  "summary": {
-  "probedAt": "2026-07-10T11:48:09.069Z",
+  "probedAt": "2026-07-10T11:51:51.331Z",
   "targets": 283,
-  "resolved": 37,
-  "unresolvedWithLeads": 26,
-  "dark": 220,
+  "resolved": 36,
+  "unresolvedWithLeads": 25,
+  "dark": 222,
   "byType": {
    "workdayUrl": 7,
-   "phenom": 6,
    "greenhouse": 4,
+   "phenom": 5,
    "eightfold": 4,
    "jsonld": 3,
    "smartrecruiters": 1,
@@ -25,11 +25,6 @@
    "type": "workdayUrl",
    "url": "https://cisco.wd5.myworkdayjobs.com/Cisco_Careers",
    "jobs": 985
-  },
-  "cisco": {
-   "type": "phenom",
-   "host": "careers.cisco.com",
-   "jobs": 979
   },
   "tenable": {
    "type": "greenhouse",
@@ -62,10 +57,20 @@
    "host": "jobs.ebayinc.com",
    "jobs": 524
   },
+  "zynga-take-two": {
+   "type": "greenhouse",
+   "slug": "zyngacareers",
+   "jobs": 48
+  },
   "freshworks": {
    "type": "smartrecruiters",
    "slug": "Freshworks",
    "jobs": 121
+  },
+  "niantic": {
+   "type": "phenom",
+   "host": "careers.scopely.com",
+   "jobs": 144
   },
   "locus-sh": {
    "type": "freshteam",
@@ -77,16 +82,6 @@
    "host": "app.eightfold.ai",
    "domain": "eightfold.ai",
    "jobs": 64
-  },
-  "niantic": {
-   "type": "phenom",
-   "host": "careers.scopely.com",
-   "jobs": 144
-  },
-  "zynga-take-two": {
-   "type": "greenhouse",
-   "slug": "zyngaearlycareers",
-   "jobs": 0
   },
   "o9-solutions": {
    "type": "workdayUrl",
@@ -103,11 +98,6 @@
    "slug": "Deel",
    "jobs": 0
   },
-  "prudential": {
-   "type": "workdayUrl",
-   "url": "https://pru.wd5.myworkdayjobs.com/Careers",
-   "jobs": 140
-  },
   "abb": {
    "type": "workdayUrl",
    "url": "https://abb.wd3.myworkdayjobs.com/External_Career_Page",
@@ -123,6 +113,16 @@
    "slug": "crewai",
    "jobs": 9
   },
+  "prudential": {
+   "type": "workdayUrl",
+   "url": "https://pru.wd5.myworkdayjobs.com/Careers",
+   "jobs": 140
+  },
+  "thermo-fisher": {
+   "type": "phenom",
+   "host": "jobs.thermofisher.com",
+   "jobs": 3159
+  },
   "vespa-ai-yahoo": {
    "type": "bamboohr",
    "host": "vespaai.bamboohr.com",
@@ -133,15 +133,15 @@
    "slug": "Jasper AI",
    "jobs": 2
   },
-  "thermo-fisher": {
-   "type": "phenom",
-   "host": "jobs.thermofisher.com",
-   "jobs": 3159
-  },
   "haptik-jio": {
    "type": "freshteam",
    "host": "haptik.freshteam.com",
    "jobs": 16
+  },
+  "sourcegraph-cody": {
+   "type": "greenhouse",
+   "slug": "sourcegraph91",
+   "jobs": 10
   },
   "codeium": {
    "type": "ashby",
@@ -153,11 +153,6 @@
    "host": "app.eightfold.ai",
    "domain": "eightfold.ai",
    "jobs": 64
-  },
-  "sourcegraph-cody": {
-   "type": "greenhouse",
-   "slug": "sourcegraph91",
-   "jobs": 10
   },
   "clerk": {
    "type": "ashby",
@@ -179,16 +174,16 @@
    "url": "https://www.shipsy.ai/careers/senior-director-customer-solutions",
    "jobs": 1
   },
-  "sprinto": {
-   "type": "lever",
-   "slug": "Sprinto",
-   "jobs": 26
-  },
   "increff": {
    "type": "zohorecruit",
    "host": "increff.zohorecruit.com",
    "jobs": null,
    "htmlOnly": true
+  },
+  "sprinto": {
+   "type": "lever",
+   "slug": "Sprinto",
+   "jobs": 26
   },
   "harness": {
    "type": "greenhouse",
@@ -200,16 +195,16 @@
    "url": "https://thoughtspot.wd5.myworkdayjobs.com/careers",
    "jobs": 0
   },
-  "samsung-r-d": {
-   "type": "workdayUrl",
-   "url": "https://sec.wd3.myworkdayjobs.com/Samsung_Careers",
-   "jobs": 559
-  },
   "amdocs": {
    "type": "eightfold",
    "host": "jobs.amdocs.com",
    "domain": "amdocs.com",
    "jobs": 1
+  },
+  "samsung-r-d": {
+   "type": "workdayUrl",
+   "url": "https://sec.wd3.myworkdayjobs.com/Samsung_Careers",
+   "jobs": 559
   }
  },
  "leads": {
@@ -225,16 +220,16 @@
     "host": "leadsquaredhrms.darwinbox.in"
    }
   ],
-  "clevertap": [
-   {
-    "type": "darwinbox",
-    "host": "clevertap.darwinbox.in"
-   }
-  ],
   "fareye": [
    {
     "type": "darwinbox",
     "host": "fareye.darwinbox.in"
+   }
+  ],
+  "clevertap": [
+   {
+    "type": "darwinbox",
+    "host": "clevertap.darwinbox.in"
    }
   ],
   "upgrad": [
@@ -281,6 +276,12 @@
     "host": "geppeoplecentral.darwinbox.com"
    }
   ],
+  "amd": [
+   {
+    "type": "icims",
+    "host": "careers-amd.icims.com"
+   }
+  ],
   "micron": [
    {
     "type": "eightfold",
@@ -296,12 +297,6 @@
     "type": "eightfold",
     "host": "sg.micron.com",
     "domain": "micron.com"
-   }
-  ],
-  "amd": [
-   {
-    "type": "icims",
-    "host": "careers-amd.icims.com"
    }
   ],
   "pharmeasy": [
@@ -323,17 +318,17 @@
     "domain": "deere.com"
    }
   ],
-  "honeywell": [
-   {
-    "type": "phenom",
-    "host": "careers.honeywell.com"
-   }
-  ],
   "astrazeneca": [
    {
     "type": "eightfold",
     "host": "careers.astrazeneca.com",
     "domain": "astrazeneca.com"
+   }
+  ],
+  "honeywell": [
+   {
+    "type": "phenom",
+    "host": "careers.honeywell.com"
    }
   ],
   "weights-biases": [
@@ -348,22 +343,16 @@
     "host": "bharatpe.darwinbox.in"
    }
   ],
-  "optum-unitedhealth": [
-   {
-    "type": "taleo",
-    "host": "uhg.taleo.net"
-   }
-  ],
   "lendingkart": [
    {
     "type": "darwinbox",
     "host": "hrlendingkart.darwinbox.in"
    }
   ],
-  "spinny": [
+  "optum-unitedhealth": [
    {
-    "type": "darwinbox",
-    "host": "spinzone.darwinbox.in"
+    "type": "taleo",
+    "host": "uhg.taleo.net"
    }
   ],
   "millennium-management": [
@@ -373,17 +362,17 @@
     "domain": "mlp.com"
    }
   ],
+  "spinny": [
+   {
+    "type": "darwinbox",
+    "host": "spinzone.darwinbox.in"
+   }
+  ],
   "morgan-stanley": [
    {
     "type": "eightfold",
     "host": "www.morganstanley.com",
     "domain": "morganstanley.com"
-   }
-  ],
-  "unicommerce": [
-   {
-    "type": "keka",
-    "host": "unicommerce.keka.com"
    }
   ],
   "american-express": [
@@ -393,16 +382,16 @@
     "domain": "americanexpress.com"
    }
   ],
-  "societe-generale": [
-   {
-    "type": "taleo",
-    "host": "socgen.taleo.net"
-   }
-  ],
   "jupiter": [
    {
     "type": "keka",
     "host": "jupiter.keka.com"
+   }
+  ],
+  "societe-generale": [
+   {
+    "type": "taleo",
+    "host": "socgen.taleo.net"
    }
   ]
  }
