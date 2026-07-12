@@ -17,6 +17,7 @@ export const KEYS = {
   DSA_STARRED: "DSAPrepStarred",
   PLAN_DAYS: "PlanningDays",
   JOB_TRACKER: "JobTrackerState",
+  POMO_STATE: "PlanningPomoState",
 };
 
 // Solved DSA problems revert to unsolved after this window (spaced repetition).
