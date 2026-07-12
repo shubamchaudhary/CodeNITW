@@ -60,23 +60,42 @@ function buildSessions(totalMin) {
   return out;
 }
 
-function playChime(complete = false) {
+function itemTotalMinutes(item) {
+  const subs = item.subItems || [];
+  if (subs.length > 0) return subs.reduce((s, sub) => s + (sub.estimatedMinutes || 0), 0);
+  return item.estimatedMinutes || 0;
+}
+
+function itemDoneMinutes(item) {
+  const subs = item.subItems || [];
+  if (subs.length > 0) return subs.filter((s) => s.completed).reduce((s, sub) => s + (sub.estimatedMinutes || 0), 0);
+  return 0;
+}
+
+function playSound(type) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const now = ctx.currentTime;
-    const tones = complete ? [523, 659, 784] : [680, 880];
-    const gap = complete ? 0.2 : 0.15;
-    tones.forEach((freq, i) => {
+    const configs = {
+      focusStart: { tones: [440, 660], gap: 0.12, gain: 0.18, decay: 0.35, wave: "triangle" },
+      breakStart: { tones: [660, 440], gap: 0.15, gain: 0.15, decay: 0.4, wave: "sine" },
+      transition: { tones: [680, 880], gap: 0.15, gain: 0.2, decay: 0.4, wave: "triangle" },
+      timerDone: { tones: [523, 659, 784], gap: 0.2, gain: 0.22, decay: 0.5, wave: "triangle" },
+      taskDone: { tones: [800, 1200], gap: 0.08, gain: 0.12, decay: 0.2, wave: "sine" },
+    };
+    const c = configs[type] || configs.transition;
+    c.tones.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const g = ctx.createGain();
       osc.connect(g);
       g.connect(ctx.destination);
       osc.frequency.value = freq;
+      osc.type = c.wave;
       g.gain.value = 0;
-      g.gain.linearRampToValueAtTime(0.22, now + i * gap + 0.03);
-      g.gain.exponentialRampToValueAtTime(0.001, now + i * gap + 0.4);
-      osc.start(now + i * gap);
-      osc.stop(now + i * gap + 0.4);
+      g.gain.linearRampToValueAtTime(c.gain, now + i * c.gap + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * c.gap + c.decay);
+      osc.start(now + i * c.gap);
+      osc.stop(now + i * c.gap + c.decay);
     });
   } catch (_) {}
 }
@@ -161,6 +180,10 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
 // ─── Pomodoro Timer ──────────────────────────────────────────────────────────
 const R = 80;
 const CIRC = 2 * Math.PI * R;
+const TICK_COUNT = 60;
+const TICK_R_OUTER = 92;
+const TICK_R_INNER_MAJOR = 85;
+const TICK_R_INNER_MINOR = 88;
 
 function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
   if (!pomo) return null;
@@ -182,36 +205,75 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
     ? "url(#pomoFocus)"
     : "url(#pomoBreak)";
 
+  const glowColor = isComplete ? "rgba(34,197,94,0.15)" : isWork ? "rgba(139,92,246,0.12)" : "rgba(52,211,153,0.12)";
+
+  const ticks = useMemo(() => {
+    const out = [];
+    for (let i = 0; i < TICK_COUNT; i++) {
+      const angle = (i / TICK_COUNT) * 360 - 90;
+      const rad = (angle * Math.PI) / 180;
+      const major = i % 5 === 0;
+      const rInner = major ? TICK_R_INNER_MAJOR : TICK_R_INNER_MINOR;
+      out.push({
+        x1: 100 + Math.cos(rad) * rInner,
+        y1: 100 + Math.sin(rad) * rInner,
+        x2: 100 + Math.cos(rad) * TICK_R_OUTER,
+        y2: 100 + Math.sin(rad) * TICK_R_OUTER,
+        major,
+      });
+    }
+    return out;
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
-      className={`rounded-2xl ${GLASS} p-6 mb-4`}
+      className={`rounded-2xl ${GLASS} p-6 mb-4 relative overflow-hidden`}
     >
-      <div className="flex flex-col items-center">
-        {/* Ring */}
+      <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{ boxShadow: `inset 0 0 80px ${glowColor}` }} />
+      <div className="flex flex-col items-center relative z-10">
         <div className="relative">
-          <svg viewBox="0 0 200 200" className="w-44 h-44 sm:w-52 sm:h-52">
+          <svg viewBox="0 0 200 200" className="w-48 h-48 sm:w-56 sm:h-56">
             <defs>
-              <linearGradient id="pomoFocus" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="pomoFocus" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#8b5cf6" />
+                <stop offset="50%" stopColor="#a78bfa" />
                 <stop offset="100%" stopColor="#6366f1" />
               </linearGradient>
-              <linearGradient id="pomoBreak" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="pomoBreak" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#34d399" />
+                <stop offset="50%" stopColor="#6ee7b7" />
                 <stop offset="100%" stopColor="#22d3ee" />
               </linearGradient>
+              <filter id="pomoGlow">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
-            <circle cx="100" cy="100" r={R} fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="7" />
+            {ticks.map((t, i) => (
+              <line
+                key={i}
+                x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                stroke="currentColor"
+                className={t.major ? "text-gray-300 dark:text-slate-600" : "text-gray-200 dark:text-slate-700"}
+                strokeWidth={t.major ? 1.5 : 0.7}
+                strokeLinecap="round"
+              />
+            ))}
+            <circle cx="100" cy="100" r={R} fill="none" stroke="currentColor" className="text-gray-200/50 dark:text-slate-700/50" strokeWidth="6" />
             <motion.circle
               cx="100" cy="100" r={R} fill="none" stroke={ringColor} strokeWidth="7" strokeLinecap="round"
               strokeDasharray={CIRC}
               initial={false}
               animate={{ strokeDashoffset: CIRC * (1 - progress) }}
               transition={{ duration: 0.4, ease: "linear" }}
-              className="-rotate-90 origin-center"
-              style={{ transformOrigin: "100px 100px" }}
+              style={{ transformOrigin: "100px 100px", transform: "rotate(-90deg)" }}
+              filter={isPaused ? undefined : "url(#pomoGlow)"}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -222,8 +284,8 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
               </>
             ) : (
               <>
-                <span className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 dark:text-gray-100 tabular-nums">{fmtClock(remaining)}</span>
-                <span className={`text-xs font-bold mt-1 ${isWork ? "text-violet-500" : "text-emerald-500"}`}>
+                <span className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 dark:text-gray-100 tabular-nums tracking-wider">{fmtClock(remaining)}</span>
+                <span className={`text-xs font-bold mt-1 tracking-wide ${isWork ? "text-violet-500" : "text-emerald-500"}`}>
                   {isPaused ? "Paused" : isWork ? "Focus" : "Break"}
                 </span>
                 <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
@@ -234,7 +296,6 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
           </div>
         </div>
 
-        {/* Session dots */}
         <div className="flex items-center gap-1.5 mt-3">
           {sessions.filter((s) => s.type === "work").map((_, i) => {
             const done = i < workIdx - (isWork || isComplete ? 0 : 1);
@@ -250,12 +311,11 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
           })}
         </div>
 
-        {/* Controls */}
         <div className="flex items-center gap-3 mt-4">
           {isComplete ? (
             <button
               onClick={onDismiss}
-              className="px-5 py-2 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors"
+              className="px-5 py-2 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
             >
               Done
             </button>
@@ -270,10 +330,10 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
               </button>
               <button
                 onClick={isPaused ? onResume : onPause}
-                className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg transition-all ${
+                className={`w-14 h-14 rounded-full flex items-center justify-center text-white transition-all ${
                   isWork
-                    ? "bg-gradient-to-br from-violet-500 to-indigo-600 hover:shadow-violet-500/40"
-                    : "bg-gradient-to-br from-emerald-400 to-cyan-500 hover:shadow-emerald-500/40"
+                    ? "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50"
+                    : "bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50"
                 }`}
               >
                 {isPaused ? (
@@ -299,7 +359,7 @@ function DayCard({
   item, index, complete, note, isOpen, canComplete, isToday: dayIsToday,
   onToggleOpen, onToggleComplete, onNoteChange, onRemove, onMove, moveLabel,
   isStarred, onToggleStar, daysLeft,
-  onTimeChange, onToggleSubItem, onAddSubItem, onRemoveSubItem,
+  onTimeChange, onToggleSubItem, onAddSubItem, onRemoveSubItem, onSubItemTimeChange,
   pomoActive, pomoItemUid, onStartPomo,
   onDragStart, onDragOver, onDrop, onDragEnd, isDragging, isOver,
 }) {
@@ -309,6 +369,9 @@ function DayCard({
   const [editingTime, setEditingTime] = useState(false);
   const [timeVal, setTimeVal] = useState(String(item.estimatedMinutes || ""));
   const [subInput, setSubInput] = useState("");
+  const [subTimeInput, setSubTimeInput] = useState("25");
+  const [editingSubTime, setEditingSubTime] = useState(null);
+  const [subTimeVal, setSubTimeVal] = useState("");
 
   useEffect(() => { setLocalNote(note); }, [note]);
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
@@ -329,10 +392,19 @@ function DayCard({
     setEditingTime(false);
   };
 
+  const saveSubTime = (subUid) => {
+    const v = parseInt(subTimeVal) || 0;
+    if (v > 0) onSubItemTimeChange(item.uid, subUid, v);
+    setEditingSubTime(null);
+  };
+
   const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
   const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
   const subs = item.subItems || [];
   const subDone = subs.filter((s) => s.completed).length;
+  const hasSubs = subs.length > 0;
+  const parentAutoComplete = hasSubs;
+  const totalMin = itemTotalMinutes(item);
 
   const isThisPomo = pomoItemUid === item.uid;
 
@@ -348,18 +420,17 @@ function DayCard({
       {isOver && !isDragging && <div className="h-0.5 bg-violet-500 rounded-full mb-1 -mt-0.5" />}
       <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
         <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
-          {/* Drag grip */}
           <span className="hidden sm:flex text-gray-300 dark:text-gray-600 cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" /><circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" /><circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" /></svg>
           </span>
 
-          {/* Checkbox */}
           <button
-            onClick={(e) => { e.stopPropagation(); if (canComplete) onToggleComplete(); }}
-            disabled={!canComplete}
+            onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
+            disabled={!canComplete || parentAutoComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
               complete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"
-            } ${!canComplete ? "opacity-50 cursor-not-allowed" : ""}`}
+            } ${(!canComplete || parentAutoComplete) ? "opacity-50 cursor-not-allowed" : ""}`}
+            title={parentAutoComplete ? "Complete all sub-tasks to finish" : undefined}
           >
             {complete && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
           </button>
@@ -368,52 +439,54 @@ function DayCard({
 
           <div className="flex-1 min-w-0">
             <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>{item.title}</h3>
-            {subs.length > 0 && (
-              <p className="text-[10px] text-gray-400 dark:text-gray-500">{subDone}/{subs.length} sub-tasks</p>
+            {hasSubs && (
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">{subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}</p>
             )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-            {/* Time estimate */}
-            {editingTime ? (
-              <input
-                autoFocus
-                type="number"
-                min="5"
-                max="480"
-                value={timeVal}
-                onChange={(e) => setTimeVal(e.target.value)}
-                onBlur={saveTime}
-                onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
-                className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
-              />
-            ) : (
-              <button
-                onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
-                className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-gray-400 dark:text-gray-500 hover:text-violet-500 transition-colors"
-                title="Set time estimate"
-              >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                {item.estimatedMinutes ? fmt(item.estimatedMinutes) : "set"}
-              </button>
-            )}
+            {!hasSubs && (
+              <>
+                {editingTime ? (
+                  <input
+                    autoFocus
+                    type="number"
+                    min="5"
+                    max="480"
+                    value={timeVal}
+                    onChange={(e) => setTimeVal(e.target.value)}
+                    onBlur={saveTime}
+                    onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
+                    className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+                  />
+                ) : (
+                  <button
+                    onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
+                    className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-gray-400 dark:text-gray-500 hover:text-violet-500 transition-colors"
+                    title="Set time estimate"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                    {item.estimatedMinutes ? fmt(item.estimatedMinutes) : "set"}
+                  </button>
+                )}
 
-            {/* Play pomodoro */}
-            {dayIsToday && item.estimatedMinutes > 0 && !complete && (
-              <button
-                onClick={() => { if (!pomoActive || isThisPomo) onStartPomo(item); }}
-                disabled={pomoActive && !isThisPomo}
-                className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                  isThisPomo
-                    ? "bg-violet-500 text-white animate-pulse"
-                    : pomoActive
-                    ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
-                    : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50"
-                }`}
-                title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
-              >
-                <svg className="w-3 h-3 ml-px" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
-              </button>
+                {dayIsToday && item.estimatedMinutes > 0 && !complete && (
+                  <button
+                    onClick={() => { if (!pomoActive || isThisPomo) onStartPomo(item); }}
+                    disabled={pomoActive && !isThisPomo}
+                    className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                      isThisPomo
+                        ? "bg-violet-500 text-white animate-pulse"
+                        : pomoActive
+                        ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
+                        : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50"
+                    }`}
+                    title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
+                  >
+                    <svg className="w-3 h-3 ml-px" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
+                  </button>
+                )}
+              </>
             )}
 
             {onMove && (
@@ -441,13 +514,12 @@ function DayCard({
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
               <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
-                {/* Sub-items for custom cards */}
-                {item.source === "custom" && subs.length > 0 && (
+                {item.source === "custom" && hasSubs && (
                   <div className="mb-3">
                     <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Sub-tasks</h4>
-                    <div className="space-y-1">
+                    <div className="space-y-1.5">
                       {subs.map((s) => (
-                        <div key={s.uid} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${GLASS} text-sm`}>
+                        <div key={s.uid} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${GLASS} ${s.completed ? "opacity-60" : ""}`}>
                           <button
                             onClick={() => onToggleSubItem(item.uid, s.uid)}
                             disabled={!canComplete}
@@ -458,29 +530,81 @@ function DayCard({
                             {s.completed && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                           </button>
                           <span className={`flex-1 text-xs ${s.completed ? "line-through text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>{s.title}</span>
-                          <button onClick={() => onRemoveSubItem(item.uid, s.uid)} className="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors">
-                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                          </button>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {editingSubTime === s.uid ? (
+                              <input
+                                autoFocus
+                                type="number"
+                                min="5"
+                                max="480"
+                                value={subTimeVal}
+                                onChange={(e) => setSubTimeVal(e.target.value)}
+                                onBlur={() => saveSubTime(s.uid)}
+                                onKeyDown={(e) => { if (e.key === "Enter") saveSubTime(s.uid); if (e.key === "Escape") setEditingSubTime(null); }}
+                                className="w-12 px-1 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+                              />
+                            ) : (
+                              <button
+                                onClick={() => { setSubTimeVal(String(s.estimatedMinutes || 25)); setEditingSubTime(s.uid); }}
+                                className="text-[10px] font-semibold px-1 py-0.5 rounded text-gray-400 dark:text-gray-500 hover:text-violet-500 transition-colors flex items-center gap-0.5"
+                              >
+                                <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                {s.estimatedMinutes ? fmt(s.estimatedMinutes) : "set"}
+                              </button>
+                            )}
+
+                            {dayIsToday && (s.estimatedMinutes || 0) > 0 && !s.completed && (
+                              <button
+                                onClick={() => { if (!pomoActive) onStartPomo(item, s); }}
+                                disabled={pomoActive}
+                                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+                                  pomoActive
+                                    ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
+                                    : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50"
+                                }`}
+                                title={pomoActive ? "Stop current session first" : "Start focus"}
+                              >
+                                <svg className="w-2.5 h-2.5 ml-px" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
+                              </button>
+                            )}
+
+                            <button onClick={() => onRemoveSubItem(item.uid, s.uid)} className="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors">
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Add sub-item inline */}
                 {item.source === "custom" && canComplete && (
                   <div className="flex gap-2 mb-3">
                     <input
                       value={subInput}
                       onChange={(e) => setSubInput(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" && subInput.trim()) { onAddSubItem(item.uid, subInput.trim()); setSubInput(""); }
+                        if (e.key === "Enter" && subInput.trim()) {
+                          onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25);
+                          setSubInput("");
+                        }
                       }}
                       placeholder="Add sub-task..."
                       className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                     />
+                    <input
+                      type="number"
+                      min="5"
+                      max="480"
+                      value={subTimeInput}
+                      onChange={(e) => setSubTimeInput(e.target.value)}
+                      className="w-16 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
+                      placeholder="min"
+                      title="Time estimate (minutes)"
+                    />
                     <button
-                      onClick={() => { if (subInput.trim()) { onAddSubItem(item.uid, subInput.trim()); setSubInput(""); } }}
+                      onClick={() => { if (subInput.trim()) { onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25); setSubInput(""); } }}
                       disabled={!subInput.trim()}
                       className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs font-semibold disabled:opacity-40 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"
                     >
@@ -526,6 +650,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
   const [customTime, setCustomTime] = useState("30");
   const [subItems, setSubItems] = useState([]);
   const [subInput, setSubInput] = useState("");
+  const [subTimeInput, setSubTimeInput] = useState("25");
 
   const addedKey = useMemo(() => {
     const s = new Set();
@@ -545,14 +670,16 @@ function CardPicker({ dayItems, onClose, onAdd }) {
     return DSA_PROBLEMS.filter((p) => !q || p.title.toLowerCase().includes(q) || p.topic.toLowerCase().includes(q));
   }, [tab, q]);
 
+  const hasSubs = subItems.length > 0;
+
   const addCustom = () => {
     const title = customTitle.trim();
     if (!title) return;
     onAdd({
       uid: uid(), source: "custom", title, completed: false,
       notes: customNote.trim(),
-      estimatedMinutes: parseInt(customTime) || 30,
-      subItems: subItems.length ? subItems : undefined,
+      estimatedMinutes: hasSubs ? 0 : (parseInt(customTime) || 30),
+      subItems: hasSubs ? subItems : undefined,
     });
     setCustomTitle("");
     setCustomNote("");
@@ -563,7 +690,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
   const addSub = () => {
     const t = subInput.trim();
     if (!t) return;
-    setSubItems([...subItems, { uid: uid(), title: t, completed: false }]);
+    setSubItems([...subItems, { uid: uid(), title: t, completed: false, estimatedMinutes: parseInt(subTimeInput) || 25 }]);
     setSubInput("");
   };
 
@@ -630,7 +757,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                     >
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${CATEGORY_CONFIG[c.primaryCategory].badge}`}>{c.primaryCategory}</span>
                       <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{c.title}</span>
-                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added ✓" : "Add +"}</span>
+                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
                   </li>
                 );
@@ -652,7 +779,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                     >
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[p.difficulty]}`}>{p.difficulty}</span>
                       <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{p.title}</span>
-                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added ✓" : "Add +"}</span>
+                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
                   </li>
                 );
@@ -674,8 +801,9 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                   className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                 />
               </div>
-              <div className="flex gap-3">
-                <div className="flex-1">
+
+              {!hasSubs && (
+                <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Time estimate (minutes)</label>
                   <input
                     type="number"
@@ -685,17 +813,19 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                     onChange={(e) => setCustomTime(e.target.value)}
                     className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                   />
-                  <p className="text-[10px] text-gray-400 mt-1">{fmt(parseInt(customTime) || 0)} → {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
+                  <p className="text-[10px] text-gray-400 mt-1">{fmt(parseInt(customTime) || 0)} &rarr; {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
                 </div>
-              </div>
+              )}
+
               <div>
-                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Sub-tasks (optional)</label>
-                {subItems.length > 0 && (
+                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Sub-tasks (optional){hasSubs ? ` — ${fmt(subItems.reduce((s, i) => s + (i.estimatedMinutes || 0), 0))} total` : ""}</label>
+                {hasSubs && (
                   <div className="space-y-1 mt-1.5">
                     {subItems.map((s) => (
                       <div key={s.uid} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-sm">
                         <span className="flex-1 text-gray-700 dark:text-gray-300">{s.title}</span>
-                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} className="text-gray-400 hover:text-red-500">×</button>
+                        <span className="text-[10px] text-gray-400 shrink-0">{fmt(s.estimatedMinutes || 0)}</span>
+                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} className="text-gray-400 hover:text-red-500">&times;</button>
                       </div>
                     ))}
                   </div>
@@ -708,9 +838,24 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                     placeholder="Add a sub-task..."
                     className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                   />
+                  <input
+                    type="number"
+                    min="5"
+                    max="480"
+                    value={subTimeInput}
+                    onChange={(e) => setSubTimeInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
+                    className="w-16 px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
+                    placeholder="min"
+                    title="Minutes"
+                  />
                   <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-sm font-semibold disabled:opacity-40">+</button>
                 </div>
+                {hasSubs && (
+                  <p className="text-[10px] text-gray-400 mt-1">Time is set per sub-task. Timer runs on each sub-task individually.</p>
+                )}
               </div>
+
               <div>
                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Notes (optional)</label>
                 <textarea
@@ -757,12 +902,10 @@ const Planning = () => {
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
 
-  // Pomodoro state
   const [pomo, setPomo] = useState(null);
   const pomoRef = useRef(null);
   useEffect(() => { pomoRef.current = pomo; }, [pomo]);
 
-  // Drag-and-drop state
   const [dragIdx, setDragIdx] = useState(null);
   const [overIdx, setOverIdx] = useState(null);
 
@@ -783,7 +926,6 @@ const Planning = () => {
     []
   );
 
-  // Pomodoro tick
   const isRunning = pomo?.status === "running";
   useEffect(() => {
     if (!isRunning) return;
@@ -794,11 +936,12 @@ const Planning = () => {
       if (p.remaining <= 1) {
         const nextIdx = p.currentIdx + 1;
         if (nextIdx >= p.sessions.length) {
-          playChime(true);
+          playSound("timerDone");
           next = { ...p, remaining: 0, status: "complete" };
         } else {
-          playChime();
-          next = { ...p, currentIdx: nextIdx, remaining: p.sessions[nextIdx].duration };
+          const nextSession = p.sessions[nextIdx];
+          playSound(nextSession.type === "work" ? "focusStart" : "breakStart");
+          next = { ...p, currentIdx: nextIdx, remaining: nextSession.duration };
         }
       } else {
         next = { ...p, remaining: p.remaining - 1 };
@@ -843,14 +986,19 @@ const Planning = () => {
 
   const toggleComplete = useCallback((item) => {
     if (current !== today) return;
+    const hasSubs = (item.subItems || []).length > 0;
     if (item.source === "custom") {
-      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: !i.completed } : i)));
+      if (hasSubs) return;
+      const next = !item.completed;
+      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: next } : i)));
+      if (next) playSound("taskDone");
       return;
     }
     const next = !resolve(item).complete;
     setSourceComplete(item.source, item.refId, next);
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
+    if (next) playSound("taskDone");
   }, [items, current, today, persist, resolve]);
 
   const changeNote = useCallback((item, val) => {
@@ -864,32 +1012,53 @@ const Planning = () => {
     persist(items.map((i) => (i.uid === itemUid ? { ...i, estimatedMinutes: minutes } : i)));
   }, [items, persist]);
 
+  const updateSubItemTime = useCallback((itemUid, subUid, minutes) => {
+    persist(items.map((i) => {
+      if (i.uid !== itemUid) return i;
+      return { ...i, subItems: (i.subItems || []).map((s) => (s.uid === subUid ? { ...s, estimatedMinutes: minutes } : s)) };
+    }));
+  }, [items, persist]);
+
   const toggleSubItem = useCallback((itemUid, subUid) => {
     if (current !== today) return;
     persist(items.map((i) => {
       if (i.uid !== itemUid) return i;
       const subs = (i.subItems || []).map((s) => (s.uid === subUid ? { ...s, completed: !s.completed } : s));
+      const toggled = subs.find((s) => s.uid === subUid);
+      if (toggled?.completed) playSound("taskDone");
       const allDone = subs.length > 0 && subs.every((s) => s.completed);
+      if (allDone && !i.completed) playSound("timerDone");
       return { ...i, subItems: subs, completed: allDone };
     }));
   }, [items, persist, current, today]);
 
-  const addSubItem = useCallback((itemUid, title) => {
-    persist(items.map((i) => (i.uid !== itemUid ? i : { ...i, subItems: [...(i.subItems || []), { uid: uid(), title, completed: false }] })));
+  const addSubItem = useCallback((itemUid, title, estimatedMinutes = 25) => {
+    persist(items.map((i) => (i.uid !== itemUid ? i : {
+      ...i,
+      subItems: [...(i.subItems || []), { uid: uid(), title, completed: false, estimatedMinutes }],
+      completed: false,
+    })));
   }, [items, persist]);
 
   const removeSubItem = useCallback((itemUid, subUid) => {
-    persist(items.map((i) => (i.uid !== itemUid ? i : { ...i, subItems: (i.subItems || []).filter((s) => s.uid !== subUid) })));
+    persist(items.map((i) => {
+      if (i.uid !== itemUid) return i;
+      const subs = (i.subItems || []).filter((s) => s.uid !== subUid);
+      const allDone = subs.length > 0 && subs.every((s) => s.completed);
+      return { ...i, subItems: subs, completed: subs.length > 0 ? allDone : i.completed };
+    }));
   }, [items, persist]);
 
-  // Pomodoro controls
-  const startPomo = useCallback((item) => {
-    const mins = item.estimatedMinutes || 25;
+  const startPomo = useCallback((item, subItem) => {
+    const target = subItem || item;
+    const mins = target.estimatedMinutes || 25;
     const sessions = buildSessions(mins);
     if (!sessions.length) return;
+    playSound("focusStart");
     setPomo({
       itemUid: item.uid,
-      itemTitle: item.title,
+      subItemUid: subItem?.uid || null,
+      itemTitle: subItem ? `${item.title} → ${subItem.title}` : item.title,
       sessions,
       currentIdx: 0,
       remaining: sessions[0].duration,
@@ -897,7 +1066,6 @@ const Planning = () => {
     });
   }, []);
 
-  // Drag handlers
   const handleDragStart = useCallback((e, idx) => {
     setDragIdx(idx);
     e.dataTransfer.effectAllowed = "move";
@@ -925,8 +1093,11 @@ const Planning = () => {
   const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
   const isToday = current === today;
 
-  const totalPlanned = items.reduce((s, i) => s + (i.estimatedMinutes || 0), 0);
-  const totalDone = items.filter((i) => resolve(i).complete).reduce((s, i) => s + (i.estimatedMinutes || 0), 0);
+  const totalPlanned = items.reduce((s, i) => s + itemTotalMinutes(i), 0);
+  const totalDone = items.reduce((s, i) => {
+    if (resolve(i).complete) return s + itemTotalMinutes(i);
+    return s + itemDoneMinutes(i);
+  }, 0);
 
   if (!authReady) return null;
 
@@ -935,7 +1106,6 @@ const Planning = () => {
       <div className="min-h-screen flex justify-center px-2">
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
 
-          {/* Header */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 mb-4 px-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Planning</h1>
@@ -963,9 +1133,8 @@ const Planning = () => {
             </div>
           </motion.div>
 
-          {/* Date navigation */}
           <div className="flex items-center justify-between gap-2 mb-3 px-2 relative">
-            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">‹</button>
+            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&lsaquo;</button>
 
             <div className="relative text-center">
               <button onClick={() => setCalOpen(!calOpen)} className="group">
@@ -984,11 +1153,10 @@ const Planning = () => {
               {!isToday && (
                 <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-semibold transition-all">Today</button>
               )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">›</button>
+              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&rsaquo;</button>
             </div>
           </div>
 
-          {/* Total time bar */}
           {totalPlanned > 0 && (
             <div className="px-2 mb-3">
               <div className={`rounded-xl ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
@@ -1011,7 +1179,6 @@ const Planning = () => {
             </div>
           )}
 
-          {/* Pomodoro timer */}
           <div className="px-2">
             <AnimatePresence>
               {pomo && (
@@ -1026,7 +1193,6 @@ const Planning = () => {
             </AnimatePresence>
           </div>
 
-          {/* Task list */}
           <div className="px-2 mb-4">
             <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md p-3 sm:p-4 transition-colors">
               <div className="flex items-center justify-between mb-3 px-1">
@@ -1064,6 +1230,7 @@ const Planning = () => {
                         moveLabel={isToday ? "Tomorrow" : "Today"}
                         onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
                         onTimeChange={updateItemTime}
+                        onSubItemTimeChange={updateSubItemTime}
                         onToggleSubItem={toggleSubItem}
                         onAddSubItem={addSubItem}
                         onRemoveSubItem={removeSubItem}
