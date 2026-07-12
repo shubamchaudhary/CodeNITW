@@ -10,6 +10,7 @@ import {
   DSA_PROBLEMS,
   KEYS,
   loadJSON,
+  saveJSON,
   setSourceComplete,
   setSourceNote,
   getInterviewCard,
@@ -81,6 +82,30 @@ function pomoElapsedWorkMinutes(p) {
   const cur = p.sessions[p.currentIdx];
   if (cur?.type === "work") sec += cur.duration - p.remaining;
   return Math.max(1, Math.ceil(sec / 60));
+}
+
+function catchUpPomo(saved) {
+  if (!saved) return null;
+  if (saved.status !== "running") return saved;
+  let elapsed = Math.floor((Date.now() - (saved.updatedAt || Date.now())) / 1000);
+  if (elapsed <= 0) return saved;
+  let idx = saved.currentIdx;
+  let remaining = saved.remaining;
+  while (elapsed > 0) {
+    if (elapsed < remaining) {
+      remaining -= elapsed;
+      elapsed = 0;
+    } else {
+      elapsed -= remaining;
+      const nextIdx = idx + 1;
+      if (nextIdx >= saved.sessions.length) {
+        return { ...saved, currentIdx: idx, remaining: 0, status: "complete" };
+      }
+      idx = nextIdx;
+      remaining = saved.sessions[idx].duration;
+    }
+  }
+  return { ...saved, currentIdx: idx, remaining };
 }
 
 function playSound(type) {
@@ -929,9 +954,12 @@ const Planning = () => {
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
 
-  const [pomo, setPomo] = useState(null);
+  const [pomo, setPomo] = useState(() => catchUpPomo(loadJSON(KEYS.POMO_STATE, null)));
   const pomoRef = useRef(null);
   useEffect(() => { pomoRef.current = pomo; }, [pomo]);
+  useEffect(() => {
+    saveJSON(KEYS.POMO_STATE, pomo ? { ...pomo, updatedAt: Date.now() } : null);
+  }, [pomo]);
 
   const [dragIdx, setDragIdx] = useState(null);
   const [overIdx, setOverIdx] = useState(null);
