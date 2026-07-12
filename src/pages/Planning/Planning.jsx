@@ -450,11 +450,10 @@ function DayCard({
                 {editingTime ? (
                   <input
                     autoFocus
-                    type="number"
-                    min="5"
-                    max="480"
+                    type="text"
+                    inputMode="numeric"
                     value={timeVal}
-                    onChange={(e) => setTimeVal(e.target.value)}
+                    onChange={(e) => setTimeVal(e.target.value.replace(/\D/g, ""))}
                     onBlur={saveTime}
                     onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
                     className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
@@ -535,11 +534,10 @@ function DayCard({
                             {editingSubTime === s.uid ? (
                               <input
                                 autoFocus
-                                type="number"
-                                min="5"
-                                max="480"
+                                type="text"
+                                inputMode="numeric"
                                 value={subTimeVal}
-                                onChange={(e) => setSubTimeVal(e.target.value)}
+                                onChange={(e) => setSubTimeVal(e.target.value.replace(/\D/g, ""))}
                                 onBlur={() => saveSubTime(s.uid)}
                                 onKeyDown={(e) => { if (e.key === "Enter") saveSubTime(s.uid); if (e.key === "Escape") setEditingSubTime(null); }}
                                 className="w-12 px-1 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
@@ -594,11 +592,10 @@ function DayCard({
                       className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                     />
                     <input
-                      type="number"
-                      min="5"
-                      max="480"
+                      type="text"
+                      inputMode="numeric"
                       value={subTimeInput}
-                      onChange={(e) => setSubTimeInput(e.target.value)}
+                      onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
                       className="w-16 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
                       placeholder="min"
                       title="Time estimate (minutes)"
@@ -806,11 +803,10 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Time estimate (minutes)</label>
                   <input
-                    type="number"
-                    min="5"
-                    max="480"
+                    type="text"
+                    inputMode="numeric"
                     value={customTime}
-                    onChange={(e) => setCustomTime(e.target.value)}
+                    onChange={(e) => setCustomTime(e.target.value.replace(/\D/g, ""))}
                     className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                   />
                   <p className="text-[10px] text-gray-400 mt-1">{fmt(parseInt(customTime) || 0)} &rarr; {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
@@ -839,11 +835,10 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                     className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                   />
                   <input
-                    type="number"
-                    min="5"
-                    max="480"
+                    type="text"
+                    inputMode="numeric"
                     value={subTimeInput}
-                    onChange={(e) => setSubTimeInput(e.target.value)}
+                    onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
                     onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
                     className="w-16 px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
                     placeholder="min"
