@@ -69,7 +69,7 @@ function itemTotalMinutes(item) {
 
 function itemDoneMinutes(item) {
   const subs = item.subItems || [];
-  if (subs.length > 0) return subs.filter((s) => s.completed).reduce((s, sub) => s + (sub.actualMinutes ?? sub.estimatedMinutes ?? 0), 0);
+  if (subs.length > 0) return subs.filter((s) => s.completed).reduce((s, sub) => s + (sub.actualMinutes ?? 0), 0);
   return 0;
 }
 
@@ -1180,10 +1180,12 @@ const Planning = () => {
   const totalDone = items.reduce((s, i) => {
     if (resolve(i).complete) {
       const subs = i.subItems || [];
-      if (subs.length > 0) return s + subs.reduce((a, sub) => a + (sub.actualMinutes ?? sub.estimatedMinutes ?? 0), 0);
-      return s + (i.actualMinutes ?? i.estimatedMinutes ?? 0);
+      if (subs.length > 0) return s + subs.reduce((a, sub) => a + (sub.actualMinutes ?? 0), 0);
+      return s + (i.actualMinutes ?? 0);
     }
-    return s + itemDoneMinutes(i);
+    let done = itemDoneMinutes(i);
+    if (pomo && pomo.itemUid === i.uid) done += pomoElapsedWorkMinutes(pomo);
+    return s + done;
   }, 0);
 
   if (!authReady) return null;
