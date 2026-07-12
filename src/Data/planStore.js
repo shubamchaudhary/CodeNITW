@@ -241,10 +241,15 @@ export function migratePersonalPlanProgress() {
 }
 
 // ─── Date helpers for the planning timeline ───────────────────────────────────
+// Day boundary is 5:00 AM IST (UTC+5:30), not midnight. If the current IST time
+// is before 5 AM, the active "planning day" is still the previous calendar date.
 export function dateKey(d = new Date()) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+  const ist = new Date(utc + 5.5 * 3600000);
+  if (ist.getHours() < 5) ist.setDate(ist.getDate() - 1);
+  const y = ist.getFullYear();
+  const m = String(ist.getMonth() + 1).padStart(2, "0");
+  const day = String(ist.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
