@@ -10,6 +10,7 @@ import {
   DSA_PROBLEMS,
   KEYS,
   loadJSON,
+  saveJSON,
   setSourceComplete,
   setSourceNote,
   getInterviewCard,
@@ -68,8 +69,43 @@ function itemTotalMinutes(item) {
 
 function itemDoneMinutes(item) {
   const subs = item.subItems || [];
-  if (subs.length > 0) return subs.filter((s) => s.completed).reduce((s, sub) => s + (sub.estimatedMinutes || 0), 0);
+  if (subs.length > 0) return subs.filter((s) => s.completed).reduce((s, sub) => s + (sub.actualMinutes ?? sub.estimatedMinutes ?? 0), 0);
   return 0;
+}
+
+function pomoElapsedWorkMinutes(p) {
+  if (!p) return 0;
+  let sec = 0;
+  for (let i = 0; i < p.currentIdx; i++) {
+    if (p.sessions[i].type === "work") sec += p.sessions[i].duration;
+  }
+  const cur = p.sessions[p.currentIdx];
+  if (cur?.type === "work") sec += cur.duration - p.remaining;
+  return Math.max(1, Math.ceil(sec / 60));
+}
+
+function catchUpPomo(saved) {
+  if (!saved) return null;
+  if (saved.status !== "running") return saved;
+  let elapsed = Math.floor((Date.now() - (saved.updatedAt || Date.now())) / 1000);
+  if (elapsed <= 0) return saved;
+  let idx = saved.currentIdx;
+  let remaining = saved.remaining;
+  while (elapsed > 0) {
+    if (elapsed < remaining) {
+      remaining -= elapsed;
+      elapsed = 0;
+    } else {
+      elapsed -= remaining;
+      const nextIdx = idx + 1;
+      if (nextIdx >= saved.sessions.length) {
+        return { ...saved, currentIdx: idx, remaining: 0, status: "complete" };
+      }
+      idx = nextIdx;
+      remaining = saved.sessions[idx].duration;
+    }
+  }
+  return { ...saved, currentIdx: idx, remaining };
 }
 
 function playSound(type) {
@@ -185,7 +221,8 @@ const TICK_R_OUTER = 92;
 const TICK_R_INNER_MAJOR = 85;
 const TICK_R_INNER_MINOR = 88;
 
-function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
+function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend }) {
+  const [extendVal, setExtendVal] = useState("");
   if (!pomo) return null;
   const { sessions, currentIdx, remaining, status } = pomo;
   const session = sessions[currentIdx];
@@ -311,14 +348,34 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
           })}
         </div>
 
-        <div className="flex items-center gap-3 mt-4">
+        <div className="flex flex-col items-center gap-3 mt-4">
           {isComplete ? (
-            <button
-              onClick={onDismiss}
-              className="px-5 py-2 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
-            >
-              Done
-            </button>
+            <>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={extendVal}
+                  onChange={(e) => setExtendVal(e.target.value.replace(/\D/g, ""))}
+                  onKeyDown={(e) => { if (e.key === "Enter" && parseInt(extendVal) > 0) { onExtend(parseInt(extendVal)); setExtendVal(""); } }}
+                  placeholder="+min"
+                  className="w-16 px-2 py-1.5 text-sm text-center rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                />
+                <button
+                  onClick={() => { if (parseInt(extendVal) > 0) { onExtend(parseInt(extendVal)); setExtendVal(""); } }}
+                  disabled={!parseInt(extendVal)}
+                  className="px-4 py-1.5 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-40 transition-colors"
+                >
+                  Continue
+                </button>
+              </div>
+              <button
+                onClick={onDismiss}
+                className="px-5 py-2 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
+              >
+                Done
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -897,9 +954,12 @@ const Planning = () => {
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
 
-  const [pomo, setPomo] = useState(null);
+  const [pomo, setPomo] = useState(() => catchUpPomo(loadJSON(KEYS.POMO_STATE, null)));
   const pomoRef = useRef(null);
   useEffect(() => { pomoRef.current = pomo; }, [pomo]);
+  useEffect(() => {
+    saveJSON(KEYS.POMO_STATE, pomo ? { ...pomo, updatedAt: Date.now() } : null);
+  }, [pomo]);
 
   const [dragIdx, setDragIdx] = useState(null);
   const [overIdx, setOverIdx] = useState(null);
@@ -982,19 +1042,29 @@ const Planning = () => {
   const toggleComplete = useCallback((item) => {
     if (current !== today) return;
     const hasSubs = (item.subItems || []).length > 0;
+    const pomoForThis = pomo && pomo.itemUid === item.uid;
     if (item.source === "custom") {
       if (hasSubs) return;
       const next = !item.completed;
-      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: next } : i)));
+      const actual = next && pomoForThis && !pomo.subItemUid ? pomoElapsedWorkMinutes(pomo) : undefined;
+      if (next && pomoForThis) setPomo(null);
+      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: next, actualMinutes: next ? (actual ?? i.actualMinutes) : undefined } : i)));
       if (next) playSound("taskDone");
       return;
     }
     const next = !resolve(item).complete;
+    if (next && pomoForThis) {
+      const actual = pomoElapsedWorkMinutes(pomo);
+      setPomo(null);
+      persist(items.map((i) => (i.uid === item.uid ? { ...i, actualMinutes: actual } : i)));
+    } else if (!next) {
+      persist(items.map((i) => (i.uid === item.uid ? { ...i, actualMinutes: undefined } : i)));
+    }
     setSourceComplete(item.source, item.refId, next);
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
     if (next) playSound("taskDone");
-  }, [items, current, today, persist, resolve]);
+  }, [items, current, today, persist, resolve, pomo]);
 
   const changeNote = useCallback((item, val) => {
     if (item.source === "custom") { persist(items.map((i) => (i.uid === item.uid ? { ...i, notes: val } : i))); return; }
@@ -1016,16 +1086,23 @@ const Planning = () => {
 
   const toggleSubItem = useCallback((itemUid, subUid) => {
     if (current !== today) return;
+    const pomoForSub = pomo && pomo.itemUid === itemUid && pomo.subItemUid === subUid;
     persist(items.map((i) => {
       if (i.uid !== itemUid) return i;
-      const subs = (i.subItems || []).map((s) => (s.uid === subUid ? { ...s, completed: !s.completed } : s));
+      const subs = (i.subItems || []).map((s) => {
+        if (s.uid !== subUid) return s;
+        const nowDone = !s.completed;
+        const actual = nowDone && pomoForSub ? pomoElapsedWorkMinutes(pomo) : undefined;
+        return { ...s, completed: nowDone, actualMinutes: nowDone ? (actual ?? s.actualMinutes) : undefined };
+      });
       const toggled = subs.find((s) => s.uid === subUid);
       if (toggled?.completed) playSound("taskDone");
       const allDone = subs.length > 0 && subs.every((s) => s.completed);
       if (allDone && !i.completed) playSound("timerDone");
       return { ...i, subItems: subs, completed: allDone };
     }));
-  }, [items, persist, current, today]);
+    if (pomoForSub) setPomo(null);
+  }, [items, persist, current, today, pomo]);
 
   const addSubItem = useCallback((itemUid, title, estimatedMinutes = 25) => {
     persist(items.map((i) => (i.uid !== itemUid ? i : {
@@ -1061,6 +1138,17 @@ const Planning = () => {
     });
   }, []);
 
+  const extendPomo = useCallback((addMinutes) => {
+    setPomo((p) => {
+      if (!p) return null;
+      const extra = buildSessions(addMinutes);
+      if (!extra.length) return p;
+      const sessions = [...p.sessions, ...extra];
+      return { ...p, sessions, currentIdx: p.sessions.length, remaining: extra[0].duration, status: "running" };
+    });
+    playSound("focusStart");
+  }, []);
+
   const handleDragStart = useCallback((e, idx) => {
     setDragIdx(idx);
     e.dataTransfer.effectAllowed = "move";
@@ -1090,7 +1178,11 @@ const Planning = () => {
 
   const totalPlanned = items.reduce((s, i) => s + itemTotalMinutes(i), 0);
   const totalDone = items.reduce((s, i) => {
-    if (resolve(i).complete) return s + itemTotalMinutes(i);
+    if (resolve(i).complete) {
+      const subs = i.subItems || [];
+      if (subs.length > 0) return s + subs.reduce((a, sub) => a + (sub.actualMinutes ?? sub.estimatedMinutes ?? 0), 0);
+      return s + (i.actualMinutes ?? i.estimatedMinutes ?? 0);
+    }
     return s + itemDoneMinutes(i);
   }, 0);
 
@@ -1183,6 +1275,7 @@ const Planning = () => {
                   onResume={() => setPomo((p) => p ? { ...p, status: "running" } : null)}
                   onStop={() => setPomo(null)}
                   onDismiss={() => setPomo(null)}
+                  onExtend={extendPomo}
                 />
               )}
             </AnimatePresence>
