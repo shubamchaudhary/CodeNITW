@@ -31,325 +31,55 @@ function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-const Planning = () => {
-  const [authReady, setAuthReady] = useState(false);
+function fmt(min) {
+  if (!min) return "";
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(), () => setAuthReady(true));
-    return unsubscribe;
-  }, []);
+function fmtClock(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
 
-  useEffect(() => { pruneExpiredDsaSolves(); }, []);
+function buildSessions(totalMin) {
+  if (!totalMin || totalMin <= 0) return [];
+  const n = Math.max(1, Math.round(totalMin / 30));
+  if (n === 1) return [{ type: "work", duration: totalMin * 60 }];
+  const breakTime = (n - 1) * 5;
+  const workPerSession = (totalMin - breakTime) / n;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    out.push({ type: "work", duration: Math.round(workPerSession * 60) });
+    if (i < n - 1) out.push({ type: "break", duration: 300 });
+  }
+  return out;
+}
 
-  const today = dateKey();
-  const [current, setCurrent] = useState(today);
-  const [items, setItems] = useState(() => getDay(today));
-  // Local mirrors of the source stores so completion/notes stay reactive here.
-  const [ipCompleted, setIpCompleted] = useState(() => loadJSON(KEYS.IP_COMPLETED, {}));
-  const [dsaCompleted, setDsaCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
-  const [ipNotes, setIpNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
-  const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
-  const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [openItem, setOpenItem] = useState(null);
-
-  const currentRef = useRef(current);
-  useEffect(() => { currentRef.current = current; }, [current]);
-
-  useEffect(() => setItems(getDay(current)), [current]);
-
-  useEffect(
-    () =>
-      subscribe((key) => {
-        if (key === KEYS.IP_COMPLETED) setIpCompleted(loadJSON(KEYS.IP_COMPLETED, {}));
-        if (key === KEYS.DSA_COMPLETED) setDsaCompleted(loadJSON(KEYS.DSA_COMPLETED, {}));
-        if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
-        if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
-        if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
-        if (key === KEYS.PLAN_DAYS) setItems(getDay(currentRef.current));
-      }),
-    []
-  );
-
-  const toggleStar = useCallback(
-    (id) => {
-      const next = !dsaStarred[id];
-      setDsaStarred(id, next);
-      setDsaStarredMap((m) => ({ ...m, [id]: next }));
-    },
-    [dsaStarred]
-  );
-
-  const persist = useCallback(
-    (next) => {
-      setItems(next);
-      setDay(current, next);
-    },
-    [current]
-  );
-
-  // Resolve an item's live completion + notes from the right source.
-  const resolve = useCallback(
-    (item) => {
-      if (item.source === "custom") {
-        return { complete: !!item.completed, note: item.notes || "" };
-      }
-      if (item.source === "dsa") {
-        return { complete: !!dsaCompleted[item.refId], note: dsaNotes[item.refId] || "" };
-      }
-      return { complete: !!ipCompleted[item.refId], note: ipNotes[item.refId] || "" };
-    },
-    [ipCompleted, dsaCompleted, ipNotes, dsaNotes]
-  );
-
-  const addItem = useCallback(
-    (item) => {
-      if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) {
-        return; // already on today's plan
-      }
-      persist([...items, item]);
-    },
-    [items, persist]
-  );
-
-  const removeItem = useCallback((id) => persist(items.filter((i) => i.uid !== id)), [items, persist]);
-
-  // Move a card off the shown day onto another day (today / tomorrow).
-  const moveItem = useCallback(
-    (item, targetKey) => {
-      if (targetKey === current) return;
-      persist(items.filter((i) => i.uid !== item.uid));
-      const targetItems = getDay(targetKey);
-      const dup =
-        item.source !== "custom" &&
-        targetItems.some((i) => i.source === item.source && i.refId === item.refId);
-      if (!dup) setDay(targetKey, [...targetItems, item]);
-    },
-    [items, current, persist]
-  );
-
-  const toggleComplete = useCallback(
-    (item) => {
-      // Completion can only happen on today — past/future cards must be moved first.
-      if (current !== today) return;
-      if (item.source === "custom") {
-        persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: !i.completed } : i)));
-        return;
-      }
-      const next = !resolve(item).complete;
-      setSourceComplete(item.source, item.refId, next);
-      if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
-      else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
-    },
-    [items, current, today, persist, resolve]
-  );
-
-  const changeNote = useCallback(
-    (item, val) => {
-      if (item.source === "custom") {
-        persist(items.map((i) => (i.uid === item.uid ? { ...i, notes: val } : i)));
-        return;
-      }
-      setSourceNote(item.source, item.refId, val);
-      if (item.source === "dsa") setDsaNotes((m) => ({ ...m, [item.refId]: val }));
-      else setIpNotes((m) => ({ ...m, [item.refId]: val }));
-    },
-    [items, persist]
-  );
-
-  const doneCount = items.filter((i) => resolve(i).complete).length;
-  const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
-
-  // Timeline: a window of ~7 days before/after today (today centred), plus any
-  // day that has a saved plan. Sorted chronologically (past → left, future → right).
-  const timeline = useMemo(() => {
-    const set = new Set();
-    for (let i = -7; i <= 7; i++) set.add(addDays(today, i));
-    getAllDayKeys().forEach((k) => set.add(k));
-    set.add(current);
-    return [...set].sort();
-  }, [today, current, items]);
-
-  // Keep the selected day centred in the horizontal strip.
-  const selectedChipRef = useRef(null);
-  useEffect(() => {
-    selectedChipRef.current?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
-  }, [current, timeline.length]);
-
-  const dayDoneCount = useCallback(
-    (key) => {
-      const dayItems = key === current ? items : getDay(key);
-      let done = 0;
-      dayItems.forEach((it) => {
-        if (it.source === "custom") { if (it.completed) done++; }
-        else if (it.source === "dsa") { if (dsaCompleted[it.refId]) done++; }
-        else if (ipCompleted[it.refId]) done++;
-      });
-      return { done, total: dayItems.length };
-    },
-    [current, items, ipCompleted, dsaCompleted]
-  );
-
-  if (!authReady) return null;
-
-  const isToday = current === today;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
-      <div className="min-h-screen flex justify-center px-2">
-        <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
-
-          {/* ── Header ── */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6 mb-4 px-2">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Planning</h1>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{relativeLabel(current)}</p>
-                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{doneCount}/{items.length} done</p>
-                </div>
-                <div className="relative w-12 h-12">
-                  <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="4" />
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="url(#planGrad)" strokeWidth="4" strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 19}`}
-                      strokeDashoffset={`${2 * Math.PI * 19 * (1 - pct / 100)}`}
-                      style={{ transition: "stroke-dashoffset 0.5s ease" }} />
-                    <defs>
-                      <linearGradient id="planGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#8b5cf6" />
-                        <stop offset="100%" stopColor="#6366f1" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-violet-600 dark:text-violet-400">{pct}%</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* ── Date stepper ── */}
-          <div className="flex items-center justify-between gap-2 mb-3 px-2">
-            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all" title="Previous day">‹ Prev</button>
-            <div className="text-center">
-              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{relativeLabel(current)}</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">{prettyDate(current)}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {!isToday && (
-                <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-semibold transition-all">Today</button>
-              )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all" title="Next day">Next ›</button>
-            </div>
-          </div>
-
-          {/* ── Timeline strip ── */}
-          <div className="flex gap-2 overflow-x-auto pb-2 mb-4 px-2 no-scrollbar">
-            {timeline.map((key) => {
-              const { done, total } = dayDoneCount(key);
-              const sel = key === current;
-              const isT = key === today;
-              const [yy, mm, dd] = key.split("-");
-              const localDate = new Date(Number(yy), Number(mm) - 1, Number(dd));
-              return (
-                <button
-                  key={key}
-                  ref={sel ? selectedChipRef : null}
-                  onClick={() => setCurrent(key)}
-                  className={`shrink-0 w-16 rounded-xl border px-2 py-2 text-center transition-all ${
-                    sel
-                      ? "border-violet-500 bg-violet-600 text-white shadow-md"
-                      : isT
-                      ? "border-violet-400/70 dark:border-violet-500/40 bg-violet-50/60 dark:bg-violet-900/20 backdrop-blur-md text-gray-700 dark:text-gray-200 hover:border-violet-400"
-                      : "border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400"
-                  }`}
-                >
-                  <p className={`text-[10px] font-semibold ${sel ? "text-violet-100" : "text-gray-400 dark:text-gray-500"}`}>
-                    {isT ? "TODAY" : localDate.toLocaleDateString(undefined, { weekday: "short" }).toUpperCase()}
-                  </p>
-                  <p className="text-sm font-bold leading-tight">{mm}/{dd}</p>
-                  <p className={`text-[10px] ${sel ? "text-violet-100" : total && done === total ? "text-green-500" : "text-gray-400 dark:text-gray-500"}`}>
-                    {total ? `${done}/${total}` : "—"}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* ── Day plan box (grows as cards are added) ── */}
-          <div className="px-2 mb-4">
-            <motion.div
-              layout
-              className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md p-3 sm:p-4 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-3 px-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">
-                  Tasks for {relativeLabel(current)}
-                </h3>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                  {doneCount}/{items.length} done
-                </span>
-              </div>
-
-              {items.length === 0 ? (
-                <p className="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
-                  Nothing planned yet — add cards from Topics, DSA, or create a custom one.
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  <AnimatePresence>
-                    {items.map((item) => {
-                      const { complete, note } = resolve(item);
-                      return (
-                        <motion.div key={item.uid} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }}>
-                          <DayCard
-                            item={item}
-                            complete={complete}
-                            note={note}
-                            isOpen={openItem === item.uid}
-                            onToggleOpen={() => setOpenItem((p) => (p === item.uid ? null : item.uid))}
-                            onToggleComplete={() => toggleComplete(item)}
-                            onNoteChange={(val) => changeNote(item, val)}
-                            onRemove={() => removeItem(item.uid)}
-                            isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
-                            onToggleStar={item.source === "dsa" ? toggleStar : undefined}
-                            daysLeft={item.source === "dsa" && complete ? dsaDaysLeft(item.refId) : null}
-                            canComplete={isToday}
-                            moveLabel={isToday ? "Tomorrow" : "Today"}
-                            onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
-                          />
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                </div>
-              )}
-
-              {/* Add button — pinned to the bottom, inside the box */}
-              <button
-                onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-                Add to {isToday ? "today's" : "this day's"} plan
-              </button>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {pickerOpen && (
-          <CardPicker
-            dayItems={items}
-            onClose={() => setPickerOpen(false)}
-            onAdd={addItem}
-          />
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
+function playChime(complete = false) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    const tones = complete ? [523, 659, 784] : [680, 880];
+    const gap = complete ? 0.2 : 0.15;
+    tones.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g);
+      g.connect(ctx.destination);
+      osc.frequency.value = freq;
+      g.gain.value = 0;
+      g.gain.linearRampToValueAtTime(0.22, now + i * gap + 0.03);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * gap + 0.4);
+      osc.start(now + i * gap);
+      osc.stop(now + i * gap + 0.4);
+    });
+  } catch (_) {}
+}
 
 const SOURCE_META = {
   interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
@@ -357,10 +87,228 @@ const SOURCE_META = {
   custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
 };
 
-function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete, onNoteChange, onRemove, isStarred, onToggleStar, daysLeft, canComplete, moveLabel, onMove }) {
+const WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+// ─── Calendar Picker ─────────────────────────────────────────────────────────
+function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
+  const ref = useRef(null);
+  const [view, setView] = useState(() => {
+    const [y, m] = current.split("-").map(Number);
+    return { year: y, month: m - 1 };
+  });
+
+  useEffect(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [onClose]);
+
+  const { year, month } = view;
+  const first = new Date(year, month, 1).getDay();
+  const days = new Date(year, month + 1, 0).getDate();
+  const cells = Array.from({ length: first }, () => null).concat(Array.from({ length: days }, (_, i) => i + 1));
+  const label = new Date(year, month).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+  const prev = () => setView((v) => v.month === 0 ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 });
+  const next = () => setView((v) => v.month === 11 ? { year: v.year + 1, month: 0 } : { ...v, month: v.month + 1 });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+      transition={{ duration: 0.2 }}
+      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl border border-gray-200/70 dark:border-slate-700/60 bg-white dark:bg-slate-800 shadow-2xl p-4"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={prev} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">‹</button>
+        <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{label}</span>
+        <button onClick={next} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">›</button>
+      </div>
+      <div className="grid grid-cols-7 gap-0.5 text-center">
+        {WEEK.map((d) => (
+          <span key={d} className="text-[10px] font-bold text-gray-400 dark:text-gray-500 py-1">{d}</span>
+        ))}
+        {cells.map((d, i) => {
+          if (!d) return <span key={`e${i}`} />;
+          const key = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const isT = key === today;
+          const isSel = key === current;
+          const has = planDays.has(key);
+          return (
+            <button
+              key={i}
+              onClick={() => { onSelect(key); onClose(); }}
+              className={`relative w-9 h-9 mx-auto rounded-xl text-xs font-semibold transition-all ${
+                isSel
+                  ? "bg-violet-600 text-white shadow-md"
+                  : isT
+                  ? "ring-2 ring-violet-400 text-violet-600 dark:text-violet-400"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
+              }`}
+            >
+              {d}
+              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-violet-400" />}
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Pomodoro Timer ──────────────────────────────────────────────────────────
+const R = 80;
+const CIRC = 2 * Math.PI * R;
+
+function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss }) {
+  if (!pomo) return null;
+  const { sessions, currentIdx, remaining, status } = pomo;
+  const session = sessions[currentIdx];
+  const progress = session ? (session.duration - remaining) / session.duration : 1;
+  const isWork = session?.type === "work";
+  const isComplete = status === "complete";
+  const isPaused = status === "paused";
+
+  const workIdx = sessions.slice(0, currentIdx + 1).filter((s) => s.type === "work").length;
+  const totalWork = sessions.filter((s) => s.type === "work").length;
+
+  const ringColor = isComplete
+    ? "#22c55e"
+    : isPaused
+    ? "#64748b"
+    : isWork
+    ? "url(#pomoFocus)"
+    : "url(#pomoBreak)";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
+      className={`rounded-2xl ${GLASS} p-6 mb-4`}
+    >
+      <div className="flex flex-col items-center">
+        {/* Ring */}
+        <div className="relative">
+          <svg viewBox="0 0 200 200" className="w-44 h-44 sm:w-52 sm:h-52">
+            <defs>
+              <linearGradient id="pomoFocus" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#8b5cf6" />
+                <stop offset="100%" stopColor="#6366f1" />
+              </linearGradient>
+              <linearGradient id="pomoBreak" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#34d399" />
+                <stop offset="100%" stopColor="#22d3ee" />
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r={R} fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="7" />
+            <motion.circle
+              cx="100" cy="100" r={R} fill="none" stroke={ringColor} strokeWidth="7" strokeLinecap="round"
+              strokeDasharray={CIRC}
+              initial={false}
+              animate={{ strokeDashoffset: CIRC * (1 - progress) }}
+              transition={{ duration: 0.4, ease: "linear" }}
+              className="-rotate-90 origin-center"
+              style={{ transformOrigin: "100px 100px" }}
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            {isComplete ? (
+              <>
+                <svg className="w-10 h-10 text-green-500 mb-1" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span className="text-sm font-bold text-green-500">Complete!</span>
+              </>
+            ) : (
+              <>
+                <span className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 dark:text-gray-100 tabular-nums">{fmtClock(remaining)}</span>
+                <span className={`text-xs font-bold mt-1 ${isWork ? "text-violet-500" : "text-emerald-500"}`}>
+                  {isPaused ? "Paused" : isWork ? "Focus" : "Break"}
+                </span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                  Session {workIdx} of {totalWork}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Session dots */}
+        <div className="flex items-center gap-1.5 mt-3">
+          {sessions.filter((s) => s.type === "work").map((_, i) => {
+            const done = i < workIdx - (isWork || isComplete ? 0 : 1);
+            const active = !isComplete && i === workIdx - 1 && isWork;
+            return (
+              <span
+                key={i}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  done ? "bg-violet-500" : active ? "bg-violet-400 animate-pulse" : "bg-gray-300 dark:bg-slate-600"
+                }`}
+              />
+            );
+          })}
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center gap-3 mt-4">
+          {isComplete ? (
+            <button
+              onClick={onDismiss}
+              className="px-5 py-2 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors"
+            >
+              Done
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={onStop}
+                className="w-10 h-10 rounded-full border border-gray-200/70 dark:border-slate-600 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors"
+                title="Stop"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1.5" /></svg>
+              </button>
+              <button
+                onClick={isPaused ? onResume : onPause}
+                className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg transition-all ${
+                  isWork
+                    ? "bg-gradient-to-br from-violet-500 to-indigo-600 hover:shadow-violet-500/40"
+                    : "bg-gradient-to-br from-emerald-400 to-cyan-500 hover:shadow-emerald-500/40"
+                }`}
+              >
+                {isPaused ? (
+                  <svg className="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 16 16"><path d="M4 2h3v12H4zM9 2h3v12H9z" /></svg>
+                )}
+              </button>
+            </>
+          )}
+        </div>
+
+        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 truncate max-w-full text-center">
+          Working on: <span className="font-semibold text-gray-700 dark:text-gray-300">{pomo.itemTitle}</span>
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Day Card ────────────────────────────────────────────────────────────────
+function DayCard({
+  item, index, complete, note, isOpen, canComplete, isToday: dayIsToday,
+  onToggleOpen, onToggleComplete, onNoteChange, onRemove, onMove, moveLabel,
+  isStarred, onToggleStar, daysLeft,
+  onTimeChange, onToggleSubItem, onAddSubItem, onRemoveSubItem,
+  pomoActive, pomoItemUid, onStartPomo,
+  onDragStart, onDragOver, onDrop, onDragEnd, isDragging, isOver,
+}) {
   const meta = SOURCE_META[item.source];
   const debounceRef = useRef(null);
   const [localNote, setLocalNote] = useState(note);
+  const [editingTime, setEditingTime] = useState(false);
+  const [timeVal, setTimeVal] = useState(String(item.estimatedMinutes || ""));
+  const [subInput, setSubInput] = useState("");
 
   useEffect(() => { setLocalNote(note); }, [note]);
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
@@ -375,109 +323,209 @@ function DayCard({ item, complete, note, isOpen, onToggleOpen, onToggleComplete,
     [onNoteChange]
   );
 
+  const saveTime = () => {
+    const v = parseInt(timeVal) || 0;
+    if (v > 0) onTimeChange(item.uid, v);
+    setEditingTime(false);
+  };
+
   const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
   const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
+  const subs = item.subItems || [];
+  const subDone = subs.filter((s) => s.completed).length;
+
+  const isThisPomo = pomoItemUid === item.uid;
 
   return (
-    <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-80" : ""}`}>
-      <div className="flex items-center gap-3 px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
-        <button
-          onClick={(e) => { e.stopPropagation(); if (canComplete) onToggleComplete(); }}
-          disabled={!canComplete}
-          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-            complete
-              ? "bg-green-500 border-green-500"
-              : "border-gray-300 dark:border-slate-500 hover:border-green-400"
-          } ${!canComplete ? "opacity-50 cursor-not-allowed" : ""}`}
-          title={canComplete ? (complete ? "Mark incomplete" : "Mark complete") : `Move to today to mark complete`}
-        >
-          {complete && (
-            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          )}
-        </button>
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, index)}
+      onDragOver={(e) => onDragOver(e, index)}
+      onDrop={(e) => onDrop(e, index)}
+      onDragEnd={onDragEnd}
+      className={`transition-opacity ${isDragging ? "opacity-30" : ""}`}
+    >
+      {isOver && !isDragging && <div className="h-0.5 bg-violet-500 rounded-full mb-1 -mt-0.5" />}
+      <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
+        <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
+          {/* Drag grip */}
+          <span className="hidden sm:flex text-gray-300 dark:text-gray-600 cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" /><circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" /><circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" /></svg>
+          </span>
 
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${meta.badge}`}>{meta.label}</span>
-        {item.meta && <span className="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 hidden sm:inline">{item.meta}</span>}
-
-        <div className="flex-1 min-w-0">
-          <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>{item.title}</h3>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs">✎</span>}
-          {onMove && (
-            <button
-              onClick={onMove}
-              title={`Move to ${moveLabel}`}
-              className="flex items-center gap-0.5 text-[10px] font-semibold px-2 py-1 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 transition-colors"
-            >
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              {moveLabel}
-            </button>
-          )}
-          <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove from this day">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+          {/* Checkbox */}
+          <button
+            onClick={(e) => { e.stopPropagation(); if (canComplete) onToggleComplete(); }}
+            disabled={!canComplete}
+            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
+              complete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"
+            } ${!canComplete ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            {complete && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
           </button>
+
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${meta.badge}`}>{meta.label}</span>
+
+          <div className="flex-1 min-w-0">
+            <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>{item.title}</h3>
+            {subs.length > 0 && (
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">{subDone}/{subs.length} sub-tasks</p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+            {/* Time estimate */}
+            {editingTime ? (
+              <input
+                autoFocus
+                type="number"
+                min="5"
+                max="480"
+                value={timeVal}
+                onChange={(e) => setTimeVal(e.target.value)}
+                onBlur={saveTime}
+                onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
+                className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+              />
+            ) : (
+              <button
+                onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
+                className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-gray-400 dark:text-gray-500 hover:text-violet-500 transition-colors"
+                title="Set time estimate"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                {item.estimatedMinutes ? fmt(item.estimatedMinutes) : "set"}
+              </button>
+            )}
+
+            {/* Play pomodoro */}
+            {dayIsToday && item.estimatedMinutes > 0 && !complete && (
+              <button
+                onClick={() => { if (!pomoActive || isThisPomo) onStartPomo(item); }}
+                disabled={pomoActive && !isThisPomo}
+                className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                  isThisPomo
+                    ? "bg-violet-500 text-white animate-pulse"
+                    : pomoActive
+                    ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
+                    : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50"
+                }`}
+                title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
+              >
+                <svg className="w-3 h-3 ml-px" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
+              </button>
+            )}
+
+            {onMove && (
+              <button
+                onClick={onMove}
+                title={`Push to ${moveLabel}`}
+                className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span className="hidden sm:inline">{moveLabel}</span>
+              </button>
+            )}
+
+            <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            </button>
+          </div>
+
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 shrink-0">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </motion.div>
         </div>
 
-        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 shrink-0">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </motion.div>
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
+              <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
+                {/* Sub-items for custom cards */}
+                {item.source === "custom" && subs.length > 0 && (
+                  <div className="mb-3">
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Sub-tasks</h4>
+                    <div className="space-y-1">
+                      {subs.map((s) => (
+                        <div key={s.uid} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${GLASS} text-sm`}>
+                          <button
+                            onClick={() => onToggleSubItem(item.uid, s.uid)}
+                            disabled={!canComplete}
+                            className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
+                              s.completed ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500"
+                            } ${!canComplete ? "opacity-50" : ""}`}
+                          >
+                            {s.completed && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                          </button>
+                          <span className={`flex-1 text-xs ${s.completed ? "line-through text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>{s.title}</span>
+                          <button onClick={() => onRemoveSubItem(item.uid, s.uid)} className="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors">
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add sub-item inline */}
+                {item.source === "custom" && canComplete && (
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      value={subInput}
+                      onChange={(e) => setSubInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && subInput.trim()) { onAddSubItem(item.uid, subInput.trim()); setSubInput(""); }
+                      }}
+                      placeholder="Add sub-task..."
+                      className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    />
+                    <button
+                      onClick={() => { if (subInput.trim()) { onAddSubItem(item.uid, subInput.trim()); setSubInput(""); } }}
+                      disabled={!subInput.trim()}
+                      className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs font-semibold disabled:opacity-40 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+
+                {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
+                {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} daysLeft={daysLeft} />}
+                {item.source === "custom" && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-indigo-400" />
+                        Notes
+                      </h4>
+                    </div>
+                    <textarea
+                      value={localNote}
+                      onChange={handleNoteInput}
+                      placeholder="What did you work on, key takeaways, blockers..."
+                      rows={4}
+                      className="w-full p-3 text-sm rounded-lg border border-violet-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-400/40 resize-y min-h-[80px] transition-all leading-relaxed shadow-sm"
+                    />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-            <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
-              {item.source === "interview" && (
-                <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />
-              )}
-
-              {item.source === "dsa" && (
-                <DsaProblemDetail
-                  problem={dsaProblem}
-                  note={note}
-                  onNoteChange={onNoteChange}
-                  isStarred={isStarred}
-                  onToggleStar={onToggleStar}
-                  daysLeft={daysLeft}
-                />
-              )}
-
-              {item.source === "custom" && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-indigo-400" />
-                      Notes
-                    </h4>
-                    <span className="text-[10px] font-normal text-gray-400 dark:text-gray-500">auto-saved · saved on this day</span>
-                  </div>
-                  <textarea
-                    value={localNote}
-                    onChange={handleNoteInput}
-                    placeholder="What did you work on, key takeaways, blockers..."
-                    rows={5}
-                    className="w-full p-4 text-sm rounded-lg border border-violet-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 dark:focus:border-violet-500 resize-y min-h-[120px] transition-all leading-relaxed shadow-sm"
-                  />
-                  <div className="flex items-center justify-end mt-2">
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
 
+// ─── Card Picker ─────────────────────────────────────────────────────────────
 function CardPicker({ dayItems, onClose, onAdd }) {
-  const [tab, setTab] = useState("interview");
+  const [tab, setTab] = useState("custom");
   const [query, setQuery] = useState("");
   const [customTitle, setCustomTitle] = useState("");
   const [customNote, setCustomNote] = useState("");
+  const [customTime, setCustomTime] = useState("30");
+  const [subItems, setSubItems] = useState([]);
+  const [subInput, setSubInput] = useState("");
 
   const addedKey = useMemo(() => {
     const s = new Set();
@@ -489,24 +537,34 @@ function CardPicker({ dayItems, onClose, onAdd }) {
 
   const interviewResults = useMemo(() => {
     if (tab !== "interview") return [];
-    return INTERVIEW_CARDS.filter(
-      (c) => !q || c.title.toLowerCase().includes(q) || c.categories.join(" ").toLowerCase().includes(q)
-    );
+    return INTERVIEW_CARDS.filter((c) => !q || c.title.toLowerCase().includes(q) || c.categories.join(" ").toLowerCase().includes(q));
   }, [tab, q]);
 
   const dsaResults = useMemo(() => {
     if (tab !== "dsa") return [];
-    return DSA_PROBLEMS.filter(
-      (p) => !q || p.title.toLowerCase().includes(q) || p.topic.toLowerCase().includes(q)
-    );
+    return DSA_PROBLEMS.filter((p) => !q || p.title.toLowerCase().includes(q) || p.topic.toLowerCase().includes(q));
   }, [tab, q]);
 
   const addCustom = () => {
     const title = customTitle.trim();
     if (!title) return;
-    onAdd({ uid: uid(), source: "custom", title, completed: false, notes: customNote.trim() });
+    onAdd({
+      uid: uid(), source: "custom", title, completed: false,
+      notes: customNote.trim(),
+      estimatedMinutes: parseInt(customTime) || 30,
+      subItems: subItems.length ? subItems : undefined,
+    });
     setCustomTitle("");
     setCustomNote("");
+    setCustomTime("30");
+    setSubItems([]);
+  };
+
+  const addSub = () => {
+    const t = subInput.trim();
+    if (!t) return;
+    setSubItems([...subItems, { uid: uid(), title: t, completed: false }]);
+    setSubInput("");
   };
 
   return (
@@ -530,17 +588,15 @@ function CardPicker({ dayItems, onClose, onAdd }) {
 
         <div className="flex gap-1 px-4 pt-3">
           {[
+            { key: "custom", label: "Custom" },
             { key: "interview", label: "Topics" },
             { key: "dsa", label: "DSA" },
-            { key: "custom", label: "Custom" },
           ].map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
-                tab === t.key
-                  ? "bg-violet-600 text-white border-violet-600"
-                  : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-600 hover:border-violet-400"
+                tab === t.key ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-600 hover:border-violet-400"
               }`}
             >
               {t.label}
@@ -554,7 +610,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={tab === "interview" ? "Search topics, AI / HLD / LLD..." : "Search problems or patterns..."}
+              placeholder={tab === "interview" ? "Search topics..." : "Search problems or patterns..."}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
             />
           </div>
@@ -569,9 +625,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                   <li key={c.id}>
                     <button
                       disabled={added}
-                      onClick={() =>
-                        onAdd({ uid: uid(), source: "interview", refId: c.id, title: c.title, meta: c.primaryCategory })
-                      }
+                      onClick={() => onAdd({ uid: uid(), source: "interview", refId: c.id, title: c.title, meta: c.primaryCategory, estimatedMinutes: 25 })}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/10"}`}
                     >
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${CATEGORY_CONFIG[c.primaryCategory].badge}`}>{c.primaryCategory}</span>
@@ -593,9 +647,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                   <li key={p.id}>
                     <button
                       disabled={added}
-                      onClick={() =>
-                        onAdd({ uid: uid(), source: "dsa", refId: p.id, title: p.title, meta: p.topic, link: p.link })
-                      }
+                      onClick={() => onAdd({ uid: uid(), source: "dsa", refId: p.id, title: p.title, meta: p.topic, link: p.link, estimatedMinutes: 25 })}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/10"}`}
                     >
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[p.difficulty]}`}>{p.difficulty}</span>
@@ -617,17 +669,54 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                   autoFocus
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }}
-                  placeholder="e.g. Pair session with friend, update notes..."
+                  onKeyDown={(e) => { if (e.key === "Enter" && customTitle.trim()) addCustom(); }}
+                  placeholder="e.g. Pair session, Sharding deep-dive, System Design..."
                   className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                 />
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Time estimate (minutes)</label>
+                  <input
+                    type="number"
+                    min="5"
+                    max="480"
+                    value={customTime}
+                    onChange={(e) => setCustomTime(e.target.value)}
+                    className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1">{fmt(parseInt(customTime) || 0)} → {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Sub-tasks (optional)</label>
+                {subItems.length > 0 && (
+                  <div className="space-y-1 mt-1.5">
+                    {subItems.map((s) => (
+                      <div key={s.uid} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-sm">
+                        <span className="flex-1 text-gray-700 dark:text-gray-300">{s.title}</span>
+                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} className="text-gray-400 hover:text-red-500">×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2 mt-1.5">
+                  <input
+                    value={subInput}
+                    onChange={(e) => setSubInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
+                    placeholder="Add a sub-task..."
+                    className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                  />
+                  <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-sm font-semibold disabled:opacity-40">+</button>
+                </div>
               </div>
               <div>
                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Notes (optional)</label>
                 <textarea
                   value={customNote}
                   onChange={(e) => setCustomNote(e.target.value)}
-                  rows={3}
+                  rows={2}
                   placeholder="Any details..."
                   className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40 resize-y"
                 />
@@ -637,7 +726,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                 disabled={!customTitle.trim()}
                 className="w-full py-2.5 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
-                Add custom card
+                Add to plan
               </button>
             </div>
           )}
@@ -646,5 +735,370 @@ function CardPicker({ dayItems, onClose, onAdd }) {
     </motion.div>
   );
 }
+
+// ─── Planning Page ───────────────────────────────────────────────────────────
+const Planning = () => {
+  const [authReady, setAuthReady] = useState(false);
+  useEffect(() => {
+    const unsub = onAuthStateChanged(getAuth(), () => setAuthReady(true));
+    return unsub;
+  }, []);
+  useEffect(() => { pruneExpiredDsaSolves(); }, []);
+
+  const today = dateKey();
+  const [current, setCurrent] = useState(today);
+  const [items, setItems] = useState(() => getDay(today));
+  const [ipCompleted, setIpCompleted] = useState(() => loadJSON(KEYS.IP_COMPLETED, {}));
+  const [dsaCompleted, setDsaCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
+  const [ipNotes, setIpNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
+  const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
+  const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [openItem, setOpenItem] = useState(null);
+  const [calOpen, setCalOpen] = useState(false);
+
+  // Pomodoro state
+  const [pomo, setPomo] = useState(null);
+  const pomoRef = useRef(null);
+  useEffect(() => { pomoRef.current = pomo; }, [pomo]);
+
+  // Drag-and-drop state
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+
+  const currentRef = useRef(current);
+  useEffect(() => { currentRef.current = current; }, [current]);
+  useEffect(() => setItems(getDay(current)), [current]);
+
+  useEffect(
+    () =>
+      subscribe((key) => {
+        if (key === KEYS.IP_COMPLETED) setIpCompleted(loadJSON(KEYS.IP_COMPLETED, {}));
+        if (key === KEYS.DSA_COMPLETED) setDsaCompleted(loadJSON(KEYS.DSA_COMPLETED, {}));
+        if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
+        if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
+        if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
+        if (key === KEYS.PLAN_DAYS) setItems(getDay(currentRef.current));
+      }),
+    []
+  );
+
+  // Pomodoro tick
+  const isRunning = pomo?.status === "running";
+  useEffect(() => {
+    if (!isRunning) return;
+    const id = setInterval(() => {
+      const p = pomoRef.current;
+      if (!p || p.status !== "running") return;
+      let next;
+      if (p.remaining <= 1) {
+        const nextIdx = p.currentIdx + 1;
+        if (nextIdx >= p.sessions.length) {
+          playChime(true);
+          next = { ...p, remaining: 0, status: "complete" };
+        } else {
+          playChime();
+          next = { ...p, currentIdx: nextIdx, remaining: p.sessions[nextIdx].duration };
+        }
+      } else {
+        next = { ...p, remaining: p.remaining - 1 };
+      }
+      pomoRef.current = next;
+      setPomo(next);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isRunning]);
+
+  const toggleStar = useCallback((id) => {
+    const next = !dsaStarred[id];
+    setDsaStarred(id, next);
+    setDsaStarredMap((m) => ({ ...m, [id]: next }));
+  }, [dsaStarred]);
+
+  const persist = useCallback((next) => {
+    setItems(next);
+    setDay(current, next);
+  }, [current]);
+
+  const resolve = useCallback((item) => {
+    if (item.source === "custom") return { complete: !!item.completed, note: item.notes || "" };
+    if (item.source === "dsa") return { complete: !!dsaCompleted[item.refId], note: dsaNotes[item.refId] || "" };
+    return { complete: !!ipCompleted[item.refId], note: ipNotes[item.refId] || "" };
+  }, [ipCompleted, dsaCompleted, ipNotes, dsaNotes]);
+
+  const addItem = useCallback((item) => {
+    if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) return;
+    persist([...items, item]);
+  }, [items, persist]);
+
+  const removeItem = useCallback((id) => persist(items.filter((i) => i.uid !== id)), [items, persist]);
+
+  const moveItem = useCallback((item, targetKey) => {
+    if (targetKey === current) return;
+    persist(items.filter((i) => i.uid !== item.uid));
+    const targetItems = getDay(targetKey);
+    const dup = item.source !== "custom" && targetItems.some((i) => i.source === item.source && i.refId === item.refId);
+    if (!dup) setDay(targetKey, [...targetItems, item]);
+  }, [items, current, persist]);
+
+  const toggleComplete = useCallback((item) => {
+    if (current !== today) return;
+    if (item.source === "custom") {
+      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: !i.completed } : i)));
+      return;
+    }
+    const next = !resolve(item).complete;
+    setSourceComplete(item.source, item.refId, next);
+    if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
+    else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
+  }, [items, current, today, persist, resolve]);
+
+  const changeNote = useCallback((item, val) => {
+    if (item.source === "custom") { persist(items.map((i) => (i.uid === item.uid ? { ...i, notes: val } : i))); return; }
+    setSourceNote(item.source, item.refId, val);
+    if (item.source === "dsa") setDsaNotes((m) => ({ ...m, [item.refId]: val }));
+    else setIpNotes((m) => ({ ...m, [item.refId]: val }));
+  }, [items, persist]);
+
+  const updateItemTime = useCallback((itemUid, minutes) => {
+    persist(items.map((i) => (i.uid === itemUid ? { ...i, estimatedMinutes: minutes } : i)));
+  }, [items, persist]);
+
+  const toggleSubItem = useCallback((itemUid, subUid) => {
+    if (current !== today) return;
+    persist(items.map((i) => {
+      if (i.uid !== itemUid) return i;
+      const subs = (i.subItems || []).map((s) => (s.uid === subUid ? { ...s, completed: !s.completed } : s));
+      const allDone = subs.length > 0 && subs.every((s) => s.completed);
+      return { ...i, subItems: subs, completed: allDone };
+    }));
+  }, [items, persist, current, today]);
+
+  const addSubItem = useCallback((itemUid, title) => {
+    persist(items.map((i) => (i.uid !== itemUid ? i : { ...i, subItems: [...(i.subItems || []), { uid: uid(), title, completed: false }] })));
+  }, [items, persist]);
+
+  const removeSubItem = useCallback((itemUid, subUid) => {
+    persist(items.map((i) => (i.uid !== itemUid ? i : { ...i, subItems: (i.subItems || []).filter((s) => s.uid !== subUid) })));
+  }, [items, persist]);
+
+  // Pomodoro controls
+  const startPomo = useCallback((item) => {
+    const mins = item.estimatedMinutes || 25;
+    const sessions = buildSessions(mins);
+    if (!sessions.length) return;
+    setPomo({
+      itemUid: item.uid,
+      itemTitle: item.title,
+      sessions,
+      currentIdx: 0,
+      remaining: sessions[0].duration,
+      status: "running",
+    });
+  }, []);
+
+  // Drag handlers
+  const handleDragStart = useCallback((e, idx) => {
+    setDragIdx(idx);
+    e.dataTransfer.effectAllowed = "move";
+  }, []);
+  const handleDragOver = useCallback((e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setOverIdx(idx);
+  }, []);
+  const handleDrop = useCallback((e, idx) => {
+    e.preventDefault();
+    if (dragIdx !== null && dragIdx !== idx) {
+      const next = [...items];
+      const [moved] = next.splice(dragIdx, 1);
+      next.splice(idx, 0, moved);
+      persist(next);
+    }
+    setDragIdx(null);
+    setOverIdx(null);
+  }, [dragIdx, items, persist]);
+  const handleDragEnd = useCallback(() => { setDragIdx(null); setOverIdx(null); }, []);
+
+  const planDays = useMemo(() => new Set(getAllDayKeys()), [items]);
+  const doneCount = items.filter((i) => resolve(i).complete).length;
+  const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
+  const isToday = current === today;
+
+  const totalPlanned = items.reduce((s, i) => s + (i.estimatedMinutes || 0), 0);
+  const totalDone = items.filter((i) => resolve(i).complete).reduce((s, i) => s + (i.estimatedMinutes || 0), 0);
+
+  if (!authReady) return null;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
+      <div className="min-h-screen flex justify-center px-2">
+        <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
+
+          {/* Header */}
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 mb-4 px-2">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Planning</h1>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{relativeLabel(current)}</p>
+                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{doneCount}/{items.length} done</p>
+                </div>
+                <div className="relative w-12 h-12">
+                  <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="4" />
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="url(#planGrad)" strokeWidth="4" strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 19}`}
+                      strokeDashoffset={`${2 * Math.PI * 19 * (1 - pct / 100)}`}
+                      style={{ transition: "stroke-dashoffset 0.5s ease" }} />
+                    <defs>
+                      <linearGradient id="planGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#8b5cf6" /><stop offset="100%" stopColor="#6366f1" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-violet-600 dark:text-violet-400">{pct}%</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Date navigation */}
+          <div className="flex items-center justify-between gap-2 mb-3 px-2 relative">
+            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">‹</button>
+
+            <div className="relative text-center">
+              <button onClick={() => setCalOpen(!calOpen)} className="group">
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{relativeLabel(current)}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                  {prettyDate(current)}
+                  <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 7h12M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
+                </p>
+              </button>
+              <AnimatePresence>
+                {calOpen && <CalendarPicker current={current} today={today} planDays={planDays} onSelect={setCurrent} onClose={() => setCalOpen(false)} />}
+              </AnimatePresence>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {!isToday && (
+                <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-semibold transition-all">Today</button>
+              )}
+              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">›</button>
+            </div>
+          </div>
+
+          {/* Total time bar */}
+          {totalPlanned > 0 && (
+            <div className="px-2 mb-3">
+              <div className={`rounded-xl ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
+                <svg className="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">{fmt(totalPlanned)} planned</span>
+                    <span className="text-gray-400 dark:text-gray-500">{fmt(totalDone)} done</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${totalPlanned ? (totalDone / totalPlanned) * 100 : 0}%` }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pomodoro timer */}
+          <div className="px-2">
+            <AnimatePresence>
+              {pomo && (
+                <PomodoroTimer
+                  pomo={pomo}
+                  onPause={() => setPomo((p) => p ? { ...p, status: "paused" } : null)}
+                  onResume={() => setPomo((p) => p ? { ...p, status: "running" } : null)}
+                  onStop={() => setPomo(null)}
+                  onDismiss={() => setPomo(null)}
+                />
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Task list */}
+          <div className="px-2 mb-4">
+            <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md p-3 sm:p-4 transition-colors">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+                  Tasks for {relativeLabel(current)}
+                </h3>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500">{doneCount}/{items.length} done</span>
+              </div>
+
+              {items.length === 0 ? (
+                <p className="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
+                  Nothing planned yet — add cards from Topics, DSA, or create a custom one.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {items.map((item, idx) => {
+                    const { complete, note } = resolve(item);
+                    return (
+                      <DayCard
+                        key={item.uid}
+                        item={item}
+                        index={idx}
+                        complete={complete}
+                        note={note}
+                        isOpen={openItem === item.uid}
+                        canComplete={isToday}
+                        isToday={isToday}
+                        onToggleOpen={() => setOpenItem((p) => (p === item.uid ? null : item.uid))}
+                        onToggleComplete={() => toggleComplete(item)}
+                        onNoteChange={(val) => changeNote(item, val)}
+                        onRemove={() => removeItem(item.uid)}
+                        isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
+                        onToggleStar={item.source === "dsa" ? toggleStar : undefined}
+                        daysLeft={item.source === "dsa" && complete ? dsaDaysLeft(item.refId) : null}
+                        moveLabel={isToday ? "Tomorrow" : "Today"}
+                        onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
+                        onTimeChange={updateItemTime}
+                        onToggleSubItem={toggleSubItem}
+                        onAddSubItem={addSubItem}
+                        onRemoveSubItem={removeSubItem}
+                        pomoActive={!!pomo && pomo.status !== "complete"}
+                        pomoItemUid={pomo?.itemUid}
+                        onStartPomo={startPomo}
+                        onDragStart={handleDragStart}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                        onDragEnd={handleDragEnd}
+                        isDragging={dragIdx === idx}
+                        isOver={overIdx === idx && dragIdx !== idx}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              <button
+                onClick={() => setPickerOpen(true)}
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                Add to {isToday ? "today's" : "this day's"} plan
+              </button>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {pickerOpen && <CardPicker dayItems={items} onClose={() => setPickerOpen(false)} onAdd={addItem} />}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 export default Planning;
