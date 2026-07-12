@@ -67,13 +67,8 @@ function itemTotalMinutes(item) {
   return item.estimatedMinutes || 0;
 }
 
-function itemDoneMinutes(item) {
-  const subs = item.subItems || [];
-  if (subs.length > 0) return subs.filter((s) => s.completed).reduce((s, sub) => s + (sub.actualMinutes ?? 0), 0);
-  return 0;
-}
-
-function pomoElapsedWorkMinutes(p) {
+// Total work seconds elapsed so far in a running/paused/complete pomo session.
+function pomoElapsedWorkSeconds(p) {
   if (!p) return 0;
   let sec = 0;
   for (let i = 0; i < p.currentIdx; i++) {
@@ -81,7 +76,48 @@ function pomoElapsedWorkMinutes(p) {
   }
   const cur = p.sessions[p.currentIdx];
   if (cur?.type === "work") sec += cur.duration - p.remaining;
-  return Math.max(1, Math.ceil(sec / 60));
+  return sec;
+}
+
+// Live work seconds not yet committed to the target's stored spentSeconds.
+function liveExtraSec(pomo, itemUid, subUid) {
+  if (!pomo || pomo.itemUid !== itemUid) return 0;
+  if ((pomo.subItemUid || null) !== (subUid || null)) return 0;
+  return Math.max(0, pomoElapsedWorkSeconds(pomo) - (pomo.flushedSec || 0));
+}
+
+// Stored + live spent seconds for a sub-task.
+function subSpentSec(pomo, itemUid, sub) {
+  return (sub.spentSeconds || 0) + liveExtraSec(pomo, itemUid, sub.uid);
+}
+
+// Stored + live spent seconds for a task (sum of sub-tasks if it has any).
+function itemSpentSec(pomo, item) {
+  const subs = item.subItems || [];
+  if (subs.length > 0) return subs.reduce((a, s) => a + subSpentSec(pomo, item.uid, s), 0);
+  return (item.spentSeconds || 0) + liveExtraSec(pomo, item.uid, null);
+}
+
+// Move a pomo's uncommitted live seconds into its target's stored spentSeconds.
+function flushPomoTime(items, p) {
+  if (!p) return { items, pomo: p };
+  const elapsed = pomoElapsedWorkSeconds(p);
+  const delta = elapsed - (p.flushedSec || 0);
+  if (delta <= 0) return { items, pomo: p };
+  const nextItems = items.map((i) => {
+    if (i.uid !== p.itemUid) return i;
+    if (p.subItemUid) {
+      return { ...i, subItems: (i.subItems || []).map((s) => s.uid === p.subItemUid ? { ...s, spentSeconds: (s.spentSeconds || 0) + delta } : s) };
+    }
+    return { ...i, spentSeconds: (i.spentSeconds || 0) + delta };
+  });
+  return { items: nextItems, pomo: { ...p, flushedSec: elapsed } };
+}
+
+function fmtSpent(sec) {
+  if (!sec || sec < 1) return "";
+  if (sec < 60) return "<1m";
+  return fmt(Math.round(sec / 60));
 }
 
 function catchUpPomo(saved) {
@@ -417,7 +453,7 @@ function DayCard({
   onToggleOpen, onToggleComplete, onNoteChange, onRemove, onMove, moveLabel,
   isStarred, onToggleStar, daysLeft,
   onTimeChange, onToggleSubItem, onAddSubItem, onRemoveSubItem, onSubItemTimeChange,
-  pomoActive, pomoItemUid, onStartPomo,
+  pomoActive, pomoItemUid, pomo, onStartPomo,
   onDragStart, onDragOver, onDrop, onDragEnd, isDragging, isOver,
 }) {
   const meta = SOURCE_META[item.source];
@@ -462,6 +498,7 @@ function DayCard({
   const hasSubs = subs.length > 0;
   const parentAutoComplete = hasSubs;
   const totalMin = itemTotalMinutes(item);
+  const spentSec = itemSpentSec(pomo, item);
 
   const isThisPomo = pomoItemUid === item.uid;
 
@@ -497,11 +534,19 @@ function DayCard({
           <div className="flex-1 min-w-0">
             <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>{item.title}</h3>
             {hasSubs && (
-              <p className="text-[10px] text-gray-400 dark:text-gray-500">{subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                {subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}
+                {spentSec > 0 && <span className="text-emerald-500 dark:text-emerald-400 font-semibold"> · {fmtSpent(spentSec)} spent</span>}
+              </p>
             )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+            {!hasSubs && spentSec > 0 && (
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title="Time spent focusing">
+                {fmtSpent(spentSec)}
+              </span>
+            )}
             {!hasSubs && (
               <>
                 {editingTime ? (
@@ -588,6 +633,11 @@ function DayCard({
                           <span className={`flex-1 text-xs ${s.completed ? "line-through text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>{s.title}</span>
 
                           <div className="flex items-center gap-1.5 shrink-0">
+                            {subSpentSec(pomo, item.uid, s) > 0 && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title="Time spent focusing">
+                                {fmtSpent(subSpentSec(pomo, item.uid, s))}
+                              </span>
+                            )}
                             {editingSubTime === s.uid ? (
                               <input
                                 autoFocus
@@ -956,6 +1006,7 @@ const Planning = () => {
 
   const [pomo, setPomo] = useState(() => catchUpPomo(loadJSON(KEYS.POMO_STATE, null)));
   const pomoRef = useRef(null);
+  const flushRef = useRef(null);
   useEffect(() => { pomoRef.current = pomo; }, [pomo]);
   useEffect(() => {
     saveJSON(KEYS.POMO_STATE, pomo ? { ...pomo, updatedAt: Date.now() } : null);
@@ -966,6 +1017,8 @@ const Planning = () => {
 
   const currentRef = useRef(current);
   useEffect(() => { currentRef.current = current; }, [current]);
+  const itemsRef = useRef(items);
+  useEffect(() => { itemsRef.current = items; }, [items]);
   useEffect(() => setItems(getDay(current)), [current]);
 
   useEffect(
@@ -1002,6 +1055,9 @@ const Planning = () => {
         next = { ...p, remaining: p.remaining - 1 };
       }
       pomoRef.current = next;
+      if (next.status === "complete" && flushRef.current) {
+        next = flushRef.current() || next;
+      }
       setPomo(next);
     }, 1000);
     return () => clearInterval(id);
@@ -1017,6 +1073,19 @@ const Planning = () => {
     setItems(next);
     setDay(current, next);
   }, [current]);
+
+  // Commit the running pomo's live seconds into the target's stored spentSeconds.
+  const flushPomo = useCallback(() => {
+    const p = pomoRef.current;
+    if (!p) return null;
+    const { items: nextItems, pomo: np } = flushPomoTime(itemsRef.current, p);
+    if (np !== p) {
+      persist(nextItems);
+      pomoRef.current = np;
+    }
+    return np;
+  }, [persist]);
+  useEffect(() => { flushRef.current = flushPomo; }, [flushPomo]);
 
   const resolve = useCallback((item) => {
     if (item.source === "custom") return { complete: !!item.completed, note: item.notes || "" };
@@ -1042,24 +1111,25 @@ const Planning = () => {
   const toggleComplete = useCallback((item) => {
     if (current !== today) return;
     const hasSubs = (item.subItems || []).length > 0;
-    const pomoForThis = pomo && pomo.itemUid === item.uid;
+    if (item.source === "custom" && hasSubs) return; // parent auto-completes with sub-tasks
+
+    // If a timer is running for this exact task, bank its elapsed time first.
+    const pomoForThis = pomo && pomo.itemUid === item.uid && !pomo.subItemUid;
+    let base = items;
+    if (pomoForThis) {
+      base = flushPomoTime(items, pomo).items;
+      setPomo(null);
+    }
+
     if (item.source === "custom") {
-      if (hasSubs) return;
       const next = !item.completed;
-      const actual = next && pomoForThis && !pomo.subItemUid ? pomoElapsedWorkMinutes(pomo) : undefined;
-      if (next && pomoForThis) setPomo(null);
-      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: next, actualMinutes: next ? (actual ?? i.actualMinutes) : undefined } : i)));
+      persist(base.map((i) => (i.uid === item.uid ? { ...i, completed: next } : i)));
       if (next) playSound("taskDone");
       return;
     }
+
     const next = !resolve(item).complete;
-    if (next && pomoForThis) {
-      const actual = pomoElapsedWorkMinutes(pomo);
-      setPomo(null);
-      persist(items.map((i) => (i.uid === item.uid ? { ...i, actualMinutes: actual } : i)));
-    } else if (!next) {
-      persist(items.map((i) => (i.uid === item.uid ? { ...i, actualMinutes: undefined } : i)));
-    }
+    if (base !== items) persist(base); // save the banked spent time for DSA/interview items
     setSourceComplete(item.source, item.refId, next);
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
@@ -1086,22 +1156,22 @@ const Planning = () => {
 
   const toggleSubItem = useCallback((itemUid, subUid) => {
     if (current !== today) return;
+    // If a timer is running for this exact sub-task, bank its elapsed time first.
     const pomoForSub = pomo && pomo.itemUid === itemUid && pomo.subItemUid === subUid;
-    persist(items.map((i) => {
+    let base = items;
+    if (pomoForSub) {
+      base = flushPomoTime(items, pomo).items;
+      setPomo(null);
+    }
+    persist(base.map((i) => {
       if (i.uid !== itemUid) return i;
-      const subs = (i.subItems || []).map((s) => {
-        if (s.uid !== subUid) return s;
-        const nowDone = !s.completed;
-        const actual = nowDone && pomoForSub ? pomoElapsedWorkMinutes(pomo) : undefined;
-        return { ...s, completed: nowDone, actualMinutes: nowDone ? (actual ?? s.actualMinutes) : undefined };
-      });
+      const subs = (i.subItems || []).map((s) => (s.uid === subUid ? { ...s, completed: !s.completed } : s));
       const toggled = subs.find((s) => s.uid === subUid);
       if (toggled?.completed) playSound("taskDone");
       const allDone = subs.length > 0 && subs.every((s) => s.completed);
       if (allDone && !i.completed) playSound("timerDone");
       return { ...i, subItems: subs, completed: allDone };
     }));
-    if (pomoForSub) setPomo(null);
   }, [items, persist, current, today, pomo]);
 
   const addSubItem = useCallback((itemUid, title, estimatedMinutes = 25) => {
@@ -1135,6 +1205,7 @@ const Planning = () => {
       currentIdx: 0,
       remaining: sessions[0].duration,
       status: "running",
+      flushedSec: 0,
     });
   }, []);
 
@@ -1177,16 +1248,7 @@ const Planning = () => {
   const isToday = current === today;
 
   const totalPlanned = items.reduce((s, i) => s + itemTotalMinutes(i), 0);
-  const totalDone = items.reduce((s, i) => {
-    if (resolve(i).complete) {
-      const subs = i.subItems || [];
-      if (subs.length > 0) return s + subs.reduce((a, sub) => a + (sub.actualMinutes ?? 0), 0);
-      return s + (i.actualMinutes ?? 0);
-    }
-    let done = itemDoneMinutes(i);
-    if (pomo && pomo.itemUid === i.uid) done += pomoElapsedWorkMinutes(pomo);
-    return s + done;
-  }, 0);
+  const totalDone = Math.round(items.reduce((s, i) => s + itemSpentSec(pomo, i), 0) / 60);
 
   if (!authReady) return null;
 
@@ -1273,10 +1335,10 @@ const Planning = () => {
               {pomo && (
                 <PomodoroTimer
                   pomo={pomo}
-                  onPause={() => setPomo((p) => p ? { ...p, status: "paused" } : null)}
+                  onPause={() => { const np = flushPomo(); setPomo(np ? { ...np, status: "paused" } : null); }}
                   onResume={() => setPomo((p) => p ? { ...p, status: "running" } : null)}
-                  onStop={() => setPomo(null)}
-                  onDismiss={() => setPomo(null)}
+                  onStop={() => { flushPomo(); setPomo(null); }}
+                  onDismiss={() => { flushPomo(); setPomo(null); }}
                   onExtend={extendPomo}
                 />
               )}
@@ -1326,6 +1388,7 @@ const Planning = () => {
                         onRemoveSubItem={removeSubItem}
                         pomoActive={!!pomo && pomo.status !== "complete"}
                         pomoItemUid={pomo?.itemUid}
+                        pomo={pomo}
                         onStartPomo={startPomo}
                         onDragStart={handleDragStart}
                         onDragOver={handleDragOver}
