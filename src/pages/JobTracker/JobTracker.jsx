@@ -11,6 +11,7 @@ import {
   uKeyOf,
   DISMISS_TTL_DAYS,
   migrateDismissals,
+  isOpeningEligible,
 } from "./shared";
 import PipelineTab from "./PipelineTab";
 import OpeningsTab from "./OpeningsTab";
@@ -252,7 +253,7 @@ export default function JobTracker() {
     };
   }, [allCompanies, state.companies]);
 
-  const activeOpeningsCount = radarVisible?.openings.filter((o) => !o.tracked && !state.dismissedOpenings[o.uKey]).length || 0;
+  const activeOpeningsCount = radarVisible?.openings.filter((o) => !o.tracked && !state.dismissedOpenings[o.uKey] && isOpeningEligible(o)).length || 0;
 
   const statTiles = [
     { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },

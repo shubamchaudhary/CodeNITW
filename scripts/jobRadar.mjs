@@ -109,6 +109,30 @@ function clip(s, max = 220) {
   return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
 }
 
+// Openings requiring more than this many years of experience are dropped
+// (profile is ~2 YoE; the user wants nothing above 4).
+const MAX_YOE = 4;
+
+// Best-effort minimum-years-of-experience parse from a full JD. Scans for
+// "N years", "N+ years", "N-M years", "minimum N years" etc., but only counts a
+// number when "experience" sits nearby, so unrelated counts ("team of 10",
+// "5 services") don't leak in. Returns the smallest required floor, or undefined
+// when the JD says nothing about experience.
+function parseMinYoe(text) {
+  if (!text) return undefined;
+  const t = text.toLowerCase();
+  let min;
+  const rx = /(\d{1,2})\s*(?:\+|-|–|—|to)?\s*(?:\d{1,2})?\s*\+?\s*years?/g;
+  let m;
+  while ((m = rx.exec(t))) {
+    const around = t.slice(Math.max(0, m.index - 30), m.index + m[0].length + 40);
+    if (!/exp(?:erience)?\b/.test(around)) continue;
+    const low = parseInt(m[1], 10);
+    if (!isNaN(low) && low >= 0 && low <= 30) min = min === undefined ? low : Math.min(min, low);
+  }
+  return min;
+}
+
 // ── Manual overrides for big custom boards + probe false-positive fixes ──────
 // The probe can't detect custom career sites (FAANG etc.) and providers that
 // don't expose a board name can hit an unrelated org with the same slug
@@ -932,6 +956,8 @@ async function main() {
       // Score on the FULL job description, then store only the score + matched
       // skills + a short snippet (the full JD is never committed).
       const fullDesc = stripHtml(j.desc);
+      const minYoe = parseMinYoe(fullDesc);
+      if (minYoe !== undefined && minYoe > MAX_YOE) continue; // too senior for this profile
       const { score, matched } = scorer.score({ title: j.title, desc: fullDesc, location: j.location });
       openings.push({
         key,
@@ -944,6 +970,7 @@ async function main() {
         desc: clip(fullDesc),
         matchScore: score,
         matched,
+        ...(minYoe !== undefined ? { minYoe } : {}),
         firstSeen: seen[key],
       });
     }
@@ -974,6 +1001,8 @@ async function main() {
       // the scorer's title fallback gives a low-but-real number so the opening
       // still ranks and shows a fit badge.
       const fullDesc = stripHtml(j.desc);
+      const minYoe = parseMinYoe(fullDesc);
+      if (minYoe !== undefined && minYoe > MAX_YOE) continue; // too senior for this profile
       const { score, matched } = scorer.score({ title: j.title, desc: fullDesc, location: j.location });
       openings.push({
         key,
@@ -986,6 +1015,7 @@ async function main() {
         desc: clip(fullDesc),
         matchScore: score,
         matched,
+        ...(minYoe !== undefined ? { minYoe } : {}),
         firstSeen: seen[key],
       });
       linkedinCount += 1;
