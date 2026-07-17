@@ -1,5 +1,6 @@
 import React from "react";
-import { HiOutlineExternalLink, HiCheck } from "react-icons/hi";
+import { toast } from "react-toastify";
+import { HiOutlineExternalLink, HiCheck, HiX } from "react-icons/hi";
 import { GLASS_PANEL } from "../../components/glass";
 import { APPLIED_SET, StatusSelect, daysSince } from "./shared";
 
@@ -16,8 +17,33 @@ function makeToggle(entryOf, patchCompany) {
   };
 }
 
+// Remove a single opening from a company's pipeline, with an Undo toast that
+// restores the exact prior link list (position preserved).
+function makeRemove(entryOf, patchCompany) {
+  return (companyId, linkId) => {
+    const entry = entryOf(companyId);
+    const prevLinks = entry.links || [];
+    const removed = prevLinks.find((l) => l.id === linkId);
+    patchCompany(companyId, { links: prevLinks.filter((l) => l.id !== linkId) });
+    toast.info(
+      ({ closeToast }) => (
+        <span className="text-sm">
+          Removed <span className="font-semibold">{(removed?.label || "opening").slice(0, 40)}</span>{" "}
+          <button
+            onClick={() => { patchCompany(companyId, { links: prevLinks }); closeToast(); }}
+            className="underline font-semibold text-indigo-600 dark:text-indigo-300"
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { autoClose: 4000 }
+    );
+  };
+}
+
 // One opening row with its own Applied button on the right.
-function OpeningRow({ link, onToggle }) {
+function OpeningRow({ link, onToggle, onRemove }) {
   return (
     <li className="flex items-center gap-2 text-sm rounded-lg px-1.5 py-1 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors">
       <span className={`shrink-0 ${link.applied ? "text-emerald-500" : "text-amber-500"}`}>
@@ -37,6 +63,14 @@ function OpeningRow({ link, onToggle }) {
         {link.label}
       </a>
       <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
+      {/* Remove sits right next to the link — minimal cursor travel */}
+      <button
+        onClick={onRemove}
+        className="text-gray-400 hover:text-red-500 text-xs px-0.5 shrink-0"
+        title="Remove from pipeline"
+      >
+        <HiX />
+      </button>
       <button
         onClick={() => onToggle(!link.applied)}
         className={`ml-auto shrink-0 inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-colors ${
@@ -55,6 +89,7 @@ function OpeningRow({ link, onToggle }) {
 
 export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCompany }) {
   const toggleLink = makeToggle(entryOf, patchCompany);
+  const removeLink = makeRemove(entryOf, patchCompany);
 
   return (
     <div className="grid lg:grid-cols-2 gap-6 items-start">
@@ -125,7 +160,7 @@ export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCo
                 {links.length > 0 ? (
                   <ul className="space-y-0.5 mt-1">
                     {links.map((l) => (
-                      <OpeningRow key={l.id} link={l} onToggle={(v) => toggleLink(c.id, l.id, v)} />
+                      <OpeningRow key={l.id} link={l} onToggle={(v) => toggleLink(c.id, l.id, v)} onRemove={() => removeLink(c.id, l.id)} />
                     ))}
                   </ul>
                 ) : (
@@ -209,7 +244,7 @@ export default function PipelineTab({ toApplyList, appliedList, entryOf, patchCo
                 {links.length > 0 && (
                   <ul className="space-y-0.5 mt-1">
                     {links.map((l) => (
-                      <OpeningRow key={l.id} link={l} onToggle={(v) => toggleLink(c.id, l.id, v)} />
+                      <OpeningRow key={l.id} link={l} onToggle={(v) => toggleLink(c.id, l.id, v)} onRemove={() => removeLink(c.id, l.id)} />
                     ))}
                   </ul>
                 )}
