@@ -110,8 +110,8 @@ function clip(s, max = 220) {
 }
 
 // Openings requiring more than this many years of experience are dropped
-// (profile is ~2 YoE; the user wants nothing above 4).
-const MAX_YOE = 4;
+// (profile is ~2 YoE; 0-2 preferred, 3 max).
+const MAX_YOE = 3;
 
 // Best-effort minimum-years-of-experience parse from a full JD. Scans for
 // "N years", "N+ years", "N-M years", "minimum N years" etc., but only counts a

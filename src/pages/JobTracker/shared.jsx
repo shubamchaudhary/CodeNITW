@@ -43,13 +43,13 @@ export const RADAR_NEW_DAYS = 3;
 // Only surface openings you're a real fit for: at least this résumé-match %…
 export const MIN_MATCH_SCORE = 40;
 // …and no more than this many years of experience required.
-export const MAX_YOE = 4;
+export const MAX_YOE = 3;
 
-// Title words that imply well over 4 YoE, used when the JD didn't state a
-// number (the radar drops JD-stated >4 at scan time; this catches the rest).
+// Title words that imply well over 3 YoE, used when the JD didn't state a
+// number (the radar drops JD-stated >3 at scan time; this catches the rest).
 const SENIOR_TITLE_RX = /\b(senior|sr\.?|staff|principal|lead|architect|distinguished|fellow|l[5-9])\b/i;
 
-// True when an opening fits the ≤4-YoE bar. A JD-parsed `minYoe` is
+// True when an opening fits the ≤3-YoE bar. A JD-parsed `minYoe` is
 // authoritative; otherwise fall back to the title seniority signal.
 export function withinYoe(o) {
   if (typeof o.minYoe === "number") return o.minYoe <= MAX_YOE;

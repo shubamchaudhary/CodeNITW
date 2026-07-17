@@ -230,26 +230,27 @@ export default function JobTracker() {
   const { toApplyList, appliedList, stats } = useMemo(() => {
     const toApply = [];
     const applied = [];
-    let appliedCount = 0;
     let inProcess = 0;
     let offers = 0;
     let pendingOpenings = 0;
+    let appliedOpenings = 0;
     allCompanies.forEach((c) => {
       const e = state.companies[c.id] || {};
       const status = e.status || "none";
       const links = e.links || [];
       const pending = links.filter((l) => !l.applied).length;
+      const done = links.filter((l) => l.applied).length;
       pendingOpenings += pending;
+      appliedOpenings += done;
       if (status === "toApply" || (pending > 0 && !APPLIED_SET.has(status))) toApply.push(c);
       if (APPLIED_SET.has(status) && status !== "rejected") applied.push(c);
-      if (APPLIED_SET.has(status)) appliedCount += 1;
       if (status === "oa" || status === "interview") inProcess += 1;
       if (status === "offer") offers += 1;
     });
     return {
       toApplyList: toApply,
       appliedList: applied,
-      stats: { total: allCompanies.length, toApply: toApply.length, applied: appliedCount, inProcess, offers, pendingOpenings },
+      stats: { total: allCompanies.length, toApply: pendingOpenings, applied: appliedOpenings, inProcess, offers },
     };
   }, [allCompanies, state.companies]);
 
@@ -258,7 +259,6 @@ export default function JobTracker() {
   const statTiles = [
     { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },
     { label: "To Apply", value: stats.toApply, cls: "text-amber-600 dark:text-amber-300" },
-    { label: "Pending", value: stats.pendingOpenings, cls: "text-orange-600 dark:text-orange-300" },
     { label: "Applied", value: stats.applied, cls: "text-blue-600 dark:text-blue-300" },
     { label: "In Process", value: stats.inProcess, cls: "text-violet-600 dark:text-violet-300" },
     { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-300" },
@@ -273,7 +273,7 @@ export default function JobTracker() {
         </h1>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-5">
           {statTiles.map((s) => (
             <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2.5 text-center`}>
               <div className={`text-2xl font-extrabold ${s.cls}`}>{s.value}</div>
