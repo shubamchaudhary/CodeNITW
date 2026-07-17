@@ -1,11 +1,11 @@
 {
  "summary": {
-  "updatedAt": "2026-07-17T04:54:37.747Z",
-  "boards": 221,
-  "boardsFailed": 7,
-  "liveRelevantOpenings": 530,
-  "newThisRun": 99,
-  "linkedinOpenings": 10,
+  "updatedAt": "2026-07-17T08:45:34.748Z",
+  "boards": 220,
+  "boardsFailed": 8,
+  "liveRelevantOpenings": 532,
+  "newThisRun": 18,
+  "linkedinOpenings": 11,
   "coveredCompanyIds": [
    "abb",
    "acceldata",
@@ -39,7 +39,6 @@
    "calendly",
    "caterpillar",
    "chroma",
-   "cisco",
    "citi",
    "clear-cleartax",
    "clerk",
@@ -132,7 +131,6 @@
    "navi",
    "neon",
    "netlify",
-   "netomi",
    "new-relic",
    "niantic",
    "novartis",
@@ -224,6 +222,657 @@
   ]
  },
  "openings": [
+  {
+   "key": "6128342705ee3015",
+   "companyId": "airbus",
+   "company": "Airbus",
+   "ats": "workday",
+   "title": "Software Developer - Full stack (Java & React/Angular) - Digital for Mass Properties & Structure testing",
+   "location": "Bangalore Area",
+   "url": "https://ag.wd3.myworkdayjobs.com/Airbus/job/Bangalore-Area/Software-Developer---Full-stack--Java---React-Angular----Digital-for-Mass-Properties---Structure-testing_JR10429291",
+   "desc": "Job Description: Job Description Date : 10th July, 2025 Role : Full Stack Software Developer (Java, React/Angular, AWS) Number of positions : 1 Description : Airbus is looking for a Junior Software developer to join in B…",
+   "matchScore": 53,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "SQL",
+     "type": "have"
+    },
+    {
+     "skill": "PostgreSQL",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "28603aa4f7b91156",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Software Engineer (C++, CAD/CAM)",
+   "location": "Pune, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Pune-IND/Software-Engineer--C----CAD-CAM-_26WD99923-1",
+   "desc": "Job Requisition ID # 26WD99923 Position Overview As a global leader in 3D design, engineering, and entertainment software, Autodesk empowers innovators to imagine, design, and create a better world. Through an industry-l…",
+   "matchScore": 92,
+   "matched": [
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Data Structures",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "586affd3f811e40b",
+   "companyId": "autodesk",
+   "company": "Autodesk",
+   "ats": "workday",
+   "title": "Senior Full Stack Engineer (React, Node/Java)",
+   "location": "Bengaluru, IND",
+   "url": "https://autodesk.wd1.myworkdayjobs.com/Ext/job/Bengaluru-IND/Senior-Full-Stack-Engineer--React--Node-Java-_26WD99667-1",
+   "desc": "Job Requisition ID # 26WD99667 Position Overview We are seeking a Senior Full Stack Software Engineer with strong expertise in React for front-end development and Node.js or Java for back-end development to design, build…",
+   "matchScore": 59,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "GraphQL",
+     "type": "want"
+    },
+    {
+     "skill": "Docker",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "0ea469035a70f5cf",
+   "companyId": "chargebee",
+   "company": "Chargebee",
+   "ats": "linkedin",
+   "title": "Senior Software Engineer",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/senior-software-engineer-at-chargebee-4439149005",
+   "desc": "About Chargebee Chargebee is a subscription billing and revenue management platform powering some of the fastest-growing brands around the world today, including Calendly, Hopin, Pret-a-Manger, Freshworks, Okta, Study.co…",
+   "matchScore": 57,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    },
+    {
+     "skill": "REST",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "926d47ca26930453",
+   "companyId": "crowdstrike",
+   "company": "CrowdStrike",
+   "ats": "workday",
+   "title": "Sr. AI Engineer - 2.00 pm to 11.00 pm IST (Remote, IND)",
+   "location": "India - Remote",
+   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/India---Remote/AI-Engineer-Remote--IND-_R29106",
+   "desc": "As a global leader in cybersecurity, CrowdStrike protects the people, processes and technologies that drive modern organizations. Since 2011, our mission hasn’t changed — we’re here to stop breaches, and we’ve redefined…",
+   "matchScore": 82,
+   "matched": [
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "LangChain",
+     "type": "have"
+    },
+    {
+     "skill": "RAG",
+     "type": "have"
+    },
+    {
+     "skill": "Docker",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "2f3b239cbe849271",
+   "companyId": "expedia",
+   "company": "Expedia",
+   "ats": "workday",
+   "title": "Software Development Engineer I",
+   "location": "India - Gurgaon",
+   "url": "https://expedia.wd108.myworkdayjobs.com/search/job/India---Gurgaon/Software-Development-Engineer-I_R-108029-1",
+   "desc": "At Expedia Group, we help travelers explore the world, one journey at a time. As a global travel company powered by passionate people, trusted partnerships, and leading technology, we connect travelers, partners, and adv…",
+   "matchScore": 57,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Data Structures",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "25e375d616917129",
+   "companyId": "google",
+   "company": "Google",
+   "ats": "google",
+   "title": "Senior Software Engineer Full Stack Google Cloud",
+   "location": "India",
+   "url": "https://www.google.com/about/careers/applications/jobs/results/118302093231432390-senior-software-engineer-full-stack-google-cloud",
+   "desc": "",
+   "matchScore": 52,
+   "matched": [
+    {
+     "skill": "GCP",
+     "type": "want"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "3b82c55f1680d45c",
+   "companyId": "jp-morgan-chase",
+   "company": "JP Morgan Chase",
+   "ats": "oraclecloud",
+   "title": "Software Engineer III - Back-end Engineer - Chase UK",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210714912",
+   "desc": "We know that people want great value combined with an excellent experience from a bank they can trust, so we launched our digital bank.",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "5f7ac5f2af7a1766",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer-1",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer-1_R-281676-1",
+   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
+   "matchScore": 97,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "Kafka",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "SQL",
+     "type": "have"
+    },
+    {
+     "skill": "Docker",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "edf5b0d482ad53eb",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer (Mainframe Developer)",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer--Mainframe-Developer-_R-262303",
+   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
+   "matchScore": 100,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "257a124c921c878a",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer-Database Engineer",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer-Database-Engineer_R-281679",
+   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
+   "matchScore": 94,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "SQL",
+     "type": "have"
+    },
+    {
+     "skill": "PostgreSQL",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "9a48ecf9f421e6cb",
+   "companyId": "new-relic",
+   "company": "New Relic",
+   "ats": "greenhouse",
+   "title": "Software Engineer 2",
+   "location": "Hyderabad, India",
+   "url": "https://job-boards.greenhouse.io/newrelic/jobs/5235277008",
+   "desc": "<div class=\"content-intro\"><p>We are a global team of innovators and pioneers dedicated to shaping the future of observability. At New Relic, we build an intelligent platform that empowers companies to thrive in an AI-fi…",
+   "matchScore": 74,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GCP",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "GraphQL",
+     "type": "want"
+    }
+   ],
+   "minYoe": 4,
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "c203595b9648c0e3",
+   "companyId": "pearson",
+   "company": "Pearson",
+   "ats": "linkedin",
+   "title": "Software Engineer II",
+   "location": "Bengaluru East, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-ii-at-pearson-4440627235",
+   "desc": "Role: Software Engineer II Location: Chennai/Bangalore (Hybrid - 3 days/week in Office) Pearson Marketing Cloud is one of Pearson’s global technology platforms, globally distributed instances, multi-tenant, driving the d…",
+   "matchScore": 60,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "REST",
+     "type": "have"
+    }
+   ],
+   "minYoe": 3,
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "0bbde2d7502dfbe5",
+   "companyId": "rippling",
+   "company": "Rippling",
+   "ats": "linkedin",
+   "title": "Software Engineer II",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-ii-at-rippling-4432036785",
+   "desc": "About Rippling Rippling gives businesses one place to run HR, IT, and Finance. It brings together all of the workforce systems that are normally scattered across a company, like payroll, expenses, benefits, and computers…",
+   "matchScore": 70,
+   "matched": [
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "PostgreSQL",
+     "type": "have"
+    },
+    {
+     "skill": "MongoDB",
+     "type": "have"
+    }
+   ],
+   "minYoe": 3,
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "36dde7e577227cac",
+   "companyId": "splunk-cisco",
+   "company": "Splunk (Cisco)",
+   "ats": "workday",
+   "title": "Software Engineer (AI)",
+   "location": "Bangalore, India",
+   "url": "https://cisco.wd5.myworkdayjobs.com/Cisco_Careers/job/Bangalore-India/Software-Engineer--AI-_2017407-1",
+   "desc": "Meet the Team Our vision within Cisco IT is to be admired as the world’s best IT organization! Lifec ycle Innovation & Optimization (LIO) is guided by one critical mission: to operate as and deliver solutions that drive…",
+   "matchScore": 94,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "GenAI",
+     "type": "have"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "Snowflake",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "d8e2a9ccb6aa2e17",
+   "companyId": "splunk-cisco",
+   "company": "Splunk (Cisco)",
+   "ats": "workday",
+   "title": "Software Engineer - Backend | Ruby on Rails and Cloud Networking | 6-10 years",
+   "location": "Bangalore, India",
+   "url": "https://cisco.wd5.myworkdayjobs.com/Cisco_Careers/job/Bangalore-India/Software-Engineer---Backend---Ruby-on-Rails-and-Cloud-Networking---6-10-years_2017615-1",
+   "desc": "Meet the team Cisco Networking is dedicated to delivering industry-leading, cloud-managed solutions that power global connectivity. Our team is responsible for the backend services, scalable APIs, and operational systems…",
+   "matchScore": 82,
+   "matched": [
+    {
+     "skill": "Backend",
+     "type": "have"
+    },
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "gRPC",
+     "type": "want"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "95d6937cd804b4a1",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "linkedin",
+   "title": "Sr. Software Engineer (Python, Agentic AI, JavaScript - 3-5 years' experience)",
+   "location": "Bengaluru East, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/sr-software-engineer-python-agentic-ai-javascript-3-5-years-experience-at-visa-4441219565",
+   "desc": "About Us Visa is a world leader in payments technology, facilitating transactions between consumers, merchants, financial institutions and government entities across more than 200 countries and territories, dedicated to…",
+   "matchScore": 58,
+   "matched": [
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "GenAI",
+     "type": "have"
+    },
+    {
+     "skill": "Docker",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
+  {
+   "key": "972be1f329adb71e",
+   "companyId": "zendesk",
+   "company": "Zendesk",
+   "ats": "workday",
+   "title": "Software Engineer II",
+   "location": "Pune, India",
+   "url": "https://zendesk.wd1.myworkdayjobs.com/zendesk/job/Pune-India/Software-Engineer-II_R35112",
+   "desc": "Job Description Software Engineer - Full stack What you will do: The Zendesk Product Led Growth Team is looking for a Software Engineer with working knowledge of frontend languages like JavaScript and TypeScript and past…",
+   "matchScore": 20,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "REST",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-17T08:45:34.748Z"
+  },
   {
    "key": "45c8cafdb2b74440",
    "companyId": "abb",
@@ -808,13 +1457,13 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "e4aae26ac7404e6c",
+   "key": "94db06a16064beb1",
    "companyId": "amazon",
    "company": "Amazon",
    "ats": "amazon",
    "title": "Software Development Engineer - II",
    "location": "Hyderabad, Telangana, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10474683/software-development-engineer-ii",
+   "url": "https://www.amazon.jobs/en/jobs/10474684/software-development-engineer-ii",
    "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
    "matchScore": 33,
    "matched": [
@@ -827,13 +1476,13 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "94db06a16064beb1",
+   "key": "e4aae26ac7404e6c",
    "companyId": "amazon",
    "company": "Amazon",
    "ats": "amazon",
    "title": "Software Development Engineer - II",
    "location": "Hyderabad, Telangana, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10474684/software-development-engineer-ii",
+   "url": "https://www.amazon.jobs/en/jobs/10474683/software-development-engineer-ii",
    "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
    "matchScore": 33,
    "matched": [
@@ -881,48 +1530,6 @@
     }
    ],
    "minYoe": 2,
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "4029e6d6df302ba7",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer II, Seller Flex",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10462474/software-development-engineer-ii-seller-flex",
-   "desc": "Are you passionate about solving complex fulfillment challenges at global scale? Join Seller Flex and help transform how third-party sellers fulfill Amazon orders worldwide. You'll architect systems that power warehouses…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "d1b4c78a10a46faa",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Alexa Customers & Technology",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10405518/software-development-engineer-alexa-customers-technology",
-   "desc": "Join the team that brought you the Echo Show, a touch-screen enabled Alexa device that supports video calling, music, weather, and more! Our team also works on other high-profile consumer electronics products including F…",
-   "matchScore": 86,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "GenAI",
-     "type": "have"
-    }
-   ],
-   "minYoe": 4,
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
@@ -1218,57 +1825,13 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "1ad9f33993aa1e61",
+   "key": "6bf5f5c7978b621a",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Senior Software Engineer - Cloud Partner Integrations",
-   "location": "United States (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6115277004",
-   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
-   "matchScore": 41,
-   "matched": [
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Backend",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "98bf112cedcc1c21",
-   "companyId": "clickhouse",
-   "company": "ClickHouse",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer - Cloud Partner Integrations",
-   "location": "Spain (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6115280004",
-   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
-   "matchScore": 41,
-   "matched": [
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Backend",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "fefa7d246b783aba",
-   "companyId": "clickhouse",
-   "company": "ClickHouse",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer - Cloud Partner Integrations",
-   "location": "Canada (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6115276004",
+   "location": "UK (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6116420004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 41,
    "matched": [
@@ -1306,13 +1869,57 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "6bf5f5c7978b621a",
+   "key": "fefa7d246b783aba",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Senior Software Engineer - Cloud Partner Integrations",
-   "location": "UK (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6116420004",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6115276004",
+   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
+   "matchScore": 41,
+   "matched": [
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T04:54:37.747Z"
+  },
+  {
+   "key": "1ad9f33993aa1e61",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Partner Integrations",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6115277004",
+   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
+   "matchScore": 41,
+   "matched": [
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T04:54:37.747Z"
+  },
+  {
+   "key": "98bf112cedcc1c21",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Partner Integrations",
+   "location": "Spain (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6115280004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 41,
    "matched": [
@@ -1371,33 +1978,6 @@
      "type": "have"
     }
    ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "7c1fdf8a38aeab80",
-   "companyId": "commvault",
-   "company": "Commvault",
-   "ats": "greenhouse",
-   "title": "SENIOR ENGINEER – DISTRIBUTED STORAGE SYSTEMS (C++)",
-   "location": "Bangalore, India; Hyderbad, India; Pune, India",
-   "url": "https://job-boards.greenhouse.io/commvault/jobs/5342663008",
-   "desc": "<div class=\"content-intro\"><p><strong>Recruitment Fraud Alert</strong></p> <p>We’ve learned that scammers are impersonating Commvault team members—including HR and leadership—via email or text. These bad actors may condu…",
-   "matchScore": 59,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 4,
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
@@ -1485,138 +2065,6 @@
     {
      "skill": "Spark",
      "type": "want"
-    }
-   ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "fc77e2070353ec6e",
-   "companyId": "docusign",
-   "company": "DocuSign",
-   "ats": "linkedin",
-   "title": "Senior Platform Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/senior-platform-software-engineer-at-docusign-4370231083",
-   "desc": "Company Overview Docusign brings agreements to life. Over 1.5 million customers and more than a billion people in over 180 countries use Docusign solutions to accelerate the process of doing business and simplify people’…",
-   "matchScore": 72,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "MongoDB",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Data Structures",
-     "type": "have"
-    }
-   ],
-   "minYoe": 3,
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "74b2debed4d20080",
-   "companyId": "docusign",
-   "company": "DocuSign",
-   "ats": "linkedin",
-   "title": "Sr. Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/sr-software-engineer-at-docusign-4390104836",
-   "desc": "Company Overview Docusign brings agreements to life. Over 1.5 million customers and more than a billion people in over 180 countries use Docusign solutions to accelerate the process of doing business and simplify people’…",
-   "matchScore": 92,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Spring",
-     "type": "have"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    }
-   ],
-   "minYoe": 3,
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "7363841864087fac",
-   "companyId": "docusign",
-   "company": "DocuSign",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-docusign-4439821447",
-   "desc": "Company Overview Docusign brings agreements to life. Over 1.5 million customers and more than a billion people in over 180 countries use Docusign solutions to accelerate the process of doing business and simplify people’…",
-   "matchScore": 58,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "Spark",
-     "type": "want"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
     }
    ],
    "firstSeen": "2026-07-17T04:54:37.747Z"
@@ -1782,52 +2230,6 @@
     },
     {
      "skill": "Backend",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "e39948d4fcef0323",
-   "companyId": "expedia",
-   "company": "Expedia",
-   "ats": "workday",
-   "title": "Software Development Engineer III",
-   "location": "India - Gurgaon",
-   "url": "https://expedia.wd108.myworkdayjobs.com/search/job/India---Gurgaon/Software-Development-Engineer-III_R-107743",
-   "desc": "At Expedia Group, we help travelers explore the world, one journey at a time. As a global travel company powered by passionate people, trusted partnerships, and leading technology, we connect travelers, partners, and adv…",
-   "matchScore": 66,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Kotlin",
-     "type": "want"
-    },
-    {
-     "skill": "Spring",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GraphQL",
-     "type": "want"
-    },
-    {
-     "skill": "gRPC",
-     "type": "want"
-    },
-    {
-     "skill": "Redis",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
      "type": "have"
     }
    ],
@@ -2094,19 +2496,6 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "5d6437bce935f76f",
-   "companyId": "google",
-   "company": "Google",
-   "ats": "google",
-   "title": "Software Engineer Iii Aiml Infrastructure Performance Engineering",
-   "location": "India",
-   "url": "https://www.google.com/about/careers/applications/jobs/results/99011220777902790-software-engineer-iii-aiml-infrastructure-performance-engineering",
-   "desc": "",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
    "key": "ebce16239c6d9f13",
    "companyId": "hpe",
    "company": "HPE",
@@ -2123,28 +2512,6 @@
     },
     {
      "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "782ea5ca75a13c0a",
-   "companyId": "hpe",
-   "company": "HPE",
-   "ats": "phenom",
-   "title": "Packet Forwarding Software Engineer",
-   "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Packet-Forwarding-Software-Engineer_1198240-2/apply",
-   "desc": "Embrace the role of a Packet Forwarding Software Engineer and help design, develop, and optimize cutting-edge network solutions. Leverage your expertise in C/C++, networking, and software systems to deliver high-quality,…",
-   "matchScore": 83,
-   "matched": [
-    {
-     "skill": "C++",
      "type": "have"
     },
     {
@@ -2179,6 +2546,28 @@
     },
     {
      "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-17T04:54:37.747Z"
+  },
+  {
+   "key": "782ea5ca75a13c0a",
+   "companyId": "hpe",
+   "company": "HPE",
+   "ats": "phenom",
+   "title": "Packet Forwarding Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Packet-Forwarding-Software-Engineer_1198240-2/apply",
+   "desc": "Embrace the role of a Packet Forwarding Software Engineer and help design, develop, and optimize cutting-edge network solutions. Leverage your expertise in C/C++, networking, and software systems to deliver high-quality,…",
+   "matchScore": 83,
+   "matched": [
+    {
+     "skill": "C++",
      "type": "have"
     },
     {
@@ -2364,53 +2753,6 @@
      "type": "have"
     }
    ],
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
-   "key": "35aa8ad388d08404",
-   "companyId": "mastercard",
-   "company": "Mastercard",
-   "ats": "workday",
-   "title": "Software Engineer II",
-   "location": "Navi Mumbai, India (Finicity)",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Navi-Mumbai-India-Finicity/Software-Engineer-II_R-284423",
-   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
-   "matchScore": 86,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Spring",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Hibernate",
-     "type": "have"
-    },
-    {
-     "skill": "Microservices",
-     "type": "have"
-    },
-    {
-     "skill": "MongoDB",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
@@ -3385,6 +3727,53 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
+   "key": "551e6e9ccb2e854f",
+   "companyId": "glean",
+   "company": "Glean",
+   "ats": "linkedin",
+   "title": "Software Engineer, Evals",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-evals-at-glean-4437995479",
+   "desc": "About Glean Glean is the Work AI platform that helps everyone work smarter with AI. What began as the industry’s most advanced enterprise search has evolved into a full-scale Work AI ecosystem, powering intelligent Searc…",
+   "matchScore": 96,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
+   "minYoe": 4,
+   "firstSeen": "2026-07-10T11:36:50.737Z"
+  },
+  {
    "key": "9801cad05e601bc6",
    "companyId": "fractal-analytics",
    "company": "Fractal Analytics",
@@ -3428,53 +3817,6 @@
      "type": "want"
     }
    ],
-   "firstSeen": "2026-07-10T11:29:45.269Z"
-  },
-  {
-   "key": "ed2c7d21cc5816ae",
-   "companyId": "ibm-research",
-   "company": "IBM Research",
-   "ats": "linkedin",
-   "title": "Senior Software Engineer - Confluent Kafka",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/senior-software-engineer-confluent-kafka-at-ibm-4435966133",
-   "desc": "Introduction At IBM Software, we transform client challenges into solutions. Building the world’s leading AI-powered, cloud-native products that shape the future of business and society. Our legacy of innovation creates…",
-   "matchScore": 68,
-   "matched": [
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 4,
    "firstSeen": "2026-07-10T11:29:45.269Z"
   },
   {
@@ -3774,6 +4116,19 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
+   "key": "164c6c83b36bb493",
+   "companyId": "ebay",
+   "company": "eBay",
+   "ats": "phenom",
+   "title": "Sr MTS Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/Sr-MTS-Software-Engineer_R0075081/apply",
+   "desc": "Join our team as a Senior Software Engineer - Storage Data Plane and lead the design, development, and optimization of high-performance data plane components in large-scale distributed storage systems. Drive technical de…",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-10T11:19:11.924Z"
+  },
+  {
    "key": "02f384c47ae94feb",
    "companyId": "ebay",
    "company": "eBay",
@@ -3796,19 +4151,6 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "164c6c83b36bb493",
-   "companyId": "ebay",
-   "company": "eBay",
-   "ats": "phenom",
-   "title": "Sr MTS Software Engineer",
-   "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/Sr-MTS-Software-Engineer_R0075081/apply",
-   "desc": "Join our team as a Senior Software Engineer - Storage Data Plane and lead the design, development, and optimization of high-performance data plane components in large-scale distributed storage systems. Drive technical de…",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-10T11:19:11.924Z"
-  },
-  {
    "key": "0e215b9e642dd164",
    "companyId": "ebay",
    "company": "eBay",
@@ -3821,6 +4163,24 @@
    "matched": [
     {
      "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-10T11:19:11.924Z"
+  },
+  {
+   "key": "98432c7b9e36cb19",
+   "companyId": "ebay",
+   "company": "eBay",
+   "ats": "phenom",
+   "title": "MTS 1, Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-1--Software-Engineer_R0074700/apply",
+   "desc": "Join our team as a Senior Software Engineer and help shape the future of global ecommerce. Drive backend API design, automation, and observability for millions of users. Collaborate with cross-functional teams, mentor ju…",
+   "matchScore": 33,
+   "matched": [
+    {
+     "skill": "Backend",
      "type": "have"
     }
    ],
@@ -3859,24 +4219,6 @@
      "skill": "System Design",
      "type": "have"
     },
-    {
-     "skill": "Backend",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-10T11:19:11.924Z"
-  },
-  {
-   "key": "98432c7b9e36cb19",
-   "companyId": "ebay",
-   "company": "eBay",
-   "ats": "phenom",
-   "title": "MTS 1, Software Engineer",
-   "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-1--Software-Engineer_R0074700/apply",
-   "desc": "Join our team as a Senior Software Engineer and help shape the future of global ecommerce. Drive backend API design, automation, and observability for millions of users. Collaborate with cross-functional teams, mentor ju…",
-   "matchScore": 33,
-   "matched": [
     {
      "skill": "Backend",
      "type": "have"
@@ -4037,14 +4379,14 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "c67f97b011414bc8",
+   "key": "91db954653933542",
    "companyId": "ebay",
    "company": "eBay",
    "ats": "phenom",
-   "title": "MTS 2, Software Engineer, Data Platforms",
+   "title": "Sr. MTS, Software Engineer - FullStack",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-2--Software-Engineer--Data-Platforms_R0074109-1/apply",
-   "desc": "Join our team as a Senior Software Engineer, Data Platforms, and help shape the future of global ecommerce. Drive the design and delivery of scalable, high-impact data platforms at scale. Collaborate with top engineers,…",
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/Sr-MTS--Software-Engineer-FullStack-_R0070761/apply",
+   "desc": "Join our team as a Senior Software Engineer (Fullstack) at eBay, where you'll drive technical strategy and lead complex initiatives. If you have a passion for building scalable solutions and mentoring others, we want to…",
    "matchScore": 33,
    "matched": [
     {
@@ -4055,14 +4397,14 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "91db954653933542",
+   "key": "c67f97b011414bc8",
    "companyId": "ebay",
    "company": "eBay",
    "ats": "phenom",
-   "title": "Sr. MTS, Software Engineer - FullStack",
+   "title": "MTS 2, Software Engineer, Data Platforms",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/Sr-MTS--Software-Engineer-FullStack-_R0070761/apply",
-   "desc": "Join our team as a Senior Software Engineer (Fullstack) at eBay, where you'll drive technical strategy and lead complex initiatives. If you have a passion for building scalable solutions and mentoring others, we want to…",
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-2--Software-Engineer--Data-Platforms_R0074109-1/apply",
+   "desc": "Join our team as a Senior Software Engineer, Data Platforms, and help shape the future of global ecommerce. Drive the design and delivery of scalable, high-impact data platforms at scale. Collaborate with top engineers,…",
    "matchScore": 33,
    "matched": [
     {
@@ -4297,13 +4639,13 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "e7f070dadd065227",
+   "key": "93e1da231468664b",
    "companyId": "harness",
    "company": "Harness",
    "ats": "greenhouse",
    "title": " Senior Software Engineer - UI",
    "location": "Bengaluru, Karnataka, India",
-   "url": "https://www.harness.io/company/jobs/apply?gh_jid=5139776007&gh_jid=5139776007",
+   "url": "https://www.harness.io/company/jobs/apply?gh_jid=5139777007&gh_jid=5139777007",
    "desc": "<div class=\"content-intro\"><p>Harness is the AI Software Delivery Platform company, led by technologist and entrepreneur Jyoti Bansal (founder of AppDynamics, acquired by Cisco for $3.7B). Harness has raised approximatel…",
    "matchScore": 50,
    "matched": [
@@ -4327,13 +4669,13 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "93e1da231468664b",
+   "key": "e7f070dadd065227",
    "companyId": "harness",
    "company": "Harness",
    "ats": "greenhouse",
    "title": " Senior Software Engineer - UI",
    "location": "Bengaluru, Karnataka, India",
-   "url": "https://www.harness.io/company/jobs/apply?gh_jid=5139777007&gh_jid=5139777007",
+   "url": "https://www.harness.io/company/jobs/apply?gh_jid=5139776007&gh_jid=5139776007",
    "desc": "<div class=\"content-intro\"><p>Harness is the AI Software Delivery Platform company, led by technologist and entrepreneur Jyoti Bansal (founder of AppDynamics, acquired by Cisco for $3.7B). Harness has raised approximatel…",
    "matchScore": 50,
    "matched": [
@@ -4741,13 +5083,13 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "13ccc4387b3ca1fc",
+   "key": "414863e6e34af8f6",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
    "title": "Platform Software Engineer (Networking Systems)",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202431-2/apply",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202430-3/apply",
    "desc": "Embrace the role of a Platform Software Engineer (Networking Systems) and help architect and build high-performance networking platforms at scale. Leverage your expertise in C/C++, system debugging, and networking to del…",
    "matchScore": 50,
    "matched": [
@@ -4759,13 +5101,13 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "414863e6e34af8f6",
+   "key": "13ccc4387b3ca1fc",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
    "title": "Platform Software Engineer (Networking Systems)",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202430-3/apply",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202431-2/apply",
    "desc": "Embrace the role of a Platform Software Engineer (Networking Systems) and help architect and build high-performance networking platforms at scale. Leverage your expertise in C/C++, system debugging, and networking to del…",
    "matchScore": 50,
    "matched": [
@@ -4817,19 +5159,6 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "0f1b7c3980eca7df",
-   "companyId": "hpe",
-   "company": "HPE",
-   "ats": "phenom",
-   "title": "Software Engineer V  Packet forwarding team",
-   "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-V--Packet-forwarding-team_1206610-3/apply",
-   "desc": "Join our team as a Senior Software Engineer in the Packet Forwarding team at Hewlett Packard Enterprise. Leverage your expertise in SONiC, BGP, and networking to design and optimize high-performance solutions. Collaborat…",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-10T11:19:11.924Z"
-  },
-  {
    "key": "78ce276060acc9f8",
    "companyId": "hpe",
    "company": "HPE",
@@ -4852,21 +5181,16 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "8b84cbcffa810081",
+   "key": "0f1b7c3980eca7df",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
-   "title": "Software Engineer in Routing Infrastructure Solutions",
+   "title": "Software Engineer V  Packet forwarding team",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-in-Routing-Infrastructure-Solutions_1207567-2/apply",
-   "desc": "Embrace the role of a Software Engineer, Routing Infrastructure Solutions and drive innovation in high-speed networking. Leverage your expertise in Ethernet PHY driver development, C/C++, and hardware debugging to design…",
-   "matchScore": 50,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    }
-   ],
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-V--Packet-forwarding-team_1206610-3/apply",
+   "desc": "Join our team as a Senior Software Engineer in the Packet Forwarding team at Hewlett Packard Enterprise. Leverage your expertise in SONiC, BGP, and networking to design and optimize high-performance solutions. Collaborat…",
+   "matchScore": 30,
+   "matched": [],
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
@@ -4897,6 +5221,24 @@
    "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer---Networking_1205693-2/apply",
    "desc": "Join our team as a Senior Software Engineer - C++ & Networking and help modernize large-scale cloud networks for global enterprises. Leverage your expertise in C++, networking protocols, and cloud architectures to design…",
    "matchScore": 100,
+   "matched": [
+    {
+     "skill": "C++",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-10T11:19:11.924Z"
+  },
+  {
+   "key": "8b84cbcffa810081",
+   "companyId": "hpe",
+   "company": "HPE",
+   "ats": "phenom",
+   "title": "Software Engineer in Routing Infrastructure Solutions",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-in-Routing-Infrastructure-Solutions_1207567-2/apply",
+   "desc": "Embrace the role of a Software Engineer, Routing Infrastructure Solutions and drive innovation in high-speed networking. Leverage your expertise in Ethernet PHY driver development, C/C++, and hardware debugging to design…",
+   "matchScore": 50,
    "matched": [
     {
      "skill": "C++",
@@ -6375,60 +6717,6 @@
    "firstSeen": "2026-07-09T08:16:53.525Z"
   },
   {
-   "key": "675437d524bda47e",
-   "companyId": "netomi",
-   "company": "Netomi",
-   "ats": "lever",
-   "title": "Agentic Engineer",
-   "location": "Remote - India",
-   "url": "https://jobs.lever.co/netomi/ba379f47-091b-4f2d-82d3-e97a0821227e",
-   "desc": "About the Company: Netomi is the leading agentic AI platform for enterprise customer experience. We work with the largest global brands like Delta Airlines, MetLife, MGM, United, and others to enable agentic automation a…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T08:16:53.525Z"
-  },
-  {
-   "key": "cc2453b379ee159b",
-   "companyId": "netomi",
-   "company": "Netomi",
-   "ats": "lever",
-   "title": "Agentic Senior Solution Engineer",
-   "location": "Gurugram",
-   "url": "https://jobs.lever.co/netomi/6a92fd9c-d6ea-4061-9eab-f8ba3886b94c",
-   "desc": "About the Company: Netomi is the leading agentic AI platform for enterprise customer experience. We work with the largest global brands like Delta Airlines, MetLife, MGM, United, and others to enable agentic automation a…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T08:16:53.525Z"
-  },
-  {
-   "key": "f17f3a2e984f8c42",
-   "companyId": "netomi",
-   "company": "Netomi",
-   "ats": "lever",
-   "title": "Agentic Solution Engineer",
-   "location": "Remote - India",
-   "url": "https://jobs.lever.co/netomi/b4d9ce2b-479e-47f2-a9c0-52827e94e129",
-   "desc": "About the Company: Netomi is the leading agentic AI platform for enterprise customer experience. We work with the largest global brands like Delta Airlines, MetLife, MGM, United, and others to enable agentic automation a…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T08:16:53.525Z"
-  },
-  {
    "key": "81d61473f7598b49",
    "companyId": "smartsheet",
    "company": "Smartsheet",
@@ -7371,6 +7659,48 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
+   "key": "fa7e57fb70001eb9",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer - II",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10469359/software-development-engineer-ii",
+   "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
+   "matchScore": 33,
+   "matched": [
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "b5cd634f0903a413",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, ISS",
+   "location": "Hyderabad, Telangana, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10463507/software-development-engineer-iss",
+   "desc": "Amazon's International Seller Services (ISS) org is seeking a Software Development Engineer to be part of an engineering team working on innovative products and tools to help Account Managers (AMs). AMs help onboard sell…",
+   "matchScore": 83,
+   "matched": [
+    {
+     "skill": "GenAI",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
    "key": "691fe99e0e90e73b",
    "companyId": "amazon",
    "company": "Amazon",
@@ -7494,48 +7824,6 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "fa7e57fb70001eb9",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer - II",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10469359/software-development-engineer-ii",
-   "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "b5cd634f0903a413",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, ISS",
-   "location": "Hyderabad, Telangana, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10463507/software-development-engineer-iss",
-   "desc": "Amazon's International Seller Services (ISS) org is seeking a Software Development Engineer to be part of an engineering team working on innovative products and tools to help Account Managers (AMs). AMs help onboard sell…",
-   "matchScore": 83,
-   "matched": [
-    {
-     "skill": "GenAI",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
    "key": "be728177eaea7077",
    "companyId": "amazon",
    "company": "Amazon",
@@ -7604,6 +7892,52 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
+   "key": "862be3d07fa839ce",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer - II",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10418914/software-development-engineer-ii",
+   "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
+   "matchScore": 33,
+   "matched": [
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "6907eacfe938ecb6",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Amazon",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10417371/software-development-engineer-amazon",
+   "desc": "Amazon’s Selection Monitoring team is responsible for making the biggest catalog on the planet even bigger. Our systems process billions of products to algorithmically find products not already sold on Amazon and program…",
+   "matchScore": 56,
+   "matched": [
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Data Structures",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
    "key": "b2517edba57fb3c9",
    "companyId": "amazon",
    "company": "Amazon",
@@ -7647,52 +7981,6 @@
     },
     {
      "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "862be3d07fa839ce",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer - II",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10418914/software-development-engineer-ii",
-   "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "6907eacfe938ecb6",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Amazon",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10417371/software-development-engineer-amazon",
-   "desc": "Amazon’s Selection Monitoring team is responsible for making the biggest catalog on the planet even bigger. Our systems process billions of products to algorithmically find products not already sold on Amazon and program…",
-   "matchScore": 56,
-   "matched": [
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Data Structures",
      "type": "have"
     }
    ],
@@ -8101,25 +8389,6 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "97bfdb60a427a542",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, Amazon Prime",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10467060/software-development-engineer-amazon-prime",
-   "desc": "Amazon Prime is world’s most recognized membership program and is one of the most critical aspects of Amazon business overall. The Prime Technology team has been engaged in evolving the technology services for geographic…",
-   "matchScore": 33,
-   "matched": [
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
    "key": "fb193f37109029a7",
    "companyId": "amazon",
    "company": "Amazon",
@@ -8197,6 +8466,25 @@
     },
     {
      "skill": "Data Structures",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "97bfdb60a427a542",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, Amazon Prime",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10467060/software-development-engineer-amazon-prime",
+   "desc": "Amazon Prime is world’s most recognized membership program and is one of the most critical aspects of Amazon business overall. The Prime Technology team has been engaged in evolving the technology services for geographic…",
+   "matchScore": 33,
+   "matched": [
+    {
+     "skill": "System Design",
      "type": "have"
     }
    ],
@@ -8311,72 +8599,6 @@
     },
     {
      "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "fec2fc7fec4fd595",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer II, Amazon",
-   "location": "Chennai, Tamil Nadu, IND",
-   "url": "https://www.amazon.jobs/en/jobs/3175010/software-development-engineer-ii-amazon",
-   "desc": "Digital Catalog team owns services supporting publishing and purchase of Digital content, including Kindle EBooks, Amazon AppStore for Android, Amazon MP3, and Amazon Instant Video. You will be joining a team working on…",
-   "matchScore": 77,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Backend",
-     "type": "have"
-    }
-   ],
-   "minYoe": 3,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "e29cf2db58cf4a0b",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, AFT - Inbound",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10462526/software-development-engineer-aft-inbound",
-   "desc": "Are you seeking an environment where you can apply state-of-the-art computer science techniques, data-driven decision making and problem solving skills in a real world setting? Do you want to build large-scale reliable,…",
-   "matchScore": 93,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "Data Structures",
      "type": "have"
     }
    ],
@@ -8503,6 +8725,72 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
+   "key": "fec2fc7fec4fd595",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer II, Amazon",
+   "location": "Chennai, Tamil Nadu, IND",
+   "url": "https://www.amazon.jobs/en/jobs/3175010/software-development-engineer-ii-amazon",
+   "desc": "Digital Catalog team owns services supporting publishing and purchase of Digital content, including Kindle EBooks, Amazon AppStore for Android, Amazon MP3, and Amazon Instant Video. You will be joining a team working on…",
+   "matchScore": 77,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
+   "minYoe": 3,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "e29cf2db58cf4a0b",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, AFT - Inbound",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10462526/software-development-engineer-aft-inbound",
+   "desc": "Are you seeking an environment where you can apply state-of-the-art computer science techniques, data-driven decision making and problem solving skills in a real world setting? Do you want to build large-scale reliable,…",
+   "matchScore": 93,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "Data Structures",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
    "key": "3eaff3de198596a3",
    "companyId": "acceldata",
    "company": "Acceldata",
@@ -8591,52 +8879,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "2ec7dcaa089e5a86",
-   "companyId": "affirm",
-   "company": "Affirm",
-   "ats": "greenhouse",
-   "title": "Senior CIAM Software Engineer",
-   "location": "Remote Canada",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7671390003",
-   "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>Affir…",
-   "matchScore": 89,
-   "matched": [
-    {
-     "skill": "Kotlin",
-     "type": "want"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Backend",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "8c2315e421842b7e",
    "companyId": "affirm",
    "company": "Affirm",
@@ -8683,20 +8925,16 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "69099b605b81d0de",
+   "key": "2ec7dcaa089e5a86",
    "companyId": "affirm",
    "company": "Affirm",
    "ats": "greenhouse",
-   "title": "Senior Software Engineer, Backend (Growth Platform)",
+   "title": "Senior CIAM Software Engineer",
    "location": "Remote Canada",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7491437003",
-   "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>The E…",
-   "matchScore": 83,
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7671390003",
+   "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>Affir…",
+   "matchScore": 89,
    "matched": [
-    {
-     "skill": "Backend",
-     "type": "have"
-    },
     {
      "skill": "Kotlin",
      "type": "want"
@@ -8710,8 +8948,12 @@
      "type": "want"
     },
     {
-     "skill": "Kubernetes",
+     "skill": "Azure",
      "type": "have"
+    },
+    {
+     "skill": "Terraform",
+     "type": "want"
     },
     {
      "skill": "Distributed Systems",
@@ -8722,21 +8964,20 @@
      "type": "have"
     },
     {
-     "skill": "REST",
+     "skill": "Backend",
      "type": "have"
     }
    ],
-   "minYoe": 4,
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "feb7511e1fe40656",
+   "key": "69099b605b81d0de",
    "companyId": "affirm",
    "company": "Affirm",
    "ats": "greenhouse",
-   "title": "Senior Software Engineer, Backend (Infrastructure)",
-   "location": "Remote US",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7708921003",
+   "title": "Senior Software Engineer, Backend (Growth Platform)",
+   "location": "Remote Canada",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7491437003",
    "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>The E…",
    "matchScore": 83,
    "matched": [
@@ -8824,13 +9065,60 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "06fc3efd635c2b25",
+   "key": "feb7511e1fe40656",
+   "companyId": "affirm",
+   "company": "Affirm",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer, Backend (Infrastructure)",
+   "location": "Remote US",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7708921003",
+   "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>The E…",
+   "matchScore": 83,
+   "matched": [
+    {
+     "skill": "Backend",
+     "type": "have"
+    },
+    {
+     "skill": "Kotlin",
+     "type": "want"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "REST",
+     "type": "have"
+    }
+   ],
+   "minYoe": 4,
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "99497aa89b06232b",
    "companyId": "affirm",
    "company": "Affirm",
    "ats": "greenhouse",
    "title": "Senior Software Engineer, Backend (Merchant Data Platform EU)",
-   "location": "Remote Spain",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7651525003",
+   "location": "Remote Poland",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7651523003",
    "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p data-…",
    "matchScore": 82,
    "matched": [
@@ -8867,13 +9155,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "99497aa89b06232b",
+   "key": "06fc3efd635c2b25",
    "companyId": "affirm",
    "company": "Affirm",
    "ats": "greenhouse",
    "title": "Senior Software Engineer, Backend (Merchant Data Platform EU)",
-   "location": "Remote Poland",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7651523003",
+   "location": "Remote Spain",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7651525003",
    "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p data-…",
    "matchScore": 82,
    "matched": [
@@ -9051,13 +9339,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "0ee3c10ee4d379ea",
+   "key": "190013938a2112f0",
    "companyId": "affirm",
    "company": "Affirm",
    "ats": "greenhouse",
    "title": "Senior Software Engineer, Fullstack (Servicing International)",
-   "location": "Remote Poland",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7118737003",
+   "location": "Remote Spain",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7118739003",
    "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>Join…",
    "matchScore": 51,
    "matched": [
@@ -9094,13 +9382,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "190013938a2112f0",
+   "key": "0ee3c10ee4d379ea",
    "companyId": "affirm",
    "company": "Affirm",
    "ats": "greenhouse",
    "title": "Senior Software Engineer, Fullstack (Servicing International)",
-   "location": "Remote Spain",
-   "url": "https://job-boards.greenhouse.io/affirm/jobs/7118739003",
+   "location": "Remote Poland",
+   "url": "https://job-boards.greenhouse.io/affirm/jobs/7118737003",
    "desc": "<div class=\"content-intro\"><p>Affirm is reinventing credit to make it more honest and friendly, giving consumers the flexibility to buy now and pay later without any hidden fees or compounding interest.</p></div><p>Join…",
    "matchScore": 51,
    "matched": [
@@ -10371,52 +10659,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "45a305e1ac97be69",
-   "companyId": "clickhouse",
-   "company": "ClickHouse",
-   "ats": "greenhouse",
-   "title": "Cloud Software Engineer - Observability Platform",
-   "location": "Canada (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5658009004",
-   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
-   "matchScore": 84,
-   "matched": [
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "7c326ea8d9f5ed0a",
    "companyId": "clickhouse",
    "company": "ClickHouse",
@@ -10463,13 +10705,59 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "0b209f60ab012141",
+   "key": "45a305e1ac97be69",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Cloud Software Engineer - Observability Platform",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5658009004",
+   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
+   "matchScore": 84,
+   "matched": [
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GCP",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Terraform",
+     "type": "want"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "25d105e794381b91",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Core Software Engineer (C++) - Remote",
-   "location": "Netherlands (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755090004",
+   "location": "United Kingdom (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755091004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 93,
    "matched": [
@@ -10583,13 +10871,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "25d105e794381b91",
+   "key": "0b209f60ab012141",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Core Software Engineer (C++) - Remote",
-   "location": "United Kingdom (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755091004",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5755090004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 93,
    "matched": [
@@ -10620,52 +10908,6 @@
    "title": "Full Stack Software Engineer - Billing Team",
    "location": "Netherlands (remote)",
    "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5395374004",
-   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
-   "matchScore": 54,
-   "matched": [
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "MongoDB",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Backend",
-     "type": "have"
-    },
-    {
-     "skill": "REST",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "5fb171bb56e14c18",
-   "companyId": "clickhouse",
-   "company": "ClickHouse",
-   "ats": "greenhouse",
-   "title": "Full Stack Software Engineer - Billing Team",
-   "location": "United States (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5584386004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 54,
    "matched": [
@@ -10751,13 +10993,59 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "e2449b7d61fa300a",
+   "key": "5fb171bb56e14c18",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Full Stack Software Engineer - Billing Team",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5584386004",
+   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
+   "matchScore": 54,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GCP",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "MongoDB",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    },
+    {
+     "skill": "REST",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "5806d1cf3e0c78aa",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Full Stack Software Engineer - Control Plane",
-   "location": "Germany (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587665004",
+   "location": "Netherlands (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587664004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 56,
    "matched": [
@@ -10845,13 +11133,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "5806d1cf3e0c78aa",
+   "key": "e2449b7d61fa300a",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Full Stack Software Engineer - Control Plane",
-   "location": "Netherlands (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587664004",
+   "location": "Germany (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5587665004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 56,
    "matched": [
@@ -10889,6 +11177,52 @@
     }
    ],
    "minYoe": 3,
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "4d0f075f5c498a87",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "London(Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819677004",
+   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
+   "matchScore": 88,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GCP",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Terraform",
+     "type": "want"
+    }
+   ],
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
@@ -10984,98 +11318,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "5ad50d18f7f28336",
-   "companyId": "clickhouse",
-   "company": "ClickHouse",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer - Cloud Infrastructure",
-   "location": "Amsterdam(Remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819678004",
-   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
-   "matchScore": 88,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "4d0f075f5c498a87",
-   "companyId": "clickhouse",
-   "company": "ClickHouse",
-   "ats": "greenhouse",
-   "title": "Senior Software Engineer - Cloud Infrastructure",
-   "location": "London(Remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819677004",
-   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
-   "matchScore": 88,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "312f9b76449c775b",
    "companyId": "clickhouse",
    "company": "ClickHouse",
@@ -11122,13 +11364,59 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "6652a0196f920fa7",
+   "key": "5ad50d18f7f28336",
+   "companyId": "clickhouse",
+   "company": "ClickHouse",
+   "ats": "greenhouse",
+   "title": "Senior Software Engineer - Cloud Infrastructure",
+   "location": "Amsterdam(Remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/5819678004",
+   "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
+   "matchScore": 88,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GCP",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Kubernetes",
+     "type": "have"
+    },
+    {
+     "skill": "Terraform",
+     "type": "want"
+    }
+   ],
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "074547c524429b49",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Senior Software Engineer - Identity & Authorization Platform",
-   "location": "Canada (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6018901004",
+   "location": "United States (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6018899004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 71,
    "matched": [
@@ -11168,13 +11456,13 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "074547c524429b49",
+   "key": "6652a0196f920fa7",
    "companyId": "clickhouse",
    "company": "ClickHouse",
    "ats": "greenhouse",
    "title": "Senior Software Engineer - Identity & Authorization Platform",
-   "location": "United States (remote)",
-   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6018899004",
+   "location": "Canada (remote)",
+   "url": "https://job-boards.greenhouse.io/clickhouse/jobs/6018901004",
    "desc": "<div class=\"content-intro\"><h3>About ClickHouse</h3> <p>Recognized on the 2025 Forbes Cloud 100 list, ClickHouse is one of the most innovative and fast-growing private cloud companies. With more than 3,000 customers and…",
    "matchScore": 71,
    "matched": [
@@ -11967,52 +12255,6 @@
     },
     {
      "skill": "Kubernetes",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "d4aff3dd3bd0a366",
-   "companyId": "crowdstrike",
-   "company": "CrowdStrike",
-   "ats": "workday",
-   "title": "Sr. Backend Engineer (Hybrid)",
-   "location": "USA - Remote, NY",
-   "url": "https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/job/USA---Remote-NY/Sr-Backend-Engineer--Hybrid--Austin-_R28425",
-   "desc": "As a global leader in cybersecurity, CrowdStrike protects the people, processes and technologies that drive modern organizations. Since 2011, our mission hasn’t changed — we’re here to stop breaches, and we’ve redefined…",
-   "matchScore": 87,
-   "matched": [
-    {
-     "skill": "Backend",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "PostgreSQL",
-     "type": "have"
-    },
-    {
-     "skill": "Redis",
      "type": "have"
     }
    ],
@@ -14777,50 +15019,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "03eaa7ef5194fe98",
-   "companyId": "mastercard",
-   "company": "Mastercard",
-   "ats": "workday",
-   "title": "Software Engineer II (C, C++ on Unix, Experience with socket programming, IPC)",
-   "location": "Pune, India",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer--C---Developer---Unix-Linux---ISO-8583---Payment-Domain-_R-280086-1",
-   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
-   "matchScore": 75,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "eebb2ea20a31f024",
-   "companyId": "mastercard",
-   "company": "Mastercard",
-   "ats": "workday",
-   "title": "Senior Platform Engineer",
-   "location": "Pune, India",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Platform-Engineer_R-275263",
-   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
-   "matchScore": 86,
-   "matched": [
-    {
-     "skill": "PostgreSQL",
-     "type": "have"
-    },
-    {
-     "skill": "MongoDB",
-     "type": "have"
-    },
-    {
-     "skill": "Redis",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "344f82a2d701d013",
    "companyId": "meesho",
    "company": "Meesho",
@@ -15117,52 +15315,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "6452158b4719a177",
-   "companyId": "mongodb",
-   "company": "MongoDB",
-   "ats": "greenhouse",
-   "title": "Software Engineer 3",
-   "location": "Gurugram",
-   "url": "https://www.mongodb.com/careers/job/?gh_jid=7908785",
-   "desc": "<p>The worldwide data management software market is massive (According to IDC, the worldwide database software market, which it refers to as the database management systems software market, was forecasted to be approxima…",
-   "matchScore": 83,
-   "matched": [
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "GenAI",
-     "type": "have"
-    },
-    {
-     "skill": "RAG",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "43cd01443294d581",
    "companyId": "mongodb",
    "company": "MongoDB",
@@ -15209,44 +15361,46 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "5b9f2af424d8b42c",
-   "companyId": "netomi",
-   "company": "Netomi",
-   "ats": "lever",
-   "title": "SDE I - Backend",
-   "location": "Remote - India",
-   "url": "https://jobs.lever.co/netomi/d61510b5-44ea-44c9-8441-097a48bf5e77",
-   "desc": "About the Company: Netomi is the leading agentic AI platform for enterprise customer experience. We work with the largest global brands like Delta Airlines, MetLife, MGM, United, and others to enable agentic automation a…",
-   "matchScore": 100,
+   "key": "6452158b4719a177",
+   "companyId": "mongodb",
+   "company": "MongoDB",
+   "ats": "greenhouse",
+   "title": "Software Engineer 3",
+   "location": "Gurugram",
+   "url": "https://www.mongodb.com/careers/job/?gh_jid=7908785",
+   "desc": "<p>The worldwide data management software market is massive (According to IDC, the worldwide database software market, which it refers to as the database management systems software market, was forecasted to be approxima…",
+   "matchScore": 83,
    "matched": [
     {
-     "skill": "Backend",
+     "skill": "Python",
      "type": "have"
     },
     {
-     "skill": "Java",
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GCP",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
      "type": "have"
     },
     {
-     "skill": "System Design",
+     "skill": "GenAI",
      "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "67a59745e070002a",
-   "companyId": "netomi",
-   "company": "Netomi",
-   "ats": "lever",
-   "title": "SDE I (FullStack)",
-   "location": "Remote - India",
-   "url": "https://jobs.lever.co/netomi/5dfe7149-e3e7-4063-be6f-440081b188b5",
-   "desc": "About the Company: Netomi is the leading agentic AI platform for enterprise customer experience. We work with the largest global brands like Delta Airlines, MetLife, MGM, United, and others to enable agentic automation a…",
-   "matchScore": 33,
-   "matched": [
+    },
     {
-     "skill": "System Design",
+     "skill": "RAG",
+     "type": "have"
+    },
+    {
+     "skill": "SQL",
      "type": "have"
     }
    ],
@@ -15695,6 +15849,52 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
+   "key": "e02890cbe23fd6aa",
+   "companyId": "qualys",
+   "company": "Qualys",
+   "ats": "workday",
+   "title": "Senior Software Engineer",
+   "location": "Pune",
+   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0003666",
+   "desc": "Come work at a place where innovation and teamwork come together to support the most exciting missions in the world! We are seeking a talented Lead Software Engineer to work on Qualys’ next-generation Platform & Middlewa…",
+   "matchScore": 68,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Kafka",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "Redis",
+     "type": "have"
+    },
+    {
+     "skill": "Elasticsearch",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
    "key": "261c50777a0c5217",
    "companyId": "qualys",
    "company": "Qualys",
@@ -15860,52 +16060,6 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
-   "key": "e02890cbe23fd6aa",
-   "companyId": "qualys",
-   "company": "Qualys",
-   "ats": "workday",
-   "title": "Senior Software Engineer",
-   "location": "Pune",
-   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Senior-Software-Engineer_R0003666",
-   "desc": "Come work at a place where innovation and teamwork come together to support the most exciting missions in the world! We are seeking a talented Lead Software Engineer to work on Qualys’ next-generation Platform & Middlewa…",
-   "matchScore": 68,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Microservices",
-     "type": "have"
-    },
-    {
-     "skill": "Redis",
-     "type": "have"
-    },
-    {
-     "skill": "Elasticsearch",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
    "key": "750266fb9ba3fb93",
    "companyId": "qualys",
    "company": "Qualys",
@@ -16064,52 +16218,6 @@
     },
     {
      "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T06:38:33.022Z"
-  },
-  {
-   "key": "45fcdf817462233a",
-   "companyId": "qualys",
-   "company": "Qualys",
-   "ats": "workday",
-   "title": "Software Engineer",
-   "location": "Pune",
-   "url": "https://qualys.wd5.myworkdayjobs.com/Careers/job/Pune/Software-Engineer_R0003953",
-   "desc": "Come work at a place where innovation and teamwork come together to support the most exciting missions in the world! We are seeking a highly motivated and talented Software Engineer to work on Qualys’ next-generation dat…",
-   "matchScore": 82,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "GCP",
-     "type": "want"
-    },
-    {
-     "skill": "Azure",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Microservices",
-     "type": "have"
-    },
-    {
-     "skill": "Redis",
      "type": "have"
     }
    ],
@@ -17190,6 +17298,52 @@
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
+   "key": "734e45d59c618c9c",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Sr. Software Engineer (3 - 6 years of experience in Oracle EBS, R12 development)",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Sr-Software-Engineer--3---6-years-of-experience-in-Oracle-EBS--R12-development-_REF083128W",
+   "desc": "About Us Visa is a world leader in payments technology, facilitating transactions between consumers, merchants, financial institutions and government entities across more than 200 countries and territories, dedicated to…",
+   "matchScore": 74,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "Azure",
+     "type": "have"
+    },
+    {
+     "skill": "GenAI",
+     "type": "have"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "LangChain",
+     "type": "have"
+    },
+    {
+     "skill": "RAG",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
    "key": "ebfc355b1c0f0dd8",
    "companyId": "visa",
    "company": "Visa",
@@ -17486,6 +17640,53 @@
      "type": "have"
     }
    ],
+   "firstSeen": "2026-07-09T06:38:33.022Z"
+  },
+  {
+   "key": "743ae5842c3922a0",
+   "companyId": "visa",
+   "company": "Visa",
+   "ats": "workday",
+   "title": "Software Engineer - Sr. Consultant level",
+   "location": "IN - Bengaluru, India",
+   "url": "https://visa.wd5.myworkdayjobs.com/Visa/job/IN---Bengaluru-India/Software-Engineer---Sr-Consultant-level_REF081952W",
+   "desc": "About Us Visa is a world leader in payments technology, facilitating transactions between consumers, merchants, financial institutions and government entities across more than 200 countries and territories, dedicated to…",
+   "matchScore": 73,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "Kafka",
+     "type": "have"
+    },
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "GenAI",
+     "type": "have"
+    },
+    {
+     "skill": "SQL",
+     "type": "have"
+    },
+    {
+     "skill": "Hibernate",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
    "firstSeen": "2026-07-09T06:38:33.022Z"
   },
   {
