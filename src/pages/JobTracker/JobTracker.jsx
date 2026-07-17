@@ -226,31 +226,23 @@ export default function JobTracker() {
     });
   }, []);
 
-  // Computed lists for pipeline tab
-  const { toApplyList, appliedList, stats } = useMemo(() => {
-    const toApply = [];
-    const applied = [];
-    let appliedCount = 0;
+  const stats = useMemo(() => {
     let inProcess = 0;
     let offers = 0;
     let pendingOpenings = 0;
+    let referralOpenings = 0;
+    let appliedOpenings = 0;
     allCompanies.forEach((c) => {
       const e = state.companies[c.id] || {};
       const status = e.status || "none";
       const links = e.links || [];
-      const pending = links.filter((l) => !l.applied).length;
-      pendingOpenings += pending;
-      if (status === "toApply" || (pending > 0 && !APPLIED_SET.has(status))) toApply.push(c);
-      if (APPLIED_SET.has(status) && status !== "rejected") applied.push(c);
-      if (APPLIED_SET.has(status)) appliedCount += 1;
+      pendingOpenings += links.filter((l) => !l.applied && !l.referral).length;
+      referralOpenings += links.filter((l) => l.referral).length;
+      appliedOpenings += links.filter((l) => l.applied).length;
       if (status === "oa" || status === "interview") inProcess += 1;
       if (status === "offer") offers += 1;
     });
-    return {
-      toApplyList: toApply,
-      appliedList: applied,
-      stats: { total: allCompanies.length, toApply: toApply.length, applied: appliedCount, inProcess, offers, pendingOpenings },
-    };
+    return { total: allCompanies.length, toApply: pendingOpenings, referral: referralOpenings, applied: appliedOpenings, inProcess, offers };
   }, [allCompanies, state.companies]);
 
   const activeOpeningsCount = radarVisible?.openings.filter((o) => !o.tracked && !state.dismissedOpenings[o.uKey] && isOpeningEligible(o)).length || 0;
@@ -258,9 +250,9 @@ export default function JobTracker() {
   const statTiles = [
     { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },
     { label: "To Apply", value: stats.toApply, cls: "text-amber-600 dark:text-amber-300" },
-    { label: "Pending", value: stats.pendingOpenings, cls: "text-orange-600 dark:text-orange-300" },
+    { label: "Referral", value: stats.referral, cls: "text-violet-600 dark:text-violet-300" },
     { label: "Applied", value: stats.applied, cls: "text-blue-600 dark:text-blue-300" },
-    { label: "In Process", value: stats.inProcess, cls: "text-violet-600 dark:text-violet-300" },
+    { label: "In Process", value: stats.inProcess, cls: "text-indigo-600 dark:text-indigo-300" },
     { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-300" },
   ];
 
@@ -289,7 +281,7 @@ export default function JobTracker() {
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             let count = null;
-            if (tab.id === "pipeline") count = stats.toApply + stats.applied;
+            if (tab.id === "pipeline") count = stats.toApply + stats.referral + stats.applied;
             if (tab.id === "openings") count = activeOpeningsCount;
             if (tab.id === "companies") count = stats.total;
             return (
@@ -323,8 +315,7 @@ export default function JobTracker() {
         {/* Tab content */}
         {activeTab === "pipeline" && (
           <PipelineTab
-            toApplyList={toApplyList}
-            appliedList={appliedList}
+            allCompanies={allCompanies}
             entryOf={entryOf}
             patchCompany={patchCompany}
           />
