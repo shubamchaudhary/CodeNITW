@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { HiChevronDown, HiPlus, HiX } from "react-icons/hi";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
-import { FIT_CLS, RADAR_NEW_DAYS, normalizeUrl, ScoreBadge } from "./shared";
+import { FIT_CLS, RADAR_NEW_DAYS, MIN_MATCH_SCORE, MAX_YOE, isOpeningEligible, normalizeUrl, ScoreBadge } from "./shared";
 
 // ── Manual opening form ──────────────────────────────────────────────────────
 function ManualOpeningForm({ allCompanies, onAdd, onClose }) {
@@ -77,8 +77,27 @@ export default function OpeningsTab({
 }) {
   const [openIds, setOpenIds] = useState(() => new Set());
   const [addingManual, setAddingManual] = useState(false);
-  const [onlyRemaining, setOnlyRemaining] = useState(false);
   const [sortMode, setSortMode] = useState("match");
+
+  // Dismiss + toast an Undo, so hiding a row stays recoverable without keeping
+  // crossed-out rows on screen taking up space.
+  const dismiss = (o) => {
+    onReject(o);
+    toast.info(
+      ({ closeToast }) => (
+        <span className="text-sm">
+          Removed <span className="font-semibold">{(o.title || "opening").slice(0, 40)}</span>{" "}
+          <button
+            onClick={() => { onUnreject(o); closeToast(); }}
+            className="underline font-semibold text-indigo-600 dark:text-indigo-300"
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { autoClose: 4000 }
+    );
+  };
 
   if (!radarVisible) {
     return (
@@ -108,27 +127,28 @@ export default function OpeningsTab({
   const newCutoff = Date.now() - RADAR_NEW_DAYS * 24 * 60 * 60 * 1000;
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
 
-  // Single source of truth per company: `visibleList` = untracked rows shown in
-  // the list (sorted best-match first); `remaining` = untracked AND
-  // not-dismissed (the actionable count on the badge); `topScore` = the best
-  // actionable match, used to rank company groups. The header total is the SUM
-  // of `remaining`, so it can never disagree with the badges.
+  // Single source of truth per company: `visibleList` = the rows actually shown
+  // — untracked, not dismissed, and passing the fit gate (≥40% match, ≤4 YoE).
+  // Dismissed/tracked/too-senior/low-match rows are dropped entirely so the list
+  // only ever shows what's actionable right now. `queuedCount` = already saved to
+  // To Apply; `topScore` ranks company groups.
   const meta = new Map();
   let totalRemaining = 0;
   let newCount = 0;
   for (const cid of groups) {
     const list = byCompany.get(cid);
-    const visibleList = list.filter((o) => !o.tracked).sort(byScore);
-    const remainingList = visibleList.filter((o) => !rejectedKeys[o.uKey]);
-    const hasNew = remainingList.some(isNew);
-    const topScore = remainingList.reduce((m, o) => Math.max(m, scoreOf(o)), -1);
-    newCount += remainingList.filter(isNew).length;
-    totalRemaining += remainingList.length;
+    const visibleList = list
+      .filter((o) => !o.tracked && !rejectedKeys[o.uKey] && isOpeningEligible(o))
+      .sort(byScore);
+    const hasNew = visibleList.some(isNew);
+    const topScore = visibleList.reduce((m, o) => Math.max(m, scoreOf(o)), -1);
+    newCount += visibleList.filter(isNew).length;
+    totalRemaining += visibleList.length;
     meta.set(cid, {
       list,
       visibleList,
-      remaining: remainingList.length,
-      queuedCount: list.length - visibleList.length,
+      remaining: visibleList.length,
+      queuedCount: list.filter((o) => o.tracked).length,
       hasNew,
       topScore,
     });
@@ -142,8 +162,8 @@ export default function OpeningsTab({
     groups.sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
   }
 
-  // Optional filter: only show companies that still have openings to apply to.
-  const shownGroups = onlyRemaining ? groups.filter((cid) => meta.get(cid).remaining > 0) : groups;
+  // Only show companies that still have an actionable opening.
+  const shownGroups = groups.filter((cid) => meta.get(cid).remaining > 0);
 
   const watched = radar.summary.coveredCompanyIds?.length ?? radar.summary.boards;
 
@@ -165,7 +185,7 @@ export default function OpeningsTab({
             {newCount > 0 && (
               <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{newCount} new</span>
             )}
-            {shownGroups.length} companies · {watched} boards auto-watched · scanned{" "}
+            {shownGroups.length} companies · ≥{MIN_MATCH_SCORE}% match · ≤{MAX_YOE} yrs · {watched} boards auto-watched · scanned{" "}
             {new Date(radar.summary.updatedAt).toLocaleString()}
           </span>
         </div>
@@ -181,18 +201,6 @@ export default function OpeningsTab({
               <option value="match">Best match</option>
               <option value="name">Name (A–Z)</option>
             </select>
-          </label>
-          <label
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 cursor-pointer select-none"
-            title="Hide companies whose openings are all queued or dismissed"
-          >
-            <input
-              type="checkbox"
-              checked={onlyRemaining}
-              onChange={(e) => setOnlyRemaining(e.target.checked)}
-              className="w-4 h-4 accent-indigo-600 cursor-pointer"
-            />
-            Only with openings left
           </label>
           <button
             onClick={() => setAddingManual((s) => !s)}
@@ -248,90 +256,69 @@ export default function OpeningsTab({
               </button>
               {open && (
                 <ul className="px-3 pb-2.5 space-y-0.5">
-                  {visibleList.length === 0 && (
-                    <li className="text-xs text-gray-400 dark:text-gray-500 italic px-2 py-1.5">
-                      All openings queued in To Apply — nothing left to action here.
-                    </li>
-                  )}
-                  {visibleList.map((o) => {
-                    const rejected = !!rejectedKeys[o.uKey];
-                    return (
-                      <li
-                        key={o.uKey}
-                        className="flex items-center gap-1.5 text-sm rounded-lg px-2 py-1.5 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors"
+                  {visibleList.map((o) => (
+                    <li
+                      key={o.uKey}
+                      className="flex items-center gap-1.5 text-sm rounded-lg px-2 py-1.5 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors"
+                    >
+                      {isNew(o) && (
+                        <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
+                          NEW
+                        </span>
+                      )}
+                      <ScoreBadge score={o.matchScore} matched={o.matched} basis={o.matched?.length ? "skills" : o.desc ? "skills" : "title"} />
+                      <a
+                        href={o.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:underline truncate text-indigo-600 dark:text-indigo-400"
+                        title={`${o.title} — ${o.location}`}
                       >
-                        {isNew(o) && !rejected && (
-                          <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
-                            NEW
-                          </span>
-                        )}
-                        {!rejected && <ScoreBadge score={o.matchScore} matched={o.matched} basis={o.matched?.length ? "skills" : o.desc ? "skills" : "title"} />}
-                        <a
-                          href={o.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`hover:underline truncate ${
-                            rejected
-                              ? "line-through text-gray-400 dark:text-gray-500"
-                              : "text-indigo-600 dark:text-indigo-400"
-                          }`}
-                          title={`${o.title} — ${o.location}`}
-                        >
-                          {o.title}
-                        </a>
-                        <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0 hidden sm:inline" title={o.location}>
-                          {o.location}
+                        {o.title}
+                      </a>
+                      {/* Remove sits right next to the link — minimal cursor travel */}
+                      <button
+                        onClick={() => dismiss(o)}
+                        className="text-gray-400 hover:text-red-500 text-xs px-0.5 shrink-0"
+                        title="Not a fit — remove"
+                      >
+                        <HiX />
+                      </button>
+                      {typeof o.minYoe === "number" && (
+                        <span className="text-[9px] font-semibold px-1 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 shrink-0" title="Minimum years of experience stated in the job description">
+                          {o.minYoe}+ yrs
                         </span>
-                        {!rejected && o.matched?.length > 0 && (
-                          <span className="hidden md:flex items-center gap-1 shrink-0">
-                            {o.matched.slice(0, 3).map((m) => (
-                              <span
-                                key={m.skill}
-                                className={`text-[9px] font-semibold px-1 py-0.5 rounded ${
-                                  m.type === "want"
-                                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
-                                    : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
-                                }`}
-                                title={m.type === "want" ? "A skill you want to grow into" : "A skill you have"}
-                              >
-                                {m.skill}
-                                {m.type === "want" ? " ↗" : ""}
-                              </span>
-                            ))}
-                          </span>
-                        )}
-                        {/* Actions pushed to the far right of the row */}
-                        <span className="ml-auto flex items-center gap-1 shrink-0">
-                          {rejected ? (
-                            <button
-                              onClick={() => onUnreject(o)}
-                              className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-slate-500"
-                              title="Restore this opening"
+                      )}
+                      <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[120px] shrink-0 hidden sm:inline" title={o.location}>
+                        {o.location}
+                      </span>
+                      {o.matched?.length > 0 && (
+                        <span className="hidden md:flex items-center gap-1 shrink-0">
+                          {o.matched.slice(0, 3).map((m) => (
+                            <span
+                              key={m.skill}
+                              className={`text-[9px] font-semibold px-1 py-0.5 rounded ${
+                                m.type === "want"
+                                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                                  : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300"
+                              }`}
+                              title={m.type === "want" ? "A skill you want to grow into" : "A skill you have"}
                             >
-                              Undo
-                            </button>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => onTrack(o)}
-                                className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white"
-                                title="Save under this company and queue in To Apply"
-                              >
-                                → To Apply
-                              </button>
-                              <button
-                                onClick={() => onReject(o)}
-                                className="text-gray-400 hover:text-red-500 text-xs px-0.5"
-                                title="Dismiss"
-                              >
-                                <HiX />
-                              </button>
-                            </>
-                          )}
+                              {m.skill}
+                              {m.type === "want" ? " ↗" : ""}
+                            </span>
+                          ))}
                         </span>
-                      </li>
-                    );
-                  })}
+                      )}
+                      <button
+                        onClick={() => onTrack(o)}
+                        className="ml-auto text-[11px] font-semibold px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white shrink-0"
+                        title="Save under this company and queue in To Apply"
+                      >
+                        → To Apply
+                      </button>
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>
@@ -342,9 +329,7 @@ export default function OpeningsTab({
       {shownGroups.length === 0 && (
         <div className={`${GLASS} rounded-xl p-10 text-center`}>
           <p className="text-sm text-gray-400 dark:text-gray-500">
-            {onlyRemaining
-              ? "No companies with openings left to apply — everything is queued or dismissed."
-              : "No unhandled openings — everything is tracked, dismissed, or the radar found no matches."}
+            No openings to action — everything is queued, dismissed, or below the ≥{MIN_MATCH_SCORE}% match / ≤{MAX_YOE}-year bar.
           </p>
         </div>
       )}
