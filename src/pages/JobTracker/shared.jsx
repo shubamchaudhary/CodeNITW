@@ -40,6 +40,29 @@ export const APPLIED_HIGHLIGHT_DAYS = 10;
 export const PAGE_SIZE = 60;
 export const RADAR_NEW_DAYS = 3;
 
+// Only surface openings you're a real fit for: at least this résumé-match %…
+export const MIN_MATCH_SCORE = 40;
+// …and no more than this many years of experience required.
+export const MAX_YOE = 4;
+
+// Title words that imply well over 4 YoE, used when the JD didn't state a
+// number (the radar drops JD-stated >4 at scan time; this catches the rest).
+const SENIOR_TITLE_RX = /\b(senior|sr\.?|staff|principal|lead|architect|distinguished|fellow|l[5-9])\b/i;
+
+// True when an opening fits the ≤4-YoE bar. A JD-parsed `minYoe` is
+// authoritative; otherwise fall back to the title seniority signal.
+export function withinYoe(o) {
+  if (typeof o.minYoe === "number") return o.minYoe <= MAX_YOE;
+  return !SENIOR_TITLE_RX.test(o.title || "");
+}
+
+// The single gate the Openings list applies per row: strong enough match AND
+// within the experience ceiling.
+export function isOpeningEligible(o) {
+  const score = typeof o.matchScore === "number" ? o.matchScore : -1;
+  return score >= MIN_MATCH_SCORE && withinYoe(o);
+}
+
 export const RADAR_SOURCES = [
   "https://raw.githubusercontent.com/shubamchaudhary/CodeNITW/main/radar/openings.json",
   "https://raw.githubusercontent.com/shubamchaudhary/CodeNITW/claude/job-application-tracker-nqpn76/radar/openings.json",
