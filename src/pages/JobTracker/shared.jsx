@@ -40,8 +40,9 @@ export const APPLIED_HIGHLIGHT_DAYS = 10;
 export const PAGE_SIZE = 60;
 export const RADAR_NEW_DAYS = 3;
 
-// Only surface openings you're a real fit for: at least this résumé-match %…
-export const MIN_MATCH_SCORE = 50;
+// Only surface openings you're a real fit for: the YoE-adjusted résumé-match
+// must clear this bar (0.8 → 80%).
+export const MIN_MATCH_SCORE = 80;
 // …and no more than this many years of experience required.
 export const MAX_YOE = 3;
 
@@ -60,11 +61,25 @@ export function withinYoe(o) {
   return !SENIOR_TITLE_RX.test(o.title || "");
 }
 
-// The single gate the Openings list applies per row: strong enough match AND
-// within the experience ceiling.
-export function isOpeningEligible(o) {
+// Years-of-experience weighting applied to the raw skill-match score. Roles
+// asking ≤2 yrs are an ideal fit (full weight); a 3-yr ask is a stretch, so its
+// score is scaled to 0.8× — it only survives the gate if the skill match is
+// otherwise excellent. (JD-stated >3 yrs is already dropped at scan time.)
+export function yoeMultiplier(o) {
+  return typeof o.minYoe === "number" && o.minYoe >= 3 ? 0.8 : 1;
+}
+
+// The YoE-adjusted résumé-match score (0–100) used for both ranking and the
+// eligibility gate. Rounded so badges show a clean integer. -1 when unscored.
+export function effectiveMatch(o) {
   const score = typeof o.matchScore === "number" ? o.matchScore : -1;
-  return score >= MIN_MATCH_SCORE && withinYoe(o);
+  return score < 0 ? -1 : Math.round(score * yoeMultiplier(o));
+}
+
+// The single gate the Openings list applies per row: YoE-adjusted match clears
+// the bar AND the role is within the experience ceiling.
+export function isOpeningEligible(o) {
+  return effectiveMatch(o) >= MIN_MATCH_SCORE && withinYoe(o);
 }
 
 export const RADAR_SOURCES = [
