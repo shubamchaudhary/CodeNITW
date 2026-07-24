@@ -6,6 +6,7 @@ import {
   HiChevronDown,
   HiOutlineSearch,
   HiCheck,
+  HiEye,
 } from "react-icons/hi";
 import { GLASS } from "../../components/glass";
 import {
@@ -13,6 +14,7 @@ import {
   FIT_RANK,
   PAGE_SIZE,
   APPLIED_HIGHLIGHT_DAYS,
+  CAREER_WATCH_DAYS,
   StatusSelect,
   CompanyDetail,
   AddCompanyForm,
@@ -44,6 +46,16 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
     e.stopPropagation();
     if (activeApplied) onPatch({ status: "none" });
     else onPatch({ status: "applied", appliedAt: Date.now() });
+  };
+
+  // "Watched the careers page" marker — auto-expires after CAREER_WATCH_DAYS so
+  // it prompts a re-check rather than staying marked forever.
+  const watchedAt = entry.watchedAt;
+  const watchedDays = daysSince(watchedAt);
+  const activeWatched = watchedAt != null && watchedDays !== Infinity && watchedDays <= CAREER_WATCH_DAYS;
+  const toggleWatched = (e) => {
+    e.stopPropagation();
+    onPatch({ watchedAt: activeWatched ? null : Date.now() });
   };
 
   let cardExtra = "";
@@ -85,6 +97,23 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
                 <HiOutlineExternalLink />
               </a>
             )}
+            {/* Watched-careers-page marker: auto-clears after CAREER_WATCH_DAYS */}
+            <button
+              onClick={toggleWatched}
+              className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded transition-colors ${
+                activeWatched
+                  ? "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300"
+                  : "text-gray-400 hover:text-sky-600 dark:hover:text-sky-300"
+              }`}
+              title={
+                activeWatched
+                  ? `Careers page watched ${watchedDays === 0 ? "today" : `${watchedDays}d ago`} — clears after ${CAREER_WATCH_DAYS}d. Click to un-watch.`
+                  : "Mark careers page as watched"
+              }
+            >
+              <HiEye className="w-3 h-3" />
+              {activeWatched && (watchedDays === 0 ? "today" : `${watchedDays}d`)}
+            </button>
             {links.length > 0 && (
               <span
                 className={`font-bold px-1.5 py-0.5 rounded-full text-[10px] ${

@@ -41,9 +41,13 @@ export const PAGE_SIZE = 60;
 export const RADAR_NEW_DAYS = 3;
 
 // Only surface openings you're a real fit for: at least this résumé-match %…
-export const MIN_MATCH_SCORE = 40;
+export const MIN_MATCH_SCORE = 50;
 // …and no more than this many years of experience required.
 export const MAX_YOE = 3;
+
+// A "watched the careers page" marker auto-expires after this many days, so it
+// keeps nudging you to re-check the page instead of staying green forever.
+export const CAREER_WATCH_DAYS = 15;
 
 // Title words that imply well over 3 YoE, used when the JD didn't state a
 // number (the radar drops JD-stated >3 at scan time; this catches the rest).

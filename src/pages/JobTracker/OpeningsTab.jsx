@@ -128,7 +128,7 @@ export default function OpeningsTab({
   const isNew = (o) => new Date(o.firstSeen).getTime() >= newCutoff;
 
   // Single source of truth per company: `visibleList` = the rows actually shown
-  // — untracked, not dismissed, and passing the fit gate (≥40% match, ≤4 YoE).
+  // — untracked, not dismissed, and passing the fit gate (≥50% match, ≤3 YoE).
   // Dismissed/tracked/too-senior/low-match rows are dropped entirely so the list
   // only ever shows what's actionable right now. `queuedCount` = already saved to
   // To Apply; `topScore` ranks company groups.
