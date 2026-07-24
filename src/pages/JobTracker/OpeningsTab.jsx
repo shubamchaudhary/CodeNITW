@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { HiChevronDown, HiPlus, HiX } from "react-icons/hi";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
-import { FIT_CLS, RADAR_NEW_DAYS, MIN_MATCH_SCORE, MAX_YOE, isOpeningEligible, normalizeUrl, ScoreBadge } from "./shared";
+import { FIT_CLS, RADAR_NEW_DAYS, MIN_MATCH_SCORE, MAX_YOE, isOpeningEligible, effectiveMatch, normalizeUrl, ScoreBadge } from "./shared";
 
 // ── Manual opening form ──────────────────────────────────────────────────────
 function ManualOpeningForm({ allCompanies, onAdd, onClose }) {
@@ -120,7 +120,9 @@ export default function OpeningsTab({
   }
 
   const nameOf = (cid) => companiesById[cid]?.name || byCompany.get(cid)?.[0]?.company || "";
-  const scoreOf = (o) => (typeof o.matchScore === "number" ? o.matchScore : -1);
+  // Rank by the YoE-adjusted match so a penalized 3-yr role sorts below an
+  // equally-skilled ≤2-yr one (unscored rows sink to the end).
+  const scoreOf = (o) => effectiveMatch(o);
   // Highest-match opening first within a company (unscored rows sink to the end).
   const byScore = (a, b) => scoreOf(b) - scoreOf(a) || (a.title || "").localeCompare(b.title || "");
 
@@ -266,7 +268,7 @@ export default function OpeningsTab({
                           NEW
                         </span>
                       )}
-                      <ScoreBadge score={o.matchScore} matched={o.matched} basis={o.matched?.length ? "skills" : o.desc ? "skills" : "title"} />
+                      <ScoreBadge score={effectiveMatch(o)} matched={o.matched} basis={o.matched?.length ? "skills" : o.desc ? "skills" : "title"} />
                       <a
                         href={o.url}
                         target="_blank"
