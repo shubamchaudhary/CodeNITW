@@ -17,12 +17,23 @@ import PipelineTab from "./PipelineTab";
 import OpeningsTab from "./OpeningsTab";
 import CompaniesTab from "./CompaniesTab";
 
+// Bump this token to force a one-time clean slate for every user on next load.
+// Used when the company roster is regenerated (new IDs) so stale per-company
+// tracking + dismissals from the old roster don't linger.
+const PIPELINE_RESET_TOKEN = "v7-2026-07";
+
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
+  // One-time reset: wipe all pipeline tracking (links/statuses) and dismissed
+  // openings so the tracker starts fresh against the v7 roster + stricter
+  // filters. Custom companies the user added are preserved.
+  if (s.pipelineReset !== PIPELINE_RESET_TOKEN) {
+    return { companies: {}, custom: s.custom || [], dismissedOpenings: {}, pipelineReset: PIPELINE_RESET_TOKEN };
+  }
   // Upgrade any legacy dismissal entries so crosses made before the identity
   // format changed keep working across this (and future) deployments.
   const { map: dismissedOpenings } = migrateDismissals(s.dismissedOpenings || {});
-  return { companies: s.companies || {}, custom: s.custom || [], dismissedOpenings };
+  return { companies: s.companies || {}, custom: s.custom || [], dismissedOpenings, pipelineReset: s.pipelineReset };
 }
 
 const TABS = [
@@ -45,10 +56,20 @@ export default function JobTracker() {
     []
   );
 
-  // Persist the migrated dismissal map once on mount so the upgraded format is
-  // written back to storage (and pushed to cloud sync), not just held in memory.
+  // Persist the one-time reset / migrated dismissal map once on mount so the
+  // change is written back to storage (and pushed to cloud sync), not just held
+  // in memory.
   useEffect(() => {
     const raw = loadJSON(KEYS.JOB_TRACKER, {});
+    if (raw.pipelineReset !== PIPELINE_RESET_TOKEN) {
+      saveJSON(KEYS.JOB_TRACKER, {
+        companies: {},
+        custom: raw.custom || [],
+        dismissedOpenings: {},
+        pipelineReset: PIPELINE_RESET_TOKEN,
+      });
+      return;
+    }
     const { map, changed } = migrateDismissals(raw.dismissedOpenings || {});
     if (changed) {
       const next = { ...raw, companies: raw.companies || {}, custom: raw.custom || [], dismissedOpenings: map };
