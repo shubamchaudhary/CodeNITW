@@ -1,11 +1,11 @@
 {
  "summary": {
-  "updatedAt": "2026-07-25T14:46:44.138Z",
+  "updatedAt": "2026-07-26T14:48:23.372Z",
   "boards": 142,
   "boardsFailed": 5,
-  "liveRelevantOpenings": 428,
-  "newThisRun": 19,
-  "linkedinOpenings": 13,
+  "liveRelevantOpenings": 419,
+  "newThisRun": 6,
+  "linkedinOpenings": 6,
   "coveredCompanyIds": [
    "abb",
    "acceldata",
@@ -148,6 +148,169 @@
  },
  "openings": [
   {
+   "key": "73c3bc7f9e381334",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "linkedin",
+   "title": "Software Development Engineer II, Amazon",
+   "location": "Ahmedabad, Gujarat, India",
+   "url": "https://in.linkedin.com/jobs/view/software-development-engineer-ii-amazon-at-amazon-4443045505",
+   "desc": "Description Revolutionize Global Financial Systems with Cutting-Edge Technology Are you passionate about building transformative financial technologies that power global transactions? Join our team and design innovative…",
+   "matchScore": 55,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    },
+    {
+     "skill": "Design Patterns",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-26T14:48:23.372Z"
+  },
+  {
+   "key": "d9412cd2fa7bca1c",
+   "companyId": "jp-morgan-chase",
+   "company": "JP Morgan Chase",
+   "ats": "oraclecloud",
+   "title": "Software Engineer III - Big Data",
+   "location": "Hyderabad, Telangana, India",
+   "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210755919",
+   "desc": "We have an exciting and rewarding opportunity for you to take your software engineering career to the next level.",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-26T14:48:23.372Z"
+  },
+  {
+   "key": "e1b1d94bbe1a895b",
+   "companyId": "lowe-s-india",
+   "company": "Lowe's India",
+   "ats": "linkedin",
+   "title": "Software Engineer Full Stack",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-full-stack-at-lowe-s-india-4435546558",
+   "desc": "Innovate in Bengaluru This position is based at our on-site office in Bengaluru. Lowe's offers an ultramodern work environment, complete with cutting-edge technology, collaborative workspaces, an on-site gym and clinic,…",
+   "matchScore": 38,
+   "matched": [
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "Agile",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-26T14:48:23.372Z"
+  },
+  {
+   "key": "b9f79346655b2ef6",
+   "companyId": "lufthansa-systems",
+   "company": "Lufthansa Systems",
+   "ats": "linkedin",
+   "title": "Senior Engineer – Cabin System Configuration",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/senior-engineer-%E2%80%93-cabin-system-configuration-at-lufthansa-technik-services-india-pvt-ltd-4443920185",
+   "desc": "At LTSI, we are seeking a detail-oriented Senior Engineer – Cabin System Configuration to join our Engineering Services team. In this role, you will support the evaluation and implementation of cabin system configuration…",
+   "matchScore": 25,
+   "matched": [
+    {
+     "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-26T14:48:23.372Z"
+  },
+  {
+   "key": "88baaf5e3a14af37",
+   "companyId": "mastercard",
+   "company": "Mastercard",
+   "ats": "workday",
+   "title": "Senior Software Engineer-2",
+   "location": "Pune, India",
+   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Senior-Software-Engineer-2_R-281154-1",
+   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
+   "matchScore": 56,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "CI/CD",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-26T14:48:23.372Z"
+  },
+  {
+   "key": "e61449c30f12c96b",
+   "companyId": "walmart-global-tech",
+   "company": "Walmart Global Tech",
+   "ats": "linkedin",
+   "title": "SOFTWARE ENGINEER III",
+   "location": "Bengaluru, Karnataka, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-iii-at-walmart-global-tech-india-4405182284",
+   "desc": "About Team: Our team collaborates with Walmart International, which has over 5,900 retail units operating outside of the United States under 55 banners in 26 countries including Africa, Argentina, Canada, Central America…",
+   "matchScore": 85,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Kafka",
+     "type": "have"
+    },
+    {
+     "skill": "Microservices",
+     "type": "have"
+    },
+    {
+     "skill": "Spark",
+     "type": "want"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Concurrency",
+     "type": "have"
+    },
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-26T14:48:23.372Z"
+  },
+  {
    "key": "6b2e807b2fb17d03",
    "companyId": "airbnb",
    "company": "Airbnb",
@@ -214,227 +377,6 @@
      "type": "have"
     }
    ],
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "c3c18ca07c6bda10",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "linkedin",
-   "title": "Software Development Engineer II, Amazon",
-   "location": "Uttar Pradesh, India",
-   "url": "https://in.linkedin.com/jobs/view/software-development-engineer-ii-amazon-at-amazon-4443049340",
-   "desc": "Description Revolutionize Global Financial Systems with Cutting-Edge Technology Are you passionate about building transformative financial technologies that power global transactions? Join our team and design innovative…",
-   "matchScore": 55,
-   "matched": [
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "CI/CD",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "dd929f279c9f04ac",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "linkedin",
-   "title": "Software Development Engineer II, Amazon",
-   "location": "Uttar Pradesh, India",
-   "url": "https://in.linkedin.com/jobs/view/software-development-engineer-ii-amazon-at-amazon-4443038894",
-   "desc": "Description Revolutionize Global Financial Systems with Cutting-Edge Technology Are you passionate about building transformative financial technologies that power global transactions? Join our team and design innovative…",
-   "matchScore": 55,
-   "matched": [
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "CI/CD",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "e095076590f1f3c0",
-   "companyId": "browserstack",
-   "company": "BrowserStack",
-   "ats": "linkedin",
-   "title": "SDE - Customer Engineering",
-   "location": "Mumbai Metropolitan Region",
-   "url": "https://in.linkedin.com/jobs/view/sde-customer-engineering-at-browserstack-4440443886",
-   "desc": "Location: This is a remote position; however, the role requires the candidate to be based in Mumbai. Role in nutshell: You will be part of a growing, high-performing Customer Engineering team that partners with Sales fun…",
-   "matchScore": 25,
-   "matched": [
-    {
-     "skill": "Testing",
-     "type": "have"
-    },
-    {
-     "skill": "Agile",
-     "type": "have"
-    }
-   ],
-   "minYoe": 1,
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "1141b8c0d43b63bb",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4445201033",
-   "desc": "Meet the Team The Cisco Enterprise Routing team is responsible for the end-to-end lifecycle of the platforms that serve as the \"connective tissue\" for businesses worldwide. Their work ensures that data—ranging from simpl…",
-   "matchScore": 63,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 0,
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "aa10794f1bed90a3",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4444413710",
-   "desc": "Please note this posting is to advertise potential job opportunities. This exact role may not be open today but could open in the near future. When you apply, a Cisco representative may contact you directly if a relevant…",
-   "matchScore": 73,
-   "matched": [
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "GenAI",
-     "type": "have"
-    },
-    {
-     "skill": "gRPC",
-     "type": "want"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "REST",
-     "type": "have"
-    },
-    {
-     "skill": "CI/CD",
-     "type": "have"
-    },
-    {
-     "skill": "Testing",
-     "type": "have"
-    }
-   ],
-   "minYoe": 1,
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "fdc6a2ecd1929446",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4444987486",
-   "desc": "Meet the Team The Cisco Enterprise Routing team is responsible for the end-to-end lifecycle of the platforms that serve as the \"connective tissue\" for businesses worldwide. Their work ensures that data—ranging from simpl…",
-   "matchScore": 63,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 0,
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
-   "key": "6712cfd570cf881d",
-   "companyId": "eightfold-ai",
-   "company": "Eightfold AI",
-   "ats": "linkedin",
-   "title": "Senior Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/senior-engineer-at-eightfold-ai-4445337115",
-   "desc": "Eightfold was founded with a vision to solve for employment in our society. For decades, the connection between individuals and opportunities has been based on who the individuals are and the strength of their network, v…",
-   "matchScore": 77,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    }
-   ],
-   "minYoe": 3,
    "firstSeen": "2026-07-25T14:46:44.138Z"
   },
   {
@@ -747,52 +689,6 @@
    "firstSeen": "2026-07-25T14:46:44.138Z"
   },
   {
-   "key": "3bf1dc9bf016d33b",
-   "companyId": "splunk-cisco",
-   "company": "Splunk (Cisco)",
-   "ats": "workday",
-   "title": "Software Engineer (Remote)",
-   "location": "Remote - New Jersey, USA",
-   "url": "https://cisco.wd5.myworkdayjobs.com/Cisco_Careers/job/Remote---New-Jersey-USA/Software-Engineer--Remote-_2017560",
-   "desc": "The application window is expected to close on: 07/28/2026 Job posting may be removed earlier if the position is filled or if a sufficient number of applications are received . Meet the Team The Cryptographic Services Te…",
-   "matchScore": 82,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Spring",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Backend",
-     "type": "have"
-    },
-    {
-     "skill": "Spring Boot",
-     "type": "have"
-    },
-    {
-     "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-25T14:46:44.138Z"
-  },
-  {
    "key": "e2f411237a4e630f",
    "companyId": "toast",
    "company": "Toast",
@@ -933,40 +829,6 @@
     },
     {
      "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-24T15:12:55.288Z"
-  },
-  {
-   "key": "af29434b16d294a5",
-   "companyId": "gitlab",
-   "company": "GitLab",
-   "ats": "linkedin",
-   "title": "Intermediate Backend Engineer - Analytics Instrumentation",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/intermediate-backend-engineer-analytics-instrumentation-at-gitlab-4442599765",
-   "desc": "GitLab is the intelligent orchestration platform for DevSecOps. GitLab enables organizations to increase developer productivity, improve operational efficiency, reduce security and compliance risk, and accelerate digital…",
-   "matchScore": 71,
-   "matched": [
-    {
-     "skill": "Backend",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
      "type": "have"
     }
    ],
@@ -1488,37 +1350,6 @@
    "firstSeen": "2026-07-23T15:31:22.420Z"
   },
   {
-   "key": "04678acd5f64ae06",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, RBS Tech",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10482365/software-development-engineer-rbs-tech",
-   "desc": "Are you interested in designing and delivering solutions for complex and high impact business problems? Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) S…",
-   "matchScore": 58,
-   "matched": [
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "LLM",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-23T15:31:22.420Z"
-  },
-  {
    "key": "b45b88a857268dbb",
    "companyId": "amazon",
    "company": "Amazon",
@@ -1557,6 +1388,37 @@
    "title": "Software Development Engineer, RBS Tech",
    "location": "Bengaluru, Karnataka, IND",
    "url": "https://www.amazon.jobs/en/jobs/10482303/software-development-engineer-rbs-tech",
+   "desc": "Are you interested in designing and delivering solutions for complex and high impact business problems? Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) S…",
+   "matchScore": 58,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "Design Patterns",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-23T15:31:22.420Z"
+  },
+  {
+   "key": "04678acd5f64ae06",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, RBS Tech",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10482365/software-development-engineer-rbs-tech",
    "desc": "Are you interested in designing and delivering solutions for complex and high impact business problems? Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) S…",
    "matchScore": 58,
    "matched": [
@@ -2105,6 +1967,19 @@
    "firstSeen": "2026-07-23T15:31:22.420Z"
   },
   {
+   "key": "e48290564b506d6c",
+   "companyId": "walmart-global-tech",
+   "company": "Walmart Global Tech",
+   "ats": "linkedin",
+   "title": "SOFTWARE ENGINEER III",
+   "location": "Chennai, Tamil Nadu, India",
+   "url": "https://in.linkedin.com/jobs/view/software-engineer-iii-at-walmart-global-tech-india-4401949760",
+   "desc": "",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-23T15:31:22.420Z"
+  },
+  {
    "key": "48ce1f74c55eda67",
    "companyId": "allstate-india",
    "company": "Allstate India",
@@ -2409,19 +2284,6 @@
    "firstSeen": "2026-07-22T15:20:14.267Z"
   },
   {
-   "key": "ae530a4ce1c35fe0",
-   "companyId": "jp-morgan-chase",
-   "company": "JP Morgan Chase",
-   "ats": "oraclecloud",
-   "title": "Software Engineer III - Database",
-   "location": "Hyderabad, Telangana, India",
-   "url": "https://jpmc.fa.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1001/job/210750429",
-   "desc": "Database Engineer senior individual contributor responsible for designing, implementing, maintaining, and optimizing database systems",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-22T15:20:14.267Z"
-  },
-  {
    "key": "eb6c4453c094a924",
    "companyId": "mastercard",
    "company": "Mastercard",
@@ -2588,100 +2450,6 @@
    "firstSeen": "2026-07-21T15:22:25.113Z"
   },
   {
-   "key": "26a13bbd8a1c4e69",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4434295443",
-   "desc": "Meet the Team This is an excellent opportunity to join one of the fastest growing business units of Cisco, that is focused on building next generation cloud technologies. We are working on a ground breaking new approach…",
-   "matchScore": 94,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Spring",
-     "type": "have"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Microservices",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    }
-   ],
-   "minYoe": 1,
-   "firstSeen": "2026-07-21T15:22:25.113Z"
-  },
-  {
-   "key": "afc822eacb669f90",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4434405187",
-   "desc": "What You'll Do Play a core role within the development team, responsible for analyzing, designing, and building software solutions that help customers seamlessly onboard to Cisco Spaces offers. Develop and maintain effic…",
-   "matchScore": 55,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Kotlin",
-     "type": "want"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Agentic AI",
-     "type": "have"
-    },
-    {
-     "skill": "MongoDB",
-     "type": "have"
-    },
-    {
-     "skill": "Redis",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-21T15:22:25.113Z"
-  },
-  {
    "key": "bc21db22ebab6f43",
    "companyId": "freshworks",
    "company": "Freshworks",
@@ -2808,53 +2576,6 @@
    "firstSeen": "2026-07-21T15:22:25.113Z"
   },
   {
-   "key": "44ea79964661991f",
-   "companyId": "mastercard",
-   "company": "Mastercard",
-   "ats": "workday",
-   "title": "Software Engineer II",
-   "location": "Pune, India",
-   "url": "https://mastercard.wd1.myworkdayjobs.com/CorporateCareers/job/Pune-India/Software-Engineer-II_R-282822",
-   "desc": "Our Purpose Mastercard powers economies and empowers people in 200&#43; countries and territories worldwide. Together with our customers, we’re helping build a sustainable economy where everyone can prosper. We support a…",
-   "matchScore": 78,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Spring",
-     "type": "have"
-    },
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
-     "type": "have"
-    },
-    {
-     "skill": "Microservices",
-     "type": "have"
-    },
-    {
-     "skill": "MongoDB",
-     "type": "have"
-    }
-   ],
-   "minYoe": 3,
-   "firstSeen": "2026-07-21T15:22:25.113Z"
-  },
-  {
    "key": "a7b1e6ee18dafd00",
    "companyId": "qualys",
    "company": "Qualys",
@@ -2941,44 +2662,6 @@
     }
    ],
    "minYoe": 2,
-   "firstSeen": "2026-07-21T15:22:25.113Z"
-  },
-  {
-   "key": "b1fc76f7090590aa",
-   "companyId": "salesforce",
-   "company": "Salesforce",
-   "ats": "workdayUrl",
-   "title": "Software Engineering SMTS/ LMTS - LLM Model building",
-   "location": "India - Bangalore",
-   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Bangalore/Software-Engineering-SMTS--LLM-Model-building_JR350260",
-   "desc": "To get the best candidate experience, please consider applying for a maximum of 3 roles within 12 months to ensure you are not duplicating efforts. Job Category Software Engineering Job Details About Salesforce Salesforc…",
-   "matchScore": 61,
-   "matched": [
-    {
-     "skill": "LLM",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Agentic AI",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Human-in-the-Loop",
-     "type": "have"
-    }
-   ],
    "firstSeen": "2026-07-21T15:22:25.113Z"
   },
   {
@@ -4034,29 +3717,6 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "e4aae26ac7404e6c",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer - II",
-   "location": "Hyderabad, Telangana, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10474683/software-development-engineer-ii",
-   "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
-   "matchScore": 38,
-   "matched": [
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-17T04:54:37.747Z"
-  },
-  {
    "key": "0323020ac286b94b",
    "companyId": "amazon",
    "company": "Amazon",
@@ -4087,6 +3747,29 @@
    "title": "Software Development Engineer - II",
    "location": "Hyderabad, Telangana, IND",
    "url": "https://www.amazon.jobs/en/jobs/10474684/software-development-engineer-ii",
+   "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
+   "matchScore": 38,
+   "matched": [
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "Design Patterns",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-17T04:54:37.747Z"
+  },
+  {
+   "key": "e4aae26ac7404e6c",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer - II",
+   "location": "Hyderabad, Telangana, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10474683/software-development-engineer-ii",
    "desc": "Selling Partner Identity Verification (SPIV) team ensures that Amazon is a safe and trustworthy place to shop and an amazing place to build a successful business selling products. We support this mission through providin…",
    "matchScore": 38,
    "matched": [
@@ -4906,18 +4589,26 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "ebce16239c6d9f13",
+   "key": "cdaa90b4cf288a75",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
-   "title": "Senior Backend Software Engineer",
+   "title": "Software Engineer - Golang",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Experienced-Software-Developer-or-Data-Science-Engineer_1200687-3/apply",
-   "desc": "Join our team as a Senior Backend Software Engineer and drive innovation in AI/ML and distributed systems. Collaborate with experts to design scalable backend solutions, optimize data pipelines, and work with cutting-edg…",
-   "matchScore": 89,
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Golang-Developer_1208052-2/apply",
+   "desc": "Join us as a Software Engineer - Golang and drive innovation in cloud-native solutions. Leverage your expertise in Golang, Python, SQL, and distributed systems to design, develop, and optimize scalable software. Collabor…",
+   "matchScore": 88,
    "matched": [
     {
-     "skill": "Backend",
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "Python",
+     "type": "have"
+    },
+    {
+     "skill": "SQL",
      "type": "have"
     },
     {
@@ -4954,26 +4645,18 @@
    "firstSeen": "2026-07-17T04:54:37.747Z"
   },
   {
-   "key": "cdaa90b4cf288a75",
+   "key": "ebce16239c6d9f13",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
-   "title": "Software Engineer - Golang",
+   "title": "Senior Backend Software Engineer",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Golang-Developer_1208052-2/apply",
-   "desc": "Join us as a Software Engineer - Golang and drive innovation in cloud-native solutions. Leverage your expertise in Golang, Python, SQL, and distributed systems to design, develop, and optimize scalable software. Collabor…",
-   "matchScore": 88,
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Experienced-Software-Developer-or-Data-Science-Engineer_1200687-3/apply",
+   "desc": "Join our team as a Senior Backend Software Engineer and drive innovation in AI/ML and distributed systems. Collaborate with experts to design scalable backend solutions, optimize data pipelines, and work with cutting-edg…",
+   "matchScore": 89,
    "matched": [
     {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "SQL",
+     "skill": "Backend",
      "type": "have"
     },
     {
@@ -5394,19 +5077,6 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "3f94060165d06378",
-   "companyId": "ebay",
-   "company": "eBay",
-   "ats": "phenom",
-   "title": "MTS 2 , Software Engineer",
-   "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-2---Software-Engineer_R0075080/apply",
-   "desc": "Join our team as a Senior Software Engineer, Storage Data Plane, and lead the design and optimization of high-performance data plane components in large-scale distributed storage systems. Drive technical decisions, colla…",
-   "matchScore": 30,
-   "matched": [],
-   "firstSeen": "2026-07-10T11:19:11.924Z"
-  },
-  {
    "key": "164c6c83b36bb493",
    "companyId": "ebay",
    "company": "eBay",
@@ -5415,6 +5085,19 @@
    "location": "Bengaluru, Karnātaka, India",
    "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/Sr-MTS-Software-Engineer_R0075081/apply",
    "desc": "Join our team as a Senior Software Engineer - Storage Data Plane and lead the design, development, and optimization of high-performance data plane components in large-scale distributed storage systems. Drive technical de…",
+   "matchScore": 30,
+   "matched": [],
+   "firstSeen": "2026-07-10T11:19:11.924Z"
+  },
+  {
+   "key": "3f94060165d06378",
+   "companyId": "ebay",
+   "company": "eBay",
+   "ats": "phenom",
+   "title": "MTS 2 , Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-2---Software-Engineer_R0075080/apply",
+   "desc": "Join our team as a Senior Software Engineer, Storage Data Plane, and lead the design and optimization of high-performance data plane components in large-scale distributed storage systems. Drive technical decisions, colla…",
    "matchScore": 30,
    "matched": [],
    "firstSeen": "2026-07-10T11:19:11.924Z"
@@ -5438,21 +5121,16 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "98432c7b9e36cb19",
+   "key": "6bae55e06a6e6822",
    "companyId": "ebay",
    "company": "eBay",
    "ats": "phenom",
-   "title": "MTS 1, Software Engineer",
+   "title": "MTS 2, Software Engineer",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-1--Software-Engineer_R0074700/apply",
-   "desc": "Join our team as a Senior Software Engineer and help shape the future of global ecommerce. Drive backend API design, automation, and observability for millions of users. Collaborate with cross-functional teams, mentor ju…",
-   "matchScore": 25,
-   "matched": [
-    {
-     "skill": "Backend",
-     "type": "have"
-    }
-   ],
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-2--Software-Engineer_R0071781/apply",
+   "desc": "Join our team as a Senior Software Engineer, Software Researcher, and drive innovation in online advertising and search ranking at eBay. Leverage your expertise in big data, machine learning, and applied research to shap…",
+   "matchScore": 0,
+   "matched": [],
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
@@ -5496,16 +5174,21 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "6bae55e06a6e6822",
+   "key": "98432c7b9e36cb19",
    "companyId": "ebay",
    "company": "eBay",
    "ats": "phenom",
-   "title": "MTS 2, Software Engineer",
+   "title": "MTS 1, Software Engineer",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-2--Software-Engineer_R0071781/apply",
-   "desc": "Join our team as a Senior Software Engineer, Software Researcher, and drive innovation in online advertising and search ranking at eBay. Leverage your expertise in big data, machine learning, and applied research to shap…",
-   "matchScore": 0,
-   "matched": [],
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-1--Software-Engineer_R0074700/apply",
+   "desc": "Join our team as a Senior Software Engineer and help shape the future of global ecommerce. Drive backend API design, automation, and observability for millions of users. Collaborate with cross-functional teams, mentor ju…",
+   "matchScore": 25,
+   "matched": [
+    {
+     "skill": "Backend",
+     "type": "have"
+    }
+   ],
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
@@ -5525,6 +5208,32 @@
     },
     {
      "skill": "System Design",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-10T11:19:11.924Z"
+  },
+  {
+   "key": "901a0efdcdfae73a",
+   "companyId": "ebay",
+   "company": "eBay",
+   "ats": "phenom",
+   "title": "MTS 1, Software Engineer",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://ebay.wd5.myworkdayjobs.com/apply/job/Bengaluru-India/MTS-1--Software-Engineer_R0070817/apply",
+   "desc": "Join our team as a Senior Software Engineer and drive the transformation of the post purchase ecosystem at eBay. Lead the design, development, and delivery of innovative, large-scale applications using Java, Spring, REST…",
+   "matchScore": 88,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Spring",
+     "type": "have"
+    },
+    {
+     "skill": "REST",
      "type": "have"
     }
    ],
@@ -6084,13 +5793,13 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "13ccc4387b3ca1fc",
+   "key": "414863e6e34af8f6",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
    "title": "Platform Software Engineer (Networking Systems)",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202431-2/apply",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202430-3/apply",
    "desc": "Embrace the role of a Platform Software Engineer (Networking Systems) and help architect and build high-performance networking platforms at scale. Leverage your expertise in C/C++, system debugging, and networking to del…",
    "matchScore": 38,
    "matched": [
@@ -6102,13 +5811,13 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "414863e6e34af8f6",
+   "key": "13ccc4387b3ca1fc",
    "companyId": "hpe",
    "company": "HPE",
    "ats": "phenom",
    "title": "Platform Software Engineer (Networking Systems)",
    "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202430-3/apply",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Systems-Software-Engineer_1202431-2/apply",
    "desc": "Embrace the role of a Platform Software Engineer (Networking Systems) and help architect and build high-performance networking platforms at scale. Leverage your expertise in C/C++, system debugging, and networking to del…",
    "matchScore": 38,
    "matched": [
@@ -6130,24 +5839,6 @@
    "desc": "Join our team as a Senior Software Engineer in the Packet Forwarding team at Hewlett Packard Enterprise. Leverage your expertise in SONiC, BGP, and networking to design and optimize high-performance solutions. Collaborat…",
    "matchScore": 30,
    "matched": [],
-   "firstSeen": "2026-07-10T11:19:11.924Z"
-  },
-  {
-   "key": "8b84cbcffa810081",
-   "companyId": "hpe",
-   "company": "HPE",
-   "ats": "phenom",
-   "title": "Software Engineer in Routing Infrastructure Solutions",
-   "location": "Bengaluru, Karnātaka, India",
-   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-in-Routing-Infrastructure-Solutions_1207567-2/apply",
-   "desc": "Embrace the role of a Software Engineer, Routing Infrastructure Solutions and drive innovation in high-speed networking. Leverage your expertise in Ethernet PHY driver development, C/C++, and hardware debugging to design…",
-   "matchScore": 38,
-   "matched": [
-    {
-     "skill": "C++",
-     "type": "have"
-    }
-   ],
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
@@ -6178,6 +5869,24 @@
    "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer---Networking_1205693-2/apply",
    "desc": "Join our team as a Senior Software Engineer - C++ & Networking and help modernize large-scale cloud networks for global enterprises. Leverage your expertise in C++, networking protocols, and cloud architectures to design…",
    "matchScore": 75,
+   "matched": [
+    {
+     "skill": "C++",
+     "type": "have"
+    }
+   ],
+   "firstSeen": "2026-07-10T11:19:11.924Z"
+  },
+  {
+   "key": "8b84cbcffa810081",
+   "companyId": "hpe",
+   "company": "HPE",
+   "ats": "phenom",
+   "title": "Software Engineer in Routing Infrastructure Solutions",
+   "location": "Bengaluru, Karnātaka, India",
+   "url": "https://hpe.wd5.myworkdayjobs.com/Jobsathpe/job/Bengaluru-Karntaka-India/Software-Engineer-in-Routing-Infrastructure-Solutions_1207567-2/apply",
+   "desc": "Embrace the role of a Software Engineer, Routing Infrastructure Solutions and drive innovation in high-speed networking. Leverage your expertise in Ethernet PHY driver development, C/C++, and hardware debugging to design…",
+   "matchScore": 38,
    "matched": [
     {
      "skill": "C++",
@@ -6378,33 +6087,6 @@
    "firstSeen": "2026-07-10T11:19:11.924Z"
   },
   {
-   "key": "aeee1bf1647fabbd",
-   "companyId": "ebay",
-   "company": "eBay",
-   "ats": "linkedin",
-   "title": "AI Platform Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/ai-platform-engineer-at-ebay-4398687671",
-   "desc": "At eBay, we're more than a global ecommerce leader — we’re changing the way the world shops and sells. Our platform empowers millions of buyers and sellers in more than 190 markets around the world. We’re committed to pu…",
-   "matchScore": 48,
-   "matched": [
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "LLM",
-     "type": "have"
-    }
-   ],
-   "minYoe": 3,
-   "firstSeen": "2026-07-09T20:12:56.809Z"
-  },
-  {
    "key": "b5f44bf60eecebed",
    "companyId": "allstate-india",
    "company": "Allstate India",
@@ -6506,52 +6188,6 @@
    ],
    "minYoe": 2,
    "firstSeen": "2026-07-09T20:08:41.621Z"
-  },
-  {
-   "key": "29a962482dfa9fa8",
-   "companyId": "cisco",
-   "company": "Cisco",
-   "ats": "linkedin",
-   "title": "Software Engineer",
-   "location": "Bengaluru, Karnataka, India",
-   "url": "https://in.linkedin.com/jobs/view/software-engineer-at-cisco-4436702583",
-   "desc": "Meet the Team Our Incident Command Software Engineering team is a diverse and hardworking group that shares a passion for sophisticated software and computer security. We stay a step ahead of the evolving threat landscap…",
-   "matchScore": 75,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Python",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "REST",
-     "type": "have"
-    },
-    {
-     "skill": "CI/CD",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T15:04:52.591Z"
   },
   {
    "key": "dd02e68e35e79c66",
@@ -7704,52 +7340,6 @@
    "firstSeen": "2026-07-09T08:16:53.525Z"
   },
   {
-   "key": "e47595ba1452c899",
-   "companyId": "salesforce",
-   "company": "Salesforce",
-   "ats": "workdayUrl",
-   "title": "MTS/SMTS/LMTS - Software Engineer",
-   "location": "India - Hyderabad",
-   "url": "https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/SMTS--Senior-Software-Backend-Engineer_JR312327",
-   "desc": "To get the best candidate experience, please consider applying for a maximum of 3 roles within 12 months to ensure you are not duplicating efforts. Job Category Software Engineering Job Details About Salesforce Salesforc…",
-   "matchScore": 84,
-   "matched": [
-    {
-     "skill": "Kafka",
-     "type": "have"
-    },
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Kubernetes",
-     "type": "have"
-    },
-    {
-     "skill": "Agentic AI",
-     "type": "have"
-    },
-    {
-     "skill": "Elasticsearch",
-     "type": "have"
-    },
-    {
-     "skill": "Docker",
-     "type": "have"
-    },
-    {
-     "skill": "Terraform",
-     "type": "want"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    }
-   ],
-   "firstSeen": "2026-07-09T08:16:53.525Z"
-  },
-  {
    "key": "a1784ee6f90ddc6d",
    "companyId": "target-india",
    "company": "Target India",
@@ -8770,53 +8360,22 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "b2517edba57fb3c9",
+   "key": "d922cef744433e4b",
    "companyId": "amazon",
    "company": "Amazon",
    "ats": "amazon",
-   "title": "Software Development Engineer, CAM",
+   "title": "Software Development Engineer II",
    "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10427943/software-development-engineer-cam",
-   "desc": "Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) Selection, where RBS sources, creates and enrich ASINs to drive GMS growth; (b) Defect Elimination: where…",
-   "matchScore": 58,
+   "url": "https://www.amazon.jobs/en/jobs/3151381/software-development-engineer-ii",
+   "desc": "Amazon Lab126 is an inventive research and development company that designs and engineers high-profile consumer electronics. Lab126 began in 2004 as a subsidiary of Amazon.com, Inc., originally creating the best-selling…",
+   "matchScore": 56,
    "matched": [
     {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "LLM",
+     "skill": "Java",
      "type": "have"
     },
     {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
-   "key": "05117fea314133da",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, AFFS",
-   "location": "Pune, Maharashtra, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10438767/software-development-engineer-affs",
-   "desc": "Amazon Financials Foundation Services (AFFS), a division within Amazon’s eCommerce Services Organization (eCS) is leading innovation in business systems integration and defining the future of financial accounting at Amaz…",
-   "matchScore": 90,
-   "matched": [
-    {
-     "skill": "AWS",
-     "type": "want"
-    },
-    {
-     "skill": "Distributed Systems",
+     "skill": "C++",
      "type": "have"
     },
     {
@@ -8825,10 +8384,6 @@
     },
     {
      "skill": "Design Patterns",
-     "type": "have"
-    },
-    {
-     "skill": "Agile",
      "type": "have"
     }
    ],
@@ -8898,37 +8453,6 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "d922cef744433e4b",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer II",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/3151381/software-development-engineer-ii",
-   "desc": "Amazon Lab126 is an inventive research and development company that designs and engineers high-profile consumer electronics. Lab126 began in 2004 as a subsidiary of Amazon.com, Inc., originally creating the best-selling…",
-   "matchScore": 56,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "System Design",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
    "key": "862be3d07fa839ce",
    "companyId": "amazon",
    "company": "Amazon",
@@ -8980,6 +8504,72 @@
     },
     {
      "skill": "Design Patterns",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "b2517edba57fb3c9",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, CAM",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10427943/software-development-engineer-cam",
+   "desc": "Retail Business Services (RBS) supports Amazon’s Retail business growth WW through three core tasks. These are (a) Selection, where RBS sources, creates and enrich ASINs to drive GMS growth; (b) Defect Elimination: where…",
+   "matchScore": 58,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "LLM",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "Design Patterns",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "05117fea314133da",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, AFFS",
+   "location": "Pune, Maharashtra, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10438767/software-development-engineer-affs",
+   "desc": "Amazon Financials Foundation Services (AFFS), a division within Amazon’s eCommerce Services Organization (eCS) is leading innovation in business systems integration and defining the future of financial accounting at Amaz…",
+   "matchScore": 90,
+   "matched": [
+    {
+     "skill": "AWS",
+     "type": "want"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "System Design",
+     "type": "have"
+    },
+    {
+     "skill": "Design Patterns",
+     "type": "have"
+    },
+    {
+     "skill": "Agile",
      "type": "have"
     }
    ],
@@ -9425,45 +9015,6 @@
    "firstSeen": "2026-07-09T07:02:12.247Z"
   },
   {
-   "key": "e29cf2db58cf4a0b",
-   "companyId": "amazon",
-   "company": "Amazon",
-   "ats": "amazon",
-   "title": "Software Development Engineer, AFT - Inbound",
-   "location": "Bengaluru, Karnataka, IND",
-   "url": "https://www.amazon.jobs/en/jobs/10462526/software-development-engineer-aft-inbound",
-   "desc": "Are you seeking an environment where you can apply state-of-the-art computer science techniques, data-driven decision making and problem solving skills in a real world setting? Do you want to build large-scale reliable,…",
-   "matchScore": 81,
-   "matched": [
-    {
-     "skill": "Java",
-     "type": "have"
-    },
-    {
-     "skill": "Go",
-     "type": "want"
-    },
-    {
-     "skill": "C++",
-     "type": "have"
-    },
-    {
-     "skill": "Distributed Systems",
-     "type": "have"
-    },
-    {
-     "skill": "Data Structures",
-     "type": "have"
-    },
-    {
-     "skill": "Design Patterns",
-     "type": "have"
-    }
-   ],
-   "minYoe": 2,
-   "firstSeen": "2026-07-09T07:02:12.247Z"
-  },
-  {
    "key": "4558ec662822d080",
    "companyId": "amazon",
    "company": "Amazon",
@@ -9736,6 +9287,45 @@
     },
     {
      "skill": "Backend",
+     "type": "have"
+    },
+    {
+     "skill": "Design Patterns",
+     "type": "have"
+    }
+   ],
+   "minYoe": 2,
+   "firstSeen": "2026-07-09T07:02:12.247Z"
+  },
+  {
+   "key": "e29cf2db58cf4a0b",
+   "companyId": "amazon",
+   "company": "Amazon",
+   "ats": "amazon",
+   "title": "Software Development Engineer, AFT - Inbound",
+   "location": "Bengaluru, Karnataka, IND",
+   "url": "https://www.amazon.jobs/en/jobs/10462526/software-development-engineer-aft-inbound",
+   "desc": "Are you seeking an environment where you can apply state-of-the-art computer science techniques, data-driven decision making and problem solving skills in a real world setting? Do you want to build large-scale reliable,…",
+   "matchScore": 81,
+   "matched": [
+    {
+     "skill": "Java",
+     "type": "have"
+    },
+    {
+     "skill": "Go",
+     "type": "want"
+    },
+    {
+     "skill": "C++",
+     "type": "have"
+    },
+    {
+     "skill": "Distributed Systems",
+     "type": "have"
+    },
+    {
+     "skill": "Data Structures",
      "type": "have"
     },
     {
