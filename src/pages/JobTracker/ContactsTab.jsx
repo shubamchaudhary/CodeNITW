@@ -13,10 +13,49 @@ import {
 } from "react-icons/hi";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
 import { SEED_HR_CONTACTS } from "../../Data/hrContacts";
-import { uid, copyText, PAGE_SIZE } from "./shared";
+import { copyText, daysSince, PAGE_SIZE } from "./shared";
 
 // Digits-only phone, used for tel:/wa.me links and dedupe.
 const digits = (s) => (s || "").replace(/\D/g, "");
+
+// ── Outreach channels ───────────────────────────────────────────────────────
+// Each contact records when you last reached out on each channel, so the card
+// can show how long ago it was and you know who is due a follow-up.
+export const REACH_CHANNELS = [
+  {
+    key: "whatsappAt",
+    label: "WhatsApp",
+    Icon: HiChat,
+    on: "bg-emerald-600 text-white shadow-sm",
+    off: "border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30",
+  },
+  {
+    key: "callAt",
+    label: "Call",
+    Icon: HiPhone,
+    on: "bg-blue-600 text-white shadow-sm",
+    off: "border border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30",
+  },
+  {
+    key: "emailAt",
+    label: "Email",
+    Icon: HiMail,
+    on: "bg-violet-600 text-white shadow-sm",
+    off: "border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30",
+  },
+];
+
+// "today" / "1d" / "12d" — compact enough to sit inside the toggle button.
+function agoLabel(ts) {
+  const d = daysSince(ts);
+  if (d === Infinity) return "";
+  return d === 0 ? "today" : `${d}d`;
+}
+
+// Most recent outreach across all channels (0 when never contacted).
+export function lastReachedAt(c) {
+  return Math.max(0, ...REACH_CHANNELS.map((ch) => c[ch.key] || 0));
+}
 
 // ── Add / edit contact form ─────────────────────────────────────────────────
 function ContactForm({ allCompanies, initial, onSave, onClose }) {
@@ -91,7 +130,7 @@ function ContactForm({ allCompanies, initial, onSave, onClose }) {
 }
 
 // ── One contact row ─────────────────────────────────────────────────────────
-function ContactCard({ c, onEdit, onDelete }) {
+function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
   const tel = digits(c.phone);
   // Everything worth pasting into a message, in one copy.
   const full = [c.name, c.company, c.phone, c.email, c.note].filter(Boolean).join(" · ");
@@ -167,6 +206,36 @@ function ContactCard({ c, onEdit, onDelete }) {
               <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{c.note}</p>
             )}
           </div>
+
+          {/* Outreach tracking — one toggle per channel, each showing how long
+              ago you reached out so follow-ups are obvious at a glance. */}
+          <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+            {REACH_CHANNELS.map(({ key, label, Icon, on, off }) => {
+              const ts = c[key];
+              const active = !!ts;
+              const ago = agoLabel(ts);
+              return (
+                <button
+                  key={key}
+                  onClick={() => onToggleReach(c, key)}
+                  className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-1 rounded-lg transition-colors ${
+                    active ? on : off
+                  }`}
+                  title={
+                    active
+                      ? `${label}: reached out ${ago === "today" ? "today" : `${ago} ago`} (${new Date(
+                          ts
+                        ).toLocaleDateString()}) — click to clear`
+                      : `Mark that you reached out via ${label}`
+                  }
+                >
+                  <Icon className="w-3 h-3" />
+                  {label}
+                  {active && ago && <span className="font-extrabold opacity-90">· {ago}</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Row actions */}
@@ -198,10 +267,12 @@ export default function ContactsTab({
   contactEdits,
   onAddContact,
   onEditContact,
+  onPatchContact,
   onDeleteContact,
 }) {
   const [search, setSearch] = useState("");
   const [companyFilter, setCompanyFilter] = useState("all");
+  const [reachFilter, setReachFilter] = useState("all");
   const [withEmail, setWithEmail] = useState(false);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -264,11 +335,15 @@ export default function ContactsTab({
         byPhone.set(k, c);
         result.push(c);
       } else {
-        // Merge: fill blanks on the row already kept.
+        // Merge: fill blanks on the row already kept. Outreach timestamps keep
+        // the most recent of the two so a merge never loses follow-up history.
         prev.email = prev.email || c.email;
         prev.note = prev.note || c.note;
         prev.company = prev.company || c.company;
         prev.companyId = prev.companyId || c.companyId;
+        for (const { key } of REACH_CHANNELS) {
+          if (c[key]) prev[key] = Math.max(prev[key] || 0, c[key]);
+        }
       }
     }
     return result;
@@ -287,17 +362,31 @@ export default function ContactsTab({
           return false;
         if (companyFilter !== "all" && c.company !== companyFilter) return false;
         if (withEmail && !c.email) return false;
+        if (reachFilter === "none" && lastReachedAt(c) > 0) return false;
+        if (reachFilter === "any" && lastReachedAt(c) === 0) return false;
+        if (reachFilter !== "all" && reachFilter !== "none" && reachFilter !== "any" && !c[reachFilter])
+          return false;
         return true;
       })
-      .sort(
-        (a, b) =>
+      .sort((a, b) => {
+        // When filtering by outreach, the oldest contact floats to the top —
+        // that's who is most overdue a follow-up.
+        if (reachFilter !== "all" && reachFilter !== "none") {
+          return lastReachedAt(a) - lastReachedAt(b);
+        }
+        return (
           (a.company || "zzz").localeCompare(b.company || "zzz") ||
           (a.name || "").localeCompare(b.name || "")
-      );
-  }, [contacts, search, companyFilter, withEmail]);
+        );
+      });
+  }, [contacts, search, companyFilter, withEmail, reachFilter]);
 
   const visible = filtered.slice(0, limit);
   const emailCount = contacts.filter((c) => c.email).length;
+  const reachedCount = contacts.filter((c) => lastReachedAt(c) > 0).length;
+
+  // Stamp "reached out now" on a channel, or clear it if already marked.
+  const toggleReach = (c, key) => onPatchContact(c.id, { [key]: c[key] ? null : Date.now() });
 
   const copyAll = () => {
     const text = filtered
@@ -317,8 +406,7 @@ export default function ContactsTab({
             📇 HR &amp; Recruiter Contacts ({contacts.length})
           </h2>
           <span className="text-xs text-gray-400 dark:text-gray-500">
-            {companyOptions.length} companies · {emailCount} with email · imported from WhatsApp +
-            saved company contacts
+            {companyOptions.length} companies · {emailCount} with email · {reachedCount} reached out
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -385,6 +473,24 @@ export default function ContactsTab({
             </option>
           ))}
         </select>
+        <select
+          value={reachFilter}
+          onChange={(e) => {
+            setReachFilter(e.target.value);
+            setLimit(PAGE_SIZE);
+          }}
+          className={selectCls}
+          title="Filter by whether you've reached out — oldest first, so overdue follow-ups surface"
+        >
+          <option value="all">Any outreach</option>
+          <option value="none">Not reached out</option>
+          <option value="any">Reached out (oldest first)</option>
+          {REACH_CHANNELS.map((ch) => (
+            <option key={ch.key} value={ch.key}>
+              Via {ch.label}
+            </option>
+          ))}
+        </select>
         <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 select-none cursor-pointer">
           <input
             type="checkbox"
@@ -408,6 +514,7 @@ export default function ContactsTab({
               setEditing(c);
             }}
             onDelete={() => onDeleteContact(c)}
+            onToggleReach={toggleReach}
           />
         ))}
       </div>
