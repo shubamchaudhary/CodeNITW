@@ -14,8 +14,10 @@ import {
   isOpeningEligible,
 } from "./shared";
 import PipelineTab from "./PipelineTab";
+import ContactsTab from "./ContactsTab";
 import OpeningsTab from "./OpeningsTab";
 import CompaniesTab from "./CompaniesTab";
+import { SEED_HR_CONTACTS } from "../../Data/hrContacts";
 
 // Bump this token to force a one-time clean slate for every user on next load.
 // Used when the company roster is regenerated (new IDs) so stale per-company
@@ -28,16 +30,32 @@ function loadState() {
   // openings so the tracker starts fresh against the v7 roster + stricter
   // filters. Custom companies the user added are preserved.
   if (s.pipelineReset !== PIPELINE_RESET_TOKEN) {
-    return { companies: {}, custom: s.custom || [], dismissedOpenings: {}, pipelineReset: PIPELINE_RESET_TOKEN };
+    // Contacts are independent of the company roster, so they survive the reset.
+    return {
+      companies: {},
+      custom: s.custom || [],
+      dismissedOpenings: {},
+      contacts: s.contacts || [],
+      contactEdits: s.contactEdits || {},
+      pipelineReset: PIPELINE_RESET_TOKEN,
+    };
   }
   // Upgrade any legacy dismissal entries so crosses made before the identity
   // format changed keep working across this (and future) deployments.
   const { map: dismissedOpenings } = migrateDismissals(s.dismissedOpenings || {});
-  return { companies: s.companies || {}, custom: s.custom || [], dismissedOpenings, pipelineReset: s.pipelineReset };
+  return {
+    companies: s.companies || {},
+    custom: s.custom || [],
+    dismissedOpenings,
+    contacts: s.contacts || [],
+    contactEdits: s.contactEdits || {},
+    pipelineReset: s.pipelineReset,
+  };
 }
 
 const TABS = [
   { id: "pipeline", label: "Pipeline", emoji: "📋" },
+  { id: "contacts", label: "Contacts", emoji: "📇" },
   { id: "openings", label: "Openings", emoji: "📡" },
   { id: "companies", label: "Companies", emoji: "🏢" },
 ];
@@ -66,6 +84,8 @@ export default function JobTracker() {
         companies: {},
         custom: raw.custom || [],
         dismissedOpenings: {},
+        contacts: raw.contacts || [],
+        contactEdits: raw.contactEdits || {},
         pipelineReset: PIPELINE_RESET_TOKEN,
       });
       return;
@@ -138,6 +158,91 @@ export default function JobTracker() {
     },
     [state, persist]
   );
+
+  // ── HR contacts ────────────────────────────────────────────────────────────
+  // Contacts come from three places: the seeded vCard import, hrContacts saved
+  // on a company card, and ones added in the Contacts tab. Only the last kind
+  // lives in `contacts`; edits/removals of the other two are recorded as
+  // patches in `contactEdits` keyed by the contact's synthetic id.
+  const persistState = useCallback((updater) => {
+    setState((prev) => {
+      const next = updater(prev);
+      saveJSON(KEYS.JOB_TRACKER, next);
+      return next;
+    });
+  }, []);
+
+  const addContact = useCallback(
+    (data) => {
+      persistState((prev) => ({ ...prev, contacts: [...prev.contacts, { id: `hc-${uid()}`, ...data }] }));
+      toast.success(`${data.name || "Contact"} added`);
+    },
+    [persistState]
+  );
+
+  const editContact = useCallback(
+    (id, data) => {
+      persistState((prev) =>
+        prev.contacts.some((c) => c.id === id)
+          ? { ...prev, contacts: prev.contacts.map((c) => (c.id === id ? { ...c, ...data } : c)) }
+          : { ...prev, contactEdits: { ...prev.contactEdits, [id]: { ...prev.contactEdits[id], ...data } } }
+      );
+      toast.success("Contact updated");
+    },
+    [persistState]
+  );
+
+  const deleteContact = useCallback(
+    (c) => {
+      const undo = () =>
+        persistState((prev) =>
+          c.source === "custom"
+            ? { ...prev, contacts: [...prev.contacts, c] }
+            : {
+                ...prev,
+                contactEdits: { ...prev.contactEdits, [c.id]: { ...prev.contactEdits[c.id], deleted: false } },
+              }
+        );
+      persistState((prev) =>
+        c.source === "custom"
+          ? { ...prev, contacts: prev.contacts.filter((x) => x.id !== c.id) }
+          : {
+              ...prev,
+              contactEdits: { ...prev.contactEdits, [c.id]: { ...prev.contactEdits[c.id], deleted: true } },
+            }
+      );
+      toast.info(
+        ({ closeToast }) => (
+          <span className="text-sm">
+            Removed <span className="font-semibold">{(c.name || "contact").slice(0, 30)}</span>{" "}
+            <button
+              onClick={() => {
+                undo();
+                closeToast();
+              }}
+              className="underline font-semibold text-indigo-600 dark:text-indigo-300"
+            >
+              Undo
+            </button>
+          </span>
+        ),
+        { autoClose: 4000 }
+      );
+    },
+    [persistState]
+  );
+
+  // Tab badge count — mirrors the merge the Contacts tab does.
+  const contactCount = useMemo(() => {
+    const edits = state.contactEdits;
+    let n = SEED_HR_CONTACTS.filter((c) => !edits[c.id]?.deleted).length;
+    Object.entries(state.companies).forEach(([cid, e]) =>
+      (e.hrContacts || []).forEach((hc) => {
+        if (!edits[`co-${cid}-${hc.id}`]?.deleted) n += 1;
+      })
+    );
+    return n + state.contacts.filter((c) => !edits[c.id]?.deleted).length;
+  }, [state.contacts, state.contactEdits, state.companies]);
 
   const allCompanies = useMemo(() => [...COMPANIES, ...state.custom], [state.custom]);
 
@@ -303,6 +408,7 @@ export default function JobTracker() {
             const isActive = activeTab === tab.id;
             let count = null;
             if (tab.id === "pipeline") count = stats.toApply + stats.referral + stats.applied;
+            if (tab.id === "contacts") count = contactCount;
             if (tab.id === "openings") count = activeOpeningsCount;
             if (tab.id === "companies") count = stats.total;
             return (
@@ -339,6 +445,18 @@ export default function JobTracker() {
             allCompanies={allCompanies}
             entryOf={entryOf}
             patchCompany={patchCompany}
+          />
+        )}
+
+        {activeTab === "contacts" && (
+          <ContactsTab
+            allCompanies={allCompanies}
+            companies={state.companies}
+            customContacts={state.contacts}
+            contactEdits={state.contactEdits}
+            onAddContact={addContact}
+            onEditContact={editContact}
+            onDeleteContact={deleteContact}
           />
         )}
 
