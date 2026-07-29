@@ -180,16 +180,25 @@ export default function JobTracker() {
     [persistState]
   );
 
-  const editContact = useCallback(
+  // Write a patch to a contact regardless of which source it came from: ones
+  // added here are updated in place, seeded/company ones get an id-keyed patch.
+  const patchContact = useCallback(
     (id, data) => {
       persistState((prev) =>
         prev.contacts.some((c) => c.id === id)
           ? { ...prev, contacts: prev.contacts.map((c) => (c.id === id ? { ...c, ...data } : c)) }
           : { ...prev, contactEdits: { ...prev.contactEdits, [id]: { ...prev.contactEdits[id], ...data } } }
       );
-      toast.success("Contact updated");
     },
     [persistState]
+  );
+
+  const editContact = useCallback(
+    (id, data) => {
+      patchContact(id, data);
+      toast.success("Contact updated");
+    },
+    [patchContact]
   );
 
   const deleteContact = useCallback(
@@ -456,6 +465,7 @@ export default function JobTracker() {
             contactEdits={state.contactEdits}
             onAddContact={addContact}
             onEditContact={editContact}
+            onPatchContact={patchContact}
             onDeleteContact={deleteContact}
           />
         )}
