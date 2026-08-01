@@ -71,8 +71,8 @@ export default function Header() {
     transition-all duration-200 ease-in-out rounded-lg
     ${
       isActiveItem
-        ? "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20"
-        : "text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10"
+        ? "text-violet-600 dark:text-violet-300 bg-violet-500/10 dark:bg-violet-500/[0.14] ring-1 ring-violet-500/20 dark:ring-violet-400/20"
+        : "text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-500/[0.07] dark:hover:bg-white/[0.05]"
     }
   `;
 
@@ -83,7 +83,8 @@ export default function Header() {
 
   return (
     <header>
-      <nav className="bg-white dark:bg-slate-900 shadow-lg border-b border-gray-200 dark:border-slate-700 px-3 lg:px-5 py-3 sticky top-0 z-50">
+      {/* Frosted bar so the page's ambient wash shows through as it scrolls under */}
+      <nav className="backdrop-blur-xl bg-white/70 dark:bg-[#0b1020]/75 border-b border-gray-200/70 dark:border-white/[0.07] shadow-sm dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] px-3 lg:px-5 py-3 sticky top-0 z-50">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           {/* Logo */}
           <button
@@ -98,7 +99,7 @@ export default function Header() {
           {/* Right side controls */}
           <div className="flex items-center gap-2 lg:order-2">
             {user && (
-              <div className="hidden lg:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-slate-800 px-2 py-1 rounded-lg">
+              <div className="hidden lg:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg">
                 <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
                 <span className="max-w-[120px] truncate font-medium">{user.email}</span>
               </div>
@@ -107,7 +108,7 @@ export default function Header() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="text-gray-600 dark:text-gray-400 text-xl p-1 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+              className="text-gray-600 dark:text-gray-300 text-xl p-1.5 rounded-lg bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] transition-colors"
               onClick={() => setDarkMode(!darkMode)}
             >
               <AnimatePresence mode="wait">
@@ -125,7 +126,7 @@ export default function Header() {
 
             <button
               type="button"
-              className="inline-flex items-center p-1 text-gray-600 dark:text-gray-400 rounded-lg lg:hidden bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+              className="inline-flex items-center p-1.5 text-gray-600 dark:text-gray-300 rounded-lg lg:hidden bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] transition-colors"
               onClick={toggleMenu}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -149,8 +150,8 @@ export default function Header() {
                 className={`
                   ${menuOpen ? "block" : "hidden"}
                   w-full lg:w-auto absolute lg:relative top-[58px] lg:top-auto left-0 lg:left-auto
-                  bg-white dark:bg-slate-900 lg:bg-transparent dark:lg:bg-transparent
-                  rounded-b-2xl lg:rounded-none border lg:border-0 border-gray-200 dark:border-slate-700
+                  backdrop-blur-xl bg-white/90 dark:bg-[#0b1020]/95 lg:bg-transparent dark:lg:bg-transparent lg:backdrop-blur-none
+                  rounded-b-2xl lg:rounded-none border lg:border-0 border-gray-200/70 dark:border-white/[0.07]
                   shadow-lg lg:shadow-none lg:flex lg:order-1
                 `}
               >
