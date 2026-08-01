@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base canvas colour. The sticky header is translucent glass, so whatever sits
+   behind it has to be the right colour — without this the header composites
+   over the browser's default white and reads grey in dark mode. Page-level
+   backgrounds paint over this everywhere else. */
+@layer base {
+  html,
+  body {
+    @apply bg-slate-50 dark:bg-[#0b1020];
+  }
+}
+
 .top-header {
     position: relative;
   }
