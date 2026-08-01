@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { GLASS } from "../../components/glass";
+import PageShell from "../../components/PageShell";
 import { KEYS, loadJSON, saveJSON, subscribe } from "../../Data/planStore";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
 import {
@@ -392,7 +393,7 @@ export default function JobTracker() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
+    <PageShell>
       <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
         {/* Header */}
         <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 mb-5">
@@ -494,6 +495,6 @@ export default function JobTracker() {
           />
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

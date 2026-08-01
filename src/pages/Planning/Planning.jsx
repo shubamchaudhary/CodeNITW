@@ -5,6 +5,7 @@ import { CATEGORY_CONFIG } from "../../Data/JobHuntPlan";
 import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
 import { InterviewCardDetail, DsaProblemDetail } from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
+import PageShell from "../../components/PageShell";
 import {
   INTERVIEW_CARDS,
   DSA_PROBLEMS,
@@ -1253,7 +1254,7 @@ const Planning = () => {
   if (!authReady) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
+    <PageShell>
       <div className="min-h-screen flex justify-center px-2">
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
 
@@ -1417,7 +1418,7 @@ const Planning = () => {
       <AnimatePresence>
         {pickerOpen && <CardPicker dayItems={items} onClose={() => setPickerOpen(false)} onAdd={addItem} />}
       </AnimatePresence>
-    </div>
+    </PageShell>
   );
 };
 

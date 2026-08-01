@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL } from "../../Data/DSAPrep";
+import { GLASS, GLASS_PANEL } from "../../components/glass";
+import PageShell from "../../components/PageShell";
 import {
   KEYS,
   loadJSON,
@@ -24,14 +26,10 @@ import {
   dsaPlanItem,
 } from "../../Data/planStore";
 
-// Frosted surfaces used across this page. Kept local so the DSA page can carry
-// a slightly deeper blur/elevation than the shared app glass.
-const CARD =
-  "backdrop-blur-2xl bg-white/60 dark:bg-white/[0.04] border border-white/70 dark:border-white/[0.08] shadow-[0_8px_32px_-12px_rgba(15,23,42,0.18)] dark:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.6)]";
-// Rows sit *on* a glass card, so in light mode they need a real (grey) edge —
-// a white border on a white card reads as no border at all.
-const ROW =
-  "backdrop-blur-md bg-white/75 dark:bg-white/[0.03] border border-gray-200/90 dark:border-white/[0.07]";
+// Page-level card and row surfaces now come from the shared glass tokens, so
+// every page frosts identically.
+const CARD = GLASS;
+const ROW = GLASS_PANEL;
 
 // One accent per topic card, cycled — the coloured dot + progress bar that give
 // the board its rhythm (borrowed from the kanban-style reference).
@@ -161,16 +159,8 @@ const DSAPrep = () => {
   const showImport = !bannerHidden && hasLegacyPersonalPlanData() && !isPersonalPlanMigrated();
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50/60 dark:from-[#0b1020] dark:via-[#0d1226] dark:to-[#0a0e1c] pb-20 overflow-hidden">
-      {/* Ambient colour wash behind the glass — violet family, kept faint and
-          heavily blurred so it reads as depth rather than a visible light. */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-28 w-[32rem] h-[32rem] rounded-full bg-violet-400/[0.10] dark:bg-violet-700/[0.09] blur-[140px]" />
-        <div className="absolute top-1/4 -right-40 w-[34rem] h-[34rem] rounded-full bg-purple-400/[0.08] dark:bg-purple-800/[0.07] blur-[150px]" />
-        <div className="absolute -bottom-48 left-1/3 w-[32rem] h-[32rem] rounded-full bg-indigo-400/[0.09] dark:bg-indigo-800/[0.07] blur-[150px]" />
-      </div>
-
-      <div className="relative z-10 min-h-screen flex justify-center px-3">
+    <PageShell>
+      <div className="min-h-screen flex justify-center px-3">
         <div className="w-full sm:w-11/12 lg:w-5/6 xl:w-3/4 2xl:w-2/3">
 
           {/* ── Header ── */}
@@ -303,7 +293,7 @@ const DSAPrep = () => {
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 
@@ -408,7 +398,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
         onClick={() => setShowNotes((s) => !s)}
         className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 cursor-pointer transition-all ${
           isSolved
-            ? "backdrop-blur-md bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20"
+            ? "bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20"
             : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5`
         } ${isPlanned && !isSolved ? "ring-1 ring-sky-400/50 dark:ring-sky-500/40" : ""}`}
       >
@@ -489,7 +479,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
       <AnimatePresence>
         {showNotes && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <div className="mx-1 mt-2 mb-1 rounded-xl border border-white/70 dark:border-white/[0.07] bg-white/50 dark:bg-white/[0.03] backdrop-blur-xl p-3.5">
+            <div className="mx-1 mt-2 mb-1 rounded-xl border border-gray-200/90 dark:border-white/[0.07] bg-white/60 dark:bg-white/[0.03] p-3.5">
               <div className="flex items-center justify-between mb-2">
                 <h5 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                   <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-orange-400 to-amber-400" />
