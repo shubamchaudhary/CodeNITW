@@ -4,6 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CATEGORY_CONFIG, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
 import { InterviewCardDetail } from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
+import PageShell from "../../components/PageShell";
 import {
   INTERVIEW_CARDS,
   KEYS,
@@ -109,7 +110,7 @@ const InterviewPrep = () => {
   if (!authReady) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
+    <PageShell>
       <div className="min-h-screen flex justify-center px-2">
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
 
@@ -279,7 +280,7 @@ const InterviewPrep = () => {
           </AnimatePresence>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 
