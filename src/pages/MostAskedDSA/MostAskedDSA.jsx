@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { MOST_ASKED_TIERS, MOST_ASKED_TOTAL } from "../../Data/MostAskedDSA";
 import { GLASS } from "../../components/glass";
+import PageShell from "../../components/PageShell";
 import {
   KEYS,
   loadJSON,
@@ -63,7 +64,7 @@ const MostAskedDSA = () => {
   if (!authReady) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
+    <PageShell>
       <div className="min-h-screen flex justify-center px-2">
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
 
@@ -137,7 +138,7 @@ const MostAskedDSA = () => {
           ))}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 
@@ -203,10 +204,10 @@ function QuestionRow({ problem, isSolved, isStarred, onToggleSolved, onToggleSta
 
   return (
     <div
-      className={`group flex items-start gap-3 rounded-xl px-3 py-2.5 mb-2 border backdrop-blur-md transition-all ${
+      className={`group flex items-start gap-3 rounded-xl px-3 py-2.5 mb-2 border transition-all ${
         isSolved
-          ? "bg-green-50/60 dark:bg-green-900/20 border-green-300/70 dark:border-green-800/50"
-          : "bg-white/50 dark:bg-slate-800/40 border-gray-200/70 dark:border-white/10 hover:border-orange-300 dark:hover:border-orange-700/70 hover:shadow-sm"
+          ? "bg-emerald-500/10 dark:bg-emerald-500/[0.07] border-emerald-500/30 dark:border-emerald-500/20"
+          : "bg-white/75 dark:bg-white/[0.03] border-gray-200/90 dark:border-white/[0.07] hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-sm"
       }`}
     >
       {/* Difficulty */}
