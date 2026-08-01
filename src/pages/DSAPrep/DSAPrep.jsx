@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL } from "../../Data/DSAPrep";
-import { GLASS } from "../../components/glass";
 import {
   KEYS,
   loadJSON,
@@ -18,7 +17,32 @@ import {
   isPersonalPlanMigrated,
   migratePersonalPlanProgress,
   dismissPersonalPlanImport,
+  dateKey,
+  getDay,
+  addToPlanDay,
+  removeFromPlanDay,
+  dsaPlanItem,
 } from "../../Data/planStore";
+
+// Frosted surfaces used across this page. Kept local so the DSA page can carry
+// a slightly deeper blur/elevation than the shared app glass.
+const CARD =
+  "backdrop-blur-2xl bg-white/60 dark:bg-white/[0.04] border border-white/70 dark:border-white/[0.08] shadow-[0_8px_32px_-12px_rgba(15,23,42,0.18)] dark:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.6)]";
+// Rows sit *on* a glass card, so in light mode they need a real (grey) edge —
+// a white border on a white card reads as no border at all.
+const ROW =
+  "backdrop-blur-md bg-white/75 dark:bg-white/[0.03] border border-gray-200/90 dark:border-white/[0.07]";
+
+// One accent per topic card, cycled — the coloured dot + progress bar that give
+// the board its rhythm (borrowed from the kanban-style reference).
+const ACCENTS = [
+  { dot: "bg-orange-500", ring: "shadow-orange-500/40", bar: "from-orange-500 to-amber-400" },
+  { dot: "bg-violet-500", ring: "shadow-violet-500/40", bar: "from-violet-500 to-fuchsia-400" },
+  { dot: "bg-sky-500", ring: "shadow-sky-500/40", bar: "from-sky-500 to-cyan-400" },
+  { dot: "bg-emerald-500", ring: "shadow-emerald-500/40", bar: "from-emerald-500 to-teal-400" },
+  { dot: "bg-rose-500", ring: "shadow-rose-500/40", bar: "from-rose-500 to-pink-400" },
+  { dot: "bg-indigo-500", ring: "shadow-indigo-500/40", bar: "from-indigo-500 to-blue-400" },
+];
 
 const DSAPrep = () => {
   const [authReady, setAuthReady] = useState(false);
@@ -37,6 +61,14 @@ const DSAPrep = () => {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [filter, setFilter] = useState("ALL");
   const [bannerHidden, setBannerHidden] = useState(false);
+
+  // Which problems are already on today's plan — drives the ⊕ Today toggle.
+  const today = dateKey();
+  const readPlanned = useCallback(
+    () => new Set(getDay(today).filter((i) => i.source === "dsa").map((i) => i.refId)),
+    [today]
+  );
+  const [plannedToday, setPlannedToday] = useState(readPlanned);
 
   const handleImportPlan = useCallback(() => {
     const n = migratePersonalPlanProgress();
@@ -61,8 +93,10 @@ const DSAPrep = () => {
         if (key === KEYS.DSA_COMPLETED) setSolved(loadJSON(KEYS.DSA_COMPLETED, {}));
         if (key === KEYS.DSA_NOTES) setNotes(loadJSON(KEYS.DSA_NOTES, {}));
         if (key === KEYS.DSA_STARRED) setStarred(loadJSON(KEYS.DSA_STARRED, {}));
+        // Keep the toggles honest when the Planning page edits the same day.
+        if (key === KEYS.PLAN_DAYS) setPlannedToday(readPlanned());
       }),
-    []
+    [readPlanned]
   );
 
   const totalSolved = useMemo(
@@ -74,13 +108,18 @@ const DSAPrep = () => {
 
   const visibleTopics = useMemo(() => {
     if (filter === "ALL") return DSA_TOPICS;
+    if (filter === "Today")
+      return DSA_TOPICS.map((t) => ({
+        ...t,
+        problems: t.problems.filter((p) => plannedToday.has(p.id)),
+      })).filter((t) => t.problems.length);
     return DSA_TOPICS.map((t) => ({
       ...t,
       problems: t.problems.filter((p) =>
         filter === "Starred" ? starred[p.id] : p.difficulty === filter
       ),
     })).filter((t) => t.problems.length);
-  }, [filter, starred]);
+  }, [filter, starred, plannedToday]);
 
   const toggleSolved = useCallback((id, checked) => {
     setSourceComplete("dsa", id, checked);
@@ -101,39 +140,67 @@ const DSAPrep = () => {
     setNotes((m) => ({ ...m, [id]: val }));
   }, []);
 
+  // Push a problem onto today's plan (or pull it back off) without leaving this
+  // page. Planning listens on PLAN_DAYS, so it appears there immediately.
+  const togglePlannedToday = useCallback(
+    (problem, topic) => {
+      if (plannedToday.has(problem.id)) {
+        removeFromPlanDay(today, "dsa", problem.id);
+        toast.info(`Removed "${problem.title}" from today's plan`);
+      } else {
+        addToPlanDay(today, dsaPlanItem(problem, topic));
+        toast.success(`Added "${problem.title}" to today's plan`);
+      }
+      setPlannedToday(readPlanned());
+    },
+    [plannedToday, today, readPlanned]
+  );
+
   if (!authReady) return null;
 
   const showImport = !bannerHidden && hasLegacyPersonalPlanData() && !isPersonalPlanMigrated();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-16">
-      <div className="min-h-screen flex justify-center px-2">
-        <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/60 to-amber-50 dark:from-[#0b1020] dark:via-[#0d1226] dark:to-[#0a0e1c] pb-20 overflow-hidden">
+      {/* Ambient colour wash behind the glass */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-28 w-[30rem] h-[30rem] rounded-full bg-orange-400/25 dark:bg-orange-600/15 blur-[100px]" />
+        <div className="absolute top-1/4 -right-40 w-[34rem] h-[34rem] rounded-full bg-fuchsia-400/15 dark:bg-fuchsia-700/12 blur-[110px]" />
+        <div className="absolute -bottom-48 left-1/3 w-[32rem] h-[32rem] rounded-full bg-amber-300/25 dark:bg-indigo-700/15 blur-[110px]" />
+      </div>
+
+      <div className="relative z-10 min-h-screen flex justify-center px-3">
+        <div className="w-full sm:w-11/12 lg:w-5/6 xl:w-3/4 2xl:w-2/3">
 
           {/* ── Header ── */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mt-6 mb-4 px-2">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">DSA</h1>
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-200 dark:border-orange-800">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className={`mt-6 mb-5 rounded-3xl ${CARD} px-5 sm:px-7 py-5`}
+          >
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <h1 className="text-[26px] leading-none font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">
+                    DSA
+                  </h1>
+                  <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-orange-500/10 dark:bg-orange-400/10 text-orange-600 dark:text-orange-300 border border-orange-500/25 dark:border-orange-400/25 backdrop-blur-sm">
                     {DSA_TOTAL} most-asked
                   </span>
                 </div>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-                  Medium &amp; Hard · {DSA_REVISIT_DAYS}-day spaced repetition (solved problems reopen after {DSA_REVISIT_DAYS} days)
+                <p className="text-[11.5px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
+                  Medium &amp; Hard · {DSA_REVISIT_DAYS}-day spaced repetition — solved problems reopen after {DSA_REVISIT_DAYS} days
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Solved</p>
-                  <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                    {totalSolved}<span className="text-sm font-normal text-gray-500 dark:text-gray-400">/{DSA_TOTAL}</span>
-                  </p>
-                </div>
-                <div className="relative w-14 h-14">
-                  <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
-                    <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="5" />
+
+              <div className="flex items-center gap-3 shrink-0">
+                <StatPill label="Solved" value={`${totalSolved}`} sub={`/${DSA_TOTAL}`} />
+                <StatPill label="Starred" value={starredCount} accent="text-yellow-500 dark:text-yellow-400" />
+                <StatPill label="Today" value={plannedToday.size} accent="text-sky-600 dark:text-sky-400" />
+                <div className="relative w-16 h-16 shrink-0">
+                  <svg className="w-16 h-16 -rotate-90" viewBox="0 0 56 56">
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-gray-200/80 dark:text-white/10" strokeWidth="5" />
                     <circle cx="28" cy="28" r="22" fill="none" stroke="url(#dsaProgressGrad)" strokeWidth="5" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 22}`}
                       strokeDashoffset={`${2 * Math.PI * 22 * (1 - totalPct / 100)}`}
@@ -145,7 +212,7 @@ const DSAPrep = () => {
                       </linearGradient>
                     </defs>
                   </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-orange-600 dark:text-orange-400">{totalPct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-orange-600 dark:text-orange-400">{totalPct}%</span>
                 </div>
               </div>
             </div>
@@ -156,7 +223,7 @@ const DSAPrep = () => {
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mx-2 mb-4 rounded-xl border border-indigo-200 dark:border-indigo-800/50 bg-indigo-50/70 dark:bg-indigo-900/20 backdrop-blur-md px-4 py-3 flex items-center gap-3"
+              className="mb-4 rounded-2xl border border-indigo-300/50 dark:border-indigo-500/25 bg-indigo-500/10 dark:bg-indigo-500/10 backdrop-blur-xl px-4 py-3 flex items-center gap-3"
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Continue from your Personal Plan</p>
@@ -166,7 +233,7 @@ const DSAPrep = () => {
               </div>
               <button
                 onClick={handleImportPlan}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shrink-0"
+                className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all shrink-0"
               >
                 Import
               </button>
@@ -181,20 +248,21 @@ const DSAPrep = () => {
           )}
 
           {/* ── Filter ── */}
-          <div className="flex flex-wrap items-center gap-2 mb-4 px-2">
+          <div className={`mb-5 rounded-2xl ${CARD} p-1.5 inline-flex flex-wrap gap-1`}>
             {[
-              { key: "ALL", label: `All (${DSA_TOTAL})` },
+              { key: "ALL", label: `All ${DSA_TOTAL}` },
               { key: "Medium", label: "Medium" },
               { key: "Hard", label: "Hard" },
-              { key: "Starred", label: `★ Starred (${starredCount})` },
+              { key: "Starred", label: `★ ${starredCount}` },
+              { key: "Today", label: `◉ Today ${plannedToday.size}` },
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
+                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
                   filter === tab.key
-                    ? "bg-orange-600 text-white border-orange-600 shadow-sm"
-                    : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-600 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-400"
+                    ? "bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] hover:text-orange-600 dark:hover:text-orange-300"
                 }`}
               >
                 {tab.label}
@@ -204,22 +272,33 @@ const DSAPrep = () => {
 
           {/* ── Topic cards ── */}
           {visibleTopics.length === 0 ? (
-            <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-12">No problems match this filter.</p>
+            <div className={`rounded-2xl ${CARD} py-14 text-center`}>
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                {filter === "Today"
+                  ? "Nothing queued for today yet — hit ⊕ Today on any problem."
+                  : "No problems match this filter."}
+              </p>
+            </div>
           ) : (
-            visibleTopics.map((topic) => (
-              <TopicCard
-                key={topic.topic}
-                topic={topic}
-                isOpen={selectedTopic === topic.topic}
-                onToggle={() => setSelectedTopic((p) => (p === topic.topic ? null : topic.topic))}
-                solved={solved}
-                starred={starred}
-                notes={notes}
-                onToggleSolved={toggleSolved}
-                onToggleStar={toggleStar}
-                onNoteChange={saveNote}
-              />
-            ))
+            <div className="space-y-2.5">
+              {visibleTopics.map((topic, i) => (
+                <TopicCard
+                  key={topic.topic}
+                  topic={topic}
+                  accent={ACCENTS[i % ACCENTS.length]}
+                  isOpen={selectedTopic === topic.topic}
+                  onToggle={() => setSelectedTopic((p) => (p === topic.topic ? null : topic.topic))}
+                  solved={solved}
+                  starred={starred}
+                  notes={notes}
+                  plannedToday={plannedToday}
+                  onToggleSolved={toggleSolved}
+                  onToggleStar={toggleStar}
+                  onNoteChange={saveNote}
+                  onTogglePlanned={togglePlannedToday}
+                />
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -227,20 +306,42 @@ const DSAPrep = () => {
   );
 };
 
-function TopicCard({ topic, isOpen, onToggle, solved, starred, notes, onToggleSolved, onToggleStar, onNoteChange }) {
+function StatPill({ label, value, sub, accent = "text-gray-800 dark:text-gray-100" }) {
+  return (
+    <div className="hidden sm:block text-right px-3 py-1.5 rounded-xl bg-white/50 dark:bg-white/[0.04] border border-white/60 dark:border-white/[0.06]">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{label}</p>
+      <p className={`text-base font-extrabold leading-tight ${accent}`}>
+        {value}
+        {sub && <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">{sub}</span>}
+      </p>
+    </div>
+  );
+}
+
+function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, plannedToday, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
   const done = topic.problems.filter((p) => solved[p.id]).length;
   const pct = topic.problems.length ? (100 * done) / topic.problems.length : 0;
+  const queued = topic.problems.filter((p) => plannedToday.has(p.id)).length;
 
   return (
-    <div className={`mx-2 my-1.5 rounded-xl ${GLASS} border-l-4 border-l-orange-300 shadow-sm hover:shadow-md transition-all overflow-hidden`}>
-      <div className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none" onClick={onToggle}>
+    <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14]`}>
+      <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 cursor-pointer select-none" onClick={onToggle}>
+        <span className={`w-2 h-2 rounded-full shrink-0 ${accent.dot} shadow-[0_0_10px_2px] ${accent.ring}`} />
         <div className="flex-1 min-w-0">
-          <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 truncate">{topic.topic}</h2>
+          <h2 className="text-[13.5px] font-bold text-gray-700 dark:text-gray-200 truncate">{topic.topic}</h2>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-[11px] text-gray-500 dark:text-gray-400">{done}/{topic.problems.length}</span>
-          <div className="w-20 h-2 rounded-full bg-slate-200 dark:bg-slate-600 overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-500" style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
+          {queued > 0 && (
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/25"
+              title={`${queued} queued on today's plan`}
+            >
+              ◉ {queued}
+            </span>
+          )}
+          <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 tabular-nums">{done}/{topic.problems.length}</span>
+          <div className="w-16 sm:w-24 h-1.5 rounded-full bg-gray-200/70 dark:bg-white/10 overflow-hidden">
+            <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar}`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
           </div>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -251,17 +352,20 @@ function TopicCard({ topic, isOpen, onToggle, solved, starred, notes, onToggleSo
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-            <div className="border-t border-gray-100 dark:border-slate-700 px-2 sm:px-3 py-3" onClick={(e) => e.stopPropagation()}>
+            <div className="border-t border-white/60 dark:border-white/[0.06] px-2 sm:px-3 py-3 space-y-2" onClick={(e) => e.stopPropagation()}>
               {topic.problems.map((p) => (
                 <QuestionRow
                   key={p.id}
                   problem={p}
+                  topicName={topic.topic}
                   isSolved={!!solved[p.id]}
                   isStarred={!!starred[p.id]}
+                  isPlanned={plannedToday.has(p.id)}
                   note={notes[p.id] || ""}
                   onToggleSolved={onToggleSolved}
                   onToggleStar={onToggleStar}
                   onNoteChange={onNoteChange}
+                  onTogglePlanned={onTogglePlanned}
                 />
               ))}
             </div>
@@ -272,7 +376,7 @@ function TopicCard({ topic, isOpen, onToggle, solved, starred, notes, onToggleSo
   );
 }
 
-function QuestionRow({ problem, isSolved, isStarred, note, onToggleSolved, onToggleStar, onNoteChange }) {
+function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
   const [showNotes, setShowNotes] = useState(false);
   const [localNote, setLocalNote] = useState(note);
   const debounceRef = useRef(null);
@@ -294,66 +398,81 @@ function QuestionRow({ problem, isSolved, isStarred, note, onToggleSolved, onTog
 
   const diff =
     problem.difficulty === "Hard"
-      ? { label: "Hard", badge: "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300" }
-      : { label: "Med", badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300" };
+      ? { label: "Hard", badge: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/25" }
+      : { label: "Med", badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25" };
 
   return (
-    <div className="mb-2">
+    <div>
       <div
         onClick={() => setShowNotes((s) => !s)}
-        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 cursor-pointer border backdrop-blur-md transition-all ${
+        className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 cursor-pointer transition-all ${
           isSolved
-            ? "bg-green-50/60 dark:bg-green-900/20 border-green-300/70 dark:border-green-800/50"
-            : "bg-white/50 dark:bg-slate-800/40 border-gray-200/70 dark:border-white/10 hover:border-orange-300 dark:hover:border-orange-700/70 hover:shadow-sm"
-        }`}
+            ? "backdrop-blur-md bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20"
+            : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5`
+        } ${isPlanned && !isSolved ? "ring-1 ring-sky-400/50 dark:ring-sky-500/40" : ""}`}
       >
         {/* Difficulty */}
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 ${diff.badge}`}>
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 border ${diff.badge}`}>
           {diff.label}
         </span>
 
         {/* Title */}
-        <span className={`text-sm font-semibold truncate flex-1 min-w-0 ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
+        <span className={`text-[13px] font-semibold truncate flex-1 min-w-0 ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
           {problem.title}
         </span>
 
         {/* Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {localNote && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs hidden sm:inline">✎</span>}
 
           {daysLeft != null && (
             <span
               title={`Reopens for re-attempt in ${Math.max(daysLeft, 0)} day(s)`}
-              className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200 font-semibold whitespace-nowrap"
+              className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25"
             >
               {Math.max(daysLeft, 0)}d
             </span>
           )}
+
+          {/* Add / remove from today's plan — mirrors straight into Planning */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onTogglePlanned(problem, topicName); }}
+            title={isPlanned ? "Remove from today's plan" : "Add to today's plan"}
+            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md border transition-all ${
+              isPlanned
+                ? "bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-500/30"
+                : "bg-white/60 dark:bg-white/[0.05] border-gray-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300"
+            }`}
+          >
+            {isPlanned ? "◉" : "⊕"}
+            <span className="hidden sm:inline">Today</span>
+          </button>
 
           <a
             href={problem.link}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-orange-100 hover:text-orange-600 dark:hover:bg-orange-900/30 dark:hover:text-orange-300 transition-colors"
+            className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-all"
             title="Open on LeetCode"
           >
-            LeetCode
+            <span className="hidden sm:inline">LeetCode</span>
+            <span className="sm:hidden">LC</span>
             <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </a>
 
           <button
             onClick={(e) => { e.stopPropagation(); onToggleStar(problem.id); }}
             title={isStarred ? "Unstar" : "Star"}
-            className={`text-lg leading-none transition-transform hover:scale-110 ${isStarred ? "text-yellow-400" : "text-gray-300 dark:text-slate-500 hover:text-yellow-400"}`}
+            className={`text-lg leading-none transition-transform hover:scale-110 ${isStarred ? "text-yellow-400" : "text-gray-300 dark:text-slate-600 hover:text-yellow-400"}`}
           >
             {isStarred ? "★" : "☆"}
           </button>
 
           <button
             onClick={(e) => { e.stopPropagation(); onToggleSolved(problem.id, !isSolved); }}
-            title={isSolved ? "Mark unsolved" : "Mark solved (starts 45-day timer)"}
-            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"}`}
+            title={isSolved ? "Mark unsolved" : `Mark solved (starts ${DSA_REVISIT_DAYS}-day timer)`}
+            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/30" : "border-gray-300 dark:border-slate-600 hover:border-emerald-400"}`}
           >
             {isSolved && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -369,7 +488,7 @@ function QuestionRow({ problem, isSolved, isStarred, note, onToggleSolved, onTog
       <AnimatePresence>
         {showNotes && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <div className="mx-1 mt-1.5 mb-1 rounded-xl border border-orange-100 dark:border-orange-900/40 bg-gradient-to-br from-orange-50/60 via-white to-amber-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-3 shadow-inner">
+            <div className="mx-1 mt-2 mb-1 rounded-xl border border-white/70 dark:border-white/[0.07] bg-white/50 dark:bg-white/[0.03] backdrop-blur-xl p-3.5">
               <div className="flex items-center justify-between mb-2">
                 <h5 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                   <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-orange-400 to-amber-400" />
@@ -382,7 +501,7 @@ function QuestionRow({ problem, isSolved, isStarred, note, onToggleSolved, onTog
                 onChange={handleNoteInput}
                 placeholder="Approach, pattern, time/space complexity, key insight, edge cases..."
                 rows={4}
-                className="w-full p-3 text-xs rounded-lg border border-orange-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 resize-y min-h-[90px] leading-relaxed"
+                className="w-full p-3 text-xs rounded-lg border border-gray-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 resize-y min-h-[90px] leading-relaxed backdrop-blur-sm"
               />
             </div>
           </motion.div>

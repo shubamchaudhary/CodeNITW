@@ -300,3 +300,47 @@ export function setDay(key, items) {
 export function getAllDayKeys() {
   return Object.keys(loadJSON(KEYS.PLAN_DAYS, {})).sort().reverse();
 }
+
+// ─── Add-to-a-day helpers ─────────────────────────────────────────────────────
+// Used by the prep pages so a problem can be pushed straight onto a plan day
+// without going to the Planning page and searching for it. Writes through
+// setDay, so the Planning page's PLAN_DAYS subscription picks it up live.
+export function planItemUid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// Is this interview/dsa item already on that day? (custom items have no refId)
+export function isPlanned(key, source, refId) {
+  return getDay(key).some((i) => i.source === source && i.refId === refId);
+}
+
+// Adds unless the same source+refId is already there. Returns whether it added.
+export function addToPlanDay(key, item) {
+  const items = getDay(key);
+  if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) {
+    return false;
+  }
+  setDay(key, [...items, item]);
+  return true;
+}
+
+export function removeFromPlanDay(key, source, refId) {
+  const items = getDay(key);
+  const next = items.filter((i) => !(i.source === source && i.refId === refId));
+  if (next.length === items.length) return false;
+  setDay(key, next);
+  return true;
+}
+
+// Build the plan item for a DSA problem — one shape, shared by every caller.
+export function dsaPlanItem(problem, topic) {
+  return {
+    uid: planItemUid(),
+    source: "dsa",
+    refId: problem.id,
+    title: problem.title,
+    meta: problem.topic || topic || "",
+    link: problem.link,
+    estimatedMinutes: 25,
+  };
+}
