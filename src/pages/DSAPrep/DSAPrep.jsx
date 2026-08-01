@@ -161,12 +161,13 @@ const DSAPrep = () => {
   const showImport = !bannerHidden && hasLegacyPersonalPlanData() && !isPersonalPlanMigrated();
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/60 to-amber-50 dark:from-[#0b1020] dark:via-[#0d1226] dark:to-[#0a0e1c] pb-20 overflow-hidden">
-      {/* Ambient colour wash behind the glass */}
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50/60 dark:from-[#0b1020] dark:via-[#0d1226] dark:to-[#0a0e1c] pb-20 overflow-hidden">
+      {/* Ambient colour wash behind the glass — violet family, kept faint and
+          heavily blurred so it reads as depth rather than a visible light. */}
       <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-28 w-[30rem] h-[30rem] rounded-full bg-orange-400/25 dark:bg-orange-600/15 blur-[100px]" />
-        <div className="absolute top-1/4 -right-40 w-[34rem] h-[34rem] rounded-full bg-fuchsia-400/15 dark:bg-fuchsia-700/12 blur-[110px]" />
-        <div className="absolute -bottom-48 left-1/3 w-[32rem] h-[32rem] rounded-full bg-amber-300/25 dark:bg-indigo-700/15 blur-[110px]" />
+        <div className="absolute -top-40 -left-28 w-[32rem] h-[32rem] rounded-full bg-violet-400/[0.10] dark:bg-violet-700/[0.09] blur-[140px]" />
+        <div className="absolute top-1/4 -right-40 w-[34rem] h-[34rem] rounded-full bg-purple-400/[0.08] dark:bg-purple-800/[0.07] blur-[150px]" />
+        <div className="absolute -bottom-48 left-1/3 w-[32rem] h-[32rem] rounded-full bg-indigo-400/[0.09] dark:bg-indigo-800/[0.07] blur-[150px]" />
       </div>
 
       <div className="relative z-10 min-h-screen flex justify-center px-3">
