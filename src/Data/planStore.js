@@ -20,9 +20,8 @@ export const KEYS = {
   POMO_STATE: "PlanningPomoState",
 };
 
-// Solved DSA problems revert to unsolved after this window (spaced repetition).
-export const DSA_REVISIT_DAYS = 45;
-const DSA_REVISIT_MS = DSA_REVISIT_DAYS * 24 * 60 * 60 * 1000;
+// A solve is permanent. DSA_TIMESTAMPS records *when* each problem was solved
+// so the UI can show how long ago it was, but nothing ever un-solves it.
 
 // ─── Per-account namespacing ──────────────────────────────────────────────────
 // Every persisted value is stored under a key prefixed with the signed-in user's
@@ -128,15 +127,18 @@ export function setSourceComplete(source, id, value) {
   }
 }
 
-// ─── DSA spaced-repetition + starring ─────────────────────────────────────────
+// ─── DSA solve history + starring ─────────────────────────────────────────────
 export function getDsaTimestamps() {
   return loadJSON(KEYS.DSA_TIMESTAMPS, {});
 }
 
-export function dsaDaysLeft(id) {
+// How many days ago this problem was solved (0 = today), or null if it isn't
+// solved / predates timestamp tracking. Purely informational — a solve never
+// expires, this just tells you how stale your last attempt is.
+export function dsaDaysSinceSolved(id) {
   const ts = loadJSON(KEYS.DSA_TIMESTAMPS, {})[id];
   if (!ts) return null;
-  return DSA_REVISIT_DAYS - Math.floor((Date.now() - ts) / (24 * 60 * 60 * 1000));
+  return Math.floor((Date.now() - ts) / (24 * 60 * 60 * 1000));
 }
 
 export function isDsaStarred(id) {
@@ -149,23 +151,20 @@ export function setDsaStarred(id, value) {
   saveJSON(KEYS.DSA_STARRED, map);
 }
 
-// Auto-revert solves older than the revisit window so they can be re-attempted.
-export function pruneExpiredDsaSolves() {
-  const now = Date.now();
+// Backfill a solve timestamp for anything ticked before timestamps existed (or
+// whose timestamp the old 45-day expiry deleted), so those rows can still show
+// a "solved N days ago" age instead of nothing. Runs once per load; cheap.
+export function backfillDsaTimestamps() {
   const completed = loadJSON(KEYS.DSA_COMPLETED, {});
   const ts = loadJSON(KEYS.DSA_TIMESTAMPS, {});
   let changed = false;
-  for (const [id, t] of Object.entries(ts)) {
-    if (now - t >= DSA_REVISIT_MS) {
-      completed[id] = false;
-      delete ts[id];
+  for (const [id, done] of Object.entries(completed)) {
+    if (done && !ts[id]) {
+      ts[id] = Date.now();
       changed = true;
     }
   }
-  if (changed) {
-    saveJSON(KEYS.DSA_COMPLETED, completed);
-    saveJSON(KEYS.DSA_TIMESTAMPS, ts);
-  }
+  if (changed) saveJSON(KEYS.DSA_TIMESTAMPS, ts);
   return changed;
 }
 
