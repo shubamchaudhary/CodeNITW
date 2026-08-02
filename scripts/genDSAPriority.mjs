@@ -2,23 +2,35 @@
    every problem, and folds in high-frequency problems the original curation
    dropped (it excluded Easy entirely).
 
-   PRIORITY IS DERIVED FROM REAL INTERVIEW-FREQUENCY DATA, NOT GUESSED.
+   PRIORITY IS DERIVED FROM DATA, NOT GUESSED. It blends two signals.
+
+   SIGNAL 1 — how often a problem is actually asked.
    Source: https://github.com/krishnadey30/LeetCode-Questions-CompanyWise
    — per-company CSVs of LeetCode company tags with a Frequency column, split
-   into 6month / 1year / 2year / alltime windows.
-
-   Method:
-     1. Keep only companies that appear in this user's own 470-company target
-        roster (jobTrackerCompanies.js) — 64 of them are present in the dataset
-        — so the ranking reflects where they are actually applying.
-     2. Normalise Frequency within each CSV (raw scales differ per company) and
+   into 6month / 1year / 2year / alltime windows. ALL companies in the dataset
+   are used (every one of them is an SDE employer that runs DSA interviews),
+   not just the ones on this user's target roster.
+     1. Normalise Frequency within each CSV (raw scales differ per company) and
         sum across companies, weighting recent windows higher than all-time:
         6months x3, 1year x2, 2year x1.5, alltime x1.
-     3. Multiply by log2(1 + breadth), where breadth = how many target companies
-        tag the problem. A problem asked at 30 companies is a safer use of study
+     2. Multiply by log2(1 + breadth), where breadth = how many companies tag
+        the problem. A problem asked at 60 companies is a safer use of study
         time than one asked intensely at a single company.
-     4. Bucket by position in that ranking; P0 additionally requires breadth, so
-        a problem that is merely one company's favourite cannot reach P0.
+     3. Bucket by position in that ranking; the top bucket additionally requires
+        breadth, so one company's favourite cannot reach it on intensity alone.
+
+   SIGNAL 2 — whether the problem IS a topic in its own right.
+   Source: scripts/data/patternLists.json (Blind 75 + NeetCode 150, both curated
+   for pattern coverage — each entry is the canonical representative of a
+   technique, which is why the lists are small). Solving one of these teaches a
+   whole pattern, so membership sets a FLOOR on its bucket:
+     • Blind 75      → never ranked below P1.
+     • NeetCode 150  → never ranked below P2.
+   It is a floor and not a promotion on purpose: P0 stays strictly "asked
+   constantly", which is what makes it trustworthy as a do-these-first list,
+   while a pattern anchor that is rarely asked still can't sink out of sight.
+   Each such problem also carries its pattern name (e.g. "Sliding Window") so
+   the UI can show what technique it teaches.
 
    Usage:
      git clone --depth 1 https://github.com/krishnadey30/LeetCode-Questions-CompanyWise /tmp/lcq
@@ -28,15 +40,20 @@ import { readFileSync, readdirSync, writeFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { DSA_TOPICS } from "../src/Data/DSAPrep.js";
-import { COMPANIES } from "../src/Data/jobTrackerCompanies.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIR = (process.argv[2] || "/tmp/lcq").replace(/\/$/, "") + "/";
 
+const PATTERNS = JSON.parse(readFileSync(join(__dirname, "data/patternLists.json"), "utf8"));
+const alias = (s) => PATTERNS.aliases[s] || s;
+const BLIND75 = new Set(PATTERNS.blind75.map(alias));
+const NC150 = new Map(PATTERNS.neetcode150.map((p) => [alias(p.slug), p.pattern]));
+
 // ── Problems the original curation missed ───────────────────────────────────
 // It dropped every Easy problem, which cut out the most-asked question on the
-// entire list (Two Sum, tagged at 35 of the target companies). These are all
-// free (non-premium) and all clear the same frequency bar as the rest.
+// entire list (Two Sum, tagged at 72 of the 200 companies), and it predated the
+// pattern lists so it was missing several technique anchors. All non-premium.
+// Re-running is safe: anything already present is skipped.
 const ADDITIONS = [
   // Arrays / two pointers
   ["two-sum", "Two Sum", "Easy", "Arrays and Two Pointers"],
@@ -83,6 +100,34 @@ const ADDITIONS = [
   ["word-ladder-ii", "Word Ladder II", "Hard", "Graphs - Basic Traversal"],
   ["the-skyline-problem", "The Skyline Problem", "Hard", "Heap and Priority Queue"],
   ["cherry-pickup", "Cherry Pickup", "Hard", "Dynamic Programming - 2D"],
+
+  // ── Pattern anchors from Blind 75 / NeetCode 150 that were still absent ──
+  // Each of these is the canonical representative of a technique, so the set
+  // now covers every pattern those lists cover. (Three further entries —
+  // Encode and Decode Strings, Meeting Rooms, Walls and Gates — are LeetCode
+  // Premium and their patterns are already covered here by Meeting Rooms II
+  // and Rotting Oranges, so they are deliberately left out.)
+  ["contains-duplicate", "Contains Duplicate", "Easy", "Arrays and Two Pointers"],
+  ["two-sum-ii-input-array-is-sorted", "Two Sum II - Input Array Is Sorted", "Medium", "Arrays and Two Pointers"],
+  ["plus-one", "Plus One", "Easy", "Math & Number Theory"],
+  ["reverse-integer", "Reverse Integer", "Medium", "Math & Number Theory"],
+  ["detect-squares", "Detect Squares", "Medium", "Design and Implementation"],
+  ["car-fleet", "Car Fleet", "Medium", "Stack and Queue"],
+  ["binary-search", "Binary Search", "Easy", "Binary Search"],
+  ["same-tree", "Same Tree", "Easy", "Trees - Basic and Traversal"],
+  ["subtree-of-another-tree", "Subtree of Another Tree", "Easy", "Trees - Advanced Properties"],
+  ["count-good-nodes-in-binary-tree", "Count Good Nodes in Binary Tree", "Medium", "Trees - Advanced Properties"],
+  ["kth-largest-element-in-a-stream", "Kth Largest Element in a Stream", "Easy", "Heap and Priority Queue"],
+  ["last-stone-weight", "Last Stone Weight", "Easy", "Heap and Priority Queue"],
+  ["min-cost-climbing-stairs", "Min Cost Climbing Stairs", "Easy", "Dynamic Programming - 1D"],
+  ["coin-change-ii", "Coin Change II", "Medium", "Dynamic Programming - 2D"],
+  ["combination-sum-iv", "Combination Sum IV", "Medium", "Dynamic Programming - 1D"],
+  ["hand-of-straights", "Hand of Straights", "Medium", "Greedy & Intervals"],
+  ["merge-triplets-to-form-target-triplet", "Merge Triplets to Form Target Triplet", "Medium", "Greedy & Intervals"],
+  ["valid-parenthesis-string", "Valid Parenthesis String", "Medium", "Greedy & Intervals"],
+  ["minimum-interval-to-include-each-query", "Minimum Interval to Include Each Query", "Hard", "Greedy & Intervals"],
+  ["counting-bits", "Counting Bits", "Easy", "Bit Manipulation"],
+  ["reverse-bits", "Reverse Bits", "Easy", "Bit Manipulation"],
 ];
 
 // ── Aggregate frequency across the user's target companies ──────────────────
@@ -91,15 +136,9 @@ if (!files.length) {
   console.error(`No CSVs in ${DIR}. Clone the dataset first (see header).`);
   process.exit(1);
 }
-const avail = new Set(files.map((f) => f.replace(/_(alltime|6months|1year|2year)\.csv$/, "")));
-const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-
-const targets = new Set();
-for (const c of COMPANIES) {
-  for (const k of [norm(c.name), norm(c.name.split(" ")[0]), c.id]) {
-    if (avail.has(k)) { targets.add(k); break; }
-  }
-}
+// Every company in the dataset — they are all SDE employers running DSA
+// interviews, so restricting to one roster only threw away signal.
+const targets = new Set(files.map((f) => f.replace(/_(alltime|6months|1year|2year)\.csv$/, "")));
 
 const WINDOW_WEIGHT = { "6months": 3, "1year": 2, "2year": 1.5, alltime: 1 };
 
@@ -154,26 +193,42 @@ for (const [id, title, difficulty, topic] of ADDITIONS) {
 }
 
 // ── Assign P0–P3 ────────────────────────────────────────────────────────────
-// Cutoffs are positions in the frequency ranking above. P0 also needs breadth
-// so a single company's pet problem can't reach the top bucket.
-const P0_MAX_POS = 45, P0_MIN_BREADTH = 11;
-const P1_MAX_POS = 150;
-const P2_MAX_POS = 400;
+// Frequency decides the base bucket; being a pattern anchor then promotes it.
+const P0_MAX_POS = 55, P0_MIN_BREADTH = 22;
+const P1_MAX_POS = 190;
+const P2_MAX_POS = 600;
 
-function priorityOf(id) {
+function freqTier(id) {
   const p = pos.get(id);
-  if (p === undefined) return "P3";            // never tagged at any target company
+  if (p === undefined) return 3;               // never tagged at any company
   const b = breadthOf.get(id) || 0;
-  if (p <= P0_MAX_POS && b >= P0_MIN_BREADTH) return "P0";
-  if (p <= P1_MAX_POS) return "P1";
-  if (p <= P2_MAX_POS) return "P2";
-  return "P3";
+  if (p <= P0_MAX_POS && b >= P0_MIN_BREADTH) return 0;
+  if (p <= P1_MAX_POS) return 1;
+  if (p <= P2_MAX_POS) return 2;
+  return 3;
+}
+
+// A problem that IS a technique is worth doing even when it isn't asked often,
+// so being a pattern anchor sets a FLOOR on its bucket — it can't sink out of
+// sight. It is deliberately not a promotion: P0 stays "asked constantly", which
+// is what makes that bucket worth trusting as a do-these-first list.
+function priorityOf(id) {
+  const t = freqTier(id);
+  if (BLIND75.has(id)) return `P${Math.min(t, 1)}`;   // never below P1
+  if (NC150.has(id)) return `P${Math.min(t, 2)}`;     // never below P2
+  return `P${t}`;
 }
 
 const counts = { P0: 0, P1: 0, P2: 0, P3: 0 };
+let anchors = 0;
 for (const t of topics) {
   for (const p of t.problems) {
     p.priority = priorityOf(p.id);
+    // What technique this problem teaches, when it is a recognised anchor.
+    const pattern = NC150.get(p.id);
+    if (pattern) p.pattern = pattern;
+    if (BLIND75.has(p.id)) p.core = true;      // the minimal pattern-covering set
+    if (pattern || p.core) anchors += 1;
     counts[p.priority] += 1;
   }
   // Highest-priority problems first inside each topic, then by frequency rank.
@@ -184,8 +239,8 @@ for (const t of topics) {
 }
 
 const total = topics.reduce((n, t) => n + t.problems.length, 0);
-console.log("target companies used:", targets.size);
-console.log("problems:", total, "| added:", ADDITIONS.length);
+console.log("companies used:", targets.size);
+console.log("problems:", total, "| pattern anchors:", anchors);
 console.log("priority distribution:", counts);
 console.log("\nP0 list:");
 topics.flatMap((t) => t.problems.filter((p) => p.priority === "P0").map((p) => ({ ...p, t: t.topic })))
@@ -195,13 +250,22 @@ topics.flatMap((t) => t.problems.filter((p) => p.priority === "P0").map((p) => (
 // ── Emit ────────────────────────────────────────────────────────────────────
 const out = `// Curated interview DSA set — ${total} problems targeting senior-SDE roles.
 //
-// \`priority\` (P0–P3) is derived from real interview-frequency data, not hand
-// waving: per-company LeetCode tag frequencies from
-// https://github.com/krishnadey30/LeetCode-Questions-CompanyWise, restricted to
-// the ${targets.size} companies from this user's own target roster that the dataset
-// covers, normalised per company, weighted toward recent windows, and scaled by
-// how many of those companies ask each problem. P0 additionally requires the
-// problem to be asked broadly, so one company's favourite can't reach the top.
+// \`priority\` (P0–P3) blends two measured signals, not judgement:
+//
+//   1. HOW OFTEN IT IS ASKED. Per-company LeetCode tag frequencies from
+//      https://github.com/krishnadey30/LeetCode-Questions-CompanyWise across all
+//      ${targets.size} companies in that dataset, normalised per company, weighted toward
+//      recent windows, and scaled by how many companies ask it. The top bucket
+//      also requires breadth, so one company's favourite can't reach it alone.
+//
+//   2. WHETHER IT IS A TOPIC IN ITSELF. Blind 75 and NeetCode 150 are curated
+//      for pattern coverage — each entry is the canonical representative of a
+//      technique. Membership promotes a problem a bucket and floors it (Blind 75
+//      never below P1, NeetCode 150 never below P2), because solving one teaches
+//      a whole pattern even if it is asked less often.
+//
+// \`pattern\` names the technique a problem teaches; \`core\` marks the Blind 75
+// minimal pattern-covering set.
 //
 // Regenerate with scripts/genDSAPriority.mjs — edit there, not here.
 

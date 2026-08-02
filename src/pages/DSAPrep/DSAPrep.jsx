@@ -110,6 +110,7 @@ const DSAPrep = () => {
       if (filter === "ALL") return true;
       if (filter === "Today") return plannedToday.has(p.id);
       if (filter === "Starred") return !!starred[p.id];
+      if (filter === "Core") return !!p.core;
       if (DSA_PRIORITIES.includes(filter)) return p.priority === filter;
       return p.difficulty === filter;
     },
@@ -128,6 +129,12 @@ const DSAPrep = () => {
     DSA_TOPICS.forEach((t) => t.problems.forEach((p) => { if (c[p.priority] != null) c[p.priority] += 1; }));
     return c;
   }, []);
+
+  // Blind 75 — the minimal set that covers every pattern once.
+  const coreCount = useMemo(
+    () => DSA_TOPICS.reduce((n, t) => n + t.problems.filter((p) => p.core).length, 0),
+    []
+  );
 
   const toggleSolved = useCallback((id, checked) => {
     setSourceComplete("dsa", id, checked);
@@ -191,8 +198,9 @@ const DSAPrep = () => {
                   </span>
                 </div>
                 <p className="text-[11.5px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-                  P0–P3 ranked by how often each problem is actually asked at your {" "}
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">target companies</span> · solves are permanent and show how long ago you did them
+                  P0–P3 ranked by how often each problem is actually asked across{" "}
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">200 companies</span> ·{" "}
+                  <span className="text-violet-500 dark:text-violet-400">◆</span> marks a core pattern worth knowing on its own · solves are permanent
                 </p>
               </div>
 
@@ -258,6 +266,11 @@ const DSAPrep = () => {
                 label: `${p} ${priorityCounts[p]}`,
                 title: DSA_PRIORITY_CONFIG[p].blurb,
               })),
+              {
+                key: "Core",
+                label: `◆ Core ${coreCount}`,
+                title: "Blind 75 — the minimal set that covers every pattern once",
+              },
               { key: "Easy", label: "Easy" },
               { key: "Medium", label: "Medium" },
               { key: "Hard", label: "Hard" },
@@ -439,7 +452,17 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
             : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5`
         } ${isPlanned && !isSolved ? "ring-1 ring-sky-400/50 dark:ring-sky-500/40" : ""}`}
       >
-        {/* Priority — how often this is actually asked at the target companies */}
+        {/* Core = Blind 75, i.e. this problem *is* a pattern worth knowing */}
+        {problem.core && (
+          <span
+            className="text-[11px] leading-none text-violet-500 dark:text-violet-400 shrink-0"
+            title="Core pattern (Blind 75) — this problem is a topic in itself"
+          >
+            ◆
+          </span>
+        )}
+
+        {/* Priority — how often this is actually asked across 200 companies */}
         {prio && (
           <span
             className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border ${prio.cls}`}
@@ -454,9 +477,19 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
           {diff.label}
         </span>
 
-        {/* Title */}
-        <span className={`text-[13px] font-semibold truncate flex-1 min-w-0 ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
-          {problem.title}
+        {/* Title, plus the technique it teaches when it's a recognised anchor */}
+        <span className="flex items-baseline gap-2 flex-1 min-w-0">
+          <span className={`text-[13px] font-semibold truncate ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
+            {problem.title}
+          </span>
+          {problem.pattern && (
+            <span
+              className="hidden lg:inline text-[10px] font-semibold text-gray-400 dark:text-gray-500 whitespace-nowrap shrink-0"
+              title={`Teaches: ${problem.pattern}`}
+            >
+              {problem.pattern}
+            </span>
+          )}
         </span>
 
         {/* Controls */}

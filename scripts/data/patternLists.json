@@ -1,0 +1,689 @@
+{
+ "_source": {
+  "blind75": "https://github.com/Sugapriyan-P-K/blind75 (cross-checked byte-identical against https://github.com/amrita150/Blind-75-LeetCode-Questions)",
+  "neetcode150": "https://github.com/krmanik/Anki-NeetCode/blob/main/neetcode-150-list.json (mirror of neetcode.io/practice)",
+  "note": "Both lists are curated for PATTERN COVERAGE — each entry is the canonical representative of a technique. Used to promote problems that are a topic in themselves. Slugs verified against leetcode.com/problems/<slug>."
+ },
+ "aliases": {
+  "add-and-search-word-data-structure-design": "design-add-and-search-words-data-structure"
+ },
+ "blind75": [
+  "3sum",
+  "add-and-search-word-data-structure-design",
+  "alien-dictionary",
+  "best-time-to-buy-and-sell-stock",
+  "binary-tree-level-order-traversal",
+  "binary-tree-maximum-path-sum",
+  "climbing-stairs",
+  "clone-graph",
+  "coin-change",
+  "combination-sum-iv",
+  "construct-binary-tree-from-preorder-and-inorder-traversal",
+  "container-with-most-water",
+  "contains-duplicate",
+  "counting-bits",
+  "course-schedule",
+  "decode-ways",
+  "encode-and-decode-strings",
+  "find-median-from-data-stream",
+  "find-minimum-in-rotated-sorted-array",
+  "graph-valid-tree",
+  "group-anagrams",
+  "house-robber",
+  "house-robber-ii",
+  "implement-trie-prefix-tree",
+  "insert-interval",
+  "invert-binary-tree",
+  "jump-game",
+  "kth-smallest-element-in-a-bst",
+  "linked-list-cycle",
+  "longest-common-subsequence",
+  "longest-consecutive-sequence",
+  "longest-increasing-subsequence",
+  "longest-palindromic-substring",
+  "longest-repeating-character-replacement",
+  "longest-substring-without-repeating-characters",
+  "lowest-common-ancestor-of-a-binary-search-tree",
+  "maximum-depth-of-binary-tree",
+  "maximum-product-subarray",
+  "maximum-subarray",
+  "meeting-rooms",
+  "meeting-rooms-ii",
+  "merge-intervals",
+  "merge-k-sorted-lists",
+  "merge-two-sorted-lists",
+  "minimum-window-substring",
+  "missing-number",
+  "non-overlapping-intervals",
+  "number-of-1-bits",
+  "number-of-connected-components-in-an-undirected-graph",
+  "number-of-islands",
+  "pacific-atlantic-water-flow",
+  "palindromic-substrings",
+  "product-of-array-except-self",
+  "remove-nth-node-from-end-of-list",
+  "reorder-list",
+  "reverse-bits",
+  "reverse-linked-list",
+  "rotate-image",
+  "same-tree",
+  "search-in-rotated-sorted-array",
+  "serialize-and-deserialize-binary-tree",
+  "set-matrix-zeroes",
+  "spiral-matrix",
+  "subtree-of-another-tree",
+  "sum-of-two-integers",
+  "top-k-frequent-elements",
+  "two-sum",
+  "unique-paths",
+  "valid-anagram",
+  "valid-palindrome",
+  "valid-parentheses",
+  "validate-binary-search-tree",
+  "word-break",
+  "word-search",
+  "word-search-ii"
+ ],
+ "neetcode150": [
+  {
+   "slug": "3sum",
+   "pattern": "Two Pointers"
+  },
+  {
+   "slug": "add-two-numbers",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "alien-dictionary",
+   "pattern": "Advanced Graphs"
+  },
+  {
+   "slug": "balanced-binary-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock",
+   "pattern": "Sliding Window"
+  },
+  {
+   "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "binary-search",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "binary-tree-level-order-traversal",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "binary-tree-maximum-path-sum",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "binary-tree-right-side-view",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "burst-balloons",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "car-fleet",
+   "pattern": "Stack"
+  },
+  {
+   "slug": "cheapest-flights-within-k-stops",
+   "pattern": "Advanced Graphs"
+  },
+  {
+   "slug": "climbing-stairs",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "clone-graph",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "coin-change",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "coin-change-ii",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "combination-sum",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "combination-sum-ii",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "container-with-most-water",
+   "pattern": "Two Pointers"
+  },
+  {
+   "slug": "contains-duplicate",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "copy-list-with-random-pointer",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "count-good-nodes-in-binary-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "counting-bits",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "course-schedule",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "course-schedule-ii",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "daily-temperatures",
+   "pattern": "Stack"
+  },
+  {
+   "slug": "decode-ways",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "design-add-and-search-words-data-structure",
+   "pattern": "Tries"
+  },
+  {
+   "slug": "design-twitter",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "detect-squares",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "diameter-of-binary-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "distinct-subsequences",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "edit-distance",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "encode-and-decode-strings",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "evaluate-reverse-polish-notation",
+   "pattern": "Stack"
+  },
+  {
+   "slug": "find-median-from-data-stream",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "find-minimum-in-rotated-sorted-array",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "find-the-duplicate-number",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "gas-station",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "generate-parentheses",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "graph-valid-tree",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "group-anagrams",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "hand-of-straights",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "happy-number",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "house-robber",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "house-robber-ii",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "implement-trie-prefix-tree",
+   "pattern": "Tries"
+  },
+  {
+   "slug": "insert-interval",
+   "pattern": "Intervals"
+  },
+  {
+   "slug": "interleaving-string",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "invert-binary-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "jump-game",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "jump-game-ii",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "k-closest-points-to-origin",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "koko-eating-bananas",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "kth-largest-element-in-a-stream",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "kth-largest-element-in-an-array",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "kth-smallest-element-in-a-bst",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "largest-rectangle-in-histogram",
+   "pattern": "Stack"
+  },
+  {
+   "slug": "last-stone-weight",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "letter-combinations-of-a-phone-number",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "linked-list-cycle",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "longest-common-subsequence",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "longest-consecutive-sequence",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "longest-increasing-path-in-a-matrix",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "longest-increasing-subsequence",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "longest-palindromic-substring",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "longest-repeating-character-replacement",
+   "pattern": "Sliding Window"
+  },
+  {
+   "slug": "longest-substring-without-repeating-characters",
+   "pattern": "Sliding Window"
+  },
+  {
+   "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "lru-cache",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "max-area-of-island",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "maximum-depth-of-binary-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "maximum-product-subarray",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "maximum-subarray",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "median-of-two-sorted-arrays",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "meeting-rooms",
+   "pattern": "Intervals"
+  },
+  {
+   "slug": "meeting-rooms-ii",
+   "pattern": "Intervals"
+  },
+  {
+   "slug": "merge-intervals",
+   "pattern": "Intervals"
+  },
+  {
+   "slug": "merge-k-sorted-lists",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "merge-triplets-to-form-target-triplet",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "merge-two-sorted-lists",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "min-cost-climbing-stairs",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "min-cost-to-connect-all-points",
+   "pattern": "Advanced Graphs"
+  },
+  {
+   "slug": "min-stack",
+   "pattern": "Stack"
+  },
+  {
+   "slug": "minimum-interval-to-include-each-query",
+   "pattern": "Intervals"
+  },
+  {
+   "slug": "minimum-window-substring",
+   "pattern": "Sliding Window"
+  },
+  {
+   "slug": "missing-number",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "multiply-strings",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "n-queens",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "network-delay-time",
+   "pattern": "Advanced Graphs"
+  },
+  {
+   "slug": "non-overlapping-intervals",
+   "pattern": "Intervals"
+  },
+  {
+   "slug": "number-of-1-bits",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "number-of-connected-components-in-an-undirected-graph",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "number-of-islands",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "pacific-atlantic-water-flow",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "palindrome-partitioning",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "palindromic-substrings",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "partition-equal-subset-sum",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "partition-labels",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "permutation-in-string",
+   "pattern": "Sliding Window"
+  },
+  {
+   "slug": "permutations",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "plus-one",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "powx-n",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "product-of-array-except-self",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "reconstruct-itinerary",
+   "pattern": "Advanced Graphs"
+  },
+  {
+   "slug": "redundant-connection",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "regular-expression-matching",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "remove-nth-node-from-end-of-list",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "reorder-list",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "reverse-bits",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "reverse-integer",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "reverse-linked-list",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "reverse-nodes-in-k-group",
+   "pattern": "Linked List"
+  },
+  {
+   "slug": "rotate-image",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "rotting-oranges",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "same-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "search-a-2d-matrix",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "search-in-rotated-sorted-array",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "serialize-and-deserialize-binary-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "set-matrix-zeroes",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "single-number",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "sliding-window-maximum",
+   "pattern": "Sliding Window"
+  },
+  {
+   "slug": "spiral-matrix",
+   "pattern": "Math & Geometry"
+  },
+  {
+   "slug": "subsets",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "subsets-ii",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "subtree-of-another-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "sum-of-two-integers",
+   "pattern": "Bit Manipulation"
+  },
+  {
+   "slug": "surrounded-regions",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "swim-in-rising-water",
+   "pattern": "Advanced Graphs"
+  },
+  {
+   "slug": "target-sum",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "task-scheduler",
+   "pattern": "Heap / Priority Queue"
+  },
+  {
+   "slug": "time-based-key-value-store",
+   "pattern": "Binary Search"
+  },
+  {
+   "slug": "top-k-frequent-elements",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "trapping-rain-water",
+   "pattern": "Two Pointers"
+  },
+  {
+   "slug": "two-sum",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "two-sum-ii-input-array-is-sorted",
+   "pattern": "Two Pointers"
+  },
+  {
+   "slug": "unique-paths",
+   "pattern": "2-D Dynamic Programming"
+  },
+  {
+   "slug": "valid-anagram",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "valid-palindrome",
+   "pattern": "Two Pointers"
+  },
+  {
+   "slug": "valid-parentheses",
+   "pattern": "Stack"
+  },
+  {
+   "slug": "valid-parenthesis-string",
+   "pattern": "Greedy"
+  },
+  {
+   "slug": "valid-sudoku",
+   "pattern": "Arrays & Hashing"
+  },
+  {
+   "slug": "validate-binary-search-tree",
+   "pattern": "Trees"
+  },
+  {
+   "slug": "walls-and-gates",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "word-break",
+   "pattern": "1-D Dynamic Programming"
+  },
+  {
+   "slug": "word-ladder",
+   "pattern": "Graphs"
+  },
+  {
+   "slug": "word-search",
+   "pattern": "Backtracking"
+  },
+  {
+   "slug": "word-search-ii",
+   "pattern": "Tries"
+  }
+ ]
+}
