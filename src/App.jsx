@@ -11,7 +11,6 @@ import PrivateRoute from "./components/PrivateRoute";
 import OwnerRoute from "./components/OwnerRoute";
 import InterviewPrep from "./pages/InterviewPrep/InterviewPrep";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
-import MostAskedDSA from "./pages/MostAskedDSA/MostAskedDSA";
 import Planning from "./pages/Planning/Planning";
 import SignUp from "./pages/SignInUp/SignUp";
 import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
@@ -42,9 +41,6 @@ function App() {
           </Route>
           <Route path="/dsa-prep" element={<PrivateRoute />}>
             <Route path="/dsa-prep" element={<DSAPrep />} />
-          </Route>
-          <Route path="/most-asked-dsa" element={<PrivateRoute />}>
-            <Route path="/most-asked-dsa" element={<MostAskedDSA />} />
           </Route>
           <Route path="/planning" element={<PrivateRoute />}>
             <Route path="/planning" element={<Planning />} />
