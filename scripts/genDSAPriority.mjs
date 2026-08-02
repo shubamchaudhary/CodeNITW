@@ -231,10 +231,16 @@ for (const t of topics) {
     if (pattern || p.core) anchors += 1;
     counts[p.priority] += 1;
   }
-  // Highest-priority problems first inside each topic, then by frequency rank.
+  // Highest-priority problems first inside each topic. Within a bucket the
+  // pattern anchors come first — they teach the technique the rest of the
+  // bucket then applies — and everything else falls back to frequency rank.
   const order = { P0: 0, P1: 1, P2: 2, P3: 3 };
   t.problems.sort(
-    (a, b) => order[a.priority] - order[b.priority] || (pos.get(a.id) ?? 1e9) - (pos.get(b.id) ?? 1e9)
+    (a, b) =>
+      order[a.priority] - order[b.priority] ||
+      (b.core ? 1 : 0) - (a.core ? 1 : 0) ||
+      (NC150.has(b.id) ? 1 : 0) - (NC150.has(a.id) ? 1 : 0) ||
+      (pos.get(a.id) ?? 1e9) - (pos.get(b.id) ?? 1e9)
   );
 }
 

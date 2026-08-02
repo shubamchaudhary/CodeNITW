@@ -96,25 +96,14 @@ const DSAPrep = () => {
     [readPlanned]
   );
 
-  const totalSolved = useMemo(
-    () => DSA_TOPICS.reduce((a, t) => a + t.problems.filter((p) => solved[p.id]).length, 0),
-    [solved]
-  );
-  const totalPct = DSA_TOTAL ? Math.round((totalSolved / DSA_TOTAL) * 100) : 0;
-  const starredCount = useMemo(() => Object.values(starred).filter(Boolean).length, [starred]);
-
-  // One predicate per filter chip, so priority sits alongside difficulty rather
-  // than being a second independent axis to reason about.
+  // One predicate per filter chip.
   const matches = useCallback(
     (p) => {
       if (filter === "ALL") return true;
-      if (filter === "Today") return plannedToday.has(p.id);
       if (filter === "Starred") return !!starred[p.id];
-      if (filter === "Core") return !!p.core;
-      if (DSA_PRIORITIES.includes(filter)) return p.priority === filter;
-      return p.difficulty === filter;
+      return p.priority === filter;
     },
-    [filter, starred, plannedToday]
+    [filter, starred]
   );
 
   const visibleTopics = useMemo(() => {
@@ -124,17 +113,13 @@ const DSAPrep = () => {
     );
   }, [filter, matches]);
 
-  const priorityCounts = useMemo(() => {
-    const c = { P0: 0, P1: 0, P2: 0, P3: 0 };
-    DSA_TOPICS.forEach((t) => t.problems.forEach((p) => { if (c[p.priority] != null) c[p.priority] += 1; }));
-    return c;
-  }, []);
-
-  // Blind 75 — the minimal set that covers every pattern once.
-  const coreCount = useMemo(
-    () => DSA_TOPICS.reduce((n, t) => n + t.problems.filter((p) => p.core).length, 0),
-    []
-  );
+  // Header stats follow the active filter, so "Solved" and the ring always
+  // describe the set you are actually looking at rather than the whole list.
+  const scoped = useMemo(() => {
+    const problems = visibleTopics.flatMap((t) => t.problems);
+    const done = problems.filter((p) => solved[p.id]).length;
+    return { total: problems.length, done, pct: problems.length ? Math.round((100 * done) / problems.length) : 0 };
+  }, [visibleTopics, solved]);
 
   const toggleSolved = useCallback((id, checked) => {
     setSourceComplete("dsa", id, checked);
@@ -197,23 +182,16 @@ const DSAPrep = () => {
                     {DSA_TOTAL} most-asked
                   </span>
                 </div>
-                <p className="text-[11.5px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-                  P0–P3 ranked by how often each problem is actually asked across{" "}
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">200 companies</span> ·{" "}
-                  <span className="text-violet-500 dark:text-violet-400">◆</span> marks a core pattern worth knowing on its own · solves are permanent
-                </p>
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
-                <StatPill label="Solved" value={`${totalSolved}`} sub={`/${DSA_TOTAL}`} />
-                <StatPill label="Starred" value={starredCount} accent="text-yellow-500 dark:text-yellow-400" />
-                <StatPill label="Today" value={plannedToday.size} accent="text-sky-600 dark:text-sky-400" />
+                <StatPill label="Solved" value={`${scoped.done}`} sub={`/${scoped.total}`} />
                 <div className="relative w-16 h-16 shrink-0">
                   <svg className="w-16 h-16 -rotate-90" viewBox="0 0 56 56">
                     <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-gray-200/80 dark:text-white/10" strokeWidth="5" />
                     <circle cx="28" cy="28" r="22" fill="none" stroke="url(#dsaProgressGrad)" strokeWidth="5" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 22}`}
-                      strokeDashoffset={`${2 * Math.PI * 22 * (1 - totalPct / 100)}`}
+                      strokeDashoffset={`${2 * Math.PI * 22 * (1 - scoped.pct / 100)}`}
                       style={{ transition: "stroke-dashoffset 0.5s ease" }} />
                     <defs>
                       <linearGradient id="dsaProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -222,7 +200,7 @@ const DSAPrep = () => {
                       </linearGradient>
                     </defs>
                   </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-orange-600 dark:text-orange-400">{totalPct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-orange-600 dark:text-orange-400">{scoped.pct}%</span>
                 </div>
               </div>
             </div>
@@ -260,22 +238,13 @@ const DSAPrep = () => {
           {/* ── Filter ── */}
           <div className={`mb-5 rounded-2xl ${CARD} p-1.5 inline-flex flex-wrap gap-1`}>
             {[
-              { key: "ALL", label: `All ${DSA_TOTAL}` },
+              { key: "ALL", label: "All", title: "Every problem" },
               ...DSA_PRIORITIES.map((p) => ({
                 key: p,
-                label: `${p} ${priorityCounts[p]}`,
+                label: p,
                 title: DSA_PRIORITY_CONFIG[p].blurb,
               })),
-              {
-                key: "Core",
-                label: `◆ Core ${coreCount}`,
-                title: "Blind 75 — the minimal set that covers every pattern once",
-              },
-              { key: "Easy", label: "Easy" },
-              { key: "Medium", label: "Medium" },
-              { key: "Hard", label: "Hard" },
-              { key: "Starred", label: `★ ${starredCount}` },
-              { key: "Today", label: `◉ Today ${plannedToday.size}` },
+              { key: "Starred", label: "★", title: "Starred" },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -305,6 +274,7 @@ const DSAPrep = () => {
             <div className="space-y-2.5">
               {visibleTopics.map((topic, i) => (
                 <TopicCard
+                  showP0Badge={filter !== "P0"}
                   key={topic.topic}
                   topic={topic}
                   accent={ACCENTS[i % ACCENTS.length]}
@@ -340,12 +310,15 @@ function StatPill({ label, value, sub, accent = "text-gray-800 dark:text-gray-10
   );
 }
 
-function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, plannedToday, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
+function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, plannedToday, showP0Badge, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
   const done = topic.problems.filter((p) => solved[p.id]).length;
   const pct = topic.problems.length ? (100 * done) / topic.problems.length : 0;
   const queued = topic.problems.filter((p) => plannedToday.has(p.id)).length;
-  // Unsolved P0s are the reason to open this topic next.
-  const p0Left = topic.problems.filter((p) => p.priority === "P0" && !solved[p.id]).length;
+  // Unsolved P0s are the reason to open this topic next — redundant noise
+  // while the P0 filter is on, since every row shown is already a P0.
+  const p0Left = showP0Badge
+    ? topic.problems.filter((p) => p.priority === "P0" && !solved[p.id]).length
+    : 0;
 
   return (
     <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14]`}>
