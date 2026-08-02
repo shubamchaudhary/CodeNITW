@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
-import { DSA_TOPICS, DSA_TOTAL } from "../../Data/DSAPrep";
+import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
@@ -11,9 +11,8 @@ import {
   setSourceComplete,
   setSourceNote,
   setDsaStarred,
-  pruneExpiredDsaSolves,
-  dsaDaysLeft,
-  DSA_REVISIT_DAYS,
+  backfillDsaTimestamps,
+  dsaDaysSinceSolved,
   subscribe,
   hasLegacyPersonalPlanData,
   isPersonalPlanMigrated,
@@ -50,8 +49,8 @@ const DSAPrep = () => {
     return unsubscribe;
   }, []);
 
-  // Expire any solves older than the revisit window before reading state.
-  useEffect(() => { pruneExpiredDsaSolves(); }, []);
+  // Give any older solve a timestamp so it can show an age. Never un-solves.
+  useEffect(() => { backfillDsaTimestamps(); }, []);
 
   const [solved, setSolved] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
   const [notes, setNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
@@ -104,20 +103,31 @@ const DSAPrep = () => {
   const totalPct = DSA_TOTAL ? Math.round((totalSolved / DSA_TOTAL) * 100) : 0;
   const starredCount = useMemo(() => Object.values(starred).filter(Boolean).length, [starred]);
 
+  // One predicate per filter chip, so priority sits alongside difficulty rather
+  // than being a second independent axis to reason about.
+  const matches = useCallback(
+    (p) => {
+      if (filter === "ALL") return true;
+      if (filter === "Today") return plannedToday.has(p.id);
+      if (filter === "Starred") return !!starred[p.id];
+      if (DSA_PRIORITIES.includes(filter)) return p.priority === filter;
+      return p.difficulty === filter;
+    },
+    [filter, starred, plannedToday]
+  );
+
   const visibleTopics = useMemo(() => {
     if (filter === "ALL") return DSA_TOPICS;
-    if (filter === "Today")
-      return DSA_TOPICS.map((t) => ({
-        ...t,
-        problems: t.problems.filter((p) => plannedToday.has(p.id)),
-      })).filter((t) => t.problems.length);
-    return DSA_TOPICS.map((t) => ({
-      ...t,
-      problems: t.problems.filter((p) =>
-        filter === "Starred" ? starred[p.id] : p.difficulty === filter
-      ),
-    })).filter((t) => t.problems.length);
-  }, [filter, starred, plannedToday]);
+    return DSA_TOPICS.map((t) => ({ ...t, problems: t.problems.filter(matches) })).filter(
+      (t) => t.problems.length
+    );
+  }, [filter, matches]);
+
+  const priorityCounts = useMemo(() => {
+    const c = { P0: 0, P1: 0, P2: 0, P3: 0 };
+    DSA_TOPICS.forEach((t) => t.problems.forEach((p) => { if (c[p.priority] != null) c[p.priority] += 1; }));
+    return c;
+  }, []);
 
   const toggleSolved = useCallback((id, checked) => {
     setSourceComplete("dsa", id, checked);
@@ -181,7 +191,8 @@ const DSAPrep = () => {
                   </span>
                 </div>
                 <p className="text-[11.5px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-                  Medium &amp; Hard · {DSA_REVISIT_DAYS}-day spaced repetition — solved problems reopen after {DSA_REVISIT_DAYS} days
+                  P0–P3 ranked by how often each problem is actually asked at your {" "}
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">target companies</span> · solves are permanent and show how long ago you did them
                 </p>
               </div>
 
@@ -242,6 +253,12 @@ const DSAPrep = () => {
           <div className={`mb-5 rounded-2xl ${CARD} p-1.5 inline-flex flex-wrap gap-1`}>
             {[
               { key: "ALL", label: `All ${DSA_TOTAL}` },
+              ...DSA_PRIORITIES.map((p) => ({
+                key: p,
+                label: `${p} ${priorityCounts[p]}`,
+                title: DSA_PRIORITY_CONFIG[p].blurb,
+              })),
+              { key: "Easy", label: "Easy" },
               { key: "Medium", label: "Medium" },
               { key: "Hard", label: "Hard" },
               { key: "Starred", label: `★ ${starredCount}` },
@@ -250,6 +267,7 @@ const DSAPrep = () => {
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
+                title={tab.title}
                 className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
                   filter === tab.key
                     ? "bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30"
@@ -313,6 +331,8 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
   const done = topic.problems.filter((p) => solved[p.id]).length;
   const pct = topic.problems.length ? (100 * done) / topic.problems.length : 0;
   const queued = topic.problems.filter((p) => plannedToday.has(p.id)).length;
+  // Unsolved P0s are the reason to open this topic next.
+  const p0Left = topic.problems.filter((p) => p.priority === "P0" && !solved[p.id]).length;
 
   return (
     <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14]`}>
@@ -322,6 +342,14 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
           <h2 className="text-[13.5px] font-bold text-gray-700 dark:text-gray-200 truncate">{topic.topic}</h2>
         </div>
         <div className="flex items-center gap-3 shrink-0">
+          {p0Left > 0 && (
+            <span
+              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30"
+              title={`${p0Left} P0 problem${p0Left > 1 ? "s" : ""} still unsolved here`}
+            >
+              {p0Left} P0
+            </span>
+          )}
           {queued > 0 && (
             <span
               className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/25"
@@ -385,11 +413,20 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
     [problem.id, onNoteChange]
   );
 
-  const daysLeft = isSolved ? dsaDaysLeft(problem.id) : null;
+  // Age of the solve, shown purely as information — a solve never expires.
+  const solvedDays = isSolved ? dsaDaysSinceSolved(problem.id) : null;
+  const solvedLabel =
+    solvedDays == null ? null : solvedDays === 0 ? "today" : solvedDays === 1 ? "1d ago" : `${solvedDays}d ago`;
 
+  const prio = DSA_PRIORITY_CONFIG[problem.priority];
+
+  // Three-way: the set now includes Easy problems, so this can't be a
+  // Hard/everything-else binary any more.
   const diff =
     problem.difficulty === "Hard"
       ? { label: "Hard", badge: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/25" }
+      : problem.difficulty === "Easy"
+      ? { label: "Easy", badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25" }
       : { label: "Med", badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25" };
 
   return (
@@ -402,6 +439,16 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
             : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5`
         } ${isPlanned && !isSolved ? "ring-1 ring-sky-400/50 dark:ring-sky-500/40" : ""}`}
       >
+        {/* Priority — how often this is actually asked at the target companies */}
+        {prio && (
+          <span
+            className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border ${prio.cls}`}
+            title={`${prio.label} — ${prio.blurb}`}
+          >
+            {prio.label}
+          </span>
+        )}
+
         {/* Difficulty */}
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 border ${diff.badge}`}>
           {diff.label}
@@ -416,12 +463,12 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {localNote && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs hidden sm:inline">✎</span>}
 
-          {daysLeft != null && (
+          {solvedLabel && (
             <span
-              title={`Reopens for re-attempt in ${Math.max(daysLeft, 0)} day(s)`}
+              title={`You solved this ${solvedLabel === "today" ? "today" : solvedLabel}`}
               className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25"
             >
-              {Math.max(daysLeft, 0)}d
+              ✓ {solvedLabel}
             </span>
           )}
 
@@ -462,7 +509,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
 
           <button
             onClick={(e) => { e.stopPropagation(); onToggleSolved(problem.id, !isSolved); }}
-            title={isSolved ? "Mark unsolved" : `Mark solved (starts ${DSA_REVISIT_DAYS}-day timer)`}
+            title={isSolved ? "Mark unsolved" : "Mark solved"}
             className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/30" : "border-gray-300 dark:border-slate-600 hover:border-emerald-400"}`}
           >
             {isSolved && (
