@@ -129,7 +129,7 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
 
 // Shared expandable body for a DSA problem — link, difficulty, star, the 45-day
 // countdown and the solution notes — so a planned DSA card matches the DSA page.
-export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onToggleStar, daysLeft }) {
+export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onToggleStar, solvedDays }) {
   const [localNote, setLocalNote] = useState(note);
   const debounceRef = useRef(null);
 
@@ -175,9 +175,9 @@ export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onTog
             {isStarred ? "★" : "☆"}
           </button>
         )}
-        {daysLeft != null && (
+        {solvedDays != null && (
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200 font-semibold whitespace-nowrap">
-            reopens in {Math.max(daysLeft, 0)}d
+            ✓ solved {solvedDays === 0 ? "today" : `${solvedDays}d ago`}
           </span>
         )}
       </div>
