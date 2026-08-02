@@ -9,7 +9,7 @@ import {
   loadJSON,
   setSourceComplete,
   setDsaStarred,
-  pruneExpiredDsaSolves,
+  backfillDsaTimestamps,
   subscribe,
 } from "../../Data/planStore";
 
@@ -21,8 +21,8 @@ const MostAskedDSA = () => {
     return unsubscribe;
   }, []);
 
-  // Share the spaced-repetition pruning with the main DSA page.
-  useEffect(() => { pruneExpiredDsaSolves(); }, []);
+  // Give older solves a timestamp so they can show an age (never un-solves).
+  useEffect(() => { backfillDsaTimestamps(); }, []);
 
   const [solved, setSolved] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
   const [starred, setStarred] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));

@@ -17,11 +17,11 @@ import {
   getInterviewCard,
   getDsaProblem,
   setDsaStarred,
-  dsaDaysLeft,
+  dsaDaysSinceSolved,
   getDay,
   setDay,
   getAllDayKeys,
-  pruneExpiredDsaSolves,
+  backfillDsaTimestamps,
   dateKey,
   addDays,
   prettyDate,
@@ -452,7 +452,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
 function DayCard({
   item, index, complete, note, isOpen, canComplete, isToday: dayIsToday,
   onToggleOpen, onToggleComplete, onNoteChange, onRemove, onMove, moveLabel,
-  isStarred, onToggleStar, daysLeft,
+  isStarred, onToggleStar, solvedDays,
   onTimeChange, onToggleSubItem, onAddSubItem, onRemoveSubItem, onSubItemTimeChange,
   pomoActive, pomoItemUid, pomo, onStartPomo,
   onDragStart, onDragOver, onDrop, onDragEnd, isDragging, isOver,
@@ -719,7 +719,7 @@ function DayCard({
                 )}
 
                 {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
-                {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} daysLeft={daysLeft} />}
+                {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} solvedDays={solvedDays} />}
                 {item.source === "custom" && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -991,7 +991,7 @@ const Planning = () => {
     const unsub = onAuthStateChanged(getAuth(), () => setAuthReady(true));
     return unsub;
   }, []);
-  useEffect(() => { pruneExpiredDsaSolves(); }, []);
+  useEffect(() => { backfillDsaTimestamps(); }, []);
 
   const today = dateKey();
   const [current, setCurrent] = useState(today);
@@ -1379,7 +1379,7 @@ const Planning = () => {
                         onRemove={() => removeItem(item.uid)}
                         isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
                         onToggleStar={item.source === "dsa" ? toggleStar : undefined}
-                        daysLeft={item.source === "dsa" && complete ? dsaDaysLeft(item.refId) : null}
+                        solvedDays={item.source === "dsa" && complete ? dsaDaysSinceSolved(item.refId) : null}
                         moveLabel={isToday ? "Tomorrow" : "Today"}
                         onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
                         onTimeChange={updateItemTime}
