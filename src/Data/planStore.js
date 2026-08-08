@@ -5,12 +5,16 @@
 
 import { jobHuntPlan } from "./JobHuntPlan";
 import { DSA_PROBLEMS } from "./DSAPrep";
+import { CORE_STACK_TOPICS } from "./CoreStack";
 
-export { DSA_PROBLEMS };
+export { DSA_PROBLEMS, CORE_STACK_TOPICS };
 
 export const KEYS = {
   IP_COMPLETED: "InterviewPrepCompleted",
   IP_NOTES: "InterviewPrepNotes",
+  CS_COMPLETED: "CoreStackCompleted",
+  CS_NOTES: "CoreStackNotes",
+  CS_TIMESTAMPS: "CoreStackCheckedTimestamps",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
@@ -90,6 +94,7 @@ export const INTERVIEW_CARDS = jobHuntPlan.map((card) => ({
 
 const IP_BY_ID = Object.fromEntries(INTERVIEW_CARDS.map((c) => [c.id, c]));
 const DSA_BY_ID = Object.fromEntries(DSA_PROBLEMS.map((p) => [p.id, p]));
+const CS_BY_ID = Object.fromEntries(CORE_STACK_TOPICS.map((t) => [t.id, t]));
 
 export function getInterviewCard(id) {
   return IP_BY_ID[id] || null;
@@ -97,12 +102,17 @@ export function getInterviewCard(id) {
 export function getDsaProblem(id) {
   return DSA_BY_ID[id] || null;
 }
+export function getCoreStackTopic(id) {
+  return CS_BY_ID[id] || null;
+}
 
 // ─── Completion + notes accessors keyed by source ─────────────────────────────
+// "interview" is the legacy Topics page: its store stays readable so days that
+// already reference an interview card keep working, but nothing writes new ones.
 function keysFor(source) {
-  return source === "dsa"
-    ? { completed: KEYS.DSA_COMPLETED, notes: KEYS.DSA_NOTES }
-    : { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
+  if (source === "dsa") return { completed: KEYS.DSA_COMPLETED, notes: KEYS.DSA_NOTES };
+  if (source === "corestack") return { completed: KEYS.CS_COMPLETED, notes: KEYS.CS_NOTES };
+  return { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
 }
 
 export function isSourceComplete(source, id) {
@@ -125,6 +135,21 @@ export function setSourceComplete(source, id, value) {
     else delete ts[id];
     saveJSON(KEYS.DSA_TIMESTAMPS, ts);
   }
+  // Core Stack records when a topic was ticked so the card can show its age.
+  if (source === "corestack") {
+    const ts = loadJSON(KEYS.CS_TIMESTAMPS, {});
+    if (value) ts[id] = Date.now();
+    else delete ts[id];
+    saveJSON(KEYS.CS_TIMESTAMPS, ts);
+  }
+}
+
+// How many days ago this Core Stack topic was ticked (0 = today), or null if it
+// isn't ticked. Informational only — nothing ever expires a tick.
+export function coreStackDaysSinceChecked(id) {
+  const ts = loadJSON(KEYS.CS_TIMESTAMPS, {})[id];
+  if (!ts) return null;
+  return Math.floor((Date.now() - ts) / (24 * 60 * 60 * 1000));
 }
 
 // ─── DSA solve history + starring ─────────────────────────────────────────────
@@ -329,6 +354,19 @@ export function removeFromPlanDay(key, source, refId) {
   if (next.length === items.length) return false;
   setDay(key, next);
   return true;
+}
+
+// Build the plan item for a Core Stack topic — the estimate is the topic's own
+// watch time, so a planned day adds up to something real.
+export function coreStackPlanItem(topic) {
+  return {
+    uid: planItemUid(),
+    source: "corestack",
+    refId: topic.id,
+    title: topic.title,
+    meta: topic.priority,
+    estimatedMinutes: topic.minutes || 30,
+  };
 }
 
 // Build the plan item for a DSA problem — one shape, shared by every caller.

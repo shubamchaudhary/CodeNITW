@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/PrivateRoute";
 import OwnerRoute from "./components/OwnerRoute";
-import InterviewPrep from "./pages/InterviewPrep/InterviewPrep";
+import CoreStack from "./pages/CoreStack/CoreStack";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
 import SignUp from "./pages/SignInUp/SignUp";
@@ -34,10 +34,16 @@ function App() {
       <Router>
         <Header />
         <Routes>
-          <Route path="/" element={<Navigate to="/interview-prep" replace />} />
+          <Route path="/" element={<Navigate to="/core-stack" replace />} />
 
-          <Route path="/interview-prep" element={<PrivateRoute />}>
-            <Route path="/interview-prep" element={<InterviewPrep />} />
+          {/* The old Topics page (AI / HLD / LLD / Spring Boot) is retired:
+              Core Stack replaces it. src/pages/InterviewPrep and its plan data
+              are kept on disk — and their progress still cloud-syncs — but
+              nothing routes or links to them, so the page is unreachable. */}
+          <Route path="/interview-prep" element={<Navigate to="/core-stack" replace />} />
+
+          <Route path="/core-stack" element={<PrivateRoute />}>
+            <Route path="/core-stack" element={<CoreStack />} />
           </Route>
           <Route path="/dsa-prep" element={<PrivateRoute />}>
             <Route path="/dsa-prep" element={<DSAPrep />} />
@@ -60,7 +66,7 @@ function App() {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route path="*" element={<Navigate to="/interview-prep" replace />} />
+          <Route path="*" element={<Navigate to="/core-stack" replace />} />
         </Routes>
       </Router>
       <ToastContainer
