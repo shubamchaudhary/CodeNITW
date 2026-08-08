@@ -9,7 +9,7 @@ import {
   CORE_STACK_PRIORITIES,
   CORE_STACK_PRIORITY_CONFIG,
 } from "../../Data/CoreStack";
-import { CoreStackTopicDetail } from "../../components/cardDetails";
+import { CoreStackTopicDetail, CopyButton } from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
@@ -190,7 +190,7 @@ const CoreStack = () => {
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
                 title={tab.title}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                className={`px-4 py-1.5 text-[13px] font-bold rounded-xl transition-all ${
                   filter === tab.key
                     ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30"
                     : "text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] hover:text-emerald-600 dark:hover:text-emerald-300"
@@ -211,10 +211,10 @@ const CoreStack = () => {
               <div className="flex items-center gap-3 mb-3 px-1">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-emerald-500 to-teal-400" />
-                  <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300">{CORE_STACK_SECTION}</h2>
+                  <h2 className="text-[15px] font-bold text-gray-700 dark:text-gray-300">{CORE_STACK_SECTION}</h2>
                 </div>
                 <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
-                <span className="text-xs text-gray-400 dark:text-gray-500">{sectionDone}/{visibleTopics.length} done</span>
+                <span className="text-[13px] text-gray-400 dark:text-gray-500">{sectionDone}/{visibleTopics.length} done</span>
               </div>
 
               <div className="space-y-2.5">
@@ -285,7 +285,7 @@ function TopicCard({
 
         {prio && (
           <span
-            className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border ${prio.cls}`}
+            className={`text-[11px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border ${prio.cls}`}
             title={`${prio.label} — ${prio.blurb}`}
           >
             {prio.label}
@@ -294,25 +294,32 @@ function TopicCard({
 
         <div className="flex-1 min-w-0">
           <h2
-            className={`text-[13.5px] font-bold truncate ${
+            className={`text-[15px] font-bold truncate ${
               isChecked ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-700 dark:text-gray-200"
             }`}
           >
             {topic.title}
           </h2>
-          <p className="text-[10.5px] text-gray-400 dark:text-gray-500 mt-0.5 truncate">
+          <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-0.5 truncate">
             {topic.videos.length} video{topic.videos.length === 1 ? "" : "s"} · {topic.duration}
             {topic.videos[0] ? ` · ${topic.videos[0].channel.split(" - ")[0]}` : ""}
           </p>
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-          {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs hidden sm:inline">✎</span>}
+          {note && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-sm hidden sm:inline">✎</span>}
+
+          <CopyButton
+            value={topic.title}
+            label=""
+            title={`Copy "${topic.title}"`}
+            className="!px-1.5"
+          />
 
           {checkedLabel && (
             <span
               title={`You checked this off ${checkedLabel === "today" ? "today" : checkedLabel}`}
-              className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25"
+              className="text-[11px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25"
             >
               ✓ {checkedLabel}
             </span>
@@ -322,7 +329,7 @@ function TopicCard({
           <button
             onClick={() => onTogglePlanned(topic)}
             title={isPlanned ? "Remove from today's plan" : "Add to today's plan"}
-            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md border transition-all ${
+            className={`inline-flex items-center gap-1 text-[12px] font-bold px-2 py-1 rounded-md border transition-all ${
               isPlanned
                 ? "bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-500/30"
                 : "bg-white/60 dark:bg-white/[0.05] border-gray-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300"
