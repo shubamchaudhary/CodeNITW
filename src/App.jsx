@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/PrivateRoute";
 import OwnerRoute from "./components/OwnerRoute";
 import CoreStack from "./pages/CoreStack/CoreStack";
+import AIStack from "./pages/AIStack/AIStack";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
 import SignUp from "./pages/SignInUp/SignUp";
@@ -44,6 +45,9 @@ function App() {
 
           <Route path="/core-stack" element={<PrivateRoute />}>
             <Route path="/core-stack" element={<CoreStack />} />
+          </Route>
+          <Route path="/ai-stack" element={<PrivateRoute />}>
+            <Route path="/ai-stack" element={<AIStack />} />
           </Route>
           <Route path="/dsa-prep" element={<PrivateRoute />}>
             <Route path="/dsa-prep" element={<DSAPrep />} />
