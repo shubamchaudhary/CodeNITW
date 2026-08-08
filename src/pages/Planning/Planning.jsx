@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { isOwner } from "../../components/OwnerRoute";
 import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
 import { AI_STACK_TOPICS } from "../../Data/AIStack";
@@ -780,7 +781,7 @@ function DayCard({
 }
 
 // ─── Card Picker ─────────────────────────────────────────────────────────────
-function CardPicker({ dayItems, onClose, onAdd }) {
+function CardPicker({ dayItems, onClose, onAdd, showAI }) {
   const [tab, setTab] = useState("custom");
   const [query, setQuery] = useState("");
   const [customTitle, setCustomTitle] = useState("");
@@ -806,11 +807,11 @@ function CardPicker({ dayItems, onClose, onAdd }) {
   }, [tab, q]);
 
   const aiStackResults = useMemo(() => {
-    if (tab !== "aistack") return [];
+    if (tab !== "aistack" || !showAI) return [];
     return AI_STACK_TOPICS.filter(
       (t) => !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase() === q || t.section.toLowerCase().includes(q)
     );
-  }, [tab, q]);
+  }, [tab, q, showAI]);
 
   const dsaResults = useMemo(() => {
     if (tab !== "dsa") return [];
@@ -864,7 +865,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
           {[
             { key: "custom", label: "Custom" },
             { key: "corestack", label: "Core" },
-            { key: "aistack", label: "AI" },
+            ...(showAI ? [{ key: "aistack", label: "AI" }] : []),
             { key: "dsa", label: "DSA" },
           ].map((t) => (
             <button
@@ -914,7 +915,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
             </ul>
           )}
 
-          {tab === "aistack" && (
+          {tab === "aistack" && showAI && (
             <ul className="space-y-1.5">
               {aiStackResults.map((t) => {
                 const added = addedKey.has(`aistack:${t.id}`);
@@ -1052,8 +1053,13 @@ function CardPicker({ dayItems, onClose, onAdd }) {
 // ─── Planning Page ───────────────────────────────────────────────────────────
 const Planning = () => {
   const [authReady, setAuthReady] = useState(false);
+  // AI Stack is owner-only, so its topics stay out of the picker for anyone else.
+  const [canSeeAI, setCanSeeAI] = useState(false);
   useEffect(() => {
-    const unsub = onAuthStateChanged(getAuth(), () => setAuthReady(true));
+    const unsub = onAuthStateChanged(getAuth(), (user) => {
+      setCanSeeAI(isOwner(user));
+      setAuthReady(true);
+    });
     return unsub;
   }, []);
   useEffect(() => { backfillDsaTimestamps(); }, []);
@@ -1495,7 +1501,9 @@ const Planning = () => {
       </div>
 
       <AnimatePresence>
-        {pickerOpen && <CardPicker dayItems={items} onClose={() => setPickerOpen(false)} onAdd={addItem} />}
+        {pickerOpen && (
+          <CardPicker dayItems={items} onClose={() => setPickerOpen(false)} onAdd={addItem} showAI={canSeeAI} />
+        )}
       </AnimatePresence>
     </PageShell>
   );
