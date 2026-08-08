@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { isOwner } from "./OwnerRoute";
 
 const NAV_ITEMS = [
-  { path: "/interview-prep", label: "TOPICS" },
+  { path: "/core-stack", label: "CORE STACK" },
   { path: "/dsa-prep", label: "DSA" },
   { path: "/planning", label: "PLANNING" },
 ];
@@ -87,7 +87,7 @@ export default function Header() {
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
           {/* Logo */}
           <button
-            onClick={() => handlePageSelect("/interview-prep")}
+            onClick={() => handlePageSelect("/core-stack")}
             className="flex items-center gap-1 group"
           >
             <span className="text-lg sm:text-xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 group-hover:scale-105 transition-transform">

@@ -127,6 +127,144 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
   );
 }
 
+// Shared expandable body for a Core Stack topic — the videos behind it (channel,
+// playlist, watch time), the interview-question chain to attempt cold, and the
+// topic's notes. Rendered on the Core Stack page and inside the Planning page so
+// a planned topic shows the same detail in both places.
+export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
+  const [localNote, setLocalNote] = useState(note);
+  const debounceRef = useRef(null);
+
+  useEffect(() => { setLocalNote(note); }, [note]);
+  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
+
+  const handleNoteInput = useCallback(
+    (e) => {
+      const val = e.target.value;
+      setLocalNote(val);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => onNoteChange(val), 500);
+    },
+    [onNoteChange]
+  );
+
+  if (!topic) return null;
+
+  return (
+    <div>
+      {/* ── Videos ── */}
+      <div className="mb-4">
+        <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
+          Videos
+          <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
+            · {topic.videos.length} · {topic.duration}
+          </span>
+        </h4>
+
+        <div className="space-y-2">
+          {topic.videos.map((v) => (
+            <div key={v.id} className={`${GLASS_PANEL} rounded-xl px-3 py-2.5`}>
+              <div className="flex items-start gap-2.5">
+                <span
+                  className="mt-0.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 tabular-nums"
+                  title={`Position ${v.position} in "${v.playlist}"`}
+                >
+                  #{v.position}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12.5px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{v.title}</p>
+                  <p className="text-[10.5px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                    {v.channel} · {v.playlist} · {v.minutes}m
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <a
+                  href={v.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-all"
+                  title="Find this video on YouTube"
+                >
+                  Video
+                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </a>
+                <a
+                  href={v.playlistUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300 transition-all"
+                  title={`Open "${v.playlist}" — this is video #${v.position}`}
+                >
+                  Playlist
+                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Interview questions ── */}
+      {topic.questions && topic.questions.length > 0 && (
+        <div className="mb-4">
+          <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
+            Interview questions
+            <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
+              · answer cold, before watching
+            </span>
+          </h4>
+          <ol className="space-y-1">
+            {topic.questions.map((q, i) => (
+              <li key={i} className="flex items-start gap-2 text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed">
+                <span className="mt-[3px] text-[10px] font-bold text-gray-400 dark:text-gray-500 tabular-nums shrink-0">{i + 1}.</span>
+                {q}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {/* ── Notes ── */}
+      <div className="rounded-xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/60 via-white to-teal-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-3.5 shadow-inner">
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
+            My Notes
+          </h4>
+          <div className="flex items-center gap-2">
+            {checkedDays != null && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25">
+                ✓ {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
+              </span>
+            )}
+            <span className="text-[10px] text-gray-400 dark:text-gray-500">auto-saved</span>
+          </div>
+        </div>
+        <textarea
+          value={localNote}
+          onChange={handleNoteInput}
+          placeholder="Your answers, the follow-up chain, what you got wrong, what to revise..."
+          rows={6}
+          className="w-full p-3 text-xs rounded-lg border border-emerald-200 dark:border-slate-600 bg-white/80 dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 resize-y min-h-[140px] leading-relaxed"
+        />
+        <div className="flex items-center justify-between mt-2 min-h-[16px]">
+          {localNote ? (
+            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+              Notes saved
+            </p>
+          ) : <span />}
+          <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Shared expandable body for a DSA problem — link, difficulty, star, the 45-day
 // countdown and the solution notes — so a planned DSA card matches the DSA page.
 export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onToggleStar, solvedDays }) {

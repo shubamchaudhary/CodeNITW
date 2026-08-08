@@ -29,7 +29,7 @@ export default function SignIn() {
       const auth = getAuth();
       await signInWithEmailAndPassword(auth, email.trim(), password);
       toast.success("Welcome back!");
-      navigate("/interview-prep");
+      navigate("/core-stack");
     } catch (error) {
       toast.error("Email and password didn't match");
     } finally {
@@ -43,7 +43,7 @@ export default function SignIn() {
       const auth = getAuth();
       await signInWithPopup(auth, new GoogleAuthProvider());
       toast.success("Welcome back!");
-      navigate("/interview-prep");
+      navigate("/core-stack");
     } catch (error) {
       toast.error("Failed to sign in with Google. Please try again.");
     } finally {

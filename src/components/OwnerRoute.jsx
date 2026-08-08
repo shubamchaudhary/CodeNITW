@@ -33,5 +33,5 @@ export default function OwnerRoute() {
   }
   // Same destination as the catch-all "*" route — a non-owner hitting this URL
   // sees exactly what they'd see for any nonexistent page.
-  return isOwner(user) ? <Outlet /> : <Navigate to="/interview-prep" replace />;
+  return isOwner(user) ? <Outlet /> : <Navigate to="/core-stack" replace />;
 }

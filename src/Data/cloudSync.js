@@ -24,6 +24,9 @@ import { KEYS, loadJSON, applyRemote, subscribe, setActiveUid } from "./planStor
 const SYNC_KEYS = [
   KEYS.IP_COMPLETED,
   KEYS.IP_NOTES,
+  KEYS.CS_COMPLETED,
+  KEYS.CS_NOTES,
+  KEYS.CS_TIMESTAMPS,
   KEYS.DSA_COMPLETED,
   KEYS.DSA_NOTES,
   KEYS.DSA_TIMESTAMPS,

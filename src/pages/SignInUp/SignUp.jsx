@@ -34,7 +34,7 @@ export default function SignUp() {
         await updateProfile(user, { displayName: name.trim() });
       }
       toast.success("Account created!");
-      navigate("/interview-prep");
+      navigate("/core-stack");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         toast.error("An account with this email already exists.");
