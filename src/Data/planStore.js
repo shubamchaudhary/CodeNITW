@@ -6,8 +6,9 @@
 import { jobHuntPlan } from "./JobHuntPlan";
 import { DSA_PROBLEMS } from "./DSAPrep";
 import { CORE_STACK_TOPICS } from "./CoreStack";
+import { AI_STACK_TOPICS } from "./AIStack";
 
-export { DSA_PROBLEMS, CORE_STACK_TOPICS };
+export { DSA_PROBLEMS, CORE_STACK_TOPICS, AI_STACK_TOPICS };
 
 export const KEYS = {
   IP_COMPLETED: "InterviewPrepCompleted",
@@ -15,6 +16,9 @@ export const KEYS = {
   CS_COMPLETED: "CoreStackCompleted",
   CS_NOTES: "CoreStackNotes",
   CS_TIMESTAMPS: "CoreStackCheckedTimestamps",
+  AI_COMPLETED: "AIStackCompleted",
+  AI_NOTES: "AIStackNotes",
+  AI_TIMESTAMPS: "AIStackCheckedTimestamps",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
@@ -95,6 +99,7 @@ export const INTERVIEW_CARDS = jobHuntPlan.map((card) => ({
 const IP_BY_ID = Object.fromEntries(INTERVIEW_CARDS.map((c) => [c.id, c]));
 const DSA_BY_ID = Object.fromEntries(DSA_PROBLEMS.map((p) => [p.id, p]));
 const CS_BY_ID = Object.fromEntries(CORE_STACK_TOPICS.map((t) => [t.id, t]));
+const AI_BY_ID = Object.fromEntries(AI_STACK_TOPICS.map((t) => [t.id, t]));
 
 export function getInterviewCard(id) {
   return IP_BY_ID[id] || null;
@@ -105,6 +110,9 @@ export function getDsaProblem(id) {
 export function getCoreStackTopic(id) {
   return CS_BY_ID[id] || null;
 }
+export function getAIStackTopic(id) {
+  return AI_BY_ID[id] || null;
+}
 
 // ─── Completion + notes accessors keyed by source ─────────────────────────────
 // "interview" is the legacy Topics page: its store stays readable so days that
@@ -112,6 +120,7 @@ export function getCoreStackTopic(id) {
 function keysFor(source) {
   if (source === "dsa") return { completed: KEYS.DSA_COMPLETED, notes: KEYS.DSA_NOTES };
   if (source === "corestack") return { completed: KEYS.CS_COMPLETED, notes: KEYS.CS_NOTES };
+  if (source === "aistack") return { completed: KEYS.AI_COMPLETED, notes: KEYS.AI_NOTES };
   return { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
 }
 
@@ -142,12 +151,27 @@ export function setSourceComplete(source, id, value) {
     else delete ts[id];
     saveJSON(KEYS.CS_TIMESTAMPS, ts);
   }
+  // AI Stack, same idea, its own store.
+  if (source === "aistack") {
+    const ts = loadJSON(KEYS.AI_TIMESTAMPS, {});
+    if (value) ts[id] = Date.now();
+    else delete ts[id];
+    saveJSON(KEYS.AI_TIMESTAMPS, ts);
+  }
 }
 
 // How many days ago this Core Stack topic was ticked (0 = today), or null if it
 // isn't ticked. Informational only — nothing ever expires a tick.
 export function coreStackDaysSinceChecked(id) {
-  const ts = loadJSON(KEYS.CS_TIMESTAMPS, {})[id];
+  return daysSinceStamp(KEYS.CS_TIMESTAMPS, id);
+}
+
+export function aiStackDaysSinceChecked(id) {
+  return daysSinceStamp(KEYS.AI_TIMESTAMPS, id);
+}
+
+function daysSinceStamp(key, id) {
+  const ts = loadJSON(key, {})[id];
   if (!ts) return null;
   return Math.floor((Date.now() - ts) / (24 * 60 * 60 * 1000));
 }
@@ -365,6 +389,19 @@ export function coreStackPlanItem(topic) {
     refId: topic.id,
     title: topic.title,
     meta: topic.priority,
+    estimatedMinutes: topic.minutes || 30,
+  };
+}
+
+// Build the plan item for an AI Stack topic.
+export function aiStackPlanItem(topic) {
+  return {
+    uid: planItemUid(),
+    source: "aistack",
+    refId: topic.id,
+    title: topic.title,
+    meta: topic.id,
+    link: topic.resource?.url,
     estimatedMinutes: topic.minutes || 30,
   };
 }
