@@ -46,7 +46,9 @@ function App() {
           <Route path="/core-stack" element={<PrivateRoute />}>
             <Route path="/core-stack" element={<CoreStack />} />
           </Route>
-          <Route path="/ai-stack" element={<PrivateRoute />}>
+          {/* Owner-only, exactly like the job tracker: a non-owner hitting this
+              URL lands on Core Stack, the same place any unknown URL goes. */}
+          <Route path="/ai-stack" element={<OwnerRoute />}>
             <Route path="/ai-stack" element={<AIStack />} />
           </Route>
           <Route path="/dsa-prep" element={<PrivateRoute />}>
