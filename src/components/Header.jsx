@@ -10,6 +10,7 @@ import { isOwner } from "./OwnerRoute";
 
 const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
+  { path: "/ai-stack", label: "AI STACK" },
   { path: "/dsa-prep", label: "DSA" },
   { path: "/planning", label: "PLANNING" },
 ];

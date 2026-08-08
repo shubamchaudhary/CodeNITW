@@ -3,7 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
-import { InterviewCardDetail, DsaProblemDetail, CoreStackTopicDetail } from "../../components/cardDetails";
+import { AI_STACK_TOPICS } from "../../Data/AIStack";
+import {
+  InterviewCardDetail,
+  DsaProblemDetail,
+  CoreStackTopicDetail,
+  AIStackTopicDetail,
+} from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
@@ -16,11 +22,14 @@ import {
   setSourceNote,
   getInterviewCard,
   getCoreStackTopic,
+  getAIStackTopic,
   getDsaProblem,
   setDsaStarred,
   dsaDaysSinceSolved,
   coreStackDaysSinceChecked,
   coreStackPlanItem,
+  aiStackDaysSinceChecked,
+  aiStackPlanItem,
   getDay,
   setDay,
   getAllDayKeys,
@@ -178,6 +187,7 @@ function playSound(type) {
 
 const SOURCE_META = {
   corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300", border: "border-l-emerald-400" },
+  aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
   // Retired Topics page. Kept so days planned before Core Stack still render.
   interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
   dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300", border: "border-l-orange-400" },
@@ -499,6 +509,7 @@ function DayCard({
 
   const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
   const coreStackTopic = item.source === "corestack" ? getCoreStackTopic(item.refId) : null;
+  const aiStackTopic = item.source === "aistack" ? getAIStackTopic(item.refId) : null;
   const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
   const subs = item.subItems || [];
   const subDone = subs.filter((s) => s.completed).length;
@@ -732,6 +743,14 @@ function DayCard({
                     checkedDays={complete ? coreStackDaysSinceChecked(item.refId) : null}
                   />
                 )}
+                {item.source === "aistack" && (
+                  <AIStackTopicDetail
+                    topic={aiStackTopic}
+                    note={note}
+                    onNoteChange={onNoteChange}
+                    checkedDays={complete ? aiStackDaysSinceChecked(item.refId) : null}
+                  />
+                )}
                 {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
                 {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} solvedDays={solvedDays} />}
                 {item.source === "custom" && (
@@ -786,6 +805,13 @@ function CardPicker({ dayItems, onClose, onAdd }) {
     );
   }, [tab, q]);
 
+  const aiStackResults = useMemo(() => {
+    if (tab !== "aistack") return [];
+    return AI_STACK_TOPICS.filter(
+      (t) => !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase() === q || t.section.toLowerCase().includes(q)
+    );
+  }, [tab, q]);
+
   const dsaResults = useMemo(() => {
     if (tab !== "dsa") return [];
     return DSA_PROBLEMS.filter((p) => !q || p.title.toLowerCase().includes(q) || p.topic.toLowerCase().includes(q));
@@ -837,7 +863,8 @@ function CardPicker({ dayItems, onClose, onAdd }) {
         <div className="flex gap-1 px-4 pt-3">
           {[
             { key: "custom", label: "Custom" },
-            { key: "corestack", label: "Core Stack" },
+            { key: "corestack", label: "Core" },
+            { key: "aistack", label: "AI" },
             { key: "dsa", label: "DSA" },
           ].map((t) => (
             <button
@@ -858,7 +885,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={tab === "corestack" ? "Search topics..." : "Search problems or patterns..."}
+              placeholder={tab === "dsa" ? "Search problems or patterns..." : "Search topics..."}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
             />
           </div>
@@ -884,6 +911,28 @@ function CardPicker({ dayItems, onClose, onAdd }) {
                 );
               })}
               {coreStackResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
+            </ul>
+          )}
+
+          {tab === "aistack" && (
+            <ul className="space-y-1.5">
+              {aiStackResults.map((t) => {
+                const added = addedKey.has(`aistack:${t.id}`);
+                return (
+                  <li key={t.id}>
+                    <button
+                      disabled={added}
+                      onClick={() => onAdd(aiStackPlanItem(t))}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/10"}`}
+                    >
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 border bg-violet-500/15 text-violet-600 dark:text-violet-300 border-violet-500/30">{t.id}</span>
+                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{t.title}</span>
+                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
+                    </button>
+                  </li>
+                );
+              })}
+              {aiStackResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
             </ul>
           )}
 
@@ -1017,6 +1066,8 @@ const Planning = () => {
   const [ipNotes, setIpNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
   const [csCompleted, setCsCompleted] = useState(() => loadJSON(KEYS.CS_COMPLETED, {}));
   const [csNotes, setCsNotes] = useState(() => loadJSON(KEYS.CS_NOTES, {}));
+  const [aiCompleted, setAiCompleted] = useState(() => loadJSON(KEYS.AI_COMPLETED, {}));
+  const [aiNotes, setAiNotes] = useState(() => loadJSON(KEYS.AI_NOTES, {}));
   const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
   const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -1048,6 +1099,8 @@ const Planning = () => {
         if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
         if (key === KEYS.CS_COMPLETED) setCsCompleted(loadJSON(KEYS.CS_COMPLETED, {}));
         if (key === KEYS.CS_NOTES) setCsNotes(loadJSON(KEYS.CS_NOTES, {}));
+        if (key === KEYS.AI_COMPLETED) setAiCompleted(loadJSON(KEYS.AI_COMPLETED, {}));
+        if (key === KEYS.AI_NOTES) setAiNotes(loadJSON(KEYS.AI_NOTES, {}));
         if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
         if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
         if (key === KEYS.PLAN_DAYS) setItems(getDay(currentRef.current));
@@ -1112,8 +1165,9 @@ const Planning = () => {
     if (item.source === "custom") return { complete: !!item.completed, note: item.notes || "" };
     if (item.source === "dsa") return { complete: !!dsaCompleted[item.refId], note: dsaNotes[item.refId] || "" };
     if (item.source === "corestack") return { complete: !!csCompleted[item.refId], note: csNotes[item.refId] || "" };
+    if (item.source === "aistack") return { complete: !!aiCompleted[item.refId], note: aiNotes[item.refId] || "" };
     return { complete: !!ipCompleted[item.refId], note: ipNotes[item.refId] || "" };
-  }, [ipCompleted, dsaCompleted, csCompleted, ipNotes, dsaNotes, csNotes]);
+  }, [ipCompleted, dsaCompleted, csCompleted, aiCompleted, ipNotes, dsaNotes, csNotes, aiNotes]);
 
   const addItem = useCallback((item) => {
     if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) return;
@@ -1155,6 +1209,7 @@ const Planning = () => {
     setSourceComplete(item.source, item.refId, next);
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
     else if (item.source === "corestack") setCsCompleted((m) => ({ ...m, [item.refId]: next }));
+    else if (item.source === "aistack") setAiCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
     if (next) playSound("taskDone");
   }, [items, current, today, persist, resolve, pomo]);
@@ -1164,6 +1219,7 @@ const Planning = () => {
     setSourceNote(item.source, item.refId, val);
     if (item.source === "dsa") setDsaNotes((m) => ({ ...m, [item.refId]: val }));
     else if (item.source === "corestack") setCsNotes((m) => ({ ...m, [item.refId]: val }));
+    else if (item.source === "aistack") setAiNotes((m) => ({ ...m, [item.refId]: val }));
     else setIpNotes((m) => ({ ...m, [item.refId]: val }));
   }, [items, persist]);
 
