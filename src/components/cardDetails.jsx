@@ -127,6 +127,51 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
   );
 }
 
+// Copy-to-clipboard chip. Used wherever a name has to be carried into another
+// app by hand — e.g. a video title pasted into a YouTube playlist's search.
+export function CopyButton({ value, label = "Copy", title, className = "" }) {
+  const [copied, setCopied] = useState(false);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  const copy = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setCopied(false), 1800);
+    });
+  };
+
+  return (
+    <button
+      onClick={copy}
+      title={title || `Copy "${value}"`}
+      className={`inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md border transition-all ${
+        copied
+          ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-300"
+          : "bg-white/70 dark:bg-white/[0.05] border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
+      } ${className}`}
+    >
+      {copied ? (
+        <>
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8.5l3.5 3.5L13 4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          Copied
+        </>
+      ) : (
+        <>
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16">
+            <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M3 11V3.5A1.5 1.5 0 0 1 4.5 2H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          {label}
+        </>
+      )}
+    </button>
+  );
+}
+
 // Shared expandable body for a Core Stack topic — the videos behind it (channel,
 // playlist, watch time), the interview-question chain to attempt cold, and the
 // topic's notes. Rendered on the Core Stack page and inside the Planning page so
@@ -154,8 +199,8 @@ export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays })
     <div>
       {/* ── Videos ── */}
       <div className="mb-4">
-        <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
+        <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <span className="w-1 h-4 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
           Videos
           <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
             · {topic.videos.length} · {topic.duration}
@@ -167,35 +212,29 @@ export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays })
             <div key={v.id} className={`${GLASS_PANEL} rounded-xl px-3 py-2.5`}>
               <div className="flex items-start gap-2.5">
                 <span
-                  className="mt-0.5 text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 tabular-nums"
+                  className="mt-0.5 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 tabular-nums"
                   title={`Position ${v.position} in "${v.playlist}"`}
                 >
                   #{v.position}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12.5px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{v.title}</p>
-                  <p className="text-[10.5px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                  <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{v.title}</p>
+                  <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                     {v.channel} · {v.playlist} · {v.minutes}m
                   </p>
                 </div>
               </div>
 
+              {/* Open the playlist, then paste the copied title into its search
+                  — the playlist is the deliberate source, so nothing links out
+                  to a loose video. */}
               <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                <a
-                  href={v.videoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-all"
-                  title="Find this video on YouTube"
-                >
-                  Video
-                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </a>
+                <CopyButton value={v.title} label="Copy title" title="Copy the video title to search inside the playlist" />
                 <a
                   href={v.playlistUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300 transition-all"
+                  className="inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300 transition-all"
                   title={`Open "${v.playlist}" — this is video #${v.position}`}
                 >
                   Playlist
@@ -210,17 +249,17 @@ export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays })
       {/* ── Interview questions ── */}
       {topic.questions && topic.questions.length > 0 && (
         <div className="mb-4">
-          <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
+          <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
             Interview questions
             <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
               · answer cold, before watching
             </span>
           </h4>
-          <ol className="space-y-1">
+          <ol className="space-y-1.5">
             {topic.questions.map((q, i) => (
-              <li key={i} className="flex items-start gap-2 text-[12px] text-gray-600 dark:text-gray-400 leading-relaxed">
-                <span className="mt-[3px] text-[10px] font-bold text-gray-400 dark:text-gray-500 tabular-nums shrink-0">{i + 1}.</span>
+              <li key={i} className="flex items-start gap-2 text-[13.5px] text-gray-600 dark:text-gray-300 leading-relaxed">
+                <span className="mt-[3px] text-[12px] font-bold text-gray-400 dark:text-gray-500 tabular-nums shrink-0">{i + 1}.</span>
                 {q}
               </li>
             ))}
@@ -231,13 +270,13 @@ export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays })
       {/* ── Notes ── */}
       <div className="rounded-xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/60 via-white to-teal-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-3.5 shadow-inner">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
+          <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
             My Notes
           </h4>
           <div className="flex items-center gap-2">
             {checkedDays != null && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25">
+              <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25">
                 ✓ {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
               </span>
             )}
@@ -249,7 +288,7 @@ export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays })
           onChange={handleNoteInput}
           placeholder="Your answers, the follow-up chain, what you got wrong, what to revise..."
           rows={6}
-          className="w-full p-3 text-xs rounded-lg border border-emerald-200 dark:border-slate-600 bg-white/80 dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 resize-y min-h-[140px] leading-relaxed"
+          className="w-full p-3 text-[13.5px] rounded-lg border border-emerald-200 dark:border-slate-600 bg-white/80 dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 resize-y min-h-[140px] leading-relaxed"
         />
         <div className="flex items-center justify-between mt-2 min-h-[16px]">
           {localNote ? (
