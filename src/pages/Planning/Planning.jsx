@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { CATEGORY_CONFIG } from "../../Data/JobHuntPlan";
 import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
-import { InterviewCardDetail, DsaProblemDetail } from "../../components/cardDetails";
+import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
+import { InterviewCardDetail, DsaProblemDetail, CoreStackTopicDetail } from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
-  INTERVIEW_CARDS,
+  CORE_STACK_TOPICS,
   DSA_PROBLEMS,
   KEYS,
   loadJSON,
@@ -15,9 +15,12 @@ import {
   setSourceComplete,
   setSourceNote,
   getInterviewCard,
+  getCoreStackTopic,
   getDsaProblem,
   setDsaStarred,
   dsaDaysSinceSolved,
+  coreStackDaysSinceChecked,
+  coreStackPlanItem,
   getDay,
   setDay,
   getAllDayKeys,
@@ -174,6 +177,8 @@ function playSound(type) {
 }
 
 const SOURCE_META = {
+  corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300", border: "border-l-emerald-400" },
+  // Retired Topics page. Kept so days planned before Core Stack still render.
   interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
   dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300", border: "border-l-orange-400" },
   custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
@@ -493,6 +498,7 @@ function DayCard({
   };
 
   const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
+  const coreStackTopic = item.source === "corestack" ? getCoreStackTopic(item.refId) : null;
   const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
   const subs = item.subItems || [];
   const subDone = subs.filter((s) => s.completed).length;
@@ -718,6 +724,14 @@ function DayCard({
                   </div>
                 )}
 
+                {item.source === "corestack" && (
+                  <CoreStackTopicDetail
+                    topic={coreStackTopic}
+                    note={note}
+                    onNoteChange={onNoteChange}
+                    checkedDays={complete ? coreStackDaysSinceChecked(item.refId) : null}
+                  />
+                )}
                 {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
                 {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} solvedDays={solvedDays} />}
                 {item.source === "custom" && (
@@ -765,9 +779,11 @@ function CardPicker({ dayItems, onClose, onAdd }) {
 
   const q = query.trim().toLowerCase();
 
-  const interviewResults = useMemo(() => {
-    if (tab !== "interview") return [];
-    return INTERVIEW_CARDS.filter((c) => !q || c.title.toLowerCase().includes(q) || c.categories.join(" ").toLowerCase().includes(q));
+  const coreStackResults = useMemo(() => {
+    if (tab !== "corestack") return [];
+    return CORE_STACK_TOPICS.filter(
+      (t) => !q || t.title.toLowerCase().includes(q) || t.priority.toLowerCase() === q
+    );
   }, [tab, q]);
 
   const dsaResults = useMemo(() => {
@@ -821,7 +837,7 @@ function CardPicker({ dayItems, onClose, onAdd }) {
         <div className="flex gap-1 px-4 pt-3">
           {[
             { key: "custom", label: "Custom" },
-            { key: "interview", label: "Topics" },
+            { key: "corestack", label: "Core Stack" },
             { key: "dsa", label: "DSA" },
           ].map((t) => (
             <button
@@ -842,32 +858,32 @@ function CardPicker({ dayItems, onClose, onAdd }) {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={tab === "interview" ? "Search topics..." : "Search problems or patterns..."}
+              placeholder={tab === "corestack" ? "Search topics..." : "Search problems or patterns..."}
               className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
             />
           </div>
         )}
 
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          {tab === "interview" && (
+          {tab === "corestack" && (
             <ul className="space-y-1.5">
-              {interviewResults.map((c) => {
-                const added = addedKey.has(`interview:${c.id}`);
+              {coreStackResults.map((t) => {
+                const added = addedKey.has(`corestack:${t.id}`);
                 return (
-                  <li key={c.id}>
+                  <li key={t.id}>
                     <button
                       disabled={added}
-                      onClick={() => onAdd({ uid: uid(), source: "interview", refId: c.id, title: c.title, meta: c.primaryCategory, estimatedMinutes: 25 })}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/10"}`}
+                      onClick={() => onAdd(coreStackPlanItem(t))}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10"}`}
                     >
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${CATEGORY_CONFIG[c.primaryCategory].badge}`}>{c.primaryCategory}</span>
-                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{c.title}</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>
+                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{t.title}</span>
                       <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
                   </li>
                 );
               })}
-              {interviewResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
+              {coreStackResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
             </ul>
           )}
 
@@ -999,6 +1015,8 @@ const Planning = () => {
   const [ipCompleted, setIpCompleted] = useState(() => loadJSON(KEYS.IP_COMPLETED, {}));
   const [dsaCompleted, setDsaCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
   const [ipNotes, setIpNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
+  const [csCompleted, setCsCompleted] = useState(() => loadJSON(KEYS.CS_COMPLETED, {}));
+  const [csNotes, setCsNotes] = useState(() => loadJSON(KEYS.CS_NOTES, {}));
   const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
   const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -1028,6 +1046,8 @@ const Planning = () => {
         if (key === KEYS.IP_COMPLETED) setIpCompleted(loadJSON(KEYS.IP_COMPLETED, {}));
         if (key === KEYS.DSA_COMPLETED) setDsaCompleted(loadJSON(KEYS.DSA_COMPLETED, {}));
         if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
+        if (key === KEYS.CS_COMPLETED) setCsCompleted(loadJSON(KEYS.CS_COMPLETED, {}));
+        if (key === KEYS.CS_NOTES) setCsNotes(loadJSON(KEYS.CS_NOTES, {}));
         if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
         if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
         if (key === KEYS.PLAN_DAYS) setItems(getDay(currentRef.current));
@@ -1091,8 +1111,9 @@ const Planning = () => {
   const resolve = useCallback((item) => {
     if (item.source === "custom") return { complete: !!item.completed, note: item.notes || "" };
     if (item.source === "dsa") return { complete: !!dsaCompleted[item.refId], note: dsaNotes[item.refId] || "" };
+    if (item.source === "corestack") return { complete: !!csCompleted[item.refId], note: csNotes[item.refId] || "" };
     return { complete: !!ipCompleted[item.refId], note: ipNotes[item.refId] || "" };
-  }, [ipCompleted, dsaCompleted, ipNotes, dsaNotes]);
+  }, [ipCompleted, dsaCompleted, csCompleted, ipNotes, dsaNotes, csNotes]);
 
   const addItem = useCallback((item) => {
     if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) return;
@@ -1130,9 +1151,10 @@ const Planning = () => {
     }
 
     const next = !resolve(item).complete;
-    if (base !== items) persist(base); // save the banked spent time for DSA/interview items
+    if (base !== items) persist(base); // save the banked spent time for DSA/topic items
     setSourceComplete(item.source, item.refId, next);
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
+    else if (item.source === "corestack") setCsCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
     if (next) playSound("taskDone");
   }, [items, current, today, persist, resolve, pomo]);
@@ -1141,6 +1163,7 @@ const Planning = () => {
     if (item.source === "custom") { persist(items.map((i) => (i.uid === item.uid ? { ...i, notes: val } : i))); return; }
     setSourceNote(item.source, item.refId, val);
     if (item.source === "dsa") setDsaNotes((m) => ({ ...m, [item.refId]: val }));
+    else if (item.source === "corestack") setCsNotes((m) => ({ ...m, [item.refId]: val }));
     else setIpNotes((m) => ({ ...m, [item.refId]: val }));
   }, [items, persist]);
 
