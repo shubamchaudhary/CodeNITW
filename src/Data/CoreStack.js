@@ -1,257 +1,81 @@
-// Core Stack — the Java + Spring Boot topic set, one card per topic.
+// Core Stack — Java, Spring Boot and the non-AI stack from the resume.
 //
-// GENERATED FILE. Edit scripts/data/javaSpringPrepTracker.csv (videos) or
-// scripts/data/javaSpringPrepHandoff.md (durations, resume flags, interview
-// questions) and re-run `node scripts/genCoreStack.mjs` — do not edit here.
+// GENERATED FILE. Edit scripts/data/coreStackMap.mjs (what to study and in what
+// order) or scripts/data/javaSpringPrepTracker.csv (video titles and runtimes)
+// and re-run `node scripts/genCoreStack.mjs` — do not edit here.
 //
-// Order is the study order: topics are emitted in the CSV's row order and the
-// page never re-sorts them.
-//
-// `videoUrl` is a YouTube search for the video's title + channel rather than a
-// watch link: neither source carries per-video ids, and a search that always
-// resolves beats a guessed id that rots.
+// Every video reference is resolved against the CSV index at generation time
+// and the build fails on a miss, so no title, playlist position or runtime on
+// this page is invented. Resources with kind "self" have no link on purpose:
+// they are your own systems, and only your codebase answers those questions.
 
-export const CORE_STACK_SECTION = "Java and Spring Boot";
+export const CORE_STACK_SECTIONS = [
+  {
+    "key": "java",
+    "label": "Java Core"
+  },
+  {
+    "key": "concurrency",
+    "label": "Concurrency & Multithreading"
+  },
+  {
+    "key": "spring",
+    "label": "Spring Boot & Data Access"
+  },
+  {
+    "key": "data",
+    "label": "Databases & Caching"
+  },
+  {
+    "key": "kafka",
+    "label": "Kafka & Messaging"
+  },
+  {
+    "key": "platform",
+    "label": "Microservices & Platform"
+  },
+  {
+    "key": "testing",
+    "label": "Testing & Delivery"
+  },
+  {
+    "key": "resume",
+    "label": "Your Systems — resume defence"
+  }
+];
 
 export const CORE_STACK_TOPICS = [
   {
-    "id": "P0-01",
+    "id": "JAVA-01",
+    "section": "java",
+    "sectionLabel": "Java Core",
     "priority": "P0",
-    "title": "@Transactional - propagation, isolation, proxy failure",
-    "section": "Java and Spring Boot",
-    "duration": "1h 41m",
-    "resumeLinked": true,
-    "videos": [
+    "title": "Collections framework + HashMap internals",
+    "why": "The single most reliably asked core-Java topic; HashMap internals came up by name in SDE-2 write-ups.",
+    "resources": [
       {
-        "id": "P0-01-CC-SB-13",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 13,
-        "title": "Spring boot @Transactional Annotation - Part1",
-        "minutes": 25,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40Transactional%20Annotation%20-%20Part1%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-01-CC-SB-14",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 14,
-        "title": "Spring boot @Transactional Annotation - Part2 | Declarative, Programmatic Approach and Propagation",
-        "minutes": 38,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40Transactional%20Annotation%20-%20Part2%20%7C%20Declarative%2C%20Programmatic%20Approach%20and%20Propagation%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-01-CC-SB-15",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 15,
-        "title": "Spring boot @Transactional Annotation - Part3 | Isolation Level and its different types",
-        "minutes": 39,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40Transactional%20Annotation%20-%20Part3%20%7C%20Isolation%20Level%20and%20its%20different%20types%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "methodA() (no annotation) calls this.methodB() (@Transactional) in the same class. Does a transaction start? Why not?",
-      "Give three ways to fix self-invocation. Trade-off of each.",
-      "Why doesn't @Transactional work on private / final methods?",
-      "Explain all 7 propagation levels. Which have you actually used and why?",
-      "REQUIRES_NEW inside a REQUIRED outer txn. Outer rolls back — what happens to the inner?",
-      "Default rollback behaviour: which exceptions roll back, which don't? Why that default?",
-      "How do you force rollback on a checked exception?",
-      "Explain the 4 isolation levels via the anomaly each prevents (dirty read, non-repeatable read, phantom).",
-      "What isolation does PostgreSQL actually default to? Does it differ from the JPA default?",
-      "Where does the transaction actually open and commit in the call stack?",
-      "@Transactional on a method that also spawns a @Async call — what happens to the transaction context?",
-      "Long-running transaction holding a DB connection — what breaks at 1,000 tenants?"
-    ],
-    "minutes": 102
-  },
-  {
-    "id": "P0-02",
-    "priority": "P0",
-    "title": "AOP + proxy mechanism",
-    "section": "Java and Spring Boot",
-    "duration": "1h 09m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P0-02-CC-SB-12",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 12,
-        "title": "Spring boot AOP (Aspect Oriented Programming)",
-        "minutes": 69,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20AOP%20(Aspect%20Oriented%20Programming)%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "JDK dynamic proxy vs CGLIB — when does Spring pick which?",
-      "Why can't CGLIB proxy a final class or final method?",
-      "Explain the 5 advice types and their execution order.",
-      "Difference between @Around and @Before + @After combined.",
-      "Two aspects on the same method — how do you control ordering?",
-      "What is a pointcut expression? Write one matching all methods in a package returning List.",
-      "How does AOP relate to @Transactional, @Async, and @Cacheable? (Same mechanism — say this.)",
-      "Performance cost of AOP. When is it the wrong tool?",
-      "What is a BeanPostProcessor, and how does it relate to proxy creation?"
-    ],
-    "minutes": 69
-  },
-  {
-    "id": "P0-03",
-    "priority": "P0",
-    "title": "Bean lifecycle, IoC, DI, scopes",
-    "section": "Java and Spring Boot",
-    "duration": "1h 53m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P0-03-CC-SB-6",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 6,
-        "title": "Spring boot: Bean and its Lifecycle | Inversion of Control (IOC)",
-        "minutes": 34,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Bean%20and%20its%20Lifecycle%20%7C%20Inversion%20of%20Control%20(IOC)%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-03-CC-SB-7",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 7,
-        "title": "Dependency Injection in Spring boot | With Advantages and Disadvantages",
-        "minutes": 39,
-        "videoUrl": "https://www.youtube.com/results?search_query=Dependency%20Injection%20in%20Spring%20boot%20%7C%20With%20Advantages%20and%20Disadvantages%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-03-CC-SB-8",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 8,
-        "title": "Spring boot: Bean Scopes | Singleton, Prototype, Request, Session Scopes with Examples in Java",
-        "minutes": 40,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Bean%20Scopes%20%7C%20Singleton%2C%20Prototype%2C%20Request%2C%20Session%20Scopes%20with%20Examples%20in%20Java%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Walk the full bean lifecycle from instantiation to destruction. Name the callbacks.",
-      "Constructor vs setter vs field injection. Which does Spring recommend and why?",
-      "Two beans depend on each other. Constructor injection fails, field injection works. Why is the \"working\" one worse?",
-      "How do you legitimately break a circular dependency? (@Lazy, redesign, ApplicationContextAware)",
-      "Inject a prototype bean into a singleton. How many instances get created? How do you fix it?",
-      "Difference between @Component, @Service, @Repository, @Bean. Is it purely semantic?",
-      "What does @Repository actually do beyond marking a bean?",
-      "Two beans of the same type — how does Spring resolve it? (@Primary, @Qualifier)",
-      "@PostConstruct vs InitializingBean vs initMethod — which runs first?",
-      "Is a singleton bean thread-safe? (Trick: no. The container guarantees one instance, not safety.)",
-      "Are prototype beans destroyed by the container? Why not?",
-      "What is ApplicationContext vs BeanFactory?"
-    ],
-    "minutes": 113
-  },
-  {
-    "id": "P0-04",
-    "priority": "P0",
-    "title": "JPA core - entity lifecycle, L1 cache, N+1",
-    "section": "Java and Spring Boot",
-    "duration": "2h 26m",
-    "resumeLinked": true,
-    "videos": [
-      {
-        "id": "P0-04-CC-SB-24",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 24,
-        "title": "Spring boot: JPA (Part-2) | Setup, JPA Architecture, Entity Lifecycle",
-        "minutes": 63,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-2)%20%7C%20Setup%2C%20JPA%20Architecture%2C%20Entity%20Lifecycle%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-04-CC-SB-25",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 25,
-        "title": "Spring boot: JPA (Part-3) | First Level Caching in JPA",
-        "minutes": 24,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-3)%20%7C%20First%20Level%20Caching%20in%20JPA%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-04-CC-SB-30",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 30,
-        "title": "Spring boot: JPA (Part-8) | JPQL, Derived Query, N+1 Problem, Joins, Pagination and Sorting etc.",
-        "minutes": 59,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-8)%20%7C%20JPQL%2C%20Derived%20Query%2C%20N%2B1%20Problem%2C%20Joins%2C%20Pagination%20and%20Sorting%20etc.%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Name the 4 entity states and every transition between them.",
-      "You load an entity, change a field, never call save(). Is it persisted? Why?",
-      "What is the persistence context? What is its scope by default?",
-      "Return a JPA entity from a @RestController → LazyInitializationException. Trace the full sequence.",
-      "Why is FetchType.EAGER the wrong fix for that? Give the right ones.",
-      "Explain N+1. Show a query that causes it and three fixes (JOIN FETCH, @EntityGraph, batch size).",
-      "Difference between getReference() and findById().",
-      "save() vs saveAndFlush() vs persist() vs merge().",
-      "Why is L1 cache not a cache you can rely on for performance?",
-      "Pagination + JOIN FETCH on a collection → why does Hibernate warn and load everything into memory?",
-      "What is dirty checking and when does it run?",
-      "Derived query methods vs JPQL vs native — when do you reach for each?"
-    ],
-    "minutes": 146
-  },
-  {
-    "id": "P0-05",
-    "priority": "P0",
-    "title": "HashMap internals + Collections framework",
-    "section": "Java and Spring Boot",
-    "duration": "1h 40m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P0-05-CC-J-22",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "JAVA-01-r1",
+        "kind": "video",
+        "title": "Collections in Java - Part1 | Java Collections Framework in depth",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 22,
-        "title": "Collections in Java - Part1 | Java Collections Framework in depth",
-        "minutes": 41,
-        "videoUrl": "https://www.youtube.com/results?search_query=Collections%20in%20Java%20-%20Part1%20%7C%20Java%20Collections%20Framework%20in%20depth%20Concept%20%26%26%20Coding"
+        "minutes": 41
       },
       {
-        "id": "P0-05-CC-J-25",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "JAVA-01-r2",
+        "kind": "video",
+        "title": "Collections in Java - Part4 | HashMap Internal Working in Java",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 25,
-        "title": "Collections in Java - Part4 | HashMap Internal Working in Java",
-        "minutes": 58,
-        "videoUrl": "https://www.youtube.com/results?search_query=Collections%20in%20Java%20-%20Part4%20%7C%20HashMap%20Internal%20Working%20in%20Java%20Concept%20%26%26%20Coding"
+        "minutes": 58
       }
     ],
+    "minutes": 99,
+    "duration": "1h 39m",
     "questions": [
       "Walk through put() step by step: hash → index → collision → resize.",
       "Why is default capacity 16 and load factor 0.75?",
@@ -265,40 +89,39 @@ export const CORE_STACK_TOPICS = [
       "Why is resizing a HashMap dangerous under concurrent access?",
       "ArrayList vs LinkedList — when is LinkedList actually the right choice? (Almost never. Say why.)",
       "Fail-fast vs fail-safe iterators. What is modCount?"
-    ],
-    "minutes": 99
+    ]
   },
   {
-    "id": "P0-06",
+    "id": "JAVA-02",
+    "section": "java",
+    "sectionLabel": "Java Core",
     "priority": "P0",
-    "title": "Streams + functional interfaces + lambdas",
-    "section": "Java and Spring Boot",
-    "duration": "1h 47m",
-    "resumeLinked": false,
-    "videos": [
+    "title": "Streams, lambdas & functional interfaces",
+    "why": "Java 8 stream/lambda questions appear in essentially every loop at 2–4 years.",
+    "resources": [
       {
-        "id": "P0-06-CC-J-17",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "JAVA-02-r1",
+        "kind": "video",
+        "title": "Functional Interface and Lambda Expression - Java8 features | Java Interfaces Part3",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 17,
-        "title": "Functional Interface and Lambda Expression - Java8 features | Java Interfaces Part3",
-        "minutes": 32,
-        "videoUrl": "https://www.youtube.com/results?search_query=Functional%20Interface%20and%20Lambda%20Expression%20-%20Java8%20features%20%7C%20Java%20Interfaces%20Part3%20Concept%20%26%26%20Coding"
+        "minutes": 32
       },
       {
-        "id": "P0-06-CC-J-28",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "JAVA-02-r2",
+        "kind": "video",
+        "title": "Streams in Java8 | Collections in Java - Part7",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 28,
-        "title": "Streams in Java8 | Collections in Java - Part7",
-        "minutes": 75,
-        "videoUrl": "https://www.youtube.com/results?search_query=Streams%20in%20Java8%20%7C%20Collections%20in%20Java%20-%20Part7%20Concept%20%26%26%20Coding"
+        "minutes": 75
       }
     ],
+    "minutes": 107,
+    "duration": "1h 47m",
     "questions": [
       "Intermediate vs terminal operations. Why are streams lazy?",
       "map vs flatMap — give a concrete case where only flatMap works.",
@@ -312,40 +135,346 @@ export const CORE_STACK_TOPICS = [
       "Method reference types — four kinds, give an example of each.",
       "Why must variables captured by a lambda be effectively final?",
       "Are streams always better than a for loop? (No. Say when.)"
-    ],
-    "minutes": 107
+    ]
   },
   {
-    "id": "P0-07",
+    "id": "JAVA-03",
+    "section": "java",
+    "sectionLabel": "Java Core",
     "priority": "P0",
-    "title": "Threads + ThreadPoolExecutor",
-    "section": "Java and Spring Boot",
-    "duration": "2h 05m",
-    "resumeLinked": true,
-    "videos": [
+    "title": "OOP, exceptions & error handling",
+    "why": "Reported verbatim in SDE-2 rounds: exception hierarchy, checked vs unchecked, try-with-resources, propagation. It was buried in the old plan's remedial pile — it should not have been.",
+    "resources": [
       {
-        "id": "P0-07-CC-J-29",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "JAVA-03-r1",
+        "kind": "video",
+        "title": "OOPs Concept",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 2,
+        "minutes": 0
+      },
+      {
+        "id": "JAVA-03-r2",
+        "kind": "video",
+        "title": "Exception Handling",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 19,
+        "minutes": 0
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "Four pillars of OOP — give a real example of each from code you have written, not a textbook one.",
+      "Abstract class vs interface in Java 17. When does an interface with default methods win?",
+      "What is the superclass of every exception? Where do Error and RuntimeException sit?",
+      "Checked vs unchecked — which do you throw from a service layer, and why?",
+      "How does exception propagation work through a call stack? What does the JVM do if nothing catches?",
+      "try-with-resources — what does it compile to, and what happens if both the body and close() throw?",
+      "Why is catching Exception (or Throwable) usually wrong? When is it right?",
+      "Overloading vs overriding — what is resolved at compile time and what at runtime?",
+      "Can you override a static method? What actually happens if you try?",
+      "Custom exception: checked or unchecked, and what do you put in it beyond a message?",
+      "finally runs when? Name two cases where it does not.",
+      "What is the cost of throwing an exception, and why is exception-as-control-flow discouraged?"
+    ]
+  },
+  {
+    "id": "JAVA-04",
+    "section": "java",
+    "sectionLabel": "Java Core",
+    "priority": "P1",
+    "title": "JVM memory model & garbage collection",
+    "why": "Standard at this level, and your K8s pods make the container-vs-heap question personal.",
+    "resources": [
+      {
+        "id": "JAVA-04-r1",
+        "kind": "video",
+        "title": "Java Memory Management and Garbage Collection in Depth",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 10,
+        "minutes": 49
+      }
+    ],
+    "minutes": 49,
+    "duration": "49m",
+    "questions": [
+      "Draw the JVM memory layout. Which regions are per-thread vs shared?",
+      "Stack vs heap — what lives where, and who cleans each?",
+      "Young gen / old gen / metaspace — why the generational split?",
+      "Minor vs major vs full GC. Which pauses the app and for how long?",
+      "G1 vs Parallel vs ZGC — when would you pick each?",
+      "Your pod OOM-kills in Kubernetes but heap dumps look fine. Where did the memory go? (Metaspace, direct buffers, thread stacks, native — container limit ≠ heap limit.)",
+      "OutOfMemoryError: Java heap space vs Metaspace vs GC overhead limit exceeded — different causes.",
+      "What is a memory leak in a GC'd language? Give a real example.",
+      "How do you diagnose one in production? (Heap dump, MAT, jmap, jcmd.)",
+      "Strong vs weak vs soft vs phantom references."
+    ]
+  },
+  {
+    "id": "JAVA-05",
+    "section": "java",
+    "sectionLabel": "Java Core",
+    "priority": "P1",
+    "title": "Java 17 & 21 — records, sealed types, pattern matching, virtual threads",
+    "why": "Raised from P2: 2026 write-ups treat Java 17 features as assumed knowledge, and virtual threads are now a live interview topic. You ship Java 17 — being vague here reads badly.",
+    "resources": [
+      {
+        "id": "JAVA-05-r1",
+        "kind": "video",
+        "title": "Java 17: Sealed Classes and Interfaces",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 41,
+        "minutes": 11
+      },
+      {
+        "id": "JAVA-05-r2",
+        "kind": "video",
+        "title": "Java 14: Switch Expressions Deep Dive",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 42,
+        "minutes": 23
+      },
+      {
+        "id": "JAVA-05-r3",
+        "kind": "video",
+        "title": "Java 16: Pattern Matching for instanceof",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 43,
+        "minutes": 9
+      },
+      {
+        "id": "JAVA-05-r4",
+        "kind": "video",
+        "title": "Java 21: Pattern Matching for switch",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 44,
+        "minutes": 9
+      },
+      {
+        "id": "JAVA-05-r5",
+        "kind": "video",
+        "title": "Java 16: Record class",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 45,
+        "minutes": 36
+      },
+      {
+        "id": "JAVA-05-r6",
+        "kind": "video",
+        "title": "Java VirtualThreads vs Normal Threads || ThreadLocal in Java",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 38,
+        "minutes": 23
+      }
+    ],
+    "minutes": 111,
+    "duration": "1h 51m",
+    "questions": [
+      "What is a record and what does it generate?",
+      "When is a record the wrong choice?",
+      "What do sealed classes enable that final doesn't?",
+      "How do sealed types + pattern matching give exhaustiveness?",
+      "Which of these have you actually used on Java 17 at work?",
+      "Platform thread vs virtual thread — what actually changes, and what does not?",
+      "What is pinning, what causes it, and how would you detect it?",
+      "Why are thread pools mostly pointless with virtual threads — and where do you still want one?",
+      "Virtual threads vs reactive (WebFlux/Reactor) — what problem does each solve? Which would you pick now?",
+      "Where do virtual threads NOT help? (CPU-bound work — say so plainly.)",
+      "Which of Java 17/21's features have you actually used at work, and which would you adopt next?"
+    ]
+  },
+  {
+    "id": "JAVA-06",
+    "section": "java",
+    "sectionLabel": "Java Core",
+    "priority": "P1",
+    "title": "Immutability, equals/hashCode & singletons",
+    "why": "",
+    "resources": [
+      {
+        "id": "JAVA-06-r1",
+        "kind": "video",
+        "title": "Java Singleton and Immutable Class Explained with Examples | Java Classes in Depth - Part4",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 14,
+        "minutes": 28
+      }
+    ],
+    "minutes": 28,
+    "duration": "28m",
+    "questions": [
+      "List every rule for making a class truly immutable. Which one do people forget? (Defensive copy of mutable fields.)",
+      "Why is immutability inherently thread-safe?",
+      "Is String immutable? What is the string pool and why does it exist?",
+      "Write a thread-safe singleton four ways. Rank them.",
+      "Why is enum singleton the best? What does it defend against that others don't?",
+      "How can reflection or serialization break a singleton? How do you prevent it?",
+      "Why is double-checked locking broken without volatile?"
+    ]
+  },
+  {
+    "id": "JAVA-07",
+    "section": "java",
+    "sectionLabel": "Java Core",
+    "priority": "P1",
+    "title": "Generics & type erasure",
+    "why": "",
+    "resources": [
+      {
+        "id": "JAVA-07-r1",
+        "kind": "video",
+        "title": "Java Generic Classes | Java Classes in Depth - Part2",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 12,
+        "minutes": 52
+      }
+    ],
+    "minutes": 52,
+    "duration": "52m",
+    "questions": [
+      "What is type erasure? Name two things it makes impossible.",
+      "List<Object> vs List<?> vs List<? extends Object> — what can you add to each?",
+      "Explain PECS. Give a real method signature using it.",
+      "Why can't you create new T[]?",
+      "Why is List<String> not a subtype of List<Object>?",
+      "Bounded type parameters — write a generic method that only accepts Comparable.",
+      "What is a bridge method?"
+    ]
+  },
+  {
+    "id": "JAVA-08",
+    "section": "java",
+    "sectionLabel": "Java Core",
+    "priority": "P2",
+    "title": "Optional — the API and its misuse",
+    "why": "",
+    "resources": [
+      {
+        "id": "JAVA-08-r1",
+        "kind": "video",
+        "title": "Master Java Optional from Java 8 to 11 | All Methods with Real Examples",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 47,
+        "minutes": 74
+      }
+    ],
+    "minutes": 74,
+    "duration": "1h 14m",
+    "questions": [
+      "What was Optional designed for? (Return types — not fields, not params.)",
+      "Why is Optional as an entity field a bad idea?",
+      "orElse vs orElseGet — which eagerly evaluates?",
+      "Why is Optional.get() a code smell?",
+      "Is Optional serializable?"
+    ]
+  },
+  {
+    "id": "JAVA-09",
+    "section": "java",
+    "sectionLabel": "Java Core",
+    "priority": "P2",
+    "title": "Comparable vs Comparator, TreeMap, LinkedHashMap & Set",
+    "why": "Cheap points. Comparator questions show up constantly as a warm-up before something harder.",
+    "resources": [
+      {
+        "id": "JAVA-09-r1",
+        "kind": "video",
+        "title": "Comparator vs Comparable",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 23,
+        "minutes": 0
+      },
+      {
+        "id": "JAVA-09-r2",
+        "kind": "video",
+        "title": "LinkedHashMap and TreeMap",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 26,
+        "minutes": 0
+      },
+      {
+        "id": "JAVA-09-r3",
+        "kind": "video",
+        "title": "SET",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 27,
+        "minutes": 0
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "Comparable vs Comparator — which one changes the class, and which one do you reach for in practice?",
+      "Sort a list of objects by two fields, second descending. Write it with Comparator chaining.",
+      "What breaks if your comparator is inconsistent with equals? Where does it bite you? (TreeMap/TreeSet.)",
+      "HashSet vs LinkedHashSet vs TreeSet — ordering, cost, and when each is the right pick.",
+      "How does TreeMap achieve ordering, and what is the complexity of get/put?",
+      "LinkedHashMap in access-order mode — how do you build an LRU cache from it in five lines?",
+      "Your comparator throws \"Comparison method violates its general contract\" in production. What happened?"
+    ]
+  },
+  {
+    "id": "CONC-01",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
+    "priority": "P0",
+    "title": "Threads, executors & ThreadPoolExecutor",
+    "why": "Your resume says Multithreading & Concurrency and Asynchronous Processing. Expect a whole round.",
+    "resources": [
+      {
+        "id": "CONC-01-r1",
+        "kind": "video",
+        "title": "Multithreading and Concurrency in Java: Part1 | Threads, Process and their Memory Model in depth",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 29,
-        "title": "Multithreading and Concurrency in Java: Part1 | Threads, Process and their Memory Model in depth",
-        "minutes": 48,
-        "videoUrl": "https://www.youtube.com/results?search_query=Multithreading%20and%20Concurrency%20in%20Java%3A%20Part1%20%7C%20Threads%2C%20Process%20and%20their%20Memory%20Model%20in%20depth%20Concept%20%26%26%20Coding"
+        "minutes": 48
       },
       {
-        "id": "P0-07-CC-J-34",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "CONC-01-r2",
+        "kind": "video",
+        "title": "Thread Pools in Java | ThreadPoolExecutor Framework | Multithreading Part6",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 34,
-        "title": "Thread Pools in Java | ThreadPoolExecutor Framework | Multithreading Part6",
-        "minutes": 77,
-        "videoUrl": "https://www.youtube.com/results?search_query=Thread%20Pools%20in%20Java%20%7C%20ThreadPoolExecutor%20Framework%20%7C%20Multithreading%20Part6%20Concept%20%26%26%20Coding"
+        "minutes": 77
       }
     ],
+    "minutes": 125,
+    "duration": "2h 5m",
     "questions": [
       "Name all 7 ThreadPoolExecutor constructor parameters and what each controls.",
       "core=5, max=10, unbounded LinkedBlockingQueue. How many threads actually run under load? Why is this a production incident?",
@@ -359,98 +488,39 @@ export const CORE_STACK_TOPICS = [
       "Thread lifecycle states — name all and the transitions.",
       "wait()/notify() vs await()/signal() — why does wait() require a synchronized block?",
       "What is thread starvation? How would you detect it in production?"
-    ],
-    "minutes": 125
+    ]
   },
   {
-    "id": "P0-08",
+    "id": "CONC-02",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
     "priority": "P0",
-    "title": "CompletableFuture + @Async",
-    "section": "Java and Spring Boot",
-    "duration": "2h 16m",
-    "resumeLinked": true,
-    "videos": [
+    "title": "volatile, atomics, CAS & the Java Memory Model",
+    "why": "\"volatile vs atomic\" is reported almost verbatim in SDE-2 loops.",
+    "resources": [
       {
-        "id": "P0-08-CC-J-35",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 35,
-        "title": "Java8 CompletableFuture | Future and Callable in Java | Multithreading in Java - Part7",
-        "minutes": 66,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java8%20CompletableFuture%20%7C%20Future%20and%20Callable%20in%20Java%20%7C%20Multithreading%20in%20Java%20-%20Part7%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-08-CC-SB-16",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 16,
-        "title": "Spring boot @Async Annotation - Part1 | ThreadPoolExecutor",
-        "minutes": 46,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40Async%20Annotation%20-%20Part1%20%7C%20ThreadPoolExecutor%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P0-08-CC-SB-17",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 17,
-        "title": "Spring boot @Async Annotation - Part2 | Async Annotation Important Interview questions",
-        "minutes": 24,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40Async%20Annotation%20-%20Part2%20%7C%20Async%20Annotation%20Important%20Interview%20questions%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Future vs CompletableFuture — what does Future fundamentally not let you do?",
-      "thenApply vs thenCompose vs thenCombine. When is thenCompose mandatory?",
-      "thenApply vs thenApplyAsync — which thread runs the callback in each?",
-      "How do you handle exceptions? exceptionally vs handle vs whenComplete.",
-      "allOf vs anyOf — how do you collect results from allOf?",
-      "What thread pool does CompletableFuture use by default? Why is that a problem in a web app?",
-      "Why does @Async silently not work when called from within the same class?",
-      "What must @Async methods return? What happens if one returns void and throws?",
-      "How do you configure a custom executor for @Async? What breaks if you don't?",
-      "Does the security context / @Transactional context propagate into @Async? Why not?",
-      "How would you implement a timeout on a CompletableFuture?",
-      "Scatter-gather: 5 parallel service calls, aggregate, fail fast if any fails. Write it."
-    ],
-    "minutes": 136
-  },
-  {
-    "id": "P0-09",
-    "priority": "P0",
-    "title": "volatile, atomics, CAS + Java Memory Model",
-    "section": "Java and Spring Boot",
-    "duration": "1h 15m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P0-09-CC-J-33",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "CONC-02-r1",
+        "kind": "video",
+        "title": "Lock-Free Concurrency | Compare-and-Swap | Atomic & Volatile Variables | Multithreading Part5",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 33,
-        "title": "Lock-Free Concurrency | Compare-and-Swap | Atomic & Volatile Variables | Multithreading Part5",
-        "minutes": 64,
-        "videoUrl": "https://www.youtube.com/results?search_query=Lock-Free%20Concurrency%20%7C%20Compare-and-Swap%20%7C%20Atomic%20%26%20Volatile%20Variables%20%7C%20Multithreading%20Part5%20Concept%20%26%26%20Coding"
+        "minutes": 64
       },
       {
-        "id": "P0-09-DT-4",
-        "source": "DT",
-        "channel": "Defog Tech",
+        "id": "CONC-02-r2",
+        "kind": "video",
+        "title": "Java Memory Model in 10 minutes",
+        "source": "Defog Tech",
         "playlist": "Java Concurrency",
         "playlistUrl": "https://www.youtube.com/playlist?list=PLhfHPmPYPPRk6yMrcbfafFGSbE2EPK_A6",
         "position": 4,
-        "title": "Java Memory Model in 10 minutes",
-        "minutes": 11,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%20Memory%20Model%20in%2010%20minutes%20Defog%20Tech"
+        "minutes": 11
       }
     ],
+    "minutes": 75,
+    "duration": "1h 15m",
     "questions": [
       "What exactly does volatile guarantee? What does it NOT guarantee?",
       "Give a concrete case where volatile fixes visibility but the code is still broken.",
@@ -464,29 +534,29 @@ export const CORE_STACK_TOPICS = [
       "Is synchronized reentrant? What would break if it weren't?",
       "Where is the memory barrier inserted for a volatile write vs read?",
       "When would you choose lock-free over locking in real code?"
-    ],
-    "minutes": 75
+    ]
   },
   {
-    "id": "P0-10",
+    "id": "CONC-03",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
     "priority": "P0",
-    "title": "Locks - Reentrant, ReadWrite, Semaphore",
-    "section": "Java and Spring Boot",
-    "duration": "47m",
-    "resumeLinked": false,
-    "videos": [
+    "title": "Locks, wait/notify & coordination primitives",
+    "why": "This is where the classic live-coding ask lands: N threads printing in strict sequence.",
+    "resources": [
       {
-        "id": "P0-10-CC-J-32",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "CONC-03-r1",
+        "kind": "video",
+        "title": "Locks and Condition | Java Multithreading Part4 | Reentrant, ReadWrite, Stamped & Semaphore Lock",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 32,
-        "title": "Locks and Condition | Java Multithreading Part4 | Reentrant, ReadWrite, Stamped & Semaphore Lock",
-        "minutes": 47,
-        "videoUrl": "https://www.youtube.com/results?search_query=Locks%20and%20Condition%20%7C%20Java%20Multithreading%20Part4%20%7C%20Reentrant%2C%20ReadWrite%2C%20Stamped%20%26%20Semaphore%20Lock%20Concept%20%26%26%20Coding"
+        "minutes": 47
       }
     ],
+    "minutes": 47,
+    "duration": "47m",
     "questions": [
       "ReentrantLock vs synchronized — name four things ReentrantLock gives you.",
       "What is lock fairness? What does it cost?",
@@ -497,178 +567,322 @@ export const CORE_STACK_TOPICS = [
       "Semaphore vs CountDownLatch vs CyclicBarrier — one line each.",
       "How do you detect a deadlock in a running production JVM?",
       "Four conditions for deadlock. Which one do you break in practice?",
-      "tryLock() with timeout — give a real use case."
-    ],
-    "minutes": 47
+      "tryLock() with timeout — give a real use case.",
+      "Three threads must print 1,2,3,1,2,3… in strict order. Write it with wait/notify, then with Semaphores. Which would you ship?",
+      "Print odd/even alternately with two threads — where does the naive version deadlock or miss a signal?",
+      "Why notifyAll() over notify()? What is the lost-wakeup problem?",
+      "Why must wait() always sit inside a loop that rechecks the condition?",
+      "Producer–consumer with a bounded buffer: implement it with BlockingQueue, then say what BlockingQueue is doing for you underneath."
+    ]
   },
   {
-    "id": "P1-11",
-    "priority": "P1",
-    "title": "Kafka fundamentals + consumer groups",
-    "section": "Java and Spring Boot",
-    "duration": "1h 10m",
-    "resumeLinked": true,
-    "videos": [
+    "id": "CONC-04",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
+    "priority": "P0",
+    "title": "CompletableFuture & @Async",
+    "why": "Directly backs the async/sync-fallback work on your resume.",
+    "resources": [
       {
-        "id": "P1-11-JT-K-2",
-        "source": "JT-K",
-        "channel": "Java Techie",
-        "playlist": "Kafka for beginners",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
-        "position": 2,
-        "title": "Apache Kafka Components & Architecture Detailed Explanation in 15 min",
-        "minutes": 16,
-        "videoUrl": "https://www.youtube.com/results?search_query=Apache%20Kafka%20Components%20%26%20Architecture%20Detailed%20Explanation%20in%2015%20min%20Java%20Techie"
+        "id": "CONC-04-r1",
+        "kind": "video",
+        "title": "Java8 CompletableFuture | Future and Callable in Java | Multithreading in Java - Part7",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 35,
+        "minutes": 66
       },
       {
-        "id": "P1-11-JT-K-7",
-        "source": "JT-K",
-        "channel": "Java Techie",
-        "playlist": "Kafka for beginners",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
-        "position": 7,
-        "title": "Apache Kafka Producer Example using SpringBoot 3.x",
-        "minutes": 26,
-        "videoUrl": "https://www.youtube.com/results?search_query=Apache%20Kafka%20Producer%20Example%20using%20SpringBoot%203.x%20Java%20Techie"
-      },
-      {
-        "id": "P1-11-JT-K-8",
-        "source": "JT-K",
-        "channel": "Java Techie",
-        "playlist": "Kafka for beginners",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
-        "position": 8,
-        "title": "Apache Kafka Consumer Example using SpringBoot 3 | Consumer Groups",
-        "minutes": 28,
-        "videoUrl": "https://www.youtube.com/results?search_query=Apache%20Kafka%20Consumer%20Example%20using%20SpringBoot%203%20%7C%20Consumer%20Groups%20Java%20Techie"
-      }
-    ],
-    "questions": [
-      "Topic, partition, offset, consumer group — define each and how they interact.",
-      "3 partitions, 5 consumers in one group. What happens to consumer 4 and 5?",
-      "How does Kafka decide which partition a message goes to?",
-      "What triggers a consumer group rebalance? What's the cost?",
-      "What is ISR? What does acks=all actually wait for?",
-      "Where does Kafka store consumer offsets?",
-      "How does Kafka achieve high throughput? (Sequential IO, zero-copy, batching.)",
-      "Kafka vs RabbitMQ — when would you pick each?"
-    ],
-    "minutes": 70
-  },
-  {
-    "id": "P1-12",
-    "priority": "P1",
-    "title": "Kafka ordering, idempotency, exactly-once",
-    "section": "Java and Spring Boot",
-    "duration": "52m",
-    "resumeLinked": true,
-    "videos": [
-      {
-        "id": "P1-12-JT-K-15",
-        "source": "JT-K",
-        "channel": "Java Techie",
-        "playlist": "Kafka for beginners",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
-        "position": 15,
-        "title": "Does Kafka Guarantee Message Ordering? | Microservices Fix Inside!",
-        "minutes": 28,
-        "videoUrl": "https://www.youtube.com/results?search_query=Does%20Kafka%20Guarantee%20Message%20Ordering%3F%20%7C%20Microservices%20Fix%20Inside!%20Java%20Techie"
-      },
-      {
-        "id": "P1-12-JT-K-16",
-        "source": "JT-K",
-        "channel": "Java Techie",
-        "playlist": "Kafka for beginners",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "id": "CONC-04-r2",
+        "kind": "video",
+        "title": "Spring boot @Async Annotation - Part1 | ThreadPoolExecutor",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 16,
-        "title": "Why Kafka Processes the Same Message Twice? | Kafka Idempotency Real-Time Example",
-        "minutes": 24,
-        "videoUrl": "https://www.youtube.com/results?search_query=Why%20Kafka%20Processes%20the%20Same%20Message%20Twice%3F%20%7C%20Kafka%20Idempotency%20Real-Time%20Example%20Java%20Techie"
+        "minutes": 46
+      },
+      {
+        "id": "CONC-04-r3",
+        "kind": "video",
+        "title": "Spring boot @Async Annotation - Part2 | Async Annotation Important Interview questions",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 17,
+        "minutes": 24
       }
     ],
+    "minutes": 136,
+    "duration": "2h 16m",
     "questions": [
-      "Consumer crashes after processing but before committing the offset. What happens on restart?",
-      "At-least-once vs at-most-once vs exactly-once. Which is Kafka's default?",
-      "How did LogLens turn at-least-once delivery into exactly-once effects? (Fingerprint-keyed idempotent upserts + commit-after-durable-write. He must say this fluently.)",
-      "What ordering does Kafka actually guarantee — and at what scope?",
-      "You need global ordering across a topic. What are you forced to give up?",
-      "Auto-commit vs manual commit. Why is auto-commit dangerous?",
-      "What is the idempotent producer, and what does it protect against?",
-      "Kafka transactions — what do they cover and what do they not?"
-    ],
-    "minutes": 52
+      "Future vs CompletableFuture — what does Future fundamentally not let you do?",
+      "thenApply vs thenCompose vs thenCombine. When is thenCompose mandatory?",
+      "thenApply vs thenApplyAsync — which thread runs the callback in each?",
+      "How do you handle exceptions? exceptionally vs handle vs whenComplete.",
+      "allOf vs anyOf — how do you collect results from allOf?",
+      "What thread pool does CompletableFuture use by default? Why is that a problem in a web app?",
+      "Why does @Async silently not work when called from within the same class?",
+      "What must @Async methods return? What happens if one returns void and throws?",
+      "How do you configure a custom executor for @Async? What breaks if you don't?",
+      "Does the security context / @Transactional context propagate into @Async? Why not?",
+      "How would you implement a timeout on a CompletableFuture?",
+      "Scatter-gather: 5 parallel service calls, aggregate, fail fast if any fails. Write it."
+    ]
   },
   {
-    "id": "P1-13",
-    "priority": "P1",
-    "title": "Kafka error handling, retries, DLT",
-    "section": "Java and Spring Boot",
-    "duration": "29m",
-    "resumeLinked": true,
-    "videos": [
+    "id": "CONC-05",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
+    "priority": "P2",
+    "title": "ForkJoinPool, work stealing & parallel streams",
+    "why": "",
+    "resources": [
       {
-        "id": "P1-13-JT-K-13",
-        "source": "JT-K",
-        "channel": "Java Techie",
-        "playlist": "Kafka for beginners",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "id": "CONC-05-r1",
+        "kind": "video",
+        "title": "Java ForkJoinPool || WorkStealingPool || FixedThreadPool || CachedThreadPool",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 36,
+        "minutes": 39
+      },
+      {
+        "id": "CONC-05-r2",
+        "kind": "video",
+        "title": "Understanding how ForkJoinPool works",
+        "source": "Defog Tech",
+        "playlist": "Java Concurrency",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLhfHPmPYPPRk6yMrcbfafFGSbE2EPK_A6",
+        "position": 20,
+        "minutes": 13
+      }
+    ],
+    "minutes": 52,
+    "duration": "52m",
+    "questions": [
+      "What is work stealing?",
+      "Why does ForkJoinPool use a deque per thread?",
+      "Why is blocking IO inside a ForkJoinPool task a bug?",
+      "Who else uses the common pool by default? (parallelStream — link to P0-06.)"
+    ]
+  },
+  {
+    "id": "CONC-06",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
+    "priority": "P2",
+    "title": "Deadlock detection, thread dumps & ThreadLocal leaks",
+    "why": "",
+    "resources": [
+      {
+        "id": "CONC-06-r1",
+        "kind": "video",
+        "title": "How detect and resolve DeadLocks in Java",
+        "source": "Defog Tech",
+        "playlist": "Java Concurrency",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLhfHPmPYPPRk6yMrcbfafFGSbE2EPK_A6",
+        "position": 25,
+        "minutes": 11
+      },
+      {
+        "id": "CONC-06-r2",
+        "kind": "video",
+        "title": "Java VirtualThreads vs Normal Threads || ThreadLocal in Java",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 38,
+        "minutes": 23
+      }
+    ],
+    "minutes": 34,
+    "duration": "34m",
+    "questions": [
+      "Detect a deadlock in a live JVM — what tools?",
+      "What does a thread dump show?",
+      "Lock ordering as prevention — how do you enforce it?",
+      "Livelock vs deadlock vs starvation.",
+      "Why is ThreadLocal a leak risk in a pooled thread, and what is the fix?",
+      "How does ThreadLocal behave with virtual threads?",
+      "A request-scoped ThreadLocal leaks into the next request. How does that happen and how do you prove it?"
+    ]
+  },
+  {
+    "id": "SPRING-01",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "@Transactional — propagation, isolation & proxy failure",
+    "why": "The self-invocation question is reported by name in interview write-ups. Highest-yield Spring topic there is.",
+    "resources": [
+      {
+        "id": "SPRING-01-r1",
+        "kind": "video",
+        "title": "Spring boot @Transactional Annotation - Part1",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 13,
-        "title": "Kafka Error Handling with Spring Boot | Retry Strategies & Dead Letter Topics",
-        "minutes": 29,
-        "videoUrl": "https://www.youtube.com/results?search_query=Kafka%20Error%20Handling%20with%20Spring%20Boot%20%7C%20Retry%20Strategies%20%26%20Dead%20Letter%20Topics%20Java%20Techie"
+        "minutes": 25
+      },
+      {
+        "id": "SPRING-01-r2",
+        "kind": "video",
+        "title": "Spring boot @Transactional Annotation - Part2 | Declarative, Programmatic Approach and Propagation",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 14,
+        "minutes": 38
+      },
+      {
+        "id": "SPRING-01-r3",
+        "kind": "video",
+        "title": "Spring boot @Transactional Annotation - Part3 | Isolation Level and its different types",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 15,
+        "minutes": 39
       }
     ],
+    "minutes": 102,
+    "duration": "1h 42m",
     "questions": [
-      "A poison-pill message fails forever. What happens to the partition without a DLT?",
-      "Blocking vs non-blocking retry — what does blocking retry do to the rest of the partition?",
-      "How do you design a DLT? What metadata goes on the message?",
-      "How do you replay from a DLT safely?",
-      "Retryable vs non-retryable exceptions — how do you classify them?"
-    ],
-    "minutes": 29
+      "methodA() (no annotation) calls this.methodB() (@Transactional) in the same class. Does a transaction start? Why not?",
+      "Give three ways to fix self-invocation. Trade-off of each.",
+      "Why doesn't @Transactional work on private / final methods?",
+      "Explain all 7 propagation levels. Which have you actually used and why?",
+      "REQUIRES_NEW inside a REQUIRED outer txn. Outer rolls back — what happens to the inner?",
+      "Default rollback behaviour: which exceptions roll back, which don't? Why that default?",
+      "How do you force rollback on a checked exception?",
+      "Explain the 4 isolation levels via the anomaly each prevents (dirty read, non-repeatable read, phantom).",
+      "What isolation does PostgreSQL actually default to? Does it differ from the JPA default?",
+      "Where does the transaction actually open and commit in the call stack?",
+      "@Transactional on a method that also spawns a @Async call — what happens to the transaction context?",
+      "Long-running transaction holding a DB connection — what breaks at 1,000 tenants?"
+    ]
   },
   {
-    "id": "P1-14",
-    "priority": "P1",
-    "title": "Feature flags + externalized config",
-    "section": "Java and Spring Boot",
-    "duration": "1h 17m",
-    "resumeLinked": true,
-    "videos": [
+    "id": "SPRING-02",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "Bean lifecycle, IoC, DI & scopes",
+    "why": "\"Spring lifecycle\", @Component vs @Bean vs @Qualifier — reported repeatedly.",
+    "resources": [
       {
-        "id": "P1-14-CC-SB-10",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-02-r1",
+        "kind": "video",
+        "title": "Spring boot: Bean and its Lifecycle | Inversion of Control (IOC)",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 6,
+        "minutes": 34
+      },
+      {
+        "id": "SPRING-02-r2",
+        "kind": "video",
+        "title": "Dependency Injection in Spring boot | With Advantages and Disadvantages",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 7,
+        "minutes": 39
+      },
+      {
+        "id": "SPRING-02-r3",
+        "kind": "video",
+        "title": "Spring boot: Bean Scopes | Singleton, Prototype, Request, Session Scopes with Examples in Java",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 8,
+        "minutes": 40
+      }
+    ],
+    "minutes": 113,
+    "duration": "1h 53m",
+    "questions": [
+      "Walk the full bean lifecycle from instantiation to destruction. Name the callbacks.",
+      "Constructor vs setter vs field injection. Which does Spring recommend and why?",
+      "Two beans depend on each other. Constructor injection fails, field injection works. Why is the \"working\" one worse?",
+      "How do you legitimately break a circular dependency? (@Lazy, redesign, ApplicationContextAware)",
+      "Inject a prototype bean into a singleton. How many instances get created? How do you fix it?",
+      "Difference between @Component, @Service, @Repository, @Bean. Is it purely semantic?",
+      "What does @Repository actually do beyond marking a bean?",
+      "Two beans of the same type — how does Spring resolve it? (@Primary, @Qualifier)",
+      "@PostConstruct vs InitializingBean vs initMethod — which runs first?",
+      "Is a singleton bean thread-safe? (Trick: no. The container guarantees one instance, not safety.)",
+      "Are prototype beans destroyed by the container? Why not?",
+      "What is ApplicationContext vs BeanFactory?"
+    ]
+  },
+  {
+    "id": "SPRING-03",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "Spring Boot fundamentals — starters, auto-configuration, profiles & config",
+    "why": "MISSING FROM THE OLD PLAN. \"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and the old plan only covered @ConditionalOnProperty in passing.",
+    "resources": [
+      {
+        "id": "SPRING-03-r1",
+        "kind": "video",
+        "title": "Spring boot @ConditionalOnProperty Annotation",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 10,
-        "title": "Spring boot @ConditionalOnProperty Annotation",
-        "minutes": 20,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40ConditionalOnProperty%20Annotation%20Concept%20%26%26%20Coding"
+        "minutes": 20
       },
       {
-        "id": "P1-14-CC-SB-11",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-03-r2",
+        "kind": "video",
+        "title": "Spring boot @Profile annotation | How Profiling works in Spring boot",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 11,
-        "title": "Spring boot @Profile annotation | How Profiling works in Spring boot",
-        "minutes": 33,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20%40Profile%20annotation%20%7C%20How%20Profiling%20works%20in%20Spring%20boot%20Concept%20%26%26%20Coding"
+        "minutes": 33
       },
       {
-        "id": "P1-14-CC-SB-44",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-03-r3",
+        "kind": "video",
+        "title": "Spring Boot: ConfigurationProperties in-depth",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 44,
-        "title": "Spring Boot: ConfigurationProperties in-depth",
-        "minutes": 24,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20Boot%3A%20ConfigurationProperties%20in-depth%20Concept%20%26%26%20Coding"
+        "minutes": 24
+      },
+      {
+        "id": "SPRING-03-r4",
+        "kind": "video",
+        "title": "Introduction to Spring Boot",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 2,
+        "minutes": 0
+      },
+      {
+        "id": "SPRING-03-r5",
+        "kind": "video",
+        "title": "Maven",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 4,
+        "minutes": 0
       }
     ],
+    "minutes": 77,
+    "duration": "≈1h 17m",
     "questions": [
       "Your feature flag flips mid-request. What happens? (His actual system.)",
       "@ConditionalOnProperty is evaluated at startup. So how do you build a runtime-togglable flag?",
@@ -677,155 +891,321 @@ export const CORE_STACK_TOPICS = [
       "How do you refresh config without restarting? What are the risks?",
       "How do you scope a feature flag per tenant across 1,000+ tenants?",
       "How do you test both sides of a feature flag in CI?",
-      "What's your rollback plan when a flag causes an incident?"
-    ],
-    "minutes": 77
+      "What's your rollback plan when a flag causes an incident?",
+      "What does @SpringBootApplication actually expand to? Name all three annotations and what each does.",
+      "Walk auto-configuration end to end: what reads spring.factories / AutoConfiguration.imports, and when does a condition get evaluated?",
+      "@ConditionalOnMissingBean — why is it the backbone of auto-configuration, and how do you override an auto-configured bean?",
+      "How do you debug why a bean you expected was NOT created? (--debug / the conditions report.)",
+      "What is a starter, and what would you put in one if you wrote your own?",
+      "Property resolution order: env var vs application.yml vs profile-specific yml vs CLI arg — which wins?",
+      "@Value vs @ConfigurationProperties — when does the latter win, and how do you validate it?",
+      "How does an embedded server get chosen and started? What changes if you exclude Tomcat?",
+      "Fat jar layout — why can't a plain java -cp run it, and what does the loader do?"
+    ]
   },
   {
-    "id": "P1-15",
-    "priority": "P1",
-    "title": "Circuit breaker + retry (Resilience4j)",
-    "section": "Java and Spring Boot",
-    "duration": "38m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "SPRING-04",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "JPA core — entity lifecycle, L1 cache & the N+1 problem",
+    "why": "N+1 and lazy loading are named explicitly in current interview guides. Spring Data JPA is your loudest resume claim.",
+    "resources": [
       {
-        "id": "P1-15-JT-M-10",
-        "source": "JT-M",
-        "channel": "Java Techie",
-        "playlist": "Microservice",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
-        "position": 10,
-        "title": "Microservice | Resilience4J Circuit Breaker Implementation on Spring Boot",
-        "minutes": 25,
-        "videoUrl": "https://www.youtube.com/results?search_query=Microservice%20%7C%20Resilience4J%20Circuit%20Breaker%20Implementation%20on%20Spring%20Boot%20Java%20Techie"
+        "id": "SPRING-04-r1",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-2) | Setup, JPA Architecture, Entity Lifecycle",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 24,
+        "minutes": 63
       },
       {
-        "id": "P1-15-JT-M-11",
-        "source": "JT-M",
-        "channel": "Java Techie",
-        "playlist": "Microservice",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
-        "position": 11,
-        "title": "Microservice | Resilience4J Retry Module Implementation With Spring Boot",
-        "minutes": 13,
-        "videoUrl": "https://www.youtube.com/results?search_query=Microservice%20%7C%20Resilience4J%20Retry%20Module%20Implementation%20With%20Spring%20Boot%20Java%20Techie"
-      }
-    ],
-    "questions": [
-      "Three circuit breaker states and every transition. What triggers each?",
-      "Breaker is OPEN. A request arrives. What does the caller see?",
-      "How does it decide to try again? What is HALF_OPEN?",
-      "How do you tune failure threshold and wait duration? What goes wrong at each extreme?",
-      "Retry + circuit breaker together — what's the ordering trap?",
-      "Why is naive retry dangerous during an outage? (Retry storm, thundering herd.)",
-      "What is exponential backoff with jitter and why the jitter?",
-      "Bulkhead vs circuit breaker — what does each protect?"
-    ],
-    "minutes": 38
-  },
-  {
-    "id": "P1-16",
-    "priority": "P1",
-    "title": "Service discovery + API gateway",
-    "section": "Java and Spring Boot",
-    "duration": "58m",
-    "resumeLinked": true,
-    "videos": [
-      {
-        "id": "P1-16-JT-M-1",
-        "source": "JT-M",
-        "channel": "Java Techie",
-        "playlist": "Microservice",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
-        "position": 1,
-        "title": "Microservice | Spring Cloud Eureka + API Gateway + Spring Cloud Hystrix | PART-1",
-        "minutes": 40,
-        "videoUrl": "https://www.youtube.com/results?search_query=Microservice%20%7C%20Spring%20Cloud%20Eureka%20%2B%20API%20Gateway%20%2B%20Spring%20Cloud%20Hystrix%20%7C%20PART-1%20Java%20Techie"
+        "id": "SPRING-04-r2",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-3) | First Level Caching in JPA",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 25,
+        "minutes": 24
       },
       {
-        "id": "P1-16-JT-M-2",
-        "source": "JT-M",
-        "channel": "Java Techie",
-        "playlist": "Microservice",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
-        "position": 2,
-        "title": "Microservice | Spring Cloud Eureka + Gateway + Hystrix | PART-2",
-        "minutes": 18,
-        "videoUrl": "https://www.youtube.com/results?search_query=Microservice%20%7C%20Spring%20Cloud%20Eureka%20%2B%20Gateway%20%2B%20Hystrix%20%7C%20PART-2%20Java%20Techie"
+        "id": "SPRING-04-r3",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-8) | JPQL, Derived Query, N+1 Problem, Joins, Pagination and Sorting etc.",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 30,
+        "minutes": 59
       }
     ],
+    "minutes": 146,
+    "duration": "2h 26m",
     "questions": [
-      "Client-side vs server-side discovery. Which is Eureka?",
-      "What happens to in-flight requests when a service instance dies?",
-      "What is Eureka self-preservation mode and why does it exist?",
-      "What belongs in a gateway vs in the service itself?",
-      "How did you verify zero downtime in your dual-gateway migration? What was your rollback trigger?",
-      "How does the gateway propagate identity to downstream services?",
-      "Isn't the gateway a single point of failure? How do you address that?"
-    ],
-    "minutes": 58
+      "Name the 4 entity states and every transition between them.",
+      "You load an entity, change a field, never call save(). Is it persisted? Why?",
+      "What is the persistence context? What is its scope by default?",
+      "Return a JPA entity from a @RestController → LazyInitializationException. Trace the full sequence.",
+      "Why is FetchType.EAGER the wrong fix for that? Give the right ones.",
+      "Explain N+1. Show a query that causes it and three fixes (JOIN FETCH, @EntityGraph, batch size).",
+      "Difference between getReference() and findById().",
+      "save() vs saveAndFlush() vs persist() vs merge().",
+      "Why is L1 cache not a cache you can rely on for performance?",
+      "Pagination + JOIN FETCH on a collection → why does Hibernate warn and load everything into memory?",
+      "What is dirty checking and when does it run?",
+      "Derived query methods vs JPQL vs native — when do you reach for each?"
+    ]
   },
   {
-    "id": "P1-17",
-    "priority": "P1",
-    "title": "Distributed tracing",
-    "section": "Java and Spring Boot",
-    "duration": "15m",
-    "resumeLinked": true,
-    "videos": [
+    "id": "SPRING-05",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "REST API design — status codes, idempotency, versioning, pagination",
+    "why": "Raised from P1: \"REST API design\" appears as its own round topic in SDE-2 write-ups, and it is the easiest place to sound senior or junior.",
+    "resources": [
       {
-        "id": "P1-17-JT-M-7",
-        "source": "JT-M",
-        "channel": "Java Techie",
-        "playlist": "Microservice",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
-        "position": 7,
-        "title": "Microservice | Distributed log tracing using Spring Cloud Sleuth & Zipkin | PART-7",
-        "minutes": 15,
-        "videoUrl": "https://www.youtube.com/results?search_query=Microservice%20%7C%20Distributed%20log%20tracing%20using%20Spring%20Cloud%20Sleuth%20%26%20Zipkin%20%7C%20PART-7%20Java%20Techie"
+        "id": "SPRING-05-r1",
+        "kind": "video",
+        "title": "Spring boot ResponseEntity and Response Codes | 1xx, 2xx, 3xx, 4xx and 5xx Return Codes",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 21,
+        "minutes": 43
+      },
+      {
+        "id": "SPRING-05-r2",
+        "kind": "video",
+        "title": "Controller Annotations",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 5,
+        "minutes": 0
       }
     ],
+    "minutes": 43,
+    "duration": "≈43m",
     "questions": [
-      "Trace ID vs span ID — what does each identify?",
-      "How does the trace ID survive a hop into an async thread or a Kafka message?",
-      "What is context propagation and where does it typically break?",
-      "How do you correlate a tenant with a trace in a multi-tenant system?",
-      "What is sampling and why can't you trace 100% in production?"
-    ],
-    "minutes": 15
+      "401 vs 403. 400 vs 422. 409 — when?",
+      "PUT vs PATCH vs POST — which are idempotent? Is POST ever?",
+      "What does idempotency mean for an API, and how do you implement an idempotency key?",
+      "Async job accepted but not finished — what status code, what response body?",
+      "How do you version a REST API? Trade-offs of URL vs header versioning.",
+      "When should a POST return 201 vs 200?",
+      "Design pagination for a large collection. Offset vs cursor — which and why?",
+      "@Controller vs @RestController — what does the difference actually change at runtime?",
+      "@RequestParam vs @PathVariable vs @RequestBody — and when is each the wrong choice?",
+      "How do you validate a request body, and what does the failure response look like end to end?",
+      "Design the idempotency-key flow for a POST that creates a payment. Where do you store the key, and for how long?",
+      "A client retries a timed-out POST. Walk through what your server does — twice."
+    ]
   },
   {
-    "id": "P1-18",
+    "id": "SPRING-06",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
     "priority": "P1",
-    "title": "OAuth 2.0",
-    "section": "Java and Spring Boot",
-    "duration": "1h 28m",
-    "resumeLinked": true,
-    "videos": [
+    "title": "AOP & the proxy mechanism",
+    "why": "The mechanism under @Transactional, @Async and @Cacheable — reach for it whenever a self-invocation follow-up lands.",
+    "resources": [
       {
-        "id": "P1-18-CC-SB-40",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-06-r1",
+        "kind": "video",
+        "title": "Spring boot AOP (Aspect Oriented Programming)",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 12,
+        "minutes": 69
+      }
+    ],
+    "minutes": 69,
+    "duration": "1h 9m",
+    "questions": [
+      "JDK dynamic proxy vs CGLIB — when does Spring pick which?",
+      "Why can't CGLIB proxy a final class or final method?",
+      "Explain the 5 advice types and their execution order.",
+      "Difference between @Around and @Before + @After combined.",
+      "Two aspects on the same method — how do you control ordering?",
+      "What is a pointcut expression? Write one matching all methods in a package returning List.",
+      "How does AOP relate to @Transactional, @Async, and @Cacheable? (Same mechanism — say this.)",
+      "Performance cost of AOP. When is it the wrong tool?",
+      "What is a BeanPostProcessor, and how does it relate to proxy creation?"
+    ]
+  },
+  {
+    "id": "SPRING-07",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P1",
+    "title": "JPA relationships, fetching & cascades",
+    "why": "Raised from P2: mapping questions are routine, and they are where N+1 actually originates.",
+    "resources": [
+      {
+        "id": "SPRING-07-r1",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-6) | OneToOne Unidirectional and Bidirectional Mapping",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 28,
+        "minutes": 66
+      },
+      {
+        "id": "SPRING-07-r2",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-7) | OneToMany, ManyToOne & ManyToMany Unidirectional & Bidirectional Mapping",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 29,
+        "minutes": 59
+      }
+    ],
+    "minutes": 125,
+    "duration": "2h 5m",
+    "questions": [
+      "Who owns a bidirectional relationship? What does mappedBy do?",
+      "Why does @OneToMany without mappedBy create a join table?",
+      "CascadeType.ALL — when is it dangerous?",
+      "What is orphan removal and how does it differ from CascadeType.REMOVE?",
+      "Why avoid @ManyToMany in real systems?"
+    ]
+  },
+  {
+    "id": "SPRING-08",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P1",
+    "title": "Exception handling — @ControllerAdvice & error contracts",
+    "why": "",
+    "resources": [
+      {
+        "id": "SPRING-08-r1",
+        "kind": "video",
+        "title": "Spring boot - Exception Handling | @ControllerAdvice | @ResponseStatus | @ExceptionHandler",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 22,
+        "minutes": 56
+      }
+    ],
+    "minutes": 56,
+    "duration": "56m",
+    "questions": [
+      "@ControllerAdvice vs @ExceptionHandler vs @ResponseStatus — scope of each.",
+      "Two handlers could match the same exception. Which wins?",
+      "Checked vs unchecked — which do you throw from a service layer and why?",
+      "How do you return a consistent error response shape across all endpoints?",
+      "Why should you never leak a stack trace in an API response?",
+      "How do you handle validation errors (MethodArgumentNotValidException) cleanly?",
+      "Does @ControllerAdvice catch exceptions thrown from a filter? (No — say why.)"
+    ]
+  },
+  {
+    "id": "SPRING-09",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P1",
+    "title": "Spring Security architecture, JWT & stateless auth",
+    "why": "Merged: the filter chain and JWT are one story in an interview, and current guides list securing endpoints with OAuth2/JWT as a core expectation.",
+    "resources": [
+      {
+        "id": "SPRING-09-r1",
+        "kind": "video",
+        "title": "Spring boot: Security (Part-1) | Architecture and SetUp",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 34,
+        "minutes": 18
+      },
+      {
+        "id": "SPRING-09-r2",
+        "kind": "video",
+        "title": "Spring boot: Security (Part-2) | Multiple User Creation & Storing Username & Password | inMemory, DB",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 35,
+        "minutes": 47
+      },
+      {
+        "id": "SPRING-09-r3",
+        "kind": "video",
+        "title": "Spring boot: Security (Part-4) | Basic Authentication & Authorization | Stateless Authentication",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 37,
+        "minutes": 20
+      },
+      {
+        "id": "SPRING-09-r4",
+        "kind": "video",
+        "title": "JWT Explained | JWT vs SessionID | JSON Web Token | Security Challenges with JWT & its Handling",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 38,
+        "minutes": 49
+      }
+    ],
+    "minutes": 134,
+    "duration": "2h 14m",
+    "questions": [
+      "Walk the filter chain top to bottom.",
+      "What is SecurityContextHolder and where is it stored by default?",
+      "Does the security context propagate to a child thread?",
+      "How do you add a custom filter at the right position?",
+      "Why BCrypt over SHA-256 for passwords?",
+      "Three parts of a JWT. What's in each?",
+      "Is a JWT encrypted? (No — signed. Correct anyone who says encrypted.)",
+      "How do you invalidate a JWT before expiry? (The hard one. Blocklist, short TTL + refresh, token versioning.)",
+      "JWT vs session ID — what do you trade away?",
+      "Where do you store a JWT client-side? localStorage vs httpOnly cookie — which attack does each expose?",
+      "HS256 vs RS256 — when is asymmetric required?",
+      "What is the alg: none attack?",
+      "How do you rotate signing keys without logging everyone out?"
+    ]
+  },
+  {
+    "id": "SPRING-10",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P1",
+    "title": "OAuth 2.0 & service-to-service tokens",
+    "why": "Your Snowflake B2C auth and adaptive S2S tokens live here.",
+    "resources": [
+      {
+        "id": "SPRING-10-r1",
+        "kind": "video",
+        "title": "OAuth 2.0: Explained with API Request and Response Sample | High Level System Design",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 40,
-        "title": "OAuth 2.0: Explained with API Request and Response Sample | High Level System Design",
-        "minutes": 35,
-        "videoUrl": "https://www.youtube.com/results?search_query=OAuth%202.0%3A%20Explained%20with%20API%20Request%20and%20Response%20Sample%20%7C%20High%20Level%20System%20Design%20Concept%20%26%26%20Coding"
+        "minutes": 35
       },
       {
-        "id": "P1-18-CC-SB-41",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-10-r2",
+        "kind": "video",
+        "title": "Spring boot: Security (Part-8) | OAUTH2 Authentication Implementation",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 41,
-        "title": "Spring boot: Security (Part-8) | OAUTH2 Authentication Implementation",
-        "minutes": 52,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Security%20(Part-8)%20%7C%20OAUTH2%20Authentication%20Implementation%20Concept%20%26%26%20Coding"
+        "minutes": 52
       }
     ],
+    "minutes": 87,
+    "duration": "1h 27m",
     "questions": [
       "Name the four roles in OAuth 2.0.",
       "Authorization Code vs Client Credentials vs Implicit vs Password grant. Which is deprecated and why?",
@@ -835,781 +1215,969 @@ export const CORE_STACK_TOPICS = [
       "Where do you store the client secret? (His answer: Azure Key Vault. Expect a follow-up on rotation.)",
       "OAuth vs OIDC — what does OIDC add?",
       "How do you revoke a token before it expires?"
-    ],
-    "minutes": 87
+    ]
   },
   {
-    "id": "P1-19",
-    "priority": "P1",
-    "title": "JWT + stateless auth",
-    "section": "Java and Spring Boot",
-    "duration": "1h 10m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "SPRING-11",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P2",
+    "title": "Filters vs interceptors — and where tenant resolution goes",
+    "why": "",
+    "resources": [
       {
-        "id": "P1-19-CC-SB-37",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-11-r1",
+        "kind": "video",
+        "title": "Spring boot: Custom Interceptors | How to Intercept Incoming HTTP Request and Custom Annotations",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 37,
-        "title": "Spring boot: Security (Part-4) | Basic Authentication & Authorization | Stateless Authentication",
-        "minutes": 20,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Security%20(Part-4)%20%7C%20Basic%20Authentication%20%26%20Authorization%20%7C%20Stateless%20Authentication%20Concept%20%26%26%20Coding"
+        "position": 18,
+        "minutes": 30
       },
       {
-        "id": "P1-19-CC-SB-38",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-11-r2",
+        "kind": "video",
+        "title": "Spring boot: Filters vs Interceptors | Filters and Interceptors Advantage and UseCases for both",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 38,
-        "title": "JWT Explained | JWT vs SessionID | JSON Web Token | Security Challenges with JWT & its Handling",
-        "minutes": 49,
-        "videoUrl": "https://www.youtube.com/results?search_query=JWT%20Explained%20%7C%20JWT%20vs%20SessionID%20%7C%20JSON%20Web%20Token%20%7C%20Security%20Challenges%20with%20JWT%20%26%20its%20Handling%20Concept%20%26%26%20Coding"
+        "position": 19,
+        "minutes": 24
       }
     ],
+    "minutes": 54,
+    "duration": "54m",
     "questions": [
-      "Three parts of a JWT. What's in each?",
-      "Is a JWT encrypted? (No — signed. Correct anyone who says encrypted.)",
-      "How do you invalidate a JWT before expiry? (The hard one. Blocklist, short TTL + refresh, token versioning.)",
-      "JWT vs session ID — what do you trade away?",
-      "Where do you store a JWT client-side? localStorage vs httpOnly cookie — which attack does each expose?",
-      "HS256 vs RS256 — when is asymmetric required?",
-      "What is the alg: none attack?",
-      "How do you rotate signing keys without logging everyone out?"
-    ],
-    "minutes": 69
+      "Where does each sit in the request pipeline?",
+      "Which one can see the handler method?",
+      "Which runs first?",
+      "Where do you put tenant resolution in a multi-tenant app, and why?"
+    ]
   },
   {
-    "id": "P1-20",
-    "priority": "P1",
-    "title": "Exception handling / @ControllerAdvice",
-    "section": "Java and Spring Boot",
-    "duration": "56m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P1-20-CC-SB-22",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 22,
-        "title": "Spring boot - Exception Handling | @ControllerAdvice | @ResponseStatus | @ExceptionHandler",
-        "minutes": 56,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20-%20Exception%20Handling%20%7C%20%40ControllerAdvice%20%7C%20%40ResponseStatus%20%7C%20%40ExceptionHandler%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "@ControllerAdvice vs @ExceptionHandler vs @ResponseStatus — scope of each.",
-      "Two handlers could match the same exception. Which wins?",
-      "Checked vs unchecked — which do you throw from a service layer and why?",
-      "How do you return a consistent error response shape across all endpoints?",
-      "Why should you never leak a stack trace in an API response?",
-      "How do you handle validation errors (MethodArgumentNotValidException) cleanly?",
-      "Does @ControllerAdvice catch exceptions thrown from a filter? (No — say why.)"
-    ],
-    "minutes": 56
-  },
-  {
-    "id": "P1-21",
-    "priority": "P1",
-    "title": "REST + ResponseEntity + status codes",
-    "section": "Java and Spring Boot",
-    "duration": "43m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P1-21-CC-SB-21",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 21,
-        "title": "Spring boot ResponseEntity and Response Codes | 1xx, 2xx, 3xx, 4xx and 5xx Return Codes",
-        "minutes": 43,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%20ResponseEntity%20and%20Response%20Codes%20%7C%201xx%2C%202xx%2C%203xx%2C%204xx%20and%205xx%20Return%20Codes%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "401 vs 403. 400 vs 422. 409 — when?",
-      "PUT vs PATCH vs POST — which are idempotent? Is POST ever?",
-      "What does idempotency mean for an API, and how do you implement an idempotency key?",
-      "Async job accepted but not finished — what status code, what response body?",
-      "How do you version a REST API? Trade-offs of URL vs header versioning.",
-      "When should a POST return 201 vs 200?",
-      "Design pagination for a large collection. Offset vs cursor — which and why?"
-    ],
-    "minutes": 43
-  },
-  {
-    "id": "P1-22",
-    "priority": "P1",
-    "title": "JVM memory + garbage collection",
-    "section": "Java and Spring Boot",
-    "duration": "49m",
-    "resumeLinked": true,
-    "videos": [
-      {
-        "id": "P1-22-CC-J-10",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 10,
-        "title": "Java Memory Management and Garbage Collection in Depth",
-        "minutes": 49,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%20Memory%20Management%20and%20Garbage%20Collection%20in%20Depth%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Draw the JVM memory layout. Which regions are per-thread vs shared?",
-      "Stack vs heap — what lives where, and who cleans each?",
-      "Young gen / old gen / metaspace — why the generational split?",
-      "Minor vs major vs full GC. Which pauses the app and for how long?",
-      "G1 vs Parallel vs ZGC — when would you pick each?",
-      "Your pod OOM-kills in Kubernetes but heap dumps look fine. Where did the memory go? (Metaspace, direct buffers, thread stacks, native — container limit ≠ heap limit.)",
-      "OutOfMemoryError: Java heap space vs Metaspace vs GC overhead limit exceeded — different causes.",
-      "What is a memory leak in a GC'd language? Give a real example.",
-      "How do you diagnose one in production? (Heap dump, MAT, jmap, jcmd.)",
-      "Strong vs weak vs soft vs phantom references."
-    ],
-    "minutes": 49
-  },
-  {
-    "id": "P1-23",
-    "priority": "P1",
-    "title": "Immutable classes + Singleton",
-    "section": "Java and Spring Boot",
-    "duration": "28m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P1-23-CC-J-14",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 14,
-        "title": "Java Singleton and Immutable Class Explained with Examples | Java Classes in Depth - Part4",
-        "minutes": 28,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%20Singleton%20and%20Immutable%20Class%20Explained%20with%20Examples%20%7C%20Java%20Classes%20in%20Depth%20-%20Part4%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "List every rule for making a class truly immutable. Which one do people forget? (Defensive copy of mutable fields.)",
-      "Why is immutability inherently thread-safe?",
-      "Is String immutable? What is the string pool and why does it exist?",
-      "Write a thread-safe singleton four ways. Rank them.",
-      "Why is enum singleton the best? What does it defend against that others don't?",
-      "How can reflection or serialization break a singleton? How do you prevent it?",
-      "Why is double-checked locking broken without volatile?"
-    ],
-    "minutes": 28
-  },
-  {
-    "id": "P1-24",
-    "priority": "P1",
-    "title": "Generics",
-    "section": "Java and Spring Boot",
-    "duration": "52m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P1-24-CC-J-12",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 12,
-        "title": "Java Generic Classes | Java Classes in Depth - Part2",
-        "minutes": 52,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%20Generic%20Classes%20%7C%20Java%20Classes%20in%20Depth%20-%20Part2%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "What is type erasure? Name two things it makes impossible.",
-      "List<Object> vs List<?> vs List<? extends Object> — what can you add to each?",
-      "Explain PECS. Give a real method signature using it.",
-      "Why can't you create new T[]?",
-      "Why is List<String> not a subtype of List<Object>?",
-      "Bounded type parameters — write a generic method that only accepts Comparable.",
-      "What is a bridge method?"
-    ],
-    "minutes": 52
-  },
-  {
-    "id": "P2-25",
+    "id": "SPRING-12",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
     "priority": "P2",
-    "title": "JPA second-level caching",
-    "section": "Java and Spring Boot",
-    "duration": "41m",
-    "resumeLinked": true,
-    "videos": [
+    "title": "Criteria API & Specifications — dynamic queries",
+    "why": "",
+    "resources": [
       {
-        "id": "P2-25-CC-SB-26",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
+        "id": "SPRING-12-r1",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-9) | Native Query and Criteria API",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 31,
+        "minutes": 44
+      },
+      {
+        "id": "SPRING-12-r2",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-10) | Specification API, Problem with Criteria API and its solution",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 32,
+        "minutes": 14
+      }
+    ],
+    "minutes": 58,
+    "duration": "58m",
+    "questions": [
+      "When do you need dynamic queries?",
+      "Criteria API vs Specification — what problem does Specification solve?",
+      "How do you compose filters safely without SQL injection?",
+      "Why is Criteria API considered unreadable?"
+    ]
+  },
+  {
+    "id": "SPRING-13",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P2",
+    "title": "Method security — @PreAuthorize & @PostAuthorize",
+    "why": "",
+    "resources": [
+      {
+        "id": "SPRING-13-r1",
+        "kind": "video",
+        "title": "Spring boot: Security (Part-9) | Method Security | Role based Authorization | @PreAuthorize and Post",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 42,
+        "minutes": 29
+      }
+    ],
+    "minutes": 29,
+    "duration": "29m",
+    "questions": [
+      "@PreAuthorize vs @Secured vs @RolesAllowed.",
+      "@PreAuthorize vs @PostAuthorize — when is Post necessary and what's the risk?",
+      "Why does method security also fail on self-invocation? (Same proxy mechanism — link back to P0-02.)"
+    ]
+  },
+  {
+    "id": "SPRING-14",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P2",
+    "title": "Actuator, health probes & metrics",
+    "why": "",
+    "resources": [
+      {
+        "id": "SPRING-14-r1",
+        "kind": "video",
+        "title": "Spring Boot Actuator in depth",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 43,
+        "minutes": 31
+      }
+    ],
+    "minutes": 31,
+    "duration": "31m",
+    "questions": [
+      "Liveness vs readiness probe — what does K8s do differently with each?",
+      "Which endpoints must never be public?",
+      "How do you add a custom health indicator?",
+      "How do actuator metrics reach Prometheus?"
+    ]
+  },
+  {
+    "id": "SPRING-15",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P2",
+    "title": "Web attacks — CSRF, XSS, CORS, SQL injection",
+    "why": "",
+    "resources": [
+      {
+        "id": "SPRING-15-r1",
+        "kind": "video",
+        "title": "Understand Attacks: CSRF, XSS, CORS, SQL Injection with DEMO | Spring Security",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 33,
+        "minutes": 25
+      }
+    ],
+    "minutes": 25,
+    "duration": "25m",
+    "questions": [
+      "Why can you disable CSRF for a stateless JWT API?",
+      "CORS is enforced by whom — server or browser?",
+      "How does a PreparedStatement actually prevent SQL injection?",
+      "Stored vs reflected XSS."
+    ]
+  },
+  {
+    "id": "SPRING-16",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P2",
+    "title": "JPA second-level cache",
+    "why": "",
+    "resources": [
+      {
+        "id": "SPRING-16-r1",
+        "kind": "video",
+        "title": "Spring boot: JPA (Part-4) | Second Level Caching | L2 Caching",
+        "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 26,
-        "title": "Spring boot: JPA (Part-4) | Second Level Caching | L2 Caching",
-        "minutes": 41,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-4)%20%7C%20Second%20Level%20Caching%20%7C%20L2%20Caching%20Concept%20%26%26%20Coding"
+        "minutes": 41
       }
     ],
+    "minutes": 41,
+    "duration": "41m",
     "questions": [
       "L1 vs L2 — scope and lifetime of each.",
       "When does L2 hurt?",
       "How do you invalidate L2 across multiple app instances?",
       "Query cache — why is it usually a trap?",
       "How does Redis fit as an L2 provider?"
-    ],
-    "minutes": 41
+    ]
   },
   {
-    "id": "P2-26",
-    "priority": "P2",
-    "title": "JPA relationships",
-    "section": "Java and Spring Boot",
-    "duration": "2h 05m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "DATA-01",
+    "section": "data",
+    "sectionLabel": "Databases & Caching",
+    "priority": "P0",
+    "title": "SQL & indexing — B-Tree, composite indexes, EXPLAIN, join order",
+    "why": "MISSING FROM THE OLD PLAN, and it is a standing round of its own. Write-ups put SQL beside Core Java and Spring Boot; 2026 guides stress index-vs-scan reasoning and reading a plan. You claim PostgreSQL and a GIN/B-Tree/HNSW index design — this will be probed.",
+    "resources": [
       {
-        "id": "P2-26-CC-SB-28",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 28,
-        "title": "Spring boot: JPA (Part-6) | OneToOne Unidirectional and Bidirectional Mapping",
-        "minutes": 66,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-6)%20%7C%20OneToOne%20Unidirectional%20and%20Bidirectional%20Mapping%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P2-26-CC-SB-29",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 29,
-        "title": "Spring boot: JPA (Part-7) | OneToMany, ManyToOne & ManyToMany Unidirectional & Bidirectional Mapping",
-        "minutes": 59,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-7)%20%7C%20OneToMany%2C%20ManyToOne%20%26%20ManyToMany%20Unidirectional%20%26%20Bidirectional%20Mapping%20Concept%20%26%26%20Coding"
+        "id": "DATA-01-r1",
+        "kind": "doc",
+        "title": "Use The Index, Luke! — SQL indexing and tuning for developers",
+        "source": "use-the-index-luke.com",
+        "url": "https://use-the-index-luke.com/sql/table-of-contents",
+        "minutes": 90,
+        "estimate": true,
+        "note": "Read: Anatomy of an Index, The Where Clause, Sorting & Grouping, Partial Results. Skip the rest."
       }
     ],
+    "minutes": 90,
+    "duration": "≈1h 30m",
     "questions": [
-      "Who owns a bidirectional relationship? What does mappedBy do?",
-      "Why does @OneToMany without mappedBy create a join table?",
-      "CascadeType.ALL — when is it dangerous?",
-      "What is orphan removal and how does it differ from CascadeType.REMOVE?",
-      "Why avoid @ManyToMany in real systems?"
-    ],
-    "minutes": 125
+      "How does a B-Tree index actually answer a range query? Why is lookup logarithmic and not constant?",
+      "Composite index on (a, b, c): which of these use it — WHERE b = ?, WHERE a = ? AND c = ?, ORDER BY a, b?",
+      "What is a covering index, and how would you know from a plan that you got one?",
+      "Read this plan: Seq Scan on a 50M-row table with a filter. Give three reasons the index was not used.",
+      "Why can a query get SLOWER after you add an index? Name two mechanisms.",
+      "LIKE 'abc%' vs LIKE '%abc' — which can use a B-Tree and why?",
+      "What does an index cost you on write paths? How many indexes is too many?",
+      "GIN vs B-Tree — what is GIN for, and why did your log search need it?",
+      "Pagination with OFFSET 100000 — why is it slow, and what is keyset pagination?",
+      "How do you find the slow query in production in the first place? (pg_stat_statements, auto_explain.)",
+      "Your ORM generated the query. How do you see the real SQL and its plan?",
+      "When is a full table scan the RIGHT plan?"
+    ]
   },
   {
-    "id": "P2-27",
-    "priority": "P2",
-    "title": "Criteria API + Specification API",
-    "section": "Java and Spring Boot",
-    "duration": "59m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "DATA-02",
+    "section": "data",
+    "sectionLabel": "Databases & Caching",
+    "priority": "P0",
+    "title": "Redis & caching patterns",
+    "why": "MISSING FROM THE OLD PLAN. Redis and Caching are both listed on your resume, and your LLM agent stages writes in Redis — expect the consistency question. Cache-aside, invalidation, stampede and distributed locks are standard asks.",
+    "resources": [
       {
-        "id": "P2-27-CC-SB-31",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 31,
-        "title": "Spring boot: JPA (Part-9) | Native Query and Criteria API",
-        "minutes": 44,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-9)%20%7C%20Native%20Query%20and%20Criteria%20API%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P2-27-CC-SB-32",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 32,
-        "title": "Spring boot: JPA (Part-10) | Specification API, Problem with Criteria API and its solution",
-        "minutes": 14,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20JPA%20(Part-10)%20%7C%20Specification%20API%2C%20Problem%20with%20Criteria%20API%20and%20its%20solution%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "When do you need dynamic queries?",
-      "Criteria API vs Specification — what problem does Specification solve?",
-      "How do you compose filters safely without SQL injection?",
-      "Why is Criteria API considered unreadable?"
-    ],
-    "minutes": 58
-  },
-  {
-    "id": "P2-28",
-    "priority": "P2",
-    "title": "Filters vs Interceptors",
-    "section": "Java and Spring Boot",
-    "duration": "55m",
-    "resumeLinked": true,
-    "videos": [
-      {
-        "id": "P2-28-CC-SB-18",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 18,
-        "title": "Spring boot: Custom Interceptors | How to Intercept Incoming HTTP Request and Custom Annotations",
-        "minutes": 30,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Custom%20Interceptors%20%7C%20How%20to%20Intercept%20Incoming%20HTTP%20Request%20and%20Custom%20Annotations%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P2-28-CC-SB-19",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 19,
-        "title": "Spring boot: Filters vs Interceptors | Filters and Interceptors Advantage and UseCases for both",
-        "minutes": 24,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Filters%20vs%20Interceptors%20%7C%20Filters%20and%20Interceptors%20Advantage%20and%20UseCases%20for%20both%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Where does each sit in the request pipeline?",
-      "Which one can see the handler method?",
-      "Which runs first?",
-      "Where do you put tenant resolution in a multi-tenant app, and why?"
-    ],
-    "minutes": 54
-  },
-  {
-    "id": "P2-29",
-    "priority": "P2",
-    "title": "Spring Security architecture",
-    "section": "Java and Spring Boot",
-    "duration": "1h 04m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P2-29-CC-SB-34",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 34,
-        "title": "Spring boot: Security (Part-1) | Architecture and SetUp",
-        "minutes": 18,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Security%20(Part-1)%20%7C%20Architecture%20and%20SetUp%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P2-29-CC-SB-35",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 35,
-        "title": "Spring boot: Security (Part-2) | Multiple User Creation & Storing Username & Password | inMemory, DB",
-        "minutes": 47,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Security%20(Part-2)%20%7C%20Multiple%20User%20Creation%20%26%20Storing%20Username%20%26%20Password%20%7C%20inMemory%2C%20DB%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Walk the filter chain top to bottom.",
-      "What is SecurityContextHolder and where is it stored by default?",
-      "Does the security context propagate to a child thread?",
-      "How do you add a custom filter at the right position?",
-      "Why BCrypt over SHA-256 for passwords?"
-    ],
-    "minutes": 65
-  },
-  {
-    "id": "P2-30",
-    "priority": "P2",
-    "title": "Method security / @PreAuthorize",
-    "section": "Java and Spring Boot",
-    "duration": "29m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P2-30-CC-SB-42",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 42,
-        "title": "Spring boot: Security (Part-9) | Method Security | Role based Authorization | @PreAuthorize and Post",
-        "minutes": 29,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20boot%3A%20Security%20(Part-9)%20%7C%20Method%20Security%20%7C%20Role%20based%20Authorization%20%7C%20%40PreAuthorize%20and%20Post%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "@PreAuthorize vs @Secured vs @RolesAllowed.",
-      "@PreAuthorize vs @PostAuthorize — when is Post necessary and what's the risk?",
-      "Why does method security also fail on self-invocation? (Same proxy mechanism — link back to P0-02.)"
-    ],
-    "minutes": 29
-  },
-  {
-    "id": "P2-31",
-    "priority": "P2",
-    "title": "Actuator",
-    "section": "Java and Spring Boot",
-    "duration": "31m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P2-31-CC-SB-43",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 43,
-        "title": "Spring Boot Actuator in depth",
-        "minutes": 31,
-        "videoUrl": "https://www.youtube.com/results?search_query=Spring%20Boot%20Actuator%20in%20depth%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Liveness vs readiness probe — what does K8s do differently with each?",
-      "Which endpoints must never be public?",
-      "How do you add a custom health indicator?",
-      "How do actuator metrics reach Prometheus?"
-    ],
-    "minutes": 31
-  },
-  {
-    "id": "P2-32",
-    "priority": "P2",
-    "title": "Web attacks - CSRF, XSS, CORS, SQLi",
-    "section": "Java and Spring Boot",
-    "duration": "25m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P2-32-CC-SB-33",
-        "source": "CC-SB",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 33,
-        "title": "Understand Attacks: CSRF, XSS, CORS, SQL Injection with DEMO | Spring Security",
+        "id": "DATA-02-r1",
+        "kind": "video",
+        "title": "Spring Boot | Spring Data Redis as Cache | @Cacheable | @CacheEvict | @CachePut",
+        "source": "Java Techie",
+        "url": "https://www.youtube.com/watch?v=vpe4aDu5ixI",
         "minutes": 25,
-        "videoUrl": "https://www.youtube.com/results?search_query=Understand%20Attacks%3A%20CSRF%2C%20XSS%2C%20CORS%2C%20SQL%20Injection%20with%20DEMO%20%7C%20Spring%20Security%20Concept%20%26%26%20Coding"
-      }
-    ],
-    "questions": [
-      "Why can you disable CSRF for a stateless JWT API?",
-      "CORS is enforced by whom — server or browser?",
-      "How does a PreparedStatement actually prevent SQL injection?",
-      "Stored vs reflected XSS."
-    ],
-    "minutes": 25
-  },
-  {
-    "id": "P2-33",
-    "priority": "P2",
-    "title": "ForkJoinPool",
-    "section": "Java and Spring Boot",
-    "duration": "53m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P2-33-CC-J-36",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 36,
-        "title": "Java ForkJoinPool || WorkStealingPool || FixedThreadPool || CachedThreadPool",
-        "minutes": 39,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%20ForkJoinPool%20%7C%7C%20WorkStealingPool%20%7C%7C%20FixedThreadPool%20%7C%7C%20CachedThreadPool%20Concept%20%26%26%20Coding"
+        "estimate": true,
+        "note": ""
       },
       {
-        "id": "P2-33-DT-20",
-        "source": "DT",
-        "channel": "Defog Tech",
-        "playlist": "Java Concurrency",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLhfHPmPYPPRk6yMrcbfafFGSbE2EPK_A6",
-        "position": 20,
-        "title": "Understanding how ForkJoinPool works",
-        "minutes": 13,
-        "videoUrl": "https://www.youtube.com/results?search_query=Understanding%20how%20ForkJoinPool%20works%20Defog%20Tech"
+        "id": "DATA-02-r2",
+        "kind": "doc",
+        "title": "Redis — data types & key eviction",
+        "source": "redis.io",
+        "url": "https://redis.io/docs/latest/develop/data-types/",
+        "minutes": 20,
+        "estimate": true,
+        "note": "Enough to say which structure you'd pick and why; skip the command reference."
       }
     ],
+    "minutes": 45,
+    "duration": "≈45m",
     "questions": [
-      "What is work stealing?",
-      "Why does ForkJoinPool use a deque per thread?",
-      "Why is blocking IO inside a ForkJoinPool task a bug?",
-      "Who else uses the common pool by default? (parallelStream — link to P0-06.)"
-    ],
-    "minutes": 52
+      "Cache-aside vs write-through vs write-behind — which do you run, and what does each lose on failure?",
+      "@Cacheable, @CachePut, @CacheEvict — what does each do, and what is the self-invocation trap? (Same proxy mechanism as @Transactional.)",
+      "Redis write succeeds, Postgres write fails. What is the state of the world, and how do you recover? ← your Base+Overlay design",
+      "Two nodes invalidate the same key at once. What guarantees do you actually have?",
+      "What is a cache stampede? Give two mitigations. (Distributed lock on recompute; probabilistic early expiry.)",
+      "Implement a distributed lock in Redis. Why SET key val NX PX, why a random token, and why is releasing it not a plain DEL?",
+      "Why is a Redis-based lock not safe under partition? (Say the honest thing — it is a lease, not a lock.)",
+      "Which Redis data structure for: a session, a leaderboard, a rate limiter, a job queue?",
+      "TTL strategy: how do you pick one, and what happens at the moment everything expires together?",
+      "Redis is single-threaded — why is that a feature, and what does it mean for a slow command?",
+      "How do you cap memory, and what does each eviction policy do? (allkeys-lru vs volatile-ttl vs noeviction.)",
+      "Your cache hit rate drops from 95% to 40% overnight. Walk your investigation."
+    ]
   },
   {
-    "id": "P2-34",
-    "priority": "P2",
-    "title": "Virtual threads + ThreadLocal",
-    "section": "Java and Spring Boot",
-    "duration": "23m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "DATA-03",
+    "section": "data",
+    "sectionLabel": "Databases & Caching",
+    "priority": "P1",
+    "title": "Postgres transactions, MVCC, locking & connection pooling",
+    "why": "MISSING FROM THE OLD PLAN. The old plan taught JPA isolation levels but never the database that implements them. Long transactions, lock waits and pool exhaustion are the incidents you will be asked to debug.",
+    "resources": [
       {
-        "id": "P2-34-CC-J-38",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 38,
-        "title": "Java VirtualThreads vs Normal Threads || ThreadLocal in Java",
-        "minutes": 23,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%20VirtualThreads%20vs%20Normal%20Threads%20%7C%7C%20ThreadLocal%20in%20Java%20Concept%20%26%26%20Coding"
+        "id": "DATA-03-r1",
+        "kind": "doc",
+        "title": "PostgreSQL — Chapter 13: Concurrency Control (MVCC & transaction isolation)",
+        "source": "postgresql.org",
+        "url": "https://www.postgresql.org/docs/current/mvcc.html",
+        "minutes": 45,
+        "estimate": true,
+        "note": "Sections 13.1–13.3 only."
       }
     ],
+    "minutes": 45,
+    "duration": "≈45m",
     "questions": [
-      "Platform vs virtual thread — what changes?",
-      "What is pinning and what causes it?",
-      "Why are thread pools mostly pointless with virtual threads?",
-      "Why is ThreadLocal a leak risk in a pooled thread?",
-      "How does ThreadLocal behave with virtual threads?"
-    ],
-    "minutes": 23
+      "What does MVCC actually do — how can a reader not block a writer?",
+      "PostgreSQL's default isolation level is Read Committed. What anomaly does that still allow?",
+      "Repeatable Read in Postgres vs the SQL standard — what does Postgres give you that the standard doesn't require?",
+      "SELECT FOR UPDATE — when do you need it, and what does it do to concurrent readers?",
+      "Two transactions update the same two rows in opposite order. What does Postgres do, and who wins?",
+      "What is a long-running transaction's real cost? (Bloat, vacuum starvation, held connections.)",
+      "What is autovacuum for, and what breaks when it can't keep up?",
+      "HikariCP: pool size 10, 200 concurrent requests. What happens, and what does the caller see?",
+      "How do you size a connection pool? Why is 'more connections' usually the wrong fix?",
+      "Your @Transactional method makes an HTTP call in the middle. What is wrong with that at 1,000 tenants?",
+      "Optimistic vs pessimistic locking in JPA — which did you use, and what does @Version cost you?",
+      "Deadlock in production: how do you find the two statements involved?"
+    ]
   },
   {
-    "id": "P2-35",
-    "priority": "P2",
-    "title": "Deadlock detection",
-    "section": "Java and Spring Boot",
-    "duration": "11m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "KAFKA-01",
+    "section": "kafka",
+    "sectionLabel": "Kafka & Messaging",
+    "priority": "P0",
+    "title": "Kafka fundamentals & consumer groups",
+    "why": "Raised from P1. Kafka is on your resume and drives LogLens; current guides list consumer-group and rebalance mechanics as standard for experienced Java devs.",
+    "resources": [
       {
-        "id": "P2-35-DT-25",
-        "source": "DT",
-        "channel": "Defog Tech",
-        "playlist": "Java Concurrency",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PLhfHPmPYPPRk6yMrcbfafFGSbE2EPK_A6",
-        "position": 25,
-        "title": "How detect and resolve DeadLocks in Java",
-        "minutes": 11,
-        "videoUrl": "https://www.youtube.com/results?search_query=How%20detect%20and%20resolve%20DeadLocks%20in%20Java%20Defog%20Tech"
-      }
-    ],
-    "questions": [
-      "Detect a deadlock in a live JVM — what tools?",
-      "What does a thread dump show?",
-      "Lock ordering as prevention — how do you enforce it?",
-      "Livelock vs deadlock vs starvation."
-    ],
-    "minutes": 11
-  },
-  {
-    "id": "P2-36",
-    "priority": "P2",
-    "title": "Java 17/21 features",
-    "section": "Java and Spring Boot",
-    "duration": "1h 27m",
-    "resumeLinked": false,
-    "videos": [
-      {
-        "id": "P2-36-CC-J-41",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 41,
-        "title": "Java 17: Sealed Classes and Interfaces",
-        "minutes": 11,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%2017%3A%20Sealed%20Classes%20and%20Interfaces%20Concept%20%26%26%20Coding"
+        "id": "KAFKA-01-r1",
+        "kind": "video",
+        "title": "Apache Kafka Components & Architecture Detailed Explanation in 15 min",
+        "source": "Java Techie",
+        "playlist": "Kafka for beginners",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "position": 2,
+        "minutes": 16
       },
       {
-        "id": "P2-36-CC-J-42",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 42,
-        "title": "Java 14: Switch Expressions Deep Dive",
-        "minutes": 23,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%2014%3A%20Switch%20Expressions%20Deep%20Dive%20Concept%20%26%26%20Coding"
+        "id": "KAFKA-01-r2",
+        "kind": "video",
+        "title": "Apache Kafka Producer Example using SpringBoot 3.x",
+        "source": "Java Techie",
+        "playlist": "Kafka for beginners",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "position": 7,
+        "minutes": 26
       },
       {
-        "id": "P2-36-CC-J-43",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 43,
-        "title": "Java 16: Pattern Matching for instanceof",
-        "minutes": 9,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%2016%3A%20Pattern%20Matching%20for%20instanceof%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P2-36-CC-J-44",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 44,
-        "title": "Java 21: Pattern Matching for switch",
-        "minutes": 9,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%2021%3A%20Pattern%20Matching%20for%20switch%20Concept%20%26%26%20Coding"
-      },
-      {
-        "id": "P2-36-CC-J-45",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 45,
-        "title": "Java 16: Record class",
-        "minutes": 36,
-        "videoUrl": "https://www.youtube.com/results?search_query=Java%2016%3A%20Record%20class%20Concept%20%26%26%20Coding"
+        "id": "KAFKA-01-r3",
+        "kind": "video",
+        "title": "Apache Kafka Consumer Example using SpringBoot 3 | Consumer Groups",
+        "source": "Java Techie",
+        "playlist": "Kafka for beginners",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "position": 8,
+        "minutes": 28
       }
     ],
+    "minutes": 70,
+    "duration": "1h 10m",
     "questions": [
-      "What is a record and what does it generate?",
-      "When is a record the wrong choice?",
-      "What do sealed classes enable that final doesn't?",
-      "How do sealed types + pattern matching give exhaustiveness?",
-      "Which of these have you actually used on Java 17 at work?"
-    ],
-    "minutes": 88
+      "Topic, partition, offset, consumer group — define each and how they interact.",
+      "3 partitions, 5 consumers in one group. What happens to consumer 4 and 5?",
+      "How does Kafka decide which partition a message goes to?",
+      "What triggers a consumer group rebalance? What's the cost?",
+      "What is ISR? What does acks=all actually wait for?",
+      "Where does Kafka store consumer offsets?",
+      "How does Kafka achieve high throughput? (Sequential IO, zero-copy, batching.)",
+      "Kafka vs RabbitMQ — when would you pick each?",
+      "What triggers a rebalance, and what does StickyAssignor change about it?",
+      "Your consumer takes 40s per message and max.poll.interval.ms is 300000 with max.poll.records 500. What goes wrong?",
+      "Which metrics tell you a consumer is falling behind vs failing to commit? (records-lag-max vs commit-rate.)"
+    ]
   },
   {
-    "id": "P2-37",
-    "priority": "P2",
-    "title": "Optional",
-    "section": "Java and Spring Boot",
-    "duration": "1h 14m",
-    "resumeLinked": false,
-    "videos": [
+    "id": "KAFKA-02",
+    "section": "kafka",
+    "sectionLabel": "Kafka & Messaging",
+    "priority": "P0",
+    "title": "Ordering, idempotency & exactly-once effects",
+    "why": "Your headline resume claim: at-least-once delivery turned into exactly-once effects. If one Kafka topic is P0, it is this one.",
+    "resources": [
       {
-        "id": "P2-37-CC-J-47",
-        "source": "CC-J",
-        "channel": "Concept && Coding - by Shrayansh",
-        "playlist": "JAVA from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 47,
-        "title": "Master Java Optional from Java 8 to 11 | All Methods with Real Examples",
-        "minutes": 74,
-        "videoUrl": "https://www.youtube.com/results?search_query=Master%20Java%20Optional%20from%20Java%208%20to%2011%20%7C%20All%20Methods%20with%20Real%20Examples%20Concept%20%26%26%20Coding"
+        "id": "KAFKA-02-r1",
+        "kind": "video",
+        "title": "Does Kafka Guarantee Message Ordering? | Microservices Fix Inside!",
+        "source": "Java Techie",
+        "playlist": "Kafka for beginners",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "position": 15,
+        "minutes": 28
+      },
+      {
+        "id": "KAFKA-02-r2",
+        "kind": "video",
+        "title": "Why Kafka Processes the Same Message Twice? | Kafka Idempotency Real-Time Example",
+        "source": "Java Techie",
+        "playlist": "Kafka for beginners",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "position": 16,
+        "minutes": 24
       }
     ],
+    "minutes": 52,
+    "duration": "52m",
     "questions": [
-      "What was Optional designed for? (Return types — not fields, not params.)",
-      "Why is Optional as an entity field a bad idea?",
-      "orElse vs orElseGet — which eagerly evaluates?",
-      "Why is Optional.get() a code smell?",
-      "Is Optional serializable?"
-    ],
-    "minutes": 74
+      "Consumer crashes after processing but before committing the offset. What happens on restart?",
+      "At-least-once vs at-most-once vs exactly-once. Which is Kafka's default?",
+      "How did LogLens turn at-least-once delivery into exactly-once effects? (Fingerprint-keyed idempotent upserts + commit-after-durable-write. He must say this fluently.)",
+      "What ordering does Kafka actually guarantee — and at what scope?",
+      "You need global ordering across a topic. What are you forced to give up?",
+      "Auto-commit vs manual commit. Why is auto-commit dangerous?",
+      "What is the idempotent producer, and what does it protect against?",
+      "Kafka transactions — what do they cover and what do they not?",
+      "enable.idempotence=true is set. Can a downstream sink still see duplicates? Why?",
+      "Where exactly do you commit the offset relative to the durable write, and what does each ordering cost you?"
+    ]
   },
   {
-    "id": "P2-38",
-    "priority": "P2",
-    "title": "Kubernetes basics",
-    "section": "Java and Spring Boot",
-    "duration": "27m",
-    "resumeLinked": true,
-    "videos": [
+    "id": "KAFKA-03",
+    "section": "kafka",
+    "sectionLabel": "Kafka & Messaging",
+    "priority": "P1",
+    "title": "Error handling, retries & dead-letter topics",
+    "why": "",
+    "resources": [
       {
-        "id": "P2-38-JT-K8-1",
-        "source": "JT-K8",
-        "channel": "Java Techie",
+        "id": "KAFKA-03-r1",
+        "kind": "video",
+        "title": "Kafka Error Handling with Spring Boot | Retry Strategies & Dead Letter Topics",
+        "source": "Java Techie",
+        "playlist": "Kafka for beginners",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxwpWGoNokohsSW2CysI6lDc",
+        "position": 13,
+        "minutes": 29
+      }
+    ],
+    "minutes": 29,
+    "duration": "29m",
+    "questions": [
+      "A poison-pill message fails forever. What happens to the partition without a DLT?",
+      "Blocking vs non-blocking retry — what does blocking retry do to the rest of the partition?",
+      "How do you design a DLT? What metadata goes on the message?",
+      "How do you replay from a DLT safely?",
+      "Retryable vs non-retryable exceptions — how do you classify them?"
+    ]
+  },
+  {
+    "id": "PLAT-01",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
+    "priority": "P1",
+    "title": "Distributed data — saga, outbox, idempotency & eventual consistency",
+    "why": "MISSING FROM THE OLD PLAN. Saga/compensation/idempotency is called out as an SDE-2-level expectation, and it is the theory behind what you already built in LogLens.",
+    "resources": [
+      {
+        "id": "PLAT-01-r1",
+        "kind": "doc",
+        "title": "Pattern: Saga",
+        "source": "microservices.io",
+        "url": "https://microservices.io/patterns/data/saga.html",
+        "minutes": 40,
+        "estimate": true,
+        "note": "Also read Database per service and Transactional outbox from the same pattern language."
+      }
+    ],
+    "minutes": 40,
+    "duration": "≈40m",
+    "questions": [
+      "Why can't you just use a distributed transaction (2PC) across services? What does it cost you?",
+      "Saga: choreography vs orchestration. Which did you pick, and when does the other win?",
+      "What is a compensating transaction, and why must it be idempotent?",
+      "Your compensation itself fails. Now what?",
+      "What is the dual-write problem, and how does the transactional outbox fix it?",
+      "Design an idempotency key for an at-least-once consumer. What do you key on, and where does state live? ← your fingerprint-keyed upserts",
+      "Eventual consistency: how do you explain the user-visible behaviour to a product manager?",
+      "How do you test a saga's failure paths?"
+    ]
+  },
+  {
+    "id": "PLAT-02",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
+    "priority": "P1",
+    "title": "Resiliency — circuit breaker, retry, backoff & bulkhead",
+    "why": "",
+    "resources": [
+      {
+        "id": "PLAT-02-r1",
+        "kind": "video",
+        "title": "Microservice | Resilience4J Circuit Breaker Implementation on Spring Boot",
+        "source": "Java Techie",
+        "playlist": "Microservice",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
+        "position": 10,
+        "minutes": 25
+      },
+      {
+        "id": "PLAT-02-r2",
+        "kind": "video",
+        "title": "Microservice | Resilience4J Retry Module Implementation With Spring Boot",
+        "source": "Java Techie",
+        "playlist": "Microservice",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
+        "position": 11,
+        "minutes": 13
+      }
+    ],
+    "minutes": 38,
+    "duration": "38m",
+    "questions": [
+      "Three circuit breaker states and every transition. What triggers each?",
+      "Breaker is OPEN. A request arrives. What does the caller see?",
+      "How does it decide to try again? What is HALF_OPEN?",
+      "How do you tune failure threshold and wait duration? What goes wrong at each extreme?",
+      "Retry + circuit breaker together — what's the ordering trap?",
+      "Why is naive retry dangerous during an outage? (Retry storm, thundering herd.)",
+      "What is exponential backoff with jitter and why the jitter?",
+      "Bulkhead vs circuit breaker — what does each protect?"
+    ]
+  },
+  {
+    "id": "PLAT-03",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
+    "priority": "P1",
+    "title": "Service discovery & API gateway",
+    "why": "Backs your zero-downtime dual-APIM migration.",
+    "resources": [
+      {
+        "id": "PLAT-03-r1",
+        "kind": "video",
+        "title": "Microservice | Spring Cloud Eureka + API Gateway + Spring Cloud Hystrix | PART-1",
+        "source": "Java Techie",
+        "playlist": "Microservice",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
+        "position": 1,
+        "minutes": 40
+      },
+      {
+        "id": "PLAT-03-r2",
+        "kind": "video",
+        "title": "Microservice | Spring Cloud Eureka + Gateway + Hystrix | PART-2",
+        "source": "Java Techie",
+        "playlist": "Microservice",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
+        "position": 2,
+        "minutes": 18
+      }
+    ],
+    "minutes": 58,
+    "duration": "58m",
+    "questions": [
+      "Client-side vs server-side discovery. Which is Eureka?",
+      "What happens to in-flight requests when a service instance dies?",
+      "What is Eureka self-preservation mode and why does it exist?",
+      "What belongs in a gateway vs in the service itself?",
+      "How did you verify zero downtime in your dual-gateway migration? What was your rollback trigger?",
+      "How does the gateway propagate identity to downstream services?",
+      "Isn't the gateway a single point of failure? How do you address that?"
+    ]
+  },
+  {
+    "id": "PLAT-04",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
+    "priority": "P1",
+    "title": "Docker — images, layers & containerising a Spring Boot service",
+    "why": "MISSING FROM THE OLD PLAN, which jumped straight to Kubernetes. Docker is named directly in an SDE-2 round write-up, and it is on your resume.",
+    "resources": [
+      {
+        "id": "PLAT-04-r1",
+        "kind": "video",
+        "title": "Docker — Dockerizing your Spring Boot Application",
+        "source": "Java Techie",
+        "url": "https://www.youtube.com/watch?v=e3YERpG2rMs",
+        "minutes": 20,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "PLAT-04-r2",
+        "kind": "doc",
+        "title": "Java Techie — Docker playlist (for anything the above leaves open)",
+        "source": "youtube.com",
+        "url": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxzMiFDnwxUDxmuZQU3igcBb",
+        "minutes": 0,
+        "estimate": false,
+        "note": ""
+      }
+    ],
+    "minutes": 20,
+    "duration": "≈20m",
+    "questions": [
+      "Container vs VM — what is actually shared, and what isolates them? (Namespaces, cgroups.)",
+      "What is a layer? Why does the ORDER of Dockerfile instructions change your build time?",
+      "Why is a multi-stage build the norm for a Spring Boot jar, and what does it save?",
+      "COPY vs ADD; CMD vs ENTRYPOINT — the difference and when it bites.",
+      "How do you keep an image small, and why does that matter beyond disk?",
+      "Your JVM inside a container ignores the memory limit and gets OOM-killed. What's the fix? (Container-aware flags / MaxRAMPercentage.)",
+      "Where do logs and config belong for a containerised service, and why not in the image?",
+      "How would you debug a container that exits immediately on start?"
+    ]
+  },
+  {
+    "id": "PLAT-05",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
+    "priority": "P2",
+    "title": "Kubernetes basics — pods, deployments, services",
+    "why": "",
+    "resources": [
+      {
+        "id": "PLAT-05-r1",
+        "kind": "video",
+        "title": "Kubernetes Tutorial | Basic Introduction and Getting Started part-1",
+        "source": "Java Techie",
         "playlist": "Kubernetes",
         "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxybsyOxK7WFtteH42ayn5i9",
         "position": 1,
-        "title": "Kubernetes Tutorial | Basic Introduction and Getting Started part-1",
-        "minutes": 6,
-        "videoUrl": "https://www.youtube.com/results?search_query=Kubernetes%20Tutorial%20%7C%20Basic%20Introduction%20and%20Getting%20Started%20part-1%20Java%20Techie"
+        "minutes": 6
       },
       {
-        "id": "P2-38-JT-K8-2",
-        "source": "JT-K8",
-        "channel": "Java Techie",
+        "id": "PLAT-05-r2",
+        "kind": "video",
+        "title": "Kubernetes Tutorial | K8s Components Explained in 10 mins | Part-2",
+        "source": "Java Techie",
         "playlist": "Kubernetes",
         "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxybsyOxK7WFtteH42ayn5i9",
         "position": 2,
-        "title": "Kubernetes Tutorial | K8s Components Explained in 10 mins | Part-2",
-        "minutes": 10,
-        "videoUrl": "https://www.youtube.com/results?search_query=Kubernetes%20Tutorial%20%7C%20K8s%20Components%20Explained%20in%2010%20mins%20%7C%20Part-2%20Java%20Techie"
+        "minutes": 10
       },
       {
-        "id": "P2-38-JT-K8-3",
-        "source": "JT-K8",
-        "channel": "Java Techie",
+        "id": "PLAT-05-r3",
+        "kind": "video",
+        "title": "Kubernetes Tutorial | Kubernetes Basics & Architecture Explained in 10 mins | Part-3",
+        "source": "Java Techie",
         "playlist": "Kubernetes",
         "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxybsyOxK7WFtteH42ayn5i9",
         "position": 3,
-        "title": "Kubernetes Tutorial | Kubernetes Basics & Architecture Explained in 10 mins | Part-3",
-        "minutes": 11,
-        "videoUrl": "https://www.youtube.com/results?search_query=Kubernetes%20Tutorial%20%7C%20Kubernetes%20Basics%20%26%20Architecture%20Explained%20in%2010%20mins%20%7C%20Part-3%20Java%20Techie"
+        "minutes": 11
       }
     ],
+    "minutes": 27,
+    "duration": "27m",
     "questions": [
       "Pod vs Deployment vs Service vs ReplicaSet.",
       "What does the control plane do?",
       "Which Service type for external traffic?",
       "What happens when a pod fails a liveness probe?"
-    ],
-    "minutes": 27
+    ]
   },
   {
-    "id": "P2-39",
+    "id": "PLAT-06",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
     "priority": "P2",
-    "title": "K8s deployment + ConfigMap/Secrets",
-    "section": "Java and Spring Boot",
-    "duration": "50m",
-    "resumeLinked": true,
-    "videos": [
+    "title": "K8s deployment, ConfigMaps/Secrets, probes & resource limits",
+    "why": "",
+    "resources": [
       {
-        "id": "P2-39-JT-K8-6",
-        "source": "JT-K8",
-        "channel": "Java Techie",
+        "id": "PLAT-06-r1",
+        "kind": "video",
+        "title": "Kubernetes Tutorial | Run & Deploy Spring Boot Application in K8s Cluster using yaml configuration",
+        "source": "Java Techie",
         "playlist": "Kubernetes",
         "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxybsyOxK7WFtteH42ayn5i9",
         "position": 6,
-        "title": "Kubernetes Tutorial | Run & Deploy Spring Boot Application in K8s Cluster using yaml configuration",
-        "minutes": 21,
-        "videoUrl": "https://www.youtube.com/results?search_query=Kubernetes%20Tutorial%20%7C%20Run%20%26%20Deploy%20Spring%20Boot%20Application%20in%20K8s%20Cluster%20using%20yaml%20configuration%20Java%20Techie"
+        "minutes": 21
       },
       {
-        "id": "P2-39-JT-K8-8",
-        "source": "JT-K8",
-        "channel": "Java Techie",
+        "id": "PLAT-06-r2",
+        "kind": "video",
+        "title": "Kubernetes Tutorial | ConfigMap & Secrets Implementation in Spring Boot CRUD Example",
+        "source": "Java Techie",
         "playlist": "Kubernetes",
         "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxybsyOxK7WFtteH42ayn5i9",
         "position": 8,
-        "title": "Kubernetes Tutorial | ConfigMap & Secrets Implementation in Spring Boot CRUD Example",
-        "minutes": 28,
-        "videoUrl": "https://www.youtube.com/results?search_query=Kubernetes%20Tutorial%20%7C%20ConfigMap%20%26%20Secrets%20Implementation%20in%20Spring%20Boot%20CRUD%20Example%20Java%20Techie"
+        "minutes": 28
       }
     ],
+    "minutes": 49,
+    "duration": "49m",
     "questions": [
       "Resource requests vs limits — what happens when each is exceeded?",
       "Why does a container OOM-kill even when JVM heap looks healthy? (Link to P1-22.)",
       "ConfigMap vs Secret — is a Secret encrypted by default?",
       "Rolling update — how does K8s guarantee zero downtime?",
       "How do config changes reach a running pod?"
+    ]
+  },
+  {
+    "id": "PLAT-07",
+    "section": "platform",
+    "sectionLabel": "Microservices & Platform",
+    "priority": "P2",
+    "title": "Distributed tracing & correlation",
+    "why": "",
+    "resources": [
+      {
+        "id": "PLAT-07-r1",
+        "kind": "video",
+        "title": "Microservice | Distributed log tracing using Spring Cloud Sleuth & Zipkin | PART-7",
+        "source": "Java Techie",
+        "playlist": "Microservice",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxxWhFkucZBoMxeYE6qTgEF8",
+        "position": 7,
+        "minutes": 15
+      }
     ],
-    "minutes": 49
+    "minutes": 15,
+    "duration": "15m",
+    "questions": [
+      "Trace ID vs span ID — what does each identify?",
+      "How does the trace ID survive a hop into an async thread or a Kafka message?",
+      "What is context propagation and where does it typically break?",
+      "How do you correlate a tenant with a trace in a multi-tenant system?",
+      "What is sampling and why can't you trace 100% in production?"
+    ]
+  },
+  {
+    "id": "TEST-01",
+    "section": "testing",
+    "sectionLabel": "Testing & Delivery",
+    "priority": "P1",
+    "title": "JUnit 5 & Mockito",
+    "why": "MISSING FROM THE OLD PLAN despite JUnit and Mockito being on your resume and you claiming 90%+ coverage. @Mock vs @InjectMocks vs @MockBean is a standard question, and 'how do you test this?' follows most design answers.",
+    "resources": [
+      {
+        "id": "TEST-01-r1",
+        "kind": "video",
+        "title": "Spring Boot Testing | Writing JUnit Tests using JUnit and Mockito",
+        "source": "Java Techie",
+        "url": "https://www.youtube.com/watch?v=kXhYu939_5s",
+        "minutes": 30,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 30,
+    "duration": "≈30m",
+    "questions": [
+      "@Mock vs @InjectMocks vs @Spy vs @MockBean — what does each do, and which needs a Spring context?",
+      "when/thenReturn vs doReturn/when — when are they not interchangeable?",
+      "How do you verify an interaction, and how do you assert on the argument that was passed? (ArgumentCaptor.)",
+      "How do you test a void method that throws?",
+      "You cannot mock a static or final method with plain Mockito — what are your options, and what does needing one tell you about the design?",
+      "What belongs in a unit test vs an integration test? Where do you draw the line in a Spring service?",
+      "90% coverage and a bug still shipped. What was the test suite not measuring?",
+      "How do you test time-dependent code without Thread.sleep?",
+      "How do you test a @Transactional method's rollback behaviour?"
+    ]
+  },
+  {
+    "id": "TEST-02",
+    "section": "testing",
+    "sectionLabel": "Testing & Delivery",
+    "priority": "P1",
+    "title": "Testcontainers & Spring Boot test slices",
+    "why": "MISSING FROM THE OLD PLAN — and you BUILT your team's Postgres-Testcontainers regression framework gating every PR. This is a story you should be able to tell cold; instead it had no card.",
+    "resources": [
+      {
+        "id": "TEST-02-r1",
+        "kind": "video",
+        "title": "Spring Boot 3 Integration Testing With TestContainers | JUnit 5",
+        "source": "Java Techie",
+        "url": "https://www.youtube.com/watch?v=Q-0Z6KZF1xM",
+        "minutes": 30,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 30,
+    "duration": "≈30m",
+    "questions": [
+      "Why Testcontainers over H2 for a Postgres app? Name a bug H2 would hide.",
+      "What does @DataJpaTest give you, and what does it replace by default? How do you stop it swapping your datasource?",
+      "@SpringBootTest vs a slice (@WebMvcTest / @DataJpaTest) — cost, and what each actually proves.",
+      "Containers are slow to start. How do you keep a suite fast? (Reuse, singleton container, @ServiceConnection.)",
+      "How do you keep tests isolated when they share one database container?",
+      "Walk me through the regression framework you built: what gates a merge, and what happens when it goes red?",
+      "How do you test a Kafka consumer end to end?",
+      "Flaky integration test — how do you find the cause instead of retrying it?"
+    ]
+  },
+  {
+    "id": "TEST-03",
+    "section": "testing",
+    "sectionLabel": "Testing & Delivery",
+    "priority": "P2",
+    "title": "CI/CD with GitHub Actions & release safety",
+    "why": "On your resume (batch regression + quality dashboard across 7 repos). Rarely a whole round, but it comes up as 'how does your code reach production?'.",
+    "resources": [
+      {
+        "id": "TEST-03-r1",
+        "kind": "self",
+        "title": "Your own workflows",
+        "source": "Your own codebase",
+        "minutes": 0,
+        "note": "Re-read the batch regression and master quality workflows, and the Pages dashboard job. No video will teach you your own pipeline."
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "Walk your pipeline from a push to a deployed artifact. What gates exist, and which can be skipped?",
+      "How do you run the same workflow across 7 repositories without maintaining 7 copies? (Reusable workflows / composite actions.)",
+      "Where do secrets live, and how do you keep them out of logs?",
+      "A regression suite takes 40 minutes. How do you decide what runs per PR vs nightly?",
+      "How do you roll back a bad deploy, and how fast can you actually do it?",
+      "What makes a build reproducible? Where does your pipeline break that?"
+    ]
+  },
+  {
+    "id": "SELF-01",
+    "section": "resume",
+    "sectionLabel": "Your Systems — resume defence",
+    "priority": "P0",
+    "title": "Multi-tenancy, sharding & runtime datasource routing",
+    "why": "The most distinctive thing on your resume: feature-flag-controlled Snowflake routing across three modes, lazy datasource init, 1,000+ tenants. An interviewer probing your own bullets is the round you cannot bluff.",
+    "resources": [
+      {
+        "id": "SELF-01-r1",
+        "kind": "self",
+        "title": "The routing framework you built",
+        "source": "Your own codebase",
+        "minutes": 0,
+        "note": "Write down the WHY for each decision: three modes, lazy init, the tenant-mapping API, and what you would change now."
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "How does an incoming request find its tenant's shard? Walk the whole path.",
+      "The tenant-mapping API is down. What happens to in-flight requests, and what happens to new ones?",
+      "Your feature flag flips mid-request. What happens?",
+      "@ConditionalOnProperty is evaluated at startup — so how is your flag togglable at runtime at all?",
+      "Why lazy datasource initialisation? What breaks if you eagerly initialise 1,000 datasources?",
+      "How many connection pools exist in your JVM at steady state? What is the memory and connection cost?",
+      "Schema-per-tenant vs database-per-tenant vs discriminator column — which did you use and what does it cost?",
+      "How do you stop tenant A's query from ever seeing tenant B's rows? Prove it, don't assert it.",
+      "A single tenant's load degrades everyone (noisy neighbour). How would you contain it?",
+      "How did you test the sharded path? What did you not test?",
+      "The 10% batch runtime cut — where did the time actually go, and how did you measure it?"
+    ]
+  },
+  {
+    "id": "SELF-02",
+    "section": "resume",
+    "sectionLabel": "Your Systems — resume defence",
+    "priority": "P0",
+    "title": "Exactly-once effects on at-least-once delivery (LogLens)",
+    "why": "You claim it in one line on the resume. Expect the full walk-through: consumer dies after processing, before commit.",
+    "resources": [
+      {
+        "id": "SELF-02-r1",
+        "kind": "self",
+        "title": "The LogLens ingest path",
+        "source": "Your own codebase",
+        "minutes": 0,
+        "note": "Reconstruct the exact ordering: ranged blob read → parse → durable upsert → offset commit. Know what is idempotent and what is not."
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "Consumer crashes after the durable write but before the offset commit. Walk the restart.",
+      "What exactly is in the fingerprint key, and what happens if two different log lines collide on it?",
+      "Where is the upsert idempotent — the database, the application, or both? Show the constraint.",
+      "Why not Kafka transactions / exactly-once semantics? What did you trade away by not using them?",
+      "Constant-heap ingest at any file size — how? What is the actual memory ceiling and what sets it?",
+      "One window-aligned byte range fails permanently. What happens to the rest of the file?",
+      "How would you prove, after a run, that nothing was double-counted?"
+    ]
+  },
+  {
+    "id": "SELF-03",
+    "section": "resume",
+    "sectionLabel": "Your Systems — resume defence",
+    "priority": "P0",
+    "title": "Redis-staged writes & Base+Overlay persistence",
+    "why": "A distributed-consistency claim sitting in your GenAI bullet, but it is a backend question and it will be asked as one.",
+    "resources": [
+      {
+        "id": "SELF-03-r1",
+        "kind": "self",
+        "title": "The data-management layer of the inventory agent",
+        "source": "Your own codebase",
+        "minutes": 0,
+        "note": "Be able to draw the Base+Overlay model on a whiteboard, including what happens on approval, rejection and timeout."
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "Why stage in Redis at all instead of writing straight to Postgres?",
+      "Redis write succeeds, Postgres commit fails. What does the user see, and what cleans up?",
+      "What is scenario-scoped Base+Overlay, and how does a read merge the two?",
+      "The human approval never arrives. What happens to the staged write, and who decides the TTL?",
+      "The underlying data changed while the approval was pending. Now what?",
+      "Two planners stage conflicting overlays on the same rows. How is that resolved?",
+      "How would you make the approval step survive a pod restart?"
+    ]
+  },
+  {
+    "id": "SELF-04",
+    "section": "resume",
+    "sectionLabel": "Your Systems — resume defence",
+    "priority": "P1",
+    "title": "Zero-downtime dual-gateway migration",
+    "why": "",
+    "resources": [
+      {
+        "id": "SELF-04-r1",
+        "kind": "self",
+        "title": "The Azure APIM ↔ Gravitee migration",
+        "source": "Your own codebase",
+        "minutes": 0,
+        "note": "The interviewer wants your verification and rollback story, not the architecture diagram."
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "How did you VERIFY zero downtime? What signal would have told you that you were wrong?",
+      "What was the rollback trigger, and how long would a rollback have taken?",
+      "How did identity propagate across sync, async and batch flows without the services caring which gateway they were behind?",
+      "What is an adaptive S2S token, and what problem forced it?",
+      "What broke first in staging, and what did that teach you?",
+      "Isn't the gateway a single point of failure? How is that addressed?"
+    ]
+  },
+  {
+    "id": "SELF-05",
+    "section": "resume",
+    "sectionLabel": "Your Systems — resume defence",
+    "priority": "P1",
+    "title": "Sync/async fallback & the 10% timeout failure rate",
+    "why": "",
+    "resources": [
+      {
+        "id": "SELF-05-r1",
+        "kind": "self",
+        "title": "The Pack Service integration layer",
+        "source": "Your own codebase",
+        "minutes": 0,
+        "note": "This is your cleanest 'I found a failure mode and killed it' story. Know the numbers."
+      }
+    ],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "What was actually timing out, and how did you establish it was 10%?",
+      "How does the sync path decide to fall back to async? What is the timeout, and how did you choose it?",
+      "The async fallback also fails. What does the caller see?",
+      "How do you avoid doing the work twice when the sync call actually succeeded after the timeout?",
+      "Why a feature flag here — what were you protecting against?",
+      "How would you design this today with virtual threads available?"
+    ]
   }
 ];
 
 export const CORE_STACK_PRIORITIES = ["P0","P1","P2"];
 
 export const CORE_STACK_PRIORITY_CONFIG = {
-  P0: { label: "P0", blurb: "Asked in ~every loop", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
-  P1: { label: "P1", blurb: "Common, and claimed on the resume", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" },
-  P2: { label: "P2", blurb: "Depth differentiator", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
-  P3: { label: "P3", blurb: "Remedial only", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30" },
+  P0: { label: "P0", blurb: "Asked in nearly every loop, or a resume claim you can't fumble", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
+  P1: { label: "P1", blurb: "Very likely — do before any real interview", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" },
+  P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 39;
+export const CORE_STACK_TOTAL = 52;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":10,"P1":14,"P2":15};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":19,"P1":19,"P2":14};
 
-export const CORE_STACK_VIDEO_TOTAL = 72;
+export const CORE_STACK_SECTION_COUNTS = {"java":9,"concurrency":6,"spring":16,"data":3,"kafka":3,"platform":7,"testing":3,"resume":5};
+
+export const CORE_STACK_MINUTES = 2817;
