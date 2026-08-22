@@ -11,6 +11,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import OwnerRoute from "./components/OwnerRoute";
 import CoreStack from "./pages/CoreStack/CoreStack";
 import AIStack from "./pages/AIStack/AIStack";
+import TopicNotes from "./pages/Notes/TopicNotes";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
 import SignUp from "./pages/SignInUp/SignUp";
@@ -51,6 +52,12 @@ function App() {
           <Route path="/ai-stack" element={<OwnerRoute />}>
             <Route path="/ai-stack" element={<AIStack />} />
           </Route>
+          {/* One full page per topic's notes. The page itself turns away a
+              non-owner asking for an AI Stack topic. */}
+          <Route path="/notes/:source/:topicId" element={<PrivateRoute />}>
+            <Route path="/notes/:source/:topicId" element={<TopicNotes />} />
+          </Route>
+
           <Route path="/dsa-prep" element={<PrivateRoute />}>
             <Route path="/dsa-prep" element={<DSAPrep />} />
           </Route>
