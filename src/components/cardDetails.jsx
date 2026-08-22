@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { CATEGORY_CONFIG } from "../Data/JobHuntPlan";
 import { GLASS_PANEL } from "./glass";
 
@@ -172,160 +173,228 @@ export function CopyButton({ value, label = "Copy", title, className = "" }) {
   );
 }
 
-// Shared expandable body for a Core Stack topic — the videos behind it (channel,
-// playlist, watch time), the interview-question chain to attempt cold, and the
-// topic's notes. Rendered on the Core Stack page and inside the Planning page so
-// a planned topic shows the same detail in both places.
-export function CoreStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
-  const [localNote, setLocalNote] = useState(note);
-  const debounceRef = useRef(null);
-
-  useEffect(() => { setLocalNote(note); }, [note]);
-  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
-
-  const handleNoteInput = useCallback(
-    (e) => {
-      const val = e.target.value;
-      setLocalNote(val);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => onNoteChange(val), 500);
-    },
-    [onNoteChange]
-  );
-
+// Shared expandable body for a Core Stack topic — why it sits at its priority,
+// the resources behind it, the interview-question chain to attempt cold, and a
+// way into the topic's notes page. Rendered on the Core Stack board and inside
+// the Planning page so a planned topic shows the same detail in both places.
+export function CoreStackTopicDetail({ topic, note, checkedDays }) {
   if (!topic) return null;
 
   return (
     <div>
-      {/* ── Videos ── */}
-      <div className="mb-4">
-        <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span className="w-1 h-4 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
-          Videos
-          <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
-            · {topic.videos.length} · {topic.duration}
-          </span>
-        </h4>
-
-        <div className="space-y-2">
-          {topic.videos.map((v) => (
-            <div key={v.id} className={`${GLASS_PANEL} rounded-xl px-3 py-2.5`}>
-              <div className="flex items-start gap-2.5">
-                <span
-                  className="mt-0.5 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 tabular-nums"
-                  title={`Position ${v.position} in "${v.playlist}"`}
-                >
-                  #{v.position}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{v.title}</p>
-                  <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                    {v.channel} · {v.playlist} · {v.minutes}m
-                  </p>
-                </div>
-              </div>
-
-              {/* Open the playlist, then paste the copied title into its search
-                  — the playlist is the deliberate source, so nothing links out
-                  to a loose video. */}
-              <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                <CopyButton value={v.title} label="Copy title" title="Copy the video title to search inside the playlist" />
-                <a
-                  href={v.playlistUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300 transition-all"
-                  title={`Open "${v.playlist}" — this is video #${v.position}`}
-                >
-                  Playlist
-                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Interview questions ── */}
-      {topic.questions && topic.questions.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
-            Interview questions
-            <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
-              · answer cold, before watching
-            </span>
-          </h4>
-          <ol className="space-y-1.5">
-            {topic.questions.map((q, i) => (
-              <li key={i} className="flex items-start gap-2 text-[13.5px] text-gray-600 dark:text-gray-300 leading-relaxed">
-                <span className="mt-[3px] text-[12px] font-bold text-gray-400 dark:text-gray-500 tabular-nums shrink-0">{i + 1}.</span>
-                {q}
-              </li>
-            ))}
-          </ol>
+      {topic.why && (
+        <div className="mb-3 flex items-start gap-2 rounded-lg px-3 py-2 bg-slate-500/[0.07] border border-slate-500/20">
+          <span className="text-[13px] shrink-0">🎯</span>
+          <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{topic.why}</p>
         </div>
       )}
 
-      {/* ── Notes ── */}
-      <div className="rounded-xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/60 via-white to-teal-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-3.5 shadow-inner">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-emerald-400 to-teal-400" />
-            My Notes
-          </h4>
-          <div className="flex items-center gap-2">
-            {checkedDays != null && (
-              <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25">
-                ✓ {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
-              </span>
-            )}
-            <span className="text-[10px] text-gray-400 dark:text-gray-500">auto-saved</span>
-          </div>
+      <ResourceList
+        resources={topic.resources}
+        duration={topic.duration}
+        barClass="from-emerald-400 to-teal-400"
+        linkHover="hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300"
+      />
+
+      <QuestionList questions={topic.questions} barClass="from-emerald-400 to-teal-400" prompt="answer cold, before watching" />
+
+      <NotesLink
+        source="corestack"
+        topicId={topic.id}
+        note={note}
+        checkedDays={checkedDays}
+        accent={{
+          panel: "border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/60 via-white to-teal-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60",
+          bar: "from-emerald-400 to-teal-400",
+          badge: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/25",
+          button: "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-emerald-500/30",
+        }}
+      />
+    </div>
+  );
+}
+
+// One resource row. A video from a playlist gets "copy the title, open the
+// playlist" (the playlist is the chosen source, so nothing links to a loose
+// video); a video with its own URL gets a watch link; a doc gets an open link;
+// and a "self" resource gets no link at all, because it is your own codebase.
+function ResourceRow({ resource: r, linkHover }) {
+  const isPlaylistVideo = r.kind === "video" && !!r.playlistUrl;
+
+  return (
+    <div className={`${GLASS_PANEL} rounded-xl px-3 py-2.5`}>
+      <div className="flex items-start gap-2.5">
+        <span
+          className={`mt-0.5 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border tabular-nums ${
+            r.kind === "self"
+              ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25"
+              : r.kind === "doc"
+              ? "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/25"
+              : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25"
+          }`}
+          title={isPlaylistVideo ? `Position ${r.position} in "${r.playlist}"` : r.kind}
+        >
+          {isPlaylistVideo ? `#${r.position}` : r.kind === "doc" ? "DOC" : r.kind === "self" ? "YOU" : "▶"}
+        </span>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{r.title}</p>
+          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">
+            {[r.source, r.playlist, r.minutes ? `${r.estimate ? "≈" : ""}${r.minutes}m` : ""]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+          {r.note && (
+            <p className="text-[12px] text-amber-600 dark:text-amber-300/90 mt-1 leading-relaxed">↳ {r.note}</p>
+          )}
         </div>
-        <textarea
-          value={localNote}
-          onChange={handleNoteInput}
-          placeholder="Your answers, the follow-up chain, what you got wrong, what to revise..."
-          rows={6}
-          className="w-full p-3 text-[13.5px] rounded-lg border border-emerald-200 dark:border-slate-600 bg-white/80 dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 focus:border-emerald-400 resize-y min-h-[140px] leading-relaxed"
-        />
-        <div className="flex items-center justify-between mt-2 min-h-[16px]">
-          {localNote ? (
-            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
-              Notes saved
-            </p>
-          ) : <span />}
-          <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
+      </div>
+
+      {r.kind !== "self" && (
+        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+          <CopyButton value={r.title} label="Copy title" title="Copy the title to search for it" />
+          {isPlaylistVideo && (
+            <a
+              href={r.playlistUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 transition-all ${linkHover}`}
+              title={`Open "${r.playlist}" — this is video #${r.position}`}
+            >
+              Playlist
+              <ExternalIcon />
+            </a>
+          )}
+          {r.url && (
+            <a
+              href={r.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 transition-all ${linkHover}`}
+              title={r.url}
+            >
+              {r.kind === "doc" ? "Read" : "Watch"}
+              <ExternalIcon />
+            </a>
+          )}
         </div>
+      )}
+    </div>
+  );
+}
+
+function ResourceList({ resources, duration, barClass, linkHover }) {
+  if (!resources || !resources.length) return null;
+  return (
+    <div className="mb-4">
+      <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <span className={`w-1 h-4 rounded-full bg-gradient-to-b ${barClass}`} />
+        Resources
+        <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
+          · {resources.length} · {duration}
+        </span>
+      </h4>
+      <div className="space-y-2">
+        {resources.map((r) => (
+          <ResourceRow key={r.id} resource={r} linkHover={linkHover} />
+        ))}
       </div>
     </div>
   );
 }
 
+function QuestionList({ questions, barClass, prompt }) {
+  if (!questions || !questions.length) return null;
+  return (
+    <div className="mb-4">
+      <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <span className={`w-1 h-4 rounded-full bg-gradient-to-b ${barClass}`} />
+        Interview questions
+        <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">· {prompt}</span>
+      </h4>
+      <ol className="space-y-1.5">
+        {questions.map((q, i) => (
+          <li key={i} className="flex items-start gap-2 text-[13.5px] text-gray-600 dark:text-gray-300 leading-relaxed">
+            <span className="mt-[3px] text-[12px] font-bold text-gray-400 dark:text-gray-500 tabular-nums shrink-0">{i + 1}.</span>
+            {q}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+// Notes moved to their own page — markdown, screenshots, room to think. What
+// stays on the card is a preview and the way in.
+function NotesLink({ source, topicId, note, checkedDays, accent }) {
+  const text = note || "";
+  const images = (text.match(/!\[[^\]]*\]\((?!\s*\))/g) || []).length;
+  const preview = text
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/[#>*`_~-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+  return (
+    <div className={`rounded-xl border p-3.5 shadow-inner ${accent.panel}`}>
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+          <span className={`w-1 h-4 rounded-full bg-gradient-to-b ${accent.bar}`} />
+          My Notes
+        </h4>
+        {checkedDays != null && (
+          <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap border ${accent.badge}`}>
+            ✓ {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
+          </span>
+        )}
+      </div>
+
+      {preview ? (
+        <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed line-clamp-3 mb-3">
+          {preview.slice(0, 240)}
+          {preview.length > 240 ? "…" : ""}
+        </p>
+      ) : (
+        <p className="text-[13px] text-gray-400 dark:text-gray-500 mb-3">
+          Nothing written yet — the notes page takes markdown, code blocks and pasted screenshots.
+        </p>
+      )}
+
+      <div className="flex items-center gap-3">
+        <Link
+          to={`/notes/${source}/${topicId}`}
+          className={`inline-flex items-center gap-1.5 text-[12.5px] font-bold px-3 py-1.5 rounded-lg text-white shadow-lg transition-all hover:brightness-110 ${accent.button}`}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+            <path d="M11 2.5l2.5 2.5M3 13l8.5-8.5 2.5 2.5L5.5 15.5 2.5 16l.5-3z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {text ? "Open notes" : "Write notes"}
+        </Link>
+        {text && (
+          <span className="text-[11.5px] text-gray-400 dark:text-gray-500">
+            {words} word{words === 1 ? "" : "s"}
+            {images > 0 ? ` · ${images} screenshot${images === 1 ? "" : "s"}` : ""}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ExternalIcon() {
+  return (
+    <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12">
+      <path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 // Shared expandable body for an AI Stack topic — the single resource for it,
 // the depth ceiling (what is enough, and where reading further stops paying),
-// the interview questions, and the topic's notes.
-export function AIStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
-  const [localNote, setLocalNote] = useState(note);
-  const debounceRef = useRef(null);
-
-  useEffect(() => { setLocalNote(note); }, [note]);
-  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
-
-  const handleNoteInput = useCallback(
-    (e) => {
-      const val = e.target.value;
-      setLocalNote(val);
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => onNoteChange(val), 500);
-    },
-    [onNoteChange]
-  );
-
+// the interview questions, and the way into its notes page.
+export function AIStackTopicDetail({ topic, note, checkedDays }) {
   if (!topic) return null;
-
   const r = topic.resource;
 
   return (
@@ -339,7 +408,6 @@ export function AIStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
         </div>
       )}
 
-      {/* ── The one resource ── */}
       <div className="mb-4">
         <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-fuchsia-400" />
@@ -369,7 +437,7 @@ export function AIStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
                 title={r.url}
               >
                 Open
-                <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 12 12"><path d="M3.5 8.5l5-5M4.5 3.5h4v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <ExternalIcon />
               </a>
             )}
           </div>
@@ -380,7 +448,6 @@ export function AIStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
         )}
       </div>
 
-      {/* ── Depth ceiling ── */}
       {(topic.ceiling?.enough || topic.ceiling?.tooDeep) && (
         <div className="mb-4">
           <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -408,60 +475,24 @@ export function AIStackTopicDetail({ topic, note, onNoteChange, checkedDays }) {
         </div>
       )}
 
-      {/* ── Interview questions ── */}
-      {topic.questions && topic.questions.length > 0 && (
-        <div className="mb-4">
-          <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-fuchsia-400" />
-            Interview questions
-            <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
-              · answer cold, before reading
-            </span>
-          </h4>
-          <ol className="space-y-1.5">
-            {topic.questions.map((q, i) => (
-              <li key={i} className="flex items-start gap-2 text-[13.5px] text-gray-600 dark:text-gray-300 leading-relaxed">
-                <span className="mt-[3px] text-[12px] font-bold text-gray-400 dark:text-gray-500 tabular-nums shrink-0">{i + 1}.</span>
-                {q}
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
+      <QuestionList
+        questions={topic.questions}
+        barClass="from-violet-400 to-fuchsia-400"
+        prompt="answer cold, before reading"
+      />
 
-      {/* ── Notes ── */}
-      <div className="rounded-xl border border-violet-100 dark:border-violet-900/40 bg-gradient-to-br from-violet-50/60 via-white to-fuchsia-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60 p-3.5 shadow-inner">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-            <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-fuchsia-400" />
-            My Notes
-          </h4>
-          <div className="flex items-center gap-2">
-            {checkedDays != null && (
-              <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-300 font-bold whitespace-nowrap border border-violet-500/25">
-                ✓ {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
-              </span>
-            )}
-            <span className="text-[10px] text-gray-400 dark:text-gray-500">auto-saved</span>
-          </div>
-        </div>
-        <textarea
-          value={localNote}
-          onChange={handleNoteInput}
-          placeholder="Your answers, the decisions you actually made, what you got wrong..."
-          rows={6}
-          className="w-full p-3 text-[13.5px] rounded-lg border border-violet-200 dark:border-slate-600 bg-white/80 dark:bg-slate-900/60 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:border-violet-400 resize-y min-h-[140px] leading-relaxed"
-        />
-        <div className="flex items-center justify-between mt-2 min-h-[16px]">
-          {localNote ? (
-            <p className="text-[11px] text-violet-600 dark:text-violet-400 flex items-center gap-1.5">
-              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
-              Notes saved
-            </p>
-          ) : <span />}
-          <span className="text-[10px] text-gray-400 dark:text-gray-500">{localNote.length} chars</span>
-        </div>
-      </div>
+      <NotesLink
+        source="aistack"
+        topicId={topic.id}
+        note={note}
+        checkedDays={checkedDays}
+        accent={{
+          panel: "border-violet-100 dark:border-violet-900/40 bg-gradient-to-br from-violet-50/60 via-white to-fuchsia-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60",
+          bar: "from-violet-400 to-fuchsia-400",
+          badge: "bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/25",
+          button: "bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-violet-500/30",
+        }}
+      />
     </div>
   );
 }

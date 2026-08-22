@@ -740,7 +740,6 @@ function DayCard({
                   <CoreStackTopicDetail
                     topic={coreStackTopic}
                     note={note}
-                    onNoteChange={onNoteChange}
                     checkedDays={complete ? coreStackDaysSinceChecked(item.refId) : null}
                   />
                 )}
@@ -748,7 +747,6 @@ function DayCard({
                   <AIStackTopicDetail
                     topic={aiStackTopic}
                     note={note}
-                    onNoteChange={onNoteChange}
                     checkedDays={complete ? aiStackDaysSinceChecked(item.refId) : null}
                   />
                 )}
