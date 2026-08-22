@@ -87,6 +87,15 @@ export async function uploadNoteImage({ uid, source, topicId, file }) {
     return { url: await getDownloadURL(objectRef), path };
   } catch (err) {
     const code = err?.code || "";
+    if (code === "storage/quota-exceeded") {
+      // Since the Sept-2024 policy change, Cloud Storage — including the
+      // default bucket — requires the Blaze plan. A Spark project gets this
+      // error on every write, and no application change can work around it.
+      throw new NoteAssetError(
+        "Firebase is refusing uploads: this project needs the Blaze plan for Cloud Storage. Your note text is saved — only the screenshot was dropped.",
+        code
+      );
+    }
     if (code === "storage/unauthorized") {
       throw new NoteAssetError(
         "Storage rejected the upload — deploy storage.rules (firebase deploy --only storage).",
