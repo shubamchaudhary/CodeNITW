@@ -882,7 +882,7 @@ export const CORE_STACK_TOPICS = [
       }
     ],
     "minutes": 77,
-    "duration": "1h 17m+",
+    "duration": "≈1h 17m",
     "questions": [
       "Your feature flag flips mid-request. What happens? (His actual system.)",
       "@ConditionalOnProperty is evaluated at startup. So how do you build a runtime-togglable flag?",
@@ -989,7 +989,7 @@ export const CORE_STACK_TOPICS = [
       }
     ],
     "minutes": 43,
-    "duration": "43m+",
+    "duration": "≈43m",
     "questions": [
       "401 vs 403. 400 vs 422. 409 — when?",
       "PUT vs PATCH vs POST — which are idempotent? Is POST ever?",
@@ -1420,11 +1420,12 @@ export const CORE_STACK_TOPICS = [
         "source": "use-the-index-luke.com",
         "url": "https://use-the-index-luke.com/sql/table-of-contents",
         "minutes": 90,
+        "estimate": true,
         "note": "Read: Anatomy of an Index, The Where Clause, Sorting & Grouping, Partial Results. Skip the rest."
       }
     ],
     "minutes": 90,
-    "duration": "1h 30m",
+    "duration": "≈1h 30m",
     "questions": [
       "How does a B-Tree index actually answer a range query? Why is lookup logarithmic and not constant?",
       "Composite index on (a, b, c): which of these use it — WHERE b = ?, WHERE a = ? AND c = ?, ORDER BY a, b?",
@@ -1455,6 +1456,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Java Techie",
         "url": "https://www.youtube.com/watch?v=vpe4aDu5ixI",
         "minutes": 25,
+        "estimate": true,
         "note": ""
       },
       {
@@ -1464,11 +1466,12 @@ export const CORE_STACK_TOPICS = [
         "source": "redis.io",
         "url": "https://redis.io/docs/latest/develop/data-types/",
         "minutes": 20,
+        "estimate": true,
         "note": "Enough to say which structure you'd pick and why; skip the command reference."
       }
     ],
     "minutes": 45,
-    "duration": "45m",
+    "duration": "≈45m",
     "questions": [
       "Cache-aside vs write-through vs write-behind — which do you run, and what does each lose on failure?",
       "@Cacheable, @CachePut, @CacheEvict — what does each do, and what is the self-invocation trap? (Same proxy mechanism as @Transactional.)",
@@ -1499,11 +1502,12 @@ export const CORE_STACK_TOPICS = [
         "source": "postgresql.org",
         "url": "https://www.postgresql.org/docs/current/mvcc.html",
         "minutes": 45,
+        "estimate": true,
         "note": "Sections 13.1–13.3 only."
       }
     ],
     "minutes": 45,
-    "duration": "45m",
+    "duration": "≈45m",
     "questions": [
       "What does MVCC actually do — how can a reader not block a writer?",
       "PostgreSQL's default isolation level is Read Committed. What anomaly does that still allow?",
@@ -1662,11 +1666,12 @@ export const CORE_STACK_TOPICS = [
         "source": "microservices.io",
         "url": "https://microservices.io/patterns/data/saga.html",
         "minutes": 40,
+        "estimate": true,
         "note": "Also read Database per service and Transactional outbox from the same pattern language."
       }
     ],
     "minutes": 40,
-    "duration": "40m",
+    "duration": "≈40m",
     "questions": [
       "Why can't you just use a distributed transaction (2PC) across services? What does it cost you?",
       "Saga: choreography vs orchestration. Which did you pick, and when does the other win?",
@@ -1776,6 +1781,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Java Techie",
         "url": "https://www.youtube.com/watch?v=e3YERpG2rMs",
         "minutes": 20,
+        "estimate": true,
         "note": ""
       },
       {
@@ -1785,11 +1791,12 @@ export const CORE_STACK_TOPICS = [
         "source": "youtube.com",
         "url": "https://www.youtube.com/playlist?list=PLVz2XdJiJQxzMiFDnwxUDxmuZQU3igcBb",
         "minutes": 0,
+        "estimate": false,
         "note": ""
       }
     ],
     "minutes": 20,
-    "duration": "20m+",
+    "duration": "≈20m",
     "questions": [
       "Container vs VM — what is actually shared, and what isolates them? (Namespaces, cgroups.)",
       "What is a layer? Why does the ORDER of Dockerfile instructions change your build time?",
@@ -1932,11 +1939,12 @@ export const CORE_STACK_TOPICS = [
         "source": "Java Techie",
         "url": "https://www.youtube.com/watch?v=kXhYu939_5s",
         "minutes": 30,
+        "estimate": true,
         "note": ""
       }
     ],
     "minutes": 30,
-    "duration": "30m",
+    "duration": "≈30m",
     "questions": [
       "@Mock vs @InjectMocks vs @Spy vs @MockBean — what does each do, and which needs a Spring context?",
       "when/thenReturn vs doReturn/when — when are they not interchangeable?",
@@ -1964,11 +1972,12 @@ export const CORE_STACK_TOPICS = [
         "source": "Java Techie",
         "url": "https://www.youtube.com/watch?v=Q-0Z6KZF1xM",
         "minutes": 30,
+        "estimate": true,
         "note": ""
       }
     ],
     "minutes": 30,
-    "duration": "30m",
+    "duration": "≈30m",
     "questions": [
       "Why Testcontainers over H2 for a Postgres app? Name a bug H2 would hide.",
       "What does @DataJpaTest give you, and what does it replace by default? How do you stop it swapping your datasource?",

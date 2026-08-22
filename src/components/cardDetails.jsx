@@ -240,7 +240,9 @@ function ResourceRow({ resource: r, linkHover }) {
         <div className="flex-1 min-w-0">
           <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{r.title}</p>
           <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">
-            {[r.source, r.playlist, r.minutes ? `${r.minutes}m` : ""].filter(Boolean).join(" · ")}
+            {[r.source, r.playlist, r.minutes ? `${r.estimate ? "≈" : ""}${r.minutes}m` : ""]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
           {r.note && (
             <p className="text-[12px] text-amber-600 dark:text-amber-300/90 mt-1 leading-relaxed">↳ {r.note}</p>

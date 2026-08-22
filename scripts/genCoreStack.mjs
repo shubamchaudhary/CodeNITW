@@ -191,6 +191,9 @@ function resolveResource(ref, topicId, index) {
       source: v.channel,
       url: v.url,
       minutes: v.minutes || 0,
+      // Runtimes for resources added outside the tracker CSV are estimates, and
+      // the UI marks them as such rather than passing a guess off as measured.
+      estimate: !!v.estimate,
       note: v.note || "",
     };
   }
@@ -204,6 +207,7 @@ function resolveResource(ref, topicId, index) {
       source: d.site,
       url: d.url,
       minutes: d.minutes || 0,
+      estimate: !!d.estimate,
       note: d.note || "",
     };
   }
@@ -252,7 +256,7 @@ const topics = TOPICS.map((t) => {
 
   const minutes = resources.reduce((sum, r) => sum + r.minutes, 0);
   // A topic whose resources include an untimed item can only state a floor.
-  const approx = resources.some((r) => !r.minutes && r.kind !== "self");
+  const approx = resources.some((r) => (!r.minutes && r.kind !== "self") || r.estimate);
 
   return {
     id: t.id,
@@ -263,7 +267,7 @@ const topics = TOPICS.map((t) => {
     why: t.why || "",
     resources,
     minutes,
-    duration: minutes ? `${fmtMinutes(minutes)}${approx ? "+" : ""}` : "—",
+    duration: minutes ? `${approx ? "≈" : ""}${fmtMinutes(minutes)}` : "—",
     questions,
   };
 });
