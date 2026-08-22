@@ -1,22 +1,38 @@
 // Screenshots for the topic notes pages.
 //
-// A note is markdown text living in the same synced store as before; an image
-// is a file in Cloud Storage and the note holds only its URL. That keeps the
-// Firestore document small (it caps at 1 MB) while screenshots stay durable and
-// available on every device.
+// Cloud Storage would be the natural home for these, but Firebase now requires
+// the Blaze plan for any bucket, so images live in Firestore instead — one
+// document per screenshot under userProgress/{uid}/noteAssets/{id}, holding the
+// image as a data URL.
 //
-// Images are downscaled in the browser before upload: a 4K screenshot is ~8 MB
-// of PNG and ~300 KB of JPEG at 1600px wide, and nothing on a notes page needs
-// more than that.
+// Two rules make that safe:
+//   1. Each image is its own document, in a SUBCOLLECTION. The progress
+//      document that cloudSync rewrites on every change is never touched, so a
+//      screenshot can't bloat it or break syncing.
+//   2. A Firestore document caps at 1 MB and base64 inflates bytes by ~33%, so
+//      every image is compressed to a hard byte target before it is encoded.
+//      A screenshot that can't be squeezed under the target is rejected with a
+//      message rather than written and lost later.
+//
+// A note references an image by path (/note-asset/{id}); the notes page resolves
+// those to data URLs when it renders the preview.
 
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { storage } from "../firebase";
+import { doc, getDoc, setDoc, deleteDoc, collection } from "firebase/firestore";
+import { db } from "../firebase";
 
-const MAX_EDGE = 1600;
-const JPEG_QUALITY = 0.85;
-// Anything at or under this is uploaded untouched — re-encoding a small PNG
-// (a diagram, a screenshot of text) usually makes it worse, not smaller.
-const SKIP_RESIZE_BYTES = 300 * 1024;
+// Raw bytes before base64. 500 KB → ~667 KB encoded, comfortably inside the
+// 1 MB document limit with room for the other fields.
+const TARGET_BYTES = 500 * 1024;
+const SIZE_LADDER = [
+  { edge: 1600, quality: 0.82 },
+  { edge: 1600, quality: 0.7 },
+  { edge: 1280, quality: 0.7 },
+  { edge: 1280, quality: 0.55 },
+  { edge: 1024, quality: 0.6 },
+  { edge: 900, quality: 0.5 },
+];
+
+export const ASSET_PREFIX = "/note-asset/";
 
 export class NoteAssetError extends Error {
   constructor(message, code) {
@@ -26,97 +42,138 @@ export class NoteAssetError extends Error {
   }
 }
 
-function extensionFor(type) {
-  if (type === "image/png") return "png";
-  if (type === "image/gif") return "gif";
-  if (type === "image/webp") return "webp";
-  return "jpg";
+// Resolved images, kept for the tab's lifetime so flipping between topics does
+// not re-read the same documents.
+const cache = new Map();
+
+function assetDoc(uid, id) {
+  return doc(collection(doc(db, "userProgress", uid), "noteAssets"), id);
 }
 
-// Draw the image into a canvas no larger than MAX_EDGE on its longest side.
-// Returns the original blob unchanged when it is already small, or when the
-// browser can't decode it (GIFs would lose animation, so they pass through).
-async function downscale(file) {
-  if (file.size <= SKIP_RESIZE_BYTES || file.type === "image/gif") return file;
-
-  const bitmap = await createImageBitmap(file).catch(() => null);
-  if (!bitmap) return file;
-
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
-  if (scale === 1 && file.size < 1024 * 1024) {
-    bitmap.close?.();
-    return file;
-  }
-
+// Render at a given max edge and JPEG quality. White is painted first so a PNG
+// with transparency doesn't come back with a black background.
+async function encode(bitmap, edge, quality) {
+  const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(bitmap.width * scale);
   canvas.height = Math.round(bitmap.height * scale);
   const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close?.();
-
-  const blob = await new Promise((res) => canvas.toBlob(res, "image/jpeg", JPEG_QUALITY));
-  // If the re-encode somehow grew the file, keep the original.
-  return blob && blob.size < file.size ? blob : file;
+  return new Promise((res) => canvas.toBlob(res, "image/jpeg", quality));
 }
 
-function pathFor(uid, source, topicId, ext) {
-  const stamp = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-  return `noteAssets/${uid}/${source}/${topicId}/${stamp}.${ext}`;
-}
-
-// Upload one image and return { url, path }. Throws NoteAssetError with a
-// message meant to be shown to the user — the common failure is that Cloud
-// Storage has never been enabled for the project, which is a console action,
-// not something the app can fix.
-export async function uploadNoteImage({ uid, source, topicId, file }) {
-  if (!uid) throw new NoteAssetError("Sign in again before uploading.", "no-uid");
-  if (!file.type.startsWith("image/")) {
-    throw new NoteAssetError("That file isn't an image.", "not-image");
-  }
-
-  const blob = await downscale(file);
-  const path = pathFor(uid, source, topicId, extensionFor(blob.type || file.type));
+// Walk down the ladder until the encode fits the byte target.
+async function compress(file) {
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) throw new NoteAssetError("That image couldn't be read.", "decode-failed");
 
   try {
-    const objectRef = ref(storage, path);
-    await uploadBytes(objectRef, blob, {
-      contentType: blob.type || file.type,
-      cacheControl: "public, max-age=31536000",
+    let best = null;
+    for (const step of SIZE_LADDER) {
+      const blob = await encode(bitmap, step.edge, step.quality);
+      if (!blob) continue;
+      best = blob;
+      if (blob.size <= TARGET_BYTES) return blob;
+    }
+    if (best && best.size <= TARGET_BYTES * 1.1) return best;
+    throw new NoteAssetError(
+      "That image is too large to store even after compression — crop it and try again.",
+      "too-large"
+    );
+  } finally {
+    bitmap.close?.();
+  }
+}
+
+function toDataUrl(blob) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = () => res(reader.result);
+    reader.onerror = () => rej(new NoteAssetError("Couldn't encode the image.", "encode-failed"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function newId() {
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
+// Store one screenshot and return its reference path for the markdown.
+export async function uploadNoteImage({ uid, source, topicId, file }) {
+  if (!uid) throw new NoteAssetError("Sign in again before adding screenshots.", "no-uid");
+  if (!file.type.startsWith("image/")) throw new NoteAssetError("That file isn't an image.", "not-image");
+
+  const blob = await compress(file);
+  const data = await toDataUrl(blob);
+  const id = newId();
+
+  try {
+    await setDoc(assetDoc(uid, id), {
+      data,
+      source,
+      topicId,
+      bytes: blob.size,
+      contentType: "image/jpeg",
+      createdAt: Date.now(),
     });
-    return { url: await getDownloadURL(objectRef), path };
   } catch (err) {
     const code = err?.code || "";
-    if (code === "storage/quota-exceeded") {
-      // Since the Sept-2024 policy change, Cloud Storage — including the
-      // default bucket — requires the Blaze plan. A Spark project gets this
-      // error on every write, and no application change can work around it.
+    if (code === "permission-denied") {
       throw new NoteAssetError(
-        "Firebase is refusing uploads: this project needs the Blaze plan for Cloud Storage. Your note text is saved — only the screenshot was dropped.",
+        "Firestore rejected the write — deploy firestore.rules so notes can store screenshots.",
         code
       );
     }
-    if (code === "storage/unauthorized") {
-      throw new NoteAssetError(
-        "Storage rejected the upload — deploy storage.rules (firebase deploy --only storage).",
-        code
-      );
-    }
-    if (code === "storage/unknown" || code === "storage/retry-limit-exceeded") {
-      throw new NoteAssetError(
-        "Couldn't reach Cloud Storage. Enable Storage for this Firebase project, then retry.",
-        code
-      );
-    }
-    throw new NoteAssetError(err?.message || "Upload failed.", code || "unknown");
+    throw new NoteAssetError(err?.message || "Couldn't save the screenshot.", code || "unknown");
   }
+
+  cache.set(id, data);
+  return { id, path: `${ASSET_PREFIX}${id}` };
 }
 
-// Best-effort delete, used when an upload is undone right after it happened.
-// A missing object is not an error worth surfacing.
-export async function deleteNoteImage(path) {
+// Every asset id referenced by a note's markdown, in order of appearance.
+export function assetIdsIn(text) {
+  const ids = [];
+  const re = /!\[[^\]]*\]\((\/note-asset\/([A-Za-z0-9]+))\)/g;
+  let m;
+  while ((m = re.exec(text || ""))) if (!ids.includes(m[2])) ids.push(m[2]);
+  return ids;
+}
+
+// Resolve ids to data URLs, reading only the ones not already cached.
+export async function loadNoteAssets(uid, ids) {
+  const out = {};
+  const missing = [];
+  for (const id of ids) {
+    if (cache.has(id)) out[id] = cache.get(id);
+    else missing.push(id);
+  }
+  if (!uid || !missing.length) return out;
+
+  await Promise.all(
+    missing.map(async (id) => {
+      try {
+        const snap = await getDoc(assetDoc(uid, id));
+        const data = snap.exists() ? snap.data()?.data : null;
+        if (data) {
+          cache.set(id, data);
+          out[id] = data;
+        }
+      } catch (_) {
+        // A single unreadable image shouldn't take the whole note down; the
+        // preview shows a placeholder for it instead.
+      }
+    })
+  );
+  return out;
+}
+
+export async function deleteNoteAsset(uid, id) {
   try {
-    await deleteObject(ref(storage, path));
+    await deleteDoc(assetDoc(uid, id));
+    cache.delete(id);
     return true;
   } catch (_) {
     return false;

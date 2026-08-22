@@ -18,7 +18,13 @@ import {
   getAIStackTopic,
   subscribe,
 } from "../../Data/planStore";
-import { uploadNoteImage, NoteAssetError } from "../../Data/noteAssets";
+import {
+  uploadNoteImage,
+  loadNoteAssets,
+  assetIdsIn,
+  ASSET_PREFIX,
+  NoteAssetError,
+} from "../../Data/noteAssets";
 
 // A full page per topic, because a 4-line textarea inside a card is no place to
 // think. Markdown in, live preview beside it, screenshots pasted straight from
@@ -96,6 +102,10 @@ export default function TopicNotes() {
   const [view, setView] = useState("split"); // split | write | preview
   const [dragging, setDragging] = useState(false);
 
+  const [assets, setAssets] = useState({});
+  // Ids already looked up, so a screenshot whose document is missing is not
+  // re-fetched forever.
+  const fetchedRef = useRef(new Set());
   const areaRef = useRef(null);
   const saveTimer = useRef(null);
   const dirtyRef = useRef(false);
@@ -117,6 +127,22 @@ export default function TopicNotes() {
       setText((prev) => (incoming === prev ? prev : incoming));
     });
   }, [config, topicId]);
+
+  // Screenshots live in their own Firestore documents; the note only carries
+  // their paths, so the preview resolves them to data URLs as they appear.
+  useEffect(() => {
+    if (!user?.uid) return undefined;
+    const wanted = assetIdsIn(text).filter((id) => !fetchedRef.current.has(id));
+    if (!wanted.length) return undefined;
+    wanted.forEach((id) => fetchedRef.current.add(id));
+    let alive = true;
+    loadNoteAssets(user.uid, wanted).then((found) => {
+      if (alive && Object.keys(found).length) setAssets((prev) => ({ ...prev, ...found }));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [text, user]);
 
   const persist = useCallback(
     (value) => {
@@ -227,10 +253,15 @@ export default function TopicNotes() {
         const token = `![uploading ${file.name || "screenshot"}…]()`;
         insertAtCursor(`\n${token}\n`);
         try {
-          const { url } = await uploadNoteImage({ uid: user.uid, source, topicId, file });
+          const { id, path } = await uploadNoteImage({ uid: user.uid, source, topicId, file });
           const el = areaRef.current;
           const current = el ? el.value : text;
-          onChange(current.replace(token, `![screenshot](${url})`));
+          onChange(current.replace(token, `![screenshot](${path})`));
+          // The uploader cached the data URL, so mark it fetched and resolve it
+          // from cache rather than reading the document straight back.
+          fetchedRef.current.add(id);
+          const local = await loadNoteAssets(user.uid, [id]);
+          setAssets((prev) => ({ ...prev, ...local }));
         } catch (err) {
           const el = areaRef.current;
           const current = el ? el.value : text;
@@ -445,6 +476,7 @@ export default function TopicNotes() {
                       source={text}
                       style={{ background: "transparent", fontSize: "14px" }}
                       wrapperElement={{ "data-color-mode": "auto" }}
+                      components={{ img: NoteImage(assets) }}
                     />
                   </div>
                 ) : (
@@ -461,6 +493,34 @@ export default function TopicNotes() {
       </div>
     </PageShell>
   );
+}
+
+// A screenshot is stored as its own document, so the markdown holds a path and
+// this swaps in the resolved data URL. Anything else (an ordinary URL from an
+// older note) renders untouched.
+function NoteImage(assets) {
+  return function Img({ src, alt, ...rest }) {
+    if (typeof src === "string" && src.startsWith(ASSET_PREFIX)) {
+      const id = src.slice(ASSET_PREFIX.length);
+      const data = assets[id];
+      if (!data) {
+        return (
+          <span className="inline-flex items-center gap-2 my-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 dark:border-white/15 text-[12px] text-gray-400 dark:text-gray-500">
+            <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-white/20 animate-pulse" />
+            loading screenshot…
+          </span>
+        );
+      }
+      return (
+        <img
+          src={data}
+          alt={alt || "screenshot"}
+          className="rounded-lg border border-gray-200 dark:border-white/10 max-w-full my-2"
+        />
+      );
+    }
+    return <img src={src} alt={alt} {...rest} className="rounded-lg max-w-full my-2" />;
+  };
 }
 
 function SaveState({ dirty, savedAt, accent }) {
