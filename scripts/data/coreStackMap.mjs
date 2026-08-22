@@ -68,8 +68,18 @@ export const TOPICS = [
     title: "OOP, exceptions & error handling",
     why: "Reported verbatim in SDE-2 rounds: exception hierarchy, checked vs unchecked, try-with-resources, propagation. It was buried in the old plan's remedial pile — it should not have been.",
     resources: [
-      { playlist: "CC-J#2", title: "OOPs Concept" },
-      { playlist: "CC-J#19", title: "Exception Handling" },
+      {
+        playlist: "CC-J#1",
+        title: "OOPs Concept in Java with Examples | 4 Pillars of Object Oriented Programming",
+        minutes: 217,
+        note: "3h36m — you have shipped Java for 2.5 years. Skim it to find gaps, don't watch it end to end.",
+      },
+      {
+        playlist: "CC-J#15",
+        title: "Default, Static & Private Method in Interface - Java8 and Java9 features | Java Interfaces Part2",
+        minutes: 24,
+      },
+      { playlist: "CC-J#19", title: "Exception Handling in Java with Examples", minutes: 115 },
     ],
     questions: [
       "Four pillars of OOP — give a real example of each from code you have written, not a textbook one.",
@@ -150,9 +160,9 @@ export const TOPICS = [
     title: "Comparable vs Comparator, TreeMap, LinkedHashMap & Set",
     why: "Cheap points. Comparator questions show up constantly as a warm-up before something harder.",
     resources: [
-      { playlist: "CC-J#23", title: "Comparator vs Comparable" },
-      { playlist: "CC-J#26", title: "LinkedHashMap and TreeMap" },
-      { playlist: "CC-J#27", title: "SET" },
+      { playlist: "CC-J#23", title: "Collections in Java - Part2 | Comparator Vs Comparable | PriorityQueue", minutes: 61 },
+      { playlist: "CC-J#26", title: "Collections in Java - Part5 | LinkedHashMap and TreeMap in depth", minutes: 37 },
+      { playlist: "CC-J#27", title: "Collections in Java - Part6 | SET", minutes: 21 },
     ],
     questions: [
       "Comparable vs Comparator — which one changes the class, and which one do you reach for in practice?",
@@ -172,8 +182,50 @@ export const TOPICS = [
     priority: "P0",
     title: "Threads, executors & ThreadPoolExecutor",
     why: "Your resume says Multithreading & Concurrency and Asynchronous Processing. Expect a whole round.",
-    resources: [{ csv: "CC-J#29" }, { csv: "CC-J#34" }],
+    resources: [
+      { csv: "CC-J#29" },
+      { csv: "CC-J#34" },
+      {
+        playlist: "CC-J#37",
+        title: "Java ScheduledThreadPoolExecutor || Shutdown Vs AwaitTermination || Multithreading in Java",
+        minutes: 23,
+        note: "Where shutdown() vs shutdownNow() vs awaitTermination() is actually taught.",
+      },
+    ],
     inherit: "P0-07",
+  },
+  {
+    id: "CONC-01B",
+    section: "concurrency",
+    priority: "P0",
+    title: "Thread lifecycle, creation & inter-thread communication",
+    why: "MISSED IN THE FIRST PASS. The plan asked you to name every thread state and to explain wait/notify, but pointed at no video that teaches either — this is where both live, along with the classic 'N threads printing in sequence' machinery. Thread states, wait/notify and daemon threads are standard asks at 2–3 years.",
+    resources: [
+      {
+        playlist: "CC-J#30",
+        title: "Thread Creation, Thread Lifecycle and Inter-Thread Communication | Multithreading in Java: Part2",
+        minutes: 98,
+      },
+      {
+        playlist: "CC-J#31",
+        title: "Thread Joining, Daemon Thread, Thread Priority | Multithreading in Java: Part3",
+      },
+    ],
+    questions: [
+      "Name every thread state and every transition between them. Which state does a thread blocked on a monitor sit in — and which one does wait() put it in?",
+      "Thread vs Runnable vs Callable — which do you extend, which do you implement, and why does it matter?",
+      "start() vs run() — what actually happens if you call run() directly?",
+      "Can you call start() twice on the same Thread object? What happens?",
+      "wait(), notify() and notifyAll() — why must all three be called inside a synchronized block?",
+      "Why is wait() on Object and sleep() on Thread? What does each do to the lock?",
+      "What is a lost wakeup, and why must wait() always sit in a while loop?",
+      "notify() vs notifyAll() — when is notify() a bug waiting to happen?",
+      "What does join() do, and how would you wait for ten threads with a timeout?",
+      "What is a daemon thread? What happens to one when the last non-daemon thread exits — and why does that make daemon threads wrong for a write path?",
+      "Does thread priority guarantee anything? What does it actually do?",
+      "An uncaught exception kills a thread. Where does it go, and how do you catch it? (UncaughtExceptionHandler.)",
+      "Deadlock vs livelock vs starvation — one line each, and which one does a thread dump make obvious?",
+    ],
   },
   {
     id: "CONC-02",
@@ -260,8 +312,31 @@ export const TOPICS = [
       { csv: "CC-SB#10" },
       { csv: "CC-SB#11" },
       { csv: "CC-SB#44" },
-      { playlist: "CC-SB#2", title: "Introduction to Spring Boot" },
-      { playlist: "CC-SB#4", title: "Maven" },
+      {
+        playlist: "CC-SB#1",
+        title: "Introduction to Spring boot | Its Advantage over Spring MVC and Servlets based Web applications",
+        minutes: 46,
+      },
+      {
+        playlist: "CC-SB#3",
+        title: "Introduction to Maven and its Lifecycle | Spring boot Maven project",
+        minutes: 48,
+      },
+      {
+        playlist: "CC-SB#8",
+        title: "Spring boot: Dynamically Initialized Beans | Value Annotation",
+        minutes: 11,
+      },
+      {
+        doc: {
+          title: "Spring Boot reference — Auto-configuration",
+          site: "docs.spring.io",
+          url: "https://docs.spring.io/spring-boot/reference/using/auto-configuration.html",
+          note: "The playlist never opens up auto-configuration itself. Read this for @EnableAutoConfiguration, the conditions report (--debug) and excluding a configuration.",
+          minutes: 20,
+          estimate: true,
+        },
+      },
     ],
     inherit: "P1-14",
     questions: [
@@ -293,7 +368,11 @@ export const TOPICS = [
     why: "Raised from P1: \"REST API design\" appears as its own round topic in SDE-2 write-ups, and it is the easiest place to sound senior or junior.",
     resources: [
       { csv: "CC-SB#21" },
-      { playlist: "CC-SB#5", title: "Controller Annotations" },
+      {
+        playlist: "CC-SB#4",
+        title: "Spring boot Annotations (Controller Layer) | Controller, RestController, RequestMapping etc.",
+        minutes: 35,
+      },
     ],
     inherit: "P1-21",
     questions: [

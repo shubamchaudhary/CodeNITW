@@ -152,7 +152,10 @@ function resolveResource(ref, topicId, index) {
       source: row.channel,
       playlist: row.playlist,
       playlistUrl: row.playlist_url,
-      position: Number(row.video_position),
+      // `video_position` is the tracker's internal id and is what refs use;
+      // `playlist_position` is the number the playlist page actually shows,
+      // which is what a human needs. They differ on 43 of 72 rows.
+      position: Number(row.playlist_position) || 0,
       minutes: Number(row.duration_min) || 0,
     };
   }
@@ -176,9 +179,9 @@ function resolveResource(ref, topicId, index) {
       playlist: meta.playlist,
       playlistUrl: meta.playlistUrl,
       position: Number(position),
-      // Duration was never tracked for these; the UI omits a runtime rather
-      // than printing a guess.
-      minutes: 0,
+      // Runtime as printed on the playlist page when it could be read there,
+      // otherwise omitted — never guessed.
+      minutes: ref.minutes || 0,
     };
   }
 

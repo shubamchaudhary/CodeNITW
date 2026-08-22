@@ -106,7 +106,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 17,
+        "position": 16,
         "minutes": 32
       },
       {
@@ -148,26 +148,36 @@ export const CORE_STACK_TOPICS = [
       {
         "id": "JAVA-03-r1",
         "kind": "video",
-        "title": "OOPs Concept",
+        "title": "OOPs Concept in Java with Examples | 4 Pillars of Object Oriented Programming",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 2,
-        "minutes": 0
+        "position": 1,
+        "minutes": 217
       },
       {
         "id": "JAVA-03-r2",
         "kind": "video",
-        "title": "Exception Handling",
+        "title": "Default, Static & Private Method in Interface - Java8 and Java9 features | Java Interfaces Part2",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 15,
+        "minutes": 24
+      },
+      {
+        "id": "JAVA-03-r3",
+        "kind": "video",
+        "title": "Exception Handling in Java with Examples",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 19,
-        "minutes": 0
+        "minutes": 115
       }
     ],
-    "minutes": 0,
-    "duration": "—",
+    "minutes": 356,
+    "duration": "5h 56m",
     "questions": [
       "Four pillars of OOP — give a real example of each from code you have written, not a textbook one.",
       "Abstract class vs interface in Java 17. When does an interface with default methods win?",
@@ -198,7 +208,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 10,
+        "position": 9,
         "minutes": 49
       }
     ],
@@ -232,7 +242,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 41,
+        "position": 0,
         "minutes": 11
       },
       {
@@ -242,7 +252,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 42,
+        "position": 0,
         "minutes": 23
       },
       {
@@ -252,7 +262,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 43,
+        "position": 0,
         "minutes": 9
       },
       {
@@ -262,7 +272,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 44,
+        "position": 0,
         "minutes": 9
       },
       {
@@ -272,7 +282,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 45,
+        "position": 0,
         "minutes": 36
       },
       {
@@ -317,7 +327,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 14,
+        "position": 13,
         "minutes": 28
       }
     ],
@@ -348,7 +358,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 12,
+        "position": 11,
         "minutes": 52
       }
     ],
@@ -379,7 +389,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
-        "position": 47,
+        "position": 0,
         "minutes": 74
       }
     ],
@@ -404,36 +414,36 @@ export const CORE_STACK_TOPICS = [
       {
         "id": "JAVA-09-r1",
         "kind": "video",
-        "title": "Comparator vs Comparable",
+        "title": "Collections in Java - Part2 | Comparator Vs Comparable | PriorityQueue",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 23,
-        "minutes": 0
+        "minutes": 61
       },
       {
         "id": "JAVA-09-r2",
         "kind": "video",
-        "title": "LinkedHashMap and TreeMap",
+        "title": "Collections in Java - Part5 | LinkedHashMap and TreeMap in depth",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 26,
-        "minutes": 0
+        "minutes": 37
       },
       {
         "id": "JAVA-09-r3",
         "kind": "video",
-        "title": "SET",
+        "title": "Collections in Java - Part6 | SET",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "JAVA from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 27,
-        "minutes": 0
+        "minutes": 21
       }
     ],
-    "minutes": 0,
-    "duration": "—",
+    "minutes": 119,
+    "duration": "1h 59m",
     "questions": [
       "Comparable vs Comparator — which one changes the class, and which one do you reach for in practice?",
       "Sort a list of objects by two fields, second descending. Write it with Comparator chaining.",
@@ -471,10 +481,20 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
         "position": 34,
         "minutes": 77
+      },
+      {
+        "id": "CONC-01-r3",
+        "kind": "video",
+        "title": "Java ScheduledThreadPoolExecutor || Shutdown Vs AwaitTermination || Multithreading in Java",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 37,
+        "minutes": 23
       }
     ],
-    "minutes": 125,
-    "duration": "2h 5m",
+    "minutes": 148,
+    "duration": "2h 28m",
     "questions": [
       "Name all 7 ThreadPoolExecutor constructor parameters and what each controls.",
       "core=5, max=10, unbounded LinkedBlockingQueue. How many threads actually run under load? Why is this a production incident?",
@@ -488,6 +508,53 @@ export const CORE_STACK_TOPICS = [
       "Thread lifecycle states — name all and the transitions.",
       "wait()/notify() vs await()/signal() — why does wait() require a synchronized block?",
       "What is thread starvation? How would you detect it in production?"
+    ]
+  },
+  {
+    "id": "CONC-01B",
+    "section": "concurrency",
+    "sectionLabel": "Concurrency & Multithreading",
+    "priority": "P0",
+    "title": "Thread lifecycle, creation & inter-thread communication",
+    "why": "MISSED IN THE FIRST PASS. The plan asked you to name every thread state and to explain wait/notify, but pointed at no video that teaches either — this is where both live, along with the classic 'N threads printing in sequence' machinery. Thread states, wait/notify and daemon threads are standard asks at 2–3 years.",
+    "resources": [
+      {
+        "id": "CONC-01B-r1",
+        "kind": "video",
+        "title": "Thread Creation, Thread Lifecycle and Inter-Thread Communication | Multithreading in Java: Part2",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 30,
+        "minutes": 98
+      },
+      {
+        "id": "CONC-01B-r2",
+        "kind": "video",
+        "title": "Thread Joining, Daemon Thread, Thread Priority | Multithreading in Java: Part3",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "JAVA from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c63f469AyV78np0rbxRFppkx",
+        "position": 31,
+        "minutes": 0
+      }
+    ],
+    "minutes": 98,
+    "duration": "≈1h 38m",
+    "questions": [
+      "Name every thread state and every transition between them. Which state does a thread blocked on a monitor sit in — and which one does wait() put it in?",
+      "Thread vs Runnable vs Callable — which do you extend, which do you implement, and why does it matter?",
+      "start() vs run() — what actually happens if you call run() directly?",
+      "Can you call start() twice on the same Thread object? What happens?",
+      "wait(), notify() and notifyAll() — why must all three be called inside a synchronized block?",
+      "Why is wait() on Object and sleep() on Thread? What does each do to the lock?",
+      "What is a lost wakeup, and why must wait() always sit in a while loop?",
+      "notify() vs notifyAll() — when is notify() a bug waiting to happen?",
+      "What does join() do, and how would you wait for ten threads with a timeout?",
+      "What is a daemon thread? What happens to one when the last non-daemon thread exits — and why does that make daemon threads wrong for a write path?",
+      "Does thread priority guarantee anything? What does it actually do?",
+      "An uncaught exception kills a thread. Where does it go, and how do you catch it? (UncaughtExceptionHandler.)",
+      "Deadlock vs livelock vs starvation — one line each, and which one does a thread dump make obvious?"
     ]
   },
   {
@@ -600,7 +667,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 16,
+        "position": 15,
         "minutes": 46
       },
       {
@@ -610,7 +677,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 17,
+        "position": 16,
         "minutes": 24
       }
     ],
@@ -725,7 +792,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 13,
+        "position": 12,
         "minutes": 25
       },
       {
@@ -735,7 +802,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 14,
+        "position": 13,
         "minutes": 38
       },
       {
@@ -745,7 +812,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 15,
+        "position": 14,
         "minutes": 39
       }
     ],
@@ -781,7 +848,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 6,
+        "position": 5,
         "minutes": 34
       },
       {
@@ -791,7 +858,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 7,
+        "position": 6,
         "minutes": 39
       },
       {
@@ -801,7 +868,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 8,
+        "position": 7,
         "minutes": 40
       }
     ],
@@ -837,7 +904,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 10,
+        "position": 9,
         "minutes": 20
       },
       {
@@ -847,7 +914,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 11,
+        "position": 10,
         "minutes": 33
       },
       {
@@ -857,32 +924,52 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 44,
+        "position": 0,
         "minutes": 24
       },
       {
         "id": "SPRING-03-r4",
         "kind": "video",
-        "title": "Introduction to Spring Boot",
+        "title": "Introduction to Spring boot | Its Advantage over Spring MVC and Servlets based Web applications",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 2,
-        "minutes": 0
+        "position": 1,
+        "minutes": 46
       },
       {
         "id": "SPRING-03-r5",
         "kind": "video",
-        "title": "Maven",
+        "title": "Introduction to Maven and its Lifecycle | Spring boot Maven project",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 4,
-        "minutes": 0
+        "position": 3,
+        "minutes": 48
+      },
+      {
+        "id": "SPRING-03-r6",
+        "kind": "video",
+        "title": "Spring boot: Dynamically Initialized Beans | Value Annotation",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 8,
+        "minutes": 11
+      },
+      {
+        "id": "SPRING-03-r7",
+        "kind": "doc",
+        "title": "Spring Boot reference — Auto-configuration",
+        "source": "docs.spring.io",
+        "url": "https://docs.spring.io/spring-boot/reference/using/auto-configuration.html",
+        "minutes": 20,
+        "estimate": true,
+        "note": "The playlist never opens up auto-configuration itself. Read this for @EnableAutoConfiguration, the conditions report (--debug) and excluding a configuration."
       }
     ],
-    "minutes": 77,
-    "duration": "≈1h 17m",
+    "minutes": 202,
+    "duration": "≈3h 22m",
     "questions": [
       "Your feature flag flips mid-request. What happens? (His actual system.)",
       "@ConditionalOnProperty is evaluated at startup. So how do you build a runtime-togglable flag?",
@@ -918,7 +1005,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 24,
+        "position": 23,
         "minutes": 63
       },
       {
@@ -928,7 +1015,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 25,
+        "position": 24,
         "minutes": 24
       },
       {
@@ -938,7 +1025,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 30,
+        "position": 29,
         "minutes": 59
       }
     ],
@@ -974,22 +1061,22 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 21,
+        "position": 20,
         "minutes": 43
       },
       {
         "id": "SPRING-05-r2",
         "kind": "video",
-        "title": "Controller Annotations",
+        "title": "Spring boot Annotations (Controller Layer) | Controller, RestController, RequestMapping etc.",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 5,
-        "minutes": 0
+        "position": 4,
+        "minutes": 35
       }
     ],
-    "minutes": 43,
-    "duration": "≈43m",
+    "minutes": 78,
+    "duration": "1h 18m",
     "questions": [
       "401 vs 403. 400 vs 422. 409 — when?",
       "PUT vs PATCH vs POST — which are idempotent? Is POST ever?",
@@ -1020,7 +1107,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 12,
+        "position": 11,
         "minutes": 69
       }
     ],
@@ -1053,7 +1140,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 28,
+        "position": 27,
         "minutes": 66
       },
       {
@@ -1063,7 +1150,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 29,
+        "position": 28,
         "minutes": 59
       }
     ],
@@ -1092,7 +1179,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 22,
+        "position": 21,
         "minutes": 56
       }
     ],
@@ -1123,7 +1210,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 34,
+        "position": 32,
         "minutes": 18
       },
       {
@@ -1133,7 +1220,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 35,
+        "position": 33,
         "minutes": 47
       },
       {
@@ -1143,7 +1230,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 37,
+        "position": 35,
         "minutes": 20
       },
       {
@@ -1153,7 +1240,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 38,
+        "position": 0,
         "minutes": 49
       }
     ],
@@ -1190,7 +1277,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 40,
+        "position": 0,
         "minutes": 35
       },
       {
@@ -1200,7 +1287,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 41,
+        "position": 37,
         "minutes": 52
       }
     ],
@@ -1232,7 +1319,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 18,
+        "position": 17,
         "minutes": 30
       },
       {
@@ -1242,7 +1329,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 19,
+        "position": 18,
         "minutes": 24
       }
     ],
@@ -1270,7 +1357,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 31,
+        "position": 30,
         "minutes": 44
       },
       {
@@ -1280,7 +1367,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 32,
+        "position": 31,
         "minutes": 14
       }
     ],
@@ -1308,7 +1395,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 42,
+        "position": 38,
         "minutes": 29
       }
     ],
@@ -1335,7 +1422,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 43,
+        "position": 0,
         "minutes": 31
       }
     ],
@@ -1363,7 +1450,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 33,
+        "position": 0,
         "minutes": 25
       }
     ],
@@ -1391,7 +1478,7 @@ export const CORE_STACK_TOPICS = [
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 26,
+        "position": 25,
         "minutes": 41
       }
     ],
@@ -2174,10 +2261,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 52;
+export const CORE_STACK_TOTAL = 53;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":19,"P1":19,"P2":14};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":20,"P1":19,"P2":14};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":9,"concurrency":6,"spring":16,"data":3,"kafka":3,"platform":7,"testing":3,"resume":5};
+export const CORE_STACK_SECTION_COUNTS = {"java":9,"concurrency":7,"spring":16,"data":3,"kafka":3,"platform":7,"testing":3,"resume":5};
 
-export const CORE_STACK_MINUTES = 2817;
+export const CORE_STACK_MINUTES = 3573;

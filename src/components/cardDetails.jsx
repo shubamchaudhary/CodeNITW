@@ -220,6 +220,9 @@ export function CoreStackTopicDetail({ topic, note, checkedDays }) {
 // and a "self" resource gets no link at all, because it is your own codebase.
 function ResourceRow({ resource: r, linkHover }) {
   const isPlaylistVideo = r.kind === "video" && !!r.playlistUrl;
+  // Some videos sit in the playlist without a number on them; a badge reading
+  // "#0" would send you looking for a position that doesn't exist.
+  const numbered = isPlaylistVideo && r.position > 0;
 
   return (
     <div className={`${GLASS_PANEL} rounded-xl px-3 py-2.5`}>
@@ -232,9 +235,9 @@ function ResourceRow({ resource: r, linkHover }) {
               ? "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/25"
               : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25"
           }`}
-          title={isPlaylistVideo ? `Position ${r.position} in "${r.playlist}"` : r.kind}
+          title={numbered ? `Video #${r.position} in "${r.playlist}"` : isPlaylistVideo ? `In "${r.playlist}" — unnumbered, search by title` : r.kind}
         >
-          {isPlaylistVideo ? `#${r.position}` : r.kind === "doc" ? "DOC" : r.kind === "self" ? "YOU" : "▶"}
+          {numbered ? `#${r.position}` : r.kind === "doc" ? "DOC" : r.kind === "self" ? "YOU" : "▶"}
         </span>
 
         <div className="flex-1 min-w-0">
@@ -259,7 +262,7 @@ function ResourceRow({ resource: r, linkHover }) {
               target="_blank"
               rel="noopener noreferrer"
               className={`inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 transition-all ${linkHover}`}
-              title={`Open "${r.playlist}" — this is video #${r.position}`}
+              title={numbered ? `Open "${r.playlist}" — this is video #${r.position}` : `Open "${r.playlist}" — find it by title`}
             >
               Playlist
               <ExternalIcon />
