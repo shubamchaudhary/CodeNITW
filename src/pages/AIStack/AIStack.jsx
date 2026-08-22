@@ -69,8 +69,8 @@ function SkipNote() {
 
 export default function AIStack() {
   const renderDetail = useCallback(
-    (topic, { note, onNoteChange, checkedDays }) => (
-      <AIStackTopicDetail topic={topic} note={note} onNoteChange={onNoteChange} checkedDays={checkedDays} />
+    (topic, { note, checkedDays }) => (
+      <AIStackTopicDetail topic={topic} note={note} checkedDays={checkedDays} />
     ),
     []
   );

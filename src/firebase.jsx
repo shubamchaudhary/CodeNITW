@@ -5,6 +5,7 @@ import {
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -30,3 +31,7 @@ export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });
 
+// Screenshots pasted into a topic's notes page live in Cloud Storage, not in
+// the Firestore document — a note holds only the URL. Requires Cloud Storage to
+// be enabled for the project; see storage.rules for the access rule.
+export const storage = getStorage(app);

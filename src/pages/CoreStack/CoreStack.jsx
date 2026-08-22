@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import {
   CORE_STACK_TOPICS,
   CORE_STACK_TOTAL,
-  CORE_STACK_SECTION,
+  CORE_STACK_SECTIONS,
   CORE_STACK_PRIORITIES,
   CORE_STACK_PRIORITY_CONFIG,
 } from "../../Data/CoreStack";
@@ -28,7 +28,11 @@ const ACCENT = {
   checkedBadge: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/25",
 };
 
-const SECTIONS = [{ key: "java", label: CORE_STACK_SECTION, topics: CORE_STACK_TOPICS }];
+const SECTIONS = CORE_STACK_SECTIONS.map((s) => ({
+  key: s.key,
+  label: s.label,
+  topics: CORE_STACK_TOPICS.filter((t) => t.section === s.key),
+}));
 
 const FILTERS = [
   { key: "ALL", label: "All", title: "Every topic" },
@@ -41,8 +45,8 @@ const FILTERS = [
 
 export default function CoreStack() {
   const renderDetail = useCallback(
-    (topic, { note, onNoteChange, checkedDays }) => (
-      <CoreStackTopicDetail topic={topic} note={note} onNoteChange={onNoteChange} checkedDays={checkedDays} />
+    (topic, { note, checkedDays }) => (
+      <CoreStackTopicDetail topic={topic} note={note} checkedDays={checkedDays} />
     ),
     []
   );
@@ -63,10 +67,14 @@ export default function CoreStack() {
         const prio = CORE_STACK_PRIORITY_CONFIG[topic.priority];
         return prio && { label: prio.label, cls: prio.cls, title: `${prio.label} — ${prio.blurb}` };
       }}
-      metaOf={(topic) =>
-        `${topic.videos.length} video${topic.videos.length === 1 ? "" : "s"} · ${topic.duration}` +
-        (topic.videos[0] ? ` · ${topic.videos[0].channel.split(" - ")[0]}` : "")
-      }
+      metaOf={(topic) => {
+        // "3 resources · 1h 41m · Concept && Coding" — the source named is the
+        // first one, which is the one to start with.
+        const first = topic.resources[0];
+        const source = first ? first.source.split(" - ")[0] : "";
+        const count = `${topic.resources.length} resource${topic.resources.length === 1 ? "" : "s"}`;
+        return [count, topic.duration !== "—" ? topic.duration : "", source].filter(Boolean).join(" · ");
+      }}
       renderDetail={renderDetail}
     />
   );
