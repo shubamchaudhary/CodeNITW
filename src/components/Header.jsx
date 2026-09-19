@@ -19,6 +19,7 @@ const NAV_ITEMS = [
 const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
   { path: "/job-tracker", label: "JOBS" },
+  { path: "/interview-kit", label: "INTERVIEW" },
 ];
 
 export default function Header() {

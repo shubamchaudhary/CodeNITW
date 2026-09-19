@@ -20,6 +20,8 @@ import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
 // Lazy-loaded so the (large) company dataset ships in its own chunk and is only
 // fetched when the owner actually opens the tracker.
 const JobTracker = lazy(() => import("./pages/JobTracker/JobTracker"));
+// Same for the Interview Kit: its content only downloads for the owner.
+const InterviewKit = lazy(() => import("./pages/InterviewKit/InterviewKit"));
 
 function App() {
   // Each signed-in account syncs its own progress to Firestore (scoped by uid).
@@ -70,6 +72,16 @@ function App() {
               element={
                 <Suspense fallback={null}>
                   <JobTracker />
+                </Suspense>
+              }
+            />
+          </Route>
+          <Route path="/interview-kit" element={<OwnerRoute />}>
+            <Route
+              path="/interview-kit"
+              element={
+                <Suspense fallback={null}>
+                  <InterviewKit />
                 </Suspense>
               }
             />

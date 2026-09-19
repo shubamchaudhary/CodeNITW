@@ -23,6 +23,9 @@ export const KEYS = {
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
   DSA_STARRED: "DSAPrepStarred",
+  // Interview Kit checklists (behavioral, STAR, HR, design, Java, LogLens).
+  IK_COMPLETED: "InterviewKitCompleted",
+  IK_NOTES: "InterviewKitNotes",
   PLAN_DAYS: "PlanningDays",
   JOB_TRACKER: "JobTrackerState",
   POMO_STATE: "PlanningPomoState",
@@ -121,6 +124,7 @@ function keysFor(source) {
   if (source === "dsa") return { completed: KEYS.DSA_COMPLETED, notes: KEYS.DSA_NOTES };
   if (source === "corestack") return { completed: KEYS.CS_COMPLETED, notes: KEYS.CS_NOTES };
   if (source === "aistack") return { completed: KEYS.AI_COMPLETED, notes: KEYS.AI_NOTES };
+  if (source === "interviewkit") return { completed: KEYS.IK_COMPLETED, notes: KEYS.IK_NOTES };
   return { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
 }
 
