@@ -1,4 +1,4 @@
-// Curated interview DSA set — 276 problems targeting senior-SDE roles.
+// Curated interview DSA set — 361 problems targeting senior-SDE roles.
 //
 // `priority` (P0–P3) blends two measured signals, not judgement:
 //
@@ -130,6 +130,13 @@ export const DSA_TOPICS = [
         "priority": "P1"
       },
       {
+        "id": "summary-ranges",
+        "title": "Summary Ranges",
+        "link": "https://leetcode.com/problems/summary-ranges/",
+        "difficulty": "Easy",
+        "priority": "P1"
+      },
+      {
         "id": "squares-of-a-sorted-array",
         "title": "Squares of a Sorted Array",
         "link": "https://leetcode.com/problems/squares-of-a-sorted-array/",
@@ -150,6 +157,13 @@ export const DSA_TOPICS = [
         "difficulty": "Medium",
         "priority": "P2",
         "pattern": "Two Pointers"
+      },
+      {
+        "id": "backspace-string-compare",
+        "title": "Backspace String Compare",
+        "link": "https://leetcode.com/problems/backspace-string-compare/",
+        "difficulty": "Easy",
+        "priority": "P2"
       },
       {
         "id": "4sum",
@@ -255,6 +269,13 @@ export const DSA_TOPICS = [
         "pattern": "Sliding Window"
       },
       {
+        "id": "minimum-size-subarray-sum",
+        "title": "Minimum Size Subarray Sum",
+        "link": "https://leetcode.com/problems/minimum-size-subarray-sum/",
+        "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
         "id": "permutation-in-string",
         "title": "Permutation in String",
         "link": "https://leetcode.com/problems/permutation-in-string/",
@@ -270,6 +291,13 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "sliding-window-median",
+        "title": "Sliding Window Median",
+        "link": "https://leetcode.com/problems/sliding-window-median/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
         "id": "subarray-product-less-than-k",
         "title": "Subarray Product Less Than K",
         "link": "https://leetcode.com/problems/subarray-product-less-than-k/",
@@ -281,6 +309,13 @@ export const DSA_TOPICS = [
         "title": "Max Consecutive Ones III",
         "link": "https://leetcode.com/problems/max-consecutive-ones-iii/",
         "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "subarrays-with-k-different-integers",
+        "title": "Subarrays with K Different Integers",
+        "link": "https://leetcode.com/problems/subarrays-with-k-different-integers/",
+        "difficulty": "Hard",
         "priority": "P2"
       },
       {
@@ -344,6 +379,20 @@ export const DSA_TOPICS = [
         "priority": "P1"
       },
       {
+        "id": "count-of-smaller-numbers-after-self",
+        "title": "Count of Smaller Numbers After Self",
+        "link": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "reverse-pairs",
+        "title": "Reverse Pairs",
+        "link": "https://leetcode.com/problems/reverse-pairs/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
         "id": "continuous-subarray-sum",
         "title": "Continuous Subarray Sum",
         "link": "https://leetcode.com/problems/continuous-subarray-sum/",
@@ -354,6 +403,13 @@ export const DSA_TOPICS = [
         "id": "maximum-sum-circular-subarray",
         "title": "Maximum Sum Circular Subarray",
         "link": "https://leetcode.com/problems/maximum-sum-circular-subarray/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "range-sum-query-mutable",
+        "title": "Range Sum Query - Mutable",
+        "link": "https://leetcode.com/problems/range-sum-query-mutable/",
         "difficulty": "Medium",
         "priority": "P3"
       }
@@ -484,11 +540,74 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "word-pattern",
+        "title": "Word Pattern",
+        "link": "https://leetcode.com/problems/word-pattern/",
+        "difficulty": "Easy",
+        "priority": "P2"
+      },
+      {
+        "id": "longest-duplicate-substring",
+        "title": "Longest Duplicate Substring",
+        "link": "https://leetcode.com/problems/longest-duplicate-substring/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "shortest-palindrome",
+        "title": "Shortest Palindrome",
+        "link": "https://leetcode.com/problems/shortest-palindrome/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "find-and-replace-in-string",
+        "title": "Find And Replace in String",
+        "link": "https://leetcode.com/problems/find-and-replace-in-string/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "expressive-words",
+        "title": "Expressive Words",
+        "link": "https://leetcode.com/problems/expressive-words/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "repeated-dna-sequences",
+        "title": "Repeated DNA Sequences",
+        "link": "https://leetcode.com/problems/repeated-dna-sequences/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "license-key-formatting",
+        "title": "License Key Formatting",
+        "link": "https://leetcode.com/problems/license-key-formatting/",
+        "difficulty": "Easy",
+        "priority": "P2"
+      },
+      {
         "id": "longest-palindromic-subsequence",
         "title": "Longest Palindromic Subsequence",
         "link": "https://leetcode.com/problems/longest-palindromic-subsequence/",
         "difficulty": "Medium",
         "priority": "P2"
+      },
+      {
+        "id": "number-of-matching-subsequences",
+        "title": "Number of Matching Subsequences",
+        "link": "https://leetcode.com/problems/number-of-matching-subsequences/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "find-the-index-of-the-first-occurrence-in-a-string",
+        "title": "Find the Index of the First Occurrence in a String",
+        "link": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+        "difficulty": "Easy",
+        "priority": "P3"
       }
     ]
   },
@@ -696,6 +815,13 @@ export const DSA_TOPICS = [
         "priority": "P1"
       },
       {
+        "id": "exclusive-time-of-functions",
+        "title": "Exclusive Time of Functions",
+        "link": "https://leetcode.com/problems/exclusive-time-of-functions/",
+        "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
         "id": "simplify-path",
         "title": "Simplify Path",
         "link": "https://leetcode.com/problems/simplify-path/",
@@ -748,6 +874,13 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "remove-duplicate-letters",
+        "title": "Remove Duplicate Letters",
+        "link": "https://leetcode.com/problems/remove-duplicate-letters/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "next-greater-element-ii",
         "title": "Next Greater Element II",
         "link": "https://leetcode.com/problems/next-greater-element-ii/",
@@ -765,6 +898,13 @@ export const DSA_TOPICS = [
         "id": "132-pattern",
         "title": "132 Pattern",
         "link": "https://leetcode.com/problems/132-pattern/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "online-stock-span",
+        "title": "Online Stock Span",
+        "link": "https://leetcode.com/problems/online-stock-span/",
         "difficulty": "Medium",
         "priority": "P3"
       }
@@ -836,6 +976,13 @@ export const DSA_TOPICS = [
         "title": "Symmetric Tree",
         "link": "https://leetcode.com/problems/symmetric-tree/",
         "difficulty": "Easy",
+        "priority": "P2"
+      },
+      {
+        "id": "maximum-width-of-binary-tree",
+        "title": "Maximum Width of Binary Tree",
+        "link": "https://leetcode.com/problems/maximum-width-of-binary-tree/",
+        "difficulty": "Medium",
         "priority": "P2"
       }
     ]
@@ -921,11 +1068,60 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "find-duplicate-subtrees",
+        "title": "Find Duplicate Subtrees",
+        "link": "https://leetcode.com/problems/find-duplicate-subtrees/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "sum-root-to-leaf-numbers",
         "title": "Sum Root to Leaf Numbers",
         "link": "https://leetcode.com/problems/sum-root-to-leaf-numbers/",
         "difficulty": "Medium",
         "priority": "P2"
+      },
+      {
+        "id": "house-robber-iii",
+        "title": "House Robber III",
+        "link": "https://leetcode.com/problems/house-robber-iii/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "longest-univalue-path",
+        "title": "Longest Univalue Path",
+        "link": "https://leetcode.com/problems/longest-univalue-path/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "sum-of-distances-in-tree",
+        "title": "Sum of Distances in Tree",
+        "link": "https://leetcode.com/problems/sum-of-distances-in-tree/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
+        "id": "step-by-step-directions-from-a-binary-tree-node-to-another",
+        "title": "Step-By-Step Directions From a Binary Tree Node to Another",
+        "link": "https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "amount-of-time-for-binary-tree-to-be-infected",
+        "title": "Amount of Time for Binary Tree to Be Infected",
+        "link": "https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "longest-path-with-different-adjacent-characters",
+        "title": "Longest Path With Different Adjacent Characters",
+        "link": "https://leetcode.com/problems/longest-path-with-different-adjacent-characters/",
+        "difficulty": "Hard",
+        "priority": "P3"
       }
     ]
   },
@@ -963,6 +1159,13 @@ export const DSA_TOPICS = [
         "link": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/",
         "difficulty": "Medium",
         "priority": "P1"
+      },
+      {
+        "id": "delete-nodes-and-return-forest",
+        "title": "Delete Nodes And Return Forest",
+        "link": "https://leetcode.com/problems/delete-nodes-and-return-forest/",
+        "difficulty": "Medium",
+        "priority": "P2"
       },
       {
         "id": "construct-binary-tree-from-inorder-and-postorder-traversal",
@@ -1092,6 +1295,13 @@ export const DSA_TOPICS = [
         "priority": "P1"
       },
       {
+        "id": "trapping-rain-water-ii",
+        "title": "Trapping Rain Water II",
+        "link": "https://leetcode.com/problems/trapping-rain-water-ii/",
+        "difficulty": "Hard",
+        "priority": "P1"
+      },
+      {
         "id": "kth-largest-element-in-a-stream",
         "title": "Kth Largest Element in a Stream",
         "link": "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
@@ -1116,10 +1326,59 @@ export const DSA_TOPICS = [
         "pattern": "Heap / Priority Queue"
       },
       {
+        "id": "smallest-range-covering-elements-from-k-lists",
+        "title": "Smallest Range Covering Elements from K Lists",
+        "link": "https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "minimum-number-of-refueling-stops",
+        "title": "Minimum Number of Refueling Stops",
+        "link": "https://leetcode.com/problems/minimum-number-of-refueling-stops/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "minimum-cost-to-hire-k-workers",
+        "title": "Minimum Cost to Hire K Workers",
+        "link": "https://leetcode.com/problems/minimum-cost-to-hire-k-workers/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
         "id": "car-pooling",
         "title": "Car Pooling",
         "link": "https://leetcode.com/problems/car-pooling/",
         "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "single-threaded-cpu",
+        "title": "Single-Threaded CPU",
+        "link": "https://leetcode.com/problems/single-threaded-cpu/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "furthest-building-you-can-reach",
+        "title": "Furthest Building You Can Reach",
+        "link": "https://leetcode.com/problems/furthest-building-you-can-reach/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "meeting-rooms-iii",
+        "title": "Meeting Rooms III",
+        "link": "https://leetcode.com/problems/meeting-rooms-iii/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
+        "id": "ipo",
+        "title": "IPO",
+        "link": "https://leetcode.com/problems/ipo/",
+        "difficulty": "Hard",
         "priority": "P3"
       }
     ]
@@ -1185,6 +1444,13 @@ export const DSA_TOPICS = [
         "pattern": "Binary Search"
       },
       {
+        "id": "find-k-closest-elements",
+        "title": "Find K Closest Elements",
+        "link": "https://leetcode.com/problems/find-k-closest-elements/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "find-peak-element",
         "title": "Find Peak Element",
         "link": "https://leetcode.com/problems/find-peak-element/",
@@ -1196,6 +1462,20 @@ export const DSA_TOPICS = [
         "title": "Single Element in a Sorted Array",
         "link": "https://leetcode.com/problems/single-element-in-a-sorted-array/",
         "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "kth-smallest-element-in-a-sorted-matrix",
+        "title": "Kth Smallest Element in a Sorted Matrix",
+        "link": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "sqrtx",
+        "title": "Sqrt(x)",
+        "link": "https://leetcode.com/problems/sqrtx/",
+        "difficulty": "Easy",
         "priority": "P2"
       },
       {
@@ -1217,6 +1497,13 @@ export const DSA_TOPICS = [
         "title": "Search in Rotated Sorted Array II",
         "link": "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
         "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "find-k-th-smallest-pair-distance",
+        "title": "Find K-th Smallest Pair Distance",
+        "link": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/",
+        "difficulty": "Hard",
         "priority": "P3"
       }
     ]
@@ -1313,6 +1600,13 @@ export const DSA_TOPICS = [
         "pattern": "Greedy"
       },
       {
+        "id": "longest-string-chain",
+        "title": "Longest String Chain",
+        "link": "https://leetcode.com/problems/longest-string-chain/",
+        "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
         "id": "word-break-ii",
         "title": "Word Break II",
         "link": "https://leetcode.com/problems/word-break-ii/",
@@ -1335,9 +1629,23 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "minimum-cost-for-tickets",
+        "title": "Minimum Cost For Tickets",
+        "link": "https://leetcode.com/problems/minimum-cost-for-tickets/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "number-of-longest-increasing-subsequence",
         "title": "Number of Longest Increasing Subsequence",
         "link": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "flip-string-to-monotone-increasing",
+        "title": "Flip String to Monotone Increasing",
+        "link": "https://leetcode.com/problems/flip-string-to-monotone-increasing/",
         "difficulty": "Medium",
         "priority": "P3"
       }
@@ -1443,6 +1751,13 @@ export const DSA_TOPICS = [
         "pattern": "2-D Dynamic Programming"
       },
       {
+        "id": "knight-dialer",
+        "title": "Knight Dialer",
+        "link": "https://leetcode.com/problems/knight-dialer/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "wildcard-matching",
         "title": "Wildcard Matching",
         "link": "https://leetcode.com/problems/wildcard-matching/",
@@ -1476,6 +1791,27 @@ export const DSA_TOPICS = [
         "link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/",
         "difficulty": "Hard",
         "priority": "P2"
+      },
+      {
+        "id": "number-of-dice-rolls-with-target-sum",
+        "title": "Number of Dice Rolls With Target Sum",
+        "link": "https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "dungeon-game",
+        "title": "Dungeon Game",
+        "link": "https://leetcode.com/problems/dungeon-game/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
+        "id": "maximum-number-of-points-with-cost",
+        "title": "Maximum Number of Points with Cost",
+        "link": "https://leetcode.com/problems/maximum-number-of-points-with-cost/",
+        "difficulty": "Medium",
+        "priority": "P3"
       }
     ]
   },
@@ -1496,6 +1832,27 @@ export const DSA_TOPICS = [
         "link": "https://leetcode.com/problems/longest-valid-parentheses/",
         "difficulty": "Hard",
         "priority": "P2"
+      },
+      {
+        "id": "maximum-profit-in-job-scheduling",
+        "title": "Maximum Profit in Job Scheduling",
+        "link": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "russian-doll-envelopes",
+        "title": "Russian Doll Envelopes",
+        "link": "https://leetcode.com/problems/russian-doll-envelopes/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
+        "id": "minimum-difficulty-of-a-job-schedule",
+        "title": "Minimum Difficulty of a Job Schedule",
+        "link": "https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/",
+        "difficulty": "Hard",
+        "priority": "P3"
       },
       {
         "id": "palindrome-partitioning-ii",
@@ -1576,6 +1933,13 @@ export const DSA_TOPICS = [
         "pattern": "Graphs"
       },
       {
+        "id": "sliding-puzzle",
+        "title": "Sliding Puzzle",
+        "link": "https://leetcode.com/problems/sliding-puzzle/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
         "id": "evaluate-division",
         "title": "Evaluate Division",
         "link": "https://leetcode.com/problems/evaluate-division/",
@@ -1590,6 +1954,20 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "bus-routes",
+        "title": "Bus Routes",
+        "link": "https://leetcode.com/problems/bus-routes/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "shortest-path-in-a-grid-with-obstacles-elimination",
+        "title": "Shortest Path in a Grid with Obstacles Elimination",
+        "link": "https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
         "id": "open-the-lock",
         "title": "Open the Lock",
         "link": "https://leetcode.com/problems/open-the-lock/",
@@ -1597,9 +1975,44 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "shortest-path-to-get-all-keys",
+        "title": "Shortest Path to Get All Keys",
+        "link": "https://leetcode.com/problems/shortest-path-to-get-all-keys/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "making-a-large-island",
+        "title": "Making A Large Island",
+        "link": "https://leetcode.com/problems/making-a-large-island/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
         "id": "01-matrix",
         "title": "01 Matrix",
         "link": "https://leetcode.com/problems/01-matrix/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "possible-bipartition",
+        "title": "Possible Bipartition",
+        "link": "https://leetcode.com/problems/possible-bipartition/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "jump-game-iii",
+        "title": "Jump Game III",
+        "link": "https://leetcode.com/problems/jump-game-iii/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "detonate-the-maximum-bombs",
+        "title": "Detonate the Maximum Bombs",
+        "link": "https://leetcode.com/problems/detonate-the-maximum-bombs/",
         "difficulty": "Medium",
         "priority": "P3"
       }
@@ -1654,6 +2067,13 @@ export const DSA_TOPICS = [
         "link": "https://leetcode.com/problems/course-schedule-iv/",
         "difficulty": "Medium",
         "priority": "P3"
+      },
+      {
+        "id": "parallel-courses-iii",
+        "title": "Parallel Courses III",
+        "link": "https://leetcode.com/problems/parallel-courses-iii/",
+        "difficulty": "Hard",
+        "priority": "P3"
       }
     ]
   },
@@ -1701,6 +2121,13 @@ export const DSA_TOPICS = [
         "pattern": "Advanced Graphs"
       },
       {
+        "id": "critical-connections-in-a-network",
+        "title": "Critical Connections in a Network",
+        "link": "https://leetcode.com/problems/critical-connections-in-a-network/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
         "id": "shortest-bridge",
         "title": "Shortest Bridge",
         "link": "https://leetcode.com/problems/shortest-bridge/",
@@ -1708,9 +2135,23 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+        "title": "Minimum Cost to Make at Least One Valid Path in a Grid",
+        "link": "https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/",
+        "difficulty": "Hard",
+        "priority": "P3"
+      },
+      {
         "id": "path-with-maximum-probability",
         "title": "Path with Maximum Probability",
         "link": "https://leetcode.com/problems/path-with-maximum-probability/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "path-with-minimum-effort",
+        "title": "Path With Minimum Effort",
+        "link": "https://leetcode.com/problems/path-with-minimum-effort/",
         "difficulty": "Medium",
         "priority": "P3"
       }
@@ -1751,6 +2192,20 @@ export const DSA_TOPICS = [
         "difficulty": "Medium",
         "priority": "P2",
         "pattern": "Graphs"
+      },
+      {
+        "id": "most-stones-removed-with-same-row-or-column",
+        "title": "Most Stones Removed with Same Row or Column",
+        "link": "https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "satisfiability-of-equality-equations",
+        "title": "Satisfiability of Equality Equations",
+        "link": "https://leetcode.com/problems/satisfiability-of-equality-equations/",
+        "difficulty": "Medium",
+        "priority": "P3"
       },
       {
         "id": "number-of-provinces",
@@ -1822,6 +2277,13 @@ export const DSA_TOPICS = [
         "priority": "P1"
       },
       {
+        "id": "remove-invalid-parentheses",
+        "title": "Remove Invalid Parentheses",
+        "link": "https://leetcode.com/problems/remove-invalid-parentheses/",
+        "difficulty": "Hard",
+        "priority": "P1"
+      },
+      {
         "id": "combination-sum",
         "title": "Combination Sum",
         "link": "https://leetcode.com/problems/combination-sum/",
@@ -1860,6 +2322,13 @@ export const DSA_TOPICS = [
         "difficulty": "Medium",
         "priority": "P2",
         "pattern": "Backtracking"
+      },
+      {
+        "id": "expression-add-operators",
+        "title": "Expression Add Operators",
+        "link": "https://leetcode.com/problems/expression-add-operators/",
+        "difficulty": "Hard",
+        "priority": "P2"
       },
       {
         "id": "permutations-ii",
@@ -1918,6 +2387,13 @@ export const DSA_TOPICS = [
         "pattern": "Greedy"
       },
       {
+        "id": "my-calendar-i",
+        "title": "My Calendar I",
+        "link": "https://leetcode.com/problems/my-calendar-i/",
+        "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
         "id": "interval-list-intersections",
         "title": "Interval List Intersections",
         "link": "https://leetcode.com/problems/interval-list-intersections/",
@@ -1965,11 +2441,53 @@ export const DSA_TOPICS = [
         "pattern": "Intervals"
       },
       {
+        "id": "range-module",
+        "title": "Range Module",
+        "link": "https://leetcode.com/problems/range-module/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "candy",
+        "title": "Candy",
+        "link": "https://leetcode.com/problems/candy/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "maximum-number-of-events-that-can-be-attended",
+        "title": "Maximum Number of Events That Can Be Attended",
+        "link": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
+        "id": "queue-reconstruction-by-height",
+        "title": "Queue Reconstruction by Height",
+        "link": "https://leetcode.com/problems/queue-reconstruction-by-height/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "minimum-number-of-arrows-to-burst-balloons",
         "title": "Minimum Number of Arrows to Burst Balloons",
         "link": "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/",
         "difficulty": "Medium",
         "priority": "P2"
+      },
+      {
+        "id": "my-calendar-ii",
+        "title": "My Calendar II",
+        "link": "https://leetcode.com/problems/my-calendar-ii/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "video-stitching",
+        "title": "Video Stitching",
+        "link": "https://leetcode.com/problems/video-stitching/",
+        "difficulty": "Medium",
+        "priority": "P3"
       }
     ]
   },
@@ -1993,6 +2511,41 @@ export const DSA_TOPICS = [
         "priority": "P1",
         "pattern": "Tries",
         "core": true
+      },
+      {
+        "id": "palindrome-pairs",
+        "title": "Palindrome Pairs",
+        "link": "https://leetcode.com/problems/palindrome-pairs/",
+        "difficulty": "Hard",
+        "priority": "P1"
+      },
+      {
+        "id": "concatenated-words",
+        "title": "Concatenated Words",
+        "link": "https://leetcode.com/problems/concatenated-words/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "stream-of-characters",
+        "title": "Stream of Characters",
+        "link": "https://leetcode.com/problems/stream-of-characters/",
+        "difficulty": "Hard",
+        "priority": "P2"
+      },
+      {
+        "id": "search-suggestions-system",
+        "title": "Search Suggestions System",
+        "link": "https://leetcode.com/problems/search-suggestions-system/",
+        "difficulty": "Medium",
+        "priority": "P3"
+      },
+      {
+        "id": "maximum-xor-of-two-numbers-in-an-array",
+        "title": "Maximum XOR of Two Numbers in an Array",
+        "link": "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
+        "difficulty": "Medium",
+        "priority": "P3"
       }
     ]
   },
@@ -2185,6 +2738,13 @@ export const DSA_TOPICS = [
         "priority": "P1"
       },
       {
+        "id": "peeking-iterator",
+        "title": "Peeking Iterator",
+        "link": "https://leetcode.com/problems/peeking-iterator/",
+        "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
         "id": "design-circular-queue",
         "title": "Design Circular Queue",
         "link": "https://leetcode.com/problems/design-circular-queue/",
@@ -2222,6 +2782,13 @@ export const DSA_TOPICS = [
         "priority": "P2"
       },
       {
+        "id": "snapshot-array",
+        "title": "Snapshot Array",
+        "link": "https://leetcode.com/problems/snapshot-array/",
+        "difficulty": "Medium",
+        "priority": "P2"
+      },
+      {
         "id": "design-in-memory-file-system",
         "title": "Design In-Memory File System",
         "link": "https://leetcode.com/problems/design-in-memory-file-system/",
@@ -2255,6 +2822,13 @@ export const DSA_TOPICS = [
         "link": "https://leetcode.com/problems/design-circular-deque/",
         "difficulty": "Medium",
         "priority": "P3"
+      },
+      {
+        "id": "stock-price-fluctuation",
+        "title": "Stock Price Fluctuation",
+        "link": "https://leetcode.com/problems/stock-price-fluctuation/",
+        "difficulty": "Medium",
+        "priority": "P3"
       }
     ]
   },
@@ -2270,10 +2844,24 @@ export const DSA_TOPICS = [
         "pattern": "Math & Geometry"
       },
       {
+        "id": "fraction-to-recurring-decimal",
+        "title": "Fraction to Recurring Decimal",
+        "link": "https://leetcode.com/problems/fraction-to-recurring-decimal/",
+        "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
         "id": "integer-to-roman",
         "title": "Integer to Roman",
         "link": "https://leetcode.com/problems/integer-to-roman/",
         "difficulty": "Medium",
+        "priority": "P1"
+      },
+      {
+        "id": "max-points-on-a-line",
+        "title": "Max Points on a Line",
+        "link": "https://leetcode.com/problems/max-points-on-a-line/",
+        "difficulty": "Hard",
         "priority": "P1"
       },
       {
@@ -2299,6 +2887,13 @@ export const DSA_TOPICS = [
         "difficulty": "Easy",
         "priority": "P2",
         "pattern": "Math & Geometry"
+      },
+      {
+        "id": "minimum-area-rectangle",
+        "title": "Minimum Area Rectangle",
+        "link": "https://leetcode.com/problems/minimum-area-rectangle/",
+        "difficulty": "Medium",
+        "priority": "P2"
       }
     ]
   }
@@ -2326,6 +2921,6 @@ export const DSA_PROBLEMS = DSA_TOPICS.flatMap((t) =>
   t.problems.map((p) => ({ ...p, topic: t.topic }))
 );
 
-export const DSA_TOTAL = 276;
+export const DSA_TOTAL = 361;
 
-export const DSA_PRIORITY_COUNTS = {"P0":35,"P1":124,"P2":97,"P3":20};
+export const DSA_PRIORITY_COUNTS = {"P0":35,"P1":135,"P2":137,"P3":54};
