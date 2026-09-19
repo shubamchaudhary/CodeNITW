@@ -128,6 +128,111 @@ const ADDITIONS = [
   ["minimum-interval-to-include-each-query", "Minimum Interval to Include Each Query", "Hard", "Greedy & Intervals"],
   ["counting-bits", "Counting Bits", "Easy", "Bit Manipulation"],
   ["reverse-bits", "Reverse Bits", "Easy", "Bit Manipulation"],
+
+  // ── Harder follow-ups and product-company favourites ──
+  // Scheduling with heaps, BFS over (cell, extra state), binary search on the
+  // answer, design-a-class and range-query problems: the variants that show
+  // up after the pattern anchor is solved. Premium-only problems and
+  // near-duplicates of problems already here were left out.
+  // Arrays / two pointers / sliding window
+  ["summary-ranges", "Summary Ranges", "Easy", "Arrays and Two Pointers"],
+  ["backspace-string-compare", "Backspace String Compare", "Easy", "Arrays and Two Pointers"],
+  ["minimum-size-subarray-sum", "Minimum Size Subarray Sum", "Medium", "Sliding Window"],
+  ["subarrays-with-k-different-integers", "Subarrays with K Different Integers", "Hard", "Sliding Window"],
+  ["sliding-window-median", "Sliding Window Median", "Hard", "Sliding Window"],
+  // Range queries
+  ["range-sum-query-mutable", "Range Sum Query - Mutable", "Medium", "Array Manipulation and Prefix Sums"],
+  ["count-of-smaller-numbers-after-self", "Count of Smaller Numbers After Self", "Hard", "Array Manipulation and Prefix Sums"],
+  ["reverse-pairs", "Reverse Pairs", "Hard", "Array Manipulation and Prefix Sums"],
+  // Strings
+  ["license-key-formatting", "License Key Formatting", "Easy", "String Algorithms"],
+  ["word-pattern", "Word Pattern", "Easy", "String Algorithms"],
+  ["find-the-index-of-the-first-occurrence-in-a-string", "Find the Index of the First Occurrence in a String", "Easy", "String Algorithms"],
+  ["expressive-words", "Expressive Words", "Medium", "String Algorithms"],
+  ["find-and-replace-in-string", "Find And Replace in String", "Medium", "String Algorithms"],
+  ["number-of-matching-subsequences", "Number of Matching Subsequences", "Medium", "String Algorithms"],
+  ["repeated-dna-sequences", "Repeated DNA Sequences", "Medium", "String Algorithms"],
+  ["longest-duplicate-substring", "Longest Duplicate Substring", "Hard", "String Algorithms"],
+  ["shortest-palindrome", "Shortest Palindrome", "Hard", "String Algorithms"],
+  // Stacks
+  ["online-stock-span", "Online Stock Span", "Medium", "Stack and Queue"],
+  ["exclusive-time-of-functions", "Exclusive Time of Functions", "Medium", "Stack and Queue"],
+  ["remove-duplicate-letters", "Remove Duplicate Letters", "Medium", "Stack and Queue"],
+  // Trees
+  ["maximum-width-of-binary-tree", "Maximum Width of Binary Tree", "Medium", "Trees - Basic and Traversal"],
+  ["house-robber-iii", "House Robber III", "Medium", "Trees - Advanced Properties"],
+  ["step-by-step-directions-from-a-binary-tree-node-to-another", "Step-By-Step Directions From a Binary Tree Node to Another", "Medium", "Trees - Advanced Properties"],
+  ["find-duplicate-subtrees", "Find Duplicate Subtrees", "Medium", "Trees - Advanced Properties"],
+  ["longest-univalue-path", "Longest Univalue Path", "Medium", "Trees - Advanced Properties"],
+  ["amount-of-time-for-binary-tree-to-be-infected", "Amount of Time for Binary Tree to Be Infected", "Medium", "Trees - Advanced Properties"],
+  ["longest-path-with-different-adjacent-characters", "Longest Path With Different Adjacent Characters", "Hard", "Trees - Advanced Properties"],
+  ["sum-of-distances-in-tree", "Sum of Distances in Tree", "Hard", "Trees - Advanced Properties"],
+  ["delete-nodes-and-return-forest", "Delete Nodes And Return Forest", "Medium", "Trees - Construction and Modification"],
+  // Heaps / scheduling
+  ["single-threaded-cpu", "Single-Threaded CPU", "Medium", "Heap and Priority Queue"],
+  ["furthest-building-you-can-reach", "Furthest Building You Can Reach", "Medium", "Heap and Priority Queue"],
+  ["meeting-rooms-iii", "Meeting Rooms III", "Hard", "Heap and Priority Queue"],
+  ["ipo", "IPO", "Hard", "Heap and Priority Queue"],
+  ["smallest-range-covering-elements-from-k-lists", "Smallest Range Covering Elements from K Lists", "Hard", "Heap and Priority Queue"],
+  ["minimum-cost-to-hire-k-workers", "Minimum Cost to Hire K Workers", "Hard", "Heap and Priority Queue"],
+  ["minimum-number-of-refueling-stops", "Minimum Number of Refueling Stops", "Hard", "Heap and Priority Queue"],
+  ["trapping-rain-water-ii", "Trapping Rain Water II", "Hard", "Heap and Priority Queue"],
+  // Binary search
+  ["sqrtx", "Sqrt(x)", "Easy", "Binary Search"],
+  ["find-k-closest-elements", "Find K Closest Elements", "Medium", "Binary Search"],
+  ["kth-smallest-element-in-a-sorted-matrix", "Kth Smallest Element in a Sorted Matrix", "Medium", "Binary Search"],
+  ["find-k-th-smallest-pair-distance", "Find K-th Smallest Pair Distance", "Hard", "Binary Search"],
+  // DP
+  ["longest-string-chain", "Longest String Chain", "Medium", "Dynamic Programming - 1D"],
+  ["flip-string-to-monotone-increasing", "Flip String to Monotone Increasing", "Medium", "Dynamic Programming - 1D"],
+  ["minimum-cost-for-tickets", "Minimum Cost For Tickets", "Medium", "Dynamic Programming - 1D"],
+  ["knight-dialer", "Knight Dialer", "Medium", "Dynamic Programming - 2D"],
+  ["maximum-number-of-points-with-cost", "Maximum Number of Points with Cost", "Medium", "Dynamic Programming - 2D"],
+  ["number-of-dice-rolls-with-target-sum", "Number of Dice Rolls With Target Sum", "Medium", "Dynamic Programming - 2D"],
+  ["dungeon-game", "Dungeon Game", "Hard", "Dynamic Programming - 2D"],
+  ["maximum-profit-in-job-scheduling", "Maximum Profit in Job Scheduling", "Hard", "Dynamic Programming - Advanced"],
+  ["minimum-difficulty-of-a-job-schedule", "Minimum Difficulty of a Job Schedule", "Hard", "Dynamic Programming - Advanced"],
+  ["russian-doll-envelopes", "Russian Doll Envelopes", "Hard", "Dynamic Programming - Advanced"],
+  // Graphs
+  ["jump-game-iii", "Jump Game III", "Medium", "Graphs - Basic Traversal"],
+  ["possible-bipartition", "Possible Bipartition", "Medium", "Graphs - Basic Traversal"],
+  ["detonate-the-maximum-bombs", "Detonate the Maximum Bombs", "Medium", "Graphs - Basic Traversal"],
+  ["making-a-large-island", "Making A Large Island", "Hard", "Graphs - Basic Traversal"],
+  ["shortest-path-in-a-grid-with-obstacles-elimination", "Shortest Path in a Grid with Obstacles Elimination", "Hard", "Graphs - Basic Traversal"],
+  ["shortest-path-to-get-all-keys", "Shortest Path to Get All Keys", "Hard", "Graphs - Basic Traversal"],
+  ["bus-routes", "Bus Routes", "Hard", "Graphs - Basic Traversal"],
+  ["sliding-puzzle", "Sliding Puzzle", "Hard", "Graphs - Basic Traversal"],
+  ["parallel-courses-iii", "Parallel Courses III", "Hard", "Graphs - Topological Sort and Cycle Detection"],
+  ["path-with-minimum-effort", "Path With Minimum Effort", "Medium", "Graphs - Shortest Path and Advanced"],
+  ["minimum-cost-to-make-at-least-one-valid-path-in-a-grid", "Minimum Cost to Make at Least One Valid Path in a Grid", "Hard", "Graphs - Shortest Path and Advanced"],
+  ["critical-connections-in-a-network", "Critical Connections in a Network", "Hard", "Graphs - Shortest Path and Advanced"],
+  ["most-stones-removed-with-same-row-or-column", "Most Stones Removed with Same Row or Column", "Medium", "Union Find"],
+  ["satisfiability-of-equality-equations", "Satisfiability of Equality Equations", "Medium", "Union Find"],
+  // Backtracking
+  ["expression-add-operators", "Expression Add Operators", "Hard", "Backtracking"],
+  ["remove-invalid-parentheses", "Remove Invalid Parentheses", "Hard", "Backtracking"],
+  // Greedy & intervals
+  ["queue-reconstruction-by-height", "Queue Reconstruction by Height", "Medium", "Greedy & Intervals"],
+  ["video-stitching", "Video Stitching", "Medium", "Greedy & Intervals"],
+  ["maximum-number-of-events-that-can-be-attended", "Maximum Number of Events That Can Be Attended", "Medium", "Greedy & Intervals"],
+  ["my-calendar-i", "My Calendar I", "Medium", "Greedy & Intervals"],
+  ["my-calendar-ii", "My Calendar II", "Medium", "Greedy & Intervals"],
+  ["candy", "Candy", "Hard", "Greedy & Intervals"],
+  ["range-module", "Range Module", "Hard", "Greedy & Intervals"],
+  // Trie
+  ["search-suggestions-system", "Search Suggestions System", "Medium", "Trie"],
+  ["maximum-xor-of-two-numbers-in-an-array", "Maximum XOR of Two Numbers in an Array", "Medium", "Trie"],
+  ["stream-of-characters", "Stream of Characters", "Hard", "Trie"],
+  ["palindrome-pairs", "Palindrome Pairs", "Hard", "Trie"],
+  ["concatenated-words", "Concatenated Words", "Hard", "Trie"],
+  // Design
+  ["snapshot-array", "Snapshot Array", "Medium", "Design and Implementation"],
+  ["stock-price-fluctuation", "Stock Price Fluctuation", "Medium", "Design and Implementation"],
+  ["peeking-iterator", "Peeking Iterator", "Medium", "Design and Implementation"],
+  // Math & geometry
+  ["fraction-to-recurring-decimal", "Fraction to Recurring Decimal", "Medium", "Math & Number Theory"],
+  ["minimum-area-rectangle", "Minimum Area Rectangle", "Medium", "Math & Number Theory"],
+  ["max-points-on-a-line", "Max Points on a Line", "Hard", "Math & Number Theory"],
 ];
 
 // ── Aggregate frequency across the user's target companies ──────────────────
