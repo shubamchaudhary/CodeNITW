@@ -131,7 +131,9 @@ function parseHandoff(text) {
   return out;
 }
 
-const HANDOFF = parseHandoff(readFileSync(MD_PATH, "utf8"));
+// Normalise line endings first: a Windows checkout (core.autocrlf) hands us
+// CRLF, and the stray \r defeats every `$`-anchored heading match below.
+const HANDOFF = parseHandoff(readFileSync(MD_PATH, "utf8").replace(/\r\n?/g, "\n"));
 
 // ─── Resolve one resource reference ──────────────────────────────────────────
 const errors = [];
@@ -154,6 +156,9 @@ function resolveResource(ref, topicId, index) {
       playlistUrl: row.playlist_url,
       position: Number(row.video_position),
       minutes: Number(row.duration_min) || 0,
+      // The map can say which part of a long video the topic needs; the CSV
+      // stays pure fact about the video itself.
+      note: ref.note || "",
     };
   }
 
