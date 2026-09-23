@@ -16,10 +16,12 @@
    ── Resource kinds ─────────────────────────────────────────────────────────
    csv:      "CC-SB#13"  → resolved against scripts/data/javaSpringPrepTracker.csv,
                            which carries the verified channel/playlist/title/
-                           duration for every video the original plan used. The
+                           duration for every playlist video this map uses. The
                            generator FAILS if the reference is not in that file.
+                           An optional `note` says which part of the video to watch.
    playlist: "CC-J#19"   → a video known by playlist position and title but whose
                            duration was never tracked. Rendered without a runtime.
+                           (None left: every such video now has a CSV row.)
    video:    {...}        → a direct watch URL.
    doc:      {...}        → written reference.
    self:     {...}        → your own codebase. There is no substitute for it and
@@ -28,6 +30,10 @@
    `inherit` pulls a topic's question list from scripts/data/javaSpringPrepHandoff.md
    by its old id; `questions` adds to that (or stands alone when there is no
    inherit). Nothing is retyped, so nothing drifts.
+
+   Topic ids are storage keys — progress, notes and check-in history hang off
+   them. Never renumber or reuse one; a new topic gets the next free id and
+   goes wherever it belongs in the array (array order is display order).
 */
 
 export const SECTIONS = [
@@ -48,18 +54,56 @@ export const TOPICS = [
     section: "java",
     priority: "P0",
     title: "Collections framework + HashMap internals",
-    why: "The single most reliably asked core-Java topic; HashMap internals came up by name in SDE-2 write-ups.",
-    resources: [{ csv: "CC-J#22" }, { csv: "CC-J#25" }],
+    why: "The single most reliably asked core-Java topic. 2025–26 SDE-2 write-ups still open with it: resize and rehashing, what changed in Java 8, how ConcurrentHashMap stays safe without a global lock, and whether a custom object can be a key.",
+    resources: [{ csv: "CC-J#23" }, { csv: "CC-J#26" }],
     inherit: "P0-05",
+    questions: [
+      "HashMap allows one null key — where does it live? Why do ConcurrentHashMap and Hashtable reject null keys and values?",
+      "Is get-then-put on a ConcurrentHashMap thread-safe? What do you use instead? (computeIfAbsent / compute / merge.)",
+      "Can any object be a HashMap key? What must it guarantee, and what is the cheapest way to get it right? (Immutable + equals/hashCode — or a record.)",
+    ],
   },
   {
     id: "JAVA-02",
     section: "java",
     priority: "P0",
     title: "Streams, lambdas & functional interfaces",
-    why: "Java 8 stream/lambda questions appear in essentially every loop at 2–4 years.",
-    resources: [{ csv: "CC-J#17" }, { csv: "CC-J#28" }],
+    why: "Java 8 stream/lambda questions appear in essentially every loop at 2–4 years. This card is the theory; JAVA-10 is the live-coding half.",
+    resources: [{ csv: "CC-J#17" }, { csv: "CC-J#29" }],
     inherit: "P0-06",
+  },
+  {
+    id: "JAVA-10",
+    section: "java",
+    priority: "P0",
+    title: "Streams live-coding — the Employee / Transaction drill",
+    why: "NEW. Streams are tested by writing them, not describing them: \"customers whose total amount > 5000 from a transaction list\" was reported verbatim in a 2026 SDE-2 loop, and second-highest-salary and group-by-department variants recur across write-ups. Knowing what map and flatMap do is not the same as producing groupingBy + collectingAndThen under a timer.",
+    resources: [
+      {
+        doc: {
+          title: "Guide to Java groupingBy Collector",
+          site: "baeldung.com",
+          url: "https://www.baeldung.com/java-groupingby-collector",
+          note: "Reference only. The drill is the prompts below — write each one in an IDE without looking, then check.",
+          minutes: 20,
+          estimate: true,
+        },
+      },
+    ],
+    questions: [
+      "Transaction(customerId, amount): return the customerIds whose total amount exceeds 5000, sorted by total descending.",
+      "Employee(name, dept, salary): the second-highest distinct salary overall. Then the same per department.",
+      "Highest-paid employee per department as Map<String, Employee> — groupingBy + maxBy, then collectingAndThen to unwrap the Optional.",
+      "Average salary per department, sorted by that average, collected into a LinkedHashMap.",
+      "Frequency of each character in a string; then the first non-repeating character.",
+      "Duplicates in a List<Integer> — two ways (Set.add trick vs groupingBy + counting). Which is O(n)?",
+      "Split employees into salary > 50k and the rest. partitioningBy vs groupingBy — what differs in the result?",
+      "Flatten List<List<String>>, then return the distinct words sorted by length, then alphabetically.",
+      "Employee names per department as one comma-separated string. (joining as a downstream collector.)",
+      "Top 3 most frequent words in a paragraph, ties broken alphabetically.",
+      "Collectors.toMap throws on a duplicate key — why, and what does the merge function fix?",
+      "Turn a nested loop with an early break into a stream. Should you? (anyMatch / takeWhile — or keep the loop, and say why.)",
+    ],
   },
   {
     id: "JAVA-03",
@@ -67,13 +111,12 @@ export const TOPICS = [
     priority: "P0",
     title: "OOP, exceptions & error handling",
     why: "Reported verbatim in SDE-2 rounds: exception hierarchy, checked vs unchecked, try-with-resources, propagation. It was buried in the old plan's remedial pile — it should not have been.",
-    resources: [
-      { playlist: "CC-J#2", title: "OOPs Concept" },
-      { playlist: "CC-J#19", title: "Exception Handling" },
-    ],
+    resources: [{ csv: "CC-J#2" }, { csv: "CC-J#20" }],
     questions: [
       "Four pillars of OOP — give a real example of each from code you have written, not a textbook one.",
       "Abstract class vs interface in Java 17. When does an interface with default methods win?",
+      "Two interfaces give you the same default method. What does the compiler make you do?",
+      "Is Java pass-by-value or pass-by-reference? Prove it with a swap method.",
       "What is the superclass of every exception? Where do Error and RuntimeException sit?",
       "Checked vs unchecked — which do you throw from a service layer, and why?",
       "How does exception propagation work through a call stack? What does the JVM do if nothing catches?",
@@ -83,7 +126,30 @@ export const TOPICS = [
       "Can you override a static method? What actually happens if you try?",
       "Custom exception: checked or unchecked, and what do you put in it beyond a message?",
       "finally runs when? Name two cases where it does not.",
+      "final vs finally vs finalize — and why is finalize deprecated for removal?",
       "What is the cost of throwing an exception, and why is exception-as-control-flow discouraged?",
+    ],
+  },
+  {
+    id: "JAVA-06",
+    section: "java",
+    priority: "P0",
+    title: "Strings, immutability, equals/hashCode & singletons",
+    why: "Raised from P1 and widened to Strings. A 2026 SDE-2 write-up asked both \"why are Strings immutable?\" and \"why does double-checked locking break without volatile?\" by name, and String vs StringBuilder vs StringBuffer is on every 2026 core-Java list. Cheap to own, embarrassing to miss.",
+    resources: [
+      { csv: "CC-J#14" },
+      { csv: "CC-J#7", note: "The String, wrapper-class and autoboxing parts are what this card needs; the casting rules are revision." },
+      { csv: "DT#27" },
+    ],
+    inherit: "P1-23",
+    questions: [
+      "String s = new String(\"abc\") — how many objects can that create, and where does each live?",
+      "== vs equals on Strings. What does intern() do, and when would you ever call it?",
+      "String vs StringBuilder vs StringBuffer — and why is + inside a loop slow?",
+      "Why is String final as well as immutable? Give the security, hashCode-caching and pooling reasons.",
+      "Integer a = 127, b = 127; a == b? Now 128. Explain. (The Integer cache behind valueOf.)",
+      "Where can autoboxing throw a NullPointerException you did not see coming?",
+      "Why keep a password in a char[] rather than a String?",
     ],
   },
   {
@@ -99,33 +165,28 @@ export const TOPICS = [
     id: "JAVA-05",
     section: "java",
     priority: "P1",
-    title: "Java 17 & 21 — records, sealed types, pattern matching, virtual threads",
-    why: "Raised from P2: 2026 write-ups treat Java 17 features as assumed knowledge, and virtual threads are now a live interview topic. You ship Java 17 — being vague here reads badly.",
+    title: "Java 17 → 25 — records, sealed types, pattern matching, virtual threads",
+    why: "2026 write-ups treat Java 17 features as assumed knowledge, \"Java 8 vs 11 vs 17\" is asked by name, and virtual threads are now a live topic. Java 25 is the current LTS and finalised Scoped Values. You ship Java 17 — being vague here reads badly.",
     resources: [
-      { csv: "CC-J#41" },
       { csv: "CC-J#42" },
       { csv: "CC-J#43" },
       { csv: "CC-J#44" },
       { csv: "CC-J#45" },
-      { csv: "CC-J#38" },
+      { csv: "CC-J#46" },
+      { csv: "CC-J#39" },
     ],
     inherit: "P2-36",
     questions: [
+      "Java 8 → 11 → 17 → 21 → 25: name the one change in each that you would actually use in a Spring service.",
       "Platform thread vs virtual thread — what actually changes, and what does not?",
-      "What is pinning, what causes it, and how would you detect it?",
+      "What is pinning, what causes it, and how would you detect it? What did JDK 24 (JEP 491) change about synchronized, and what still pins?",
       "Why are thread pools mostly pointless with virtual threads — and where do you still want one?",
       "Virtual threads vs reactive (WebFlux/Reactor) — what problem does each solve? Which would you pick now?",
       "Where do virtual threads NOT help? (CPU-bound work — say so plainly.)",
+      "spring.threads.virtual.enabled=true — what does Spring Boot switch over, and what do you check first? (Connection-pool limits: a million threads still share ten connections.)",
+      "Scoped Values (final in Java 25) vs ThreadLocal — what problem do they fix for virtual threads?",
       "Which of Java 17/21's features have you actually used at work, and which would you adopt next?",
     ],
-  },
-  {
-    id: "JAVA-06",
-    section: "java",
-    priority: "P1",
-    title: "Immutability, equals/hashCode & singletons",
-    resources: [{ csv: "CC-J#14" }],
-    inherit: "P1-23",
   },
   {
     id: "JAVA-07",
@@ -136,24 +197,12 @@ export const TOPICS = [
     inherit: "P1-24",
   },
   {
-    id: "JAVA-08",
-    section: "java",
-    priority: "P2",
-    title: "Optional — the API and its misuse",
-    resources: [{ csv: "CC-J#47" }],
-    inherit: "P2-37",
-  },
-  {
     id: "JAVA-09",
     section: "java",
     priority: "P2",
     title: "Comparable vs Comparator, TreeMap, LinkedHashMap & Set",
-    why: "Cheap points. Comparator questions show up constantly as a warm-up before something harder.",
-    resources: [
-      { playlist: "CC-J#23", title: "Comparator vs Comparable" },
-      { playlist: "CC-J#26", title: "LinkedHashMap and TreeMap" },
-      { playlist: "CC-J#27", title: "SET" },
-    ],
+    why: "Cheap points. Comparator questions show up constantly as a warm-up before something harder, and the JAVA-10 drill leans on them.",
+    resources: [{ csv: "CC-J#24" }, { csv: "CC-J#27" }, { csv: "CC-J#28" }],
     questions: [
       "Comparable vs Comparator — which one changes the class, and which one do you reach for in practice?",
       "Sort a list of objects by two fields, second descending. Write it with Comparator chaining.",
@@ -164,6 +213,32 @@ export const TOPICS = [
       "Your comparator throws \"Comparison method violates its general contract\" in production. What happened?",
     ],
   },
+  {
+    id: "JAVA-08",
+    section: "java",
+    priority: "P2",
+    title: "Optional — the API and its misuse",
+    resources: [{ csv: "CC-J#48" }],
+    inherit: "P2-37",
+  },
+  {
+    id: "JAVA-11",
+    section: "java",
+    priority: "P2",
+    title: "Reflection, annotations, serialization & class loading",
+    why: "NEW. What Spring is built on. Rarely a round of its own, but \"how does Spring find your @Component?\" and \"write a custom annotation\" land here (a Gartner SDE-2 loop asked about custom annotations in the Spring lifecycle), and ClassNotFoundException vs NoClassDefFoundError is a classic production question.",
+    resources: [{ csv: "CC-J#18" }, { csv: "CC-J#19" }],
+    questions: [
+      "Retention policies — SOURCE, CLASS, RUNTIME. Which one must an annotation Spring reads at runtime use, and why?",
+      "You write @LogExecutionTime. What makes it do anything? (Nothing — until an aspect or a processor reads it. See SPRING-06.)",
+      "How does Spring find your @Component classes at startup, and what does that scanning cost at boot?",
+      "How can reflection break a singleton or an immutable class, and how do you defend against it?",
+      "ClassNotFoundException vs NoClassDefFoundError — which is checked, and what usually causes the second one in production?",
+      "ClassLoader hierarchy and parent delegation — what does delegation protect you from?",
+      "Serializable, transient and serialVersionUID — what happens if the class changes after an object was serialised?",
+      "Why is native Java serialization discouraged for anything crossing a trust boundary?",
+    ],
+  },
 
   // ─── Concurrency ───────────────────────────────────────────────────────────
   {
@@ -172,16 +247,26 @@ export const TOPICS = [
     priority: "P0",
     title: "Threads, executors & ThreadPoolExecutor",
     why: "Your resume says Multithreading & Concurrency and Asynchronous Processing. Expect a whole round.",
-    resources: [{ csv: "CC-J#29" }, { csv: "CC-J#34" }],
+    resources: [
+      { csv: "CC-J#30" },
+      { csv: "CC-J#35" },
+      { csv: "CC-J#38" },
+    ],
     inherit: "P0-07",
+    questions: [
+      "Runnable vs Callable; start() vs run() — what happens if you call run() directly?",
+      "Daemon vs user thread — what happens to a daemon thread when main returns?",
+      "scheduleAtFixedRate vs scheduleWithFixedDelay — and what happens to the schedule if one run throws?",
+      "Tomcat already has a thread pool. When does your Spring service need its own executor, and how do you size it against the DB connection pool?",
+    ],
   },
   {
     id: "CONC-02",
     section: "concurrency",
     priority: "P0",
     title: "volatile, atomics, CAS & the Java Memory Model",
-    why: "\"volatile vs atomic\" is reported almost verbatim in SDE-2 loops.",
-    resources: [{ csv: "CC-J#33" }, { csv: "DT#4" }],
+    why: "\"volatile vs atomic\" is reported almost verbatim in SDE-2 loops, and \"what is volatile for?\" came up again in a Sept 2025 Walmart SDE-2 round.",
+    resources: [{ csv: "CC-J#34" }, { csv: "DT#1" }, { csv: "DT#4" }],
     inherit: "P0-09",
   },
   {
@@ -189,8 +274,13 @@ export const TOPICS = [
     section: "concurrency",
     priority: "P0",
     title: "Locks, wait/notify & coordination primitives",
-    why: "This is where the classic live-coding ask lands: N threads printing in strict sequence.",
-    resources: [{ csv: "CC-J#32" }],
+    why: "This is where the classic live-coding ask lands: N threads printing in strict sequence, or producer–consumer. Defog #18 builds the wait/notify version; Defog #21 covers the latch/barrier question the locks video skips.",
+    resources: [
+      { csv: "CC-J#33" },
+      { csv: "CC-J#31" },
+      { csv: "DT#18" },
+      { csv: "DT#21" },
+    ],
     inherit: "P0-10",
     questions: [
       "Three threads must print 1,2,3,1,2,3… in strict order. Write it with wait/notify, then with Semaphores. Which would you ship?",
@@ -198,6 +288,8 @@ export const TOPICS = [
       "Why notifyAll() over notify()? What is the lost-wakeup problem?",
       "Why must wait() always sit inside a loop that rechecks the condition?",
       "Producer–consumer with a bounded buffer: implement it with BlockingQueue, then say what BlockingQueue is doing for you underneath.",
+      "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
+      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
     ],
   },
   {
@@ -205,30 +297,56 @@ export const TOPICS = [
     section: "concurrency",
     priority: "P0",
     title: "CompletableFuture & @Async",
-    why: "Directly backs the async/sync-fallback work on your resume.",
-    resources: [{ csv: "CC-J#35" }, { csv: "CC-SB#16" }, { csv: "CC-SB#17" }],
+    why: "Directly backs the async/sync-fallback work on your resume. \"Long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
+    resources: [
+      { csv: "CC-J#36" },
+      { csv: "CC-SB#16" },
+      { csv: "CC-SB#17" },
+      { csv: "DT#19" },
+    ],
     inherit: "P0-08",
+    questions: [
+      "A client triggers a 10-minute job over HTTP. @Async, a queue, or a scheduler? What does the client get back, and how does it learn the result?",
+      "An @Scheduled job runs on all three pods. How do you make it run once? (ShedLock / leader election / a K8s CronJob.)",
+    ],
+  },
+  {
+    id: "CONC-06",
+    section: "concurrency",
+    priority: "P1",
+    title: "Production JVM debugging — thread dumps, deadlocks, high CPU & leaks",
+    why: "Raised from P2 and widened. SDE-2 loops increasingly ask you to walk a production incident, and the 2026 scenario questions (low CPU but requests timing out; a pool exhausted) are all answered with a thread dump. This card is the toolkit; JAVA-04 covers the heap side.",
+    resources: [
+      { csv: "DT#25" },
+      { csv: "DT#2" },
+      {
+        doc: {
+          title: "Java SE 21 Troubleshooting Guide — Diagnostic Tools",
+          site: "docs.oracle.com",
+          url: "https://docs.oracle.com/en/java/javase/21/troubleshoot/diagnostic-tools.html",
+          note: "Skim jcmd, jstack and Java Flight Recorder. Skip the rest.",
+          minutes: 30,
+          estimate: true,
+        },
+      },
+    ],
+    inherit: "P2-35",
+    questions: [
+      "One pod sits at 100% CPU. Find the guilty thread. (top -H → thread id in hex → nid in a jcmd Thread.print dump.)",
+      "p99 latency doubled after a deploy but CPU is flat. What are you looking for in a thread dump? (Threads BLOCKED or WAITING on a pool or a lock.)",
+      "What would you switch on in production ahead of time so the next incident is debuggable? (JFR, GC logs, HeapDumpOnOutOfMemoryError.)",
+      "Why is ThreadLocal a leak risk in a pooled thread, and what is the fix?",
+      "How does ThreadLocal behave with virtual threads?",
+      "A request-scoped ThreadLocal leaks into the next request. How does that happen and how do you prove it?",
+    ],
   },
   {
     id: "CONC-05",
     section: "concurrency",
     priority: "P2",
     title: "ForkJoinPool, work stealing & parallel streams",
-    resources: [{ csv: "CC-J#36" }, { csv: "DT#20" }],
+    resources: [{ csv: "CC-J#37" }, { csv: "DT#20" }],
     inherit: "P2-33",
-  },
-  {
-    id: "CONC-06",
-    section: "concurrency",
-    priority: "P2",
-    title: "Deadlock detection, thread dumps & ThreadLocal leaks",
-    resources: [{ csv: "DT#25" }, { csv: "CC-J#38" }],
-    inherit: "P2-35",
-    questions: [
-      "Why is ThreadLocal a leak risk in a pooled thread, and what is the fix?",
-      "How does ThreadLocal behave with virtual threads?",
-      "A request-scoped ThreadLocal leaks into the next request. How does that happen and how do you prove it?",
-    ],
   },
 
   // ─── Spring Boot & Data Access ─────────────────────────────────────────────
@@ -246,22 +364,24 @@ export const TOPICS = [
     section: "spring",
     priority: "P0",
     title: "Bean lifecycle, IoC, DI & scopes",
-    why: "\"Spring lifecycle\", @Component vs @Bean vs @Qualifier — reported repeatedly.",
+    why: "\"Spring lifecycle\", @Component vs @Bean vs @Qualifier, DI styles and circular dependencies — reported repeatedly, including in 2026 SDE-2 loops.",
     resources: [{ csv: "CC-SB#6" }, { csv: "CC-SB#7" }, { csv: "CC-SB#8" }],
     inherit: "P0-03",
+    questions: [
+      "Spring Boot 2.6+ refuses circular references by default. What fails at startup, and why shouldn't you just set spring.main.allow-circular-references=true?",
+    ],
   },
   {
     id: "SPRING-03",
     section: "spring",
     priority: "P0",
-    title: "Spring Boot fundamentals — starters, auto-configuration, profiles & config",
-    why: "MISSING FROM THE OLD PLAN. \"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and the old plan only covered @ConditionalOnProperty in passing.",
+    title: "Spring Boot fundamentals — starters, auto-configuration, profiles, config & Maven",
+    why: "\"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and HERE's SDE-2 first round listed Maven by name. Add \"what changed in Boot 3 and 4?\" — a fair question now that Boot 4 has shipped.",
     resources: [
       { csv: "CC-SB#10" },
       { csv: "CC-SB#11" },
       { csv: "CC-SB#44" },
-      { playlist: "CC-SB#2", title: "Introduction to Spring Boot" },
-      { playlist: "CC-SB#4", title: "Maven" },
+      { csv: "CC-SB#4" },
     ],
     inherit: "P1-14",
     questions: [
@@ -274,6 +394,51 @@ export const TOPICS = [
       "@Value vs @ConfigurationProperties — when does the latter win, and how do you validate it?",
       "How does an embedded server get chosen and started? What changes if you exclude Tomcat?",
       "Fat jar layout — why can't a plain java -cp run it, and what does the loader do?",
+      "mvn package — which lifecycle phases run, and what is the difference between a phase and a plugin goal?",
+      "Two libraries pull different versions of the same dependency. Which wins in Maven, and how do you force one? (Nearest wins; dependencyManagement / a BOM; mvn dependency:tree.)",
+      "Dependency scopes — compile, provided, runtime, test: where does each end up?",
+      "Spring Boot 2 → 3: what broke when you upgraded? (javax → jakarta, the Java 17 baseline, Sleuth → Micrometer Tracing.)",
+      "What did Spring Boot 4 / Spring Framework 7 add that you would actually use? (Built-in API versioning, @Retryable and @ConcurrencyLimit in core, JSpecify null-safety, modular auto-configuration.)",
+    ],
+  },
+  {
+    id: "SPRING-17",
+    section: "spring",
+    priority: "P0",
+    title: "Request lifecycle — DispatcherServlet, Tomcat threads & message converters",
+    why: "NEW. \"What happens internally when a REST request hits a Spring Boot application?\" was reported verbatim in a 2026 SDE-2 loop, and \"Spring vs Spring Boot\" in PayPal's and other SDE-2 rounds. It is also the frame every filter, interceptor, security and exception-handling question hangs off.",
+    resources: [
+      { csv: "CC-SB#2", note: "Start at 10:30 (Spring MVC over servlets); the first ten minutes are plain servlets." },
+      {
+        doc: {
+          title: "Spring Framework reference — DispatcherServlet",
+          site: "docs.spring.io",
+          url: "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html",
+          note: "Read Special Bean Types and Processing. Skip the configuration pages.",
+          minutes: 20,
+          estimate: true,
+        },
+      },
+      {
+        doc: {
+          title: "Tomcat Server Threading Model",
+          site: "codingshuttle.com",
+          url: "https://www.codingshuttle.com/spring-boot-handbook/tomcat-server-threading-model/",
+          minutes: 15,
+          estimate: true,
+        },
+      },
+    ],
+    questions: [
+      "A request hits your Spring Boot app. Walk it end to end: Tomcat connector → pooled thread → filter chain → DispatcherServlet → HandlerMapping → HandlerAdapter → argument resolvers → controller → HttpMessageConverter → response.",
+      "What is the DispatcherServlet, and why is it called a front controller?",
+      "Who turns your JSON body into a Java object, and who decides it is Jackson? (HttpMessageConverter + content negotiation.)",
+      "Where on that path do filters, interceptors, Spring Security and @ControllerAdvice each sit?",
+      "How many requests can a default Spring Boot app serve at once? What happens to request 201? (server.tomcat.threads.max, accept-count, max-connections.)",
+      "Every request thread is blocked on a slow downstream and CPU is at 10%. What is actually saturated, and what do you change?",
+      "Spring vs Spring MVC vs Spring Boot — what does each layer actually add?",
+      "Servlet stack (Tomcat) vs reactive stack (Netty/WebFlux) — how does the threading model differ, and when is WebFlux worth it?",
+      "What does the request thread look like once virtual threads are enabled?",
     ],
   },
   {
@@ -284,17 +449,19 @@ export const TOPICS = [
     why: "N+1 and lazy loading are named explicitly in current interview guides. Spring Data JPA is your loudest resume claim.",
     resources: [{ csv: "CC-SB#24" }, { csv: "CC-SB#25" }, { csv: "CC-SB#30" }],
     inherit: "P0-04",
+    questions: [
+      "CrudRepository vs PagingAndSortingRepository vs JpaRepository — what does each add?",
+      "spring.jpa.open-in-view is on by default. What does it do, why does Boot log a warning about it, and why turn it off?",
+      "@Transactional(readOnly = true) — what does it change in Hibernate, and what does it NOT do?",
+    ],
   },
   {
     id: "SPRING-05",
     section: "spring",
     priority: "P0",
     title: "REST API design — status codes, idempotency, versioning, pagination",
-    why: "Raised from P1: \"REST API design\" appears as its own round topic in SDE-2 write-ups, and it is the easiest place to sound senior or junior.",
-    resources: [
-      { csv: "CC-SB#21" },
-      { playlist: "CC-SB#5", title: "Controller Annotations" },
-    ],
+    why: "\"REST API design\" appears as its own round topic in SDE-2 write-ups (HERE, PayPal), and it is the easiest place to sound senior or junior.",
+    resources: [{ csv: "CC-SB#21" }, { csv: "CC-SB#5" }],
     inherit: "P1-21",
     questions: [
       "@Controller vs @RestController — what does the difference actually change at runtime?",
@@ -305,40 +472,52 @@ export const TOPICS = [
     ],
   },
   {
+    id: "SPRING-08",
+    section: "spring",
+    priority: "P0",
+    title: "Exception handling — @ControllerAdvice & error contracts",
+    why: "Raised from P1. Global exception handling and \"where should exception translation happen?\" appear in nearly every 2025–26 Spring write-up and guide. One video, one pattern — a cheap P0.",
+    resources: [{ csv: "CC-SB#22" }],
+    inherit: "P1-20",
+    questions: [
+      "Where should exception translation happen in a layered service — repository, service, or controller advice? What does each layer know that the others don't?",
+      "ProblemDetail (RFC 9457) — what is it, and how does Spring Boot 3 let you return it?",
+    ],
+  },
+  {
     id: "SPRING-06",
     section: "spring",
     priority: "P1",
     title: "AOP & the proxy mechanism",
-    why: "The mechanism under @Transactional, @Async and @Cacheable — reach for it whenever a self-invocation follow-up lands.",
+    why: "The mechanism under @Transactional, @Async and @Cacheable — reach for it whenever a self-invocation follow-up lands. \"JDK vs CGLIB proxies\" is on current SDE-2 lists.",
     resources: [{ csv: "CC-SB#12" }],
     inherit: "P0-02",
+    questions: [
+      "Write a custom @LogExecutionTime annotation and the @Around aspect behind it. Why won't it fire on a call from inside the same class?",
+    ],
   },
   {
     id: "SPRING-07",
     section: "spring",
     priority: "P1",
     title: "JPA relationships, fetching & cascades",
-    why: "Raised from P2: mapping questions are routine, and they are where N+1 actually originates.",
+    why: "Mapping questions are routine, and they are where N+1 actually originates.",
     resources: [{ csv: "CC-SB#28" }, { csv: "CC-SB#29" }],
     inherit: "P2-26",
-  },
-  {
-    id: "SPRING-08",
-    section: "spring",
-    priority: "P1",
-    title: "Exception handling — @ControllerAdvice & error contracts",
-    resources: [{ csv: "CC-SB#22" }],
-    inherit: "P1-20",
   },
   {
     id: "SPRING-09",
     section: "spring",
     priority: "P1",
     title: "Spring Security architecture, JWT & stateless auth",
-    why: "Merged: the filter chain and JWT are one story in an interview, and current guides list securing endpoints with OAuth2/JWT as a core expectation.",
+    why: "The filter chain and JWT are one story in an interview. A 2026 SDE-2 loop asked exactly where the JWT is validated in the chain, what happens when validation fails, how to revoke one, and why localStorage is risky.",
     resources: [{ csv: "CC-SB#34" }, { csv: "CC-SB#35" }, { csv: "CC-SB#37" }, { csv: "CC-SB#38" }],
     inherit: "P2-29",
     extraInherit: "P1-19",
+    questions: [
+      "Where exactly is the JWT validated in the filter chain, and what does the client get if validation fails part-way?",
+      "Where should token refresh live — frontend, backend or gateway? How do you stop the refresh call itself from being intercepted in a loop?",
+    ],
   },
   {
     id: "SPRING-10",
@@ -348,6 +527,9 @@ export const TOPICS = [
     why: "Your Snowflake B2C auth and adaptive S2S tokens live here.",
     resources: [{ csv: "CC-SB#40" }, { csv: "CC-SB#41" }],
     inherit: "P1-18",
+    questions: [
+      "How do you secure service-to-service calls when there is no user in the loop? (Client credentials, token audience, mTLS.)",
+    ],
   },
   {
     id: "SPRING-11",
@@ -404,7 +586,7 @@ export const TOPICS = [
     section: "data",
     priority: "P0",
     title: "SQL & indexing — B-Tree, composite indexes, EXPLAIN, join order",
-    why: "MISSING FROM THE OLD PLAN, and it is a standing round of its own. Write-ups put SQL beside Core Java and Spring Boot; 2026 guides stress index-vs-scan reasoning and reading a plan. You claim PostgreSQL and a GIN/B-Tree/HNSW index design — this will be probed.",
+    why: "A standing round of its own. Write-ups put SQL beside Core Java and Spring Boot; 2026 guides stress index-vs-scan reasoning and reading a plan. You claim PostgreSQL and a GIN/B-Tree/HNSW index design — this will be probed.",
     resources: [
       {
         doc: {
@@ -437,15 +619,14 @@ export const TOPICS = [
     section: "data",
     priority: "P0",
     title: "Redis & caching patterns",
-    why: "MISSING FROM THE OLD PLAN. Redis and Caching are both listed on your resume, and your LLM agent stages writes in Redis — expect the consistency question. Cache-aside, invalidation, stampede and distributed locks are standard asks.",
+    why: "Redis and Caching are both listed on your resume, and your LLM agent stages writes in Redis — expect the consistency question. Cache-aside, invalidation, stampede and distributed locks are standard asks.",
     resources: [
       {
         video: {
           title: "Spring Boot | Spring Data Redis as Cache | @Cacheable | @CacheEvict | @CachePut",
           channel: "Java Techie",
           url: "https://www.youtube.com/watch?v=vpe4aDu5ixI",
-          minutes: 25,
-          estimate: true,
+          minutes: 14,
         },
       },
       {
@@ -475,11 +656,52 @@ export const TOPICS = [
     ],
   },
   {
+    id: "DATA-04",
+    section: "data",
+    priority: "P1",
+    title: "SQL query writing — joins, GROUP BY / HAVING, window functions",
+    why: "NEW. DATA-01 is the theory; this is the live part. HERE's SDE-2 first round put SQL beside Core Java, Walmart SDE-2 prep guides list SQL and DBMS, and \"Nth-highest salary\" / \"top earner per department\" are the standing warm-ups. You write SQL for a living — make it fast under a timer.",
+    resources: [
+      {
+        doc: {
+          title: "SQL 50 — Study Plan",
+          site: "leetcode.com",
+          url: "https://leetcode.com/studyplan/top-sql-50/",
+          note: "Do Select, Basic Joins, Basic Aggregate Functions and Subqueries. Time-box each problem to 10 minutes.",
+          minutes: 180,
+          estimate: true,
+        },
+      },
+      {
+        doc: {
+          title: "PostgreSQL tutorial — Window Functions",
+          site: "postgresql.org",
+          url: "https://www.postgresql.org/docs/current/tutorial-window.html",
+          minutes: 15,
+          estimate: true,
+        },
+      },
+    ],
+    questions: [
+      "Second-highest salary — once with a subquery, once with DENSE_RANK. What does each return with ties, or with no second value?",
+      "Nth-highest salary per department with a window function. ROW_NUMBER vs RANK vs DENSE_RANK — which, and why?",
+      "Employees who earn more than their manager. (Self-join.)",
+      "Departments with more than 5 employees and an average salary above X. WHERE vs HAVING — when does each filter run?",
+      "Find and delete duplicate rows, keeping the lowest id.",
+      "Customers who never placed an order — LEFT JOIN … IS NULL vs NOT EXISTS vs NOT IN. Which one breaks when there are NULLs?",
+      "Running total and 7-day moving average of daily sales.",
+      "INNER vs LEFT vs FULL OUTER vs CROSS JOIN — and what a join with a missing condition does to your row count.",
+      "UNION vs UNION ALL — which is cheaper, and why?",
+      "Normalise this table to 3NF — then tell me when you would deliberately denormalise.",
+      "When would you NOT put this data in Postgres? (SQL vs NoSQL — argue from the access pattern, not the brand.)",
+    ],
+  },
+  {
     id: "DATA-03",
     section: "data",
     priority: "P1",
     title: "Postgres transactions, MVCC, locking & connection pooling",
-    why: "MISSING FROM THE OLD PLAN. The old plan taught JPA isolation levels but never the database that implements them. Long transactions, lock waits and pool exhaustion are the incidents you will be asked to debug.",
+    why: "The JPA cards teach isolation levels; this is the database that implements them. Long transactions, lock waits and pool exhaustion are the incidents you will be asked to debug — pool exhaustion is a stock 2026 Spring Boot scenario question.",
     resources: [
       {
         doc: {
@@ -493,6 +715,7 @@ export const TOPICS = [
       },
     ],
     questions: [
+      "ACID — what does each letter guarantee, and which of them does Postgres get from the write-ahead log?",
       "What does MVCC actually do — how can a reader not block a writer?",
       "PostgreSQL's default isolation level is Read Committed. What anomaly does that still allow?",
       "Repeatable Read in Postgres vs the SQL standard — what does Postgres give you that the standard doesn't require?",
@@ -514,11 +737,13 @@ export const TOPICS = [
     section: "kafka",
     priority: "P0",
     title: "Kafka fundamentals & consumer groups",
-    why: "Raised from P1. Kafka is on your resume and drives LogLens; current guides list consumer-group and rebalance mechanics as standard for experienced Java devs.",
+    why: "Kafka is on your resume and drives LogLens; current guides list consumer-group and rebalance mechanics as standard for experienced Java devs.",
     resources: [{ csv: "JT-K#2" }, { csv: "JT-K#7" }, { csv: "JT-K#8" }],
     inherit: "P1-11",
     questions: [
       "What triggers a rebalance, and what does StickyAssignor change about it?",
+      "A rolling deploy of 6 consumers causes 6 rebalances. How do cooperative-sticky assignment and static membership (group.instance.id) cut that down?",
+      "Spring Kafka listener concurrency = 10 on a 6-partition topic. How many threads do real work?",
       "Your consumer takes 40s per message and max.poll.interval.ms is 300000 with max.poll.records 500. What goes wrong?",
       "Which metrics tell you a consumer is falling behind vs failing to commit? (records-lag-max vs commit-rate.)",
     ],
@@ -551,7 +776,7 @@ export const TOPICS = [
     section: "platform",
     priority: "P1",
     title: "Distributed data — saga, outbox, idempotency & eventual consistency",
-    why: "MISSING FROM THE OLD PLAN. Saga/compensation/idempotency is called out as an SDE-2-level expectation, and it is the theory behind what you already built in LogLens.",
+    why: "Saga/compensation/idempotency is called out as an SDE-2-level expectation, and it is the theory behind what you already built in LogLens.",
     resources: [
       {
         doc: {
@@ -580,15 +805,45 @@ export const TOPICS = [
     section: "platform",
     priority: "P1",
     title: "Resiliency — circuit breaker, retry, backoff & bulkhead",
+    why: "\"Explain the circuit breaker pattern\" was asked in PayPal's SDE-2 loop; bulkheads are the 2026 answer to a slow downstream eating every thread.",
     resources: [{ csv: "JT-M#10" }, { csv: "JT-M#11" }],
     inherit: "P1-15",
+  },
+  {
+    id: "PLAT-08",
+    section: "platform",
+    priority: "P1",
+    title: "Service-to-service calls — RestClient / WebClient / Feign, timeouts, sync vs async",
+    why: "NEW. \"How do your services talk to each other?\" follows every microservices answer, and 2026 guides list REST vs gRPC vs messaging as a core ask. It is also the ground under your Pack Service fix — a call with no timeout is the bug you already killed once.",
+    resources: [
+      {
+        doc: {
+          title: "Spring Framework reference — REST Clients",
+          site: "docs.spring.io",
+          url: "https://docs.spring.io/spring-framework/reference/integration/rest-clients.html",
+          note: "Read RestClient and HTTP Service Clients; skim WebClient and RestTemplate.",
+          minutes: 25,
+          estimate: true,
+        },
+      },
+    ],
+    questions: [
+      "RestTemplate vs RestClient vs WebClient vs OpenFeign — which would you pick for a new Spring Boot service, and why?",
+      "Sync REST vs async messaging between two services — how do you decide, call by call?",
+      "Which timeouts does an HTTP client need, and what happens if you set none? (Connect vs read vs pool-acquire; the JDK default is to wait forever.)",
+      "How do you size the HTTP connection pool to one downstream, and what happens when it is exhausted?",
+      "A downstream's p99 goes from 20 ms to 2 s. Walk what happens to your Tomcat threads, and what stops the cascade.",
+      "Retries on a POST — when are they safe? (Only behind an idempotency key.)",
+      "REST vs gRPC between internal services — what do you gain, and what do you give up?",
+      "HTTP interface clients (@HttpExchange) vs Feign — what is the difference, and why did Spring add its own?",
+    ],
   },
   {
     id: "PLAT-03",
     section: "platform",
     priority: "P1",
     title: "Service discovery & API gateway",
-    why: "Backs your zero-downtime dual-APIM migration.",
+    why: "Backs your zero-downtime dual-APIM migration. Heads-up: these videos use Hystrix, which is retired — watch them for Eureka and the gateway, and say Resilience4j when the breaker comes up.",
     resources: [{ csv: "JT-M#1" }, { csv: "JT-M#2" }],
     inherit: "P1-16",
   },
@@ -597,15 +852,14 @@ export const TOPICS = [
     section: "platform",
     priority: "P1",
     title: "Docker — images, layers & containerising a Spring Boot service",
-    why: "MISSING FROM THE OLD PLAN, which jumped straight to Kubernetes. Docker is named directly in an SDE-2 round write-up, and it is on your resume.",
+    why: "Docker is named directly in an SDE-2 round write-up (HERE), and it is on your resume.",
     resources: [
       {
         video: {
           title: "Docker — Dockerizing your Spring Boot Application",
           channel: "Java Techie",
           url: "https://www.youtube.com/watch?v=e3YERpG2rMs",
-          minutes: 20,
-          estimate: true,
+          minutes: 14,
         },
       },
       {
@@ -649,8 +903,13 @@ export const TOPICS = [
     section: "platform",
     priority: "P2",
     title: "Distributed tracing & correlation",
+    why: "The video uses Spring Cloud Sleuth, which Spring Boot 3 replaced with Micrometer Tracing (OpenTelemetry or Brave underneath). Learn the concepts from it; name the current stack in the interview.",
     resources: [{ csv: "JT-M#7" }],
     inherit: "P1-17",
+    questions: [
+      "Sleuth is gone in Spring Boot 3. What replaced it, and what did you have to change?",
+      "How do you get the trace ID into every log line? (MDC.)",
+    ],
   },
 
   // ─── Testing & Delivery ────────────────────────────────────────────────────
@@ -659,20 +918,19 @@ export const TOPICS = [
     section: "testing",
     priority: "P1",
     title: "JUnit 5 & Mockito",
-    why: "MISSING FROM THE OLD PLAN despite JUnit and Mockito being on your resume and you claiming 90%+ coverage. @Mock vs @InjectMocks vs @MockBean is a standard question, and 'how do you test this?' follows most design answers.",
+    why: "JUnit and Mockito are on your resume and you claim 90%+ coverage. @Mock vs @InjectMocks vs @MockBean is a standard question, and 'how do you test this?' follows most design answers.",
     resources: [
       {
         video: {
           title: "Spring Boot Testing | Writing JUnit Tests using JUnit and Mockito",
           channel: "Java Techie",
           url: "https://www.youtube.com/watch?v=kXhYu939_5s",
-          minutes: 30,
-          estimate: true,
+          minutes: 17,
         },
       },
     ],
     questions: [
-      "@Mock vs @InjectMocks vs @Spy vs @MockBean — what does each do, and which needs a Spring context?",
+      "@Mock vs @InjectMocks vs @Spy vs @MockBean — what does each do, and which needs a Spring context? (@MockBean is deprecated in Boot 3.4 for @MockitoBean — know the new name.)",
       "when/thenReturn vs doReturn/when — when are they not interchangeable?",
       "How do you verify an interaction, and how do you assert on the argument that was passed? (ArgumentCaptor.)",
       "How do you test a void method that throws?",
@@ -688,17 +946,17 @@ export const TOPICS = [
     section: "testing",
     priority: "P1",
     title: "Testcontainers & Spring Boot test slices",
-    why: "MISSING FROM THE OLD PLAN — and you BUILT your team's Postgres-Testcontainers regression framework gating every PR. This is a story you should be able to tell cold; instead it had no card.",
+    why: "You BUILT your team's Postgres-Testcontainers regression framework gating every PR. This is a story you should be able to tell cold. The Kafka video answers the end-to-end consumer-test question below.",
     resources: [
       {
         video: {
           title: "Spring Boot 3 Integration Testing With TestContainers | JUnit 5",
           channel: "Java Techie",
           url: "https://www.youtube.com/watch?v=Q-0Z6KZF1xM",
-          minutes: 30,
-          estimate: true,
+          minutes: 22,
         },
       },
+      { csv: "JT-K#10" },
     ],
     questions: [
       "Why Testcontainers over H2 for a Postgres app? Name a bug H2 would hide.",
@@ -724,6 +982,15 @@ export const TOPICS = [
           note: "Re-read the batch regression and master quality workflows, and the Pages dashboard job. No video will teach you your own pipeline.",
         },
       },
+      {
+        video: {
+          title: "SpringBoot - Build CI/CD Pipeline Using GitHub Actions | Build & Push Docker Image",
+          channel: "Java Techie",
+          url: "https://www.youtube.com/watch?v=NppkHKvnrqc",
+          minutes: 33,
+          note: "Watch for the build → push image → deploy stages, so you can place your regression and quality gates inside a full delivery pipeline.",
+        },
+      },
     ],
     questions: [
       "Walk your pipeline from a push to a deployed artifact. What gates exist, and which can be skipped?",
@@ -736,6 +1003,32 @@ export const TOPICS = [
   },
 
   // ─── Your Systems ──────────────────────────────────────────────────────────
+  {
+    id: "SELF-06",
+    section: "resume",
+    priority: "P0",
+    title: "Priority allocation & lifecycle-driven eligibility — your lead bullet",
+    why: "NEW. Your first resume bullet, and the one an interviewer opens with: ranking logic in 100% of customer allocations, a 20% sales-lift claim, a 30%+ cut in ineligible allocations, and cross-team API and schema changes. It had no card.",
+    resources: [
+      {
+        self: {
+          title: "The allocation ranking and lifecycle-eligibility code",
+          note: "Be able to state the ranking rule, the tie-break, and how each number on the resume was measured — without hedging.",
+        },
+      },
+    ],
+    questions: [
+      "Explain the ranking: what decides which store gets inventory first, and what are the inputs?",
+      "Fair-share splitting on tied demand: 10 units, 3 tied stores. Who gets the remainder, and is the result the same on every run?",
+      "What is the complexity of an allocation run, and at what store × SKU count did it start to matter?",
+      "\"Contributed to a 20% sales lift\" — how was that measured, and what else changed in the same period?",
+      "How did you measure the 30%+ drop in allocations to ineligible stores? What was the baseline?",
+      "Lifecycle data is now the source of truth for eligibility. What happens when that data arrives late or wrong?",
+      "You changed a schema other teams depend on. How did you roll it out without breaking them? (Expand → migrate → contract; backward-compatible API versions.)",
+      "How do you test ranking logic that runs in every customer's allocation? What would a regression look like, and who would notice first?",
+      "If you rebuilt it today, what would you change?",
+    ],
+  },
   {
     id: "SELF-01",
     section: "resume",
@@ -886,9 +1179,52 @@ export const TOPICS = [
        perfectnotes.org, codebegun.com
      • Java 17/21 — records/sealed/pattern matching assumed; virtual threads now
        asked, including vs reactive.  apna.co, datacamp.com, kore1.com
+
+   Second pass (Sep 2026) — what moved and why:
+     • Java SDE-2 loop, 2026 (LinkedIn, Padmanava Dutta) — HashMap resize and
+       Java 8 changes, ConcurrentHashMap without a global lock, custom keys,
+       Java 8/11/17 differences, singleton + double-checked locking, String
+       immutability, "what happens internally when a REST request hits a Spring
+       Boot app", circular dependencies, exception translation, idempotent APIs,
+       long-running background work, where JWT is validated in the filter chain,
+       revocation, refresh placement, S2S security, JWT in localStorage; live
+       coding: customers with total > 5000 from a transaction list.
+       → SPRING-17 and JAVA-10 added; JAVA-06 and SPRING-08 raised to P0.
+     • PayPal SDE II (geeksforgeeks.org) — circuit breaker, HashMap internals,
+       HashMap vs Hashtable, Spring vs Spring Boot, CompletableFuture/lambdas/
+       streams, @Controller vs @RestController, CRUD REST design.
+     • Walmart SE-III Java backend, Sept 2025 (interviewexperiences.in) — OOP,
+       HashMap internals, volatile. Walmart SDE-2 prep guides also list SQL and
+       DBMS beside Java.  → DATA-04 added.
+     • LeetCode discuss summaries (Yes Madam SDE-2 Jan 2026, Gartner SDE-2,
+       Apple L4) — Spring vs Spring Boot, bean lifecycle, DI styles,
+       @Transactional, HashMap red-black trees, custom annotations in the
+       Spring lifecycle.  → JAVA-11 added (P2).
+     • KORE1 2026 guide — String/StringBuilder/StringBuffer, virtual threads as
+       newly relevant, service communication (REST, gRPC, messaging).
+       → PLAT-08 added.
+     • 2026 production-scenario banks (javarevisited, javabulletin) — slow
+       downstream exhausting request threads at low CPU, connection-pool
+       exhaustion, fast-locally-slow-in-prod.  → CONC-06 widened and raised.
+     • Stream coding banks (medium.com, github.com) — second-highest salary,
+       group by department, averagingInt, maxBy.  SQL banks (geeksforgeeks.org,
+       codebegun.com) — Nth-highest salary, DENSE_RANK vs subquery.
+     • Current versions: Spring Boot 4.0 / Framework 7 GA Nov 2025 (spring.io) —
+       API versioning, @Retryable, JSpecify. Java 25 LTS — Scoped Values final
+       (openjdk.org, JEP 506).
+     • The resume's lead bullet (priority allocation) had no card → SELF-06.
+
+   Playlist positions and runtimes were re-checked against the live YouTube
+   playlists on 23 Sep 2026. The Java playlist has 52 videos including
+   "17. Java Reflection in Depth" at position 18, which the original index
+   skipped — so every CC-J reference from 18 on moved down one. Five runtimes
+   were corrected (Lock-Free Concurrency 42m, Pattern Matching for switch 19m,
+   ConfigurationProperties 39m, JT-M #2 15m, JT-M #7 14m).
+
    Channel choice: Concept && Coding (Shrayansh Jain) stays primary for Java and
-   Spring Boot; Defog Tech is used where it is strongest — the Java Memory Model
-   and ForkJoinPool/deadlock material — since it is widely cited as the best
-   free Java concurrency explainer. Java Techie covers Kafka, microservices,
-   Docker, K8s and testing.
+   Spring Boot; Defog Tech is used where it is strongest — the Java Memory Model,
+   the short interview-build videos (producer–consumer, scatter–gather) and
+   ForkJoinPool/deadlock material — since it is widely cited as the best free
+   Java concurrency explainer. Java Techie covers Kafka, microservices, Docker,
+   K8s and testing.
 */

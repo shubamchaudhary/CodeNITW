@@ -5,6 +5,11 @@ flag and the interview-question chain behind each Core Stack card. Trimmed to th
 map itself — the learner briefing and scheduling sections of the original handoff
 are personal notes and deliberately not checked in.
 
+> Only the question lists below are read by the generator. The video tables are
+> historical: `CC-J` positions from #18 on are one low (this index skipped
+> "17. Java Reflection in Depth"), and a few runtimes were wrong. Positions and
+> runtimes live in `javaSpringPrepTracker.csv`, re-verified 23 Sep 2026.
+
 ---
 
 ## PART 1 — Source index
