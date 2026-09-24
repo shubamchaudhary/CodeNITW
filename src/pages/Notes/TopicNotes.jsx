@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import "@uiw/react-markdown-preview/markdown.css";
-import { GLASS, GLASS_PANEL } from "../../components/glass";
+import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { isOwner } from "../../components/OwnerRoute";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
@@ -13,20 +13,24 @@ import {
   KEYS,
   loadJSON,
   getSourceNote,
+  getAnnotations,
+  setAnnotations,
+  annotationsKey,
   setSourceNote,
   getCoreStackTopic,
   getAIStackTopic,
   subscribe,
 } from "../../Data/planStore";
 import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
-import NoteReader, { NotePreview, useStickyHeaderOffset } from "./NoteReader";
+import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
 
 // A full page per topic, because a 4-line textarea inside a card is no place to
-// think. It opens on the reading view — wide, large type, a contents rail — and
-// every section can be edited or highlighted right there. Split and Write keep
-// the raw-markdown editor for longer sessions. The text itself still lives in
-// the same synced note store the board and the Planning page read.
+// think. It opens on the reading view — wide, large type, a contents column —
+// where every section can be edited, highlighted or annotated with a personal
+// note right there. Write keeps the raw-markdown editor for longer sessions.
+// The text itself still lives in the same synced note store the board and the
+// Planning page read; personal notes have a synced store of their own.
 
 const SOURCES = {
   corestack: {
@@ -60,8 +64,7 @@ const SOURCES = {
 };
 
 const VIEWS = [
-  { key: "read", label: "Read", title: "Read — edit any section in place, select text to highlight" },
-  { key: "split", label: "Split", title: "Markdown on the left, preview on the right" },
+  { key: "read", label: "Read", title: "Read — edit any section in place, select text to highlight or add a note" },
   { key: "write", label: "Write", title: "Markdown editor only" },
 ];
 
@@ -72,9 +75,9 @@ const FONT_MIN = 14;
 const FONT_MAX = 22;
 function loadPrefs() {
   try {
-    return { fontSize: 17, wide: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") };
+    return { fontSize: 17, ...JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") };
   } catch (_) {
-    return { fontSize: 17, wide: true };
+    return { fontSize: 17 };
   }
 }
 
@@ -107,6 +110,7 @@ export default function TopicNotes() {
   const [dragging, setDragging] = useState(false);
   const [prefs, setPrefs] = useState(loadPrefs);
   const [immersive, setImmersive] = useState(false);
+  const [annotations, setAnnotationList] = useState([]);
   const [barHeight, setBarHeight] = useState(0);
   const barRef = useRef(null);
 
@@ -198,6 +202,7 @@ export default function TopicNotes() {
     const initial = getSourceNote(source, topicId);
     latestRef.current = initial;
     setText(initial);
+    setAnnotationList(getAnnotations(source, topicId));
     setView(initial.trim() ? "read" : "write");
     setLoaded(true);
   }, [authReady, config, topic, source, topicId]);
@@ -207,12 +212,16 @@ export default function TopicNotes() {
   useEffect(() => {
     if (!config) return undefined;
     return subscribe((key) => {
+      if (key === annotationsKey(source)) {
+        setAnnotationList(getAnnotations(source, topicId));
+        return;
+      }
       if (key !== config.notesKey || dirtyRef.current) return;
       const incoming = loadJSON(config.notesKey, {})[topicId] || "";
       latestRef.current = incoming;
       setText((prev) => (incoming === prev ? prev : incoming));
     });
-  }, [config, topicId]);
+  }, [config, source, topicId]);
 
   // Screenshots live in their own Firestore documents; the note only carries
   // their paths, so the preview resolves them to data URLs as they appear.
@@ -263,6 +272,14 @@ export default function TopicNotes() {
       persist(value);
     },
     [persist]
+  );
+
+  const changeAnnotations = useCallback(
+    (list) => {
+      setAnnotationList(list);
+      setAnnotations(source, topicId, list);
+    },
+    [source, topicId]
   );
 
   // Flush on unmount so navigating away inside the debounce window still saves.
@@ -407,10 +424,6 @@ export default function TopicNotes() {
   // What covers the top of the viewport once scrolled: the slim bar in full
   // screen, otherwise the site header only if it really sticks.
   const topOffset = immersive ? barHeight : headerOffset;
-  const paneHeight = {
-    height: immersive ? `calc(100vh - ${barHeight + 44}px)` : "calc(100vh - 16rem)",
-    minHeight: "28rem",
-  };
 
   // View switch, then reading or formatting tools, then full screen. Shared by
   // the topic card and the slim full-screen bar.
@@ -454,25 +467,6 @@ export default function TopicNotes() {
               <span className="text-[15px] font-bold">A+</span>
             </IconButton>
           </div>
-          <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
-            {[
-              { wide: true, label: "Wide", title: "Use the full width of the page" },
-              { wide: false, label: "Focus", title: "A narrower column, easier on long reads" },
-            ].map((w) => (
-              <button
-                key={w.label}
-                onClick={() => updatePrefs({ wide: w.wide })}
-                title={w.title}
-                className={`px-3 h-8 rounded-lg text-[12.5px] font-bold transition-colors ${
-                  prefs.wide === w.wide
-                    ? "bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                }`}
-              >
-                {w.label}
-              </button>
-            ))}
-          </div>
         </>
       ) : (
         <>
@@ -515,7 +509,7 @@ export default function TopicNotes() {
       <div className="ml-auto flex items-center gap-3">
         {!inBar && isRead && (
           <p className="hidden 2xl:block text-[12px] text-gray-400 dark:text-gray-500">
-            Select text to highlight · hover a section and press ✎ to edit it
+            Select text to highlight or add a note · hover a section and press ✎ to edit it
           </p>
         )}
         <button
@@ -597,6 +591,14 @@ export default function TopicNotes() {
                 <span>
                   {stats.images} screenshot{stats.images === 1 ? "" : "s"}
                 </span>
+                {annotations.length > 0 && (
+                  <>
+                    <span className="text-gray-300 dark:text-gray-600">•</span>
+                    <span>
+                      {annotations.length} personal note{annotations.length === 1 ? "" : "s"}
+                    </span>
+                  </>
+                )}
                 {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
               </p>
             </div>
@@ -618,15 +620,17 @@ export default function TopicNotes() {
             assets={assets}
             colorMode={colorMode}
             fontSize={prefs.fontSize}
-            wide={prefs.wide}
             accent={accent}
             uploadInto={uploadFiles}
             topOffset={topOffset}
+            immersive={immersive}
+            annotations={annotations}
+            onAnnotationsChange={changeAnnotations}
           />
         )}
 
         {loaded && !isRead && (
-          <div className={`grid gap-4 mb-10 ${view === "split" ? "lg:grid-cols-2" : "grid-cols-1"}`}>
+          <div className="mb-10">
             <div
               onDragOver={(e) => {
                 e.preventDefault();
@@ -646,10 +650,7 @@ export default function TopicNotes() {
                 placeholder={
                   "# What I got wrong\n\nParagraph, **bold**, `code`.\n\n```java\n// paste the snippet that bit you\n```\n\n- [ ] revisit before the next mock\n\nPaste a screenshot straight in — Ctrl/Cmd+V."
                 }
-                style={view === "split" ? paneHeight : undefined}
-                className={`w-full ${
-                  view === "split" ? "resize-none" : "min-h-[72vh] resize-y"
-                } px-5 py-4 text-[14.5px] leading-[1.7] font-mono rounded-[1.1rem] bg-white/75 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200/80 dark:border-white/[0.07] focus:outline-none focus:ring-2 ${accent.ring}`}
+                className={`w-full min-h-[75vh] resize-y px-5 py-4 text-[14.5px] leading-[1.7] font-mono rounded-[1.1rem] bg-white/75 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200/80 dark:border-white/[0.07] focus:outline-none focus:ring-2 ${accent.ring}`}
               />
               {dragging && (
                 <div className="absolute inset-0 rounded-3xl bg-sky-500/10 border-2 border-dashed border-sky-400/70 flex items-center justify-center pointer-events-none">
@@ -658,17 +659,6 @@ export default function TopicNotes() {
               )}
             </div>
 
-            {view === "split" && (
-              <div className={`rounded-3xl ${GLASS} overflow-y-auto px-6 lg:px-9 py-6`} style={paneHeight}>
-                {text.trim() ? (
-                  <NotePreview text={text} assets={assets} colorMode={colorMode} fontSize={Math.min(prefs.fontSize, 16)} />
-                ) : (
-                  <div className={`${GLASS_PANEL} rounded-xl px-4 py-10 text-center`}>
-                    <p className="text-sm text-gray-400 dark:text-gray-500">Nothing yet. Whatever you write on the left renders here.</p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>
