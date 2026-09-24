@@ -1,0 +1,329 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+/* Notes typography. Scoped to .note-md so the rest of the app keeps its look.
+   The theme comes from data-color-mode, which the page sets from the app's own
+   light/dark toggle — never from the OS preference. The renderer's own tokens
+   (--color-*) are overridden here, plus a few of ours (--nm-*, --hl-*). */
+
+.note-md[data-color-mode="light"] .wmde-markdown {
+  --color-fg-default: #1e2433;
+  --color-fg-muted: #4b5468;
+  --color-fg-subtle: #6b7385;
+  --color-canvas-default: transparent;
+  --color-canvas-subtle: #f5f6fa;
+  --color-border-default: #e1e4ec;
+  --color-border-muted: #eceef4;
+  --color-neutral-muted: rgba(99, 102, 241, 0.08);
+  --color-accent-fg: #4f46e5;
+  --nm-heading: #0c1224;
+  --nm-strong: #0c1224;
+  --nm-code-bg: #f7f8fc;
+  --nm-code-border: #e3e6ef;
+  --nm-inline-bg: rgba(99, 102, 241, 0.09);
+  --nm-inline-fg: #4338ca;
+  --nm-table-head: #f3f4f9;
+  --nm-quote-bg: rgba(99, 102, 241, 0.06);
+  --nm-quote-bar: #818cf8;
+  --nm-hr: #e5e7ee;
+  --hl-yellow: rgba(250, 204, 21, 0.45);
+  --hl-green: rgba(74, 222, 128, 0.4);
+  --hl-blue: rgba(96, 165, 250, 0.36);
+  --hl-pink: rgba(244, 114, 182, 0.34);
+}
+
+.note-md[data-color-mode="dark"] .wmde-markdown {
+  --color-fg-default: #d5dae5;
+  --color-fg-muted: #a1aabb;
+  --color-fg-subtle: #7a8395;
+  --color-canvas-default: transparent;
+  --color-canvas-subtle: rgba(255, 255, 255, 0.035);
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-muted: rgba(255, 255, 255, 0.065);
+  --color-neutral-muted: rgba(148, 163, 184, 0.14);
+  --color-accent-fg: #a5b4fc;
+  --nm-heading: #f4f6fb;
+  --nm-strong: #eef1f8;
+  --nm-code-bg: #0a0f1e;
+  --nm-code-border: rgba(255, 255, 255, 0.08);
+  --nm-inline-bg: rgba(165, 180, 252, 0.12);
+  --nm-inline-fg: #c7d2fe;
+  --nm-table-head: rgba(255, 255, 255, 0.05);
+  --nm-quote-bg: rgba(129, 140, 248, 0.08);
+  --nm-quote-bar: #818cf8;
+  --nm-hr: rgba(255, 255, 255, 0.09);
+  --hl-yellow: rgba(250, 204, 21, 0.3);
+  --hl-green: rgba(74, 222, 128, 0.26);
+  --hl-blue: rgba(96, 165, 250, 0.3);
+  --hl-pink: rgba(244, 114, 182, 0.28);
+}
+
+/* ── Body text ─────────────────────────────────────────────────────────── */
+.note-md .wmde-markdown {
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: var(--note-fs, 17px);
+  line-height: 1.75;
+  letter-spacing: -0.004em;
+  color: var(--color-fg-default);
+  background: transparent;
+  word-wrap: break-word;
+}
+
+.note-md .wmde-markdown p,
+.note-md .wmde-markdown blockquote,
+.note-md .wmde-markdown ul,
+.note-md .wmde-markdown ol,
+.note-md .wmde-markdown table,
+.note-md .wmde-markdown pre,
+.note-md .wmde-markdown details {
+  margin-top: 0;
+  margin-bottom: 1.05em;
+}
+
+.note-md .wmde-markdown strong {
+  font-weight: 650;
+  color: var(--nm-strong);
+}
+
+.note-md .wmde-markdown a {
+  color: var(--color-accent-fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--color-accent-fg) 40%, transparent);
+}
+.note-md .wmde-markdown h1 a.anchor,
+.note-md .wmde-markdown h2 a.anchor,
+.note-md .wmde-markdown h3 a.anchor,
+.note-md .wmde-markdown h4 a.anchor {
+  text-decoration: none;
+}
+
+/* ── Headings ──────────────────────────────────────────────────────────── */
+.note-md .wmde-markdown h1,
+.note-md .wmde-markdown h2,
+.note-md .wmde-markdown h3,
+.note-md .wmde-markdown h4,
+.note-md .wmde-markdown h5,
+.note-md .wmde-markdown h6 {
+  color: var(--nm-heading);
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.022em;
+  margin: 1.7em 0 0.6em;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.note-md .wmde-markdown h1 {
+  font-size: 2.1em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.note-md .wmde-markdown h2 {
+  font-size: 1.6em;
+}
+.note-md .wmde-markdown h3 {
+  font-size: 1.27em;
+}
+.note-md .wmde-markdown h4 {
+  font-size: 1.08em;
+}
+.note-md .wmde-markdown h5,
+.note-md .wmde-markdown h6 {
+  font-size: 1em;
+  color: var(--color-fg-muted);
+}
+
+/* Each section renders on its own, so its heading has no margin above it —
+   the spacing between sections is set here instead, by heading level. */
+.note-reader .note-sec:not(:first-child)[data-level="1"],
+.note-reader .note-sec:not(:first-child)[data-level="2"] {
+  margin-top: 2.7em;
+}
+.note-reader .note-sec:not(:first-child)[data-level="3"] {
+  margin-top: 2em;
+}
+.note-reader .note-sec:not(:first-child)[data-level="4"],
+.note-reader .note-sec:not(:first-child)[data-level="5"],
+.note-reader .note-sec:not(:first-child)[data-level="6"] {
+  margin-top: 1.5em;
+}
+.note-reader .note-sec .wmde-markdown > :last-child {
+  margin-bottom: 0 !important;
+}
+
+/* ── Lists ─────────────────────────────────────────────────────────────── */
+/* Tailwind's preflight strips list markers from every ul/ol, and the renderer
+   only restores them for nested lists — put them back at every level. */
+.note-md .wmde-markdown ul,
+.note-md .wmde-markdown ol {
+  padding-left: 1.55em;
+}
+.note-md .wmde-markdown ul {
+  list-style: disc;
+}
+.note-md .wmde-markdown ul ul {
+  list-style: circle;
+}
+.note-md .wmde-markdown ol {
+  list-style: decimal;
+}
+.note-md .wmde-markdown ul.contains-task-list,
+.note-md .wmde-markdown li.task-list-item {
+  list-style: none;
+}
+.note-md .wmde-markdown li + li {
+  margin-top: 0.35em;
+}
+.note-md .wmde-markdown li > p {
+  margin-bottom: 0.4em;
+}
+.note-md .wmde-markdown ul li::marker {
+  color: var(--color-fg-subtle);
+}
+.note-md .wmde-markdown ol li::marker {
+  color: var(--color-fg-muted);
+  font-weight: 600;
+}
+
+/* ── Code ──────────────────────────────────────────────────────────────── */
+.note-md .wmde-markdown code,
+.note-md .wmde-markdown pre,
+.note-md .wmde-markdown kbd {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.note-md .wmde-markdown :not(pre) > code {
+  font-size: 0.84em;
+  padding: 0.14em 0.42em;
+  border-radius: 6px;
+  background: var(--nm-inline-bg);
+  color: var(--nm-inline-fg);
+  white-space: break-spaces;
+}
+.note-md .wmde-markdown pre {
+  background: var(--nm-code-bg) !important;
+  border: 1px solid var(--nm-code-border);
+  border-radius: 14px;
+  padding: 1.1em 1.3em;
+  font-size: 0.8em;
+  line-height: 1.7;
+}
+.note-md .wmde-markdown pre > code {
+  font-size: 1em;
+  background: transparent;
+  padding: 0;
+}
+.note-md .wmde-markdown pre .copied {
+  top: 10px;
+  right: 10px;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+.note-md .wmde-markdown table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  font-size: 0.93em;
+  line-height: 1.55;
+}
+.note-md .wmde-markdown table tr {
+  background: transparent;
+  border-top: none;
+}
+.note-md .wmde-markdown table tr:nth-child(2n) {
+  background: var(--color-canvas-subtle);
+}
+.note-md .wmde-markdown table th,
+.note-md .wmde-markdown table td {
+  border: none;
+  border-bottom: 1px solid var(--color-border-muted);
+  padding: 0.65em 1em;
+  text-align: left;
+}
+.note-md .wmde-markdown table tr:last-child td {
+  border-bottom: none;
+}
+.note-md .wmde-markdown table th {
+  background: var(--nm-table-head);
+  color: var(--nm-heading);
+  font-weight: 650;
+}
+
+/* ── Quotes, answers, rules ────────────────────────────────────────────── */
+.note-md .wmde-markdown blockquote {
+  border-left: 4px solid var(--nm-quote-bar);
+  background: var(--nm-quote-bg);
+  color: var(--color-fg-default);
+  padding: 0.8em 1.15em;
+  border-radius: 0 12px 12px 0;
+}
+.note-md .wmde-markdown blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.note-md .wmde-markdown details {
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  padding: 0.55em 1em;
+  background: var(--color-canvas-subtle);
+}
+.note-md .wmde-markdown details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-accent-fg);
+}
+.note-md .wmde-markdown details[open] > summary {
+  margin-bottom: 0.6em;
+}
+.note-md .wmde-markdown details > :last-child {
+  margin-bottom: 0.2em;
+}
+
+.note-md .wmde-markdown hr {
+  height: 1px;
+  background: var(--nm-hr);
+  border: 0;
+  margin: 2.6em 0;
+}
+
+.note-md .note-img {
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-default);
+  margin: 0.75em 0;
+}
+
+/* ── Highlights ────────────────────────────────────────────────────────── */
+.note-md .wmde-markdown mark {
+  background: var(--hl-yellow);
+  color: inherit;
+  padding: 0.04em 0.16em;
+  border-radius: 4px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.note-reader .wmde-markdown mark[data-s] {
+  cursor: pointer;
+}
+.note-md .wmde-markdown mark.hl-green {
+  background: var(--hl-green);
+}
+.note-md .wmde-markdown mark.hl-blue {
+  background: var(--hl-blue);
+}
+.note-md .wmde-markdown mark.hl-pink {
+  background: var(--hl-pink);
+}
+
+.note-reader ::selection {
+  background: rgba(99, 102, 241, 0.28);
+}
+
+/* ── In-place editor & contents rail ───────────────────────────────────── */
+.note-editor {
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.035);
+}
+.note-toc {
+  scrollbar-width: thin;
+}

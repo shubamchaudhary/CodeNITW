@@ -7,10 +7,15 @@ import React from "react";
 // Children are wrapped in a positioned layer so they stack above the orbs —
 // the orbs can't simply use a negative z-index, since that would drop them
 // behind the page's own gradient background and hide them entirely.
-export default function PageShell({ children, className = "" }) {
+//
+// `allowSticky` swaps overflow-hidden for overflow-x-clip: a hidden-overflow
+// ancestor becomes the scroll container for position: sticky, so nothing
+// inside it could ever stick to the viewport. Clip trims the same sideways
+// overflow without that side effect.
+export default function PageShell({ children, className = "", allowSticky = false }) {
   return (
     <div
-      className={`relative min-h-screen overflow-hidden pb-16 bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50/60 dark:from-[#0b1020] dark:via-[#0d1226] dark:to-[#0a0e1c] ${className}`}
+      className={`relative min-h-screen ${allowSticky ? "overflow-x-clip" : "overflow-hidden"} pb-16 bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50/60 dark:from-[#0b1020] dark:via-[#0d1226] dark:to-[#0a0e1c] ${className}`}
     >
       <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-28 w-[32rem] h-[32rem] rounded-full bg-violet-400/[0.10] dark:bg-violet-700/[0.09] blur-[140px]" />
