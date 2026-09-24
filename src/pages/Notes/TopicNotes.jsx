@@ -3,12 +3,12 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
-import MarkdownPreview from "@uiw/react-markdown-preview";
 import "@uiw/react-markdown-preview/markdown.css";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { isOwner } from "../../components/OwnerRoute";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
+import useIsDark from "../../hooks/useIsDark";
 import {
   KEYS,
   loadJSON,
@@ -18,18 +18,15 @@ import {
   getAIStackTopic,
   subscribe,
 } from "../../Data/planStore";
-import {
-  uploadNoteImage,
-  loadNoteAssets,
-  assetIdsIn,
-  ASSET_PREFIX,
-  NoteAssetError,
-} from "../../Data/noteAssets";
+import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
+import NoteReader, { NotePreview, useNavHeight } from "./NoteReader";
+import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
 
 // A full page per topic, because a 4-line textarea inside a card is no place to
-// think. Markdown in, live preview beside it, screenshots pasted straight from
-// the clipboard. The text itself still lives in the same synced note store the
-// board and the Planning page read, so nothing forked.
+// think. It opens on the reading view — wide, large type, a contents rail — and
+// every section can be edited or highlighted right there. Split and Write keep
+// the raw-markdown editor for longer sessions. The text itself still lives in
+// the same synced note store the board and the Planning page read.
 
 const SOURCES = {
   corestack: {
@@ -62,25 +59,32 @@ const SOURCES = {
   },
 };
 
-// Toolbar actions. `wrap` surrounds the selection, `line` prefixes each selected
-// line — enough to cover everything people actually reach for.
-const TOOLBAR = [
-  { key: "h2", label: "H", title: "Heading", line: "## " },
-  { key: "bold", label: "B", title: "Bold (Ctrl+B)", wrap: "**", bold: true },
-  { key: "italic", label: "I", title: "Italic (Ctrl+I)", wrap: "*", italic: true },
-  { key: "code", label: "</>", title: "Inline code", wrap: "`" },
-  { key: "block", label: "{ }", title: "Code block", block: "```java\n", blockEnd: "\n```" },
-  { key: "ul", label: "•", title: "Bullet list", line: "- " },
-  { key: "ol", label: "1.", title: "Numbered list", line: "1. " },
-  { key: "task", label: "☑", title: "Checklist", line: "- [ ] " },
-  { key: "quote", label: "❝", title: "Quote", line: "> " },
-  { key: "hr", label: "—", title: "Divider", insert: "\n\n---\n\n" },
+const VIEWS = [
+  { key: "read", label: "Read", title: "Read — edit any section in place, select text to highlight" },
+  { key: "split", label: "Split", title: "Markdown on the left, preview on the right" },
+  { key: "write", label: "Write", title: "Markdown editor only" },
 ];
+
+// Reading preferences are a per-device convenience, so localStorage is fine;
+// they never touch the synced note store.
+const PREFS_KEY = "notesReaderPrefs";
+const FONT_MIN = 14;
+const FONT_MAX = 22;
+function loadPrefs() {
+  try {
+    return { fontSize: 17, wide: true, ...JSON.parse(localStorage.getItem(PREFS_KEY) || "{}") };
+  } catch (_) {
+    return { fontSize: 17, wide: true };
+  }
+}
 
 export default function TopicNotes() {
   const { source, topicId } = useParams();
   const navigate = useNavigate();
   const config = SOURCES[source];
+  const isDark = useIsDark();
+  const colorMode = isDark ? "dark" : "light";
+  const navTop = useNavHeight();
 
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
@@ -99,8 +103,9 @@ export default function TopicNotes() {
   const [savedAt, setSavedAt] = useState(null);
   const [dirty, setDirty] = useState(false);
   const [uploading, setUploading] = useState(0);
-  const [view, setView] = useState("split"); // split | write | preview
+  const [view, setView] = useState("read");
   const [dragging, setDragging] = useState(false);
+  const [prefs, setPrefs] = useState(loadPrefs);
 
   const [assets, setAssets] = useState({});
   // Ids already looked up, so a screenshot whose document is missing is not
@@ -109,11 +114,28 @@ export default function TopicNotes() {
   const areaRef = useRef(null);
   const saveTimer = useRef(null);
   const dirtyRef = useRef(false);
+  // The newest text, for the unmount flush — in the reading view there is no
+  // textarea to read it back from.
+  const latestRef = useRef("");
+
+  const updatePrefs = useCallback((patch) => {
+    setPrefs((prev) => {
+      const next = { ...prev, ...patch };
+      try {
+        localStorage.setItem(PREFS_KEY, JSON.stringify(next));
+      } catch (_) {}
+      return next;
+    });
+  }, []);
 
   // Hydrate once auth has settled, so the per-account note store is in scope.
+  // A note with something in it opens to read; an empty one opens to write.
   useEffect(() => {
     if (!authReady || !config || !topic) return;
-    setText(getSourceNote(source, topicId));
+    const initial = getSourceNote(source, topicId);
+    latestRef.current = initial;
+    setText(initial);
+    setView(initial.trim() ? "read" : "write");
     setLoaded(true);
   }, [authReady, config, topic, source, topicId]);
 
@@ -124,6 +146,7 @@ export default function TopicNotes() {
     return subscribe((key) => {
       if (key !== config.notesKey || dirtyRef.current) return;
       const incoming = loadJSON(config.notesKey, {})[topicId] || "";
+      latestRef.current = incoming;
       setText((prev) => (incoming === prev ? prev : incoming));
     });
   }, [config, topicId]);
@@ -154,8 +177,10 @@ export default function TopicNotes() {
     [source, topicId]
   );
 
+  // Typing: debounced save.
   const onChange = useCallback(
     (value) => {
+      latestRef.current = value;
       setText(value);
       dirtyRef.current = true;
       setDirty(true);
@@ -165,80 +190,76 @@ export default function TopicNotes() {
     [persist]
   );
 
+  // A discrete change from the reading view (a saved section, a highlight):
+  // there is nothing more coming, so save it now.
+  const commit = useCallback(
+    (value) => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      latestRef.current = value;
+      setText(value);
+      persist(value);
+    },
+    [persist]
+  );
+
   // Flush on unmount so navigating away inside the debounce window still saves.
   useEffect(
     () => () => {
       if (saveTimer.current) {
         clearTimeout(saveTimer.current);
-        if (dirtyRef.current && areaRef.current) setSourceNote(source, topicId, areaRef.current.value);
+        if (dirtyRef.current) setSourceNote(source, topicId, latestRef.current);
       }
     },
     [source, topicId]
   );
 
   // ── Editing helpers ────────────────────────────────────────────────────────
+  // An editing target is anything with a textarea and a way to read and set
+  // its value: the full editor here, or a section editor in the reading view.
+  const mainTarget = useMemo(
+    () => ({
+      get el() {
+        return areaRef.current;
+      },
+      get: () => (areaRef.current ? areaRef.current.value : latestRef.current),
+      set: onChange,
+    }),
+    [onChange]
+  );
+
   const applyAction = useCallback(
     (action) => {
       const el = areaRef.current;
       if (!el) return;
-      const { selectionStart: start, selectionEnd: end, value } = el;
-      const selected = value.slice(start, end);
-      let next;
-      let caret;
-
-      if (action.insert) {
-        next = value.slice(0, start) + action.insert + value.slice(end);
-        caret = start + action.insert.length;
-      } else if (action.block) {
-        const body = selected || "// code";
-        const chunk = action.block + body + action.blockEnd;
-        next = value.slice(0, start) + chunk + value.slice(end);
-        caret = start + action.block.length + body.length;
-      } else if (action.wrap) {
-        const body = selected || "text";
-        next = value.slice(0, start) + action.wrap + body + action.wrap + value.slice(end);
-        caret = start + action.wrap.length + body.length;
-      } else if (action.line) {
-        // Prefix every line the selection touches, list numbering included.
-        const lineStart = value.lastIndexOf("\n", start - 1) + 1;
-        const lineEnd = value.indexOf("\n", end);
-        const stop = lineEnd === -1 ? value.length : lineEnd;
-        const lines = value.slice(lineStart, stop).split("\n");
-        const prefixed = lines
-          .map((l, i) => (action.key === "ol" ? `${i + 1}. ${l}` : action.line + l))
-          .join("\n");
-        next = value.slice(0, lineStart) + prefixed + value.slice(stop);
-        caret = lineStart + prefixed.length;
-      } else return;
-
-      onChange(next);
+      const out = formatSelection(el.value, el.selectionStart, el.selectionEnd, action);
+      if (!out) return;
+      onChange(out.next);
       requestAnimationFrame(() => {
         el.focus();
-        el.setSelectionRange(caret, caret);
+        el.setSelectionRange(out.caret, out.caret);
       });
     },
     [onChange]
   );
 
-  const insertAtCursor = useCallback(
-    (snippet) => {
-      const el = areaRef.current;
-      if (!el) return;
-      const { selectionStart: start, selectionEnd: end, value } = el;
-      const next = value.slice(0, start) + snippet + value.slice(end);
-      onChange(next);
-      requestAnimationFrame(() => {
-        el.focus();
-        const caret = start + snippet.length;
-        el.setSelectionRange(caret, caret);
-      });
-    },
-    [onChange]
-  );
+  const insertInto = useCallback((target, snippet) => {
+    const el = target.el;
+    if (!el) {
+      target.set(target.get() + snippet);
+      return;
+    }
+    const { selectionStart: start, selectionEnd: end, value } = el;
+    target.set(value.slice(0, start) + snippet + value.slice(end));
+    requestAnimationFrame(() => {
+      el.focus();
+      const caret = start + snippet.length;
+      el.setSelectionRange(caret, caret);
+    });
+  }, []);
 
   // ── Screenshots ────────────────────────────────────────────────────────────
   const uploadFiles = useCallback(
-    async (files) => {
+    async (files, target = mainTarget) => {
       const images = [...files].filter((f) => f.type.startsWith("image/"));
       if (!images.length) return;
       if (!user?.uid) {
@@ -251,28 +272,24 @@ export default function TopicNotes() {
         // A placeholder keeps the caret position meaningful while the upload
         // runs, and is swapped for the real link (or removed) when it settles.
         const token = `![uploading ${file.name || "screenshot"}…]()`;
-        insertAtCursor(`\n${token}\n`);
+        insertInto(target, `\n${token}\n`);
         try {
           const { id, path } = await uploadNoteImage({ uid: user.uid, source, topicId, file });
-          const el = areaRef.current;
-          const current = el ? el.value : text;
-          onChange(current.replace(token, `![screenshot](${path})`));
+          target.set(target.get().replace(token, `![screenshot](${path})`));
           // The uploader cached the data URL, so mark it fetched and resolve it
           // from cache rather than reading the document straight back.
           fetchedRef.current.add(id);
           const local = await loadNoteAssets(user.uid, [id]);
           setAssets((prev) => ({ ...prev, ...local }));
         } catch (err) {
-          const el = areaRef.current;
-          const current = el ? el.value : text;
-          onChange(current.replace(`\n${token}\n`, ""));
+          target.set(target.get().replace(`\n${token}\n`, ""));
           toast.error(err instanceof NoteAssetError ? err.message : "Upload failed.");
         } finally {
           setUploading((n) => n - 1);
         }
       }
     },
-    [user, source, topicId, insertAtCursor, onChange, text]
+    [user, source, topicId, insertInto, mainTarget]
   );
 
   const onPaste = useCallback(
@@ -307,18 +324,14 @@ export default function TopicNotes() {
         applyAction(TOOLBAR.find((t) => t.key === "italic"));
       } else if (key === "s") {
         e.preventDefault();
-        persist(areaRef.current?.value ?? text);
+        persist(areaRef.current?.value ?? latestRef.current);
         toast.success("Notes saved");
       }
     },
-    [applyAction, persist, text]
+    [applyAction, persist]
   );
 
-  const stats = useMemo(() => {
-    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-    const images = (text.match(/!\[[^\]]*\]\((?!\s*\))/g) || []).length;
-    return { words, images, chars: text.length };
-  }, [text]);
+  const stats = useMemo(() => noteStats(text), [text]);
 
   if (!authReady) return null;
   if (!config) return <Navigate to="/core-stack" replace />;
@@ -327,102 +340,70 @@ export default function TopicNotes() {
 
   const prio = CORE_STACK_PRIORITY_CONFIG[topic.priority];
   const accent = config.accent;
+  const isRead = view === "read";
+  const paneHeight = { height: `calc(100vh - ${navTop + 250}px)`, minHeight: "28rem" };
 
   return (
-    <PageShell>
-      <div className="min-h-screen flex justify-center px-3">
-        <div className="w-full sm:w-11/12 lg:w-5/6 2xl:w-3/4">
-
-          {/* ── Header ── */}
-          <motion.div
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className={`mt-6 mb-4 rounded-3xl ${GLASS} px-4 sm:px-6 py-4`}
-          >
-            <div className="flex items-start gap-3">
-              <button
-                onClick={() => navigate(config.backTo)}
-                title={`Back to ${config.label}`}
-                className="mt-0.5 shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </button>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                    {config.label} · {topic.id}
-                  </span>
-                  {prio && (
-                    <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md border ${prio.cls}`}>
-                      {prio.label}
-                    </span>
-                  )}
-                </div>
-                <h1 className="text-[19px] sm:text-[22px] font-extrabold text-gray-800 dark:text-gray-100 leading-tight mt-0.5">
-                  {topic.title}
-                </h1>
-                <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-1">
-                  {stats.words} words · {stats.images} screenshot{stats.images === 1 ? "" : "s"}
-                  {uploading > 0 && <span className={accent.text}> · uploading {uploading}…</span>}
-                </p>
-              </div>
-
-              <div className="shrink-0 flex items-center gap-2">
-                <SaveState dirty={dirty} savedAt={savedAt} accent={accent} />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* ── Toolbar ── */}
-          <div className={`mb-3 rounded-2xl ${GLASS} px-2 py-2 flex flex-wrap items-center gap-1`}>
-            {TOOLBAR.map((action) => (
-              <button
-                key={action.key}
-                onClick={() => applyAction(action)}
-                title={action.title}
-                className={`min-w-[32px] h-8 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip} ${
-                  action.bold ? "font-extrabold" : ""
-                } ${action.italic ? "italic font-serif" : ""}`}
-              >
-                {action.label}
-              </button>
-            ))}
-
-            <span className="w-px h-5 bg-gray-200 dark:bg-white/10 mx-1" />
-
-            <label
-              className={`h-8 px-2.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip}`}
-              title="Add a screenshot (or just paste one)"
+    <PageShell allowSticky>
+      <div className="w-full max-w-[1760px] mx-auto px-3 sm:px-5 lg:px-8">
+        {/* ── Header ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className={`mt-5 mb-5 rounded-3xl ${GLASS} px-4 sm:px-7 pt-5 pb-4`}
+        >
+          <div className="flex items-start gap-3 sm:gap-4">
+            <button
+              onClick={() => navigate(config.backTo)}
+              title={`Back to ${config.label}`}
+              className="mt-1 shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
-                <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-                <path d="M2 10.5l3-3 3 3 2-2 4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Screenshot
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => {
-                  uploadFiles(e.target.files);
-                  e.target.value = "";
-                }}
-              />
-            </label>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
 
-            <div className="ml-auto flex items-center gap-1 rounded-lg bg-white/50 dark:bg-white/[0.04] p-0.5">
-              {[
-                { key: "write", label: "Write" },
-                { key: "split", label: "Split" },
-                { key: "preview", label: "Preview" },
-              ].map((v) => (
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                  {config.label} · {topic.id}
+                </span>
+                {prio && (
+                  <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md border ${prio.cls}`}>{prio.label}</span>
+                )}
+              </div>
+              <h1 className="text-[22px] sm:text-[28px] lg:text-[32px] font-extrabold tracking-tight text-gray-900 dark:text-gray-50 leading-tight mt-1">
+                {topic.title}
+              </h1>
+              <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1.5 flex flex-wrap items-center gap-x-2">
+                <span>{stats.words.toLocaleString()} words</span>
+                <span className="text-gray-300 dark:text-gray-600">•</span>
+                {stats.minutes > 0 && (
+                  <>
+                    <span>≈ {stats.minutes} min read</span>
+                    <span className="text-gray-300 dark:text-gray-600">•</span>
+                  </>
+                )}
+                <span>
+                  {stats.images} screenshot{stats.images === 1 ? "" : "s"}
+                </span>
+                {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
+              </p>
+            </div>
+
+            <div className="shrink-0 pt-1">
+              <SaveState dirty={dirty} savedAt={savedAt} accent={accent} />
+            </div>
+          </div>
+
+          {/* ── Controls: view switch, then reading or formatting tools ── */}
+          <div className="mt-4 pt-3 border-t border-gray-200/70 dark:border-white/[0.07] flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
+              {VIEWS.map((v) => (
                 <button
                   key={v.key}
                   onClick={() => setView(v.key)}
-                  className={`px-2.5 h-7 rounded-md text-[12px] font-bold transition-all ${
+                  title={v.title}
+                  className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
                     view === v.key
                       ? `${accent.button} text-white shadow-md`
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
@@ -432,95 +413,167 @@ export default function TopicNotes() {
                 </button>
               ))}
             </div>
-          </div>
 
-          {/* ── Editor + preview ── */}
-          <div className={`grid gap-3 mb-10 ${view === "split" ? "lg:grid-cols-2" : "grid-cols-1"}`}>
-            {view !== "preview" && (
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragging(true);
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={onDrop}
-                className={`relative rounded-2xl ${GLASS} p-1 transition-all ${
-                  dragging ? "ring-2 ring-sky-400/60" : ""
-                }`}
-              >
-                <textarea
-                  ref={areaRef}
-                  value={loaded ? text : ""}
-                  onChange={(e) => onChange(e.target.value)}
-                  onPaste={onPaste}
-                  onKeyDown={onKeyDown}
-                  spellCheck={false}
-                  placeholder={
-                    "# What I got wrong\n\nParagraph, **bold**, `code`.\n\n```java\n// paste the snippet that bit you\n```\n\n- [ ] revisit before the next mock\n\nPaste a screenshot straight in — Ctrl/Cmd+V."
-                  }
-                  className={`w-full min-h-[62vh] p-4 text-[13.5px] leading-relaxed font-mono rounded-xl bg-white/70 dark:bg-slate-900/50 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200/80 dark:border-white/[0.07] resize-y focus:outline-none focus:ring-2 ${accent.ring}`}
-                />
-                {dragging && (
-                  <div className="absolute inset-0 rounded-2xl bg-sky-500/10 border-2 border-dashed border-sky-400/70 flex items-center justify-center pointer-events-none">
-                    <p className="text-sm font-bold text-sky-600 dark:text-sky-300">Drop the image to upload</p>
-                  </div>
-                )}
-              </div>
+            {isRead ? (
+              <>
+                <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1 ml-1" title="Text size">
+                  <IconButton
+                    onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
+                    disabled={prefs.fontSize <= FONT_MIN}
+                    title="Smaller text"
+                  >
+                    <span className="text-[12px] font-bold">A−</span>
+                  </IconButton>
+                  <span className="w-9 text-center text-[12px] font-bold tabular-nums text-gray-600 dark:text-gray-300">
+                    {prefs.fontSize}
+                  </span>
+                  <IconButton
+                    onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
+                    disabled={prefs.fontSize >= FONT_MAX}
+                    title="Larger text"
+                  >
+                    <span className="text-[15px] font-bold">A+</span>
+                  </IconButton>
+                </div>
+                <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
+                  {[
+                    { wide: true, label: "Wide", title: "Use the full width of the page" },
+                    { wide: false, label: "Focus", title: "A narrower column, easier on long reads" },
+                  ].map((w) => (
+                    <button
+                      key={w.label}
+                      onClick={() => updatePrefs({ wide: w.wide })}
+                      title={w.title}
+                      className={`px-3 h-8 rounded-lg text-[12.5px] font-bold transition-colors ${
+                        prefs.wide === w.wide
+                          ? "bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm"
+                          : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                      }`}
+                    >
+                      {w.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="hidden md:block ml-auto text-[12px] text-gray-400 dark:text-gray-500">
+                  Select text to highlight · hover a section and press ✎ to edit it
+                </p>
+              </>
+            ) : (
+              <>
+                <span className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-1" />
+                {TOOLBAR.map((action) => (
+                  <button
+                    key={action.key}
+                    onClick={() => applyAction(action)}
+                    title={action.title}
+                    className={`min-w-[32px] h-8 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip} ${
+                      action.bold ? "font-extrabold" : ""
+                    } ${action.italic ? "italic font-serif" : ""}`}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+                <label
+                  className={`h-8 px-2.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip}`}
+                  title="Add a screenshot (or just paste one)"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                    <path d="M2 10.5l3-3 3 3 2-2 4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Screenshot
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      uploadFiles(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </>
             )}
+          </div>
+        </motion.div>
 
-            {view !== "write" && (
-              <div className={`rounded-2xl ${GLASS} p-4 overflow-x-auto`}>
+        {/* ── Body ── */}
+        {loaded && isRead && (
+          <NoteReader
+            text={text}
+            onCommit={commit}
+            assets={assets}
+            colorMode={colorMode}
+            fontSize={prefs.fontSize}
+            wide={prefs.wide}
+            accent={accent}
+            uploadInto={uploadFiles}
+          />
+        )}
+
+        {loaded && !isRead && (
+          <div className={`grid gap-4 mb-10 ${view === "split" ? "lg:grid-cols-2" : "grid-cols-1"}`}>
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDrop}
+              className={`relative rounded-3xl ${GLASS} p-1.5 transition-all ${dragging ? "ring-2 ring-sky-400/60" : ""}`}
+            >
+              <textarea
+                ref={areaRef}
+                value={text}
+                onChange={(e) => onChange(e.target.value)}
+                onPaste={onPaste}
+                onKeyDown={onKeyDown}
+                spellCheck={false}
+                placeholder={
+                  "# What I got wrong\n\nParagraph, **bold**, `code`.\n\n```java\n// paste the snippet that bit you\n```\n\n- [ ] revisit before the next mock\n\nPaste a screenshot straight in — Ctrl/Cmd+V."
+                }
+                style={view === "split" ? paneHeight : undefined}
+                className={`w-full ${
+                  view === "split" ? "resize-none" : "min-h-[72vh] resize-y"
+                } px-5 py-4 text-[14.5px] leading-[1.7] font-mono rounded-[1.1rem] bg-white/75 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200/80 dark:border-white/[0.07] focus:outline-none focus:ring-2 ${accent.ring}`}
+              />
+              {dragging && (
+                <div className="absolute inset-0 rounded-3xl bg-sky-500/10 border-2 border-dashed border-sky-400/70 flex items-center justify-center pointer-events-none">
+                  <p className="text-sm font-bold text-sky-600 dark:text-sky-300">Drop the image to upload</p>
+                </div>
+              )}
+            </div>
+
+            {view === "split" && (
+              <div className={`rounded-3xl ${GLASS} overflow-y-auto px-6 lg:px-9 py-6`} style={paneHeight}>
                 {text.trim() ? (
-                  <div data-color-mode="auto" className="cs-markdown">
-                    <MarkdownPreview
-                      source={text}
-                      style={{ background: "transparent", fontSize: "14px" }}
-                      wrapperElement={{ "data-color-mode": "auto" }}
-                      components={{ img: NoteImage(assets) }}
-                    />
-                  </div>
+                  <NotePreview text={text} assets={assets} colorMode={colorMode} fontSize={Math.min(prefs.fontSize, 16)} />
                 ) : (
                   <div className={`${GLASS_PANEL} rounded-xl px-4 py-10 text-center`}>
-                    <p className="text-sm text-gray-400 dark:text-gray-500">
-                      Nothing yet. Whatever you write on the left renders here.
-                    </p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500">Nothing yet. Whatever you write on the left renders here.</p>
                   </div>
                 )}
               </div>
             )}
           </div>
-        </div>
+        )}
       </div>
     </PageShell>
   );
 }
 
-// A screenshot is stored as its own document, so the markdown holds a path and
-// this swaps in the resolved data URL. Anything else (an ordinary URL from an
-// older note) renders untouched.
-function NoteImage(assets) {
-  return function Img({ src, alt, ...rest }) {
-    if (typeof src === "string" && src.startsWith(ASSET_PREFIX)) {
-      const id = src.slice(ASSET_PREFIX.length);
-      const data = assets[id];
-      if (!data) {
-        return (
-          <span className="inline-flex items-center gap-2 my-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 dark:border-white/15 text-[12px] text-gray-400 dark:text-gray-500">
-            <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-white/20 animate-pulse" />
-            loading screenshot…
-          </span>
-        );
-      }
-      return (
-        <img
-          src={data}
-          alt={alt || "screenshot"}
-          className="rounded-lg border border-gray-200 dark:border-white/10 max-w-full my-2"
-        />
-      );
-    }
-    return <img src={src} alt={alt} {...rest} className="rounded-lg max-w-full my-2" />;
-  };
+function IconButton({ onClick, disabled, title, children }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/[0.1] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
+    >
+      {children}
+    </button>
+  );
 }
 
 function SaveState({ dirty, savedAt, accent }) {
