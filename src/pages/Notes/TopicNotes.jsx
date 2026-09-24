@@ -19,7 +19,7 @@ import {
   subscribe,
 } from "../../Data/planStore";
 import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
-import NoteReader, { NotePreview, useNavHeight } from "./NoteReader";
+import NoteReader, { NotePreview, useStickyHeaderOffset } from "./NoteReader";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
 
 // A full page per topic, because a 4-line textarea inside a card is no place to
@@ -84,7 +84,7 @@ export default function TopicNotes() {
   const config = SOURCES[source];
   const isDark = useIsDark();
   const colorMode = isDark ? "dark" : "light";
-  const navTop = useNavHeight();
+  const headerOffset = useStickyHeaderOffset();
 
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
@@ -106,6 +106,9 @@ export default function TopicNotes() {
   const [view, setView] = useState("read");
   const [dragging, setDragging] = useState(false);
   const [prefs, setPrefs] = useState(loadPrefs);
+  const [immersive, setImmersive] = useState(false);
+  const [barHeight, setBarHeight] = useState(0);
+  const barRef = useRef(null);
 
   const [assets, setAssets] = useState({});
   // Ids already looked up, so a screenshot whose document is missing is not
@@ -127,6 +130,66 @@ export default function TopicNotes() {
       return next;
     });
   }, []);
+
+  // ── Full-screen reading ──────────────────────────────────────────────────
+  // Hides the site header and the topic card and asks the browser for real
+  // full screen. If the browser refuses (or has no Fullscreen API), the page
+  // still goes chrome-free and Esc brings it back.
+  const enterImmersive = useCallback(() => {
+    setImmersive(true);
+    const root = document.documentElement;
+    if (root.requestFullscreen && !document.fullscreenElement) root.requestFullscreen().catch(() => {});
+  }, []);
+
+  const exitImmersive = useCallback(() => {
+    setImmersive(false);
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("notes-immersive", immersive);
+    return () => document.documentElement.classList.remove("notes-immersive");
+  }, [immersive]);
+
+  // Leaving browser full screen (Esc, F11, the browser's own button) ends the
+  // reading mode too, so the two never disagree.
+  useEffect(() => {
+    const onChange = () => {
+      if (!document.fullscreenElement) setImmersive(false);
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    };
+  }, []);
+
+  // Without real full screen, Esc is ours — unless an editor already used it.
+  useEffect(() => {
+    if (!immersive) return undefined;
+    const onKey = (e) => {
+      if (e.key !== "Escape" || e.defaultPrevented || document.fullscreenElement) return;
+      if (e.target instanceof Element && e.target.closest("textarea, input")) return;
+      setImmersive(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [immersive]);
+
+  // The slim bar is sticky in full screen, so anchors and the contents column
+  // need to clear it.
+  useEffect(() => {
+    const el = barRef.current;
+    if (!immersive || !el) {
+      setBarHeight(0);
+      return undefined;
+    }
+    const update = () => setBarHeight(Math.round(el.getBoundingClientRect().height));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [immersive]);
 
   // Hydrate once auth has settled, so the per-account note store is in scope.
   // A note with something in it opens to read; an empty one opens to write.
@@ -341,12 +404,160 @@ export default function TopicNotes() {
   const prio = CORE_STACK_PRIORITY_CONFIG[topic.priority];
   const accent = config.accent;
   const isRead = view === "read";
-  const paneHeight = { height: `calc(100vh - ${navTop + 250}px)`, minHeight: "28rem" };
+  // What covers the top of the viewport once scrolled: the slim bar in full
+  // screen, otherwise the site header only if it really sticks.
+  const topOffset = immersive ? barHeight : headerOffset;
+  const paneHeight = {
+    height: immersive ? `calc(100vh - ${barHeight + 44}px)` : "calc(100vh - 16rem)",
+    minHeight: "28rem",
+  };
+
+  // View switch, then reading or formatting tools, then full screen. Shared by
+  // the topic card and the slim full-screen bar.
+  const renderControls = (inBar) => (
+    <div className={`flex flex-wrap items-center gap-2 ${inBar ? "" : "w-full"}`}>
+      <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
+        {VIEWS.map((v) => (
+          <button
+            key={v.key}
+            onClick={() => setView(v.key)}
+            title={v.title}
+            className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
+              view === v.key
+                ? `${accent.button} text-white shadow-md`
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+            }`}
+          >
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {isRead ? (
+        <>
+          <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1 ml-1" title="Text size">
+            <IconButton
+              onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
+              disabled={prefs.fontSize <= FONT_MIN}
+              title="Smaller text"
+            >
+              <span className="text-[12px] font-bold">A−</span>
+            </IconButton>
+            <span className="w-9 text-center text-[12px] font-bold tabular-nums text-gray-600 dark:text-gray-300">
+              {prefs.fontSize}
+            </span>
+            <IconButton
+              onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
+              disabled={prefs.fontSize >= FONT_MAX}
+              title="Larger text"
+            >
+              <span className="text-[15px] font-bold">A+</span>
+            </IconButton>
+          </div>
+          <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
+            {[
+              { wide: true, label: "Wide", title: "Use the full width of the page" },
+              { wide: false, label: "Focus", title: "A narrower column, easier on long reads" },
+            ].map((w) => (
+              <button
+                key={w.label}
+                onClick={() => updatePrefs({ wide: w.wide })}
+                title={w.title}
+                className={`px-3 h-8 rounded-lg text-[12.5px] font-bold transition-colors ${
+                  prefs.wide === w.wide
+                    ? "bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                }`}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <span className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-1" />
+          {TOOLBAR.map((action) => (
+            <button
+              key={action.key}
+              onClick={() => applyAction(action)}
+              title={action.title}
+              className={`min-w-[32px] h-8 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip} ${
+                action.bold ? "font-extrabold" : ""
+              } ${action.italic ? "italic font-serif" : ""}`}
+            >
+              {action.label}
+            </button>
+          ))}
+          <label
+            className={`h-8 px-2.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip}`}
+            title="Add a screenshot (or just paste one)"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+              <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+              <path d="M2 10.5l3-3 3 3 2-2 4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Screenshot
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                uploadFiles(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </label>
+        </>
+      )}
+
+      <div className="ml-auto flex items-center gap-3">
+        {!inBar && isRead && (
+          <p className="hidden 2xl:block text-[12px] text-gray-400 dark:text-gray-500">
+            Select text to highlight · hover a section and press ✎ to edit it
+          </p>
+        )}
+        <button
+          onClick={immersive ? exitImmersive : enterImmersive}
+          title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
+          className="h-9 px-3 rounded-xl flex items-center gap-1.5 text-[12.5px] font-bold text-gray-600 dark:text-gray-300 bg-gray-100/80 dark:bg-white/[0.05] hover:bg-gray-200/80 dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          {immersive ? (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          ) : (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          )}
+          {immersive ? "Exit full screen" : "Full screen"}
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <PageShell allowSticky>
-      <div className="w-full max-w-[1760px] mx-auto px-3 sm:px-5 lg:px-8">
-        {/* ── Header ── */}
+      <div className="w-full max-w-[2200px] mx-auto px-3 sm:px-5 lg:px-8">
+        {immersive ? (
+          /* ── Full screen: a slim sticky bar instead of the site header + topic card ── */
+          <div
+            ref={barRef}
+            className="sticky top-0 z-40 -mx-3 sm:-mx-5 lg:-mx-8 mb-5 px-3 sm:px-5 lg:px-8 py-2.5 backdrop-blur-xl bg-white/75 dark:bg-[#0b1020]/80 border-b border-gray-200/70 dark:border-white/[0.07]"
+          >
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div className="min-w-0 flex-1 flex items-baseline gap-2.5">
+                <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                  {topic.id}
+                </span>
+                <span className="truncate text-[15px] font-extrabold tracking-tight text-gray-900 dark:text-gray-50">{topic.title}</span>
+                <span className="shrink-0 hidden sm:inline">
+                  <SaveState dirty={dirty} savedAt={savedAt} accent={accent} />
+                </span>
+              </div>
+              {renderControls(true)}
+            </div>
+          </div>
+        ) : (
+        /* ── Topic card ── */
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -395,108 +606,9 @@ export default function TopicNotes() {
             </div>
           </div>
 
-          {/* ── Controls: view switch, then reading or formatting tools ── */}
-          <div className="mt-4 pt-3 border-t border-gray-200/70 dark:border-white/[0.07] flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
-              {VIEWS.map((v) => (
-                <button
-                  key={v.key}
-                  onClick={() => setView(v.key)}
-                  title={v.title}
-                  className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
-                    view === v.key
-                      ? `${accent.button} text-white shadow-md`
-                      : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                  }`}
-                >
-                  {v.label}
-                </button>
-              ))}
-            </div>
-
-            {isRead ? (
-              <>
-                <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1 ml-1" title="Text size">
-                  <IconButton
-                    onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
-                    disabled={prefs.fontSize <= FONT_MIN}
-                    title="Smaller text"
-                  >
-                    <span className="text-[12px] font-bold">A−</span>
-                  </IconButton>
-                  <span className="w-9 text-center text-[12px] font-bold tabular-nums text-gray-600 dark:text-gray-300">
-                    {prefs.fontSize}
-                  </span>
-                  <IconButton
-                    onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
-                    disabled={prefs.fontSize >= FONT_MAX}
-                    title="Larger text"
-                  >
-                    <span className="text-[15px] font-bold">A+</span>
-                  </IconButton>
-                </div>
-                <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
-                  {[
-                    { wide: true, label: "Wide", title: "Use the full width of the page" },
-                    { wide: false, label: "Focus", title: "A narrower column, easier on long reads" },
-                  ].map((w) => (
-                    <button
-                      key={w.label}
-                      onClick={() => updatePrefs({ wide: w.wide })}
-                      title={w.title}
-                      className={`px-3 h-8 rounded-lg text-[12.5px] font-bold transition-colors ${
-                        prefs.wide === w.wide
-                          ? "bg-white dark:bg-white/[0.12] text-gray-900 dark:text-white shadow-sm"
-                          : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                      }`}
-                    >
-                      {w.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="hidden md:block ml-auto text-[12px] text-gray-400 dark:text-gray-500">
-                  Select text to highlight · hover a section and press ✎ to edit it
-                </p>
-              </>
-            ) : (
-              <>
-                <span className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-1" />
-                {TOOLBAR.map((action) => (
-                  <button
-                    key={action.key}
-                    onClick={() => applyAction(action)}
-                    title={action.title}
-                    className={`min-w-[32px] h-8 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip} ${
-                      action.bold ? "font-extrabold" : ""
-                    } ${action.italic ? "italic font-serif" : ""}`}
-                  >
-                    {action.label}
-                  </button>
-                ))}
-                <label
-                  className={`h-8 px-2.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip}`}
-                  title="Add a screenshot (or just paste one)"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
-                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-                    <path d="M2 10.5l3-3 3 3 2-2 4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  Screenshot
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={(e) => {
-                      uploadFiles(e.target.files);
-                      e.target.value = "";
-                    }}
-                  />
-                </label>
-              </>
-            )}
-          </div>
+          <div className="mt-4 pt-3 border-t border-gray-200/70 dark:border-white/[0.07]">{renderControls(false)}</div>
         </motion.div>
+        )}
 
         {/* ── Body ── */}
         {loaded && isRead && (
@@ -509,6 +621,7 @@ export default function TopicNotes() {
             wide={prefs.wide}
             accent={accent}
             uploadInto={uploadFiles}
+            topOffset={topOffset}
           />
         )}
 
