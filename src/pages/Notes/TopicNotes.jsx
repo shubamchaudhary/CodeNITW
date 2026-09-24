@@ -140,6 +140,7 @@ export default function TopicNotes() {
   // full screen. If the browser refuses (or has no Fullscreen API), the page
   // still goes chrome-free and Esc brings it back.
   const enterImmersive = useCallback(() => {
+    setView("read"); // full screen is for reading
     setImmersive(true);
     const root = document.documentElement;
     if (root.requestFullscreen && !document.fullscreenElement) root.requestFullscreen().catch(() => {});
@@ -426,25 +427,28 @@ export default function TopicNotes() {
   const topOffset = immersive ? barHeight : headerOffset;
 
   // View switch, then reading or formatting tools, then full screen. Shared by
-  // the topic card and the slim full-screen bar.
+  // the topic card and the slim full-screen bar — which is for reading only,
+  // so it has no view switch.
   const renderControls = (inBar) => (
     <div className={`flex flex-wrap items-center gap-2 ${inBar ? "" : "w-full"}`}>
-      <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
-        {VIEWS.map((v) => (
-          <button
-            key={v.key}
-            onClick={() => setView(v.key)}
-            title={v.title}
-            className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
-              view === v.key
-                ? `${accent.button} text-white shadow-md`
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            }`}
-          >
-            {v.label}
-          </button>
-        ))}
-      </div>
+      {!inBar && (
+        <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
+          {VIEWS.map((v) => (
+            <button
+              key={v.key}
+              onClick={() => setView(v.key)}
+              title={v.title}
+              className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
+                view === v.key
+                  ? `${accent.button} text-white shadow-md`
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+              }`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {isRead ? (
         <>
@@ -512,30 +516,33 @@ export default function TopicNotes() {
             Select text to highlight or add a note · hover a section and press ✎ to edit it
           </p>
         )}
-        <button
-          onClick={immersive ? exitImmersive : enterImmersive}
-          title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
-          className="h-9 px-3 rounded-xl flex items-center gap-1.5 text-[12.5px] font-bold text-gray-600 dark:text-gray-300 bg-gray-100/80 dark:bg-white/[0.05] hover:bg-gray-200/80 dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white transition-colors"
-        >
-          {immersive ? (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          ) : (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          )}
-          {immersive ? "Exit full screen" : "Full screen"}
-        </button>
+        {(isRead || immersive) && (
+          <button
+            onClick={immersive ? exitImmersive : enterImmersive}
+            title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
+            className="h-9 px-3 rounded-xl flex items-center gap-1.5 text-[12.5px] font-bold text-gray-600 dark:text-gray-300 bg-gray-100/80 dark:bg-white/[0.05] hover:bg-gray-200/80 dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white transition-colors"
+          >
+            {immersive ? (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            )}
+            {immersive ? "Exit full screen" : "Full screen"}
+          </button>
+        )}
       </div>
     </div>
   );
 
   return (
-    <PageShell allowSticky>
+    <PageShell allowSticky className={immersive ? "!pb-0" : ""}>
       <div className="w-full max-w-[2200px] mx-auto px-3 sm:px-5 lg:px-8">
         {immersive ? (
-          /* ── Full screen: a slim sticky bar instead of the site header + topic card ── */
+          /* ── Full screen: a slim sticky bar sitting right on the page, instead
+                of the site header + topic card ── */
           <div
             ref={barRef}
-            className="sticky top-0 z-40 -mx-3 sm:-mx-5 lg:-mx-8 mb-5 px-3 sm:px-5 lg:px-8 py-2.5 backdrop-blur-xl bg-white/75 dark:bg-[#0b1020]/80 border-b border-gray-200/70 dark:border-white/[0.07]"
+            className="sticky top-0 z-40 -mx-3 sm:-mx-5 lg:-mx-8 px-3 sm:px-5 lg:px-8 py-2.5 backdrop-blur-xl bg-white/90 dark:bg-[#0e1427]/90 border-b border-gray-200/90 dark:border-white/[0.07]"
           >
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <div className="min-w-0 flex-1 flex items-baseline gap-2.5">
