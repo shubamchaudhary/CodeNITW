@@ -97,20 +97,28 @@ export function NotePreview({ text, assets, colorMode, fontSize }) {
   );
 }
 
-// The sticky header's height, so anchors and the sticky contents rail land
-// just below it rather than under it.
-export function useNavHeight() {
-  const [height, setHeight] = useState(64);
+// How much of the top of the viewport the site header covers once the page is
+// scrolled. Its bar is `sticky`, but it sits inside a <header> of exactly its
+// own height, so it has nowhere to stick and scrolls away — in that case this
+// is 0. It only reports the bar's height if the bar can really stay put.
+export function useStickyHeaderOffset() {
+  const [offset, setOffset] = useState(0);
   useEffect(() => {
-    const nav = document.querySelector("nav");
+    const nav = document.querySelector("#root > header nav, #root > nav");
     if (!nav) return undefined;
-    const update = () => setHeight(Math.round(nav.getBoundingClientRect().height));
+    const update = () => {
+      const { position } = getComputedStyle(nav);
+      const own = nav.getBoundingClientRect().height;
+      const room = nav.parentElement ? nav.parentElement.getBoundingClientRect().height : 0;
+      const sticks = position === "fixed" || (position === "sticky" && room > own + 1);
+      setOffset(sticks ? Math.round(own) : 0);
+    };
     update();
     const observer = new ResizeObserver(update);
     observer.observe(nav);
     return () => observer.disconnect();
   }, []);
-  return height;
+  return offset;
 }
 
 // ─── Reader ──────────────────────────────────────────────────────────────────
@@ -124,8 +132,9 @@ export default function NoteReader({
   wide,
   accent,
   uploadInto,
+  topOffset = 0, // px of the viewport covered by anything sticky above the page
 }) {
-  const navTop = useNavHeight();
+  const navTop = topOffset;
   const sections = useMemo(() => splitSections(text), [text]);
   const components = useMemo(() => ({ ...TRACKED_COMPONENTS, img: noteImage(assets) }), [assets]);
 
@@ -340,20 +349,12 @@ export default function NoteReader({
   );
 
   return (
-    <div className="grid gap-6 xl:gap-8 xl:grid-cols-[minmax(0,1fr)_16.5rem] items-start">
-      {/* Reading progress, pinned just under the site header */}
-      <div className="fixed left-0 right-0 z-40 h-[3px] bg-transparent pointer-events-none" style={{ top: navTop }}>
-        <div
-          className={`h-full bg-gradient-to-r ${accent.bar} transition-[width] duration-150`}
-          style={{ width: `${progress * 100}%` }}
-        />
-      </div>
-
+    <div className="grid gap-6 xl:gap-0 xl:grid-cols-[minmax(0,1fr)_17rem] 2xl:grid-cols-[minmax(0,1fr)_18.5rem]">
       <article
         ref={articleRef}
         onMouseUp={onMouseUp}
         onMouseDown={() => setToolbar(null)}
-        className={`${GLASS} rounded-3xl min-w-0 px-5 sm:px-8 lg:px-14 py-7 lg:py-11`}
+        className={`${GLASS} rounded-3xl min-w-0 self-start px-5 sm:px-8 lg:px-12 py-7 lg:py-11 xl:mr-8`}
       >
         {toc.length > 2 && <MobileContents toc={toc} activeId={activeTocId} onJump={jumpTo} />}
 
@@ -428,9 +429,12 @@ export default function NoteReader({
         </div>
       </article>
 
-      <aside className="hidden xl:block self-stretch">
-        <div className="sticky" style={{ top: navTop + 20 }}>
-          <Contents toc={toc} activeId={activeTocId} progress={progress} onJump={jumpTo} accent={accent} />
+      {/* Contents: plain text in its own column behind a hairline, not a card.
+          The column stretches to the article's height so the line runs the
+          full length, and the list inside it sticks. */}
+      <aside className="hidden xl:block border-l border-gray-300/60 dark:border-white/[0.09] pl-7">
+        <div className="sticky" style={{ top: navTop + 24 }}>
+          <Contents toc={toc} activeId={activeTocId} activeIndex={active} progress={progress} onJump={jumpTo} accent={accent} topOffset={navTop} />
         </div>
       </aside>
 
@@ -624,41 +628,93 @@ function SectionEditor({ initial, placeholder, onSave, onCancel, uploadInto, acc
   );
 }
 
-function Contents({ toc, activeId, progress, onJump, accent }) {
-  const listRef = useRef(null);
-  const minLevel = Math.min(...toc.map((t) => t.level), 3);
+// The level that actually structures the note: the shallowest heading level
+// used more than once. A lone "# Title" above numbered "## Topic" sections is
+// the title, not the outline, so the outline starts at ##.
+function outlineLevel(toc) {
+  const counts = {};
+  toc.forEach((t) => (counts[t.level] = (counts[t.level] || 0) + 1));
+  const levels = Object.keys(counts).map(Number).sort((a, b) => a - b);
+  return levels.find((l) => counts[l] > 1) ?? levels[0] ?? 1;
+}
 
-  // Keep the active entry in view when the list is taller than the rail.
+// Which entries to list: everything down to the outline level, plus the
+// sub-headings of the part you are reading. A 13-topic note with ten
+// sub-headings each stays a short list instead of 130 lines.
+function visibleEntries(toc, activeIndex) {
+  const top = outlineLevel(toc);
+  let group = -1; // index into toc of the outline entry you are inside
+  toc.forEach((t, i) => {
+    if (t.level === top && t.index <= activeIndex) group = i;
+  });
+  const out = [];
+  let parent = -1;
+  toc.forEach((t, i) => {
+    if (t.level < top) {
+      // A heading above the outline is the note's title — the page header
+      // already shows the topic, and "Back to top" goes there.
+      parent = -1;
+    } else if (t.level === top) {
+      parent = i;
+      out.push(t);
+    } else if (parent === group && group !== -1) out.push(t);
+  });
+  return { entries: out.length ? out : toc, top };
+}
+
+function Contents({ toc, activeId, activeIndex, progress, onJump, accent, topOffset }) {
+  const listRef = useRef(null);
+  const { entries, top } = useMemo(() => visibleEntries(toc, activeIndex), [toc, activeIndex]);
+  const minLevel = Math.min(...entries.map((t) => t.level), top);
+
+  // Keep the active entry in view without a scrollbar: scroll the list itself,
+  // never the page.
   useEffect(() => {
-    const el = listRef.current?.querySelector(`[data-toc="${activeId}"]`);
-    el?.scrollIntoView({ block: "nearest" });
-  }, [activeId]);
+    const list = listRef.current;
+    const el = list?.querySelector(`[data-toc="${activeId}"]`);
+    if (!list || !el) return;
+    const above = el.offsetTop - list.scrollTop;
+    const below = above + el.offsetHeight - list.clientHeight;
+    if (above < 24) list.scrollTo({ top: el.offsetTop - 24, behavior: "smooth" });
+    else if (below > -24) list.scrollTo({ top: el.offsetTop - list.clientHeight + el.offsetHeight + 24, behavior: "smooth" });
+  }, [activeId, entries.length]);
 
   return (
-    <div className={`${GLASS} rounded-2xl p-4`}>
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-gray-500">On this page</p>
-        <span className={`text-[11px] font-bold tabular-nums ${accent.text}`}>{Math.round(progress * 100)}%</span>
+    <div>
+      <div className="flex items-center justify-between">
+        <p className="text-[13px] font-medium text-gray-500 dark:text-gray-400">Reading progress</p>
+        <span className={`text-[12px] font-bold tabular-nums ${accent.text}`}>{Math.round(progress * 100)}%</span>
       </div>
-      <div className="h-1 rounded-full bg-gray-200/80 dark:bg-white/[0.07] overflow-hidden mb-3">
-        <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar}`} style={{ width: `${progress * 100}%` }} />
+      <div className="mt-2 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] overflow-hidden">
+        <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar} transition-[width] duration-200`} style={{ width: `${progress * 100}%` }} />
       </div>
-      {toc.length ? (
-        <nav ref={listRef} className="max-h-[calc(100vh-15rem)] overflow-y-auto pr-1 -mr-1 note-toc">
-          {toc.map((t) => {
+
+      <p className="mt-7 mb-3 text-[17px] font-semibold text-gray-800 dark:text-gray-100">On this page</p>
+      {entries.length ? (
+        <nav
+          ref={listRef}
+          className="note-toc relative overflow-y-auto -ml-2"
+          style={{ maxHeight: `calc(100vh - ${topOffset + 210}px)` }}
+        >
+          {entries.map((t) => {
             const on = t.id === activeId;
+            const depth = t.level - minLevel;
             return (
               <button
                 key={t.id}
                 data-toc={t.id}
                 onClick={() => onJump(t.id)}
                 title={t.title}
-                style={{ paddingLeft: `${10 + (t.level - minLevel) * 12}px` }}
-                className={`block w-full text-left py-1.5 pr-2 border-l-2 text-[13px] leading-snug transition-colors ${
+                style={{ paddingLeft: `${8 + depth * 16}px` }}
+                className={`block w-full text-left pr-2 rounded-md leading-snug transition-colors ${
+                  depth === 0 ? "py-1.5 text-[14.5px]" : "py-1 text-[13.5px]"
+                } ${
                   on
-                    ? `${accent.text} font-semibold border-current`
-                    : "text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-gray-100"
-                } ${t.level === minLevel ? "" : "text-[12.5px]"}`}
+                    ? `${accent.text} font-semibold`
+                    : depth === 0
+                    ? "text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                }`}
               >
                 <span className="line-clamp-2">{t.title}</span>
               </button>
@@ -666,11 +722,11 @@ function Contents({ toc, activeId, progress, onJump, accent }) {
           })}
         </nav>
       ) : (
-        <p className="text-[12px] text-gray-400 dark:text-gray-500">Add headings (## …) and they show up here.</p>
+        <p className="text-[13px] text-gray-400 dark:text-gray-500">Add headings (## …) and they show up here.</p>
       )}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="mt-3 text-[12px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200"
+        className="mt-4 text-[12.5px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200"
       >
         ↑ Back to top
       </button>

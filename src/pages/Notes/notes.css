@@ -324,6 +324,16 @@
   border-color: rgba(99, 102, 241, 0.35);
   background: rgba(99, 102, 241, 0.035);
 }
+/* The contents list scrolls to follow you, but shows no scrollbar. */
 .note-toc {
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+.note-toc::-webkit-scrollbar {
+  display: none;
+}
+
+/* Full-screen reading: the site header goes away; the page shows its own
+   slim bar instead. The class is set on <html> by the notes page only. */
+.notes-immersive #root > header {
+  display: none !important;
 }
