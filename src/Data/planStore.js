@@ -16,9 +16,13 @@ export const KEYS = {
   CS_COMPLETED: "CoreStackCompleted",
   CS_NOTES: "CoreStackNotes",
   CS_TIMESTAMPS: "CoreStackCheckedTimestamps",
+  // Personal notes pinned to a passage of a topic's notes page, kept apart
+  // from the note text so annotating never edits the markdown (or code).
+  CS_ANNOTATIONS: "CoreStackAnnotations",
   AI_COMPLETED: "AIStackCompleted",
   AI_NOTES: "AIStackNotes",
   AI_TIMESTAMPS: "AIStackCheckedTimestamps",
+  AI_ANNOTATIONS: "AIStackAnnotations",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
@@ -134,6 +138,27 @@ export function isSourceComplete(source, id) {
 
 export function getSourceNote(source, id) {
   return loadJSON(keysFor(source).notes, {})[id] || "";
+}
+
+// Annotations exist only on the full notes pages (Core Stack, AI Stack).
+export function annotationsKey(source) {
+  if (source === "corestack") return KEYS.CS_ANNOTATIONS;
+  if (source === "aistack") return KEYS.AI_ANNOTATIONS;
+  return null;
+}
+
+export function getAnnotations(source, id) {
+  const key = annotationsKey(source);
+  return (key && loadJSON(key, {})[id]) || [];
+}
+
+export function setAnnotations(source, id, list) {
+  const key = annotationsKey(source);
+  if (!key) return;
+  const map = loadJSON(key, {});
+  if (list.length) map[id] = list;
+  else delete map[id];
+  saveJSON(key, map);
 }
 
 export function setSourceComplete(source, id, value) {
