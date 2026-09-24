@@ -332,6 +332,36 @@
   display: none;
 }
 
+/* ── Personal notes ────────────────────────────────────────────────────── */
+/* Painted with the CSS Custom Highlight API: no elements are added to the
+   rendered markdown, so a note can sit on code, tables or hidden answers. */
+::highlight(note-annotation) {
+  background-color: rgba(251, 191, 36, 0.16);
+  text-decoration: underline dotted rgba(217, 119, 6, 0.95);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+::highlight(note-annotation-active) {
+  background-color: rgba(251, 191, 36, 0.38);
+}
+:root.dark ::highlight(note-annotation) {
+  background-color: rgba(251, 191, 36, 0.12);
+  text-decoration-color: rgba(251, 191, 36, 0.85);
+}
+:root.dark ::highlight(note-annotation-active) {
+  background-color: rgba(251, 191, 36, 0.3);
+}
+
+/* Margin markers: in the right gutter, side by side when two share a line. */
+.note-badge {
+  right: calc(2px + var(--shift, 0) * 30px);
+}
+@media (min-width: 1024px) {
+  .note-badge {
+    right: calc(20px + var(--shift, 0) * 30px);
+  }
+}
+
 /* Full-screen reading: the site header goes away; the page shows its own
    slim bar instead. The class is set on <html> by the notes page only. */
 .notes-immersive #root > header {
