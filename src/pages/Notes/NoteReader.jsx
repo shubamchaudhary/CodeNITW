@@ -518,8 +518,11 @@ export default function NoteReader({
           fixed positioning relative to this box instead of the window. */}
       <div
         className={`bg-white dark:bg-[#0e1427] border-gray-200/90 dark:border-white/[0.07] ${
-          immersive ? "-mx-3 sm:-mx-5 lg:-mx-8 border-y" : "rounded-3xl border shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] dark:shadow-[0_10px_40px_-12px_rgba(0,0,0,0.6)]"
+          immersive ? "-mx-3 sm:-mx-5 lg:-mx-8" : "rounded-3xl border shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] dark:shadow-[0_10px_40px_-12px_rgba(0,0,0,0.6)]"
         }`}
+        // In full screen the page runs from the bar to the bottom of the
+        // window with no frame, so nothing of the backdrop shows around it.
+        style={immersive ? { minHeight: `calc(100vh - ${navTop}px)` } : undefined}
       >
         <div className="grid xl:grid-cols-[minmax(0,1fr)_19rem] 2xl:grid-cols-[minmax(0,1fr)_21rem]">
           <article
