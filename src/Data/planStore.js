@@ -430,11 +430,17 @@ export function dateKey(d = new Date()) {
   return `${y}-${m}-${day}`;
 }
 
+// Pure calendar arithmetic on a "YYYY-MM-DD" key. The 5 AM boundary above is
+// only for turning *the current time* into a planning day; it must not run
+// here — a key's local midnight is before 5 AM in IST, so it used to be pushed
+// back a day: +1 returned the same day ("Tomorrow" moved nothing) and -1 went
+// back two. UTC keeps the arithmetic free of timezones and DST.
 export function addDays(key, delta) {
   const [y, m, d] = key.split("-").map(Number);
-  const dt = new Date(y, m - 1, d);
-  dt.setDate(dt.getDate() + delta);
-  return dateKey(dt);
+  const dt = new Date(Date.UTC(y, m - 1, d + delta));
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getUTCDate()).padStart(2, "0");
+  return `${dt.getUTCFullYear()}-${mm}-${dd}`;
 }
 
 export function prettyDate(key) {
