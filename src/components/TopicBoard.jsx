@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
+import { requireAuth } from "../Data/authGate";
 import { GLASS } from "./glass";
 import PageShell from "./PageShell";
 import {
@@ -140,6 +141,7 @@ export default function TopicBoard({
 
   const togglePlannedToday = useCallback(
     (topic) => {
+      if (!requireAuth("Sign in to plan your day — your plan is saved to your account.")) return;
       if (plannedToday.has(topic.id)) {
         removeFromPlanDay(today, source, topic.id);
         toast.info(`Removed "${topic.title}" from today's plan`);

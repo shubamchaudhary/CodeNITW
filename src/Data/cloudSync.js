@@ -304,7 +304,10 @@ function attachListeners() {
   // Local saves: journal the changed entries, then push. Cloud applications
   // and other tabs' writes aren't ours to journal (the writing tab did that).
   subscribe((key, info = {}) => {
-    if (!currentUid || applyingRemote || info.remote || info.external || !SYNCED.has(key)) return;
+    if (!currentUid || applyingRemote || !SYNCED.has(key)) return;
+    // Only a real local save is ours to push — not cloud data, another tab's
+    // write, an account switch, or a guest's refused write.
+    if (info.remote || info.external || info.account || info.blocked) return;
     recordPending(currentUid, key, info.ids);
     schedulePush();
   });

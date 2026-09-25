@@ -7,6 +7,7 @@ import { jobHuntPlan } from "./JobHuntPlan";
 import { DSA_PROBLEMS } from "./DSAPrep";
 import { CORE_STACK_TOPICS } from "./CoreStack";
 import { AI_STACK_TOPICS } from "./AIStack";
+import { getAuthState, requestSignIn } from "./authGate";
 
 export { DSA_PROBLEMS, CORE_STACK_TOPICS, AI_STACK_TOPICS };
 
@@ -45,11 +46,45 @@ export const KEYS = {
 let activeUid = "anon";
 
 export function setActiveUid(uid) {
-  activeUid = uid || "anon";
+  const next = uid || "anon";
+  if (next === activeUid) return;
+  activeUid = next;
+  // Pages were showing the previous account's (or a guest's empty) data: tell
+  // every one of them to re-read from the new namespace.
+  Object.values(KEYS).forEach((key) => emit(key, { account: true }));
 }
 
 function nsKey(base) {
   return `u:${activeUid}:${base}`;
+}
+
+// ─── Guests can read everything but change nothing ────────────────────────────
+// Everything a person would expect to keep is refused for a guest; they're asked
+// to sign in instead. The Pomodoro timer's state is a device convenience, not
+// progress, so it stays usable signed out.
+const USER_DATA = new Set(Object.values(KEYS).filter((k) => k !== KEYS.POMO_STATE));
+
+// Writes made by the app itself (one-off migrations and backfills on page
+// load) are refused silently for a guest — only a person's action should pop
+// the sign-in prompt.
+let quietDepth = 0;
+export function quietly(fn) {
+  quietDepth++;
+  try {
+    return fn();
+  } finally {
+    quietDepth--;
+  }
+}
+
+function refuseGuestWrite(key) {
+  if (!USER_DATA.has(key) || getAuthState() === "user") return false;
+  if (quietDepth === 0 && getAuthState() === "guest") requestSignIn();
+  // Pages update their own state right after calling the store; once that
+  // handler has finished, have them re-read storage so the change visibly
+  // doesn't stick (a ticked box un-ticks).
+  setTimeout(() => emit(key, { blocked: true }), 0);
+  return true;
 }
 
 // ─── Low-level JSON storage with a change event for live cross-page sync ──────
@@ -57,6 +92,8 @@ function nsKey(base) {
 //   { ids }      a local save — ids are the entries that changed (null = all)
 //   { remote }   the cloud-sync layer applied data from Firestore
 //   { external } another tab of this browser wrote it (same localStorage)
+//   { account }  the signed-in account changed — re-read everything
+//   { blocked }  a guest's write was refused — re-read to undo it on screen
 const listeners = new Set();
 
 export function subscribe(fn) {
@@ -104,6 +141,7 @@ export function loadJSON(key, fallback) {
 }
 
 export function saveJSON(key, value) {
+  if (refuseGuestWrite(key)) return false;
   const prev = loadJSON(key, undefined);
   // A first save of a map counts as adding its entries, not replacing the
   // whole key — so it can't wipe entries another device already synced.
@@ -278,7 +316,8 @@ export function backfillDsaTimestamps() {
       changed = true;
     }
   }
-  if (changed) saveJSON(KEYS.DSA_TIMESTAMPS, ts);
+  // Runs by itself on page load, so for a guest it's refused without a prompt.
+  if (changed) quietly(() => saveJSON(KEYS.DSA_TIMESTAMPS, ts));
   return changed;
 }
 
