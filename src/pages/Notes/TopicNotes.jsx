@@ -18,6 +18,9 @@ import {
   getAnnotations,
   setAnnotations,
   annotationsKey,
+  getLearnt,
+  setLearnt,
+  learntKey,
   setSourceNote,
   getCoreStackTopic,
   getAIStackTopic,
@@ -113,6 +116,7 @@ export default function TopicNotes() {
   const [prefs, setPrefs] = useState(loadPrefs);
   const [immersive, setImmersive] = useState(false);
   const [annotations, setAnnotationList] = useState([]);
+  const [learnt, setLearntMarks] = useState({});
   const [barHeight, setBarHeight] = useState(0);
   const barRef = useRef(null);
 
@@ -206,6 +210,7 @@ export default function TopicNotes() {
     latestRef.current = initial;
     setText(initial);
     setAnnotationList(getAnnotations(source, topicId));
+    setLearntMarks(getLearnt(source, topicId));
     setView(initial.trim() || !user ? "read" : "write");
     setLoaded(true);
   }, [authReady, config, topic, source, topicId, user]);
@@ -217,6 +222,10 @@ export default function TopicNotes() {
     return subscribe((key) => {
       if (key === annotationsKey(source)) {
         setAnnotationList(getAnnotations(source, topicId));
+        return;
+      }
+      if (key === learntKey(source)) {
+        setLearntMarks(getLearnt(source, topicId));
         return;
       }
       if (key !== config.notesKey || dirtyRef.current) return;
@@ -281,6 +290,19 @@ export default function TopicNotes() {
     (list) => {
       setAnnotationList(list);
       setAnnotations(source, topicId, list);
+    },
+    [source, topicId]
+  );
+
+  // "Learnt" is per topic heading inside this note; ticking it again undoes it.
+  const toggleLearnt = useCallback(
+    (key) => {
+      if (!requireAuth("Sign in to mark topics as learnt — your progress is saved to your account.")) return;
+      const next = { ...getLearnt(source, topicId) };
+      if (next[key]) delete next[key];
+      else next[key] = Date.now();
+      setLearnt(source, topicId, next);
+      setLearntMarks(next);
     },
     [source, topicId]
   );
@@ -635,6 +657,8 @@ export default function TopicNotes() {
             immersive={immersive}
             annotations={annotations}
             onAnnotationsChange={changeAnnotations}
+            learnt={learnt}
+            onToggleLearnt={toggleLearnt}
           />
         )}
 
