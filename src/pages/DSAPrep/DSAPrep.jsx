@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
 import PageShell from "../../components/PageShell";
+import { requireAuth } from "../../Data/authGate";
 import {
   KEYS,
   loadJSON,
@@ -68,6 +69,7 @@ const DSAPrep = () => {
   const [plannedToday, setPlannedToday] = useState(readPlanned);
 
   const handleImportPlan = useCallback(() => {
+    if (!requireAuth("Your imported progress is saved to your account.")) return;
     const n = migratePersonalPlanProgress();
     setSolved(loadJSON(KEYS.DSA_COMPLETED, {}));
     setStarred(loadJSON(KEYS.DSA_STARRED, {}));
@@ -144,6 +146,7 @@ const DSAPrep = () => {
   // page. Planning listens on PLAN_DAYS, so it appears there immediately.
   const togglePlannedToday = useCallback(
     (problem, topic) => {
+      if (!requireAuth("Sign in to plan your day — your plan is saved to your account.")) return;
       if (plannedToday.has(problem.id)) {
         removeFromPlanDay(today, "dsa", problem.id);
         toast.info(`Removed "${problem.title}" from today's plan`);
