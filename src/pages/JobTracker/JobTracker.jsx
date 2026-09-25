@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
-import { KEYS, loadJSON, saveJSON, subscribe } from "../../Data/planStore";
+import { KEYS, loadJSON, saveJSON, subscribe, quietly } from "../../Data/planStore";
+import { requireAuth } from "../../Data/authGate";
+import { isOwner } from "../../components/OwnerRoute";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
 import {
   APPLIED_SET,
@@ -15,10 +18,14 @@ import {
   isOpeningEligible,
 } from "./shared";
 import PipelineTab from "./PipelineTab";
-import ContactsTab from "./ContactsTab";
-import OpeningsTab from "./OpeningsTab";
 import CompaniesTab from "./CompaniesTab";
-import { SEED_HR_CONTACTS } from "../../Data/hrContacts";
+
+// Contacts and Openings are the owner's alone: their code, the seeded HR
+// contacts and the referral templates are split into chunks that are only
+// ever requested for the owner account, so they never reach anyone else.
+const ContactsTab = lazy(() => import("./ContactsTab"));
+const OpeningsTab = lazy(() => import("./OpeningsTab"));
+const OWNER_TABS = new Set(["contacts", "openings"]);
 
 // Bump this token to force a one-time clean slate for every user on next load.
 // Used when the company roster is regenerated (new IDs) so stale per-company
@@ -66,6 +73,26 @@ export default function JobTracker() {
   const [activeTab, setActiveTab] = useState("pipeline");
   const [state, setState] = useState(loadState);
   const [radar, setRadar] = useState(null);
+  const [user, setUser] = useState(undefined); // undefined while auth loads
+  const owner = isOwner(user);
+  const [ownerData, setOwnerData] = useState({ templates: null, seedContacts: [] });
+
+  useEffect(() => onAuthStateChanged(getAuth(), (u) => setUser(u || null)), []);
+
+  // The owner's private data, fetched only once we know it's the owner.
+  useEffect(() => {
+    if (!owner) {
+      setOwnerData({ templates: null, seedContacts: [] });
+      return undefined;
+    }
+    let alive = true;
+    Promise.all([import("../../Data/referralTemplates"), import("../../Data/hrContacts")]).then(([t, h]) => {
+      if (alive) setOwnerData({ templates: t.REFERRAL_TEMPLATES, seedContacts: h.SEED_HR_CONTACTS });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [owner]);
 
   useEffect(
     () =>
@@ -81,26 +108,31 @@ export default function JobTracker() {
   useEffect(() => {
     const raw = loadJSON(KEYS.JOB_TRACKER, {});
     if (raw.pipelineReset !== PIPELINE_RESET_TOKEN) {
-      saveJSON(KEYS.JOB_TRACKER, {
+      quietly(() => saveJSON(KEYS.JOB_TRACKER, {
         companies: {},
         custom: raw.custom || [],
         dismissedOpenings: {},
         contacts: raw.contacts || [],
         contactEdits: raw.contactEdits || {},
         pipelineReset: PIPELINE_RESET_TOKEN,
-      });
+      }));
       return;
     }
     const { map, changed } = migrateDismissals(raw.dismissedOpenings || {});
     if (changed) {
       const next = { ...raw, companies: raw.companies || {}, custom: raw.custom || [], dismissedOpenings: map };
-      saveJSON(KEYS.JOB_TRACKER, next);
+      quietly(() => saveJSON(KEYS.JOB_TRACKER, next));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load the daily radar output (first source that answers wins).
+  // Load the daily radar output (first source that answers wins) — it feeds the
+  // owner's Openings tab and "auto" badges, so only the owner fetches it.
   useEffect(() => {
+    if (!owner) {
+      setRadar(null);
+      return undefined;
+    }
     let alive = true;
     (async () => {
       for (const src of RADAR_SOURCES) {
@@ -118,7 +150,7 @@ export default function JobTracker() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [owner]);
 
   const persist = useCallback((next) => {
     setState(next);
@@ -127,6 +159,7 @@ export default function JobTracker() {
 
   const patchCompany = useCallback(
     (id, patch) => {
+      if (!requireAuth("Sign in to track your applications — your pipeline is saved to your account.")) return;
       setState((prev) => {
         const existing = prev.companies[id] || {};
         const merged = { ...existing, ...patch };
@@ -154,6 +187,7 @@ export default function JobTracker() {
 
   const addCustom = useCallback(
     (company) => {
+      if (!requireAuth("Sign in to track your applications — your pipeline is saved to your account.")) return;
       persist({ ...state, custom: [...state.custom, company] });
       toast.success(`${company.name} added`);
     },
@@ -245,14 +279,14 @@ export default function JobTracker() {
   // Tab badge count — mirrors the merge the Contacts tab does.
   const contactCount = useMemo(() => {
     const edits = state.contactEdits;
-    let n = SEED_HR_CONTACTS.filter((c) => !edits[c.id]?.deleted).length;
+    let n = ownerData.seedContacts.filter((c) => !edits[c.id]?.deleted).length;
     Object.entries(state.companies).forEach(([cid, e]) =>
       (e.hrContacts || []).forEach((hc) => {
         if (!edits[`co-${cid}-${hc.id}`]?.deleted) n += 1;
       })
     );
     return n + state.contacts.filter((c) => !edits[c.id]?.deleted).length;
-  }, [state.contacts, state.contactEdits, state.companies]);
+  }, [state.contacts, state.contactEdits, state.companies, ownerData.seedContacts]);
 
   const allCompanies = useMemo(() => [...COMPANIES, ...state.custom], [state.custom]);
 
@@ -392,6 +426,13 @@ export default function JobTracker() {
     { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-300" },
   ];
 
+  if (user === undefined) return null;
+
+  // Everyone gets Pipeline and Companies (their own tracking, the shared company
+  // list). Contacts and Openings exist only for the owner.
+  const tabs = owner ? TABS : TABS.filter((t) => !OWNER_TABS.has(t.id));
+  const currentTab = tabs.some((t) => t.id === activeTab) ? activeTab : "pipeline";
+
   return (
     <PageShell>
       <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
@@ -414,8 +455,8 @@ export default function JobTracker() {
 
         {/* Tab navigation */}
         <div className={`${GLASS} rounded-xl p-1 mb-5 inline-flex gap-1`}>
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
+          {tabs.map((tab) => {
+            const isActive = currentTab === tab.id;
             let count = null;
             if (tab.id === "pipeline") count = stats.toApply + stats.referral + stats.applied;
             if (tab.id === "contacts") count = contactCount;
@@ -450,7 +491,7 @@ export default function JobTracker() {
         </div>
 
         {/* Tab content */}
-        {activeTab === "pipeline" && (
+        {currentTab === "pipeline" && (
           <PipelineTab
             allCompanies={allCompanies}
             entryOf={entryOf}
@@ -458,7 +499,8 @@ export default function JobTracker() {
           />
         )}
 
-        {activeTab === "contacts" && (
+        {currentTab === "contacts" && (
+          <Suspense fallback={null}>
           <ContactsTab
             allCompanies={allCompanies}
             companies={state.companies}
@@ -469,9 +511,11 @@ export default function JobTracker() {
             onPatchContact={patchContact}
             onDeleteContact={deleteContact}
           />
+          </Suspense>
         )}
 
-        {activeTab === "openings" && (
+        {currentTab === "openings" && (
+          <Suspense fallback={null}>
           <OpeningsTab
             radarVisible={radarVisible}
             companiesById={companiesById}
@@ -482,9 +526,10 @@ export default function JobTracker() {
             onUnreject={unrejectOpening}
             onManualAdd={manualAddOpening}
           />
+          </Suspense>
         )}
 
-        {activeTab === "companies" && (
+        {currentTab === "companies" && (
           <CompaniesTab
             allCompanies={allCompanies}
             companies={state.companies}
@@ -492,6 +537,7 @@ export default function JobTracker() {
             addCustom={addCustom}
             radarCoveredIds={radarCoveredIds}
             entryOf={entryOf}
+            templates={ownerData.templates}
           />
         )}
       </div>
