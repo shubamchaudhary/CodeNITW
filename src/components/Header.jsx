@@ -25,16 +25,27 @@ const OWNER_NAV_ITEMS = [
 export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(
-    JSON.parse(localStorage.getItem("darkMode")) || false
-  );
+  // Theme is per tab: each tab remembers its own choice (sessionStorage, which
+  // survives a refresh of that tab only). A new tab starts from the most
+  // recent choice made in any tab (localStorage).
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const own = sessionStorage.getItem("darkMode");
+      return JSON.parse(own ?? localStorage.getItem("darkMode")) || false;
+    } catch (_) {
+      return false;
+    }
+  });
 
   const auth = getAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    try {
+      sessionStorage.setItem("darkMode", JSON.stringify(darkMode));
+      localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    } catch (_) {}
     if (darkMode) {
       document.documentElement.classList.add("dark");
     } else {
