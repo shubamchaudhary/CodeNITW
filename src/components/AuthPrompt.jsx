@@ -50,10 +50,8 @@ export default function AuthPrompt() {
           ✕
         </button>
 
-        {mode !== "reset" && (
-          <p className="mb-3 pr-8 text-[13.5px] leading-relaxed text-gray-500 dark:text-gray-400">
-            {reason || "Browsing is open to everyone. Sign in to keep your progress, notes and highlights — they're saved to your account and follow you across devices."}
-          </p>
+        {reason && mode !== "reset" && (
+          <p className="mb-3 pr-8 text-[13.5px] leading-relaxed text-gray-500 dark:text-gray-400">{reason}</p>
         )}
 
         <AuthForm

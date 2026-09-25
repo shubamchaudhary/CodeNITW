@@ -22,7 +22,7 @@ import {
 } from "./shared";
 
 // ── Company card (accordion) ─────────────────────────────────────────────────
-const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onToggle, onPatch, autoCovered }) {
+const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onToggle, onPatch, autoCovered, templates }) {
   const status = entry.status || "none";
   const links = entry.links || [];
   const pending = links.filter((l) => !l.applied).length;
@@ -178,7 +178,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
       {/* Expanded detail */}
       {expanded && (
         <div className="px-4 pb-4 pt-2 border-t border-gray-200/60 dark:border-slate-700/60 bg-gray-50/60 dark:bg-slate-800/40">
-          <CompanyDetail company={company} entry={entry} onPatch={onPatch} />
+          <CompanyDetail company={company} entry={entry} onPatch={onPatch} templates={templates} />
         </div>
       )}
     </div>
@@ -186,7 +186,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
 });
 
 // ── Companies tab ────────────────────────────────────────────────────────────
-export default function CompaniesTab({ allCompanies, companies, patchCompany, addCustom, radarCoveredIds, entryOf }) {
+export default function CompaniesTab({ allCompanies, companies, patchCompany, addCustom, radarCoveredIds, entryOf, templates }) {
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -328,6 +328,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
             onToggle={() => setExpandedId((e) => (e === c.id ? null : c.id))}
             onPatch={(patch) => patchCompany(c.id, patch)}
             autoCovered={radarCoveredIds.has(c.id)}
+            templates={templates}
           />
         ))}
       </div>

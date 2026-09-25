@@ -11,7 +11,6 @@ import {
   HiMail,
 } from "react-icons/hi";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
-import { REFERRAL_TEMPLATES } from "../../Data/jobTrackerCompanies";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 export const STATUSES = {
@@ -422,8 +421,10 @@ export function NoteEditor({ note, onSave }) {
 }
 
 // ── Expanded row detail ──────────────────────────────────────────────────────
-export function CompanyDetail({ company, entry, onPatch }) {
-  const template = REFERRAL_TEMPLATES[company.template];
+// `templates` are the owner's referral messages — null for everyone else, and
+// then the template section simply isn't there.
+export function CompanyDetail({ company, entry, onPatch, templates }) {
+  const template = templates ? templates[company.template] : null;
   const [showTemplate, setShowTemplate] = useState(false);
 
   return (

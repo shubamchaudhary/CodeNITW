@@ -17,7 +17,7 @@ import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
 import { setAuthState } from "./Data/authGate";
 
 // Lazy-loaded so the (large) company dataset ships in its own chunk and is only
-// fetched when the owner actually opens the tracker.
+// fetched when someone actually opens the tracker.
 const JobTracker = lazy(() => import("./pages/JobTracker/JobTracker"));
 // Same for the Interview Kit: its content only downloads for the owner.
 const InterviewKit = lazy(() => import("./pages/InterviewKit/InterviewKit"));
@@ -60,16 +60,16 @@ function App() {
           <Route path="/notes/:source/:topicId" element={<TopicNotes />} />
           <Route path="/dsa-prep" element={<DSAPrep />} />
           <Route path="/planning" element={<Planning />} />
-          <Route path="/job-tracker" element={<OwnerRoute />}>
-            <Route
-              path="/job-tracker"
-              element={
-                <Suspense fallback={null}>
-                  <JobTracker />
-                </Suspense>
-              }
-            />
-          </Route>
+          {/* Pipeline and Companies are for everyone; the page itself keeps
+              Contacts and Openings (and their data) to the owner. */}
+          <Route
+            path="/job-tracker"
+            element={
+              <Suspense fallback={null}>
+                <JobTracker />
+              </Suspense>
+            }
+          />
           <Route path="/interview-kit" element={<OwnerRoute />}>
             <Route
               path="/interview-kit"

@@ -22,9 +22,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 function loadCompanies() {
   const src = readFileSync(join(__dirname, "../src/Data/jobTrackerCompanies.js"), "utf8");
   const start = src.indexOf("export const COMPANIES = ") + "export const COMPANIES = ".length;
-  const end = src.indexOf("export const REFERRAL_TEMPLATES");
+  // Referral templates used to follow the array in this file; they now live in
+  // referralTemplates.js, so the array runs to the end of the file.
+  const marker = src.indexOf("export const REFERRAL_TEMPLATES");
+  const end = marker === -1 ? src.length : marker;
   let txt = src.slice(start, end).trim();
   if (txt.endsWith(";")) txt = txt.slice(0, -1);
+  // The array is JS, not JSON: its last element carries a trailing comma.
+  txt = txt.replace(/,\s*\]$/, "]");
   return JSON.parse(txt);
 }
 
