@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { toast } from "react-toastify";
+import { requireAuth } from "../../Data/authGate";
 import { ASSET_PREFIX } from "../../Data/noteAssets";
 import {
   splitSections,
@@ -339,6 +340,10 @@ export default function NoteReader({
   const applyHighlight = useCallback(
     (color) => {
       if (!toolbar) return;
+      if (!requireAuth("Sign in to highlight — highlights are saved to your account.")) {
+        setToolbar(null);
+        return;
+      }
       const { range } = toolbar;
       const root =
         range.commonAncestorContainer.nodeType === Node.TEXT_NODE
@@ -414,6 +419,10 @@ export default function NoteReader({
 
   const startNote = useCallback(() => {
     if (!toolbar || !mdRef.current) return;
+    if (!requireAuth("Sign in to add personal notes — they're saved to your account.")) {
+      setToolbar(null);
+      return;
+    }
     const anchor = anchorFromRange(buildTextIndex(mdRef.current), toolbar.range);
     const rect = toolbar.range.getBoundingClientRect();
     window.getSelection()?.removeAllRanges();
@@ -457,6 +466,10 @@ export default function NoteReader({
   );
 
   const editFromSelection = useCallback(() => {
+    if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) {
+      setToolbar(null);
+      return;
+    }
     const node = toolbar?.range.startContainer;
     const el = node && (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
     const section = el && el.closest("section[data-sec]");
@@ -468,6 +481,10 @@ export default function NoteReader({
   const onMarkAction = useCallback(
     (color) => {
       if (!markMenu) return;
+      if (!requireAuth("Sign in to change highlights.")) {
+        setMarkMenu(null);
+        return;
+      }
       const base = sections[markMenu.sec]?.start ?? 0;
       const s = base + markMenu.s;
       const e = base + markMenu.e;
@@ -480,6 +497,7 @@ export default function NoteReader({
   );
 
   const startEdit = useCallback((index) => {
+    if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) return;
     setToolbar(null);
     setMarkMenu(null);
     setNotePop(null);
@@ -538,7 +556,7 @@ export default function NoteReader({
                 <div className="text-center py-16">
                   <p className="text-[15px] text-gray-500 dark:text-gray-400">This note is empty.</p>
                   <button
-                    onClick={() => setEditing("append")}
+                    onClick={() => startEdit("append")}
                     className={`mt-4 px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}
                   >
                     Start writing
@@ -590,7 +608,7 @@ export default function NoteReader({
               ) : (
                 !isEmpty && (
                   <button
-                    onClick={() => setEditing("append")}
+                    onClick={() => startEdit("append")}
                     className="note-add mt-12 w-full rounded-2xl border-2 border-dashed border-gray-300/80 dark:border-white/10 py-4 text-[14px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-white/25 transition-colors"
                   >
                     ＋ Add a section

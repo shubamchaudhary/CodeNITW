@@ -10,6 +10,7 @@ import { isOwner } from "../../components/OwnerRoute";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
 import useIsDark from "../../hooks/useIsDark";
 import { getSyncStatus, subscribeSyncStatus } from "../../Data/cloudSync";
+import { requireAuth, requestSignIn } from "../../Data/authGate";
 import {
   KEYS,
   loadJSON,
@@ -205,9 +206,9 @@ export default function TopicNotes() {
     latestRef.current = initial;
     setText(initial);
     setAnnotationList(getAnnotations(source, topicId));
-    setView(initial.trim() ? "read" : "write");
+    setView(initial.trim() || !user ? "read" : "write");
     setLoaded(true);
-  }, [authReady, config, topic, source, topicId]);
+  }, [authReady, config, topic, source, topicId, user]);
 
   // Another device (or the Planning page) edited this note — take it, unless
   // there are local edits in flight that would be lost.
@@ -437,7 +438,7 @@ export default function TopicNotes() {
           {VIEWS.map((v) => (
             <button
               key={v.key}
-              onClick={() => setView(v.key)}
+              onClick={() => (v.key === "read" || requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) && setView(v.key)}
               title={v.title}
               className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
                 view === v.key
@@ -552,7 +553,7 @@ export default function TopicNotes() {
                 </span>
                 <span className="truncate text-[15px] font-extrabold tracking-tight text-gray-900 dark:text-gray-50">{topic.title}</span>
                 <span className="shrink-0 hidden sm:inline">
-                  <SaveState dirty={dirty} savedAt={savedAt} accent={accent} />
+                  <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user} />
                 </span>
               </div>
               {renderControls(true)}
@@ -612,7 +613,7 @@ export default function TopicNotes() {
             </div>
 
             <div className="shrink-0 pt-1">
-              <SaveState dirty={dirty} savedAt={savedAt} accent={accent} />
+              <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user} />
             </div>
           </div>
 
@@ -690,7 +691,7 @@ function IconButton({ onClick, disabled, title, children }) {
 // Two steps, both shown: saved on this device (instant), then saved to the
 // account (whenever the network allows). "Saved" only appears once the cloud
 // has the change, so a slow connection can't hide an unsynced edit.
-function SaveState({ dirty, savedAt, accent }) {
+function SaveState({ dirty, savedAt, accent, guest }) {
   const [, tick] = useState(0);
   const [sync, setSync] = useState(getSyncStatus);
   useEffect(() => subscribeSyncStatus(setSync), []);
@@ -706,6 +707,13 @@ function SaveState({ dirty, savedAt, accent }) {
     </span>
   );
 
+  if (guest) {
+    return (
+      <button onClick={() => requestSignIn()} className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+        Sign in to save changes
+      </button>
+    );
+  }
   if (dirty) return pill("bg-amber-400 animate-pulse", "Saving…", "text-gray-400 dark:text-gray-500");
   if (sync.state === "offline") {
     return pill("bg-amber-400", "Offline · saved on this device", "text-amber-600 dark:text-amber-400", "Will sync to your account when you're back online.");
