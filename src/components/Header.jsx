@@ -13,13 +13,13 @@ const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
   { path: "/dsa-prep", label: "DSA" },
   { path: "/planning", label: "PLANNING" },
+  { path: "/job-tracker", label: "JOBS" },
 ];
 
 // Owner-only pages: rendered in the nav ONLY for the owner account, so other
 // users never see any hint these pages exist.
 const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
-  { path: "/job-tracker", label: "JOBS" },
   { path: "/interview-kit", label: "INTERVIEW" },
 ];
 
