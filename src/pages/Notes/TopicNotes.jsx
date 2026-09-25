@@ -9,6 +9,7 @@ import PageShell from "../../components/PageShell";
 import { isOwner } from "../../components/OwnerRoute";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
 import useIsDark from "../../hooks/useIsDark";
+import { getSyncStatus, subscribeSyncStatus } from "../../Data/cloudSync";
 import {
   KEYS,
   loadJSON,
@@ -686,20 +687,34 @@ function IconButton({ onClick, disabled, title, children }) {
   );
 }
 
+// Two steps, both shown: saved on this device (instant), then saved to the
+// account (whenever the network allows). "Saved" only appears once the cloud
+// has the change, so a slow connection can't hide an unsynced edit.
 function SaveState({ dirty, savedAt, accent }) {
   const [, tick] = useState(0);
+  const [sync, setSync] = useState(getSyncStatus);
+  useEffect(() => subscribeSyncStatus(setSync), []);
   useEffect(() => {
     const t = setInterval(() => tick((n) => n + 1), 15000);
     return () => clearInterval(t);
   }, []);
 
-  if (dirty) {
-    return (
-      <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-        Saving…
-      </span>
-    );
+  const pill = (dot, text, cls, title) => (
+    <span title={title} className={`text-[11px] font-semibold flex items-center gap-1.5 ${cls}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+      {text}
+    </span>
+  );
+
+  if (dirty) return pill("bg-amber-400 animate-pulse", "Saving…", "text-gray-400 dark:text-gray-500");
+  if (sync.state === "offline") {
+    return pill("bg-amber-400", "Offline · saved on this device", "text-amber-600 dark:text-amber-400", "Will sync to your account when you're back online.");
+  }
+  if (sync.state === "error") {
+    return pill("bg-rose-500", "Not synced yet · retrying", "text-rose-600 dark:text-rose-400", `Saved on this device. Cloud sync failed (${sync.detail || "unknown error"}) and is retrying.`);
+  }
+  if (sync.state === "pending" || sync.state === "syncing") {
+    return pill("bg-amber-400 animate-pulse", "Saved on this device · syncing…", "text-gray-500 dark:text-gray-400", "Waiting for the cloud to confirm.");
   }
   if (!savedAt) {
     return <span className="text-[11px] text-gray-400 dark:text-gray-500">Synced</span>;
