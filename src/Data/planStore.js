@@ -53,6 +53,10 @@ function nsKey(base) {
 }
 
 // ─── Low-level JSON storage with a change event for live cross-page sync ──────
+// Listeners get (key, info). info says where the change came from:
+//   { ids }      a local save — ids are the entries that changed (null = all)
+//   { remote }   the cloud-sync layer applied data from Firestore
+//   { external } another tab of this browser wrote it (same localStorage)
 const listeners = new Set();
 
 export function subscribe(fn) {
@@ -60,11 +64,33 @@ export function subscribe(fn) {
   return () => listeners.delete(fn);
 }
 
-function emit(key) {
+function emit(key, info = {}) {
   listeners.forEach((fn) => {
     try {
-      fn(key);
+      fn(key, info);
     } catch (_) {}
+  });
+}
+
+const isMap = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+
+// Which entries of a stored map differ between two versions. null means the
+// value isn't a map, so treat the whole thing as changed.
+export function changedIds(prev, next) {
+  if (!isMap(prev) || !isMap(next)) return null;
+  const ids = [];
+  for (const id of new Set([...Object.keys(prev), ...Object.keys(next)])) {
+    if (JSON.stringify(prev[id]) !== JSON.stringify(next[id])) ids.push(id);
+  }
+  return ids;
+}
+
+// Another tab wrote to the same localStorage: tell this tab's pages, so no
+// tab keeps showing (and later saving back) an outdated copy.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    const prefix = `u:${activeUid}:`;
+    if (e.key && e.key.startsWith(prefix)) emit(e.key.slice(prefix.length), { external: true });
   });
 }
 
@@ -78,20 +104,30 @@ export function loadJSON(key, fallback) {
 }
 
 export function saveJSON(key, value) {
+  const prev = loadJSON(key, undefined);
+  // A first save of a map counts as adding its entries, not replacing the
+  // whole key — so it can't wipe entries another device already synced.
+  const ids = changedIds(prev === undefined && isMap(value) ? {} : prev, value);
+  if (ids && !ids.length) return; // nothing changed — don't wake sync or the UI
   localStorage.setItem(nsKey(key), JSON.stringify(value));
-  emit(key);
+  emit(key, { ids });
 }
 
 // Write a batch of remote (cloud) values into local storage and notify the UI.
-// Used by the Firestore sync layer when another device pushes changes.
+// Used by the Firestore sync layer. Keys whose value is unchanged are skipped,
+// so a snapshot that only confirms what we have doesn't re-render every page.
 export function applyRemote(data) {
   if (!data) return;
   Object.entries(data).forEach(([key, value]) => {
     if (value === undefined) return;
+    const next = JSON.stringify(value);
     try {
-      localStorage.setItem(nsKey(key), JSON.stringify(value));
-    } catch (_) {}
-    emit(key);
+      if (localStorage.getItem(nsKey(key)) === next) return;
+      localStorage.setItem(nsKey(key), next);
+    } catch (_) {
+      return;
+    }
+    emit(key, { remote: true });
   });
 }
 
