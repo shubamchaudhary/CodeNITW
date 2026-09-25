@@ -151,6 +151,12 @@
   margin-bottom: 0 !important;
 }
 
+/* A topic heading shares its line with the "Mark as learnt" pill; keep the
+   heading text clear of it. */
+.note-reader .note-sec[data-learnable] .wmde-markdown > :first-child {
+  padding-right: 9.75rem;
+}
+
 /* ── Lists ─────────────────────────────────────────────────────────────── */
 /* Tailwind's preflight strips list markers from every ul/ol, and the renderer
    only restores them for nested lists — put them back at every level. */

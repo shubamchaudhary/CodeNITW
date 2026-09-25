@@ -20,10 +20,13 @@ export const KEYS = {
   // Personal notes pinned to a passage of a topic's notes page, kept apart
   // from the note text so annotating never edits the markdown (or code).
   CS_ANNOTATIONS: "CoreStackAnnotations",
+  // Which topics inside a note you've marked as learnt: { noteId: { key: at } }.
+  CS_LEARNT: "CoreStackLearntSections",
   AI_COMPLETED: "AIStackCompleted",
   AI_NOTES: "AIStackNotes",
   AI_TIMESTAMPS: "AIStackCheckedTimestamps",
   AI_ANNOTATIONS: "AIStackAnnotations",
+  AI_LEARNT: "AIStackLearntSections",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
@@ -224,6 +227,27 @@ export function annotationsKey(source) {
 export function getAnnotations(source, id) {
   const key = annotationsKey(source);
   return (key && loadJSON(key, {})[id]) || [];
+}
+
+// "Learnt" marks for the topics inside a note, keyed by each topic heading.
+export function learntKey(source) {
+  if (source === "corestack") return KEYS.CS_LEARNT;
+  if (source === "aistack") return KEYS.AI_LEARNT;
+  return null;
+}
+
+export function getLearnt(source, id) {
+  const key = learntKey(source);
+  return (key && loadJSON(key, {})[id]) || {};
+}
+
+export function setLearnt(source, id, marks) {
+  const key = learntKey(source);
+  if (!key) return;
+  const map = loadJSON(key, {});
+  if (Object.keys(marks).length) map[id] = marks;
+  else delete map[id];
+  saveJSON(key, map);
 }
 
 export function setAnnotations(source, id, list) {
