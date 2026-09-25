@@ -131,6 +131,8 @@ export default function NoteReader({
   immersive = false,
   annotations = [],
   onAnnotationsChange,
+  learnt = {},
+  onToggleLearnt,
 }) {
   const navTop = topOffset;
   const sections = useMemo(() => splitSections(text), [text]);
@@ -516,6 +518,24 @@ export default function NoteReader({
     () => sections.map((s, i) => ({ ...s, index: i })).filter((s) => s.level >= 1 && s.level <= 3 && s.title),
     [sections]
   );
+  // The topics you can mark as learnt: the outline-level headings — the same
+  // entries the contents column lists at its top level. Keyed by heading text
+  // (a repeated heading gets #2, #3…), so the mark follows the topic even when
+  // sections are added or moved around it.
+  const topicKeys = useMemo(() => {
+    const top = outlineLevel(toc);
+    const seen = {};
+    const keys = new Map(); // section index → key
+    for (const t of toc) {
+      if (t.level !== top) continue;
+      const base = t.title.toLowerCase().replace(/\s+/g, " ").trim();
+      seen[base] = (seen[base] || 0) + 1;
+      keys.set(t.index, seen[base] > 1 ? `${base}#${seen[base]}` : base);
+    }
+    return keys;
+  }, [toc]);
+  const learntCount = useMemo(() => [...topicKeys.values()].filter((k) => learnt[k]).length, [topicKeys, learnt]);
+
   const activeTocId = useMemo(() => {
     let id = toc[0]?.id;
     for (const entry of toc) if (entry.index <= active) id = entry.id;
@@ -549,7 +569,9 @@ export default function NoteReader({
             onMouseDown={() => setToolbar(null)}
             className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
           >
-            {toc.length > 2 && <MobileContents toc={toc} activeId={activeTocId} onJump={jumpTo} />}
+            {toc.length > 2 && (
+              <MobileContents toc={toc} activeId={activeTocId} onJump={jumpTo} topicKeys={topicKeys} learnt={learnt} />
+            )}
 
             <div ref={mdRef} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": `${fontSize}px` }}>
               {isEmpty && editing !== "append" && (
@@ -588,6 +610,9 @@ export default function NoteReader({
                       colorMode={colorMode}
                       navTop={navTop}
                       onEdit={startEdit}
+                      learnKey={topicKeys.get(i) || null}
+                      learnt={!!learnt[topicKeys.get(i)]}
+                      onToggleLearnt={onToggleLearnt}
                     />
                   )
                 )}
@@ -665,6 +690,9 @@ export default function NoteReader({
                 openNoteId={notePop?.id}
                 onOpenNote={(id) => openNote(id, { scroll: true })}
                 onDeleteNote={deleteNote}
+                topicKeys={topicKeys}
+                learnt={learnt}
+                learntCount={learntCount}
               />
             </div>
           </aside>
@@ -715,20 +743,34 @@ export default function NoteReader({
 
 // ─── Pieces ──────────────────────────────────────────────────────────────────
 
-const Section = memo(function Section({ id, index, level, source, components, colorMode, navTop, onEdit }) {
+const Section = memo(function Section({
+  id,
+  index,
+  level,
+  source,
+  components,
+  colorMode,
+  navTop,
+  onEdit,
+  learnKey,
+  learnt,
+  onToggleLearnt,
+}) {
   return (
     <section
       id={id}
       data-sec={index}
       data-level={level}
+      data-learnable={learnKey ? "" : undefined}
       className="note-sec group relative"
       style={{ scrollMarginTop: navTop + 24 }}
     >
+      {learnKey && <LearntButton learnt={learnt} onClick={() => onToggleLearnt(learnKey)} />}
       {/* Left gutter on wide screens, so the right one is free for note markers. */}
       <button
         onClick={() => onEdit(index)}
         title="Edit this section"
-        className="note-sec-edit absolute z-10 top-0 right-0 lg:right-auto lg:-left-12 w-8 h-8 rounded-lg flex items-center justify-center bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-60 transition-opacity"
+        className={`note-sec-edit absolute z-10 right-0 lg:right-auto lg:-left-12 lg:top-0 ${learnKey ? "top-11" : "top-0"} w-8 h-8 rounded-lg flex items-center justify-center bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-60 transition-opacity`}
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
           <path d="M11.2 2.3l2.5 2.5-8 8H3.2v-2.5l8-8z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
@@ -738,6 +780,39 @@ const Section = memo(function Section({ id, index, level, source, components, co
     </section>
   );
 });
+
+// Beside each topic heading: "Mark as learnt", then a solid green "Learnt"
+// once done. Clicking a learnt topic undoes it.
+function LearntButton({ learnt, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      title={learnt ? "Learnt — click to mark as not learnt" : "Mark this topic as learnt"}
+      className={`note-learnt absolute z-10 top-0.5 right-0 h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-bold border transition-colors ${
+        learnt
+          ? "bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30 hover:bg-emerald-600"
+          : "bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.14] text-gray-500 dark:text-gray-400 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
+      }`}
+    >
+      <CheckCircle done={learnt} className="w-4 h-4" onColor="text-white" />
+      {learnt ? "Learnt" : "Mark as learnt"}
+    </button>
+  );
+}
+
+// A round tick: filled when done, an empty ring when not.
+function CheckCircle({ done, className = "w-4 h-4", onColor = "text-emerald-500" }) {
+  return done ? (
+    <svg className={`${className} ${onColor} shrink-0`} viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="7" fill="currentColor" opacity={onColor === "text-white" ? 0.25 : 1} />
+      <path d="M4.8 8.2l2.1 2.1 4.3-4.5" stroke={onColor === "text-white" ? "currentColor" : "white"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg className={`${className} shrink-0`} viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" opacity="0.55" />
+    </svg>
+  );
+}
 
 // In-place editor for one section (or a new one at the end). Anything typed is
 // kept even if the editor goes away without Save — switching views or leaving
@@ -1045,6 +1120,9 @@ function SidePanel({
   openNoteId,
   onOpenNote,
   onDeleteNote,
+  topicKeys,
+  learnt,
+  learntCount,
 }) {
   const listRef = useRef(null);
   const { entries, top } = useMemo(() => visibleEntries(toc, activeIndex), [toc, activeIndex]);
@@ -1080,6 +1158,23 @@ function SidePanel({
         <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar} transition-[width] duration-200`} style={{ width: `${progress * 100}%` }} />
       </div>
 
+      {topicKeys.size > 0 && (
+        <>
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-[13px] font-medium text-gray-500 dark:text-gray-400">Topics learnt</p>
+            <span className="text-[12px] font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+              {learntCount}/{topicKeys.size}
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] overflow-hidden">
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-[width] duration-300"
+              style={{ width: `${(learntCount / topicKeys.size) * 100}%` }}
+            />
+          </div>
+        </>
+      )}
+
       <div className="mt-7 mb-3 flex items-end gap-5 border-b border-gray-200/90 dark:border-white/[0.07]">
         {tab("contents", "On this page")}
         {tab("notes", `Notes${notes.length ? ` · ${notes.length}` : ""}`)}
@@ -1091,6 +1186,8 @@ function SidePanel({
             {entries.map((t) => {
               const on = t.id === activeId;
               const depth = t.level - minLevel;
+              const key = topicKeys.get(t.index);
+              const done = !!(key && learnt[key]);
               return (
                 <button
                   key={t.id}
@@ -1098,16 +1195,23 @@ function SidePanel({
                   onClick={() => onJump(t.id)}
                   title={t.title}
                   style={{ paddingLeft: `${8 + depth * 16}px` }}
-                  className={`block w-full text-left pr-2 rounded-md leading-snug transition-colors ${
+                  className={`flex w-full items-start gap-2 text-left pr-2 rounded-md leading-snug transition-colors ${
                     depth === 0 ? "py-1.5 text-[14.5px]" : "py-1 text-[13.5px]"
                   } ${
                     on
                       ? `${accent.text} font-semibold`
+                      : done
+                      ? "text-emerald-700 dark:text-emerald-300 font-medium hover:text-emerald-800 dark:hover:text-emerald-200"
                       : depth === 0
                       ? "text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white"
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   }`}
                 >
+                  {key && (
+                    <span className={`mt-[2px] ${done ? "" : "text-gray-300 dark:text-gray-600"}`} title={done ? "Learnt" : "Not learnt yet"}>
+                      <CheckCircle done={done} />
+                    </span>
+                  )}
                   <span className="line-clamp-2">{t.title}</span>
                 </button>
               );
@@ -1164,7 +1268,7 @@ function SidePanel({
   );
 }
 
-function MobileContents({ toc, activeId, onJump }) {
+function MobileContents({ toc, activeId, onJump, topicKeys, learnt }) {
   const minLevel = Math.min(...toc.map((t) => t.level), 3);
   return (
     <details className="xl:hidden mb-6 rounded-xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/70 dark:bg-white/[0.02] px-4 py-2.5">
@@ -1175,10 +1279,19 @@ function MobileContents({ toc, activeId, onJump }) {
             key={t.id}
             onClick={() => onJump(t.id)}
             style={{ paddingLeft: `${(t.level - minLevel) * 12}px` }}
-            className={`block w-full text-left py-1 text-[13px] ${
-              t.id === activeId ? "font-semibold text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"
+            className={`flex w-full items-start gap-2 text-left py-1 text-[13px] ${
+              t.id === activeId
+                ? "font-semibold text-gray-900 dark:text-white"
+                : learnt[topicKeys.get(t.index)]
+                ? "text-emerald-700 dark:text-emerald-300"
+                : "text-gray-500 dark:text-gray-400"
             }`}
           >
+            {topicKeys.has(t.index) && (
+              <span className={`mt-[1px] ${learnt[topicKeys.get(t.index)] ? "" : "text-gray-300 dark:text-gray-600"}`}>
+                <CheckCircle done={!!learnt[topicKeys.get(t.index)]} className="w-3.5 h-3.5" />
+              </span>
+            )}
             {t.title}
           </button>
         ))}
