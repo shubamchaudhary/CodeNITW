@@ -7,6 +7,7 @@ import { HiUser, HiLogout } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { isOwner } from "./OwnerRoute";
+import { requestSignIn } from "../Data/authGate";
 
 const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
@@ -53,8 +54,14 @@ export default function Header() {
     }
   }, [darkMode]);
 
+  // authChecked keeps the Sign in button from flashing for a signed-in user
+  // while Firebase restores the session.
+  const [authChecked, setAuthChecked] = useState(false);
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setUser(user));
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setAuthChecked(true);
+    });
     return unsubscribe;
   }, [auth]);
 
@@ -65,8 +72,9 @@ export default function Header() {
     if (user) {
       signOut(auth)
         .then(() => {
-          navigate("/sign-in");
-          toast.info("Logged Out Successfully");
+          // Pages stay readable signed out; owner-only pages send you home.
+          navigate("/core-stack");
+          toast.info("Signed out");
         })
         .catch((error) => {
           console.error("Logout error:", error);
@@ -112,11 +120,20 @@ export default function Header() {
 
           {/* Right side controls */}
           <div className="flex items-center gap-2 lg:order-2">
-            {user && (
+            {user ? (
               <div className="hidden lg:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg">
                 <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
                 <span className="max-w-[120px] truncate font-medium">{user.email}</span>
               </div>
+            ) : (
+              authChecked && (
+                <button
+                  onClick={() => requestSignIn()}
+                  className="h-8 px-3.5 rounded-lg text-[13px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm transition-colors"
+                >
+                  Sign in
+                </button>
+              )
             )}
 
             <motion.button
