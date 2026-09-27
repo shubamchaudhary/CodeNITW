@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OwnerRoute from "./components/OwnerRoute";
@@ -86,6 +87,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/core-stack" replace />} />
         </Routes>
+        <Footer />
         <AuthPrompt />
       </Router>
       <ToastContainer

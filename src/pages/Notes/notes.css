@@ -368,8 +368,9 @@
   }
 }
 
-/* Full-screen reading: the site header goes away; the page shows its own
+/* Full-screen reading: the site header and footer go away; the page shows its own
    slim bar instead. The class is set on <html> by the notes page only. */
-.notes-immersive #root > header {
+.notes-immersive #root > header,
+.notes-immersive #root > footer {
   display: none !important;
 }
