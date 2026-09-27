@@ -66,7 +66,11 @@ export default function Header() {
   }, [auth]);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-  const isActive = (path) => location.pathname === path;
+  // A stack's topic pages live under /notes/<stack>/…, so its nav item stays
+  // lit while you read.
+  const NOTES_OF = { "/core-stack": "/notes/corestack/", "/ai-stack": "/notes/aistack/" };
+  const isActive = (path) =>
+    location.pathname === path || (NOTES_OF[path] && location.pathname.startsWith(NOTES_OF[path]));
 
   const handleLogout = () => {
     if (user) {

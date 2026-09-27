@@ -6,8 +6,7 @@ import Header from "./components/Header";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OwnerRoute from "./components/OwnerRoute";
-import CoreStack from "./pages/CoreStack/CoreStack";
-import AIStack from "./pages/AIStack/AIStack";
+import StackHome from "./pages/Notes/StackHome";
 import TopicNotes from "./pages/Notes/TopicNotes";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
@@ -49,11 +48,11 @@ function App() {
           <Route path="/interview-prep" element={<Navigate to="/core-stack" replace />} />
 
           {/* Open to everyone. Changing anything asks a guest to sign in. */}
-          <Route path="/core-stack" element={<CoreStack />} />
+          <Route path="/core-stack" element={<StackHome stackKey="corestack" />} />
           {/* Owner-only, exactly like the job tracker: a non-owner hitting this
               URL lands on Core Stack, the same place any unknown URL goes. */}
           <Route path="/ai-stack" element={<OwnerRoute />}>
-            <Route path="/ai-stack" element={<AIStack />} />
+            <Route path="/ai-stack" element={<StackHome stackKey="aistack" />} />
           </Route>
           {/* One full page per topic's notes. The page itself turns away a
               non-owner asking for an AI Stack topic. */}
