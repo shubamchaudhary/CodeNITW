@@ -8,8 +8,13 @@ export default function useIsDark() {
 
   useEffect(() => {
     const el = document.documentElement;
-    const observer = new MutationObserver(() => setDark(el.classList.contains("dark")));
+    const sync = () => setDark(el.classList.contains("dark"));
+    const observer = new MutationObserver(sync);
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+    // The header applies the saved theme in its own effect, which can run
+    // before this observer exists (on a fresh load straight into a page), so
+    // read the class again now rather than trusting the first render.
+    sync();
     return () => observer.disconnect();
   }, []);
 
