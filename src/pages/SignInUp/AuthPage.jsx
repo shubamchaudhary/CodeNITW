@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AuthForm from "../../components/AuthForm";
+import Brand, { SITE_NAME } from "../../components/Brand";
 import { getAuthState, onAuthStateChange } from "../../Data/authGate";
 
 // The standalone /sign-in, /sign-up and /forgot-password pages: the same form
@@ -21,11 +22,8 @@ export default function AuthPage({ initialMode = "signin" }) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-gray-50 dark:bg-[#0b1020]">
-      <button
-        onClick={() => navigate("/core-stack")}
-        className="mb-6 text-[20px] font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400"
-      >
-        Learning Resources
+      <button onClick={() => navigate("/core-stack")} className="mb-6" aria-label={`${SITE_NAME} home`}>
+        <Brand size="lg" />
       </button>
       <div className="w-full max-w-[400px] rounded-2xl bg-white dark:bg-[#121a30] border border-gray-200 dark:border-white/[0.08] shadow-sm p-6 sm:p-7">
         <AuthForm
