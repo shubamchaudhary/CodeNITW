@@ -129,6 +129,9 @@ export default function NoteReader({
   uploadInto,
   topOffset = 0, // px of the viewport covered by anything sticky above the page
   immersive = false,
+  flat = false, // part of a page that is already the reading surface: no card
+  lead = null, // shown at the top of the article column (topic header, videos)
+  starterQuestions = null, // offered when the note is empty
   annotations = [],
   onAnnotationsChange,
   learnt = {},
@@ -535,6 +538,7 @@ export default function NoteReader({
     return keys;
   }, [toc]);
   const learntCount = useMemo(() => [...topicKeys.values()].filter((k) => learnt[k]).length, [topicKeys, learnt]);
+  const toggleLearntTopic = useCallback((key) => onToggleLearnt?.(key, [...topicKeys.values()]), [onToggleLearnt, topicKeys]);
 
   const activeTocId = useMemo(() => {
     let id = toc[0]?.id;
@@ -556,7 +560,11 @@ export default function NoteReader({
           fixed positioning relative to this box instead of the window. */}
       <div
         className={`bg-white dark:bg-[#0e1427] border-gray-200/90 dark:border-white/[0.07] ${
-          immersive ? "-mx-3 sm:-mx-5 lg:-mx-8" : "rounded-3xl border shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] dark:shadow-[0_10px_40px_-12px_rgba(0,0,0,0.6)]"
+          flat
+            ? ""
+            : immersive
+            ? "-mx-3 sm:-mx-5 lg:-mx-8"
+            : "rounded-3xl border shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] dark:shadow-[0_10px_40px_-12px_rgba(0,0,0,0.6)]"
         }`}
         // In full screen the page runs from the bar to the bottom of the
         // window with no frame, so nothing of the backdrop shows around it.
@@ -569,21 +577,26 @@ export default function NoteReader({
             onMouseDown={() => setToolbar(null)}
             className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
           >
+            {lead}
             {toc.length > 2 && (
               <MobileContents toc={toc} activeId={activeTocId} onJump={jumpTo} topicKeys={topicKeys} learnt={learnt} />
             )}
 
             <div ref={mdRef} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": `${fontSize}px` }}>
               {isEmpty && editing !== "append" && (
-                <div className="text-center py-16">
-                  <p className="text-[15px] text-gray-500 dark:text-gray-400">This note is empty.</p>
-                  <button
-                    onClick={() => startEdit("append")}
-                    className={`mt-4 px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}
-                  >
-                    Start writing
-                  </button>
-                </div>
+                <EmptyNote
+                  questions={starterQuestions}
+                  accent={accent}
+                  onStart={() => startEdit("append")}
+                  onSeed={() => {
+                    if (!requireAuth("Sign in to start your notes — they're saved to your account.")) return;
+                    onCommit(
+                      "## Interview questions\n\n" +
+                        starterQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n") +
+                        "\n\n## My notes\n\n"
+                    );
+                  }}
+                />
               )}
 
               {!isEmpty &&
@@ -612,7 +625,7 @@ export default function NoteReader({
                       onEdit={startEdit}
                       learnKey={topicKeys.get(i) || null}
                       learnt={!!learnt[topicKeys.get(i)]}
-                      onToggleLearnt={onToggleLearnt}
+                      onToggleLearnt={toggleLearntTopic}
                     />
                   )
                 )}
@@ -742,6 +755,45 @@ export default function NoteReader({
 }
 
 // ─── Pieces ──────────────────────────────────────────────────────────────────
+
+// A note with nothing in it yet. When the topic comes with interview questions
+// they're offered as a starting point — answer them here, in your own words.
+function EmptyNote({ questions, accent, onStart, onSeed }) {
+  if (!questions || !questions.length) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-[15px] text-gray-500 dark:text-gray-400">This note is empty.</p>
+        <button onClick={onStart} className={`mt-4 px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}>
+          Start writing
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="note-ui wmde-markdown" style={{ background: "transparent" }}>
+      <p className="text-[15px] text-gray-500 dark:text-gray-400">
+        No notes yet. Try answering these out loud first — then write down what you'd say.
+      </p>
+      <h2 className="!mt-6">Interview questions</h2>
+      <ol>
+        {questions.map((q, i) => (
+          <li key={i}>{q}</li>
+        ))}
+      </ol>
+      <div className="mt-6 flex flex-wrap gap-2">
+        <button onClick={onSeed} className={`px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}>
+          Start notes from these questions
+        </button>
+        <button
+          onClick={onStart}
+          className="px-4 h-9 rounded-xl text-[13px] font-bold text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+        >
+          Start from a blank page
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const Section = memo(function Section({
   id,

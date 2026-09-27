@@ -1,18 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import "@uiw/react-markdown-preview/markdown.css";
-import { GLASS } from "../../components/glass";
-import PageShell from "../../components/PageShell";
 import { isOwner } from "../../components/OwnerRoute";
-import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
 import useIsDark from "../../hooks/useIsDark";
 import { getSyncStatus, subscribeSyncStatus } from "../../Data/cloudSync";
 import { requireAuth, requestSignIn } from "../../Data/authGate";
 import {
-  KEYS,
   loadJSON,
   getSourceNote,
   getAnnotations,
@@ -22,55 +17,25 @@ import {
   setLearnt,
   learntKey,
   setSourceNote,
-  getCoreStackTopic,
-  getAIStackTopic,
   subscribe,
 } from "../../Data/planStore";
 import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
 import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
+import StackNav from "./StackNav";
+import TopicLead from "./TopicLead";
+import useStackProgress from "./useStackProgress";
+import { STACKS, rememberTopic } from "./stacks";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
 
-// A full page per topic, because a 4-line textarea inside a card is no place to
-// think. It opens on the reading view — wide, large type, a contents column —
-// where every section can be edited, highlighted or annotated with a personal
-// note right there. Write keeps the raw-markdown editor for longer sessions.
-// The text itself still lives in the same synced note store the board and the
-// Planning page read; personal notes have a synced store of their own.
-
-const SOURCES = {
-  corestack: {
-    label: "Core Stack",
-    backTo: "/core-stack",
-    notesKey: KEYS.CS_NOTES,
-    getTopic: getCoreStackTopic,
-    ownerOnly: false,
-    accent: {
-      text: "text-emerald-600 dark:text-emerald-400",
-      bar: "from-emerald-500 to-teal-400",
-      button: "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-emerald-500/30",
-      ring: "focus:ring-emerald-400/40 focus:border-emerald-400",
-      chip: "hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300",
-    },
-  },
-  aistack: {
-    label: "AI Stack",
-    backTo: "/ai-stack",
-    notesKey: KEYS.AI_NOTES,
-    getTopic: getAIStackTopic,
-    ownerOnly: true,
-    accent: {
-      text: "text-violet-600 dark:text-violet-400",
-      bar: "from-violet-500 to-fuchsia-400",
-      button: "bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-violet-500/30",
-      ring: "focus:ring-violet-400/40 focus:border-violet-400",
-      chip: "hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-300",
-    },
-  },
-};
+// A topic's page, laid out like a course on a learning site: the stack's topic
+// list on the left, the topic in the middle — its header, what to watch, then
+// your notes — and the note's contents on the right. The notes open to read
+// (wide, large type) and every section can be edited, highlighted or annotated
+// in place; Write keeps the raw-markdown editor for longer sessions.
 
 const VIEWS = [
   { key: "read", label: "Read", title: "Read — edit any section in place, select text to highlight or add a note" },
-  { key: "write", label: "Write", title: "Markdown editor only" },
+  { key: "write", label: "Write", title: "Markdown editor" },
 ];
 
 // Reading preferences are a per-device convenience, so localStorage is fine;
@@ -89,10 +54,12 @@ function loadPrefs() {
 export default function TopicNotes() {
   const { source, topicId } = useParams();
   const navigate = useNavigate();
-  const config = SOURCES[source];
+  const config = STACKS[source];
+  const stack = config || STACKS.corestack; // hooks below need a stack even on a bad URL
   const isDark = useIsDark();
   const colorMode = isDark ? "dark" : "light";
   const headerOffset = useStickyHeaderOffset();
+  const { completed, planned, setDone, togglePlanned, stampRev } = useStackProgress(stack);
 
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
@@ -118,6 +85,7 @@ export default function TopicNotes() {
   const [annotations, setAnnotationList] = useState([]);
   const [learnt, setLearntMarks] = useState({});
   const [barHeight, setBarHeight] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const barRef = useRef(null);
 
   const [assets, setAssets] = useState({});
@@ -141,8 +109,16 @@ export default function TopicNotes() {
     });
   }, []);
 
+  // A new topic starts at the top, and becomes the one the stack's home reopens.
+  useEffect(() => {
+    if (!topic) return;
+    rememberTopic(source, topic.id);
+    window.scrollTo({ top: 0 });
+    setDrawerOpen(false);
+  }, [source, topic]);
+
   // ── Full-screen reading ──────────────────────────────────────────────────
-  // Hides the site header and the topic card and asks the browser for real
+  // Hides the site header and the topic list and asks the browser for real
   // full screen. If the browser refuses (or has no Fullscreen API), the page
   // still goes chrome-free and Esc brings it back.
   const enterImmersive = useCallback(() => {
@@ -203,7 +179,8 @@ export default function TopicNotes() {
   }, [immersive]);
 
   // Hydrate once auth has settled, so the per-account note store is in scope.
-  // A note with something in it opens to read; an empty one opens to write.
+  // A note with something in it opens to read; an empty one opens to write
+  // (a guest can only read).
   useEffect(() => {
     if (!authReady || !config || !topic) return;
     const initial = getSourceNote(source, topicId);
@@ -211,7 +188,7 @@ export default function TopicNotes() {
     setText(initial);
     setAnnotationList(getAnnotations(source, topicId));
     setLearntMarks(getLearnt(source, topicId));
-    setView(initial.trim() || !user ? "read" : "write");
+    setView(initial.trim() || !user || topic.questions?.length ? "read" : "write");
     setLoaded(true);
   }, [authReady, config, topic, source, topicId, user]);
 
@@ -295,19 +272,32 @@ export default function TopicNotes() {
   );
 
   // "Learnt" is per topic heading inside this note; ticking it again undoes it.
+  // Learning the last one marks the whole note done in the topic list, and
+  // un-learning one while it's done takes the tick back off — "done" means
+  // every topic in it is learnt.
   const toggleLearnt = useCallback(
-    (key) => {
+    (key, allKeys = []) => {
       if (!requireAuth("Sign in to mark topics as learnt — your progress is saved to your account.")) return;
       const next = { ...getLearnt(source, topicId) };
-      if (next[key]) delete next[key];
+      const unlearning = !!next[key];
+      if (unlearning) delete next[key];
       else next[key] = Date.now();
       setLearnt(source, topicId, next);
       setLearntMarks(next);
+
+      const allLearnt = allKeys.length > 0 && allKeys.every((k) => next[k]);
+      const isDone = !!completed[topicId];
+      if (allLearnt && !isDone) {
+        if (setDone(topicId, true)) toast.success(`Every topic learnt — "${topic?.title}" marked as done`);
+      } else if (unlearning && isDone && allKeys.length > 0) {
+        if (setDone(topicId, false)) toast.info(`"${topic?.title}" is no longer done`);
+      }
     },
-    [source, topicId]
+    [source, topicId, completed, setDone, topic]
   );
 
-  // Flush on unmount so navigating away inside the debounce window still saves.
+  // Flush on unmount (or topic switch) so leaving inside the debounce window
+  // still saves — to the note that was being edited.
   useEffect(
     () => () => {
       if (saveTimer.current) {
@@ -437,275 +427,274 @@ export default function TopicNotes() {
   );
 
   const stats = useMemo(() => noteStats(text), [text]);
+  const doneDays = useMemo(
+    () => (topic && completed[topic.id] ? stack.daysSinceDone(topic.id) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [topic, completed, stampRev, stack]
+  );
 
   if (!authReady) return null;
   if (!config) return <Navigate to="/core-stack" replace />;
   if (config.ownerOnly && !isOwner(user)) return <Navigate to="/core-stack" replace />;
-  if (!topic) return <Navigate to={config.backTo} replace />;
+  if (!topic) return <Navigate to={config.home} replace />;
 
-  const prio = CORE_STACK_PRIORITY_CONFIG[topic.priority];
   const accent = config.accent;
   const isRead = view === "read";
   // What covers the top of the viewport once scrolled: the slim bar in full
   // screen, otherwise the site header only if it really sticks.
   const topOffset = immersive ? barHeight : headerOffset;
+  const pick = (id) => navigate(`/notes/${source}/${id}`);
 
-  // View switch, then reading or formatting tools, then full screen. Shared by
-  // the topic card and the slim full-screen bar — which is for reading only,
-  // so it has no view switch.
-  const renderControls = (inBar) => (
-    <div className={`flex flex-wrap items-center gap-2 ${inBar ? "" : "w-full"}`}>
-      {!inBar && (
-        <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1">
-          {VIEWS.map((v) => (
-            <button
-              key={v.key}
-              onClick={() => (v.key === "read" || requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) && setView(v.key)}
-              title={v.title}
-              className={`px-3.5 h-8 rounded-lg text-[13px] font-bold transition-all ${
-                view === v.key
-                  ? `${accent.button} text-white shadow-md`
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-              }`}
-            >
-              {v.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {isRead ? (
-        <>
-          <div className="flex items-center gap-0.5 rounded-xl bg-gray-100/80 dark:bg-white/[0.05] p-1 ml-1" title="Text size">
-            <IconButton
-              onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
-              disabled={prefs.fontSize <= FONT_MIN}
-              title="Smaller text"
-            >
-              <span className="text-[12px] font-bold">A−</span>
-            </IconButton>
-            <span className="w-9 text-center text-[12px] font-bold tabular-nums text-gray-600 dark:text-gray-300">
-              {prefs.fontSize}
-            </span>
-            <IconButton
-              onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
-              disabled={prefs.fontSize >= FONT_MAX}
-              title="Larger text"
-            >
-              <span className="text-[15px] font-bold">A+</span>
-            </IconButton>
-          </div>
-        </>
-      ) : (
-        <>
-          <span className="w-px h-6 bg-gray-200 dark:bg-white/10 mx-1" />
-          {TOOLBAR.map((action) => (
-            <button
-              key={action.key}
-              onClick={() => applyAction(action)}
-              title={action.title}
-              className={`min-w-[32px] h-8 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip} ${
-                action.bold ? "font-extrabold" : ""
-              } ${action.italic ? "italic font-serif" : ""}`}
-            >
-              {action.label}
-            </button>
-          ))}
-          <label
-            className={`h-8 px-2.5 rounded-lg text-[12px] font-bold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 border border-transparent hover:bg-white/70 dark:hover:bg-white/[0.06] transition-all ${accent.chip}`}
-            title="Add a screenshot (or just paste one)"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
-              <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-              <path d="M2 10.5l3-3 3 3 2-2 4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Screenshot
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                uploadFiles(e.target.files);
-                e.target.value = "";
-              }}
-            />
-          </label>
-        </>
-      )}
-
-      <div className="ml-auto flex items-center gap-3">
-        {!inBar && isRead && (
-          <p className="hidden 2xl:block text-[12px] text-gray-400 dark:text-gray-500">
-            Select text to highlight or add a note · hover a section and press ✎ to edit it
-          </p>
-        )}
-        {(isRead || immersive) && (
-          <button
-            onClick={immersive ? exitImmersive : enterImmersive}
-            title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
-            className="h-9 px-3 rounded-xl flex items-center gap-1.5 text-[12.5px] font-bold text-gray-600 dark:text-gray-300 bg-gray-100/80 dark:bg-white/[0.05] hover:bg-gray-200/80 dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white transition-colors"
-          >
-            {immersive ? (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            )}
-            {immersive ? "Exit full screen" : "Full screen"}
-          </button>
-        )}
-      </div>
+  const textSize = (
+    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14]" title="Text size">
+      <SmallButton
+        onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
+        disabled={prefs.fontSize <= FONT_MIN}
+        title="Smaller text"
+      >
+        A−
+      </SmallButton>
+      <span className="w-7 text-center text-[12px] font-semibold tabular-nums text-gray-500 dark:text-gray-400">{prefs.fontSize}</span>
+      <SmallButton
+        onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
+        disabled={prefs.fontSize >= FONT_MAX}
+        title="Larger text"
+      >
+        A+
+      </SmallButton>
     </div>
   );
 
-  return (
-    <PageShell allowSticky className={immersive ? "!pb-0" : ""}>
-      <div className="w-full max-w-[2200px] mx-auto px-3 sm:px-5 lg:px-8">
-        {immersive ? (
-          /* ── Full screen: a slim sticky bar sitting right on the page, instead
-                of the site header + topic card ── */
-          <div
-            ref={barRef}
-            className="sticky top-0 z-40 -mx-3 sm:-mx-5 lg:-mx-8 px-3 sm:px-5 lg:px-8 py-2.5 backdrop-blur-xl bg-white/90 dark:bg-[#0e1427]/90 border-b border-gray-200/90 dark:border-white/[0.07]"
-          >
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <div className="min-w-0 flex-1 flex items-baseline gap-2.5">
-                <span className="shrink-0 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                  {topic.id}
-                </span>
-                <span className="truncate text-[15px] font-extrabold tracking-tight text-gray-900 dark:text-gray-50">{topic.title}</span>
-                <span className="shrink-0 hidden sm:inline">
-                  <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user} />
-                </span>
-              </div>
-              {renderControls(true)}
-            </div>
-          </div>
-        ) : (
-        /* ── Topic card ── */
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35 }}
-          className={`mt-5 mb-5 rounded-3xl ${GLASS} px-4 sm:px-7 pt-5 pb-4`}
+  const fullScreenButton = (
+    <button
+      onClick={immersive ? exitImmersive : enterImmersive}
+      title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
+      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+    >
+      {immersive ? (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      )}
+      {immersive ? "Exit full screen" : "Full screen"}
+    </button>
+  );
+
+  const viewSwitch = (
+    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14] p-0.5">
+      {VIEWS.map((v) => (
+        <button
+          key={v.key}
+          onClick={() =>
+            (v.key === "read" || requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) &&
+            setView(v.key)
+          }
+          title={v.title}
+          className={`h-8 px-3.5 rounded-full text-[13px] font-semibold transition-colors ${
+            view === v.key
+              ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+          }`}
         >
-          <div className="flex items-start gap-3 sm:gap-4">
-            <button
-              onClick={() => navigate(config.backTo)}
-              title={`Back to ${config.label}`}
-              className="mt-1 shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </button>
+          {v.label}
+        </button>
+      ))}
+    </div>
+  );
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                  {config.label} · {topic.id}
-                </span>
-                {prio && (
-                  <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md border ${prio.cls}`}>{prio.label}</span>
+  const meta = (
+    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+      {stats.words > 0 && (
+        <span>
+          {stats.words.toLocaleString()} words · ≈ {stats.minutes} min read
+        </span>
+      )}
+      {annotations.length > 0 && (
+        <span>
+          · {annotations.length} personal note{annotations.length === 1 ? "" : "s"}
+        </span>
+      )}
+      {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
+      <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user} />
+    </span>
+  );
+
+  const lead = (
+    <TopicLead
+      stack={config}
+      topic={topic}
+      done={!!completed[topic.id]}
+      doneDays={doneDays}
+      planned={planned.has(topic.id)}
+      onToggleDone={() => setDone(topic.id, !completed[topic.id])}
+      onTogglePlanned={() => togglePlanned(topic)}
+      meta={meta}
+      tools={
+        immersive ? null : (
+          <>
+            {viewSwitch}
+            {isRead && textSize}
+            {isRead && fullScreenButton}
+          </>
+        )
+      }
+    />
+  );
+
+  const nav = (
+    <StackNav stack={config} activeId={topic.id} completed={completed} planned={planned} onPick={pick} />
+  );
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-[#0e1427]">
+      {immersive && (
+        /* Full screen: a slim sticky bar instead of the site header */
+        <div
+          ref={barRef}
+          className="sticky top-0 z-40 px-4 sm:px-6 py-2.5 backdrop-blur-xl bg-white/90 dark:bg-[#0e1427]/90 border-b border-gray-200/90 dark:border-white/[0.07]"
+        >
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="min-w-0 flex-1 flex items-baseline gap-2.5">
+              <span className="shrink-0 text-[12px] text-gray-400 dark:text-gray-500">{config.eyebrow(topic)}</span>
+              <span className="truncate text-[15px] font-bold tracking-tight text-gray-900 dark:text-gray-50">{topic.title}</span>
+            </div>
+            {textSize}
+            {fullScreenButton}
+          </div>
+        </div>
+      )}
+
+      <div className="flex">
+        {!immersive && (
+          <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07]">
+            <div className="sticky top-0 h-[100dvh]">{nav}</div>
+          </aside>
+        )}
+
+        <main className="flex-1 min-w-0">
+          {!immersive && (
+            <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur">
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="h-9 px-3 rounded-full flex items-center gap-2 shrink-0 whitespace-nowrap text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14]"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                  <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                {config.label}
+              </button>
+              <span className="truncate text-[13px] text-gray-500 dark:text-gray-400">{topic.title}</span>
+            </div>
+          )}
+
+          {loaded && isRead && (
+            <NoteReader
+              key={`${source}:${topic.id}`}
+              flat
+              lead={lead}
+              starterQuestions={topic.questions}
+              text={text}
+              onCommit={commit}
+              assets={assets}
+              colorMode={colorMode}
+              fontSize={prefs.fontSize}
+              accent={accent}
+              uploadInto={uploadFiles}
+              topOffset={topOffset}
+              immersive={immersive}
+              annotations={annotations}
+              onAnnotationsChange={changeAnnotations}
+              learnt={learnt}
+              onToggleLearnt={toggleLearnt}
+            />
+          )}
+
+          {loaded && !isRead && (
+            <div className="px-5 sm:px-10 lg:px-16 py-8 lg:py-12">
+              {lead}
+              <div className="mb-3 flex flex-wrap items-center gap-1">
+                {TOOLBAR.map((action) => (
+                  <button
+                    key={action.key}
+                    onClick={() => applyAction(action)}
+                    title={action.title}
+                    className={`min-w-[34px] h-9 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06] ${
+                      action.bold ? "font-extrabold" : ""
+                    } ${action.italic ? "italic font-serif" : ""}`}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+                <label
+                  className="h-9 px-3 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+                  title="Add a screenshot (or just paste one)"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+                    <rect x="2" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+                    <path d="M2 10.5l3-3 3 3 2-2 4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Screenshot
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      uploadFiles(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={onDrop}
+                className={`relative rounded-2xl transition-all ${dragging ? "ring-2 ring-sky-400/60" : ""}`}
+              >
+                <textarea
+                  ref={areaRef}
+                  value={text}
+                  onChange={(e) => onChange(e.target.value)}
+                  onPaste={onPaste}
+                  onKeyDown={onKeyDown}
+                  spellCheck={false}
+                  placeholder={
+                    "# What I got wrong\n\nParagraph, **bold**, `code`.\n\n```java\n// paste the snippet that bit you\n```\n\n- [ ] revisit before the next mock\n\nPaste a screenshot straight in — Ctrl/Cmd+V."
+                  }
+                  className={`w-full min-h-[75vh] resize-y px-5 py-4 text-[14.5px] leading-[1.7] font-mono rounded-2xl bg-gray-50/70 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200 dark:border-white/[0.08] focus:outline-none focus:ring-2 ${accent.ring}`}
+                />
+                {dragging && (
+                  <div className="absolute inset-0 rounded-2xl bg-sky-500/10 border-2 border-dashed border-sky-400/70 flex items-center justify-center pointer-events-none">
+                    <p className="text-sm font-bold text-sky-600 dark:text-sky-300">Drop the image to upload</p>
+                  </div>
                 )}
               </div>
-              <h1 className="text-[22px] sm:text-[28px] lg:text-[32px] font-extrabold tracking-tight text-gray-900 dark:text-gray-50 leading-tight mt-1">
-                {topic.title}
-              </h1>
-              <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1.5 flex flex-wrap items-center gap-x-2">
-                <span>{stats.words.toLocaleString()} words</span>
-                <span className="text-gray-300 dark:text-gray-600">•</span>
-                {stats.minutes > 0 && (
-                  <>
-                    <span>≈ {stats.minutes} min read</span>
-                    <span className="text-gray-300 dark:text-gray-600">•</span>
-                  </>
-                )}
-                <span>
-                  {stats.images} screenshot{stats.images === 1 ? "" : "s"}
-                </span>
-                {annotations.length > 0 && (
-                  <>
-                    <span className="text-gray-300 dark:text-gray-600">•</span>
-                    <span>
-                      {annotations.length} personal note{annotations.length === 1 ? "" : "s"}
-                    </span>
-                  </>
-                )}
-                {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
-              </p>
             </div>
-
-            <div className="shrink-0 pt-1">
-              <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user} />
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-gray-200/70 dark:border-white/[0.07]">{renderControls(false)}</div>
-        </motion.div>
-        )}
-
-        {/* ── Body ── */}
-        {loaded && isRead && (
-          <NoteReader
-            text={text}
-            onCommit={commit}
-            assets={assets}
-            colorMode={colorMode}
-            fontSize={prefs.fontSize}
-            accent={accent}
-            uploadInto={uploadFiles}
-            topOffset={topOffset}
-            immersive={immersive}
-            annotations={annotations}
-            onAnnotationsChange={changeAnnotations}
-            learnt={learnt}
-            onToggleLearnt={toggleLearnt}
-          />
-        )}
-
-        {loaded && !isRead && (
-          <div className="mb-10">
-            <div
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragging(true);
-              }}
-              onDragLeave={() => setDragging(false)}
-              onDrop={onDrop}
-              className={`relative rounded-3xl ${GLASS} p-1.5 transition-all ${dragging ? "ring-2 ring-sky-400/60" : ""}`}
-            >
-              <textarea
-                ref={areaRef}
-                value={text}
-                onChange={(e) => onChange(e.target.value)}
-                onPaste={onPaste}
-                onKeyDown={onKeyDown}
-                spellCheck={false}
-                placeholder={
-                  "# What I got wrong\n\nParagraph, **bold**, `code`.\n\n```java\n// paste the snippet that bit you\n```\n\n- [ ] revisit before the next mock\n\nPaste a screenshot straight in — Ctrl/Cmd+V."
-                }
-                className={`w-full min-h-[75vh] resize-y px-5 py-4 text-[14.5px] leading-[1.7] font-mono rounded-[1.1rem] bg-white/75 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200/80 dark:border-white/[0.07] focus:outline-none focus:ring-2 ${accent.ring}`}
-              />
-              {dragging && (
-                <div className="absolute inset-0 rounded-3xl bg-sky-500/10 border-2 border-dashed border-sky-400/70 flex items-center justify-center pointer-events-none">
-                  <p className="text-sm font-bold text-sky-600 dark:text-sky-300">Drop the image to upload</p>
-                </div>
-              )}
-            </div>
-
-          </div>
-        )}
+          )}
+        </main>
       </div>
-    </PageShell>
+
+      {drawerOpen && !immersive && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-[86%] max-w-[340px] bg-white dark:bg-[#0e1427] shadow-2xl">{nav}</div>
+        </div>
+      )}
+    </div>
   );
 }
 
-function IconButton({ onClick, disabled, title, children }) {
+function SmallButton({ onClick, disabled, title, children }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/[0.1] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
+      className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.08] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
     >
       {children}
     </button>
@@ -725,7 +714,7 @@ function SaveState({ dirty, savedAt, accent, guest }) {
   }, []);
 
   const pill = (dot, text, cls, title) => (
-    <span title={title} className={`text-[11px] font-semibold flex items-center gap-1.5 ${cls}`}>
+    <span title={title} className={`text-[12px] font-medium flex items-center gap-1.5 ${cls}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
       {text}
     </span>
@@ -733,7 +722,7 @@ function SaveState({ dirty, savedAt, accent, guest }) {
 
   if (guest) {
     return (
-      <button onClick={() => requestSignIn()} className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+      <button onClick={() => requestSignIn()} className="text-[12px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
         Sign in to save changes
       </button>
     );
@@ -748,13 +737,11 @@ function SaveState({ dirty, savedAt, accent, guest }) {
   if (sync.state === "pending" || sync.state === "syncing") {
     return pill("bg-amber-400 animate-pulse", "Saved on this device · syncing…", "text-gray-500 dark:text-gray-400", "Waiting for the cloud to confirm.");
   }
-  if (!savedAt) {
-    return <span className="text-[11px] text-gray-400 dark:text-gray-500">Synced</span>;
-  }
+  if (!savedAt) return null;
   const secs = Math.round((Date.now() - savedAt) / 1000);
   const when = secs < 5 ? "just now" : secs < 60 ? `${secs}s ago` : `${Math.round(secs / 60)}m ago`;
   return (
-    <span className={`text-[11px] font-semibold flex items-center gap-1.5 ${accent.text}`}>
+    <span className={`text-[12px] font-medium flex items-center gap-1.5 ${accent.text}`}>
       <svg className="w-3 h-3" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
       Saved {when}
     </span>
