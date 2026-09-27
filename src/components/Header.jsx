@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { isOwner } from "./OwnerRoute";
 import { requestSignIn } from "../Data/authGate";
+import Brand, { SITE_NAME } from "./Brand";
 
 const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
@@ -93,7 +94,7 @@ export default function Header() {
   };
 
   const navItemClass = (isActiveItem) => `
-    relative block py-2 px-3 font-semibold text-xs tracking-wide
+    relative block py-2 px-3 font-semibold text-xs tracking-wide whitespace-nowrap
     transition-all duration-200 ease-in-out rounded-lg
     ${
       isActiveItem
@@ -111,24 +112,37 @@ export default function Header() {
     <header>
       {/* Frosted bar so the page's ambient wash shows through as it scrolls under */}
       <nav className="backdrop-blur-xl bg-white/70 dark:bg-[#0b1020]/75 border-b border-gray-200/70 dark:border-white/[0.07] shadow-sm dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] px-3 lg:px-5 py-3 sticky top-0 z-50">
-        <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+        {/* Full width, like the pages under it: the logo sits flush left over
+            the topic list, the page links sit in the centre, account controls
+            go far right. The two outer columns are equal, so the middle one is
+            centred on the page whatever the logo and controls measure. */}
+        <div className="flex flex-wrap items-center gap-x-4 xl:gap-x-8 lg:grid lg:grid-cols-[1fr_auto_1fr]">
           {/* Logo */}
           <button
             onClick={() => handlePageSelect("/core-stack")}
-            className="flex items-center gap-1 group"
+            className="flex items-center shrink-0 lg:justify-self-start"
+            aria-label={`${SITE_NAME} home`}
           >
-            <span className="text-lg sm:text-xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 group-hover:scale-105 transition-transform">
-              Learning Resources
-            </span>
+            <Brand />
           </button>
 
           {/* Right side controls */}
-          <div className="flex items-center gap-2 lg:order-2">
+          <div className="flex items-center gap-2 ml-auto lg:ml-0 lg:order-2 lg:justify-self-end">
             {user ? (
-              <div className="hidden lg:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg">
-                <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
-                <span className="max-w-[120px] truncate font-medium">{user.email}</span>
-              </div>
+              <>
+                <div className="hidden xl:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg">
+                  <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
+                  <span className="max-w-[120px] truncate font-medium">{user.email}</span>
+                </div>
+                {/* On wide screens log out lives with the account, not among the pages */}
+                <button
+                  onClick={handleLogout}
+                  className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                >
+                  <HiLogout className="text-md" />
+                  Log out
+                </button>
+              </>
             ) : (
               authChecked && (
                 <button
@@ -187,10 +201,10 @@ export default function Header() {
                   w-full lg:w-auto absolute lg:relative top-[58px] lg:top-auto left-0 lg:left-auto
                   backdrop-blur-xl bg-white/90 dark:bg-[#0b1020]/95 lg:bg-transparent dark:lg:bg-transparent lg:backdrop-blur-none
                   rounded-b-2xl lg:rounded-none border lg:border-0 border-gray-200/70 dark:border-white/[0.07]
-                  shadow-lg lg:shadow-none lg:flex lg:order-1
+                  shadow-lg lg:shadow-none lg:flex lg:order-1 lg:justify-self-center
                 `}
               >
-                <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-2 lg:mt-0 lg:items-center">
+                <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-1 xl:space-x-2 lg:mt-0 lg:items-center">
                   {[...NAV_ITEMS, ...(isOwner(user) ? OWNER_NAV_ITEMS : [])].map((item) => (
                     <li key={item.path}>
                       <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path))}>
@@ -200,7 +214,7 @@ export default function Header() {
                   ))}
 
                   {user && (
-                    <li>
+                    <li className="lg:hidden">
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
