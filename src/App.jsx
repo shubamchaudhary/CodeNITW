@@ -11,6 +11,7 @@ import StackHome from "./pages/Notes/StackHome";
 import TopicNotes from "./pages/Notes/TopicNotes";
 import DSAPrep from "./pages/DSAPrep/DSAPrep";
 import Planning from "./pages/Planning/Planning";
+import Contests from "./pages/Contests/Contests";
 import AuthPage from "./pages/SignInUp/AuthPage";
 import AuthPrompt from "./components/AuthPrompt";
 import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
@@ -60,6 +61,7 @@ function App() {
           <Route path="/notes/:source/:topicId" element={<TopicNotes />} />
           <Route path="/dsa-prep" element={<DSAPrep />} />
           <Route path="/planning" element={<Planning />} />
+          <Route path="/contests" element={<Contests />} />
           {/* Pipeline and Companies are for everyone; the page itself keeps
               Contacts and Openings (and their data) to the owner. */}
           <Route

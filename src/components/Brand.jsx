@@ -15,7 +15,7 @@ export default function Brand({ size = "md" }) {
         <path d="M18 21.5 H23" stroke="white" strokeWidth="2.8" strokeLinecap="round" />
       </svg>
       <span
-        className={`${lg ? "text-[22px]" : "text-[17px] sm:text-[18px]"} font-extrabold tracking-tight text-gray-900 dark:text-white`}
+        className={`${lg ? "text-[22px]" : "text-[16px] sm:text-[18px]"} font-extrabold tracking-tight text-gray-900 dark:text-white`}
       >
         Interview<span className="text-violet-600 dark:text-violet-400">Plan</span>Prep
       </span>
