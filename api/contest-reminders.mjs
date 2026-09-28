@@ -34,7 +34,7 @@ async function run(request) {
     const { contests } = await fetchUpcomingContests({ now });
     const to = process.env.GMAIL_USER;
     const unsubscribeUrl = linkUrl("unsubscribe", "test", secret); // points at no real subscriber
-    const mail = reminderEmail({ items: sampleReminders(contests, now), now, timeZone: "Asia/Kolkata", unsubscribeUrl });
+    const mail = reminderEmail({ items: sampleReminders(contests, now), upcoming: contests, now, timeZone: "Asia/Kolkata", unsubscribeUrl });
     try {
       await sendMail({ to, unsubscribeUrl, ...mail, subject: `[Test] ${mail.subject}` });
     } catch (e) {
@@ -85,7 +85,7 @@ async function run(request) {
       const { email, timeZone } = s.data();
       const unsubscribeUrl = linkUrl("unsubscribe", s.id, secret);
       try {
-        await sendMail({ to: email, unsubscribeUrl, ...reminderEmail({ items: claimed, now, timeZone, unsubscribeUrl }) });
+        await sendMail({ to: email, unsubscribeUrl, ...reminderEmail({ items: claimed, upcoming: contests, now, timeZone, unsubscribeUrl }) });
         sent++;
       } catch (e) {
         failures.push(String(e?.message || e));
