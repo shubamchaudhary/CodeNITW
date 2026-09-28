@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { path: "/dsa-prep", label: "DSA" },
   { path: "/planning", label: "PLANNING" },
   { path: "/job-tracker", label: "JOBS" },
+  { path: "/contests", label: "CONTESTS" },
 ];
 
 // Owner-only pages: rendered in the nav ONLY for the owner account, so other
@@ -116,7 +117,7 @@ export default function Header() {
             the topic list, the page links sit in the centre, account controls
             go far right. The two outer columns are equal, so the middle one is
             centred on the page whatever the logo and controls measure. */}
-        <div className="flex flex-wrap items-center gap-x-4 xl:gap-x-8 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+        <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 xl:gap-x-8 lg:grid lg:grid-cols-[1fr_auto_1fr]">
           {/* Logo */}
           <button
             onClick={() => handlePageSelect("/core-stack")}
