@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// The end of every page: one link to write to the developer.
-const EMAIL = "beshubam@gmail.com";
+// The end of every page: one link to write to the developer, at the site's
+// official address — the same one the contest reminders are sent from. (The
+// owner account that unlocks the private pages is separate: see OwnerRoute.)
+const EMAIL = "interviewplanprep@gmail.com";
 const SUBJECT = encodeURIComponent("About InterviewPlanPrep");
 const MAILTO = `mailto:${EMAIL}?subject=${SUBJECT}`;
 const GMAIL = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${SUBJECT}`;
