@@ -74,13 +74,6 @@ function duration(min) {
   return h && m ? `${h}h ${m}m` : h ? `${h}h` : `${m}m`;
 }
 
-function until(ms) {
-  const min = Math.max(1, Math.round(ms / MIN));
-  if (min < 60) return `${min} min`;
-  if (min < 90) return min === 60 ? "1 hour" : `1 hr ${min - 60} min`;
-  return `${Math.round(min / 60)} hours`;
-}
-
 // "Today" / "Tomorrow" / "Sunday", in the reader's own time zone.
 function dayWord(start, now, tz) {
   const day = (t) => new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(t);
@@ -106,17 +99,24 @@ function dateOf(start, tz) {
   return new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: tz }).format(start);
 }
 
-function timeShort(start, tz) {
-  return new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz })
-    .format(start)
-    .replace(/\b(am|pm)\b/, (x) => x.toUpperCase());
+// "in an hour", or the real minutes when a run started late.
+function startsIn(ms) {
+  const min = Math.max(1, Math.round(ms / MIN));
+  return min >= 45 ? "in an hour" : `in ${min} minutes`;
+}
+
+// "today at 2:42 PM IST" / "tomorrow at …" / "on Sunday at …".
+function relativeWhen(start, now, tz) {
+  const day = dayWord(start, now, tz);
+  const lead = day === "Today" || day === "Tomorrow" ? day.toLowerCase() : `on ${day}`;
+  return `${lead} at ${timeOf(start, tz)}`;
 }
 
 const PLATFORM_COLOR = { leetcode: "#c77700", codeforces: "#1a6fa3", codechef: "#6b4428" };
 const PLATFORM_TINT = { leetcode: "#fff4e0", codeforces: "#e6f2fa", codechef: "#f4ece5" };
 const logoUrl = (platform) => `${SITE_URL}/email/${platform}.png`;
 
-// Google Calendar's "add event" link — the day-before email offers it.
+// Google Calendar's "add event" link — offered for contests a day out.
 function calendarUrl(c) {
   const stamp = (t) => new Date(t).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const q = new URLSearchParams({
@@ -128,160 +128,84 @@ function calendarUrl(c) {
   return `https://calendar.google.com/calendar/render?${q}`;
 }
 
-// One short line under the button, picked by contest so it varies.
-const TIPS = {
-  hour: [
-    "Warm up with one easy problem before it starts.",
-    "Water, snacks, one warm-up problem. You're set.",
-    "Read every problem first, then start with the one you're surest of.",
-  ],
-  day: [
-    "Block the slot on your calendar now.",
-    "A short timed practice today makes tomorrow easier.",
-    "Sleep well. Contests reward a fresh mind.",
-  ],
-};
-function tipFor(i) {
-  const list = TIPS[i.kind];
-  let h = 0;
-  for (const ch of i.contest.id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return list[h % list.length];
-}
-
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+const LINK = "color:#6d28d9;font-weight:600;text-decoration:none";
 
-// The shared frame: violet header band with the brand, then a white panel.
-function frame({ preheader, eyebrow, headline, subline, body, footer }) {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"></head>
-<body style="margin:0;padding:0;background:#f5f3ff;font-family:${FONT}">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f3ff">
-<tr><td align="center" style="padding:28px 12px">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 12px 40px -18px rgba(76,29,149,.35)">
-    <tr><td style="background:#6d28d9;background-image:linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%);padding:26px 28px 30px">
-      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-        <td style="vertical-align:middle"><img src="${SITE_URL}/email/mark.png" width="26" height="26" alt="" style="display:block;border:0;border-radius:7px"></td>
-        <td style="vertical-align:middle;padding-left:9px;font-size:15px;font-weight:800;color:#ffffff;letter-spacing:-.01em">InterviewPlanPrep</td>
-      </tr></table>
-      <div style="margin-top:26px"><span style="display:inline-block;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.16);color:#ede9fe;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">${esc(eyebrow)}</span></div>
-      <div style="margin-top:12px;font-size:30px;line-height:1.15;font-weight:800;color:#ffffff;letter-spacing:-.02em">${esc(headline)}</div>
-      ${subline ? `<div style="margin-top:8px;font-size:15px;line-height:1.5;color:#ddd6fe">${esc(subline)}</div>` : ""}
-    </td></tr>
-    <tr><td style="padding:26px 28px 28px">${body}</td></tr>
-  </table>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
-    <tr><td align="center" style="padding:18px 16px 0;font-size:12px;line-height:1.6;color:#8b87a8">${footer}</td></tr>
-  </table>
-</td></tr></table></body></html>`;
+// A plain email: white, left-aligned, no banners. Deliberately close to what
+// a person would write, so it reads (and filters) as a note, not a campaign.
+function page(inner) {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#ffffff">
+<div style="max-width:560px;padding:8px 4px;font-family:${FONT};font-size:14px;line-height:1.6;color:#1f2937">${inner}</div>
+</body></html>`;
 }
 
-function logoTile(platform, size) {
-  const img = Math.round(size * 0.66);
-  return `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="${size}" height="${size}" align="center" valign="middle" style="width:${size}px;height:${size}px;border-radius:${Math.round(size / 3.5)}px;background:${PLATFORM_TINT[platform]}">
-    <img src="${logoUrl(platform)}" width="${img}" height="${img}" alt="${esc(PLATFORMS[platform].label)}" style="display:block;border:0">
+const signOff = `<p style="margin:20px 0 0">Good luck,<br><a href="${SITE_URL}" style="${LINK}">InterviewPlanPrep</a></p>`;
+
+function logoTile(platform) {
+  return `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="44" height="44" align="center" valign="middle" style="width:44px;height:44px;border-radius:12px;background:${PLATFORM_TINT[platform]}">
+    <img src="${logoUrl(platform)}" width="28" height="28" alt="${esc(PLATFORMS[platform].label)}" style="display:block;border:0">
   </td></tr></table>`;
 }
 
-const chip = (text) =>
-  `<span style="display:inline-block;margin:0 6px 6px 0;padding:6px 11px;border-radius:999px;background:#f3f4f6;color:#374151;font-size:13px;font-weight:600">${esc(text)}</span>`;
+const chip = (text, strong = false) =>
+  `<span style="display:inline-block;margin:0 6px 6px 0;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;${
+    strong ? "background:#ede9fe;color:#5b21b6" : "background:#f3f4f6;color:#374151"
+  }">${esc(text)}</span>`;
 
-function button(href, label) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="#6d28d9" style="border-radius:12px;background:#6d28d9;background-image:linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%)">
-    <a href="${esc(href)}" style="display:block;padding:14px 18px;color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;border-radius:12px">${esc(label)}</a>
-  </td></tr></table>`;
+// One contest: logo, platform, name, then when and how long as small tags.
+function contestBlock(i, now, tz) {
+  const c = i.contest;
+  const p = PLATFORMS[c.platform];
+  const soon = i.kind === "hour" ? `Starts ${startsIn(c.start - now)}` : dayWord(c.start, now, tz);
+  const links = [`<a href="${esc(c.url)}" style="${LINK}">Open on ${esc(p.label)} &rarr;</a>`];
+  if (i.kind === "day") links.push(`<a href="${esc(calendarUrl(c))}" style="${LINK}">Add to calendar</a>`);
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px"><tr>
+    <td width="44" valign="top" style="padding-top:2px">${logoTile(c.platform)}</td>
+    <td valign="top" style="padding-left:12px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${PLATFORM_COLOR[c.platform]}">${esc(p.label)}</div>
+      <div style="margin:1px 0 8px;font-size:16px;line-height:1.35;font-weight:700;color:#111827">${esc(c.name)}</div>
+      <div>${chip(soon, true)}${chip(dateOf(c.start, tz))}${chip(timeOf(c.start, tz))}${chip(duration(c.durationMin))}</div>
+      <div style="margin-top:2px;font-size:13px">${links.join(' <span style="color:#d1d5db">&nbsp;·&nbsp;</span> ')}</div>
+    </td>
+  </tr></table>`;
 }
 
 // ── The reminder email ──────────────────────────────────────────────────────
-// Leads with the most urgent contest; anything else due in the same run
-// follows as compact rows.
 export function reminderEmail({ items, now, timeZone, unsubscribeUrl }) {
   const tz = validTimeZone(timeZone);
-  const ordered = [...items].sort((a, b) => (a.kind === b.kind ? a.contest.start - b.contest.start : a.kind === "hour" ? -1 : 1));
-  const [main, ...rest] = ordered;
-  const c = main.contest;
-  const p = PLATFORMS[c.platform];
+  const ordered = [...items].sort((a, b) => a.contest.start - b.contest.start);
+  const soon = ordered.filter((i) => i.kind === "hour");
+  const later = ordered.filter((i) => i.kind === "day");
 
-  const whenLine = (i) =>
-    i.kind === "hour"
-      ? `Starts in ${until(i.contest.start - now)}`
-      : `${dayWord(i.contest.start, now, tz)}, ${timeShort(i.contest.start, tz)}`;
-  // Countdown or day, then the rest of the when, never the time twice.
-  const metaLine = (i) =>
-    i.kind === "hour"
-      ? `Starts in ${until(i.contest.start - now)} · ${timeOf(i.contest.start, tz)}`
-      : `${dayWord(i.contest.start, now, tz)}, ${dateOf(i.contest.start, tz)} · ${timeOf(i.contest.start, tz)}`;
+  // "Reminder: A, B start in an hour; C starts tomorrow at 8:00 PM IST"
+  const verb = (list) => (list.length > 1 ? "start" : "starts");
+  const names = (list) => list.map((i) => i.contest.name).join(", ");
+  const parts = [];
+  if (soon.length) parts.push(`${names(soon)} ${verb(soon)} ${startsIn(soon[0].contest.start - now)}`);
+  if (later.length) {
+    const sameTime = later.every((i) => i.contest.start === later[0].contest.start);
+    const when = sameTime ? relativeWhen(later[0].contest.start, now, tz) : dayWord(later[0].contest.start, now, tz).toLowerCase();
+    parts.push(`${names(later)} ${verb(later)} ${when}`);
+  }
+  const subject = `Reminder: ${parts.join("; ")}`;
 
-  const subject =
-    (main.kind === "hour"
-      ? `⏰ Starts in ${until(c.start - now)}: ${c.name} (${p.label})`
-      : `📅 ${dayWord(c.start, now, tz)} at ${timeOf(c.start, tz)}: ${c.name} (${p.label})`) +
-    (rest.length ? ` + ${rest.length} more` : "");
+  const html = page(
+    `${ordered.map((i) => contestBlock(i, now, tz)).join("")}
+    ${signOff}
+    <p style="margin:24px 0 0;font-size:12px;color:#9ca3af">You're receiving this because you turned on contest reminders.
+      <a href="${esc(unsubscribeUrl)}" style="color:#9ca3af">Unsubscribe</a></p>`
+  );
 
-  const eyebrow = main.kind === "hour" ? "Starting soon" : "Heads up";
-  const headline = whenLine(main);
-  const subline = main.kind === "hour" ? `${timeOf(c.start, tz)}. Time to get ready.` : "Plan your day around it.";
-
-  const others = rest.length
-    ? `<div style="margin-top:28px;padding-top:20px;border-top:1px solid #ede9fe">
-        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8b87a8">Also coming up</div>
-        ${rest
-          .map(
-            (i) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px"><tr>
-          <td width="40" valign="middle">${logoTile(i.contest.platform, 40)}</td>
-          <td valign="middle" style="padding-left:12px">
-            <div style="font-size:14px;font-weight:700;color:#111827">${esc(i.contest.name)}</div>
-            <div style="margin-top:2px;font-size:13px;color:#6b7280">${esc(metaLine(i))} · ${esc(duration(i.contest.durationMin))}</div>
-          </td>
-          <td align="right" valign="middle" style="white-space:nowrap;padding-left:12px"><a href="${esc(i.contest.url)}" style="font-size:13px;font-weight:700;color:#6d28d9;text-decoration:none">Open &rarr;</a></td>
-        </tr></table>`
-          )
-          .join("")}
-      </div>`
-    : "";
-
-  const body = `
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td width="56" valign="middle">${logoTile(c.platform, 56)}</td>
-      <td valign="middle" style="padding-left:14px">
-        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${PLATFORM_COLOR[c.platform]}">${esc(p.label)}</div>
-        <div style="margin-top:3px;font-size:20px;line-height:1.3;font-weight:800;color:#111827">${esc(c.name)}</div>
-      </td>
-    </tr></table>
-    <div style="margin-top:18px">${chip(dateOf(c.start, tz))}${chip(timeOf(c.start, tz))}${chip(duration(c.durationMin))}</div>
-    <div style="margin-top:16px">${button(c.url, "Open contest →")}</div>
-    ${
-      main.kind === "day"
-        ? `<div style="margin-top:14px;text-align:center"><a href="${esc(calendarUrl(c))}" style="font-size:13px;font-weight:700;color:#6d28d9;text-decoration:none">+ Add to Google Calendar</a></div>`
-        : ""
-    }
-    <div style="margin-top:18px;text-align:center;font-size:13px;color:#6b7280">${esc(tipFor(main))} Good luck!</div>
-    ${others}`;
-
-  const footer = `You're getting this because you turned on contest reminders on
-    <a href="${SITE_URL}/contests" style="color:#8b87a8">InterviewPlanPrep</a>.<br>
-    <a href="${esc(unsubscribeUrl)}" style="color:#8b87a8">Unsubscribe</a>`;
-
-  const html = frame({
-    preheader: `${c.name} · ${p.label} · ${timeOf(c.start, tz)}`,
-    eyebrow,
-    headline,
-    subline,
-    body,
-    footer,
-  });
-
-  const textRow = (i) =>
-    `${i.contest.name} (${PLATFORMS[i.contest.platform].label}) — ${metaLine(i)} · ${duration(i.contest.durationMin)}\n${i.contest.url}`;
   const text = [
-    textRow(main),
-    main.kind === "day" ? `Add to Google Calendar: ${calendarUrl(c)}` : "",
-    rest.length ? "Also coming up:\n" + rest.map(textRow).join("\n\n") : "",
-    `${tipFor(main)} Good luck!`,
+    ...ordered.map((i) => {
+      const c = i.contest;
+      const when = i.kind === "hour" ? `starts ${startsIn(c.start - now)} (${timeOf(c.start, tz)})` : `${relativeWhen(c.start, now, tz)}`;
+      return `${c.name} (${PLATFORMS[c.platform].label}): ${when}, ${duration(c.durationMin)}\n${c.url}`;
+    }),
+    `Good luck,\nInterviewPlanPrep\n${SITE_URL}`,
     `Unsubscribe: ${unsubscribeUrl}`,
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  ].join("\n\n");
 
   return { subject, html, text };
 }
@@ -289,23 +213,13 @@ export function reminderEmail({ items, now, timeZone, unsubscribeUrl }) {
 // ── The confirmation email (for addresses nobody has verified yet) ──────────
 export function confirmEmail({ confirmUrl }) {
   const subject = "Confirm your contest reminders";
-  const logos = ["leetcode", "codeforces", "codechef"]
-    .map((k) => `<td style="padding-right:8px">${logoTile(k, 40)}</td>`)
-    .join("");
-  const body = `
-    <div style="font-size:15px;line-height:1.6;color:#374151">One click and you'll get an email a day before and an hour before each upcoming contest on</div>
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:14px"><tr>${logos}</tr></table>
-    <div style="margin-top:22px">${button(confirmUrl, "Confirm reminders")}</div>
-    <div style="margin-top:16px;text-align:center;font-size:12px;color:#8b87a8">Didn't ask for this? Ignore this email and you won't hear from us.</div>`;
-  const html = frame({
-    preheader: "One click to start getting contest reminders.",
-    eyebrow: "One last step",
-    headline: "Confirm your contest reminders",
-    subline: "LeetCode, Codeforces and CodeChef, right on time.",
-    body,
-    footer: `<a href="${SITE_URL}/contests" style="color:#8b87a8">InterviewPlanPrep</a>`,
-  });
-  const text = `Confirm this address to get contest reminders a day and an hour before each LeetCode, Codeforces and CodeChef contest:\n${confirmUrl}\n\nDidn't ask for this? Ignore this email.`;
+  const html = page(
+    `<p style="margin:0 0 12px">Please confirm you'd like an email a day before and an hour before each upcoming LeetCode, Codeforces and CodeChef contest.</p>
+    <p style="margin:0 0 12px"><a href="${esc(confirmUrl)}" style="${LINK}">Confirm reminders &rarr;</a></p>
+    <p style="margin:0;color:#6b7280">If you didn't ask for this, ignore this email and you won't hear from us.</p>
+    ${signOff.replace("Good luck,", "Thanks,")}`
+  );
+  const text = `Please confirm you'd like an email a day before and an hour before each upcoming LeetCode, Codeforces and CodeChef contest:\n${confirmUrl}\n\nIf you didn't ask for this, ignore this email.\n\nThanks,\nInterviewPlanPrep\n${SITE_URL}`;
   return { subject, html, text };
 }
 
