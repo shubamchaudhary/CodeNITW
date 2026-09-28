@@ -1,6 +1,6 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { SENT, SUBSCRIBERS, adminConfigured, db } from "./_lib/admin.mjs";
-import { fetchUpcomingContests } from "./_lib/contests.mjs";
+import { getContests } from "./_lib/contestCache.mjs";
 import { closeMail, mailConfigured, sendMail } from "./_lib/mail.mjs";
 import { dueReminders, linkUrl, reminderEmail, sampleReminders } from "./_lib/reminders.mjs";
 
@@ -31,7 +31,7 @@ async function run(request) {
 
   if (params.has("test")) {
     if (!mailConfigured()) return json({ error: "not-configured" }, 503);
-    const { contests } = await fetchUpcomingContests({ now });
+    const { contests } = await getContests(now);
     const to = process.env.GMAIL_USER;
     const unsubscribeUrl = linkUrl("unsubscribe", "test", secret); // points at no real subscriber
     const mail = reminderEmail({ items: sampleReminders(contests, now), upcoming: contests, now, timeZone: "Asia/Kolkata", unsubscribeUrl });
@@ -47,7 +47,9 @@ async function run(request) {
 
   if (!adminConfigured() || !mailConfigured()) return json({ error: "not-configured" }, 503);
 
-  const { contests, errors } = await fetchUpcomingContests({ now });
+  // The shared cache: a platform that's down right now still has its last
+  // known contests, so their reminders go out anyway.
+  const { contests, failed: unreachable } = await getContests(now);
   const due = dueReminders(contests, now);
 
   if (params.has("dryRun")) {
@@ -55,7 +57,7 @@ async function run(request) {
       now: new Date(now).toISOString(),
       upcoming: contests.length,
       due: due.map((d) => ({ key: d.key, kind: d.kind, name: d.contest.name, start: new Date(d.contest.start).toISOString() })),
-      errors,
+      unreachable,
     });
   }
 
@@ -75,7 +77,7 @@ async function run(request) {
       if (!alreadyExists(e)) throw e;
     }
   }
-  if (!claimed.length) return json({ due: due.length, sent: 0, errors });
+  if (!claimed.length) return json({ due: due.length, sent: 0, unreachable });
 
   const subscribers = (await db().collection(SUBSCRIBERS).where("confirmed", "==", true).get()).docs;
   let sent = 0;
@@ -108,7 +110,7 @@ async function run(request) {
       sentLog.doc(d.key).set({ sentAt: FieldValue.serverTimestamp(), recipients: sent, failed: failures.length }, { merge: true })
     )
   );
-  return json({ reminders: claimed.map((d) => d.key), subscribers: subscribers.length, sent, failed: failures.length, errors });
+  return json({ reminders: claimed.map((d) => d.key), subscribers: subscribers.length, sent, failed: failures.length, unreachable });
 }
 
 export const GET = run;

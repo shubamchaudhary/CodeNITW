@@ -9,17 +9,64 @@ rules_version = '2';
 // console — check they match before running `firebase deploy --only firestore`.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function signedInAs(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // The note fields: versioned, fast-forward only. Keep in step with
+    // VERSIONED in src/Data/cloudSync.js.
+    function noteFields() {
+      return ['CoreStackNotes', 'CoreStackAnnotations', 'AIStackNotes', 'AIStackAnnotations',
+              'DSAPrepNotes', 'InterviewKitNotes', 'InterviewPrepNotes'];
+    }
+
+    // Like git refusing a non-fast-forward push: a save that changes a note
+    // must name the revision it was built on (_write.base), and is refused
+    // unless that is still the note's newest revision (_rev). It may change
+    // one note only, and moves that note's revision up by exactly one. A
+    // save that changes no note mustn't touch _rev either.
+    function fastForward() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return (!changed.hasAny(noteFields()) && !changed.hasAny(['_rev']))
+        || (changed.hasAny(noteFields()) && oneNoteOnTop(changed));
+    }
+
+    function oneNoteOnTop(changed) {
+      let before = resource.data;
+      let after = request.resource.data;
+      let w = after._write;
+      let head = before.get('_rev', {}).get(w.key, {}).get(w.id, 0);
+      return w.key in noteFields()
+        && changed.intersection(noteFields().toSet()).hasOnly([w.key])
+        && after.get(w.key, {}).diff(before.get(w.key, {})).affectedKeys().hasOnly([w.id])
+        && w.base == head
+        && after._rev.diff(before.get('_rev', {})).affectedKeys().hasOnly([w.key])
+        && after._rev[w.key].diff(before.get('_rev', {}).get(w.key, {})).affectedKeys().hasOnly([w.id])
+        && after._rev[w.key][w.id] == head + 1;
+    }
+
     match /userProgress/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, create: if signedInAs(uid);
+      allow update: if signedInAs(uid) && fastForward();
 
       match /noteAssets/{assetId} {
-        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow read, delete: if signedInAs(uid);
         // A Firestore document caps at 1 MB; the app compresses well below that,
         // and this keeps an oversized write from ever being attempted.
-        allow create, update: if request.auth != null
-                              && request.auth.uid == uid
+        allow create, update: if signedInAs(uid)
                               && request.resource.data.data is string
                               && request.resource.data.data.size() < 900000;
+      }
+
+      // Version history: every saved version of each note, like commits in
+      // git. APPEND-ONLY — a revision can be created and read, never changed
+      // or deleted, so no device (and no bug) can rewrite history.
+      match /history/{target}/revisions/{revisionId} {
+        allow read: if signedInAs(uid);
+        allow create: if signedInAs(uid)
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() < 1000000;
       }
     }
 
