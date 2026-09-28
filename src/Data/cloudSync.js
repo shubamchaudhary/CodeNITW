@@ -233,11 +233,12 @@ function setHead(uid, key, id, rev) {
 // ours: this device's pending edit; theirs: the cloud's head at `theirRev`.
 // → { take: "ours" | "theirs" | "merged", value?, rebase? }
 function decideNote(key, base, ours, theirs, theirRev) {
-  if (base && base.rev !== null && base.rev === theirRev) return { take: "ours" }; // fast-forward
   if (base && base.rev !== null && theirRev < base.rev) return { take: "ours" }; // a snapshot behind us: old news
-  if (base && base.rev === null && base.copy !== undefined && same(base.copy, theirs)) {
-    return { take: "ours", rebase: true }; // the cloud hasn't moved since we started
-  }
+  // Has the cloud's copy moved since this edit started? The content decides
+  // when it's known (a save from an older version of the app changes the
+  // text without moving the revision); otherwise the revision does.
+  const unmoved = base && (base.copy !== undefined ? same(base.copy, theirs) : base.rev !== null && base.rev === theirRev);
+  if (unmoved) return { take: "ours", rebase: base.rev !== theirRev }; // fast-forward
   if (same(ours, theirs)) return { take: "theirs" };
   // The head moved while we were editing: try to keep both.
   if (base && base.copy !== undefined) {
