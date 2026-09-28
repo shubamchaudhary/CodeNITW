@@ -13,6 +13,11 @@ on:
   schedule:
     - cron: "*/10 * * * *"
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Send a sample reminder to the site's own Gmail instead"
+        type: boolean
+        default: false
 
 jobs:
   remind:
@@ -23,11 +28,12 @@ jobs:
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           SITE_URL: https://interviewplanprep.vercel.app
+          QUERY: ${{ inputs.test && '?test=1' || '' }}
         run: |
           if [ -z "$CRON_SECRET" ]; then
             echo "The CRON_SECRET repository secret isn't set yet; skipping."
             exit 0
           fi
-          curl -fsS --max-time 90 -X POST \
+          curl -sS --fail-with-body --max-time 90 -X POST \
             -H "Authorization: Bearer $CRON_SECRET" \
-            "$SITE_URL/api/contest-reminders"
+            "$SITE_URL/api/contest-reminders$QUERY"
