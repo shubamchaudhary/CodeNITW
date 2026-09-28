@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OwnerRoute from "./components/OwnerRoute";
 import StackHome from "./pages/Notes/StackHome";
@@ -14,7 +14,7 @@ import Planning from "./pages/Planning/Planning";
 import Contests from "./pages/Contests/Contests";
 import AuthPage from "./pages/SignInUp/AuthPage";
 import AuthPrompt from "./components/AuthPrompt";
-import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
+import { startCloudSync, stopCloudSync, onSyncNotice } from "./Data/cloudSync";
 import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
 
@@ -41,6 +41,16 @@ function App() {
     });
     return unsub;
   }, []);
+
+  // A note edited on two devices at once: say what happened to it.
+  useEffect(
+    () =>
+      onSyncNotice((n) => {
+        if (n.type === "merged") toast.info("A note was also edited on another device. Both sets of changes were merged.");
+        else toast.warn("A note changed on another device while you were editing. The newer version was kept; yours is saved in the note's History.", { autoClose: 10000 });
+      }),
+    []
+  );
 
   return (
     <>
