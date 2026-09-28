@@ -1,8 +1,9 @@
 import React from "react";
 
 // The site's name and mark, in one place so the header and the sign-in page
-// always match. The name is the domain (interviewplanprep.vercel.app); the
-// mark is the favicon's prompt glyph, flat.
+// always match. The name is the domain (interviewplanprep.vercel.app). The
+// favicon (public/favicon.svg, and the PNGs/ICO rendered from it) is this same
+// mark — change them together.
 export const SITE_NAME = "InterviewPlanPrep";
 
 export default function Brand({ size = "md" }) {
