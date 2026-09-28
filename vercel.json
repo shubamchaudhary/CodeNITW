@@ -1,5 +1,393 @@
 {
   "functions": {
-    "api/contest-reminders.mjs": { "maxDuration": 60 }
-  }
+    "api/contest-reminders.mjs": {
+      "maxDuration": 60
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 0 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 0 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 0 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 1 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 1 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 1 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 2 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 2 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 3 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 3 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 4 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 4 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 5 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 5 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 5 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 6 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 6 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 7 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 7 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 7 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 8 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 8 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 8 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 9 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 9 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 9 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 10 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 10 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 10 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 11 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 11 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 11 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 12 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 12 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 12 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 13 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 13 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 13 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 14 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 14 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 14 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 15 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 15 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 15 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 16 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 16 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 16 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 17 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 17 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 17 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 18 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 18 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 18 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 19 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 19 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 19 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 20 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 20 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 20 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 20 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 21 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 21 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 21 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 22 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 22 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 22 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "15 23 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "30 23 * * *"
+    },
+    {
+      "path": "/api/contest-reminders",
+      "schedule": "45 23 * * *"
+    }
+  ]
 }

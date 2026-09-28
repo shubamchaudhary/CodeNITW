@@ -3,7 +3,6 @@
 // SAME completion + notes stores as the prep pages, so ticking a planned card or
 // writing notes there stays in sync with the real page (and vice-versa).
 
-import { jobHuntPlan } from "./JobHuntPlan";
 import { DSA_PROBLEMS } from "./DSAPrep";
 import { CORE_STACK_TOPICS } from "./CoreStack";
 import { AI_STACK_TOPICS } from "./AIStack";
@@ -174,22 +173,11 @@ export function applyRemote(data) {
   });
 }
 
-// ─── Interview Prep cards (DSA decoupled — topics only) ───────────────────────
-// Each plan card keeps AI/HLD/LLD categories; the legacy "DSA" tag and the
-// per-card daily-DSA coupling are dropped so the page stays topic-oriented.
-export const INTERVIEW_CARDS = jobHuntPlan.map((card) => ({
-  ...card,
-  categories: card.categories.filter((c) => c !== "DSA"),
-}));
-
-const IP_BY_ID = Object.fromEntries(INTERVIEW_CARDS.map((c) => [c.id, c]));
+// (The retired Topics page's cards live in ./interviewCards.)
 const DSA_BY_ID = Object.fromEntries(DSA_PROBLEMS.map((p) => [p.id, p]));
 const CS_BY_ID = Object.fromEntries(CORE_STACK_TOPICS.map((t) => [t.id, t]));
 const AI_BY_ID = Object.fromEntries(AI_STACK_TOPICS.map((t) => [t.id, t]));
 
-export function getInterviewCard(id) {
-  return IP_BY_ID[id] || null;
-}
 export function getDsaProblem(id) {
   return DSA_BY_ID[id] || null;
 }
