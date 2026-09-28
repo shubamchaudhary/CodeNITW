@@ -9,22 +9,33 @@
 //   • Every local change is recorded, per entry, in a PENDING JOURNAL that is
 //     itself kept in localStorage — so it survives a refresh, a crash or a
 //     closed tab, and every tab of the browser sees the same list.
-//   • A push sends only the pending entries (a delete is sent as a delete) and
-//     clears an entry once Firestore has acknowledged a push taken after its
-//     last change. A change made while a push is in flight stays pending and
-//     goes in the next push.
-//   • Data arriving from Firestore is applied UNDER the journal: every pending
-//     entry keeps its local value. A slow acknowledgement, a refresh, or
-//     another tab can therefore never roll back an edit that hasn't reached
-//     the cloud yet.
+//   • Nothing is pushed until this session has heard from the server.
 //
-// NOTE: lock this down in the Firebase console with a security rule so only the
-// owner's uid can read/write its document, e.g.
-//   match /userProgress/{uid} { allow read, write: if request.auth.uid == uid; }
+// NOTES (note text and personal notes) are versioned like git, fast-forward
+// only. Each note has a revision number in the cloud (`_rev`). An edit
+// remembers the revision it started from (its base); saving it names that
+// base, and the Firestore rules refuse the save unless the base is still the
+// newest revision. So an edit made on an out-of-date copy — a phone that
+// missed the laptop's change — can never land on top of a newer version.
+// When that happens, the device does what git does:
+//   • it fetches the newer version and merges both edits line by line (a
+//     three-way merge against the base); if they touched different parts,
+//     both are kept and saved as the next revision;
+//   • if both changed the same lines, the newer version stays, and this
+//     device's edit is saved to the note's history as a conflicting copy.
+//
+// EVERYTHING ELSE (ticks, plans, the job tracker…) is decided per entry by
+// edit time: the newer edit wins; an old unsent edit loses to a newer saved
+// one; and if the cloud goes back in time for an entry, a device holding the
+// newer copy puts it back.
+//
+// See firestore.rules for the server side of both.
 
 import { doc, onSnapshot, setDoc, getDoc, deleteField, FieldPath } from "firebase/firestore";
 import { db } from "../firebase";
 import { KEYS, loadJSON, applyRemote, subscribe, setActiveUid, changedIds } from "./planStore";
+import { merge3, mergeById } from "./merge3";
+import { recordNotKept, recordNow } from "./noteHistory";
 
 const SYNC_KEYS = [
   KEYS.IP_COMPLETED,
@@ -49,11 +60,32 @@ const SYNC_KEYS = [
   KEYS.JOB_TRACKER,
 ];
 const SYNCED = new Set(SYNC_KEYS);
+// Versioned, fast-forward-only keys. Keep in step with noteFields() in
+// firestore.rules.
+export const VERSIONED = new Set([
+  KEYS.CS_NOTES,
+  KEYS.CS_ANNOTATIONS,
+  KEYS.AI_NOTES,
+  KEYS.AI_ANNOTATIONS,
+  KEYS.DSA_NOTES,
+  KEYS.IK_NOTES,
+  KEYS.IP_NOTES,
+]);
+const TEXT_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
 const WHOLE = "*"; // journal marker: the whole key changed, not single entries
+const META = "_meta"; // cloud: { key: { entryId: editedAtMs } } for unversioned keys
+const REV = "_rev"; // cloud: { key: { entryId: revision } } — each note's head
+const WRITE = "_write"; // cloud: { key, id, base } — what a note save changed, on top of what
+// Device clocks drift a little; "the cloud went back in time" only counts when
+// it went back by more than this, so two slightly-off clocks can't keep
+// undoing each other.
+const SKEW_MS = 5 * 60 * 1000;
 
 let currentUid = null;
 let unsubscribeSnapshot = null;
 let applyingRemote = false;
+let serverReady = false; // this session has reconciled with the server
+let sessionStartedAt = 0;
 let pushTimer = null;
 let retryTimer = null;
 let retryDelay = 0;
@@ -68,8 +100,9 @@ function userDocRef(uid) {
 }
 
 const isMap = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
 
-// ─── Sync status, for the UI ─────────────────────────────────────────────────
+// ─── Sync status and notices, for the UI ─────────────────────────────────────
 // synced   everything local is in the cloud
 // pending  local changes waiting for the debounce / next push
 // syncing  a push is on its way
@@ -97,86 +130,224 @@ export function subscribeSyncStatus(fn) {
   return () => statusListeners.delete(fn);
 }
 
+// { type: "merged" | "conflict", key, id } — a note that was edited on two
+// devices at once, and what happened to it.
+const noticeListeners = new Set();
+export function onSyncNotice(fn) {
+  noticeListeners.add(fn);
+  return () => noticeListeners.delete(fn);
+}
+function notice(n) {
+  noticeListeners.forEach((fn) => {
+    try {
+      fn(n);
+    } catch (_) {}
+  });
+}
+
 function waitingState() {
   return typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "syncing";
 }
 
-// ─── The pending journal ─────────────────────────────────────────────────────
-// { [key]: { [entryId]: changedAtMs } }, per account, in localStorage.
-function journalKey(uid) {
-  return `sync:pending:${uid}`;
-}
-
-function loadJournal(uid) {
+// ─── Small persisted maps ────────────────────────────────────────────────────
+// journal: { key: { id: editedAtMs } }      changes not yet in the cloud
+// meta:    { key: { id: editedAtMs } }      when this copy of an entry was edited
+// heads:   { key: { id: revision } }        the note revision this copy matches
+// bases:   { key: { id: { rev, copy } } }   for a note being edited: the
+//                                           revision and text it started from
+function readMap(name) {
   try {
-    return JSON.parse(localStorage.getItem(journalKey(uid))) || {};
+    return JSON.parse(localStorage.getItem(name)) || {};
   } catch (_) {
     return {};
   }
 }
-
-function saveJournal(uid, journal) {
+function writeMap(name, value) {
   try {
-    if (Object.keys(journal).length) localStorage.setItem(journalKey(uid), JSON.stringify(journal));
-    else localStorage.removeItem(journalKey(uid));
+    const empty = !Object.keys(value).some((k) => !isMap(value[k]) || Object.keys(value[k]).length);
+    if (!empty) localStorage.setItem(name, JSON.stringify(value));
+    else localStorage.removeItem(name);
   } catch (_) {}
 }
+const store = (suffix) => ({
+  load: (uid) => readMap(`sync:${suffix}:${uid}`),
+  save: (uid, v) => writeMap(`sync:${suffix}:${uid}`, v),
+});
+const journalStore = store("pending");
+const metaStore = store("meta");
+const headStore = store("heads");
+const baseStore = store("base");
+const loadJournal = journalStore.load;
+const saveJournal = journalStore.save;
 
 function hasPending(uid) {
-  return Object.keys(loadJournal(uid)).length > 0;
+  const j = loadJournal(uid);
+  return Object.keys(j).some((k) => Object.keys(j[k] || {}).length);
 }
 
-function recordPending(uid, key, ids) {
+function recordPending(uid, key, ids, { at = Date.now(), prev, baseRev } = {}) {
   const journal = loadJournal(uid);
+  const meta = metaStore.load(uid);
   const entries = journal[key] || (journal[key] = {});
-  const now = Date.now();
-  for (const id of ids || [WHOLE]) entries[id] = now;
-  saveJournal(uid, journal);
-}
-
-// After an acknowledged push: forget every entry whose last change is covered
-// by it. Anything changed after the push was taken stays pending.
-function clearAcknowledged(uid, takenAt) {
-  const journal = loadJournal(uid);
-  for (const key of Object.keys(journal)) {
-    for (const [id, at] of Object.entries(journal[key])) if (at <= takenAt) delete journal[key][id];
-    if (!Object.keys(journal[key]).length) delete journal[key];
+  const times = meta[key] || (meta[key] = {});
+  const versioned = VERSIONED.has(key) && ids;
+  const heads = versioned ? headStore.load(uid) : null;
+  const bases = versioned ? baseStore.load(uid) : null;
+  for (const id of ids || [WHOLE]) {
+    // A note edit starting now remembers what it started from.
+    if (versioned && entries[id] === undefined && !(bases[key] && bases[key][id])) {
+      (bases[key] || (bases[key] = {}))[id] = {
+        rev: baseRev !== undefined ? baseRev : heads[key]?.[id] ?? null,
+        copy: prev === undefined ? undefined : prev[id] ?? null,
+      };
+    }
+    entries[id] = at;
+    times[id] = at;
   }
   saveJournal(uid, journal);
+  metaStore.save(uid, meta);
+  if (versioned) baseStore.save(uid, bases);
+}
+
+function dropPending(uid, key, id) {
+  const journal = loadJournal(uid);
+  if (journal[key]) {
+    delete journal[key][id];
+    if (!Object.keys(journal[key]).length) delete journal[key];
+    saveJournal(uid, journal);
+  }
+  const bases = baseStore.load(uid);
+  if (bases[key]) {
+    delete bases[key][id];
+    baseStore.save(uid, bases);
+  }
+}
+
+function setHead(uid, key, id, rev) {
+  const heads = headStore.load(uid);
+  (heads[key] || (heads[key] = {}))[id] = rev;
+  headStore.save(uid, heads);
+}
+
+// ─── Deciding a note that both sides have touched ────────────────────────────
+// ours: this device's pending edit; theirs: the cloud's head at `theirRev`.
+// → { take: "ours" | "theirs" | "merged", value?, rebase? }
+function decideNote(key, base, ours, theirs, theirRev) {
+  if (base && base.rev !== null && base.rev === theirRev) return { take: "ours" }; // fast-forward
+  if (base && base.rev !== null && theirRev < base.rev) return { take: "ours" }; // a snapshot behind us: old news
+  if (base && base.rev === null && base.copy !== undefined && same(base.copy, theirs)) {
+    return { take: "ours", rebase: true }; // the cloud hasn't moved since we started
+  }
+  if (same(ours, theirs)) return { take: "theirs" };
+  // The head moved while we were editing: try to keep both.
+  if (base && base.copy !== undefined) {
+    const m = TEXT_KEYS.has(key)
+      ? merge3(base.copy ?? "", ours ?? "", theirs ?? "")
+      : mergeById(base.copy, ours, theirs);
+    if (m.ok) return { take: "merged", value: TEXT_KEYS.has(key) ? m.text : m.value };
+  }
+  return { take: "conflict" };
 }
 
 // ─── Push ────────────────────────────────────────────────────────────────────
-// Only the pending entries, each written (or deleted) at its own field path, so
-// a push can't overwrite entries this browser never touched — and deletions
-// actually reach the cloud.
 async function doPush(uid) {
   const journal = loadJournal(uid);
-  const keys = Object.keys(journal).filter((k) => SYNCED.has(k));
+  const keys = Object.keys(journal).filter((k) => SYNCED.has(k) && Object.keys(journal[k]).length);
   if (!keys.length) return;
 
-  const takenAt = Date.now();
-  const data = { updatedAt: takenAt };
-  const fields = [new FieldPath("updatedAt")];
-  for (const key of keys) {
-    const local = loadJSON(key, {});
-    const ids = Object.keys(journal[key]);
-    if (ids.includes(WHOLE) || !isMap(local)) {
-      data[key] = local;
-      fields.push(new FieldPath(key));
-      continue;
+  // 1. Unversioned keys: one write, each entry with its edit time.
+  const plain = keys.filter((k) => !VERSIONED.has(k));
+  if (plain.length) {
+    const takenAt = Date.now();
+    const data = { updatedAt: takenAt, [META]: {} };
+    const fields = [new FieldPath("updatedAt")];
+    const sent = {};
+    for (const key of plain) {
+      const local = loadJSON(key, {});
+      const pending = journal[key];
+      sent[key] = { ...pending };
+      data[META][key] = {};
+      const ids = Object.keys(pending);
+      if (ids.includes(WHOLE) || !isMap(local)) {
+        data[key] = local;
+        fields.push(new FieldPath(key));
+        data[META][key][WHOLE] = pending[WHOLE] ?? Math.max(...Object.values(pending));
+        fields.push(new FieldPath(META, key, WHOLE));
+        continue;
+      }
+      data[key] = {};
+      for (const id of ids) {
+        data[key][id] = local[id] === undefined ? deleteField() : local[id];
+        fields.push(new FieldPath(key, id));
+        data[META][key][id] = pending[id]; // kept after a delete: a tombstone
+        fields.push(new FieldPath(META, key, id));
+      }
     }
-    data[key] = {};
-    for (const id of ids) {
-      data[key][id] = local[id] === undefined ? deleteField() : local[id];
-      fields.push(new FieldPath(key, id));
+    await setDoc(userDocRef(uid), data, { mergeFields: fields });
+    if (currentUid !== uid) return;
+    const j = loadJournal(uid);
+    for (const key of plain) {
+      for (const [id, at] of Object.entries(sent[key])) if (j[key] && j[key][id] === at) delete j[key][id];
+      if (j[key] && !Object.keys(j[key]).length) delete j[key];
     }
+    saveJournal(uid, j);
   }
 
-  // Resolves when Firestore has acknowledged the write. Offline, the write is
-  // queued in IndexedDB and this waits — the journal keeps the entries pending
-  // until then, whatever happens to this tab.
-  await setDoc(userDocRef(uid), data, { mergeFields: fields });
-  if (currentUid === uid) clearAcknowledged(uid, takenAt);
+  // 2. Notes: one write per note, naming the revision it's based on. The
+  //    rules refuse it unless that revision is still the head.
+  for (const key of keys.filter((k) => VERSIONED.has(k))) {
+    for (const id of Object.keys(journal[key])) {
+      if (currentUid !== uid) return;
+      await pushNote(uid, key, id);
+    }
+  }
+}
+
+async function pushNote(uid, key, id) {
+  const journal = loadJournal(uid);
+  const at = journal[key]?.[id];
+  if (at === undefined) return;
+  let base = baseStore.load(uid)[key]?.[id];
+  if (!base || base.rev === null) {
+    // No known base (a brand-new note, or an edit from before this device
+    // knew the cloud's revisions): let the server's current copy decide.
+    const snap = await getDoc(userDocRef(uid));
+    if (currentUid !== uid) return;
+    settleNotes(uid, snap.exists() ? snap.data() || {} : {}, [[key, id]]);
+    base = baseStore.load(uid)[key]?.[id];
+    if (!base || base.rev === null || loadJournal(uid)[key]?.[id] === undefined) return;
+  }
+
+  const value = loadJSON(key, {})[id];
+  const rev = base.rev + 1;
+  const data = {
+    updatedAt: Date.now(),
+    [key]: { [id]: value === undefined ? deleteField() : value },
+    [REV]: { [key]: { [id]: rev } },
+    [WRITE]: { key, id, base: base.rev },
+  };
+  try {
+    await setDoc(userDocRef(uid), data, {
+      mergeFields: [new FieldPath("updatedAt"), new FieldPath(key, id), new FieldPath(REV, key, id), new FieldPath(WRITE)],
+    });
+  } catch (err) {
+    if (err?.code !== "permission-denied") throw err;
+    // Refused: the head moved on. Fetch it and decide, exactly as a snapshot would.
+    const snap = await getDoc(userDocRef(uid));
+    if (currentUid === uid && snap.exists()) settleNotes(uid, snap.data() || {}, [[key, id]]);
+    return;
+  }
+  if (currentUid !== uid) return;
+  setHead(uid, key, id, rev);
+  const now = loadJournal(uid)[key]?.[id];
+  if (now === at) {
+    dropPending(uid, key, id);
+  } else {
+    // Edited again while this was on its way: the next save builds on it.
+    const bases = baseStore.load(uid);
+    (bases[key] || (bases[key] = {}))[id] = { rev, copy: value ?? null };
+    baseStore.save(uid, bases);
+  }
 }
 
 async function pushNow() {
@@ -189,6 +360,12 @@ async function pushNow() {
   if (pushing) return; // the in-flight push re-checks the journal when it lands
   if (!hasPending(uid)) {
     setStatus("synced");
+    return;
+  }
+  // Not before this session has compared notes with the server: the first
+  // server snapshot schedules the push once it has reconciled.
+  if (!serverReady) {
+    setStatus(typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "pending");
     return;
   }
   if (retryTimer) {
@@ -239,56 +416,203 @@ function flushPending() {
   if (currentUid && hasPending(currentUid)) pushNow();
 }
 
-// ─── Pull ────────────────────────────────────────────────────────────────────
-// Cloud data with every pending local entry laid back on top.
-function mergeUnderPending(uid, data) {
+// ─── Pull: reconcile the cloud with this device ──────────────────────────────
+// Notes: pending edits are decided against the cloud's head (see decideNote);
+// everything not pending simply takes the cloud's version and its revision.
+// `only` limits it to some [key, id] pairs (after a refused save).
+function settleNotes(uid, data, only = null) {
   const journal = loadJournal(uid);
+  const bases = baseStore.load(uid);
+  const heads = headStore.load(uid);
+  const remoteRevs = isMap(data[REV]) ? data[REV] : {};
   const out = {};
+  const after = []; // history + notices, once the store has the result
+
+  for (const key of VERSIONED) {
+    const wanted = only ? only.filter(([k]) => k === key).map(([, id]) => id) : null;
+    if (only && !wanted.length) continue;
+    const remote = isMap(data[key]) ? data[key] : {};
+    const local = loadJSON(key, undefined);
+    const localMap = isMap(local) ? local : {};
+    const revs = isMap(remoteRevs[key]) ? remoteRevs[key] : {};
+    const pending = journal[key] || {};
+    const keyHeads = heads[key] || (heads[key] = {});
+    // A full snapshot starts from the cloud's map; a single refused save
+    // changes only its own entry.
+    const result = only ? { ...localMap } : { ...remote };
+    const put = (id, v) => {
+      if (v === undefined) delete result[id];
+      else result[id] = v;
+    };
+    const ids = wanted || [...new Set([...Object.keys(remote), ...Object.keys(localMap), ...Object.keys(pending)])];
+
+    for (const id of ids) {
+      const theirRev = Number(revs[id]) || 0;
+      const theirs = remote[id];
+      if (pending[id] === undefined) {
+        if ((keyHeads[id] ?? -1) > theirRev) {
+          put(id, localMap[id]); // this copy is ahead of the snapshot: keep it
+          continue;
+        }
+        keyHeads[id] = theirRev;
+        put(id, theirs);
+        continue;
+      }
+      const ours = localMap[id];
+      const base = bases[key]?.[id];
+      const d = decideNote(key, base, ours, theirs, theirRev);
+      if (d.take === "ours") {
+        if (d.rebase) bases[key][id] = { ...base, rev: theirRev };
+        put(id, ours);
+      } else if (d.take === "merged") {
+        (bases[key] || (bases[key] = {}))[id] = { rev: theirRev, copy: theirs ?? null };
+        put(id, d.value);
+        after.push({ type: "merged", key, id });
+      } else {
+        // "theirs" (already identical) or "conflict": the cloud's head stands.
+        if (d.take === "conflict") after.push({ type: "conflict", key, id, ours, at: pending[id] });
+        delete pending[id];
+        if (bases[key]) delete bases[key][id];
+        keyHeads[id] = theirRev;
+        put(id, theirs);
+      }
+    }
+    if (!Object.keys(pending).length) delete journal[key];
+    else journal[key] = pending;
+    out[key] = result;
+  }
+
+  saveJournal(uid, journal);
+  baseStore.save(uid, bases);
+  headStore.save(uid, heads);
+
+  if (only) {
+    applyingRemote = true;
+    try {
+      applyRemote(out);
+    } finally {
+      applyingRemote = false;
+    }
+    finishNotes(after);
+    return null;
+  }
+  return { data: out, after };
+}
+
+// History and notices for notes decided above, once the store holds the result.
+function finishNotes(after) {
+  for (const a of after) {
+    const notesKey = TEXT_KEYS.has(a.key) ? a.key : a.key === KEYS.CS_ANNOTATIONS ? KEYS.CS_NOTES : KEYS.AI_NOTES;
+    if (a.type === "conflict") recordNotKept(a.key, a.id, a.ours, a.at, "conflict");
+    else recordNow(notesKey, a.id, "merge");
+    notice({ type: a.type, key: a.key, id: a.id });
+  }
+}
+
+// Everything else: for every entry both sides have an opinion on, the newer
+// edit wins.
+//   • An entry the cloud has no edit time for yet (saved before edit times
+//     existed) counts as edited when the document was last pushed — when the
+//     local edit is from before this session (an old unsent edit, the risky
+//     kind), which then loses to it. An edit made during this session wins.
+//   • A pending local edit that's newer stays, and is pushed.
+//   • A pending local edit that's older is dropped.
+//   • An entry the cloud has moved BACK in time (older than what this device
+//     already had) is put back: this device's newer copy is kept and pushed.
+export function reconcile(uid, data, since = sessionStartedAt) {
+  const journal = loadJournal(uid);
+  const meta = metaStore.load(uid);
+  const remoteMeta = isMap(data[META]) ? data[META] : {};
+  const docAt = Number(data.updatedAt) || 0;
+  const out = {};
+
   for (const key of SYNC_KEYS) {
-    if (data[key] === undefined) continue;
+    if (VERSIONED.has(key) || data[key] === undefined) continue;
+    const remote = data[key];
+    const local = loadJSON(key, undefined);
+    const rMeta = isMap(remoteMeta[key]) ? remoteMeta[key] : {};
+    const lMeta = meta[key] || (meta[key] = {});
     const pending = journal[key];
-    if (!pending) {
-      out[key] = data[key];
+    const remoteAt = (id, localAt) => {
+      const m = rMeta[id] ?? rMeta[WHOLE];
+      if (m !== undefined) return Number(m) || 0;
+      return localAt >= since ? 0 : docAt;
+    };
+    const wentBack = (id) => rMeta[id] !== undefined && (lMeta[id] || 0) - rMeta[id] > SKEW_MS;
+
+    // A key that isn't a map (or changed as a whole) is decided as one entry.
+    if (!isMap(remote) || !isMap(local) || (pending && pending[WHOLE])) {
+      if (pending) {
+        const localAt = pending[WHOLE] ?? Math.max(...Object.values(pending));
+        if (localAt > remoteAt(WHOLE, localAt)) continue; // ours is newer: keep it, push it
+        delete journal[key];
+      } else if (wentBack(WHOLE) && !same(local, remote)) {
+        journal[key] = { [WHOLE]: lMeta[WHOLE] }; // the cloud went back: restore ours
+        continue;
+      }
+      if (rMeta[WHOLE] !== undefined) lMeta[WHOLE] = rMeta[WHOLE];
+      out[key] = remote;
       continue;
     }
-    if (pending[WHOLE] || !isMap(data[key])) continue; // local owns the whole key until pushed
-    const local = loadJSON(key, {});
-    const merged = { ...data[key] };
-    for (const id of Object.keys(pending)) {
-      if (local[id] === undefined) delete merged[id];
-      else merged[id] = local[id];
+
+    const merged = { ...remote };
+    const ids = new Set([...Object.keys(remote), ...Object.keys(local), ...Object.keys(pending || {})]);
+    for (const id of ids) {
+      if (pending && pending[id] !== undefined) {
+        const localAt = pending[id];
+        if (localAt > remoteAt(id, localAt)) {
+          if (local[id] === undefined) delete merged[id];
+          else merged[id] = local[id];
+          continue;
+        }
+        delete pending[id];
+      } else if (wentBack(id) && !same(local[id], remote[id])) {
+        // The cloud went back in time for this entry: keep ours and push it.
+        if (local[id] === undefined) delete merged[id];
+        else merged[id] = local[id];
+        (journal[key] || (journal[key] = {}))[id] = lMeta[id];
+        continue;
+      }
+      if (rMeta[id] !== undefined) lMeta[id] = rMeta[id];
     }
+    if (pending && !Object.keys(pending).length) delete journal[key];
     out[key] = merged;
   }
-  return out;
+
+  saveJournal(uid, journal);
+  metaStore.save(uid, meta);
+  const notes = settleNotes(uid, data);
+  return { data: { ...out, ...notes.data }, after: notes.after };
 }
 
 // One-time upgrade from the old document-level sync, which had no journal:
 // changes it never managed to push are only in localStorage. The old rule was
 // "the cloud wins only if its revision is newer than the last one this browser
 // synced", so honour that once — if the cloud isn't newer, every local entry
-// that differs from it becomes pending instead of being overwritten.
+// that differs from it becomes pending, dated to that last sync (not to now,
+// which would make old data look fresh). A note recorded this way has no known
+// base, so it only lands if the cloud's copy is unchanged.
 function migrateOnce(uid, data) {
   const marker = `sync:v2:${uid}`;
   if (localStorage.getItem(marker)) return;
   const lastRev = Number(localStorage.getItem(`sync:rev:${uid}`)) || 0;
   const remoteRev = Number(data.updatedAt) || 0;
-  if (remoteRev <= lastRev) {
+  if (lastRev && remoteRev <= lastRev) {
     for (const key of SYNC_KEYS) {
       const local = loadJSON(key, undefined);
       if (local === undefined) continue;
       const remote = data[key];
       if (remote === undefined) {
-        recordPending(uid, key, null);
+        recordPending(uid, key, VERSIONED.has(key) && isMap(local) ? Object.keys(local) : null, { at: lastRev });
         continue;
       }
       const ids = changedIds(remote, local);
       if (ids === null) {
-        if (JSON.stringify(remote) !== JSON.stringify(local)) recordPending(uid, key, null);
+        if (!same(remote, local)) recordPending(uid, key, null, { at: lastRev });
       } else {
         // Only entries this browser has; an entry missing here is not a delete.
         const differing = ids.filter((id) => local[id] !== undefined);
-        if (differing.length) recordPending(uid, key, differing);
+        if (differing.length) recordPending(uid, key, differing, { at: lastRev });
       }
     }
   }
@@ -310,7 +634,7 @@ function attachListeners() {
     // Only a real local save is ours to push — not cloud data, another tab's
     // write, an account switch, or a guest's refused write.
     if (info.remote || info.external || info.account || info.blocked) return;
-    recordPending(currentUid, key, info.ids);
+    recordPending(currentUid, key, info.ids, { prev: info.prev || {} });
     schedulePush();
   });
 
@@ -337,6 +661,8 @@ export function startCloudSync(uid) {
   if (currentUid === uid && unsubscribeSnapshot) return;
   stopCloudSync();
   currentUid = uid;
+  serverReady = false;
+  sessionStartedAt = Date.now();
   // Scope all local reads/writes to this account before touching storage.
   setActiveUid(uid);
 
@@ -345,10 +671,19 @@ export function startCloudSync(uid) {
     { includeMetadataChanges: true },
     (snap) => {
       if (currentUid !== uid) return;
+      const fromServer = !snap.metadata.fromCache;
 
       if (!snap.exists()) {
+        // A cached "doesn't exist" proves nothing; wait for the server.
+        if (!fromServer) return;
         // Fresh account → seed the cloud from whatever this account has locally.
-        for (const key of SYNC_KEYS) if (loadJSON(key, undefined) !== undefined) recordPending(uid, key, null);
+        for (const key of SYNC_KEYS) {
+          const local = loadJSON(key, undefined);
+          if (local === undefined) continue;
+          if (VERSIONED.has(key) && isMap(local)) recordPending(uid, key, Object.keys(local), { prev: {}, baseRev: 0 });
+          else recordPending(uid, key, null);
+        }
+        serverReady = true;
         schedulePush(0);
         return;
       }
@@ -357,23 +692,25 @@ export function startCloudSync(uid) {
       if (snap.metadata.hasPendingWrites) return;
 
       const data = snap.data() || {};
-      migrateOnce(uid, data);
+      if (fromServer) migrateOnce(uid, data);
+      const { data: merged, after } = reconcile(uid, data);
       applyingRemote = true;
       try {
-        applyRemote(mergeUnderPending(uid, data));
+        applyRemote(merged);
       } finally {
         applyingRemote = false;
       }
-      if (hasPending(uid)) schedulePush();
+      finishNotes(after);
+
+      if (fromServer) serverReady = true;
+      if (hasPending(uid)) schedulePush(serverReady ? PUSH_DEBOUNCE_MS : 0);
+      else if (serverReady) setStatus("synced");
     },
     (err) => {
       console.error("[cloudSync] listener failed:", err);
       setStatus("error", err?.code || "");
     }
   );
-
-  // Anything a previous visit couldn't push goes out now.
-  if (hasPending(uid)) schedulePush(0);
 }
 
 export function stopCloudSync() {
@@ -393,6 +730,7 @@ export function stopCloudSync() {
     retryTimer = null;
   }
   retryDelay = 0;
+  serverReady = false;
   currentUid = null;
   setActiveUid(null);
 }

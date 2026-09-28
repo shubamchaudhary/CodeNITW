@@ -92,7 +92,8 @@ function refuseGuestWrite(key) {
 
 // ─── Low-level JSON storage with a change event for live cross-page sync ──────
 // Listeners get (key, info). info says where the change came from:
-//   { ids }      a local save — ids are the entries that changed (null = all)
+//   { ids, prev } a local save — ids are the entries that changed (null = all);
+//                prev is the stored value before it
 //   { remote }   the cloud-sync layer applied data from Firestore
 //   { external } another tab of this browser wrote it (same localStorage)
 //   { account }  the signed-in account changed — re-read everything
@@ -151,7 +152,8 @@ export function saveJSON(key, value) {
   const ids = changedIds(prev === undefined && isMap(value) ? {} : prev, value);
   if (ids && !ids.length) return; // nothing changed — don't wake sync or the UI
   localStorage.setItem(nsKey(key), JSON.stringify(value));
-  emit(key, { ids });
+  // prev lets version history keep what an entry was before this save.
+  emit(key, { ids, prev });
 }
 
 // Write a batch of remote (cloud) values into local storage and notify the UI.

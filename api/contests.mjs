@@ -1,14 +1,15 @@
-import { fetchUpcomingContests } from "./_lib/contests.mjs";
+import { getContests } from "./_lib/contestCache.mjs";
 
 // GET /api/contests — upcoming LeetCode, Codeforces and CodeChef contests.
-// Vercel's edge caches a good answer for 15 minutes, so the page stays fast
-// and the sources (and clist's 10-requests-a-minute limit) are left alone.
+//
+// The 10-minute cache (see _lib/contestCache.mjs) decides when the platforms
+// are actually asked. Vercel's edge keeps each answer for a minute on top of
+// that, so most visits never even reach this function.
 export async function GET() {
-  const { contests, errors, fetchedAt } = await fetchUpcomingContests();
-  const failedPlatforms = Object.keys(errors).filter((k) => k !== "clist");
-  const healthy = failedPlatforms.length === 0;
+  const { contests, failed, fetchedAt } = await getContests();
+  const cacheable = contests.length > 0 || failed.length === 0;
   return Response.json(
-    { contests, failed: failedPlatforms, fetchedAt },
-    { headers: { "Cache-Control": healthy ? "public, s-maxage=900, stale-while-revalidate=3600" : "no-store" } }
+    { contests, failed, fetchedAt },
+    { headers: { "Cache-Control": cacheable ? "public, s-maxage=60, stale-while-revalidate=600" : "no-store" } }
   );
 }
