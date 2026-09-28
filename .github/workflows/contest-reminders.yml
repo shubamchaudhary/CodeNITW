@@ -1,9 +1,10 @@
 name: Contest reminders
 
-# Calls the site's reminder job every 10 minutes. The job decides what is due
-# (a day before and an hour before each LeetCode, Codeforces and CodeChef
-# contest) and never sends the same reminder twice, so a late or doubled run
-# is harmless. Vercel's free plan only allows daily cron jobs, hence this.
+# A BACKUP trigger for the site's reminder job. The main trigger is Vercel
+# Cron (see vercel.json): GitHub's schedule is best-effort and can skip runs
+# for hours. The job decides what is due (a day before and an hour before
+# each LeetCode, Codeforces and CodeChef contest) and never emails anyone the
+# same reminder twice, so extra or overlapping runs are harmless.
 #
 # Needs the repository secret CRON_SECRET (the same value as in Vercel).
 # GitHub pauses scheduled workflows after 60 days without a commit to the
@@ -31,8 +32,8 @@ jobs:
           QUERY: ${{ inputs.test && '?test=1' || '' }}
         run: |
           if [ -z "$CRON_SECRET" ]; then
-            echo "The CRON_SECRET repository secret isn't set yet; skipping."
-            exit 0
+            echo "::error::The CRON_SECRET repository secret isn't set (Settings → Secrets and variables → Actions)."
+            exit 1
           fi
           curl -sS --fail-with-body --max-time 90 -X POST \
             -H "Authorization: Bearer $CRON_SECRET" \
