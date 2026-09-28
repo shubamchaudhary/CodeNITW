@@ -4,22 +4,63 @@ import { getContests } from "./_lib/contestCache.mjs";
 import { closeMail, mailConfigured, sendMail } from "./_lib/mail.mjs";
 import { dueReminders, linkUrl, reminderEmail, sampleReminders } from "./_lib/reminders.mjs";
 
-// The reminder job. Something calls it every ~10 minutes (the GitHub Actions
-// workflow in .github/workflows/contest-reminders.yml) with
-// "Authorization: Bearer <CRON_SECRET>". Each run emails every confirmed
-// subscriber about the contests whose day-before or hour-before reminder is
-// now due — one email per person per run, however many contests are in it.
+// The reminder job, called with "Authorization: Bearer <CRON_SECRET>" by:
+//   • Vercel Cron (vercel.json) — 96 daily jobs, four per hour. The Hobby plan
+//     runs each job once a day at some minute within its hour, which together
+//     makes a run roughly every 15 minutes; Vercel sends CRON_SECRET itself.
+//   • GitHub Actions (.github/workflows/contest-reminders.yml) as a backup;
+//     GitHub's schedule is best-effort and can skip runs for hours.
+// Extra or overlapping runs are harmless (see below). Each run emails every confirmed
+// subscriber the day-before and hour-before reminders that are due now and
+// that they haven't had yet — one email per person per run, however many
+// contests are in it.
 //
-// Every reminder is claimed in Firestore (contestReminders/{key}) before it
-// is sent, with create(), which fails if the key already exists. Overlapping
-// or repeated runs therefore never send the same reminder twice.
+// Delivery is tracked per person: each reminder has a document
+// (contestReminders/{key}) whose `sentTo` map lists who it has reached. A
+// transaction adds this run's recipients before anything is sent, so
+// overlapping or repeated runs never email anyone twice — and someone who
+// subscribes after a reminder first went out still gets it while it's due.
+// A send that fails takes the person back off the list, so the next run
+// retries.
 //
 // ?dryRun=1 lists what is due without claiming or sending anything.
 // ?test=1 emails a sample reminder to GMAIL_USER only (the site's own
 // address), to check the setup and see the email — nothing is recorded.
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
-const alreadyExists = (e) => e?.code === 6 || /ALREADY_EXISTS/i.test(String(e?.message));
+
+// Add to a reminder's sentTo whichever of `people` it hasn't reached yet;
+// returns those. Runs in a transaction, so two runs can't both claim someone.
+function claim(reminder, people) {
+  const ref = db().collection(SENT).doc(reminder.key);
+  return db().runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const sentTo = (snap.exists && snap.get("sentTo")) || {};
+    const fresh = people.filter((p) => !sentTo[p.id]);
+    if (!fresh.length) return [];
+    const now = Date.now();
+    tx.set(
+      ref,
+      {
+        contestId: reminder.contest.id,
+        name: reminder.contest.name,
+        kind: reminder.kind,
+        start: new Date(reminder.contest.start),
+        sentTo: Object.fromEntries(fresh.map((p) => [p.id, now])),
+      },
+      { merge: true }
+    );
+    return fresh;
+  });
+}
+
+function release(reminder, personId) {
+  return db()
+    .collection(SENT)
+    .doc(reminder.key)
+    .update({ [`sentTo.${personId}`]: FieldValue.delete() })
+    .catch(() => {});
+}
 
 async function run(request) {
   const secret = process.env.CRON_SECRET;
@@ -61,56 +102,52 @@ async function run(request) {
     });
   }
 
-  const sentLog = db().collection(SENT);
-  const claimed = [];
+  if (!due.length) return json({ due: 0, sent: 0, unreachable });
+
+  const subscribers = (await db().collection(SUBSCRIBERS).where("confirmed", "==", true).get()).docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  }));
+  if (!subscribers.length) return json({ due: due.length, subscribers: 0, sent: 0, unreachable });
+
+  // Who still needs which reminder.
+  const inbox = new Map(); // subscriber id → reminders to send them now
   for (const d of due) {
-    try {
-      await sentLog.doc(d.key).create({
-        contestId: d.contest.id,
-        name: d.contest.name,
-        kind: d.kind,
-        start: new Date(d.contest.start),
-        claimedAt: FieldValue.serverTimestamp(),
-      });
-      claimed.push(d);
-    } catch (e) {
-      if (!alreadyExists(e)) throw e;
+    for (const person of await claim(d, subscribers)) {
+      if (!inbox.has(person.id)) inbox.set(person.id, []);
+      inbox.get(person.id).push(d);
     }
   }
-  if (!claimed.length) return json({ due: due.length, sent: 0, unreachable });
+  if (!inbox.size) return json({ due: due.length, subscribers: subscribers.length, sent: 0, unreachable });
 
-  const subscribers = (await db().collection(SUBSCRIBERS).where("confirmed", "==", true).get()).docs;
   let sent = 0;
   const failures = [];
   try {
-    for (const s of subscribers) {
-      const { email, timeZone } = s.data();
-      const unsubscribeUrl = linkUrl("unsubscribe", s.id, secret);
+    for (const person of subscribers) {
+      const items = inbox.get(person.id);
+      if (!items) continue;
+      const unsubscribeUrl = linkUrl("unsubscribe", person.id, secret);
       try {
-        await sendMail({ to: email, unsubscribeUrl, ...reminderEmail({ items: claimed, upcoming: contests, now, timeZone, unsubscribeUrl }) });
+        await sendMail({
+          to: person.email,
+          unsubscribeUrl,
+          ...reminderEmail({ items, upcoming: contests, now, timeZone: person.timeZone, unsubscribeUrl }),
+        });
         sent++;
       } catch (e) {
         failures.push(String(e?.message || e));
+        await Promise.all(items.map((d) => release(d, person.id)));
       }
     }
   } finally {
     closeMail();
   }
 
-  if (subscribers.length && !sent) {
-    // Nothing went out — most likely the Gmail credentials. Release the
-    // claims so the next run tries again while the reminders are still due.
-    await Promise.all(claimed.map((d) => sentLog.doc(d.key).delete()));
+  if (!sent && failures.length) {
     console.error("contest reminders: every send failed", failures[0]);
-    return json({ error: "send-failed", detail: failures[0], reminders: claimed.map((d) => d.key) }, 502);
+    return json({ error: "send-failed", detail: failures[0] }, 502);
   }
-
-  await Promise.all(
-    claimed.map((d) =>
-      sentLog.doc(d.key).set({ sentAt: FieldValue.serverTimestamp(), recipients: sent, failed: failures.length }, { merge: true })
-    )
-  );
-  return json({ reminders: claimed.map((d) => d.key), subscribers: subscribers.length, sent, failed: failures.length, unreachable });
+  return json({ due: due.length, subscribers: subscribers.length, sent, failed: failures.length, unreachable });
 }
 
 export const GET = run;
