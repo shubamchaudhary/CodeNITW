@@ -20,9 +20,11 @@ import {
   subscribe,
 } from "../../Data/planStore";
 import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
+import { recordNow, restoreVersion } from "../../Data/noteHistory";
 import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import StackNav from "./StackNav";
 import TopicLead from "./TopicLead";
+import HistoryPanel, { describeVersion } from "./HistoryPanel";
 import useStackProgress from "./useStackProgress";
 import { STACKS, rememberTopic } from "./stacks";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
@@ -86,6 +88,8 @@ export default function TopicNotes() {
   const [learnt, setLearntMarks] = useState({});
   const [barHeight, setBarHeight] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [preview, setPreview] = useState(null); // a past version being looked at
   const barRef = useRef(null);
 
   const [assets, setAssets] = useState({});
@@ -115,6 +119,8 @@ export default function TopicNotes() {
     rememberTopic(source, topic.id);
     window.scrollTo({ top: 0 });
     setDrawerOpen(false);
+    setHistoryOpen(false);
+    setPreview(null);
   }, [source, topic]);
 
   // ── Full-screen reading ──────────────────────────────────────────────────
@@ -259,8 +265,9 @@ export default function TopicNotes() {
       latestRef.current = value;
       setText(value);
       persist(value);
+      if (config) recordNow(config.notesKey, topicId);
     },
-    [persist]
+    [persist, config, topicId]
   );
 
   const changeAnnotations = useCallback(
@@ -270,6 +277,23 @@ export default function TopicNotes() {
     },
     [source, topicId]
   );
+
+  const restorePreview = useCallback(() => {
+    if (!preview || !config) return;
+    if (!requireAuth("Sign in to restore a version.")) return;
+    const rev = preview;
+    restoreVersion(config.notesKey, topicId, rev.id, () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      latestRef.current = rev.text || "";
+      setText(rev.text || "");
+      persist(rev.text || "");
+      if (annotationsKey(source) && Array.isArray(rev.annotations)) changeAnnotations(rev.annotations);
+    });
+    setPreview(null);
+    setHistoryOpen(false);
+    window.scrollTo({ top: 0 });
+    toast.success("Version restored. The version it replaced is still in History.");
+  }, [preview, config, topicId, persist, changeAnnotations, source]);
 
   // "Learnt" is per topic heading inside this note; ticking it again undoes it.
   // Learning the last one marks the whole note done in the topic list, and
@@ -502,6 +526,48 @@ export default function TopicNotes() {
     </div>
   );
 
+  const historyButton = user && (
+    <button
+      onClick={() => setHistoryOpen(true)}
+      title="Every saved version of this note"
+      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+    >
+      <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M2.6 8a5.4 5.4 0 1 0 1.6-3.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M2.4 2.4v2.4h2.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M8 5.2V8l2 1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      History
+    </button>
+  );
+
+  // Looking at a past version: say so, and offer the two ways out.
+  const previewBanner = preview && (
+    <div className="mb-6 rounded-2xl border border-amber-300/80 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-4 py-3 flex flex-wrap items-center gap-3">
+      <div className="flex-1 min-w-[220px] text-[13.5px] leading-snug text-amber-900 dark:text-amber-200">
+        <span className="font-bold">Viewing an older version</span>
+        <span className="block text-[12.5px] opacity-80">
+          {describeVersion(preview)} · {(preview.words || 0).toLocaleString()} words
+          {Array.isArray(preview.annotations) && preview.annotations.length > 0
+            ? ` · ${preview.annotations.length} personal note${preview.annotations.length === 1 ? "" : "s"}`
+            : ""}
+        </span>
+      </div>
+      <button
+        onClick={restorePreview}
+        className="h-9 px-4 rounded-full text-[13px] font-semibold bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-90"
+      >
+        Restore this version
+      </button>
+      <button
+        onClick={() => setPreview(null)}
+        className="h-9 px-3.5 rounded-full text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-white/60 dark:hover:bg-white/[0.05]"
+      >
+        Back to current
+      </button>
+    </div>
+  );
+
   const meta = (
     <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
       {stats.words > 0 && (
@@ -530,9 +596,12 @@ export default function TopicNotes() {
       onTogglePlanned={() => togglePlanned(topic)}
       meta={meta}
       tools={
-        immersive ? null : (
+        immersive ? null : preview ? (
+          historyButton
+        ) : (
           <>
             {viewSwitch}
+            {historyButton}
             {isRead && textSize}
             {isRead && fullScreenButton}
           </>
@@ -540,6 +609,7 @@ export default function TopicNotes() {
       }
     />
   );
+  const blocked = () => toast.info("This is an older version — restore it to change it.");
 
   const nav = (
     <StackNav stack={config} activeId={topic.id} completed={completed} planned={planned} onPick={pick} />
@@ -589,12 +659,17 @@ export default function TopicNotes() {
 
           {loaded && isRead && (
             <NoteReader
-              key={`${source}:${topic.id}`}
+              key={`${source}:${topic.id}${preview ? `:${preview.id}` : ""}`}
               flat
-              lead={lead}
+              lead={
+                <>
+                  {previewBanner}
+                  {lead}
+                </>
+              }
               starterQuestions={topic.questions}
-              text={text}
-              onCommit={commit}
+              text={preview ? preview.text || "" : text}
+              onCommit={preview ? blocked : commit}
               assets={assets}
               colorMode={colorMode}
               fontSize={prefs.fontSize}
@@ -602,10 +677,11 @@ export default function TopicNotes() {
               uploadInto={uploadFiles}
               topOffset={topOffset}
               immersive={immersive}
-              annotations={annotations}
-              onAnnotationsChange={changeAnnotations}
-              learnt={learnt}
+              annotations={preview ? preview.annotations || [] : annotations}
+              onAnnotationsChange={preview ? blocked : changeAnnotations}
+              learnt={preview ? {} : learnt}
               onToggleLearnt={toggleLearnt}
+              readOnly={!!preview}
             />
           )}
 
@@ -677,6 +753,23 @@ export default function TopicNotes() {
           )}
         </main>
       </div>
+
+      {historyOpen && (
+        <HistoryPanel
+          notesKey={config.notesKey}
+          noteId={topic.id}
+          current={{ text, annotations: annotationsKey(source) ? annotations : null }}
+          previewId={preview?.id}
+          onPreview={(rev) => {
+            setPreview(rev);
+            if (rev) {
+              setView("read");
+              window.scrollTo({ top: 0 });
+            }
+          }}
+          onClose={() => setHistoryOpen(false)}
+        />
+      )}
 
       {drawerOpen && !immersive && (
         <div className="lg:hidden fixed inset-0 z-50">

@@ -15,6 +15,7 @@ import Contests from "./pages/Contests/Contests";
 import AuthPage from "./pages/SignInUp/AuthPage";
 import AuthPrompt from "./components/AuthPrompt";
 import { startCloudSync, stopCloudSync } from "./Data/cloudSync";
+import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
 
 // Lazy-loaded so the (large) company dataset ships in its own chunk and is only
@@ -30,8 +31,13 @@ function App() {
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (user) => {
       setAuthState(user ? "user" : "guest");
-      if (user) startCloudSync(user.uid);
-      else stopCloudSync();
+      if (user) {
+        startCloudSync(user.uid);
+        startNoteHistory(user.uid);
+      } else {
+        stopNoteHistory();
+        stopCloudSync();
+      }
     });
     return unsub;
   }, []);

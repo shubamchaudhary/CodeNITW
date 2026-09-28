@@ -132,6 +132,7 @@ export default function NoteReader({
   flat = false, // part of a page that is already the reading surface: no card
   lead = null, // shown at the top of the article column (topic header, videos)
   starterQuestions = null, // offered when the note is empty
+  readOnly = false, // an old version being previewed: look, don't touch
   annotations = [],
   onAnnotationsChange,
   learnt = {},
@@ -292,6 +293,7 @@ export default function NoteReader({
   // ── Selection → toolbar; click on a highlight or a noted passage → its menu ──
   const onMouseUp = useCallback(
     (e) => {
+      if (readOnly) return;
       if (e.target.closest("textarea, button, input, .note-float, .note-editor, .note-ui")) return;
       const target = e.target;
       const { clientX, clientY } = e;
@@ -339,7 +341,7 @@ export default function NoteReader({
         setToolbar({ x: r.left + r.width / 2, y: r.top, range: range.cloneRange(), text: sel.toString(), inCode });
       }, 0);
     },
-    [openNote]
+    [openNote, readOnly]
   );
 
   const applyHighlight = useCallback(
@@ -502,12 +504,13 @@ export default function NoteReader({
   );
 
   const startEdit = useCallback((index) => {
+    if (readOnly) return;
     if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) return;
     setToolbar(null);
     setMarkMenu(null);
     setNotePop(null);
     setEditing(index);
-  }, []);
+  }, [readOnly]);
 
   const saveSection = useCallback(
     (section, draft) => {
@@ -583,7 +586,8 @@ export default function NoteReader({
             )}
 
             <div ref={mdRef} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": `${fontSize}px` }}>
-              {isEmpty && editing !== "append" && (
+              {isEmpty && readOnly && <p className="py-16 text-center text-[15px] text-gray-500 dark:text-gray-400">This version was empty.</p>}
+              {isEmpty && !readOnly && editing !== "append" && (
                 <EmptyNote
                   questions={starterQuestions}
                   accent={accent}
@@ -622,8 +626,8 @@ export default function NoteReader({
                       components={components}
                       colorMode={colorMode}
                       navTop={navTop}
-                      onEdit={startEdit}
-                      learnKey={topicKeys.get(i) || null}
+                      onEdit={readOnly ? null : startEdit}
+                      learnKey={readOnly ? null : topicKeys.get(i) || null}
                       learnt={!!learnt[topicKeys.get(i)]}
                       onToggleLearnt={toggleLearntTopic}
                     />
@@ -644,7 +648,8 @@ export default function NoteReader({
                   navTop={navTop}
                 />
               ) : (
-                !isEmpty && (
+                !isEmpty &&
+                !readOnly && (
                   <button
                     onClick={() => startEdit("append")}
                     className="note-add mt-12 w-full rounded-2xl border-2 border-dashed border-gray-300/80 dark:border-white/10 py-4 text-[14px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-white/25 transition-colors"
@@ -819,7 +824,7 @@ const Section = memo(function Section({
     >
       {learnKey && <LearntButton learnt={learnt} onClick={() => onToggleLearnt(learnKey)} />}
       {/* Left gutter on wide screens, so the right one is free for note markers. */}
-      <button
+      {onEdit && <button
         onClick={() => onEdit(index)}
         title="Edit this section"
         className={`note-sec-edit absolute z-10 right-0 lg:right-auto lg:-left-12 lg:top-0 ${learnKey ? "top-11" : "top-0"} w-8 h-8 rounded-lg flex items-center justify-center bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-60 transition-opacity`}
@@ -827,7 +832,7 @@ const Section = memo(function Section({
         <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
           <path d="M11.2 2.3l2.5 2.5-8 8H3.2v-2.5l8-8z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
         </svg>
-      </button>
+      </button>}
       <MarkdownBlock source={source} components={components} colorMode={colorMode} />
     </section>
   );
