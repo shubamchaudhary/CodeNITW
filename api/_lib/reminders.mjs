@@ -76,9 +76,9 @@ function duration(min) {
 
 function until(ms) {
   const min = Math.max(1, Math.round(ms / MIN));
-  if (min < 90) return `${min} min`;
-  const h = Math.round(min / 60);
-  return `${h} hours`;
+  if (min < 60) return `${min} min`;
+  if (min < 90) return min === 60 ? "1 hour" : `1 hr ${min - 60} min`;
+  return `${Math.round(min / 60)} hours`;
 }
 
 // "Today" / "Tomorrow" / "Sunday", in the reader's own time zone.
@@ -150,7 +150,7 @@ export function reminderEmail({ items, now, timeZone, unsubscribeUrl }) {
       ? `<tr><td style="padding:4px 0 10px;font-size:13px;font-weight:700;color:#6b7280">${title}</td></tr>${list.map(row).join("")}`
       : "";
 
-  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f3f4f6">
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;padding:0;background:#f3f4f6">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:24px 12px;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px">
@@ -185,7 +185,7 @@ export function reminderEmail({ items, now, timeZone, unsubscribeUrl }) {
 // ── The confirmation email (for addresses nobody has verified yet) ──────────
 export function confirmEmail({ confirmUrl }) {
   const subject = "Confirm your contest reminders";
-  const html = `<!doctype html><html><body style="margin:0;padding:24px 12px;background:#f3f4f6;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;padding:24px 12px;background:#f3f4f6;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px">
       <tr><td style="padding:20px">
@@ -198,4 +198,22 @@ export function confirmEmail({ confirmUrl }) {
   </td></tr></table></body></html>`;
   const text = `Confirm this address to get contest reminders a day and an hour before each LeetCode, Codeforces and CodeChef contest:\n${confirmUrl}\n\nDidn't ask for this? Ignore this email.`;
   return { subject, html, text };
+}
+
+// ── A sample, for trying the email out ──────────────────────────────────────
+// Real upcoming contests, re-timed so the email shows both kinds: the first
+// as if it started in an hour, the second as if it started this time
+// tomorrow. Used by the job's ?test=1 and by local previews.
+export function sampleReminders(contests, now) {
+  const fallback = {
+    id: "leetcode:weekly-contest-sample",
+    platform: "leetcode",
+    name: "Weekly Contest (sample)",
+    url: "https://leetcode.com/contest/",
+    durationMin: 90,
+  };
+  const [first = fallback, second] = contests;
+  const items = [{ contest: { ...first, start: now + 60 * MIN }, kind: "hour", key: "sample:hour" }];
+  if (second) items.push({ contest: { ...second, start: now + 24 * HOUR }, kind: "day", key: "sample:day" });
+  return items;
 }

@@ -2,7 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { SENT, SUBSCRIBERS, adminConfigured, db } from "./_lib/admin.mjs";
 import { fetchUpcomingContests } from "./_lib/contests.mjs";
 import { closeMail, mailConfigured, sendMail } from "./_lib/mail.mjs";
-import { dueReminders, linkUrl, reminderEmail } from "./_lib/reminders.mjs";
+import { dueReminders, linkUrl, reminderEmail, sampleReminders } from "./_lib/reminders.mjs";
 
 // The reminder job. Something calls it every ~10 minutes (the GitHub Actions
 // workflow in .github/workflows/contest-reminders.yml) with
@@ -15,6 +15,8 @@ import { dueReminders, linkUrl, reminderEmail } from "./_lib/reminders.mjs";
 // or repeated runs therefore never send the same reminder twice.
 //
 // ?dryRun=1 lists what is due without claiming or sending anything.
+// ?test=1 emails a sample reminder to GMAIL_USER only (the site's own
+// address), to check the setup and see the email — nothing is recorded.
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 const alreadyExists = (e) => e?.code === 6 || /ALREADY_EXISTS/i.test(String(e?.message));
@@ -24,13 +26,31 @@ async function run(request) {
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return json({ error: "unauthorized" }, 401);
   }
+  const params = new URL(request.url).searchParams;
+  const now = Date.now();
+
+  if (params.has("test")) {
+    if (!mailConfigured()) return json({ error: "not-configured" }, 503);
+    const { contests } = await fetchUpcomingContests({ now });
+    const to = process.env.GMAIL_USER;
+    const unsubscribeUrl = linkUrl("unsubscribe", "test", secret); // points at no real subscriber
+    const mail = reminderEmail({ items: sampleReminders(contests, now), now, timeZone: "Asia/Kolkata", unsubscribeUrl });
+    try {
+      await sendMail({ to, unsubscribeUrl, ...mail, subject: `[Test] ${mail.subject}` });
+    } catch (e) {
+      return json({ error: "send-failed", detail: String(e?.message || e) }, 502);
+    } finally {
+      closeMail();
+    }
+    return json({ test: true, sentTo: to, subject: `[Test] ${mail.subject}` });
+  }
+
   if (!adminConfigured() || !mailConfigured()) return json({ error: "not-configured" }, 503);
 
-  const now = Date.now();
   const { contests, errors } = await fetchUpcomingContests({ now });
   const due = dueReminders(contests, now);
 
-  if (new URL(request.url).searchParams.has("dryRun")) {
+  if (params.has("dryRun")) {
     return json({
       now: new Date(now).toISOString(),
       upcoming: contests.length,
