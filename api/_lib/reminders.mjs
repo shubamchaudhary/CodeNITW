@@ -71,7 +71,7 @@ const esc = (s) =>
 function duration(min) {
   const h = Math.floor(min / 60);
   const m = min % 60;
-  return h && m ? `${h}h ${m}m` : h ? `${h}h` : `${m}m`;
+  return h && m ? `${h}h ${m}m` : h ? `${h}h` : `${m}m`; // one unbreakable unit
 }
 
 // "Today" / "Tomorrow" / "Sunday", in the reader's own time zone.
@@ -105,18 +105,17 @@ function startsIn(ms) {
   return min >= 45 ? "in an hour" : `in ${min} minutes`;
 }
 
-// "today at 2:42 PM IST" / "tomorrow at …" / "on Sunday at …".
-function relativeWhen(start, now, tz) {
-  const day = dayWord(start, now, tz);
-  const lead = day === "Today" || day === "Tomorrow" ? day.toLowerCase() : `on ${day}`;
-  return `${lead} at ${timeOf(start, tz)}`;
+// "8 AM", "8:30 PM" — for the subject line, in the reader's own time zone.
+function clock(start, tz) {
+  return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz })
+    .format(start)
+    .replace(":00", "");
 }
 
-const PLATFORM_COLOR = { leetcode: "#c77700", codeforces: "#1a6fa3", codechef: "#6b4428" };
 const PLATFORM_TINT = { leetcode: "#fff4e0", codeforces: "#e6f2fa", codechef: "#f4ece5" };
 const logoUrl = (platform) => `${SITE_URL}/email/${platform}.png`;
 
-// Google Calendar's "add event" link — offered for contests a day out.
+// Google Calendar's "add event" link.
 function calendarUrl(c) {
   const stamp = (t) => new Date(t).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const q = new URLSearchParams({
@@ -129,83 +128,125 @@ function calendarUrl(c) {
 }
 
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const LINK = "color:#6d28d9;font-weight:600;text-decoration:none";
+const VIOLET = "#6d28d9";
+const COMING_UP = 3;
 
-// A plain email: white, left-aligned, no banners. Deliberately close to what
-// a person would write, so it reads (and filters) as a note, not a campaign.
-function page(inner) {
+// The frame: grey page, the name (a link to the site) on top, content, a
+// one-line footer.
+function page(inner, footer) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#ffffff">
-<div style="max-width:560px;padding:8px 4px;font-family:${FONT};font-size:14px;line-height:1.6;color:#1f2937">${inner}</div>
-</body></html>`;
+<body style="margin:0;padding:0;background:#f3f4f6">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;font-family:${FONT}">
+<tr><td align="center" style="padding:24px 12px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px">
+    <tr><td style="padding:0 2px 14px"><a href="${SITE_URL}" style="font-size:18px;font-weight:800;color:#111827;text-decoration:none">Interview<span style="color:#7c3aed">Plan</span>Prep</a></td></tr>
+    ${inner}
+    <tr><td style="padding:8px 2px 0;font-size:12px;line-height:1.6;color:#6b7280">${footer}</td></tr>
+  </table>
+</td></tr></table></body></html>`;
 }
 
-const signOff = `<p style="margin:20px 0 0">Good luck,<br><a href="${SITE_URL}" style="${LINK}">InterviewPlanPrep</a></p>`;
+const sectionTitle = (title) => `<tr><td style="padding:6px 2px 8px;font-size:12px;font-weight:700;color:#6b7280">${esc(title)}</td></tr>`;
 
-function logoTile(platform) {
-  return `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="44" height="44" align="center" valign="middle" style="width:44px;height:44px;border-radius:12px;background:${PLATFORM_TINT[platform]}">
-    <img src="${logoUrl(platform)}" width="28" height="28" alt="${esc(PLATFORMS[platform].label)}" style="display:block;border:0">
-  </td></tr></table>`;
-}
-
-const chip = (text, strong = false) =>
-  `<span style="display:inline-block;margin:0 6px 6px 0;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;${
-    strong ? "background:#ede9fe;color:#5b21b6" : "background:#f3f4f6;color:#374151"
-  }">${esc(text)}</span>`;
-
-// One contest: logo, platform, name, then when and how long as small tags.
-function contestBlock(i, now, tz) {
-  const c = i.contest;
+// One contest on one thin row: icon · name and when · Open contest.
+function card(c, meta, { calendar = false } = {}) {
   const p = PLATFORMS[c.platform];
-  const soon = i.kind === "hour" ? `Starts ${startsIn(c.start - now)}` : dayWord(c.start, now, tz);
-  const links = [`<a href="${esc(c.url)}" style="${LINK}">Open on ${esc(p.label)} &rarr;</a>`];
-  if (i.kind === "day") links.push(`<a href="${esc(calendarUrl(c))}" style="${LINK}">Add to calendar</a>`);
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px"><tr>
-    <td width="44" valign="top" style="padding-top:2px">${logoTile(c.platform)}</td>
-    <td valign="top" style="padding-left:12px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:${PLATFORM_COLOR[c.platform]}">${esc(p.label)}</div>
-      <div style="margin:1px 0 8px;font-size:16px;line-height:1.35;font-weight:700;color:#111827">${esc(c.name)}</div>
-      <div>${chip(soon, true)}${chip(dateOf(c.start, tz))}${chip(timeOf(c.start, tz))}${chip(duration(c.durationMin))}</div>
-      <div style="margin-top:2px;font-size:13px">${links.join(' <span style="color:#d1d5db">&nbsp;·&nbsp;</span> ')}</div>
-    </td>
-  </tr></table>`;
+  const cal = calendar
+    ? ` · <a href="${esc(calendarUrl(c))}" style="color:${VIOLET};font-weight:600;text-decoration:none">Add to calendar</a>`
+    : "";
+  return `<tr><td style="padding:0 0 8px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px">
+    <tr>
+      <td width="34" valign="middle" style="padding:10px 0 10px 12px">
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="34" height="34" align="center" valign="middle" style="width:34px;height:34px;border-radius:9px;background:${PLATFORM_TINT[c.platform]}">
+          <img src="${logoUrl(c.platform)}" width="22" height="22" alt="${esc(p.label)}" title="${esc(p.label)}" style="display:block;border:0">
+        </td></tr></table>
+      </td>
+      <td valign="middle" style="padding:10px 12px">
+        <div style="font-size:14px;line-height:1.35;font-weight:700;color:#111827">${esc(c.name)}</div>
+        <div style="margin-top:2px;font-size:12.5px;line-height:1.5;color:#6b7280">${esc(meta)}${cal}</div>
+      </td>
+      <td align="right" valign="middle" style="padding:10px 12px 10px 0;white-space:nowrap">
+        <a href="${esc(c.url)}" style="display:inline-block;padding:7px 12px;border-radius:8px;background:#7c3aed;color:#ffffff;font-size:12.5px;font-weight:700;text-decoration:none">Open contest</a>
+      </td>
+    </tr>
+  </table>
+</td></tr>`;
+}
+
+// "CodeChef contest", "2 Codeforces contests", "CodeChef and LeetCode contests"
+function whose(list) {
+  const platforms = [...new Set(list.map((i) => PLATFORMS[i.contest.platform].label))];
+  if (list.length === 1) return `${platforms[0]} contest`;
+  if (platforms.length === 1) return `${list.length} ${platforms[0]} contests`;
+  return `${platforms.slice(0, -1).join(", ")} and ${platforms.at(-1)} contests`;
 }
 
 // ── The reminder email ──────────────────────────────────────────────────────
-export function reminderEmail({ items, now, timeZone, unsubscribeUrl }) {
+// `items` are the reminders due now; `upcoming` is every known upcoming
+// contest, from which the next few fill "Coming up".
+export function reminderEmail({ items, upcoming = [], now, timeZone, unsubscribeUrl }) {
   const tz = validTimeZone(timeZone);
-  const ordered = [...items].sort((a, b) => a.contest.start - b.contest.start);
-  const soon = ordered.filter((i) => i.kind === "hour");
-  const later = ordered.filter((i) => i.kind === "day");
+  const byStart = (a, b) => a.contest.start - b.contest.start;
+  const soon = items.filter((i) => i.kind === "hour").sort(byStart);
+  const later = items.filter((i) => i.kind === "day").sort(byStart);
 
-  // "Reminder: A, B start in an hour; C starts tomorrow at 8:00 PM IST"
-  const verb = (list) => (list.length > 1 ? "start" : "starts");
-  const names = (list) => list.map((i) => i.contest.name).join(", ");
-  const parts = [];
-  if (soon.length) parts.push(`${names(soon)} ${verb(soon)} ${startsIn(soon[0].contest.start - now)}`);
-  if (later.length) {
-    const sameTime = later.every((i) => i.contest.start === later[0].contest.start);
-    const when = sameTime ? relativeWhen(later[0].contest.start, now, tz) : dayWord(later[0].contest.start, now, tz).toLowerCase();
-    parts.push(`${names(later)} ${verb(later)} ${when}`);
+  // Contest reminder: CodeChef contest starts in an hour
+  // Contest reminder: LeetCode contest starts tomorrow at 8 AM
+  const lead = soon.length ? soon : later;
+  const plural = lead.length > 1;
+  const first = lead[0].contest;
+  const dayPhrase = (t) => {
+    const d = dayWord(t, now, tz);
+    return d === "Today" || d === "Tomorrow" ? d.toLowerCase() : `on ${d}`;
+  };
+  const sameStart = lead.every((i) => i.contest.start === first.start);
+  const when = soon.length
+    ? startsIn(first.start - now)
+    : sameStart
+    ? `${dayPhrase(first.start)} at ${clock(first.start, tz)}`
+    : dayPhrase(first.start);
+  const subject = `Contest reminder: ${whose(lead)} ${plural ? "start" : "starts"} ${when}`;
+
+  const shown = new Set(items.map((i) => i.contest.id));
+  const next = upcoming
+    .filter((c) => !shown.has(c.id) && c.start > now)
+    .sort((a, b) => a.start - b.start)
+    .slice(0, COMING_UP);
+
+  const fullWhen = (c) => `${dateOf(c.start, tz)} · ${timeOf(c.start, tz)} · ${duration(c.durationMin)}`;
+  const allTomorrow = later.every((i) => dayWord(i.contest.start, now, tz) === "Tomorrow");
+
+  let inner = "";
+  if (soon.length) {
+    inner += sectionTitle(soon.every((i) => i.contest.start - now >= 45 * MIN) ? "Starting in about an hour" : "Starting soon");
+    inner += soon.map((i) => card(i.contest, `${timeOf(i.contest.start, tz)} · ${duration(i.contest.durationMin)}`)).join("");
   }
-  const subject = `Reminder: ${parts.join("; ")}`;
+  if (later.length) {
+    inner += sectionTitle(allTomorrow ? "Tomorrow" : "Within a day");
+    inner += later.map((i) => card(i.contest, fullWhen(i.contest), { calendar: true })).join("");
+  }
+  if (next.length) {
+    inner += sectionTitle("Coming up");
+    inner += next.map((c) => card(c, fullWhen(c), { calendar: true })).join("");
+  }
 
-  const html = page(
-    `${ordered.map((i) => contestBlock(i, now, tz)).join("")}
-    ${signOff}
-    <p style="margin:24px 0 0;font-size:12px;color:#9ca3af">You're receiving this because you turned on contest reminders.
-      <a href="${esc(unsubscribeUrl)}" style="color:#9ca3af">Unsubscribe</a></p>`
-  );
+  const footer = `You're getting this because you turned on contest reminders on
+    <a href="${SITE_URL}/contests" style="color:#6b7280">InterviewPlanPrep</a>.
+    <a href="${esc(unsubscribeUrl)}" style="color:#6b7280">Unsubscribe</a>`;
 
+  const html = page(inner, footer);
+
+  const line = (c, m) => `${c.name} (${PLATFORMS[c.platform].label}), ${m}\n${c.url}`;
   const text = [
-    ...ordered.map((i) => {
-      const c = i.contest;
-      const when = i.kind === "hour" ? `starts ${startsIn(c.start - now)} (${timeOf(c.start, tz)})` : `${relativeWhen(c.start, now, tz)}`;
-      return `${c.name} (${PLATFORMS[c.platform].label}): ${when}, ${duration(c.durationMin)}\n${c.url}`;
-    }),
-    `Good luck,\nInterviewPlanPrep\n${SITE_URL}`,
+    soon.length ? "Starting in about an hour:\n" + soon.map((i) => line(i.contest, `${timeOf(i.contest.start, tz)}, ${duration(i.contest.durationMin)}`)).join("\n") : "",
+    later.length ? `${allTomorrow ? "Tomorrow" : "Within a day"}:\n` + later.map((i) => line(i.contest, fullWhen(i.contest))).join("\n") : "",
+    next.length ? "Coming up:\n" + next.map((c) => line(c, fullWhen(c))).join("\n") : "",
+    `InterviewPlanPrep: ${SITE_URL}`,
     `Unsubscribe: ${unsubscribeUrl}`,
-  ].join("\n\n");
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   return { subject, html, text };
 }
@@ -213,13 +254,16 @@ export function reminderEmail({ items, now, timeZone, unsubscribeUrl }) {
 // ── The confirmation email (for addresses nobody has verified yet) ──────────
 export function confirmEmail({ confirmUrl }) {
   const subject = "Confirm your contest reminders";
-  const html = page(
-    `<p style="margin:0 0 12px">Please confirm you'd like an email a day before and an hour before each upcoming LeetCode, Codeforces and CodeChef contest.</p>
-    <p style="margin:0 0 12px"><a href="${esc(confirmUrl)}" style="${LINK}">Confirm reminders &rarr;</a></p>
-    <p style="margin:0;color:#6b7280">If you didn't ask for this, ignore this email and you won't hear from us.</p>
-    ${signOff.replace("Good luck,", "Thanks,")}`
-  );
-  const text = `Please confirm you'd like an email a day before and an hour before each upcoming LeetCode, Codeforces and CodeChef contest:\n${confirmUrl}\n\nIf you didn't ask for this, ignore this email.\n\nThanks,\nInterviewPlanPrep\n${SITE_URL}`;
+  const inner = `<tr><td style="padding:0 0 8px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px">
+    <tr><td style="padding:18px 18px 20px;font-size:14px;line-height:1.6;color:#374151">
+      Please confirm you'd like an email a day before and an hour before each upcoming LeetCode, Codeforces and CodeChef contest.
+      <div style="margin-top:14px"><a href="${esc(confirmUrl)}" style="display:inline-block;padding:8px 14px;border-radius:8px;background:#7c3aed;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none">Confirm reminders</a></div>
+    </td></tr>
+  </table>
+</td></tr>`;
+  const html = page(inner, "Didn't ask for this? Ignore this email and you won't hear from us.");
+  const text = `Please confirm you'd like an email a day before and an hour before each upcoming LeetCode, Codeforces and CodeChef contest:\n${confirmUrl}\n\nDidn't ask for this? Ignore this email.\n\nInterviewPlanPrep: ${SITE_URL}`;
   return { subject, html, text };
 }
 
