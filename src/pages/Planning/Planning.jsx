@@ -21,7 +21,6 @@ import {
   saveJSON,
   setSourceComplete,
   setSourceNote,
-  getInterviewCard,
   getCoreStackTopic,
   getAIStackTopic,
   getDsaProblem,
@@ -41,6 +40,7 @@ import {
   relativeLabel,
   subscribe,
 } from "../../Data/planStore";
+import { getInterviewCard } from "../../Data/interviewCards";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);

@@ -7,21 +7,22 @@ import Footer from "./components/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OwnerRoute from "./components/OwnerRoute";
-import StackHome from "./pages/Notes/StackHome";
-import TopicNotes from "./pages/Notes/TopicNotes";
-import DSAPrep from "./pages/DSAPrep/DSAPrep";
-import Planning from "./pages/Planning/Planning";
-import Contests from "./pages/Contests/Contests";
-import AuthPage from "./pages/SignInUp/AuthPage";
 import AuthPrompt from "./components/AuthPrompt";
 import { startCloudSync, stopCloudSync, onSyncNotice } from "./Data/cloudSync";
 import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
 
-// Lazy-loaded so the (large) company dataset ships in its own chunk and is only
-// fetched when someone actually opens the tracker.
+// Every page is its own chunk, so opening one downloads only that page — not
+// the notes page's markdown renderer, the planner and the rest with it.
+const StackHome = lazy(() => import("./pages/Notes/StackHome"));
+const TopicNotes = lazy(() => import("./pages/Notes/TopicNotes"));
+const DSAPrep = lazy(() => import("./pages/DSAPrep/DSAPrep"));
+const Planning = lazy(() => import("./pages/Planning/Planning"));
+const Contests = lazy(() => import("./pages/Contests/Contests"));
+const AuthPage = lazy(() => import("./pages/SignInUp/AuthPage"));
+// The (large) company dataset is only fetched when someone opens the tracker,
+// and the Interview Kit's content only downloads for the owner.
 const JobTracker = lazy(() => import("./pages/JobTracker/JobTracker"));
-// Same for the Interview Kit: its content only downloads for the owner.
 const InterviewKit = lazy(() => import("./pages/InterviewKit/InterviewKit"));
 
 function App() {
@@ -56,6 +57,9 @@ function App() {
     <>
       <Router>
         <Header />
+        {/* A page-sized placeholder while a page's chunk arrives, so the footer
+            doesn't jump up and back down. */}
+        <Suspense fallback={<div className="min-h-screen" />}>
         <Routes>
           <Route path="/" element={<Navigate to="/core-stack" replace />} />
 
@@ -80,23 +84,9 @@ function App() {
           <Route path="/contests" element={<Contests />} />
           {/* Pipeline and Companies are for everyone; the page itself keeps
               Contacts and Openings (and their data) to the owner. */}
-          <Route
-            path="/job-tracker"
-            element={
-              <Suspense fallback={null}>
-                <JobTracker />
-              </Suspense>
-            }
-          />
+          <Route path="/job-tracker" element={<JobTracker />} />
           <Route path="/interview-kit" element={<OwnerRoute />}>
-            <Route
-              path="/interview-kit"
-              element={
-                <Suspense fallback={null}>
-                  <InterviewKit />
-                </Suspense>
-              }
-            />
+            <Route path="/interview-kit" element={<InterviewKit />} />
           </Route>
 
           <Route path="/sign-in" element={<AuthPage initialMode="signin" />} />
@@ -105,6 +95,7 @@ function App() {
 
           <Route path="*" element={<Navigate to="/core-stack" replace />} />
         </Routes>
+        </Suspense>
         <Footer />
         <AuthPrompt />
       </Router>

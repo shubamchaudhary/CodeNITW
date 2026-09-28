@@ -6,7 +6,6 @@ import { InterviewCardDetail } from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
-  INTERVIEW_CARDS,
   KEYS,
   loadJSON,
   saveJSON,
@@ -14,6 +13,7 @@ import {
   setSourceNote,
   subscribe,
 } from "../../Data/planStore";
+import { INTERVIEW_CARDS } from "../../Data/interviewCards";
 import { fetchIPCompletions } from "../../Data/cloudSync";
 
 const CATEGORIES = ["AI", "HLD", "LLD", "Spring Boot"];

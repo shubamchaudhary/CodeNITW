@@ -11,7 +11,11 @@ import { requireAuth } from "../../Data/authGate";
 // grouped by day in the visitor's own time zone — plus the one button that
 // turns reminder emails on (a day before and an hour before each contest).
 
-const CARD = GLASS;
+// The site's glass card without its backdrop blur: some GPUs make Chrome draw a
+// shifted strip of the page's background lights inside blurred cards (a band
+// across the top of the "Next up" card), and over this dark backdrop the blur
+// isn't visible anyway.
+const CARD = GLASS.replace(/backdrop-blur-\S+\s*/, "");
 
 const PLATFORMS = {
   leetcode: {
