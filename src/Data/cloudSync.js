@@ -325,13 +325,21 @@ async function doPush(uid) {
   }
 
   // 2. Notes: one write per note, naming the revision it's based on. The
-  //    rules refuse it unless that revision is still the head.
+  //    rules refuse it unless that revision is still the head. A note the
+  //    server keeps refusing mustn't hold up the others: push the rest, then
+  //    fail the push so it's retried with backoff.
+  let stuck = null;
   for (const key of keys.filter((k) => VERSIONED.has(k))) {
     for (const id of Object.keys(journal[key])) {
       if (currentUid !== uid) return;
-      await pushNote(uid, key, id);
+      try {
+        await pushNote(uid, key, id);
+      } catch (err) {
+        stuck ||= err;
+      }
     }
   }
+  if (stuck) throw stuck;
 }
 
 async function pushNote(uid, key, id) {
