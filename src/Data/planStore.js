@@ -34,6 +34,8 @@ export const KEYS = {
   IK_COMPLETED: "InterviewKitCompleted",
   IK_NOTES: "InterviewKitNotes",
   PLAN_DAYS: "PlanningDays",
+  // Time spent on plan cards, per day — see "Time log" below.
+  TIME_LOG: "PlanningTimeLog",
   JOB_TRACKER: "JobTrackerState",
   POMO_STATE: "PlanningPomoState",
 };
@@ -502,6 +504,88 @@ export function removeFromPlanDay(key, source, refId) {
   if (next.length === items.length) return false;
   setDay(key, next);
   return true;
+}
+
+// ─── Time log ─────────────────────────────────────────────────────────────────
+// Time spent is kept per day, apart from the plan cards. So moving a card to
+// tomorrow leaves today's time on today, removing a card keeps the time it
+// got, and a card planned again later still knows its total.
+// TIME_LOG shape: { "YYYY-MM-DD|<target>": { day, target, source, title, sec, subs? } }
+//   target — the card across days: a catalog item by its refId, a custom card
+//            by its uid (which it keeps when moved)
+//   subs   — how much of sec went to each of a custom card's sub-tasks
+export function timeTarget(item) {
+  return `${item.source}:${item.source === "custom" ? item.uid : item.refId}`;
+}
+
+export function getTimeLog() {
+  return loadJSON(KEYS.TIME_LOG, {});
+}
+
+function newTimeEntry(day, item) {
+  return { day, target: timeTarget(item), source: item.source, title: item.title, sec: 0 };
+}
+
+// Add time spent on a card (or one of its sub-tasks) on a day.
+export function addTime(day, item, sec, subUid = null) {
+  sec = Math.round(sec);
+  if (!(sec > 0)) return;
+  const log = getTimeLog();
+  const id = `${day}|${timeTarget(item)}`;
+  const entry = log[id] || newTimeEntry(day, item);
+  const next = { ...entry, title: item.title, sec: entry.sec + sec };
+  if (subUid) next.subs = { ...entry.subs, [subUid]: ((entry.subs || {})[subUid] || 0) + sec };
+  saveJSON(KEYS.TIME_LOG, { ...log, [id]: next });
+}
+
+// Correct a day's time on one card. 0 removes it.
+export function setDayTime(day, target, sec) {
+  const log = getTimeLog();
+  const id = `${day}|${target}`;
+  const entry = log[id];
+  if (!entry) return;
+  const next = { ...log };
+  if (sec > 0) {
+    next[id] = { ...entry, sec };
+    // The sub-task split can't add up to more than the card's time.
+    const split = Object.values(entry.subs || {}).reduce((a, b) => a + b, 0);
+    if (split > sec) {
+      next[id].subs = Object.fromEntries(Object.entries(entry.subs).map(([k, v]) => [k, Math.floor((v * sec) / split)]));
+    }
+  } else {
+    delete next[id];
+  }
+  saveJSON(KEYS.TIME_LOG, next);
+}
+
+// Plan cards used to carry their own spentSeconds (so the time moved and was
+// deleted with them). Move any such time into the log, on the day the card is
+// on now, and strip it from the cards. Taking the larger of the card's and the
+// log's time makes a second run (another device's stale copy) harmless.
+export function migrateCardTime() {
+  const days = loadJSON(KEYS.PLAN_DAYS, {});
+  const log = getTimeLog();
+  let found = false;
+  const nextDays = {};
+  for (const [day, items] of Object.entries(days)) {
+    nextDays[day] = (items || []).map((item) => {
+      const subs = item.subItems || [];
+      if (!item.spentSeconds && !subs.some((s) => s.spentSeconds)) return item;
+      found = true;
+      const id = `${day}|${timeTarget(item)}`;
+      const entry = log[id] || newTimeEntry(day, item);
+      const split = { ...entry.subs };
+      for (const s of subs) if (s.spentSeconds) split[s.uid] = Math.max(split[s.uid] || 0, s.spentSeconds);
+      const sec = (item.spentSeconds || 0) + subs.reduce((a, s) => a + (s.spentSeconds || 0), 0);
+      log[id] = { ...entry, sec: Math.max(entry.sec, sec), ...(Object.keys(split).length && { subs: split }) };
+      const { spentSeconds, ...rest } = item;
+      return subs.length ? { ...rest, subItems: subs.map(({ spentSeconds: _, ...s }) => s) } : rest;
+    });
+  }
+  if (!found) return;
+  quietly(() => {
+    if (saveJSON(KEYS.TIME_LOG, log) !== false) saveJSON(KEYS.PLAN_DAYS, nextDays);
+  });
 }
 
 // Build the plan item for a Core Stack topic — the estimate is the topic's own
