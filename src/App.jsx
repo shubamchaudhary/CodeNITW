@@ -43,11 +43,17 @@ function App() {
     return unsub;
   }, []);
 
-  // A note edited on two devices at once: say what happened to it.
+  // A note edited on two devices at once: say what happened to it. And warn
+  // before the account's synced data outgrows its one Firestore document.
   useEffect(
     () =>
       onSyncNotice((n) => {
-        if (n.type === "merged") toast.info("A note was also edited on another device. Both sets of changes were merged.");
+        if (n.type === "size") {
+          toast.warn(
+            `Your synced notes and progress take ${Math.round(n.bytes / 1024)} KB of the 1 MB your account can store. Very long notes count towards it.`,
+            { autoClose: false }
+          );
+        } else if (n.type === "merged") toast.info("A note was also edited on another device. Both sets of changes were merged.");
         else toast.warn("A note changed on another device while you were editing. The newer version was kept; yours is saved in the note's History.", { autoClose: 10000 });
       }),
     []
@@ -87,6 +93,10 @@ function App() {
           <Route path="/job-tracker" element={<JobTracker />} />
           <Route path="/interview-kit" element={<OwnerRoute />}>
             <Route path="/interview-kit" element={<InterviewKit />} />
+          </Route>
+          {/* Owner-only, like AI Stack: personal projects, one chapter per topic. */}
+          <Route path="/projects" element={<OwnerRoute />}>
+            <Route path="/projects" element={<StackHome stackKey="projects" />} />
           </Route>
 
           <Route path="/sign-in" element={<AuthPage initialMode="signin" />} />

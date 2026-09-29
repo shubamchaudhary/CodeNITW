@@ -50,6 +50,11 @@ const SYNC_KEYS = [
   KEYS.AI_TIMESTAMPS,
   KEYS.AI_ANNOTATIONS,
   KEYS.AI_LEARNT,
+  KEYS.PJ_COMPLETED,
+  KEYS.PJ_NOTES,
+  KEYS.PJ_TIMESTAMPS,
+  KEYS.PJ_ANNOTATIONS,
+  KEYS.PJ_LEARNT,
   KEYS.DSA_COMPLETED,
   KEYS.DSA_NOTES,
   KEYS.DSA_TIMESTAMPS,
@@ -68,11 +73,15 @@ export const VERSIONED = new Set([
   KEYS.CS_ANNOTATIONS,
   KEYS.AI_NOTES,
   KEYS.AI_ANNOTATIONS,
+  KEYS.PJ_NOTES,
+  KEYS.PJ_ANNOTATIONS,
   KEYS.DSA_NOTES,
   KEYS.IK_NOTES,
   KEYS.IP_NOTES,
 ]);
-const TEXT_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
+const TEXT_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.PJ_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
+// Personal notes (annotations) belong to the note text they're pinned to.
+const NOTES_OF = { [KEYS.CS_ANNOTATIONS]: KEYS.CS_NOTES, [KEYS.AI_ANNOTATIONS]: KEYS.AI_NOTES, [KEYS.PJ_ANNOTATIONS]: KEYS.PJ_NOTES };
 const WHOLE = "*"; // journal marker: the whole key changed, not single entries
 const META = "_meta"; // cloud: { key: { entryId: editedAtMs } } for unversioned keys
 const REV = "_rev"; // cloud: { key: { entryId: revision } } — each note's head
@@ -132,7 +141,8 @@ export function subscribeSyncStatus(fn) {
 }
 
 // { type: "merged" | "conflict", key, id } — a note that was edited on two
-// devices at once, and what happened to it.
+// devices at once, and what happened to it. { type: "size", bytes } — the
+// account's synced data is nearing Firestore's 1 MiB document limit.
 const noticeListeners = new Set();
 export function onSyncNotice(fn) {
   noticeListeners.add(fn);
@@ -144,6 +154,25 @@ function notice(n) {
       fn(n);
     } catch (_) {}
   });
+}
+
+// A Firestore document holds at most 1 MiB, and this one holds all of an
+// account's progress and notes. Say so well before a save gets refused.
+const SIZE_WARN_BYTES = 800 * 1024;
+let sizeWarned = false;
+let sizeCheckedAt = 0;
+function warnIfLarge(data) {
+  if (sizeWarned || Date.now() - sizeCheckedAt < 60 * 1000) return;
+  sizeCheckedAt = Date.now();
+  let bytes = 0;
+  try {
+    bytes = new TextEncoder().encode(JSON.stringify(data)).length;
+  } catch (_) {
+    return;
+  }
+  if (bytes < SIZE_WARN_BYTES) return;
+  sizeWarned = true;
+  notice({ type: "size", bytes });
 }
 
 function waitingState() {
@@ -337,6 +366,11 @@ async function pushNote(uid, key, id) {
     // Refused: the head moved on. Fetch it and decide, exactly as a snapshot would.
     const snap = await getDoc(userDocRef(uid));
     if (currentUid === uid && snap.exists()) settleNotes(uid, snap.data() || {}, [[key, id]]);
+    // Still pending on the same base: the head hadn't moved, so this wasn't a
+    // conflict to resolve (e.g. rules that don't know this note field yet).
+    // Fail the push so it backs off and retries, rather than spinning.
+    const after = baseStore.load(uid)[key]?.[id];
+    if (currentUid === uid && loadJournal(uid)[key]?.[id] !== undefined && after && after.rev === base.rev) throw err;
     return;
   }
   if (currentUid !== uid) return;
@@ -504,7 +538,7 @@ function settleNotes(uid, data, only = null) {
 // History and notices for notes decided above, once the store holds the result.
 function finishNotes(after) {
   for (const a of after) {
-    const notesKey = TEXT_KEYS.has(a.key) ? a.key : a.key === KEYS.CS_ANNOTATIONS ? KEYS.CS_NOTES : KEYS.AI_NOTES;
+    const notesKey = TEXT_KEYS.has(a.key) ? a.key : NOTES_OF[a.key];
     if (a.type === "conflict") recordNotKept(a.key, a.id, a.ours, a.at, "conflict");
     else recordNow(notesKey, a.id, "merge");
     notice({ type: a.type, key: a.key, id: a.id });
@@ -665,6 +699,8 @@ export function startCloudSync(uid) {
   currentUid = uid;
   serverReady = false;
   sessionStartedAt = Date.now();
+  sizeWarned = false;
+  sizeCheckedAt = 0;
   // Scope all local reads/writes to this account before touching storage.
   setActiveUid(uid);
 
@@ -694,7 +730,10 @@ export function startCloudSync(uid) {
       if (snap.metadata.hasPendingWrites) return;
 
       const data = snap.data() || {};
-      if (fromServer) migrateOnce(uid, data);
+      if (fromServer) {
+        migrateOnce(uid, data);
+        warnIfLarge(data);
+      }
       const { data: merged, after } = reconcile(uid, data);
       applyingRemote = true;
       try {

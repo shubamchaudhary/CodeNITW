@@ -497,6 +497,33 @@ export function AIStackTopicDetail({ topic, note, checkedDays }) {
   );
 }
 
+// A Projects chapter planned for a day: what it covers, and its notes.
+export function ProjectTopicDetail({ topic, note, checkedDays }) {
+  if (!topic) return null;
+  return (
+    <div>
+      {topic.summary && (
+        <div className="mb-3 flex items-start gap-2 rounded-lg px-3 py-2 bg-slate-500/[0.07] border border-slate-500/20">
+          <span className="text-[13px] shrink-0">📘</span>
+          <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{topic.summary}</p>
+        </div>
+      )}
+      <NotesLink
+        source="projects"
+        topicId={topic.id}
+        note={note}
+        checkedDays={checkedDays}
+        accent={{
+          panel: "border-sky-100 dark:border-sky-900/40 bg-gradient-to-br from-sky-50/60 via-white to-indigo-50/40 dark:from-slate-800/60 dark:via-slate-800/40 dark:to-slate-800/60",
+          bar: "from-sky-400 to-indigo-400",
+          badge: "bg-sky-500/20 text-sky-700 dark:text-sky-300 border-sky-500/25",
+          button: "bg-gradient-to-br from-sky-500 to-indigo-500 shadow-sky-500/30",
+        }}
+      />
+    </div>
+  );
+}
+
 // Shared expandable body for a DSA problem — link, difficulty, star, the 45-day
 // countdown and the solution notes — so a planned DSA card matches the DSA page.
 export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onToggleStar, solvedDays }) {

@@ -32,6 +32,7 @@
     "firebase-admin": "^11.11.0",
     "flywheel-leaderboard": "^0.0.3",
     "framer-motion": "^10.18.0",
+    "mermaid": "^11.17.2",
     "nodemailer": "^6.10.1",
     "primereact": "^10.0.7",
     "prismjs": "^1.29.0",
