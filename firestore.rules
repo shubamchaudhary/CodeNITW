@@ -18,6 +18,7 @@ service cloud.firestore {
     // VERSIONED in src/Data/cloudSync.js.
     function noteFields() {
       return ['CoreStackNotes', 'CoreStackAnnotations', 'AIStackNotes', 'AIStackAnnotations',
+              'ProjectsNotes', 'ProjectsAnnotations',
               'DSAPrepNotes', 'InterviewKitNotes', 'InterviewPrepNotes'];
     }
 

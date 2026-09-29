@@ -26,6 +26,12 @@ export const KEYS = {
   AI_TIMESTAMPS: "AIStackCheckedTimestamps",
   AI_ANNOTATIONS: "AIStackAnnotations",
   AI_LEARNT: "AIStackLearntSections",
+  // Projects (owner-only, like AI Stack): chapters on personal projects.
+  PJ_COMPLETED: "ProjectsCompleted",
+  PJ_NOTES: "ProjectsNotes",
+  PJ_TIMESTAMPS: "ProjectsCheckedTimestamps",
+  PJ_ANNOTATIONS: "ProjectsAnnotations",
+  PJ_LEARNT: "ProjectsLearntSections",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
@@ -197,6 +203,7 @@ function keysFor(source) {
   if (source === "dsa") return { completed: KEYS.DSA_COMPLETED, notes: KEYS.DSA_NOTES };
   if (source === "corestack") return { completed: KEYS.CS_COMPLETED, notes: KEYS.CS_NOTES };
   if (source === "aistack") return { completed: KEYS.AI_COMPLETED, notes: KEYS.AI_NOTES };
+  if (source === "projects") return { completed: KEYS.PJ_COMPLETED, notes: KEYS.PJ_NOTES };
   if (source === "interviewkit") return { completed: KEYS.IK_COMPLETED, notes: KEYS.IK_NOTES };
   return { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
 }
@@ -209,10 +216,11 @@ export function getSourceNote(source, id) {
   return loadJSON(keysFor(source).notes, {})[id] || "";
 }
 
-// Annotations exist only on the full notes pages (Core Stack, AI Stack).
+// Annotations exist only on the full notes pages (Core Stack, AI Stack, Projects).
 export function annotationsKey(source) {
   if (source === "corestack") return KEYS.CS_ANNOTATIONS;
   if (source === "aistack") return KEYS.AI_ANNOTATIONS;
+  if (source === "projects") return KEYS.PJ_ANNOTATIONS;
   return null;
 }
 
@@ -225,6 +233,7 @@ export function getAnnotations(source, id) {
 export function learntKey(source) {
   if (source === "corestack") return KEYS.CS_LEARNT;
   if (source === "aistack") return KEYS.AI_LEARNT;
+  if (source === "projects") return KEYS.PJ_LEARNT;
   return null;
 }
 
@@ -270,12 +279,13 @@ export function setSourceComplete(source, id, value) {
     else delete ts[id];
     saveJSON(KEYS.CS_TIMESTAMPS, ts);
   }
-  // AI Stack, same idea, its own store.
-  if (source === "aistack") {
-    const ts = loadJSON(KEYS.AI_TIMESTAMPS, {});
+  // AI Stack and Projects, same idea, each its own store.
+  const stampsKey = source === "aistack" ? KEYS.AI_TIMESTAMPS : source === "projects" ? KEYS.PJ_TIMESTAMPS : null;
+  if (stampsKey) {
+    const ts = loadJSON(stampsKey, {});
     if (value) ts[id] = Date.now();
     else delete ts[id];
-    saveJSON(KEYS.AI_TIMESTAMPS, ts);
+    saveJSON(stampsKey, ts);
   }
 }
 
@@ -287,6 +297,10 @@ export function coreStackDaysSinceChecked(id) {
 
 export function aiStackDaysSinceChecked(id) {
   return daysSinceStamp(KEYS.AI_TIMESTAMPS, id);
+}
+
+export function projectDaysSinceChecked(id) {
+  return daysSinceStamp(KEYS.PJ_TIMESTAMPS, id);
 }
 
 function daysSinceStamp(key, id) {
@@ -611,6 +625,18 @@ export function aiStackPlanItem(topic) {
     meta: topic.id,
     link: topic.resource?.url,
     estimatedMinutes: topic.minutes || 30,
+  };
+}
+
+// Build the plan item for a Projects chapter.
+export function projectPlanItem(topic) {
+  return {
+    uid: planItemUid(),
+    source: "projects",
+    refId: topic.id,
+    title: topic.title,
+    meta: topic.sectionLabel,
+    estimatedMinutes: 45,
   };
 }
 

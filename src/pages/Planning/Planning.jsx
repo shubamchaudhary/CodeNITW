@@ -10,6 +10,7 @@ import {
   DsaProblemDetail,
   CoreStackTopicDetail,
   AIStackTopicDetail,
+  ProjectTopicDetail,
 } from "../../components/cardDetails";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
@@ -23,6 +24,7 @@ import {
   setSourceNote,
   getCoreStackTopic,
   getAIStackTopic,
+  projectDaysSinceChecked,
   getDsaProblem,
   setDsaStarred,
   dsaDaysSinceSolved,
@@ -46,6 +48,7 @@ import {
   migrateCardTime,
 } from "../../Data/planStore";
 import { getInterviewCard } from "../../Data/interviewCards";
+import { getProjectTopic } from "../../Data/Projects";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -198,6 +201,7 @@ function playSound(type) {
 const SOURCE_META = {
   corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300", border: "border-l-emerald-400" },
   aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
+  projects: { label: "Project", badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300", border: "border-l-sky-400" },
   // Retired Topics page. Kept so days planned before Core Stack still render.
   interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
   dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300", border: "border-l-orange-400" },
@@ -529,6 +533,7 @@ function DayCard({
   const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
   const coreStackTopic = item.source === "corestack" ? getCoreStackTopic(item.refId) : null;
   const aiStackTopic = item.source === "aistack" ? getAIStackTopic(item.refId) : null;
+  const projectTopic = item.source === "projects" ? getProjectTopic(item.refId) : null;
   const dsaProblem = item.source === "dsa" ? getDsaProblem(item.refId) : null;
   const subs = item.subItems || [];
   const subDone = subs.filter((s) => s.completed).length;
@@ -799,6 +804,13 @@ function DayCard({
                     topic={coreStackTopic}
                     note={note}
                     checkedDays={complete ? coreStackDaysSinceChecked(item.refId) : null}
+                  />
+                )}
+                {item.source === "projects" && (
+                  <ProjectTopicDetail
+                    topic={projectTopic}
+                    note={note}
+                    checkedDays={complete ? projectDaysSinceChecked(item.refId) : null}
                   />
                 )}
                 {item.source === "aistack" && (
@@ -1190,6 +1202,8 @@ const Planning = () => {
   const [csNotes, setCsNotes] = useState(() => loadJSON(KEYS.CS_NOTES, {}));
   const [aiCompleted, setAiCompleted] = useState(() => loadJSON(KEYS.AI_COMPLETED, {}));
   const [aiNotes, setAiNotes] = useState(() => loadJSON(KEYS.AI_NOTES, {}));
+  const [pjCompleted, setPjCompleted] = useState(() => loadJSON(KEYS.PJ_COMPLETED, {}));
+  const [pjNotes, setPjNotes] = useState(() => loadJSON(KEYS.PJ_NOTES, {}));
   const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
   const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [timeLog, setTimeLog] = useState(() => getTimeLog());
@@ -1222,6 +1236,8 @@ const Planning = () => {
         if (key === KEYS.CS_NOTES) setCsNotes(loadJSON(KEYS.CS_NOTES, {}));
         if (key === KEYS.AI_COMPLETED) setAiCompleted(loadJSON(KEYS.AI_COMPLETED, {}));
         if (key === KEYS.AI_NOTES) setAiNotes(loadJSON(KEYS.AI_NOTES, {}));
+        if (key === KEYS.PJ_COMPLETED) setPjCompleted(loadJSON(KEYS.PJ_COMPLETED, {}));
+        if (key === KEYS.PJ_NOTES) setPjNotes(loadJSON(KEYS.PJ_NOTES, {}));
         if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
         if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
         if (key === KEYS.TIME_LOG) setTimeLog(getTimeLog());
@@ -1301,8 +1317,9 @@ const Planning = () => {
     if (item.source === "dsa") return { complete: !!dsaCompleted[item.refId], note: dsaNotes[item.refId] || "" };
     if (item.source === "corestack") return { complete: !!csCompleted[item.refId], note: csNotes[item.refId] || "" };
     if (item.source === "aistack") return { complete: !!aiCompleted[item.refId], note: aiNotes[item.refId] || "" };
+    if (item.source === "projects") return { complete: !!pjCompleted[item.refId], note: pjNotes[item.refId] || "" };
     return { complete: !!ipCompleted[item.refId], note: ipNotes[item.refId] || "" };
-  }, [ipCompleted, dsaCompleted, csCompleted, aiCompleted, ipNotes, dsaNotes, csNotes, aiNotes]);
+  }, [ipCompleted, dsaCompleted, csCompleted, aiCompleted, pjCompleted, ipNotes, dsaNotes, csNotes, aiNotes, pjNotes]);
 
   const addItem = useCallback((item) => {
     if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) return;
@@ -1344,6 +1361,7 @@ const Planning = () => {
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
     else if (item.source === "corestack") setCsCompleted((m) => ({ ...m, [item.refId]: next }));
     else if (item.source === "aistack") setAiCompleted((m) => ({ ...m, [item.refId]: next }));
+    else if (item.source === "projects") setPjCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
     if (next) playSound("taskDone");
   }, [items, current, today, persist, resolve, stopPomoOn]);
@@ -1354,6 +1372,7 @@ const Planning = () => {
     if (item.source === "dsa") setDsaNotes((m) => ({ ...m, [item.refId]: val }));
     else if (item.source === "corestack") setCsNotes((m) => ({ ...m, [item.refId]: val }));
     else if (item.source === "aistack") setAiNotes((m) => ({ ...m, [item.refId]: val }));
+    else if (item.source === "projects") setPjNotes((m) => ({ ...m, [item.refId]: val }));
     else setIpNotes((m) => ({ ...m, [item.refId]: val }));
   }, [items, persist]);
 
