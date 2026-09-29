@@ -23,6 +23,7 @@ const NAV_ITEMS = [
 const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
   { path: "/interview-kit", label: "INTERVIEW" },
+  { path: "/projects", label: "PROJECTS" },
 ];
 
 export default function Header() {
@@ -70,7 +71,7 @@ export default function Header() {
   const toggleMenu = () => setMenuOpen(!menuOpen);
   // A stack's topic pages live under /notes/<stack>/…, so its nav item stays
   // lit while you read.
-  const NOTES_OF = { "/core-stack": "/notes/corestack/", "/ai-stack": "/notes/aistack/" };
+  const NOTES_OF = { "/core-stack": "/notes/corestack/", "/ai-stack": "/notes/aistack/", "/projects": "/notes/projects/" };
   const isActive = (path) =>
     location.pathname === path || (NOTES_OF[path] && location.pathname.startsWith(NOTES_OF[path]));
 

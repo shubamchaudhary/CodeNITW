@@ -25,6 +25,7 @@ import {
   caretFromPoint,
   paintRanges,
 } from "./noteAnchors";
+import Diagram, { hastText, mermaidCode } from "./Diagram";
 import "./notes.css";
 
 // The reading view. One surface, like a printed page: the note on the left,
@@ -79,6 +80,16 @@ export function noteImage(assets) {
       return <img src={data} alt={alt || "screenshot"} className="note-img" />;
     }
     return <img src={src} alt={alt} {...rest} className="note-img" />;
+  };
+}
+
+// A fenced ```mermaid block draws as a diagram; every other block is the
+// usual <pre>.
+function notePre(dark) {
+  return function Pre({ node, children, ...rest }) {
+    const code = mermaidCode(node);
+    if (code) return <Diagram code={hastText(code).trim()} dark={dark} />;
+    return <pre {...rest}>{children}</pre>;
   };
 }
 
@@ -140,7 +151,10 @@ export default function NoteReader({
 }) {
   const navTop = topOffset;
   const sections = useMemo(() => splitSections(text), [text]);
-  const components = useMemo(() => ({ ...TRACKED_COMPONENTS, img: noteImage(assets) }), [assets]);
+  const components = useMemo(
+    () => ({ ...TRACKED_COMPONENTS, img: noteImage(assets), pre: notePre(colorMode === "dark") }),
+    [assets, colorMode]
+  );
 
   const [editing, setEditing] = useState(null); // section index | "append" | null
   const [toolbar, setToolbar] = useState(null); // selection toolbar

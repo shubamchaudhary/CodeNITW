@@ -1,10 +1,12 @@
-// Everything that differs between the two study stacks (Core Stack, AI Stack):
+// Everything that differs between the study stacks (Core Stack, AI Stack,
+// Projects):
 // their topics and sections, the stores behind them, and how a topic's reading
 // list and labels are drawn. The notes page, its left topic list and its topic
-// header read all of it from here, so both stacks share one layout.
+// header read all of it from here, so every stack shares one layout.
 
 import { CORE_STACK_SECTIONS, CORE_STACK_TOPICS } from "../../Data/CoreStack";
 import { AI_STACK_SECTIONS, AI_STACK_TOPICS, AI_STACK_SKIP } from "../../Data/AIStack";
+import { PROJECT_SECTIONS, PROJECT_TOPICS, getProjectTopic } from "../../Data/Projects";
 import {
   KEYS,
   getCoreStackTopic,
@@ -13,6 +15,8 @@ import {
   aiStackPlanItem,
   coreStackDaysSinceChecked,
   aiStackDaysSinceChecked,
+  projectPlanItem,
+  projectDaysSinceChecked,
 } from "../../Data/planStore";
 
 const PRIORITY_TEXT = {
@@ -83,9 +87,40 @@ export const STACKS = {
       chip: "hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-300",
     },
   },
+  // Owner-only, like AI Stack: one section per project, one topic per chapter.
+  projects: {
+    key: "projects",
+    label: "Projects",
+    home: "/projects",
+    ownerOnly: true,
+    notesKey: KEYS.PJ_NOTES,
+    completedKey: KEYS.PJ_COMPLETED,
+    timestampsKey: KEYS.PJ_TIMESTAMPS,
+    getTopic: getProjectTopic,
+    topics: PROJECT_TOPICS,
+    sections: PROJECT_SECTIONS.map((s) => ({
+      key: s.key,
+      label: s.label,
+      topics: PROJECT_TOPICS.filter((t) => t.section === s.key),
+    })),
+    filters: null,
+    matchFilter: () => true,
+    tag: (topic) => ({ label: topic.id, cls: "text-sky-500 dark:text-sky-400" }),
+    eyebrow: (topic) => topic.sectionLabel,
+    summary: (topic) => topic.summary || "",
+    planItem: projectPlanItem,
+    daysSinceDone: projectDaysSinceChecked,
+    accent: {
+      text: "text-sky-600 dark:text-sky-400",
+      bar: "from-sky-500 to-indigo-400",
+      button: "bg-gradient-to-br from-sky-500 to-indigo-500 shadow-sky-500/30",
+      ring: "focus:ring-sky-400/40 focus:border-sky-400",
+      chip: "hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300",
+    },
+  },
 };
 
-// A topic's reading list, in one shape for both stacks:
+// A topic's reading list, in one shape for every stack (Projects has none):
 //   { id, kind: video|doc|self, title, source, meta, minutes, estimate, note,
 //     url?, playlistUrl?, position? }
 export function readingList(stack, topic) {

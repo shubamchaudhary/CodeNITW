@@ -21,9 +21,13 @@ import { collection, doc, getDocs, limit, orderBy, query, serverTimestamp, setDo
 import { db } from "../firebase";
 import { KEYS, loadJSON, subscribe } from "./planStore";
 
-const NOTE_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
-const ANNOTATIONS_FOR = { [KEYS.CS_NOTES]: KEYS.CS_ANNOTATIONS, [KEYS.AI_NOTES]: KEYS.AI_ANNOTATIONS };
-const NOTES_FOR = { [KEYS.CS_ANNOTATIONS]: KEYS.CS_NOTES, [KEYS.AI_ANNOTATIONS]: KEYS.AI_NOTES };
+const NOTE_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.PJ_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
+const ANNOTATIONS_FOR = {
+  [KEYS.CS_NOTES]: KEYS.CS_ANNOTATIONS,
+  [KEYS.AI_NOTES]: KEYS.AI_ANNOTATIONS,
+  [KEYS.PJ_NOTES]: KEYS.PJ_ANNOTATIONS,
+};
+const NOTES_FOR = Object.fromEntries(Object.entries(ANNOTATIONS_FOR).map(([notes, ann]) => [ann, notes]));
 
 const IDLE_MS = 20 * 1000;
 const MAX_OPEN_MS = 2 * 60 * 1000;
