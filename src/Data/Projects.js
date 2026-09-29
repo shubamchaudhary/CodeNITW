@@ -115,8 +115,15 @@ export const PROJECT_TOPICS = [
     id: "LL-06",
     section: "loglens",
     sectionLabel: "LogLens",
+    title: "Evals, benchmarks & performance",
+    summary: "How quality and speed are measured: retrieval, groundedness and anomaly evals, ingest and query benchmarks, with real numbers.",
+  },
+  {
+    id: "LL-07",
+    section: "loglens",
+    sectionLabel: "LogLens",
     title: "Stories & interview kit",
-    summary: "Design decisions, trade-offs, likely questions and answers for LogLens.",
+    summary: "Design decisions, trade-offs, the pitch and demo, likely questions and answers for LogLens.",
   },
 ];
 
