@@ -39,6 +39,11 @@ import {
   prettyDate,
   relativeLabel,
   subscribe,
+  timeTarget,
+  getTimeLog,
+  addTime,
+  setDayTime,
+  migrateCardTime,
 } from "../../Data/planStore";
 import { getInterviewCard } from "../../Data/interviewCards";
 
@@ -93,39 +98,43 @@ function pomoElapsedWorkSeconds(p) {
   return sec;
 }
 
-// Live work seconds not yet committed to the target's stored spentSeconds.
-function liveExtraSec(pomo, itemUid, subUid) {
-  if (!pomo || pomo.itemUid !== itemUid) return 0;
-  if ((pomo.subItemUid || null) !== (subUid || null)) return 0;
-  return Math.max(0, pomoElapsedWorkSeconds(pomo) - (pomo.flushedSec || 0));
+// Work seconds of a pomo not yet written to the time log.
+function unloggedSec(p) {
+  if (!p) return 0;
+  return Math.max(0, pomoElapsedWorkSeconds(p) - (p.flushedSec || 0));
 }
 
-// Stored + live spent seconds for a sub-task.
-function subSpentSec(pomo, itemUid, sub) {
-  return (sub.spentSeconds || 0) + liveExtraSec(pomo, itemUid, sub.uid);
+// What the time log needs to know about a card.
+function cardRef(item) {
+  return { source: item.source, refId: item.refId, uid: item.uid, title: item.title };
 }
 
-// Stored + live spent seconds for a task (sum of sub-tasks if it has any).
-function itemSpentSec(pomo, item) {
-  const subs = item.subItems || [];
-  if (subs.length > 0) return subs.reduce((a, s) => a + subSpentSec(pomo, item.uid, s), 0);
-  return (item.spentSeconds || 0) + liveExtraSec(pomo, item.uid, null);
+// The card a pomo is timing. A session started before the time log only
+// names the card's uid, so look for it on its day.
+function pomoCard(p) {
+  if (!p) return null;
+  if (p.card) return p.card;
+  const item = getDay(p.day || dateKey()).find((i) => i.uid === p.itemUid);
+  return item ? cardRef(item) : null;
 }
 
-// Move a pomo's uncommitted live seconds into its target's stored spentSeconds.
-function flushPomoTime(items, p) {
-  if (!p) return { items, pomo: p };
-  const elapsed = pomoElapsedWorkSeconds(p);
-  const delta = elapsed - (p.flushedSec || 0);
-  if (delta <= 0) return { items, pomo: p };
-  const nextItems = items.map((i) => {
-    if (i.uid !== p.itemUid) return i;
-    if (p.subItemUid) {
-      return { ...i, subItems: (i.subItems || []).map((s) => s.uid === p.subItemUid ? { ...s, spentSeconds: (s.spentSeconds || 0) + delta } : s) };
-    }
-    return { ...i, spentSeconds: (i.spentSeconds || 0) + delta };
-  });
-  return { items: nextItems, pomo: { ...p, flushedSec: elapsed } };
+// Log a pomo's unlogged work time on the day it ran. Returns the pomo, marked
+// as logged up to now.
+function logPomoTime(p) {
+  const sec = unloggedSec(p);
+  if (!sec) return p;
+  const card = pomoCard(p);
+  if (card) addTime(p.day || dateKey(), card, sec, p.subItemUid || null);
+  return { ...p, flushedSec: pomoElapsedWorkSeconds(p) };
+}
+
+// "tomorrow", "yesterday", "Oct 2"…
+function dayName(key, today) {
+  if (key === today) return "today";
+  if (key === addDays(today, 1)) return "tomorrow";
+  if (key === addDays(today, -1)) return "yesterday";
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 function fmtSpent(sec) {
@@ -470,7 +479,8 @@ function DayCard({
   onToggleOpen, onToggleComplete, onNoteChange, onRemove, onMove, moveLabel,
   isStarred, onToggleStar, solvedDays,
   onTimeChange, onToggleSubItem, onAddSubItem, onRemoveSubItem, onSubItemTimeChange,
-  pomoActive, pomoItemUid, pomo, onStartPomo,
+  pomoActive, pomoItemUid, onStartPomo,
+  daySec, totalSec, subSec, dayLabel, canLog, onLogTime,
   onDragStart, onDragOver, onDrop, onDragEnd, isDragging, isOver,
 }) {
   const meta = SOURCE_META[item.source];
@@ -482,6 +492,14 @@ function DayCard({
   const [subTimeInput, setSubTimeInput] = useState("25");
   const [editingSubTime, setEditingSubTime] = useState(null);
   const [subTimeVal, setSubTimeVal] = useState("");
+  const [logVal, setLogVal] = useState("");
+
+  const logTime = (e) => {
+    e.preventDefault();
+    const m = parseInt(logVal) || 0;
+    if (m > 0) onLogTime(m);
+    setLogVal("");
+  };
 
   useEffect(() => { setLocalNote(note); }, [note]);
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
@@ -517,7 +535,8 @@ function DayCard({
   const hasSubs = subs.length > 0;
   const parentAutoComplete = hasSubs;
   const totalMin = itemTotalMinutes(item);
-  const spentSec = itemSpentSec(pomo, item);
+  // Its time across every day, shown once some came from another day.
+  const overallSec = totalSec > daySec ? totalSec : 0;
 
   const isThisPomo = pomoItemUid === item.uid;
 
@@ -555,15 +574,21 @@ function DayCard({
             {hasSubs && (
               <p className="text-[10px] text-gray-400 dark:text-gray-500">
                 {subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}
-                {spentSec > 0 && <span className="text-emerald-500 dark:text-emerald-400 font-semibold"> · {fmtSpent(spentSec)} spent</span>}
+                {daySec > 0 && <span className="text-emerald-500 dark:text-emerald-400 font-semibold"> · {fmtSpent(daySec)} spent</span>}
+                {overallSec > 0 && <span> · {fmtSpent(overallSec)} total</span>}
               </p>
             )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-            {!hasSubs && spentSec > 0 && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title="Time spent focusing">
-                {fmtSpent(spentSec)}
+            {!hasSubs && daySec > 0 && (
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title={`Time spent ${dayLabel}`}>
+                {fmtSpent(daySec)}
+              </span>
+            )}
+            {!hasSubs && overallSec > 0 && (
+              <span className="hidden sm:inline text-[10px] font-semibold text-gray-400 dark:text-gray-500" title="Time on this card across all days">
+                {fmtSpent(overallSec)} total
               </span>
             )}
             {!hasSubs && (
@@ -634,6 +659,39 @@ function DayCard({
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
               <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-xs">
+                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                    {daySec > 0 ? (
+                      <span><b className="font-semibold text-emerald-600 dark:text-emerald-400">{fmtSpent(daySec)}</b> spent {dayLabel}</span>
+                    ) : (
+                      <span>No time spent {dayLabel}</span>
+                    )}
+                    {overallSec > 0 && <span>· {fmtSpent(overallSec)} on this card in total</span>}
+                  </span>
+                  {canLog && (
+                    <form onSubmit={logTime} className="ml-auto flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={logVal}
+                        onChange={(e) => setLogVal(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                        placeholder="min"
+                        aria-label="Minutes spent"
+                        className="w-14 px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!(parseInt(logVal) > 0)}
+                        className="px-2.5 py-1 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs font-semibold disabled:opacity-40 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"
+                        title={`Add time you spent on this card ${dayLabel} without the timer`}
+                      >
+                        Log time
+                      </button>
+                    </form>
+                  )}
+                </div>
+
                 {item.source === "custom" && hasSubs && (
                   <div className="mb-3">
                     <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Sub-tasks</h4>
@@ -652,9 +710,9 @@ function DayCard({
                           <span className={`flex-1 text-xs ${s.completed ? "line-through text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>{s.title}</span>
 
                           <div className="flex items-center gap-1.5 shrink-0">
-                            {subSpentSec(pomo, item.uid, s) > 0 && (
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title="Time spent focusing">
-                                {fmtSpent(subSpentSec(pomo, item.uid, s))}
+                            {subSec(s.uid) > 0 && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title={`Time spent ${dayLabel}`}>
+                                {fmtSpent(subSec(s.uid))}
                               </span>
                             )}
                             {editingSubTime === s.uid ? (
@@ -773,6 +831,64 @@ function DayCard({
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+// ─── Time Spent ──────────────────────────────────────────────────────────────
+// Everything the day's time went to — including cards since moved to another
+// day or removed, whose time stays here. A row's time can be corrected.
+function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
+  const [editing, setEditing] = useState(null);
+  const [val, setVal] = useState("");
+  const total = rows.reduce((a, r) => a + r.sec, 0);
+
+  const save = (row) => {
+    const m = parseInt(val);
+    if (!Number.isNaN(m) && m !== Math.round(row.sec / 60)) onSetTime(row.target, m * 60);
+    setEditing(null);
+  };
+
+  return (
+    <div className={`rounded-2xl ${GLASS} p-3 sm:p-4`}>
+      <div className="flex items-center justify-between mb-1 px-1">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Time spent {dayLabel}</h3>
+        <span className="text-xs font-bold text-gray-700 dark:text-gray-200">{fmtSpent(total)}</span>
+      </div>
+      <div className="divide-y divide-gray-100 dark:divide-white/5">
+        {rows.map((r) => (
+          <div key={r.target} className="flex items-center gap-2 sm:gap-3 px-1 py-2">
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${(SOURCE_META[r.source] || SOURCE_META.custom).badge}`}>
+              {(SOURCE_META[r.source] || SOURCE_META.custom).label}
+            </span>
+            <span className="flex-1 min-w-0 truncate text-sm text-gray-700 dark:text-gray-300">{r.title}</span>
+            {r.where && <span className="text-[10px] text-gray-400 dark:text-gray-500 shrink-0">{r.where}</span>}
+            {editing === r.target ? (
+              <input
+                autoFocus
+                type="text"
+                inputMode="numeric"
+                value={val}
+                onChange={(e) => setVal(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                onBlur={() => save(r)}
+                onKeyDown={(e) => { if (e.key === "Enter") save(r); if (e.key === "Escape") setEditing(null); }}
+                aria-label="Minutes spent"
+                className="w-14 px-1.5 py-0.5 text-xs rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+              />
+            ) : (
+              <button
+                onClick={() => { setVal(String(Math.round(r.sec / 60))); setEditing(r.target); }}
+                disabled={!canEdit || r.live}
+                title={r.live ? "Timer running" : canEdit ? "Correct the time (minutes, 0 removes it)" : undefined}
+                className="flex items-center gap-1 text-xs font-semibold tabular-nums text-emerald-600 dark:text-emerald-400 enabled:hover:text-violet-600 dark:enabled:hover:text-violet-400 transition-colors shrink-0"
+              >
+                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                {fmtSpent(r.sec)}
+              </button>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1061,6 +1177,8 @@ const Planning = () => {
     return unsub;
   }, []);
   useEffect(() => { backfillDsaTimestamps(); }, []);
+  // Once the account is known, so the moved time lands in (and syncs to) it.
+  useEffect(() => { if (authReady) migrateCardTime(); }, [authReady]);
 
   const today = dateKey();
   const [current, setCurrent] = useState(today);
@@ -1074,6 +1192,7 @@ const Planning = () => {
   const [aiNotes, setAiNotes] = useState(() => loadJSON(KEYS.AI_NOTES, {}));
   const [dsaNotes, setDsaNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
   const [dsaStarred, setDsaStarredMap] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
+  const [timeLog, setTimeLog] = useState(() => getTimeLog());
   const [pickerOpen, setPickerOpen] = useState(false);
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
@@ -1091,13 +1210,11 @@ const Planning = () => {
 
   const currentRef = useRef(current);
   useEffect(() => { currentRef.current = current; }, [current]);
-  const itemsRef = useRef(items);
-  useEffect(() => { itemsRef.current = items; }, [items]);
   useEffect(() => setItems(getDay(current)), [current]);
 
   useEffect(
     () =>
-      subscribe((key) => {
+      subscribe((key, info = {}) => {
         if (key === KEYS.IP_COMPLETED) setIpCompleted(loadJSON(KEYS.IP_COMPLETED, {}));
         if (key === KEYS.DSA_COMPLETED) setDsaCompleted(loadJSON(KEYS.DSA_COMPLETED, {}));
         if (key === KEYS.IP_NOTES) setIpNotes(loadJSON(KEYS.IP_NOTES, {}));
@@ -1107,7 +1224,13 @@ const Planning = () => {
         if (key === KEYS.AI_NOTES) setAiNotes(loadJSON(KEYS.AI_NOTES, {}));
         if (key === KEYS.DSA_NOTES) setDsaNotes(loadJSON(KEYS.DSA_NOTES, {}));
         if (key === KEYS.DSA_STARRED) setDsaStarredMap(loadJSON(KEYS.DSA_STARRED, {}));
-        if (key === KEYS.PLAN_DAYS) setItems(getDay(currentRef.current));
+        if (key === KEYS.TIME_LOG) setTimeLog(getTimeLog());
+        if (key === KEYS.PLAN_DAYS) {
+          setItems(getDay(currentRef.current));
+          // Cards synced from a device that hasn't moved their time out yet.
+          // Deferred: not a write from inside the sync layer's own update.
+          if (info.remote || info.account) setTimeout(migrateCardTime, 0);
+        }
       }),
     []
   );
@@ -1152,18 +1275,26 @@ const Planning = () => {
     setDay(current, next);
   }, [current]);
 
-  // Commit the running pomo's live seconds into the target's stored spentSeconds.
+  // Write the running pomo's unlogged seconds to the time log.
   const flushPomo = useCallback(() => {
     const p = pomoRef.current;
     if (!p) return null;
-    const { items: nextItems, pomo: np } = flushPomoTime(itemsRef.current, p);
-    if (np !== p) {
-      persist(nextItems);
-      pomoRef.current = np;
-    }
+    const np = logPomoTime(p);
+    pomoRef.current = np;
     return np;
-  }, [persist]);
+  }, []);
   useEffect(() => { flushRef.current = flushPomo; }, [flushPomo]);
+
+  // Log the timer's time and stop it, if it's timing this card — or, given a
+  // subUid, that sub-task (null: the card itself, not one of its sub-tasks).
+  const stopPomoOn = useCallback((itemUid, subUid) => {
+    const p = pomoRef.current;
+    if (!p || p.itemUid !== itemUid) return;
+    if (subUid !== undefined && (p.subItemUid || null) !== subUid) return;
+    logPomoTime(p);
+    pomoRef.current = null;
+    setPomo(null);
+  }, []);
 
   const resolve = useCallback((item) => {
     if (item.source === "custom") return { complete: !!item.completed, note: item.notes || "" };
@@ -1178,45 +1309,44 @@ const Planning = () => {
     persist([...items, item]);
   }, [items, persist]);
 
-  const removeItem = useCallback((id) => persist(items.filter((i) => i.uid !== id)), [items, persist]);
+  // The card's time stays in the log, on the days it was spent.
+  const removeItem = useCallback((id) => {
+    stopPomoOn(id);
+    persist(items.filter((i) => i.uid !== id));
+  }, [items, persist, stopPomoOn]);
 
   const moveItem = useCallback((item, targetKey) => {
     if (targetKey === current) return;
+    stopPomoOn(item.uid);
     persist(items.filter((i) => i.uid !== item.uid));
     const targetItems = getDay(targetKey);
     const dup = item.source !== "custom" && targetItems.some((i) => i.source === item.source && i.refId === item.refId);
     if (!dup) setDay(targetKey, [...targetItems, item]);
-  }, [items, current, persist]);
+  }, [items, current, persist, stopPomoOn]);
 
   const toggleComplete = useCallback((item) => {
     if (current !== today) return;
     const hasSubs = (item.subItems || []).length > 0;
     if (item.source === "custom" && hasSubs) return; // parent auto-completes with sub-tasks
 
-    // If a timer is running for this exact task, bank its elapsed time first.
-    const pomoForThis = pomo && pomo.itemUid === item.uid && !pomo.subItemUid;
-    let base = items;
-    if (pomoForThis) {
-      base = flushPomoTime(items, pomo).items;
-      setPomo(null);
-    }
+    // If a timer is running for this exact task, log its time and stop it.
+    stopPomoOn(item.uid, null);
 
     if (item.source === "custom") {
       const next = !item.completed;
-      persist(base.map((i) => (i.uid === item.uid ? { ...i, completed: next } : i)));
+      persist(items.map((i) => (i.uid === item.uid ? { ...i, completed: next } : i)));
       if (next) playSound("taskDone");
       return;
     }
 
     const next = !resolve(item).complete;
-    if (base !== items) persist(base); // save the banked spent time for DSA/topic items
     setSourceComplete(item.source, item.refId, next);
     if (item.source === "dsa") setDsaCompleted((m) => ({ ...m, [item.refId]: next }));
     else if (item.source === "corestack") setCsCompleted((m) => ({ ...m, [item.refId]: next }));
     else if (item.source === "aistack") setAiCompleted((m) => ({ ...m, [item.refId]: next }));
     else setIpCompleted((m) => ({ ...m, [item.refId]: next }));
     if (next) playSound("taskDone");
-  }, [items, current, today, persist, resolve, pomo]);
+  }, [items, current, today, persist, resolve, stopPomoOn]);
 
   const changeNote = useCallback((item, val) => {
     if (item.source === "custom") { persist(items.map((i) => (i.uid === item.uid ? { ...i, notes: val } : i))); return; }
@@ -1240,14 +1370,9 @@ const Planning = () => {
 
   const toggleSubItem = useCallback((itemUid, subUid) => {
     if (current !== today) return;
-    // If a timer is running for this exact sub-task, bank its elapsed time first.
-    const pomoForSub = pomo && pomo.itemUid === itemUid && pomo.subItemUid === subUid;
-    let base = items;
-    if (pomoForSub) {
-      base = flushPomoTime(items, pomo).items;
-      setPomo(null);
-    }
-    persist(base.map((i) => {
+    // If a timer is running for this exact sub-task, log its time and stop it.
+    stopPomoOn(itemUid, subUid);
+    persist(items.map((i) => {
       if (i.uid !== itemUid) return i;
       const subs = (i.subItems || []).map((s) => (s.uid === subUid ? { ...s, completed: !s.completed } : s));
       const toggled = subs.find((s) => s.uid === subUid);
@@ -1256,7 +1381,7 @@ const Planning = () => {
       if (allDone && !i.completed) playSound("timerDone");
       return { ...i, subItems: subs, completed: allDone };
     }));
-  }, [items, persist, current, today, pomo]);
+  }, [items, persist, current, today, stopPomoOn]);
 
   const addSubItem = useCallback((itemUid, title, estimatedMinutes = 25) => {
     persist(items.map((i) => (i.uid !== itemUid ? i : {
@@ -1267,13 +1392,14 @@ const Planning = () => {
   }, [items, persist]);
 
   const removeSubItem = useCallback((itemUid, subUid) => {
+    stopPomoOn(itemUid, subUid);
     persist(items.map((i) => {
       if (i.uid !== itemUid) return i;
       const subs = (i.subItems || []).filter((s) => s.uid !== subUid);
       const allDone = subs.length > 0 && subs.every((s) => s.completed);
       return { ...i, subItems: subs, completed: subs.length > 0 ? allDone : i.completed };
     }));
-  }, [items, persist]);
+  }, [items, persist, stopPomoOn]);
 
   const startPomo = useCallback((item, subItem) => {
     const target = subItem || item;
@@ -1284,6 +1410,9 @@ const Planning = () => {
     setPomo({
       itemUid: item.uid,
       subItemUid: subItem?.uid || null,
+      // Its time is logged against this card, on the day it started.
+      card: cardRef(item),
+      day: dateKey(),
       itemTitle: subItem ? `${item.title} → ${subItem.title}` : item.title,
       sessions,
       currentIdx: 0,
@@ -1331,8 +1460,61 @@ const Planning = () => {
   const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
   const isToday = current === today;
 
+  // Logged time: this day's, per card, and each card's total over every day.
+  const { dayLog, totals } = useMemo(() => {
+    const dayLog = {};
+    const totals = {};
+    for (const e of Object.values(timeLog)) {
+      totals[e.target] = (totals[e.target] || 0) + e.sec;
+      if (e.day === current) dayLog[e.target] = e;
+    }
+    return { dayLog, totals };
+  }, [timeLog, current]);
+
+  // Cards with time this day that are no longer on its plan: where they went.
+  const whereNow = useMemo(() => {
+    const onPlan = new Set(items.map(timeTarget));
+    const days = loadJSON(KEYS.PLAN_DAYS, {});
+    const out = {};
+    for (const target of Object.keys(dayLog)) {
+      if (onPlan.has(target)) continue;
+      const on = Object.keys(days).filter((d) => d !== current && (days[d] || []).some((i) => timeTarget(i) === target)).sort();
+      const to = on.find((d) => d > current) || on[on.length - 1];
+      out[target] = to ? `Moved to ${dayName(to, today)}` : "Removed";
+    }
+    return out;
+  }, [dayLog, items, current, today]);
+
+  // The running timer's seconds not logged yet count too.
+  const liveCard = pomoCard(pomo);
+  const liveTarget = liveCard && timeTarget(liveCard);
+  const liveSec = liveCard ? unloggedSec(pomo) : 0;
+  const liveToday = liveSec > 0 && (pomo.day || today) === current;
+
+  const timeOn = (item) => {
+    const target = timeTarget(item);
+    const entry = dayLog[target];
+    const live = target === liveTarget ? liveSec : 0;
+    return {
+      daySec: (entry?.sec || 0) + (liveToday ? live : 0),
+      totalSec: (totals[target] || 0) + live,
+      subSec: (subUid) => ((entry?.subs || {})[subUid] || 0) + (liveToday && live && pomo.subItemUid === subUid ? live : 0),
+    };
+  };
+
+  const timeRows = Object.values(dayLog).map((e) => ({ ...e, where: whereNow[e.target] }));
+  if (liveToday) {
+    const row = timeRows.find((r) => r.target === liveTarget);
+    if (row) Object.assign(row, { sec: row.sec + liveSec, live: true });
+    else timeRows.push({ target: liveTarget, source: liveCard.source, title: liveCard.title, sec: liveSec, live: true });
+  }
+  const planOrder = new Map(items.map((i, n) => [timeTarget(i), n]));
+  timeRows.sort((a, b) => (planOrder.get(a.target) ?? 1e9) - (planOrder.get(b.target) ?? 1e9) || a.title.localeCompare(b.title));
+
+  const canLog = current <= today; // no time spent on a day that hasn't come
+  const dayLabel = isToday ? "today" : current === addDays(today, -1) ? "yesterday" : "this day";
   const totalPlanned = items.reduce((s, i) => s + itemTotalMinutes(i), 0);
-  const totalDone = Math.round(items.reduce((s, i) => s + itemSpentSec(pomo, i), 0) / 60);
+  const totalDone = Math.round(timeRows.reduce((s, r) => s + r.sec, 0) / 60);
 
   if (!authReady) return null;
 
@@ -1392,20 +1574,20 @@ const Planning = () => {
             </div>
           </div>
 
-          {totalPlanned > 0 && (
+          {(totalPlanned > 0 || totalDone > 0) && (
             <div className="px-2 mb-3">
               <div className={`rounded-xl ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
                 <svg className="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-gray-700 dark:text-gray-300">{fmt(totalPlanned)} planned</span>
-                    <span className="text-gray-400 dark:text-gray-500">{fmt(totalDone)} done</span>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
+                    <span className="text-gray-400 dark:text-gray-500">{fmt(totalDone) || "0m"} done</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
                     <motion.div
                       className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
                       initial={{ width: 0 }}
-                      animate={{ width: `${totalPlanned ? (totalDone / totalPlanned) * 100 : 0}%` }}
+                      animate={{ width: `${totalPlanned ? Math.min(100, (totalDone / totalPlanned) * 100) : 0}%` }}
                       transition={{ duration: 0.5 }}
                     />
                   </div>
@@ -1472,8 +1654,11 @@ const Planning = () => {
                         onRemoveSubItem={removeSubItem}
                         pomoActive={!!pomo && pomo.status !== "complete"}
                         pomoItemUid={pomo?.itemUid}
-                        pomo={pomo}
                         onStartPomo={startPomo}
+                        {...timeOn(item)}
+                        dayLabel={dayLabel}
+                        canLog={canLog}
+                        onLogTime={(minutes) => addTime(current, item, minutes * 60)}
                         onDragStart={handleDragStart}
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
@@ -1495,6 +1680,17 @@ const Planning = () => {
               </button>
             </motion.div>
           </div>
+
+          {timeRows.length > 0 && (
+            <div className="px-2 mb-6">
+              <TimeSpent
+                rows={timeRows}
+                dayLabel={dayLabel}
+                canEdit={canLog}
+                onSetTime={(target, sec) => setDayTime(current, target, sec)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
