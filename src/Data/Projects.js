@@ -3,6 +3,8 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site.
+// `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
+// a topic holds, so the whole guide can be imported as one file and split.
 
 export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
@@ -12,6 +14,7 @@ export const PROJECT_SECTIONS = [
 export const PROJECT_TOPICS = [
   {
     id: "IPP-01",
+    parts: [0],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Overview & architecture",
@@ -19,6 +22,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-02",
+    parts: [1, 2],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "JavaScript & React",
@@ -26,6 +30,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-03",
+    parts: [3, 4, 5, 6],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Routing, performance, CSS, browser & Vite",
@@ -33,6 +38,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-04",
+    parts: [7, 8, 9, 10],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Firebase, Auth, Firestore & rules",
@@ -40,6 +46,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-05",
+    parts: [11, 12, 13],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Serverless, APIs & email",
@@ -47,6 +54,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-06",
+    parts: [14, 15, 16],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Sync engine, merge & history",
@@ -54,6 +62,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-07",
+    parts: [17, 18, 19],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Contests, reminders & time log",
@@ -61,6 +70,7 @@ export const PROJECT_TOPICS = [
   },
   {
     id: "IPP-08",
+    parts: [20, 21],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
     title: "Stories & interview kit",
