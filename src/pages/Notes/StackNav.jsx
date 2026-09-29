@@ -1,4 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { requireAuth } from "../../Data/authGate";
+import { loadJSON, saveJSON } from "../../Data/planStore";
+import { recordNow } from "../../Data/noteHistory";
 
 // The left column of the notes page: every topic of the stack, grouped by
 // section, with a tick for what's done — the course outline you'd find on a
@@ -80,6 +84,7 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
             ))}
           </div>
         )}
+        {stack.importable && <ImportChapters stack={stack} onPick={onPick} />}
       </div>
 
       <nav ref={listRef} className="note-toc flex-1 overflow-y-auto px-3 py-3">
@@ -158,6 +163,86 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
         )}
       </nav>
     </div>
+  );
+}
+
+// Fill a stack's topics from Markdown files named after them ("IPP-03 - ….md"):
+// read here in the browser and saved as this account's own notes, so they
+// sync, version and stay private exactly like notes typed on the page. A topic
+// that already has other notes is only replaced if you say so, and what it
+// had stays in its History.
+function ImportChapters({ stack, onPick }) {
+  const inputRef = useRef(null);
+  const [busy, setBusy] = useState(false);
+
+  const run = async (fileList) => {
+    const files = [...(fileList || [])];
+    if (!files.length) return;
+    setBusy(true);
+    try {
+      const found = [];
+      for (const file of files) {
+        const id = (file.name.match(/^[A-Z]+-\d+/) || [])[0];
+        if (id && stack.getTopic(id)) found.push({ id, text: (await file.text()).replace(/\r\n/g, "\n") });
+      }
+      if (!found.length) {
+        toast.error("No chapter files found. Their names should start with the chapter id, like “IPP-01 - Overview and architecture.md”.");
+        return;
+      }
+      const notes = loadJSON(stack.notesKey, {});
+      const differs = (c) => (notes[c.id] || "").trim() && notes[c.id] !== c.text;
+      const taken = found.filter((c) => notes[c.id] !== c.text);
+      const replacing = taken.filter(differs);
+      const ok =
+        !replacing.length ||
+        window.confirm(
+          `${replacing.map((c) => c.id).join(", ")} already ${replacing.length === 1 ? "has" : "have"} notes. Replace ${
+            replacing.length === 1 ? "it" : "them"
+          }? What's there now stays in History.`
+        );
+      const chosen = ok ? taken : taken.filter((c) => !differs(c));
+      if (!chosen.length) {
+        toast.info(taken.length ? "Nothing imported." : "Those chapters are already up to date.");
+        return;
+      }
+      const next = { ...notes };
+      chosen.forEach((c) => (next[c.id] = c.text));
+      if (saveJSON(stack.notesKey, next) === false) return; // a guest: asked to sign in
+      chosen.forEach((c) => recordNow(stack.notesKey, c.id));
+      toast.success(`Imported ${chosen.length} chapter${chosen.length === 1 ? "" : "s"}`);
+      onPick(chosen.map((c) => c.id).sort()[0]);
+    } catch (_) {
+      toast.error("Couldn't read those files.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => requireAuth("Sign in to import notes.") && inputRef.current?.click()}
+        disabled={busy}
+        title="Pick the chapter files (IPP-01 - ….md and so on). Each fills the topic it's named after."
+        className="mt-4 w-full h-9 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold border border-dashed border-gray-300 dark:border-white/[0.16] text-gray-600 dark:text-gray-300 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 disabled:opacity-50 transition-colors"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 2.5v7.5M4.8 6.8L8 10l3.2-3.2M3 12.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        {busy ? "Importing…" : "Import chapters (.md)"}
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".md,.markdown,.txt,text/markdown,text/plain"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          run(e.target.files);
+          e.target.value = "";
+        }}
+      />
+    </>
   );
 }
 
