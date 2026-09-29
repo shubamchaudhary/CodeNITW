@@ -166,11 +166,39 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
   );
 }
 
-// Fill a stack's topics from Markdown files named after them ("IPP-03 - ….md"):
-// read here in the browser and saved as this account's own notes, so they
-// sync, version and stay private exactly like notes typed on the page. A topic
-// that already has other notes is only replaced if you say so, and what it
-// had stays in its History.
+// A whole guide in one file: cut it at its "# Part N" headings (not ones inside
+// code blocks) and give each part to the topic that lists it in `parts`.
+// Whatever comes before the first part goes with it.
+function splitByParts(text, topics) {
+  const lines = text.split("\n");
+  const cuts = [];
+  let fence = null;
+  lines.forEach((line, i) => {
+    const f = line.match(/^\s*(`{3,}|~{3,})/);
+    if (f) {
+      if (!fence) fence = f[1];
+      else if (line.trim().startsWith(fence)) fence = null;
+      return;
+    }
+    const m = !fence && line.match(/^# Part (\d+)\b/);
+    if (m) cuts.push({ i, part: Number(m[1]) });
+  });
+  const byTopic = new Map();
+  cuts.forEach((c, k) => {
+    const topic = topics.find((t) => (t.parts || []).includes(c.part));
+    if (!topic) return;
+    const chunk = lines.slice(k === 0 ? 0 : c.i, k + 1 < cuts.length ? cuts[k + 1].i : lines.length).join("\n");
+    byTopic.set(topic.id, [...(byTopic.get(topic.id) || []), chunk.replace(/(\s*\n---\s*)+$/, "").trim()]);
+  });
+  return [...byTopic].map(([id, chunks]) => ({ id, text: chunks.join("\n\n---\n\n") + "\n" }));
+}
+
+// Fill a stack's topics from Markdown files: one per topic, named with its id
+// ("IPP-03 - ….md"), or a whole guide in one file, split by its parts. Read
+// here in the browser and saved as this account's own notes, so they sync,
+// version and stay private exactly like notes typed on the page. A topic that
+// already has other notes is only replaced if you say so, and what it had
+// stays in its History.
 function ImportChapters({ stack, onPick }) {
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
@@ -180,15 +208,26 @@ function ImportChapters({ stack, onPick }) {
     if (!files.length) return;
     setBusy(true);
     try {
-      const found = [];
+      const byId = new Map();
+      const unmatched = [];
       for (const file of files) {
-        const id = (file.name.match(/^[A-Z]+-\d+/) || [])[0];
-        if (id && stack.getTopic(id)) found.push({ id, text: (await file.text()).replace(/\r\n/g, "\n") });
+        const text = (await file.text()).replace(/\r\n/g, "\n");
+        const id = (file.name.match(/\b[A-Z]+-\d+\b/) || [])[0];
+        if (id && stack.getTopic(id)) {
+          byId.set(id, text);
+          continue;
+        }
+        const split = splitByParts(text, stack.topics);
+        if (split.length) split.forEach((c) => !byId.has(c.id) && byId.set(c.id, c.text));
+        else unmatched.push(file.name);
       }
-      if (!found.length) {
-        toast.error("No chapter files found. Their names should start with the chapter id, like “IPP-01 - Overview and architecture.md”.");
+      if (!byId.size) {
+        toast.error(
+          `Couldn't match ${unmatched.join(", ")} to a chapter. Pick the chapter files (“IPP-01 - ….md” …) or the whole study guide.`
+        );
         return;
       }
+      const found = [...byId].map(([id, text]) => ({ id, text }));
       const notes = loadJSON(stack.notesKey, {});
       const differs = (c) => (notes[c.id] || "").trim() && notes[c.id] !== c.text;
       const taken = found.filter((c) => notes[c.id] !== c.text);
@@ -223,7 +262,7 @@ function ImportChapters({ stack, onPick }) {
       <button
         onClick={() => requireAuth("Sign in to import notes.") && inputRef.current?.click()}
         disabled={busy}
-        title="Pick the chapter files (IPP-01 - ….md and so on). Each fills the topic it's named after."
+        title="Pick the chapter files (IPP-01 - ….md and so on) or the whole study guide. Each chapter fills its topic."
         className="mt-4 w-full h-9 rounded-lg flex items-center justify-center gap-2 text-[13px] font-semibold border border-dashed border-gray-300 dark:border-white/[0.16] text-gray-600 dark:text-gray-300 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 disabled:opacity-50 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" aria-hidden="true">
