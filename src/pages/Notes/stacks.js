@@ -110,6 +110,8 @@ export const STACKS = {
     summary: (topic) => topic.summary || "",
     planItem: projectPlanItem,
     daysSinceDone: projectDaysSinceChecked,
+    // Chapters can be filled from .md files named after them (StackNav).
+    importable: true,
     accent: {
       text: "text-sky-600 dark:text-sky-400",
       bar: "from-sky-500 to-indigo-400",
