@@ -181,7 +181,7 @@ const DSAPrep = () => {
                   <h1 className="text-[26px] leading-none font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">
                     DSA
                   </h1>
-                  <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-orange-500/10 dark:bg-orange-400/10 text-orange-600 dark:text-orange-300 border border-orange-500/25 dark:border-orange-400/25 backdrop-blur-sm">
+                  <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-orange-500/10 dark:bg-orange-400/10 text-orange-600 dark:text-orange-300 border border-orange-500/25 dark:border-orange-400/25 backdrop-blur-sm light:bg-white light:text-gray-600 light:border-gray-300 light:backdrop-filter-none">
                     {DSA_TOTAL} most-asked
                   </span>
                 </div>
@@ -255,8 +255,8 @@ const DSAPrep = () => {
                 title={tab.title}
                 className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
                   filter === tab.key
-                    ? "bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] hover:text-orange-600 dark:hover:text-orange-300"
+                    ? "bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30 light:bg-none light:bg-gray-900 light:shadow-none"
+                    : "text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] hover:text-orange-600 dark:hover:text-orange-300 light:hover:bg-gray-100 light:hover:text-gray-900"
                 }`}
               >
                 {tab.label}
@@ -303,7 +303,7 @@ const DSAPrep = () => {
 
 function StatPill({ label, value, sub, accent = "text-gray-800 dark:text-gray-100" }) {
   return (
-    <div className="hidden sm:block text-right px-3 py-1.5 rounded-xl bg-white/50 dark:bg-white/[0.04] border border-white/60 dark:border-white/[0.06]">
+    <div className="hidden sm:block text-right px-3 py-1.5 rounded-xl bg-white/50 dark:bg-white/[0.04] border border-white/60 dark:border-white/[0.06] light:bg-gray-50 light:border-gray-200">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{label}</p>
       <p className={`text-base font-extrabold leading-tight ${accent}`}>
         {value}
@@ -324,16 +324,16 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
     : 0;
 
   return (
-    <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14]`}>
+    <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14] light:hover:border-gray-300`}>
       <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 cursor-pointer select-none" onClick={onToggle}>
-        <span className={`w-2 h-2 rounded-full shrink-0 ${accent.dot} shadow-[0_0_10px_2px] ${accent.ring}`} />
+        <span className={`w-2 h-2 rounded-full shrink-0 ${accent.dot} shadow-[0_0_10px_2px] ${accent.ring} light:shadow-none light:bg-gray-300`} />
         <div className="flex-1 min-w-0">
-          <h2 className="text-[13.5px] font-bold text-gray-700 dark:text-gray-200 truncate">{topic.topic}</h2>
+          <h2 className="text-[13.5px] font-bold text-gray-700 dark:text-gray-200 light:text-gray-900 truncate">{topic.topic}</h2>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {p0Left > 0 && (
             <span
-              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30"
+              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30 light:bg-gray-100 light:text-gray-900 light:border-gray-300"
               title={`${p0Left} P0 problem${p0Left > 1 ? "s" : ""} still unsolved here`}
             >
               {p0Left} P0
@@ -341,15 +341,15 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
           )}
           {queued > 0 && (
             <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/25"
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/25 light:bg-sky-50 light:text-sky-700 light:border-sky-200"
               title={`${queued} queued on today's plan`}
             >
               ◉ {queued}
             </span>
           )}
           <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 tabular-nums">{done}/{topic.problems.length}</span>
-          <div className="w-16 sm:w-24 h-1.5 rounded-full bg-gray-200/70 dark:bg-white/10 overflow-hidden">
-            <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar}`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
+          <div className="w-16 sm:w-24 h-1.5 rounded-full bg-gray-200/70 dark:bg-white/10 light:bg-gray-200 overflow-hidden">
+            <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar} light:bg-none light:bg-emerald-500`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
           </div>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -360,7 +360,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-            <div className="border-t border-white/60 dark:border-white/[0.06] px-2 sm:px-3 py-3 space-y-2" onClick={(e) => e.stopPropagation()}>
+            <div className="border-t border-white/60 dark:border-white/[0.06] light:border-gray-200 px-2 sm:px-3 py-3 space-y-2" onClick={(e) => e.stopPropagation()}>
               {topic.problems.map((p) => (
                 <QuestionRow
                   key={p.id}
@@ -413,10 +413,10 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
   // Hard/everything-else binary any more.
   const diff =
     problem.difficulty === "Hard"
-      ? { label: "Hard", badge: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/25" }
+      ? { label: "Hard", badge: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/25 light:bg-white light:text-rose-700 light:border-rose-200" }
       : problem.difficulty === "Easy"
-      ? { label: "Easy", badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25" }
-      : { label: "Med", badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25" };
+      ? { label: "Easy", badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25 light:bg-white light:text-emerald-700 light:border-emerald-200" }
+      : { label: "Med", badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25 light:bg-white light:text-amber-700 light:border-amber-200" };
 
   return (
     <div>
@@ -424,14 +424,14 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
         onClick={() => setShowNotes((s) => !s)}
         className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 cursor-pointer transition-all ${
           isSolved
-            ? "bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20"
-            : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5`
+            ? "bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20 light:bg-emerald-50/70 light:border-emerald-200"
+            : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5 light:hover:border-gray-300 light:hover:shadow-none`
         } ${isPlanned && !isSolved ? "ring-1 ring-sky-400/50 dark:ring-sky-500/40" : ""}`}
       >
         {/* Core = Blind 75, i.e. this problem *is* a pattern worth knowing */}
         {problem.core && (
           <span
-            className="text-[11px] leading-none text-violet-500 dark:text-violet-400 shrink-0"
+            className="text-[11px] leading-none text-violet-500 dark:text-violet-400 light:text-gray-400 shrink-0"
             title="Core pattern (Blind 75) — this problem is a topic in itself"
           >
             ◆
@@ -455,7 +455,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
 
         {/* Title, plus the technique it teaches when it's a recognised anchor */}
         <span className="flex items-baseline gap-2 flex-1 min-w-0">
-          <span className={`text-[13px] font-semibold truncate ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100"}`}>
+          <span className={`text-[13px] font-semibold truncate ${isSolved ? "text-gray-400 dark:text-gray-500 line-through decoration-1" : "text-gray-800 dark:text-gray-100 light:text-gray-900"}`}>
             {problem.title}
           </span>
           {problem.pattern && (
@@ -475,7 +475,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
           {solvedLabel && (
             <span
               title={`You solved this ${solvedLabel === "today" ? "today" : solvedLabel}`}
-              className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25"
+              className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25 light:bg-white light:border-emerald-200"
             >
               ✓ {solvedLabel}
             </span>
@@ -487,8 +487,8 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
             title={isPlanned ? "Remove from today's plan" : "Add to today's plan"}
             className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md border transition-all ${
               isPlanned
-                ? "bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-500/30"
-                : "bg-white/60 dark:bg-white/[0.05] border-gray-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300"
+                ? "bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-500/30 light:shadow-none"
+                : "bg-white/60 dark:bg-white/[0.05] border-gray-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 light:bg-white light:border-gray-300 light:text-gray-600"
             }`}
           >
             {isPlanned ? "◉" : "⊕"}
@@ -500,7 +500,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-all"
+            className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 light:bg-white light:border-gray-300 light:text-gray-700 light:hover:border-gray-400 light:hover:text-gray-900 transition-all"
             title="Open on LeetCode"
           >
             <span className="hidden sm:inline">LeetCode</span>
@@ -519,7 +519,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
           <button
             onClick={(e) => { e.stopPropagation(); onToggleSolved(problem.id, !isSolved); }}
             title={isSolved ? "Mark unsolved" : "Mark solved"}
-            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/30" : "border-gray-300 dark:border-slate-600 hover:border-emerald-400"}`}
+            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/30 light:shadow-none" : "border-gray-300 dark:border-slate-600 hover:border-emerald-400"}`}
           >
             {isSolved && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -535,10 +535,10 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
       <AnimatePresence>
         {showNotes && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <div className="mx-1 mt-2 mb-1 rounded-xl border border-gray-200/90 dark:border-white/[0.07] bg-white/60 dark:bg-white/[0.03] p-3.5">
+            <div className="mx-1 mt-2 mb-1 rounded-xl border border-gray-200/90 dark:border-white/[0.07] bg-white/60 dark:bg-white/[0.03] light:bg-gray-50 light:border-gray-200 p-3.5">
               <div className="flex items-center justify-between mb-2">
                 <h5 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-orange-400 to-amber-400" />
+                  <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-orange-400 to-amber-400 light:bg-none light:bg-gray-300" />
                   Solution Notes
                 </h5>
                 <span className="text-[10px] text-gray-400 dark:text-gray-500">auto-saved</span>
@@ -548,7 +548,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
                 onChange={handleNoteInput}
                 placeholder="Approach, pattern, time/space complexity, key insight, edge cases..."
                 rows={4}
-                className="w-full p-3 text-xs rounded-lg border border-gray-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 resize-y min-h-[90px] leading-relaxed backdrop-blur-sm"
+                className="w-full p-3 text-xs rounded-lg border border-gray-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 resize-y min-h-[90px] leading-relaxed backdrop-blur-sm light:bg-white light:border-gray-300 light:focus:ring-violet-400/30 light:focus:border-violet-400 light:backdrop-filter-none"
               />
             </div>
           </motion.div>
