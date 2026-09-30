@@ -77,7 +77,8 @@ function App() {
             doesn't jump up and back down. */}
         <Suspense fallback={<div className="min-h-screen" />}>
         <Routes>
-          <Route path="/" element={<Navigate to="/core-stack" replace />} />
+          {/* The home page is the planner (a guest sees a sample day). */}
+          <Route path="/" element={<Navigate to="/planning" replace />} />
 
           {/* The old Topics page (AI / HLD / LLD / Spring Boot) is retired:
               Core Stack replaces it. src/pages/InterviewPrep and its plan data
