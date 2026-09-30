@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import AuthForm from "../../components/AuthForm";
 import Brand, { SITE_NAME } from "../../components/Brand";
 import { getAuthState, onAuthStateChange } from "../../Data/authGate";
@@ -29,7 +28,6 @@ export default function AuthPage({ initialMode = "signin" }) {
         <AuthForm
           mode={mode}
           onModeChange={setMode}
-          onDone={(how) => toast.success(how === "signup" ? "Account created — you're all set." : "Welcome back!")}
         />
       </div>
       <button

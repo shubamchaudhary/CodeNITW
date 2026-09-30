@@ -190,7 +190,6 @@ export default function JobTracker() {
     (company) => {
       if (!requireAuth("Sign in to track your applications — your pipeline is saved to your account.")) return;
       persist({ ...state, custom: [...state.custom, company] });
-      toast.success(`${company.name} added`);
     },
     [state, persist]
   );
@@ -211,7 +210,6 @@ export default function JobTracker() {
   const addContact = useCallback(
     (data) => {
       persistState((prev) => ({ ...prev, contacts: [...prev.contacts, { id: `hc-${uid()}`, ...data }] }));
-      toast.success(`${data.name || "Contact"} added`);
     },
     [persistState]
   );
@@ -232,7 +230,6 @@ export default function JobTracker() {
   const editContact = useCallback(
     (id, data) => {
       patchContact(id, data);
-      toast.success("Contact updated");
     },
     [patchContact]
   );
