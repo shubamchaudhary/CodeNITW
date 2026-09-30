@@ -1675,20 +1675,20 @@ const Planning = () => {
                   <li><b className="font-semibold">Upcoming DSA contests</b> with email reminders</li>
                   <li><b className="font-semibold">Daily planner</b> with a Pomodoro focus timer</li>
                 </ul>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <button
-                    onClick={() => startTour()}
-                    className="px-3 py-1.5 rounded-lg border border-violet-400/60 text-violet-700 dark:text-violet-200 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
-                  >
-                    ▶ Take a quick tour
-                  </button>
+                <button
+                  onClick={() => startTour()}
+                  className="mt-3 px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
+                >
+                  ▶ Take a quick tour
+                </button>
+                <div className="mt-3 pt-3 border-t border-violet-300/40 dark:border-violet-500/20 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-gray-500 dark:text-gray-400">
+                  <span>Below is a sample day.</span>
                   <button
                     onClick={() => requestSignIn()}
-                    className="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700 transition-colors"
+                    className="px-3 py-1.5 rounded-lg border border-violet-400/60 text-violet-700 dark:text-violet-200 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
                   >
-                    Sign in to start
+                    Sign in to plan your own
                   </button>
-                  <span className="text-[12px] text-gray-500 dark:text-gray-400">Below is a sample day.</span>
                 </div>
               </div>
             </div>

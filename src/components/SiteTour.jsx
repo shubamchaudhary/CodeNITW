@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { getAuthState, onAuthStateChange } from "../Data/authGate";
+import { onAuthStateChange } from "../Data/authGate";
 import { loadDSAPrep, loadStackHome, loadJobTracker, loadContests, loadPlanning } from "../pageLoaders";
 
-// A short auto-played walk through the main pages, so a first-time visitor
-// sees what the site offers without clicking around. It plays once on its own
-// for a guest landing on the planner, and again whenever startTour() is called.
-// Any click or key press outside the tour pill hands control back to them.
+// A short auto-played walk through the main pages, so a visitor sees what the
+// site offers without clicking around. It plays when startTour() is called
+// (the landing page's "Take a quick tour" button). Any click or key press
+// outside the tour pill hands control back to them.
 
 const STEP_MS = 2200; // how long each page stays on screen
-const AUTO_START_MS = 3500; // time to read the welcome banner first
-const SEEN_KEY = "siteTourSeen";
 
 const STEPS = [
   { path: "/dsa-prep", title: "DSA", line: "350+ hand-picked problems, by pattern and difficulty", load: loadDSAPrep },
@@ -26,22 +24,13 @@ export function startTour() {
   listeners.forEach((fn) => fn());
 }
 
-const seen = () => {
-  try { return localStorage.getItem(SEEN_KEY) === "1"; } catch { return true; }
-};
-const markSeen = () => {
-  try { localStorage.setItem(SEEN_KEY, "1"); } catch { /* private mode */ }
-};
-
 export default function SiteTour() {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const [step, setStep] = useState(-1); // -1: not running
   const pillRef = useRef(null);
   const running = step >= 0;
 
   const begin = () => {
-    markSeen();
     // Download every page up front, so no step waits on its chunk.
     STEPS.forEach((s) => s.load().catch(() => {}));
     setStep(0);
@@ -52,20 +41,6 @@ export default function SiteTour() {
     listeners.add(begin);
     return () => listeners.delete(begin);
   });
-
-  // First visit of a guest on the landing page: play it once by itself.
-  useEffect(() => {
-    if (pathname !== "/planning" || seen()) return;
-    let timer;
-    const arm = (state) => {
-      clearTimeout(timer);
-      if (state === "guest" && !seen()) timer = setTimeout(begin, AUTO_START_MS);
-    };
-    arm(getAuthState());
-    const unsub = onAuthStateChange(arm);
-    return () => { clearTimeout(timer); unsub(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
 
   // Show the current step's page, then move on.
   useEffect(() => {
