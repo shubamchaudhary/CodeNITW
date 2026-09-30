@@ -146,28 +146,41 @@ function fmtSpent(sec) {
   return fmt(Math.round(sec / 60));
 }
 
-function catchUpPomo(saved) {
-  if (!saved) return null;
-  if (saved.status !== "running") return saved;
-  let elapsed = Math.floor((Date.now() - (saved.updatedAt || Date.now())) / 1000);
-  if (elapsed <= 0) return saved;
-  let idx = saved.currentIdx;
-  let remaining = saved.remaining;
-  while (elapsed > 0) {
-    if (elapsed < remaining) {
-      remaining -= elapsed;
-      elapsed = 0;
+// Bring a running timer up to `now` by the time that has really passed — the
+// clock, not a count of ticks. Browsers slow timers down in background tabs
+// (to about once a minute after a few minutes hidden), so counting ticks lost
+// all that time; this works out how far the timer really got, walking through
+// any focus/break sessions that finished meanwhile. The same catch-up runs
+// when the page is reopened.
+//   `anchor` is when `remaining` was last exact (a timer saved before anchors
+//   existed falls back to its last save). The leftover fraction of a second
+//   stays in the new anchor, so the count never drifts.
+// → { pomo, entered }: the sessions started along the way, ending with
+//   "complete" if the whole timer finished.
+function advancePomo(p, now = Date.now()) {
+  if (!p || p.status !== "running") return { pomo: p, entered: [] };
+  const anchor = p.anchor ?? p.updatedAt ?? now;
+  let whole = Math.floor((now - anchor) / 1000);
+  if (whole < 1) return { pomo: p, entered: [] };
+  const nextAnchor = anchor + whole * 1000;
+  let idx = p.currentIdx;
+  let remaining = p.remaining;
+  const entered = [];
+  while (whole > 0) {
+    if (whole < remaining) {
+      remaining -= whole;
+      whole = 0;
     } else {
-      elapsed -= remaining;
-      const nextIdx = idx + 1;
-      if (nextIdx >= saved.sessions.length) {
-        return { ...saved, currentIdx: idx, remaining: 0, status: "complete" };
+      whole -= remaining;
+      if (idx + 1 >= p.sessions.length) {
+        return { pomo: { ...p, currentIdx: idx, remaining: 0, status: "complete", anchor: undefined }, entered: [...entered, "complete"] };
       }
-      idx = nextIdx;
-      remaining = saved.sessions[idx].duration;
+      idx += 1;
+      remaining = p.sessions[idx].duration;
+      entered.push(idx);
     }
   }
-  return { ...saved, currentIdx: idx, remaining };
+  return { pomo: { ...p, currentIdx: idx, remaining, anchor: nextAnchor }, entered };
 }
 
 function playSound(type) {
@@ -1211,7 +1224,7 @@ const Planning = () => {
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
 
-  const [pomo, setPomo] = useState(() => catchUpPomo(loadJSON(KEYS.POMO_STATE, null)));
+  const [pomo, setPomo] = useState(() => advancePomo(loadJSON(KEYS.POMO_STATE, null)).pomo);
   const pomoRef = useRef(null);
   const flushRef = useRef(null);
   useEffect(() => { pomoRef.current = pomo; }, [pomo]);
@@ -1253,31 +1266,35 @@ const Planning = () => {
 
   const isRunning = pomo?.status === "running";
   useEffect(() => {
-    if (!isRunning) return;
-    const id = setInterval(() => {
+    if (!isRunning) return undefined;
+    const tick = () => {
       const p = pomoRef.current;
       if (!p || p.status !== "running") return;
-      let next;
-      if (p.remaining <= 1) {
-        const nextIdx = p.currentIdx + 1;
-        if (nextIdx >= p.sessions.length) {
-          playSound("timerDone");
-          next = { ...p, remaining: 0, status: "complete" };
-        } else {
-          const nextSession = p.sessions[nextIdx];
-          playSound(nextSession.type === "work" ? "focusStart" : "breakStart");
-          next = { ...p, currentIdx: nextIdx, remaining: nextSession.duration };
-        }
-      } else {
-        next = { ...p, remaining: p.remaining - 1 };
-      }
+      const { pomo: advanced, entered } = advancePomo(p);
+      if (advanced === p) return;
+      // One sound for however many sessions went by while the tab was hidden.
+      const last = entered[entered.length - 1];
+      if (last === "complete") playSound("timerDone");
+      else if (last !== undefined) playSound(advanced.sessions[last].type === "work" ? "focusStart" : "breakStart");
+      let next = advanced;
       pomoRef.current = next;
       if (next.status === "complete" && flushRef.current) {
         next = flushRef.current() || next;
       }
       setPomo(next);
-    }, 1000);
-    return () => clearInterval(id);
+    };
+    // Twice a second, so the display never skips a second through timer
+    // jitter; each tick advances by the clock, however late it runs.
+    const id = setInterval(tick, 500);
+    // Coming back to the tab: catch up at once, not on the next (throttled) tick.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [isRunning]);
 
   const toggleStar = useCallback((id) => {
@@ -1291,11 +1308,12 @@ const Planning = () => {
     setDay(current, next);
   }, [current]);
 
-  // Write the running pomo's unlogged seconds to the time log.
+  // Write the running pomo's unlogged seconds to the time log (brought up to
+  // this moment first, so a pause or stop logs every second).
   const flushPomo = useCallback(() => {
     const p = pomoRef.current;
     if (!p) return null;
-    const np = logPomoTime(p);
+    const np = logPomoTime(advancePomo(p).pomo);
     pomoRef.current = np;
     return np;
   }, []);
@@ -1307,7 +1325,7 @@ const Planning = () => {
     const p = pomoRef.current;
     if (!p || p.itemUid !== itemUid) return;
     if (subUid !== undefined && (p.subItemUid || null) !== subUid) return;
-    logPomoTime(p);
+    logPomoTime(advancePomo(p).pomo);
     pomoRef.current = null;
     setPomo(null);
   }, []);
@@ -1437,6 +1455,7 @@ const Planning = () => {
       currentIdx: 0,
       remaining: sessions[0].duration,
       status: "running",
+      anchor: Date.now(),
       flushedSec: 0,
     });
   }, []);
@@ -1447,7 +1466,7 @@ const Planning = () => {
       const extra = buildSessions(addMinutes);
       if (!extra.length) return p;
       const sessions = [...p.sessions, ...extra];
-      return { ...p, sessions, currentIdx: p.sessions.length, remaining: extra[0].duration, status: "running" };
+      return { ...p, sessions, currentIdx: p.sessions.length, remaining: extra[0].duration, status: "running", anchor: Date.now() };
     });
     playSound("focusStart");
   }, []);
@@ -1620,8 +1639,8 @@ const Planning = () => {
               {pomo && (
                 <PomodoroTimer
                   pomo={pomo}
-                  onPause={() => { const np = flushPomo(); setPomo(np ? { ...np, status: "paused" } : null); }}
-                  onResume={() => setPomo((p) => p ? { ...p, status: "running" } : null)}
+                  onPause={() => { const np = flushPomo(); setPomo(np ? { ...np, status: "paused", anchor: undefined } : null); }}
+                  onResume={() => setPomo((p) => p ? { ...p, status: "running", anchor: Date.now() } : null)}
                   onStop={() => { flushPomo(); setPomo(null); }}
                   onDismiss={() => { flushPomo(); setPomo(null); }}
                   onExtend={extendPomo}
