@@ -49,29 +49,33 @@ export default function OfferHero({ onTour, onSignIn }) {
       <div className="relative rounded-[15px] bg-white/90 dark:bg-[#100e26]/95 light:bg-white px-5 sm:px-8 py-7 sm:py-8 overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute -top-24 -left-10 w-[32rem] h-48 rounded-full bg-violet-500/15 blur-3xl" />
 
-        <div className="relative">
-          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">
-            Interview prep, planned
-          </span>
+        {/* The pitch on the left, the actions on the right (stacked below on a
+            phone). */}
+        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="min-w-0 flex-1">
+            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">
+              Interview prep, planned
+            </span>
 
-          {/* Left-aligned with a fixed height: the text grows to the right from
-              one starting point and nothing around it moves. */}
-          <h2
-            className="mt-3 min-h-[4.5rem] sm:min-h-[2.75rem] text-2xl sm:text-4xl font-extrabold tracking-tight text-left"
-            aria-live="polite"
-            aria-label={line.text}
-          >
-            <span className={`bg-gradient-to-r ${line.grad} bg-clip-text text-transparent`}>{shown}</span>
-            <span className="inline-block w-[3px] h-[0.9em] ml-1 align-[-0.1em] bg-violet-500 animate-[caret_1s_steps(1)_infinite]" />
-          </h2>
+            {/* Fixed height, left-aligned: the text grows to the right from one
+                starting point and nothing around it moves. */}
+            <h2
+              className="mt-3 min-h-[4.5rem] sm:min-h-[2.75rem] text-2xl sm:text-4xl font-extrabold tracking-tight text-left"
+              aria-live="polite"
+              aria-label={line.text}
+            >
+              <span className={`bg-gradient-to-r ${line.grad} bg-clip-text text-transparent`}>{shown}</span>
+              <span className="inline-block w-[3px] h-[0.9em] ml-1 align-[-0.1em] bg-violet-500 animate-[caret_1s_steps(1)_infinite]" />
+            </h2>
 
-          <div className="mt-3 flex gap-1.5" aria-hidden>
-            {LINES.map((_, k) => (
-              <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/15"}`} />
-            ))}
+            <div className="mt-3 flex gap-1.5" aria-hidden>
+              {LINES.map((_, k) => (
+                <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/15"}`} />
+              ))}
+            </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
+          <div className="shrink-0 flex flex-col items-start md:items-center gap-3">
             <button
               onClick={onTour}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold shadow-[0_10px_30px_-8px_rgba(139,92,246,0.7)] hover:brightness-110 transition"

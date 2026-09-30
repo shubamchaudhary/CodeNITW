@@ -1004,7 +1004,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
           <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">Add to plan</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <button data-tour="picker-close" onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
         </div>
@@ -1112,6 +1112,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
               <div>
                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Title</label>
                 <input
+                  data-tour="custom-title"
                   autoFocus
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
@@ -1125,6 +1126,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
                 <div>
                   <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Time estimate (minutes)</label>
                   <input
+                    data-tour="custom-time"
                     type="text"
                     inputMode="numeric"
                     value={customTime}
@@ -1184,6 +1186,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
                 />
               </div>
               <button
+                data-tour="custom-add"
                 onClick={addCustom}
                 disabled={!customTitle.trim()}
                 className="w-full py-2.5 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -1736,6 +1739,7 @@ const Planning = () => {
               )}
 
               <button
+                data-tour="open-picker"
                 onClick={() => setPickerOpen(true)}
                 className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 light:border-gray-300 light:bg-white light:text-gray-700 light:hover:bg-gray-50 light:hover:border-gray-400 light:hover:text-gray-900 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
               >
