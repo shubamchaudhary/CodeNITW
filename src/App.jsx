@@ -21,11 +21,8 @@ const DSAPrep = lazy(() => import("./pages/DSAPrep/DSAPrep"));
 const Planning = lazy(() => import("./pages/Planning/Planning"));
 const Contests = lazy(() => import("./pages/Contests/Contests"));
 const AuthPage = lazy(() => import("./pages/SignInUp/AuthPage"));
-// The (large) company dataset is only fetched when someone opens the tracker,
-// and the Interview Kit's content only downloads for the owner.
+// The (large) company dataset is only fetched when someone opens the tracker.
 const JobTracker = lazy(() => import("./pages/JobTracker/JobTracker"));
-const InterviewKit = lazy(() => import("./pages/InterviewKit/InterviewKit"));
-const Visitors = lazy(() => import("./pages/Visitors/Visitors"));
 
 // A page view for every route the app shows (see Data/visitTracker).
 function VisitTracker() {
@@ -104,17 +101,15 @@ function App() {
           {/* Pipeline and Companies are for everyone; the page itself keeps
               Contacts and Openings (and their data) to the owner. */}
           <Route path="/job-tracker" element={<JobTracker />} />
-          <Route path="/interview-kit" element={<OwnerRoute />}>
-            <Route path="/interview-kit" element={<InterviewKit />} />
-          </Route>
           {/* Owner-only, like AI Stack: personal projects, one chapter per topic. */}
           <Route path="/projects" element={<OwnerRoute />}>
             <Route path="/projects" element={<StackHome stackKey="projects" />} />
           </Route>
-          {/* Owner-only: who visits the site (the API checks the owner too). */}
-          <Route path="/visitors" element={<OwnerRoute />}>
-            <Route path="/visitors" element={<Visitors />} />
-          </Route>
+          {/* Retired pages, like the old Topics page: the Interview Kit
+              (src/pages/InterviewKit) and the visitors dashboard
+              (src/pages/Visitors; the numbers now come as a nightly email) are
+              kept on disk, but nothing routes or links to them. Their old
+              addresses land on Core Stack, like any unknown URL. */}
 
           <Route path="/sign-in" element={<AuthPage initialMode="signin" />} />
           <Route path="/sign-up" element={<AuthPage initialMode="signup" />} />
