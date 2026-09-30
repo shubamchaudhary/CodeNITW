@@ -58,6 +58,10 @@ export default function Footer() {
           </button>
         </p>
       )}
+      {/* Visits are counted (see Data/visitTracker), so say what is kept. */}
+      <p className="mt-1.5 text-[11.5px] text-gray-400 dark:text-gray-500">
+        Visits are counted to improve the site: pages viewed, approximate location, device, and your account if you're signed in. No IP addresses are stored.
+      </p>
     </footer>
   );
 }
