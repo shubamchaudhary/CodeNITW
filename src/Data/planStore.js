@@ -6,7 +6,7 @@
 import { DSA_PROBLEMS } from "./DSAPrep";
 import { CORE_STACK_TOPICS } from "./CoreStack";
 import { AI_STACK_TOPICS } from "./AIStack";
-import { getAuthState, requestSignIn } from "./authGate";
+import { getAuthState, requestSignIn, isSandbox } from "./authGate";
 
 export { DSA_PROBLEMS, CORE_STACK_TOPICS, AI_STACK_TOPICS };
 
@@ -55,6 +55,10 @@ export const KEYS = {
 // browser. Set by the cloud-sync layer on sign-in; "anon" before login.
 let activeUid = "anon";
 
+export function getActiveUid() {
+  return activeUid;
+}
+
 export function setActiveUid(uid) {
   const next = uid || "anon";
   if (next === activeUid) return;
@@ -88,7 +92,7 @@ export function quietly(fn) {
 }
 
 function refuseGuestWrite(key) {
-  if (!USER_DATA.has(key) || getAuthState() === "user") return false;
+  if (!USER_DATA.has(key) || getAuthState() === "user" || isSandbox()) return false;
   if (quietDepth === 0 && getAuthState() === "guest") requestSignIn();
   // Pages update their own state right after calling the store; once that
   // handler has finished, have them re-read storage so the change visibly

@@ -54,6 +54,7 @@ import { demoPlan } from "../../Data/planDemo";
 import { requireAuth, requestSignIn } from "../../Data/authGate";
 import { startTour } from "../../components/SiteTour";
 import OfferHero from "./OfferHero";
+import useTourSandbox from "../../hooks/useTourSandbox";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -463,6 +464,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
           ) : (
             <>
               <button
+                data-tour="pomo-stop"
                 onClick={onStop}
                 className="w-10 h-10 rounded-full border border-gray-200/70 dark:border-slate-600 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors"
                 title="Stop"
@@ -580,6 +582,7 @@ function DayCard({
           </span>
 
           <button
+            data-tour-check={item.refId || item.uid}
             onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
             disabled={!canComplete || parentAutoComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
@@ -640,6 +643,7 @@ function DayCard({
 
                 {dayIsToday && item.estimatedMinutes > 0 && !complete && (
                   <button
+                    data-tour-pomo={item.refId || item.uid}
                     onClick={() => { if (!pomoActive || isThisPomo) onStartPomo(item); }}
                     disabled={pomoActive && !isThisPomo}
                     className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
@@ -1218,7 +1222,9 @@ const Planning = () => {
   // A signed-out visitor sees a sample day (Data/planDemo) instead of an empty
   // page. It's display-only: every change asks them to sign in, and once they
   // do, they see their own plan.
-  const demo = useMemo(() => (isGuest && current === today ? demoPlan(today) : null), [isGuest, current, today]);
+  // The site tour plans a real (throwaway) day, so it sees the signed-in view.
+  const sandbox = useTourSandbox();
+  const demo = useMemo(() => (isGuest && !sandbox && current === today ? demoPlan(today) : null), [isGuest, sandbox, current, today]);
   const items = demo ? demo.items : storedItems;
   const [ipCompleted, setIpCompleted] = useState(() => loadJSON(KEYS.IP_COMPLETED, {}));
   const [dsaCompleted, setDsaCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
@@ -1575,7 +1581,7 @@ const Planning = () => {
       <div className="min-h-screen flex justify-center px-2">
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
 
-          {isGuest && (
+          {isGuest && !sandbox && (
             <div className="mt-6 px-2">
               <OfferHero onTour={() => startTour()} onSignIn={() => requestSignIn()} />
             </div>

@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import "@uiw/react-markdown-preview/markdown.css";
 import { isOwner } from "../../components/OwnerRoute";
 import useIsDark from "../../hooks/useIsDark";
+import useTourSandbox from "../../hooks/useTourSandbox";
 import { getSyncStatus, subscribeSyncStatus } from "../../Data/cloudSync";
 import { requireAuth, requestSignIn, getAuthState } from "../../Data/authGate";
 import {
@@ -60,6 +61,8 @@ export default function TopicNotes() {
   const config = STACKS[source];
   const stack = config || STACKS.corestack; // hooks below need a stack even on a bad URL
   const isDark = useIsDark();
+  // The site tour acts like a signed-in person (in a throwaway store).
+  const sandbox = useTourSandbox();
   const colorMode = isDark ? "dark" : "light";
   const headerOffset = useStickyHeaderOffset();
   const { completed, planned, setDone, togglePlanned, stampRev } = useStackProgress(stack);
@@ -493,6 +496,7 @@ export default function TopicNotes() {
 
   const fullScreenButton = (
     <button
+      data-tour="fullscreen"
       onClick={immersive ? exitImmersive : enterImmersive}
       title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
       className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
@@ -511,6 +515,7 @@ export default function TopicNotes() {
       {VIEWS.map((v) => (
         <button
           key={v.key}
+          data-tour={`view-${v.key}`}
           onClick={() =>
             (v.key === "read" || requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) &&
             setView(v.key)
@@ -528,8 +533,9 @@ export default function TopicNotes() {
     </div>
   );
 
-  const historyButton = user && (
+  const historyButton = (user || sandbox) && (
     <button
+      data-tour="history"
       onClick={() => setHistoryOpen(true)}
       title="Every saved version of this note"
       className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
@@ -583,7 +589,7 @@ export default function TopicNotes() {
         </span>
       )}
       {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
-      <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user} />
+      <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user && !sandbox} />
     </span>
   );
 
@@ -647,6 +653,7 @@ export default function TopicNotes() {
           {!immersive && (
             <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur">
               <button
+                data-tour="topics-drawer"
                 onClick={() => setDrawerOpen(true)}
                 className="h-9 px-3 rounded-full flex items-center gap-2 shrink-0 whitespace-nowrap text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14]"
               >
@@ -734,6 +741,7 @@ export default function TopicNotes() {
                 className={`relative rounded-2xl transition-all ${dragging ? "ring-2 ring-sky-400/60" : ""}`}
               >
                 <textarea
+                  data-tour="note-editor"
                   ref={areaRef}
                   value={text}
                   onChange={(e) => onChange(e.target.value)}
