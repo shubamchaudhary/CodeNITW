@@ -27,6 +27,7 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <button
+          data-tour="mark-done"
           onClick={onToggleDone}
           title={done ? "Done — click to mark as not done" : "Mark this topic as done"}
           className={`h-9 pl-2.5 pr-3.5 rounded-full flex items-center gap-2 text-[13.5px] font-semibold border transition-colors ${
@@ -46,6 +47,7 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
           {done ? (doneDays != null ? `Done · ${doneDays === 0 ? "today" : `${doneDays}d ago`}` : "Done") : "Mark as done"}
         </button>
         <button
+          data-tour="add-today"
           onClick={onTogglePlanned}
           title={planned ? "On today's plan — click to remove" : "Add this topic to today's plan"}
           className={`h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13.5px] font-semibold border transition-colors ${
