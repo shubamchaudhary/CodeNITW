@@ -1,9 +1,11 @@
 import { adminConfigured, db, verifiedUser } from "./_lib/admin.mjs";
 import { OWNER_EMAIL, VISITS, aggregate, istDay, istDayStart } from "./_lib/visits.mjs";
 
-// GET /api/visitors?days=1|7|30|90 — visit stats for the owner's dashboard,
-// over whole India-time days, today included. Anyone else gets a 404, the
-// same as an address that doesn't exist.
+// GET /api/visitors?days=1|7|30|90 — visit stats over whole India-time days,
+// today included, for the owner only (anyone else gets a 404, the same as an
+// address that doesn't exist). The dashboard that used it (src/pages/Visitors)
+// is retired in favour of the nightly email, so nothing on the site calls
+// this now; it stays for a quick look at the numbers from the owner account.
 
 const DAY = 24 * 3600 * 1000;
 const RANGES = new Set([1, 7, 30, 90]);
