@@ -34,7 +34,9 @@ export default function Header() {
   const [darkMode, setDarkMode] = useState(() => {
     try {
       const own = sessionStorage.getItem("darkMode");
-      return JSON.parse(own ?? localStorage.getItem("darkMode")) || false;
+      const saved = own ?? localStorage.getItem("darkMode");
+      // Dark until someone picks a theme.
+      return saved === null ? true : JSON.parse(saved) === true;
     } catch (_) {
       return false;
     }
