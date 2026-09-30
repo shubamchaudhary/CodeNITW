@@ -49,6 +49,8 @@ import {
 } from "../../Data/planStore";
 import { getInterviewCard } from "../../Data/interviewCards";
 import { getProjectTopic } from "../../Data/Projects";
+import { demoPlan } from "../../Data/planDemo";
+import { requireAuth, requestSignIn } from "../../Data/authGate";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -1194,9 +1196,11 @@ const Planning = () => {
   const [authReady, setAuthReady] = useState(false);
   // AI Stack is owner-only, so its topics stay out of the picker for anyone else.
   const [canSeeAI, setCanSeeAI] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (user) => {
       setCanSeeAI(isOwner(user));
+      setIsGuest(!user);
       setAuthReady(true);
     });
     return unsub;
@@ -1207,7 +1211,12 @@ const Planning = () => {
 
   const today = dateKey();
   const [current, setCurrent] = useState(today);
-  const [items, setItems] = useState(() => getDay(today));
+  const [storedItems, setItems] = useState(() => getDay(today));
+  // A signed-out visitor sees a sample day (Data/planDemo) instead of an empty
+  // page. It's display-only: every change asks them to sign in, and once they
+  // do, they see their own plan.
+  const demo = useMemo(() => (isGuest && current === today ? demoPlan(today) : null), [isGuest, current, today]);
+  const items = demo ? demo.items : storedItems;
   const [ipCompleted, setIpCompleted] = useState(() => loadJSON(KEYS.IP_COMPLETED, {}));
   const [dsaCompleted, setDsaCompleted] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
   const [ipNotes, setIpNotes] = useState(() => loadJSON(KEYS.IP_NOTES, {}));
@@ -1331,13 +1340,14 @@ const Planning = () => {
   }, []);
 
   const resolve = useCallback((item) => {
+    if (demo) return { complete: demo.complete.has(item.uid), note: "" };
     if (item.source === "custom") return { complete: !!item.completed, note: item.notes || "" };
     if (item.source === "dsa") return { complete: !!dsaCompleted[item.refId], note: dsaNotes[item.refId] || "" };
     if (item.source === "corestack") return { complete: !!csCompleted[item.refId], note: csNotes[item.refId] || "" };
     if (item.source === "aistack") return { complete: !!aiCompleted[item.refId], note: aiNotes[item.refId] || "" };
     if (item.source === "projects") return { complete: !!pjCompleted[item.refId], note: pjNotes[item.refId] || "" };
     return { complete: !!ipCompleted[item.refId], note: ipNotes[item.refId] || "" };
-  }, [ipCompleted, dsaCompleted, csCompleted, aiCompleted, pjCompleted, ipNotes, dsaNotes, csNotes, aiNotes, pjNotes]);
+  }, [demo, ipCompleted, dsaCompleted, csCompleted, aiCompleted, pjCompleted, ipNotes, dsaNotes, csNotes, aiNotes, pjNotes]);
 
   const addItem = useCallback((item) => {
     if (item.source !== "custom" && items.some((i) => i.source === item.source && i.refId === item.refId)) return;
@@ -1439,6 +1449,7 @@ const Planning = () => {
   }, [items, persist, stopPomoOn]);
 
   const startPomo = useCallback((item, subItem) => {
+    if (!requireAuth("Sign in to time your focus sessions — the time is saved to your account.")) return;
     const target = subItem || item;
     const mins = target.estimatedMinutes || 25;
     const sessions = buildSessions(mins);
@@ -1502,12 +1513,12 @@ const Planning = () => {
   const { dayLog, totals } = useMemo(() => {
     const dayLog = {};
     const totals = {};
-    for (const e of Object.values(timeLog)) {
+    for (const e of Object.values(demo ? demo.timeLog : timeLog)) {
       totals[e.target] = (totals[e.target] || 0) + e.sec;
       if (e.day === current) dayLog[e.target] = e;
     }
     return { dayLog, totals };
-  }, [timeLog, current]);
+  }, [demo, timeLog, current]);
 
   // Cards with time this day that are no longer on its plan: where they went.
   const whereNow = useMemo(() => {
@@ -1648,6 +1659,22 @@ const Planning = () => {
               )}
             </AnimatePresence>
           </div>
+
+          {demo && (
+            <div className="px-2 mb-3">
+              <div className="rounded-xl border border-violet-300/60 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px]">
+                <span className="flex-1 min-w-[200px] text-gray-700 dark:text-gray-200">
+                  <b className="font-semibold">A sample day.</b> Plan your own: DSA problems, Core Stack topics and your own tasks, with a focus timer and time tracking.
+                </span>
+                <button
+                  onClick={() => requestSignIn()}
+                  className="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700 transition-colors"
+                >
+                  Sign in to start
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="px-2 mb-4">
             <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md light:border light:border-solid light:border-gray-200 light:bg-white light:backdrop-filter-none p-3 sm:p-4 transition-colors">
