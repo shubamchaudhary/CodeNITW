@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import PageSkeleton from "../../components/PageSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
 import { GLASS, GLASS_PANEL } from "../../components/glass";
 import PageShell from "../../components/PageShell";
-import { requireAuth } from "../../Data/authGate";
+import { requireAuth, getAuthState } from "../../Data/authGate";
 import {
   KEYS,
   loadJSON,
@@ -43,7 +44,8 @@ const ACCENTS = [
 ];
 
 const DSAPrep = () => {
-  const [authReady, setAuthReady] = useState(false);
+  // Already known when the page is opened after the app has loaded.
+  const [authReady, setAuthReady] = useState(() => getAuthState() !== "unknown");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), () => setAuthReady(true));
@@ -159,7 +161,7 @@ const DSAPrep = () => {
     [plannedToday, today, readPlanned]
   );
 
-  if (!authReady) return null;
+  if (!authReady) return <PageSkeleton />;
 
   const showImport = !bannerHidden && hasLegacyPersonalPlanData() && !isPersonalPlanMigrated();
 
