@@ -22,9 +22,7 @@ const NAV_ITEMS = [
 // users never see any hint these pages exist.
 const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
-  { path: "/interview-kit", label: "INTERVIEW" },
   { path: "/projects", label: "PROJECTS" },
-  { path: "/visitors", label: "VISITORS" },
 ];
 
 export default function Header() {
