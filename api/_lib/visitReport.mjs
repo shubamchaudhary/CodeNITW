@@ -68,7 +68,7 @@ export function reportEmail(stats, { label }) {
     <tr><td style="padding:0 2px 4px"><a href="${SITE_URL}" style="font-size:18px;font-weight:800;color:#111827;text-decoration:none">Interview<span style="color:#7c3aed">Plan</span>Prep</a></td></tr>
     <tr><td style="padding:0 2px 12px;font-size:13px;color:#6b7280">Visitors · ${esc(when)} (India time)</td></tr>
     ${inner}
-    <tr><td style="padding:16px 2px 0;font-size:12px;color:#6b7280"><a href="${SITE_URL}/visitors" style="color:#7c3aed;font-weight:600;text-decoration:none">Open the visitors dashboard</a> · your own visits aren't counted</td></tr>
+    <tr><td style="padding:16px 2px 0;font-size:12px;color:#6b7280"><a href="${SITE_URL}" style="color:#7c3aed;font-weight:600;text-decoration:none">InterviewPlanPrep</a> · your own visits aren't counted</td></tr>
   </table>
 </td></tr></table></body></html>`;
 
@@ -78,7 +78,7 @@ export function reportEmail(stats, { label }) {
     users.length ? "Signed in:\n" + users.map((u) => `  ${u.name || "No name"} <${u.email || u.uid}> · ${u.place} · ${n(u.views)} views`).join("\n") : "",
     stats.pages.length ? "Top pages:\n" + stats.pages.slice(0, 6).map((r) => `  ${r.path} · ${n(r.views)}`).join("\n") : "",
     stats.places.length ? "Where from:\n" + stats.places.slice(0, 6).map((r) => `  ${r.place} · ${n(r.visitors)}`).join("\n") : "",
-    `Dashboard: ${SITE_URL}/visitors`,
+    `InterviewPlanPrep: ${SITE_URL}`,
   ]
     .filter(Boolean)
     .join("\n\n");
