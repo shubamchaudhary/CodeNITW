@@ -166,9 +166,28 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
   );
 }
 
+// Which parts a guide says each chapter holds, from its own contents table:
+// "| LL-02 Streaming ingest | Parts 5–11 (…) |", "| IPP-02 … | Part 1 (…), Part 2 (…) |".
+function declaredParts(lines, topics) {
+  const map = new Map();
+  for (const line of lines) {
+    const row = line.match(/^\|\s*([A-Z]+-\d+)\b(.*)$/);
+    if (!row || !topics.some((t) => t.id === row[1])) continue;
+    const parts = [];
+    for (const r of row[2].matchAll(/Parts?\s+(\d+)(?:\s*[–-]\s*(\d+))?/g)) {
+      for (let p = Number(r[1]); p <= Number(r[2] ?? r[1]); p++) parts.push(p);
+    }
+    if (parts.length) map.set(row[1], parts);
+  }
+  return map;
+}
+
 // A whole guide in one file: cut it at its "# Part N" headings (not ones inside
-// code blocks) and give each part to the topic that lists it in `parts`.
-// Whatever comes before the first part goes with it.
+// code blocks) and give each part to the chapter that holds it — as the
+// guide's own contents table says, or else by the topics' `parts`, but only
+// for the project the guide's title names (so one project's guide can never
+// land in another's chapters). Whatever comes before the first part goes
+// with it.
 function splitByParts(text, topics) {
   const lines = text.split("\n");
   const cuts = [];
@@ -183,9 +202,15 @@ function splitByParts(text, topics) {
     const m = !fence && line.match(/^# Part (\d+)\b/);
     if (m) cuts.push({ i, part: Number(m[1]) });
   });
+  const declared = declaredParts(lines, topics);
+  const title = (lines.find((l) => l.startsWith("# ")) || "").toLowerCase();
+  const holderOf = (part) =>
+    declared.size
+      ? topics.find((t) => (declared.get(t.id) || []).includes(part))
+      : topics.find((t) => (t.parts || []).includes(part) && title.includes(String(t.sectionLabel).toLowerCase()));
   const byTopic = new Map();
   cuts.forEach((c, k) => {
-    const topic = topics.find((t) => (t.parts || []).includes(c.part));
+    const topic = holderOf(c.part);
     if (!topic) return;
     const chunk = lines.slice(k === 0 ? 0 : c.i, k + 1 < cuts.length ? cuts[k + 1].i : lines.length).join("\n");
     byTopic.set(topic.id, [...(byTopic.get(topic.id) || []), chunk.replace(/(\s*\n---\s*)+$/, "").trim()]);
@@ -235,9 +260,9 @@ function ImportChapters({ stack, onPick }) {
       const ok =
         !replacing.length ||
         window.confirm(
-          `${replacing.map((c) => c.id).join(", ")} already ${replacing.length === 1 ? "has" : "have"} notes. Replace ${
-            replacing.length === 1 ? "it" : "them"
-          }? What's there now stays in History.`
+          `${replacing.map((c) => `${c.id} (${stack.getTopic(c.id).title})`).join(", ")} already ${
+            replacing.length === 1 ? "has" : "have"
+          } notes.\n\nReplace ${replacing.length === 1 ? "it" : "them"} with what's in ${files.map((f) => f.name).join(", ")}? What's there now stays in History.`
         );
       const chosen = ok ? taken : taken.filter((c) => !differs(c));
       if (!chosen.length) {
