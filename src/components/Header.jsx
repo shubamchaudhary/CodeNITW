@@ -164,6 +164,8 @@ export default function Header() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               className="text-gray-600 dark:text-gray-300 text-xl p-1.5 rounded-lg bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] transition-colors"
+              data-tour="theme"
+              title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               onClick={() => setDarkMode(!darkMode)}
             >
               <AnimatePresence mode="wait">
