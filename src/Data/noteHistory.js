@@ -105,8 +105,14 @@ const touched = new Set(); // targets whose "before" state this session has reco
 const labelled = new Map(); // target → { reason, extra } for the next revision
 let warned = false;
 
+// The site tour's sandbox keeps its revisions here, in memory, instead of in
+// Firestore: target → revisions, oldest first. null outside the sandbox.
+let memory = null;
+const memoryHashes = new Map();
+
 const lastKey = (target) => `hist:last:${uid}:${target}`;
 function lastHash(target) {
+  if (memory) return memoryHashes.get(target) || null;
   try {
     return localStorage.getItem(lastKey(target));
   } catch (_) {
@@ -114,6 +120,7 @@ function lastHash(target) {
   }
 }
 function setLastHash(target, hash) {
+  if (memory) return void memoryHashes.set(target, hash);
   try {
     localStorage.setItem(lastKey(target), hash);
   } catch (_) {}
@@ -132,18 +139,26 @@ function write(target, content, { at = Date.now(), reason = "edit", extra = {} }
   const device = deviceInfo();
   const id = `${at}-${device.id}`;
   if (!sideCopy) setLastHash(target, hash);
-  // Not awaited: offline, Firestore queues it and sends it later — harmless,
-  // since a revision is only ever created, never changed.
-  setDoc(doc(db, "userProgress", uid, "history", target, "revisions", id), {
+  const revision = {
     text: content.text || "",
     annotations: content.annotations ?? null,
     at,
-    savedAt: serverTimestamp(),
     device,
     words: wordCount(content.text),
     hash,
     reason,
     ...extra,
+  };
+  if (memory) {
+    if (!memory.has(target)) memory.set(target, []);
+    memory.get(target).push({ id, ...revision });
+    return;
+  }
+  // Not awaited: offline, Firestore queues it and sends it later — harmless,
+  // since a revision is only ever created, never changed.
+  setDoc(doc(db, "userProgress", uid, "history", target, "revisions", id), {
+    ...revision,
+    savedAt: serverTimestamp(),
   }).catch((err) => {
     if (!warned) {
       warned = true;
@@ -229,10 +244,13 @@ function flushAll() {
   for (const target of [...open.keys()]) close(target);
 }
 
-export function startNoteHistory(nextUid) {
-  if (uid === nextUid && unsubscribe) return;
+// `inMemory`: the site tour's sandbox — revisions live in memory only and are
+// gone once it stops.
+export function startNoteHistory(nextUid, { inMemory = false } = {}) {
+  if (uid === nextUid && unsubscribe && !!memory === inMemory) return;
   stopNoteHistory();
   uid = nextUid;
+  memory = inMemory ? new Map() : null;
   unsubscribe = subscribe((key, info = {}) => {
     // Only this device's own saves; other devices record their own.
     if (!uid || info.remote || info.external || info.account || info.blocked || !Array.isArray(info.ids)) return;
@@ -266,6 +284,8 @@ export function stopNoteHistory() {
   if (unsubscribe) unsubscribe();
   unsubscribe = null;
   uid = null;
+  memory = null;
+  memoryHashes.clear();
   touched.clear();
   if (typeof window !== "undefined") {
     window.removeEventListener("pagehide", flushAll);
@@ -274,8 +294,14 @@ export function stopNoteHistory() {
 }
 
 // ─── Reading history ─────────────────────────────────────────────────────────
+// Whether history is currently the tour sandbox's in-memory one.
+export function isInMemoryHistory() {
+  return !!memory;
+}
+
 export async function listRevisions(notesKey, id, max = 100) {
   if (!uid) return [];
+  if (memory) return [...(memory.get(targetOf(notesKey, id)) || [])].reverse().slice(0, max);
   const snap = await getDocs(
     query(collection(db, "userProgress", uid, "history", targetOf(notesKey, id), "revisions"), orderBy("at", "desc"), limit(max))
   );

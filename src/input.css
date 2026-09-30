@@ -11,6 +11,12 @@
   body {
     @apply bg-slate-50 dark:bg-[#0b1020];
   }
+  /* dark: matches inside .dark, never the <html> that carries the class, so
+     <html> itself needs the dark canvas spelled out (else a light strip shows
+     wherever content runs past the body, e.g. a popover near the bottom). */
+  html.dark {
+    background-color: #0b1020;
+  }
 }
 
 .top-header {

@@ -327,7 +327,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
 
   return (
     <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14] light:hover:border-gray-300`}>
-      <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 cursor-pointer select-none" onClick={onToggle}>
+      <div data-tour-dsa-topic={topic.topic} className="flex items-center gap-3 px-4 sm:px-5 py-3.5 cursor-pointer select-none" onClick={onToggle}>
         <span className={`w-2 h-2 rounded-full shrink-0 ${accent.dot} shadow-[0_0_10px_2px] ${accent.ring} light:shadow-none light:bg-gray-300`} />
         <div className="flex-1 min-w-0">
           <h2 className="text-[13.5px] font-bold text-gray-700 dark:text-gray-200 light:text-gray-900 truncate">{topic.topic}</h2>
@@ -485,6 +485,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
 
           {/* Add / remove from today's plan — mirrors straight into Planning */}
           <button
+            data-tour-plan={problem.id}
             onClick={(e) => { e.stopPropagation(); onTogglePlanned(problem, topicName); }}
             title={isPlanned ? "Remove from today's plan" : "Add to today's plan"}
             className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md border transition-all ${
