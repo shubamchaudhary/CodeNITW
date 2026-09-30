@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import PageSkeleton from "../../components/PageSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { isOwner } from "../../components/OwnerRoute";
@@ -52,6 +53,7 @@ import { getProjectTopic } from "../../Data/Projects";
 import { demoPlan } from "../../Data/planDemo";
 import { requireAuth, requestSignIn } from "../../Data/authGate";
 import { startTour } from "../../components/SiteTour";
+import OfferHero from "./OfferHero";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -1566,12 +1568,18 @@ const Planning = () => {
   const totalPlanned = items.reduce((s, i) => s + itemTotalMinutes(i), 0);
   const totalDone = Math.round(timeRows.reduce((s, r) => s + r.sec, 0) / 60);
 
-  if (!authReady) return null;
+  if (!authReady) return <PageSkeleton />;
 
   return (
     <PageShell>
       <div className="min-h-screen flex justify-center px-2">
         <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
+
+          {isGuest && (
+            <div className="mt-6 px-2">
+              <OfferHero onTour={() => startTour()} onSignIn={() => requestSignIn()} />
+            </div>
+          )}
 
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 mb-4 px-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -1660,39 +1668,6 @@ const Planning = () => {
               )}
             </AnimatePresence>
           </div>
-
-          {demo && (
-            <div className="px-2 mb-3">
-              <div className="rounded-xl border border-violet-300/60 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 px-4 py-3.5">
-                <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                  Everything you need to crack your next interview, in one place.
-                </h2>
-                <ul className="mt-2 grid sm:grid-cols-2 gap-x-6 gap-y-1 text-[13px] text-gray-700 dark:text-gray-200">
-                  <li><b className="font-semibold">350+ DSA problems</b>, hand-picked and grouped by pattern</li>
-                  <li><b className="font-semibold">Java & Spring Boot</b> study material, topic by topic</li>
-                  <li><b className="font-semibold">Your own notes</b> on every topic and problem</li>
-                  <li><b className="font-semibold">Job pipeline</b> to track every application</li>
-                  <li><b className="font-semibold">Upcoming DSA contests</b> with email reminders</li>
-                  <li><b className="font-semibold">Daily planner</b> with a Pomodoro focus timer</li>
-                </ul>
-                <button
-                  onClick={() => startTour()}
-                  className="mt-3 px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
-                >
-                  ▶ Take a quick tour
-                </button>
-                <div className="mt-3 pt-3 border-t border-violet-300/40 dark:border-violet-500/20 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-gray-500 dark:text-gray-400">
-                  <span>Below is a sample day.</span>
-                  <button
-                    onClick={() => requestSignIn()}
-                    className="px-3 py-1.5 rounded-lg border border-violet-400/60 text-violet-700 dark:text-violet-200 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
-                  >
-                    Sign in to plan your own
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className="px-2 mb-4">
             <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md light:border light:border-solid light:border-gray-200 light:bg-white light:backdrop-filter-none p-3 sm:p-4 transition-colors">
