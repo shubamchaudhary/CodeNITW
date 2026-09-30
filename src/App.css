@@ -52,3 +52,48 @@
 
 /* Typing caret on the landing hero (Planning/OfferHero). */
 @keyframes caret { 50% { opacity: 0; } }
+
+/* Toasts: a small, quiet dark pill (see the ToastContainer in App.jsx). The
+   library's stylesheet loads after this one, so these rules start with html to
+   outrank it; its dark theme reads its colours from the variables. */
+html:root {
+  --toastify-color-dark: rgba(17, 24, 39, 0.92);
+  --toastify-text-color-dark: #f3f4f6;
+  --toastify-font-family: inherit;
+  --toastify-toast-min-height: 0px;
+}
+html .Toastify__toast-container {
+  width: max-content;
+  max-width: min(92vw, 440px);
+}
+html .Toastify__toast {
+  min-height: 0;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.5);
+  color: #f3f4f6;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+html .Toastify__toast-body {
+  margin: 0;
+  padding: 0;
+}
+html .Toastify__toast-icon {
+  width: 16px;
+  margin-inline-end: 10px;
+}
+html .Toastify__toast--error {
+  border-color: rgba(244, 63, 94, 0.5);
+}
+html .Toastify__toast--warning {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+html .Toastify__toast button {
+  color: #c4b5fd;
+}

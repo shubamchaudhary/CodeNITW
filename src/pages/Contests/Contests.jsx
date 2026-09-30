@@ -126,7 +126,6 @@ function useAlerts(user) {
       if (status === "on") {
         const d = await callAlerts("DELETE");
         setStatus(statusOf(d));
-        toast.info("Contest reminders turned off");
       } else {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const d = await callAlerts("POST", { timeZone });
