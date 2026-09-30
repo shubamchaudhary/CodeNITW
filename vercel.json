@@ -388,6 +388,10 @@
     {
       "path": "/api/contest-reminders",
       "schedule": "45 23 * * *"
+    },
+    {
+      "path": "/api/visitor-report",
+      "schedule": "0 19 * * *"
     }
   ]
 }

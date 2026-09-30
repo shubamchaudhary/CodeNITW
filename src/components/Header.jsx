@@ -24,6 +24,7 @@ const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
   { path: "/interview-kit", label: "INTERVIEW" },
   { path: "/projects", label: "PROJECTS" },
+  { path: "/visitors", label: "VISITORS" },
 ];
 
 export default function Header() {
@@ -96,7 +97,7 @@ export default function Header() {
   };
 
   const navItemClass = (isActiveItem) => `
-    relative block py-2 px-3 font-semibold text-xs tracking-wide whitespace-nowrap
+    relative block py-2 px-3 lg:px-2 xl:px-3 font-semibold text-xs tracking-wide whitespace-nowrap
     transition-all duration-200 ease-in-out rounded-lg
     ${
       isActiveItem
@@ -132,17 +133,20 @@ export default function Header() {
           <div className="flex items-center gap-2 ml-auto lg:ml-0 lg:order-2 lg:justify-self-end">
             {user ? (
               <>
-                <div className="hidden xl:flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg">
+                <div className={`hidden ${isOwner(user) ? "2xl:flex" : "xl:flex"} items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg`}>
                   <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
                   <span className="max-w-[120px] truncate font-medium">{user.email}</span>
                 </div>
                 {/* On wide screens log out lives with the account, not among the pages */}
                 <button
                   onClick={handleLogout}
+                  title="Log out"
+                  aria-label="Log out"
                   className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 >
                   <HiLogout className="text-md" />
-                  Log out
+                  {/* Icon only until there's room: the owner's menu is long. */}
+                  <span className="hidden xl:inline">Log out</span>
                 </button>
               </>
             ) : (

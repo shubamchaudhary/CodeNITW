@@ -199,13 +199,13 @@ function playSound(type) {
 }
 
 const SOURCE_META = {
-  corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300", border: "border-l-emerald-400" },
-  aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
-  projects: { label: "Project", badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300", border: "border-l-sky-400" },
+  corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 light:bg-emerald-50 light:text-emerald-800 light:border light:border-emerald-200", border: "border-l-emerald-400" },
+  aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-violet-50 light:text-violet-800 light:border light:border-violet-200", border: "border-l-violet-400" },
+  projects: { label: "Project", badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300 light:bg-sky-50 light:text-sky-800 light:border light:border-sky-200", border: "border-l-sky-400" },
   // Retired Topics page. Kept so days planned before Core Stack still render.
-  interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300", border: "border-l-indigo-400" },
-  dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300", border: "border-l-orange-400" },
-  custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300", border: "border-l-violet-400" },
+  interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 light:bg-gray-100 light:text-gray-700 light:border light:border-gray-200", border: "border-l-indigo-400" },
+  dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 light:bg-amber-50 light:text-amber-800 light:border light:border-amber-200", border: "border-l-orange-400" },
+  custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-gray-100 light:text-gray-700 light:border light:border-gray-200", border: "border-l-violet-400" },
 };
 
 const WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -555,7 +555,7 @@ function DayCard({
       className={`transition-opacity ${isDragging ? "opacity-30" : ""}`}
     >
       {isOver && !isDragging && <div className="h-0.5 bg-violet-500 rounded-full mb-1 -mt-0.5" />}
-      <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
+      <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md light:border-l light:hover:border-gray-300 transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
         <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
           <span className="hidden sm:flex text-gray-300 dark:text-gray-600 cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" /><circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" /><circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" /></svg>
@@ -587,7 +587,7 @@ function DayCard({
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
             {!hasSubs && daySec > 0 && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title={`Time spent ${dayLabel}`}>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 light:bg-emerald-50 light:text-emerald-700 light:border light:border-emerald-200" title={`Time spent ${dayLabel}`}>
                 {fmtSpent(daySec)}
               </span>
             )}
@@ -629,7 +629,7 @@ function DayCard({
                         ? "bg-violet-500 text-white animate-pulse"
                         : pomoActive
                         ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
-                        : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50"
+                        : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50 light:bg-white light:border light:border-gray-300 light:text-gray-600 light:hover:border-violet-400 light:hover:text-violet-600 light:hover:bg-violet-50"
                     }`}
                     title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
                   >
@@ -643,14 +643,14 @@ function DayCard({
               <button
                 onClick={onMove}
                 title={`Push to ${moveLabel}`}
-                className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 transition-colors"
+                className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 light:bg-white light:border-gray-300 light:text-gray-600 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 transition-colors"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 <span className="hidden sm:inline">{moveLabel}</span>
               </button>
             )}
 
-            <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove">
+            <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 light:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
             </button>
           </div>
@@ -663,7 +663,7 @@ function DayCard({
         <AnimatePresence>
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-              <div className="border-t border-gray-100 dark:border-slate-700 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
+              <div className="border-t border-gray-100 dark:border-slate-700 light:border-gray-200 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-xs">
                   <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                     <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -748,7 +748,7 @@ function DayCard({
                                 className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
                                   pomoActive
                                     ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
-                                    : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50"
+                                    : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50 light:bg-white light:border light:border-gray-300 light:text-gray-600 light:hover:border-violet-400 light:hover:text-violet-600 light:hover:bg-violet-50"
                                 }`}
                                 title={pomoActive ? "Stop current session first" : "Start focus"}
                               >
@@ -865,10 +865,10 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
   return (
     <div className={`rounded-2xl ${GLASS} p-3 sm:p-4`}>
       <div className="flex items-center justify-between mb-1 px-1">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Time spent {dayLabel}</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 light:text-gray-500">Time spent {dayLabel}</h3>
         <span className="text-xs font-bold text-gray-700 dark:text-gray-200">{fmtSpent(total)}</span>
       </div>
-      <div className="divide-y divide-gray-100 dark:divide-white/5">
+      <div className="divide-y divide-gray-100 dark:divide-white/5 light:divide-gray-200">
         {rows.map((r) => (
           <div key={r.target} className="flex items-center gap-2 sm:gap-3 px-1 py-2">
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${(SOURCE_META[r.source] || SOURCE_META.custom).badge}`}>
@@ -1570,7 +1570,7 @@ const Planning = () => {
           </motion.div>
 
           <div className="flex items-center justify-between gap-2 mb-3 px-2 relative">
-            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&lsaquo;</button>
+            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none light:bg-white light:border-gray-300 light:text-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&lsaquo;</button>
 
             <div className="relative text-center">
               <button onClick={() => setCalOpen(!calOpen)} className="group">
@@ -1589,7 +1589,7 @@ const Planning = () => {
               {!isToday && (
                 <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-semibold transition-all">Today</button>
               )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&rsaquo;</button>
+              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none light:bg-white light:border-gray-300 light:text-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&rsaquo;</button>
             </div>
           </div>
 
@@ -1631,9 +1631,9 @@ const Planning = () => {
           </div>
 
           <div className="px-2 mb-4">
-            <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md p-3 sm:p-4 transition-colors">
+            <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md light:border light:border-solid light:border-gray-200 light:bg-white light:backdrop-filter-none p-3 sm:p-4 transition-colors">
               <div className="flex items-center justify-between mb-3 px-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 light:text-gray-500">
                   Tasks for {relativeLabel(current)}
                 </h3>
                 <span className="text-[11px] text-gray-400 dark:text-gray-500">{doneCount}/{items.length} done</span>
@@ -1692,7 +1692,7 @@ const Planning = () => {
 
               <button
                 onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 light:border-gray-300 light:bg-white light:text-gray-700 light:hover:bg-gray-50 light:hover:border-gray-400 light:hover:text-gray-900 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 Add to {isToday ? "today's" : "this day's"} plan

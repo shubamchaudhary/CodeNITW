@@ -1,5 +1,5 @@
 import { useEffect, lazy, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
 import Header from "./components/Header";
@@ -11,6 +11,7 @@ import AuthPrompt from "./components/AuthPrompt";
 import { startCloudSync, stopCloudSync, onSyncNotice } from "./Data/cloudSync";
 import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
+import { trackSignIn, trackVisit } from "./Data/visitTracker";
 
 // Every page is its own chunk, so opening one downloads only that page — not
 // the notes page's markdown renderer, the planner and the rest with it.
@@ -24,6 +25,16 @@ const AuthPage = lazy(() => import("./pages/SignInUp/AuthPage"));
 // and the Interview Kit's content only downloads for the owner.
 const JobTracker = lazy(() => import("./pages/JobTracker/JobTracker"));
 const InterviewKit = lazy(() => import("./pages/InterviewKit/InterviewKit"));
+const Visitors = lazy(() => import("./pages/Visitors/Visitors"));
+
+// A page view for every route the app shows (see Data/visitTracker).
+function VisitTracker() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    trackVisit("view", pathname);
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   // Anyone can browse; a signed-in account syncs its own progress to Firestore
@@ -32,6 +43,7 @@ function App() {
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (user) => {
       setAuthState(user ? "user" : "guest");
+      trackSignIn(user);
       if (user) {
         startCloudSync(user.uid);
         startNoteHistory(user.uid);
@@ -62,6 +74,7 @@ function App() {
   return (
     <>
       <Router>
+        <VisitTracker />
         <Header />
         {/* A page-sized placeholder while a page's chunk arrives, so the footer
             doesn't jump up and back down. */}
@@ -97,6 +110,10 @@ function App() {
           {/* Owner-only, like AI Stack: personal projects, one chapter per topic. */}
           <Route path="/projects" element={<OwnerRoute />}>
             <Route path="/projects" element={<StackHome stackKey="projects" />} />
+          </Route>
+          {/* Owner-only: who visits the site (the API checks the owner too). */}
+          <Route path="/visitors" element={<OwnerRoute />}>
+            <Route path="/visitors" element={<Visitors />} />
           </Route>
 
           <Route path="/sign-in" element={<AuthPage initialMode="signin" />} />
