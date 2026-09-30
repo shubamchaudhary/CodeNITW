@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, Slide, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OwnerRoute from "./components/OwnerRoute";
 import AuthPrompt from "./components/AuthPrompt";
@@ -122,17 +122,21 @@ function App() {
         <AuthPrompt />
         <SiteTour />
       </Router>
+      {/* Only for what the screen can't show by itself (errors, sync
+          conflicts, undo): a small dark pill, styled in App.css. An action
+          whose result is already visible gets no toast. */}
       <ToastContainer
         position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
+        autoClose={4000}
+        hideProgressBar
+        newestOnTop
         closeOnClick
-        rtl={false}
+        closeButton={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"
+        transition={Slide}
+        theme="dark"
       />
     </>
   );

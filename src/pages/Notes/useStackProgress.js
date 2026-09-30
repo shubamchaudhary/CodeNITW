@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { requireAuth } from "../../Data/authGate";
 import {
   KEYS,
@@ -53,10 +52,8 @@ export default function useStackProgress(stack) {
       if (!requireAuth("Sign in to plan your day — your plan is saved to your account.")) return;
       if (planned.has(topic.id)) {
         removeFromPlanDay(today, stack.key, topic.id);
-        toast.info(`Removed "${topic.title}" from today's plan`);
       } else {
         addToPlanDay(today, stack.planItem(topic));
-        toast.success(`Added "${topic.title}" to today's plan`);
       }
       setPlanned(readPlanned());
     },

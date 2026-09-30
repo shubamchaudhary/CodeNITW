@@ -169,7 +169,6 @@ function ReferralAddForm({ allCompanies, patchCompany, entryOf, onClose }) {
     const patch = { links: [...(entry.links || []), newLink] };
     if (!entry.status || entry.status === "none") patch.status = "toApply";
     patchCompany(company.id, patch);
-    toast.success(`Referral added for ${company.name}`);
     setRole("");
     setUrl("");
   };

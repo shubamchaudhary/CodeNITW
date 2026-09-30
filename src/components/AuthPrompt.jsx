@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import AuthForm from "./AuthForm";
 import { onSignInRequest, onAuthStateChange } from "../Data/authGate";
 
@@ -57,10 +56,7 @@ export default function AuthPrompt() {
         <AuthForm
           mode={mode}
           onModeChange={setMode}
-          onDone={(how) => {
-            setOpen(false);
-            toast.success(how === "signup" ? "Account created — you're all set." : "Signed in. Go ahead.");
-          }}
+          onDone={() => setOpen(false)}
         />
       </div>
     </div>
