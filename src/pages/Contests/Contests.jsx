@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { fetchContests, peekContests } from "../../Data/contestsFeed";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -193,15 +194,19 @@ export default function Contests() {
   useEffect(() => onAuthStateChanged(getAuth(), (u) => setUser(u || null)), []);
   const alerts = useAlerts(user);
 
-  const [data, setData] = useState({ status: "loading", contests: [], failed: [] });
-  const load = useCallback(() => {
-    setData((d) => ({ ...d, status: "loading" }));
-    fetch("/api/contests")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status))))
-      .then((d) => setData({ status: "ready", contests: d.contests || [], failed: d.failed || [] }))
+  const [data, setData] = useState(() => {
+    const d = peekContests();
+    return d ? { status: "ready", ...d } : { status: "loading", contests: [], failed: [] };
+  });
+  const load = useCallback((fresh) => {
+    const d = peekContests();
+    if (!fresh && d) return setData({ status: "ready", ...d });
+    setData((prev) => ({ ...prev, status: "loading" }));
+    fetchContests({ fresh })
+      .then((res) => setData({ status: "ready", ...res }))
       .catch(() => setData({ status: "error", contests: [], failed: [] }));
   }, []);
-  useEffect(load, [load]);
+  useEffect(() => load(false), [load]);
 
   // Countdowns tick; contests that have started drop off the list.
   const [now, setNow] = useState(Date.now());
@@ -271,7 +276,7 @@ export default function Contests() {
           {data.status === "error" && (
             <div className={`rounded-2xl ${CARD} px-5 py-10 text-center`}>
               <p className="text-[14px] text-gray-600 dark:text-gray-300">Couldn't load contests right now.</p>
-              <button onClick={load} className="mt-3 text-[13px] font-bold text-violet-600 dark:text-violet-300 hover:underline">
+              <button onClick={() => load(true)} className="mt-3 text-[13px] font-bold text-violet-600 dark:text-violet-300 hover:underline">
                 Try again
               </button>
             </div>

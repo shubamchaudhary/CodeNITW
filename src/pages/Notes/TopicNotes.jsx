@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import PageSkeleton from "../../components/PageSkeleton";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
@@ -6,7 +7,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 import { isOwner } from "../../components/OwnerRoute";
 import useIsDark from "../../hooks/useIsDark";
 import { getSyncStatus, subscribeSyncStatus } from "../../Data/cloudSync";
-import { requireAuth, requestSignIn } from "../../Data/authGate";
+import { requireAuth, requestSignIn, getAuthState } from "../../Data/authGate";
 import {
   loadJSON,
   getSourceNote,
@@ -63,8 +64,9 @@ export default function TopicNotes() {
   const headerOffset = useStickyHeaderOffset();
   const { completed, planned, setDone, togglePlanned, stampRev } = useStackProgress(stack);
 
-  const [user, setUser] = useState(null);
-  const [authReady, setAuthReady] = useState(false);
+  // Already known when the page is opened after the app has loaded.
+  const [authReady, setAuthReady] = useState(() => getAuthState() !== "unknown");
+  const [user, setUser] = useState(() => (getAuthState() !== "unknown" ? getAuth().currentUser : null));
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (u) => {
       setUser(u);
@@ -457,7 +459,7 @@ export default function TopicNotes() {
     [topic, completed, stampRev, stack]
   );
 
-  if (!authReady) return null;
+  if (!authReady) return <PageSkeleton />;
   if (!config) return <Navigate to="/core-stack" replace />;
   if (config.ownerOnly && !isOwner(user)) return <Navigate to="/core-stack" replace />;
   if (!topic) return <Navigate to={config.home} replace />;

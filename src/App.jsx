@@ -1,4 +1,4 @@
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
@@ -13,20 +13,12 @@ import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
 import { trackSignIn, trackVisit } from "./Data/visitTracker";
 import SiteTour from "./components/SiteTour";
-import {
-  loadStackHome, loadTopicNotes, loadDSAPrep, loadPlanning,
-  loadContests, loadAuthPage, loadJobTracker,
-} from "./pageLoaders";
+import PageSkeleton from "./components/PageSkeleton";
+import { StackHome, TopicNotes, DSAPrep, Planning, Contests, AuthPage, JobTracker } from "./pageLoaders";
 
 // Every page is its own chunk, so opening one downloads only that page — not
 // the notes page's markdown renderer, the planner and the rest with it.
-const StackHome = lazy(loadStackHome);
-const TopicNotes = lazy(loadTopicNotes);
-const DSAPrep = lazy(loadDSAPrep);
-const Planning = lazy(loadPlanning);
-const Contests = lazy(loadContests);
-const AuthPage = lazy(loadAuthPage);
-const JobTracker = lazy(loadJobTracker);
+// (See pageLoaders: the site tour preloads them.)
 
 // A page view for every route the app shows (see Data/visitTracker).
 function VisitTracker() {
@@ -77,9 +69,11 @@ function App() {
       <Router>
         <VisitTracker />
         <Header />
-        {/* A page-sized placeholder while a page's chunk arrives, so the footer
-            doesn't jump up and back down. */}
-        <Suspense fallback={<div className="min-h-screen" />}>
+        {/* Placeholder cards while a page's chunk arrives, so there's no blank
+            screen and the footer doesn't jump up and back down. The id is what
+            the site tour animates between pages. */}
+        <div id="page-root">
+        <Suspense fallback={<PageSkeleton />}>
         <Routes>
           {/* The home page is the planner (a guest sees a sample day). */}
           <Route path="/" element={<Navigate to="/planning" replace />} />
@@ -123,6 +117,7 @@ function App() {
           <Route path="*" element={<Navigate to="/core-stack" replace />} />
         </Routes>
         </Suspense>
+        </div>
         <Footer />
         <AuthPrompt />
         <SiteTour />

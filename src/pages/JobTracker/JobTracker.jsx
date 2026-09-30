@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
+import PageSkeleton from "../../components/PageSkeleton";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import { GLASS } from "../../components/glass";
@@ -426,7 +427,7 @@ export default function JobTracker() {
     { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-300" },
   ];
 
-  if (user === undefined) return null;
+  if (user === undefined) return <PageSkeleton />;
 
   // Everyone gets Pipeline and Companies (their own tracking, the shared company
   // list). Contacts and Openings exist only for the owner.
