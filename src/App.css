@@ -49,3 +49,6 @@
 .modal-content::-webkit-scrollbar-thumb {
   background: #2b6cb0;
 }
+
+/* Typing caret on the landing hero (Planning/OfferHero). */
+@keyframes caret { 50% { opacity: 0; } }
