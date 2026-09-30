@@ -151,10 +151,8 @@ const DSAPrep = () => {
       if (!requireAuth("Sign in to plan your day — your plan is saved to your account.")) return;
       if (plannedToday.has(problem.id)) {
         removeFromPlanDay(today, "dsa", problem.id);
-        toast.info(`Removed "${problem.title}" from today's plan`);
       } else {
         addToPlanDay(today, dsaPlanItem(problem, topic));
-        toast.success(`Added "${problem.title}" to today's plan`);
       }
       setPlannedToday(readPlanned());
     },

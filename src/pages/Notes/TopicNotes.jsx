@@ -317,12 +317,12 @@ export default function TopicNotes() {
       const allLearnt = allKeys.length > 0 && allKeys.every((k) => next[k]);
       const isDone = !!completed[topicId];
       if (allLearnt && !isDone) {
-        if (setDone(topicId, true)) toast.success(`Every topic learnt — "${topic?.title}" marked as done`);
+        setDone(topicId, true);
       } else if (unlearning && isDone && allKeys.length > 0) {
-        if (setDone(topicId, false)) toast.info(`"${topic?.title}" is no longer done`);
+        setDone(topicId, false);
       }
     },
-    [source, topicId, completed, setDone, topic]
+    [source, topicId, completed, setDone]
   );
 
   // Flush on unmount (or topic switch) so leaving inside the debounce window
@@ -449,7 +449,6 @@ export default function TopicNotes() {
       } else if (key === "s") {
         e.preventDefault();
         persist(areaRef.current?.value ?? latestRef.current);
-        toast.success("Notes saved");
       }
     },
     [applyAction, persist]

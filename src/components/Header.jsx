@@ -82,7 +82,6 @@ export default function Header() {
         .then(() => {
           // Pages stay readable signed out; owner-only pages send you home.
           navigate("/core-stack");
-          toast.info("Signed out");
         })
         .catch((error) => {
           console.error("Logout error:", error);
