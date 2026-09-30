@@ -51,6 +51,7 @@ import { getInterviewCard } from "../../Data/interviewCards";
 import { getProjectTopic } from "../../Data/Projects";
 import { demoPlan } from "../../Data/planDemo";
 import { requireAuth, requestSignIn } from "../../Data/authGate";
+import { startTour } from "../../components/SiteTour";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -1662,16 +1663,33 @@ const Planning = () => {
 
           {demo && (
             <div className="px-2 mb-3">
-              <div className="rounded-xl border border-violet-300/60 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 px-4 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px]">
-                <span className="flex-1 min-w-[200px] text-gray-700 dark:text-gray-200">
-                  <b className="font-semibold">A sample day.</b> Plan your own: DSA problems, Core Stack topics and your own tasks, with a focus timer and time tracking.
-                </span>
+              <div className="rounded-xl border border-violet-300/60 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 px-4 py-3.5">
+                <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                  Everything you need to crack your next interview, in one place.
+                </h2>
+                <ul className="mt-2 grid sm:grid-cols-2 gap-x-6 gap-y-1 text-[13px] text-gray-700 dark:text-gray-200">
+                  <li><b className="font-semibold">350+ DSA problems</b>, hand-picked and grouped by pattern</li>
+                  <li><b className="font-semibold">Java & Spring Boot</b> study material, topic by topic</li>
+                  <li><b className="font-semibold">Your own notes</b> on every topic and problem</li>
+                  <li><b className="font-semibold">Job pipeline</b> to track every application</li>
+                  <li><b className="font-semibold">Upcoming DSA contests</b> with email reminders</li>
+                  <li><b className="font-semibold">Daily planner</b> with a Pomodoro focus timer</li>
+                </ul>
                 <button
-                  onClick={() => requestSignIn()}
-                  className="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700 transition-colors"
+                  onClick={() => startTour()}
+                  className="mt-3 px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition-colors"
                 >
-                  Sign in to start
+                  ▶ Take a quick tour
                 </button>
+                <div className="mt-3 pt-3 border-t border-violet-300/40 dark:border-violet-500/20 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-gray-500 dark:text-gray-400">
+                  <span>Below is a sample day.</span>
+                  <button
+                    onClick={() => requestSignIn()}
+                    className="px-3 py-1.5 rounded-lg border border-violet-400/60 text-violet-700 dark:text-violet-200 text-xs font-semibold hover:bg-violet-100 dark:hover:bg-violet-500/20 transition-colors"
+                  >
+                    Sign in to plan your own
+                  </button>
+                </div>
               </div>
             </div>
           )}
