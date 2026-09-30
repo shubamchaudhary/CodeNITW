@@ -12,17 +12,21 @@ import { startCloudSync, stopCloudSync, onSyncNotice } from "./Data/cloudSync";
 import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
 import { trackSignIn, trackVisit } from "./Data/visitTracker";
+import SiteTour from "./components/SiteTour";
+import {
+  loadStackHome, loadTopicNotes, loadDSAPrep, loadPlanning,
+  loadContests, loadAuthPage, loadJobTracker,
+} from "./pageLoaders";
 
 // Every page is its own chunk, so opening one downloads only that page — not
 // the notes page's markdown renderer, the planner and the rest with it.
-const StackHome = lazy(() => import("./pages/Notes/StackHome"));
-const TopicNotes = lazy(() => import("./pages/Notes/TopicNotes"));
-const DSAPrep = lazy(() => import("./pages/DSAPrep/DSAPrep"));
-const Planning = lazy(() => import("./pages/Planning/Planning"));
-const Contests = lazy(() => import("./pages/Contests/Contests"));
-const AuthPage = lazy(() => import("./pages/SignInUp/AuthPage"));
-// The (large) company dataset is only fetched when someone opens the tracker.
-const JobTracker = lazy(() => import("./pages/JobTracker/JobTracker"));
+const StackHome = lazy(loadStackHome);
+const TopicNotes = lazy(loadTopicNotes);
+const DSAPrep = lazy(loadDSAPrep);
+const Planning = lazy(loadPlanning);
+const Contests = lazy(loadContests);
+const AuthPage = lazy(loadAuthPage);
+const JobTracker = lazy(loadJobTracker);
 
 // A page view for every route the app shows (see Data/visitTracker).
 function VisitTracker() {
@@ -121,6 +125,7 @@ function App() {
         </Suspense>
         <Footer />
         <AuthPrompt />
+        <SiteTour />
       </Router>
       <ToastContainer
         position="bottom-center"
