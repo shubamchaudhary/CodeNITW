@@ -2910,10 +2910,10 @@ export const DSA_DIFFICULTY_CONFIG = {
 export const DSA_PRIORITIES = ["P0", "P1", "P2", "P3"];
 
 export const DSA_PRIORITY_CONFIG = {
-  P0: { label: "P0", blurb: "Asked constantly — do these first", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
-  P1: { label: "P1", blurb: "Very common — expect these", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" },
-  P2: { label: "P2", blurb: "Shows up regularly", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
-  P3: { label: "P3", blurb: "Rounds out topic coverage", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30" },
+  P0: { label: "P0", blurb: "Asked constantly — do these first", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30 light:bg-gray-100 light:text-gray-900 light:border-gray-300" },
+  P1: { label: "P1", blurb: "Very common — expect these", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 light:bg-white light:text-gray-600 light:border-gray-200" },
+  P2: { label: "P2", blurb: "Shows up regularly", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30 light:bg-white light:text-gray-500 light:border-gray-200" },
+  P3: { label: "P3", blurb: "Rounds out topic coverage", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30 light:bg-white light:text-gray-400 light:border-gray-200" },
 };
 
 // Flat list (id-keyed) for the Planning page picker and cross-page sync.

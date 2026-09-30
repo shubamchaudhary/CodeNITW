@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   variants: {
@@ -16,6 +18,10 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    // `light:` styles apply only in light mode (no `dark` class on <html>), so
+    // light mode can be restyled without any chance of touching dark mode.
+    plugin(({ addVariant }) => addVariant("light", "html:not(.dark) &")),
+  ],
 };
 
