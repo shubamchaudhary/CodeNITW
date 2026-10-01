@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { HiOutlineExternalLink, HiCheck, HiX, HiPlus, HiChevronDown, HiReply } from "react-icons/hi";
@@ -20,7 +20,8 @@ import {
 // Each section is a stack — the newest company on top, the rest peeking out
 // behind it — that deals out into a full list on "Show all". A link left
 // untouched for ERASE_AFTER_DAYS is erased (JobTracker runs it; the rules are
-// in shared.jsx); its last week, the card counts down.
+// in shared.jsx); its last week, the card counts down. On a desktop, a card
+// (or one job in it) can be dragged to another section instead of clicking.
 
 // ── Moving a link between stages ────────────────────────────────────────────
 const without = (obj, keys) => {
@@ -28,6 +29,34 @@ const without = (obj, keys) => {
   keys.forEach((k) => delete copy[k]);
   return copy;
 };
+
+const hasApplied = (l) => !!(l.applied || l.referralAppliedAt);
+
+// A closed link with its closing taken off: back where it was.
+function reopened(l) {
+  const keys = ["outcome", "outcomeAt", "closedReason", "closedAt"];
+  if (l.referralOutcome === "rejected") keys.push("referralOutcome", "referralOutcomeAt");
+  return without(l, keys);
+}
+
+// A link dragged into `stage`, from wherever it was.
+function dropLink(l, stage, now) {
+  const r = reopened(l);
+  switch (stage) {
+    case "toApply":
+      return { ...without(r, ["appliedAt", "referralAt", "referralAppliedAt", "referralOutcome", "referralOutcomeAt"]), applied: false, referral: false };
+    case "referral":
+      return { ...without(r, ["appliedAt", "referralAppliedAt"]), applied: false, referral: true, referralAt: r.referralAt || now };
+    case "applied":
+      if (hasApplied(r)) return r; // it was an application: reopened
+      return r.referral ? { ...r, referralAppliedAt: now } : { ...r, applied: true, appliedAt: now };
+    case "closed":
+      if (hasApplied(l)) return { ...l, outcome: "rejected", outcomeAt: now };
+      return l.referral ? { ...l, closedReason: "noReply", closedAt: now } : l;
+    default:
+      return l;
+  }
+}
 
 function moveLink(l, to, now) {
   switch (to) {
@@ -41,11 +70,8 @@ function moveLink(l, to, now) {
       return { ...l, closedReason: "noReply", closedAt: now };
     case "rejected":
       return { ...l, outcome: "rejected", outcomeAt: now };
-    case "reopen": {
-      const keys = ["outcome", "outcomeAt", "closedReason", "closedAt"];
-      if (l.referralOutcome === "rejected") keys.push("referralOutcome", "referralOutcomeAt");
-      return without(l, keys);
-    }
+    case "reopen":
+      return reopened(l);
     case "back": // one step back, for a mis-click
       if (l.referralAppliedAt) return without(l, ["referralAppliedAt"]);
       if (l.applied) return without({ ...l, applied: false }, ["appliedAt"]);
@@ -56,37 +82,58 @@ function moveLink(l, to, now) {
   }
 }
 
-// Move one or more of a company's links, keeping the company's own status in
-// step: applying makes it Applied, reopening a rejected company makes it
-// Applied again, and taking back its only application returns it to To Apply.
+// Move one or more of a company's links — a button's action, or "drop:<stage>"
+// for a drag — keeping the company's own status in step: a new application
+// makes it Applied (also when it was Rejected: its earlier applications stay
+// closed, each marked rejected itself), and taking back its only application
+// returns it to To Apply.
 function makeMover(entryOf, patchCompany) {
   return (companyId, linkIds, to) => {
     const ids = new Set([].concat(linkIds));
     const entry = entryOf(companyId);
     const status = entry.status || "none";
     const now = Date.now();
-    // Any move restarts the link's erase clock.
-    const links = (entry.links || []).map((l) => (ids.has(l.id) ? { ...moveLink(l, to, now), touchedAt: now } : l));
-    const patch = { links };
-    if ((to === "applied" || to === "appliedViaReferral") && !APPLIED_SET.has(status)) patch.status = "applied";
-    if (to === "reopen" && status === "rejected") patch.status = "applied";
-    if (to === "back" && status === "applied" && !links.some((l) => l.applied || l.referralAppliedAt)) patch.status = "toApply";
-    patchCompany(companyId, patch);
+    const drop = to.startsWith("drop:") ? to.slice(5) : null;
+    let applying = false;
+    let unapplying = false;
+    let links = (entry.links || []).map((l) => {
+      if (!ids.has(l.id)) return l;
+      const next = drop ? dropLink(l, drop, now) : moveLink(l, to, now);
+      if (linkStage(next) === "applied" && linkStage(l, entry) !== "applied") applying = true;
+      if (hasApplied(l) && !hasApplied(next)) unapplying = true;
+      return { ...next, touchedAt: now }; // any move restarts the erase clock
+    });
+    const patch = {};
+    if (applying && (!APPLIED_SET.has(status) || status === "rejected")) {
+      if (status === "rejected") {
+        links = links.map((l) =>
+          !ids.has(l.id) && linkStage(l, entry) === "closed" && linkStage(l) === "applied" ? { ...l, outcome: "rejected", outcomeAt: now } : l
+        );
+      }
+      patch.status = "applied";
+    } else if (unapplying && status === "applied" && !links.some(hasApplied)) patch.status = "toApply";
+    patchCompany(companyId, { ...patch, links });
   };
 }
 
+// A company that was only "To Apply" because of its links isn't, once the
+// last one is gone.
+const settled = (entry, links) => ({ links, ...(!links.length && entry.status === "toApply" ? { status: "none" } : {}) });
+
 function makeRemove(entryOf, patchCompany) {
   return (companyId, linkId) => {
-    const prevLinks = entryOf(companyId).links || [];
+    const entry = entryOf(companyId);
+    const prevLinks = entry.links || [];
     const removed = prevLinks.find((l) => l.id === linkId);
-    patchCompany(companyId, { links: prevLinks.filter((l) => l.id !== linkId) });
+    const patch = settled(entry, prevLinks.filter((l) => l.id !== linkId));
+    patchCompany(companyId, patch);
     toast.info(
       ({ closeToast }) => (
         <span className="text-sm">
           Removed <span className="font-semibold">{(removed?.label || "opening").slice(0, 40)}</span>{" "}
           <button
             onClick={() => {
-              patchCompany(companyId, { links: prevLinks });
+              patchCompany(companyId, { links: prevLinks, ...(patch.status ? { status: entry.status } : {}) });
               closeToast();
             }}
             className="underline font-semibold"
@@ -203,16 +250,18 @@ function Stack({ items, empty }) {
 }
 
 // ── Cards and rows ──────────────────────────────────────────────────────────
-function JobCard({ company, aside, children }) {
+// `drag`: the props that make it draggable (see dragFrom); `dimmed` while it's
+// the one being dragged.
+function JobCard({ company, aside, children, drag, dimmed }) {
   return (
-    <div className={`${CARD} rounded-xl p-3.5`}>
+    <div {...drag} className={`${CARD} rounded-xl p-3.5 ${drag ? "cursor-grab active:cursor-grabbing" : ""} ${dimmed ? "opacity-40" : ""}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-semibold text-gray-800 dark:text-gray-100">{company.name}</span>
             {company.pay && <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">₹{company.pay} LPA</span>}
             {company.careers && (
-              <a href={company.careers} target="_blank" rel="noreferrer" className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400" title="Careers page">
+              <a href={company.careers} target="_blank" rel="noreferrer" draggable={false} className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400" title="Careers page">
                 <HiOutlineExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
@@ -226,12 +275,12 @@ function JobCard({ company, aside, children }) {
   );
 }
 
-function Row({ link, icon, iconCls, linkCls = "text-gray-800 dark:text-gray-100", meta, metaCls, onBack, backTitle, onRemove, children }) {
+function Row({ link, icon, iconCls, linkCls = "text-gray-800 dark:text-gray-100", meta, metaCls, onBack, backTitle, onRemove, drag, children }) {
   return (
-    <li>
+    <li {...drag}>
       <div className="flex items-center gap-1.5 text-sm min-w-0">
         <span className={`shrink-0 w-4 text-center ${iconCls}`}>{icon}</span>
-        <a href={link.url} target="_blank" rel="noreferrer" title={link.url} className={`truncate font-medium hover:underline ${linkCls}`}>
+        <a href={link.url} target="_blank" rel="noreferrer" title={link.url} draggable={false} className={`truncate font-medium hover:underline ${linkCls}`}>
           {link.label}
         </a>
         <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
@@ -304,10 +353,18 @@ function AddJobForm({ stage, allCompanies, onAdd, onClose }) {
   );
 }
 
-function Section({ stage, title, count, hint, onAdd, children }) {
+// `drop`: drop-zone handlers; `dropState`: "ready" while a card that can land
+// here is being dragged, "over" while it's over this section.
+function Section({ stage, title, count, hint, onAdd, drop, dropState, children }) {
   const t = TONES[stage];
+  const outline =
+    dropState === "over"
+      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-indigo-400 bg-indigo-500/5"
+      : dropState === "ready"
+      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-indigo-400/40"
+      : "";
   return (
-    <section className="min-w-0">
+    <section {...drop} className={`min-w-0 rounded-2xl transition-colors ${outline}`}>
       <div className="flex items-center gap-2 mb-1">
         <h2 className={`text-lg font-bold ${t.title}`}>{title}</h2>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${t.pill}`}>{count}</span>
@@ -335,6 +392,11 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const move = makeMover(entryOf, patchCompany);
   const removeLink = makeRemove(entryOf, patchCompany);
   const [adding, setAdding] = useState(null); // the section whose Add form is open
+  // What's being dragged, { from, companyId, linkIds }: in a ref for the drop
+  // logic (set at once), and in state for the highlighting (set a tick later).
+  const dragRef = useRef(null);
+  const [drag, setDrag] = useState(null);
+  const [over, setOver] = useState(null); // the section it's over
 
   // One card per company per section, holding that company's links in it.
   const groups = { toApply: [], referral: [], applied: [], closed: [] };
@@ -343,33 +405,36 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
     const links = entry.links || [];
     const by = { toApply: [], referral: [], applied: [], closed: [] };
     links.forEach((l) => by[linkStage(l, entry)].push(l));
+    // Only job links make cards: a company marked "To Apply" in Companies
+    // without one isn't something to act on here.
     Object.keys(by).forEach((stage) => {
       if (by[stage].length) groups[stage].push({ company, entry, links: by[stage] });
     });
-    // Marked "To Apply" in Companies without a job link yet.
-    if (!links.length && entry.status === "toApply") groups.toApply.push({ company, entry, links: [] });
   });
-  // Newest first, so the top of each stack is what you touched last.
+  // Newest first (entered its section, or last moved), so the top of each
+  // stack is what you touched last.
   Object.entries(groups).forEach(([stage, list]) => {
-    const newest = (g) => Math.max(0, ...g.links.map((l) => STAGE_TIME[stage](l, g.entry) || 0));
+    const newest = (g) => Math.max(0, ...g.links.map((l) => Math.max(STAGE_TIME[stage](l, g.entry) || 0, l.touchedAt || 0)));
     list.sort((a, b) => newest(b) - newest(a));
   });
   const count = (stage) => groups[stage].reduce((n, g) => n + g.links.length, 0);
 
   const clearClosed = () => {
-    const before = groups.closed.map((g) => ({ id: g.company.id, links: g.entry.links || [] }));
-    const n = count("closed");
-    before.forEach(({ id, links }) => {
-      const entry = entryOf(id);
-      patchCompany(id, { links: links.filter((l) => linkStage(l, entry) !== "closed") });
+    // What each company held before, so Undo puts back exactly that.
+    const plans = groups.closed.map((g) => {
+      const entry = entryOf(g.company.id);
+      const links = entry.links || [];
+      return { id: g.company.id, links, status: entry.status, patch: settled(entry, links.filter((l) => linkStage(l, entry) !== "closed")) };
     });
+    const n = count("closed");
+    plans.forEach((p) => patchCompany(p.id, p.patch));
     toast.info(
       ({ closeToast }) => (
         <span className="text-sm">
           Cleared {n} closed{" "}
           <button
             onClick={() => {
-              before.forEach(({ id, links }) => patchCompany(id, { links }));
+              plans.forEach((p) => patchCompany(p.id, { links: p.links, ...(p.patch.status ? { status: p.status } : {}) }));
               closeToast();
             }}
             className="underline font-semibold"
@@ -386,11 +451,12 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
     adding === stage && <AddJobForm stage={stage} allCompanies={allCompanies} onAdd={addJob} onClose={() => setAdding(null)} />;
   const toggleAdd = (stage) => () => setAdding((s) => (s === stage ? null : stage));
   // A row's date, plus a countdown in its last week before it's erased.
-  const rowProps = (g, l, label, cls) => {
+  const rowProps = (stage, g, l, label, cls) => {
     const left = daysToErase(l, g.entry);
     const soon = label && left !== null && left <= ERASE_WARN_DAYS;
     return {
       link: l,
+      drag: dragFrom(stage, g.company.id, [l.id]),
       onRemove: () => removeLink(g.company.id, l.id),
       // Past due only while this session's sync hasn't caught up yet.
       meta: soon ? `${label} · ${left > 0 ? `erased in ${left}d` : "erased soon"}` : label,
@@ -399,17 +465,60 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   };
   const mv = (g, l, to) => () => move(g.company.id, l.id, to);
 
+  // ── Drag and drop ──
+  // A card carries all its jobs in that section; a row just its own. Closed
+  // takes only applications (→ Rejected) and referral asks (→ No reply).
+  const canDrop = (d, stage) => !!d && d.from !== stage && (stage !== "closed" || d.from === "referral" || d.from === "applied");
+  const endDrag = () => {
+    dragRef.current = null;
+    setDrag(null);
+    setOver(null);
+  };
+  const dragFrom = (from, companyId, linkIds) => ({
+    draggable: true,
+    onDragStart: (e) => {
+      e.stopPropagation(); // a row inside a card drags alone
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", companyId); // some browsers only start a drag with data
+      const payload = { from, companyId, linkIds };
+      dragRef.current = payload;
+      // The highlighting waits a tick: changing the page during dragstart can cancel the drag.
+      setTimeout(() => dragRef.current === payload && setDrag(payload), 0);
+    },
+    onDragEnd: endDrag,
+  });
+  const dropOn = (stage) => ({
+    onDragOver: (e) => {
+      if (!canDrop(dragRef.current, stage)) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      if (over !== stage) setOver(stage);
+    },
+    onDragLeave: (e) => {
+      if (!e.currentTarget.contains(e.relatedTarget)) setOver((o) => (o === stage ? null : o));
+    },
+    onDrop: (e) => {
+      const d = dragRef.current;
+      if (!canDrop(d, stage)) return;
+      e.preventDefault();
+      move(d.companyId, d.linkIds, `drop:${stage}`);
+      endDrag();
+    },
+  });
+  const dropState = (stage) => (canDrop(drag, stage) ? (over === stage ? "over" : "ready") : null);
+  const cardDrag = (stage, g) => ({
+    drag: dragFrom(stage, g.company.id, g.links.map((l) => l.id)),
+    dimmed: drag?.from === stage && drag.companyId === g.company.id,
+  });
+
   const toApplyCards = groups.toApply.map((g) => ({
     key: g.company.id,
     node: (
-      <JobCard company={g.company}>
-        {g.links.length === 0 && (
-          <li className="text-xs text-gray-400 dark:text-gray-500 italic">Marked "To Apply" in Companies. Add its job link with + Add.</li>
-        )}
+      <JobCard company={g.company} {...cardDrag("toApply", g)}>
         {g.links.map((l) => {
           const added = agoLabel(l.addedAt);
           return (
-            <Row key={l.id} {...rowProps(g, l, added && `added ${added}`)} icon="○" iconCls="text-amber-500">
+            <Row key={l.id} {...rowProps("toApply", g, l, added && `added ${added}`)} icon="○" iconCls="text-amber-500">
               <Btn kind="emerald" onClick={mv(g, l, "applied")} title="You applied directly">
                 <HiCheck className="w-3.5 h-3.5" /> Applied
               </Btn>
@@ -429,13 +538,13 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const referralCards = groups.referral.map((g) => ({
     key: g.company.id,
     node: (
-      <JobCard company={g.company}>
+      <JobCard company={g.company} {...cardDrag("referral", g)}>
         {g.links.map((l) => {
           const asked = agoLabel(l.referralAt);
           return (
             <Row
               key={l.id}
-              {...rowProps(g, l, asked && `asked ${asked}`)}
+              {...rowProps("referral", g, l, asked && `asked ${asked}`)}
               icon="↗"
               iconCls="text-violet-500"
               onBack={mv(g, l, "back")}
@@ -457,14 +566,18 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const appliedCards = groups.applied.map((g) => ({
     key: g.company.id,
     node: (
-      <JobCard company={g.company} aside={<StatusSelect value={g.entry.status} onChange={(v) => patchCompany(g.company.id, { status: v })} />}>
+      <JobCard
+        company={g.company}
+        {...cardDrag("applied", g)}
+        aside={<StatusSelect value={g.entry.status} onChange={(v) => patchCompany(g.company.id, { status: v })} />}
+      >
         {g.links.map((l) => {
           const when = agoLabel(appliedTime(l, g.entry));
           const viaReferral = !!l.referralAppliedAt;
           return (
             <Row
               key={l.id}
-              {...rowProps(g, l, when && `applied ${when}`)}
+              {...rowProps("applied", g, l, when && `applied ${when}`)}
               icon="✓"
               iconCls="text-emerald-500"
               onBack={mv(g, l, "back")}
@@ -485,14 +598,14 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const closedCards = groups.closed.map((g) => ({
     key: g.company.id,
     node: (
-      <JobCard company={g.company}>
+      <JobCard company={g.company} {...cardDrag("closed", g)}>
         {g.links.map((l) => {
           const when = agoLabel(closedTime(l));
           const reason = l.closedReason === "noReply" ? "No reply" : "Rejected";
           return (
             <Row
               key={l.id}
-              {...rowProps(g, l, when ? `${reason} · ${when}` : reason, reason === "Rejected" ? "text-rose-500 dark:text-rose-300" : undefined)}
+              {...rowProps("closed", g, l, when ? `${reason} · ${when}` : reason, reason === "Rejected" ? "text-rose-500 dark:text-rose-300" : undefined)}
               icon="•"
               iconCls="text-gray-400"
               linkCls="text-gray-500 dark:text-gray-400"
@@ -510,31 +623,36 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   return (
     <div>
       <p className="mb-4 text-xs text-gray-400 dark:text-gray-500">
-        A job left untouched for {ERASE_AFTER_DAYS} days is erased automatically. Live applications (OA, Interview, Offer) stay.
+        Drag a card (or one job in it) to another section to move it. A job left untouched for {ERASE_AFTER_DAYS} days is erased
+        automatically; live applications (OA, Interview, Offer) stay.
       </p>
       <div className="grid gap-6 lg:grid-cols-3 items-start">
-        <Section stage="toApply" title="To Apply" count={count("toApply")} hint="Jobs you plan to apply to. Mark each one when you act on it." onAdd={toggleAdd("toApply")}>
+        <Section stage="toApply" title="To Apply" count={count("toApply")} hint="Jobs you plan to apply to. Mark each one when you act on it." onAdd={toggleAdd("toApply")} drop={dropOn("toApply")} dropState={dropState("toApply")}>
           {addForm("toApply")}
           <Stack items={toApplyCards} empty="Nothing to apply to yet. Add a job link." />
         </Section>
 
-        <Section stage="referral" title="Asked for Referral" count={count("referral")} hint="Waiting on a referral. Mark Applied once you apply with it." onAdd={toggleAdd("referral")}>
+        <Section stage="referral" title="Asked for Referral" count={count("referral")} hint="Waiting on a referral. Mark Applied once you apply with it." onAdd={toggleAdd("referral")} drop={dropOn("referral")} dropState={dropState("referral")}>
           {addForm("referral")}
           <Stack items={referralCards} empty="No referral asks waiting." />
         </Section>
 
         <div className="space-y-8 min-w-0">
-          <Section stage="applied" title="Applied" count={count("applied")} hint="Applied directly or with a referral. Set the stage as it moves." onAdd={toggleAdd("applied")}>
+          <Section stage="applied" title="Applied" count={count("applied")} hint="Applied directly or with a referral. Set the stage as it moves." onAdd={toggleAdd("applied")} drop={dropOn("applied")} dropState={dropState("applied")}>
             {addForm("applied")}
             <Stack items={appliedCards} empty="No applications yet." />
           </Section>
 
-          {closedCards.length > 0 && (
-            <Section stage="closed" title="Closed" count={count("closed")} hint="Rejected or no reply. Out of the way until it's erased.">
-              <Stack items={closedCards} empty="" />
-              <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400">
-                Clear all closed
-              </button>
+          {/* Shown when it has cards, or as a drop zone while an application
+              or referral ask is being dragged. */}
+          {(closedCards.length > 0 || canDrop(drag, "closed")) && (
+            <Section stage="closed" title="Closed" count={count("closed")} hint="Rejected or no reply. Out of the way until it's erased." drop={dropOn("closed")} dropState={dropState("closed")}>
+              <Stack items={closedCards} empty="Drop here to mark it rejected (or no reply)." />
+              {closedCards.length > 0 && (
+                <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400">
+                  Clear all closed
+                </button>
+              )}
             </Section>
           )}
         </div>
