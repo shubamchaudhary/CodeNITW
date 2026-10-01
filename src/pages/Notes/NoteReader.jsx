@@ -5,7 +5,6 @@ import { requireAuth } from "../../Data/authGate";
 import { ASSET_PREFIX } from "../../Data/noteAssets";
 import {
   splitSections,
-  spliceSection,
   appendBlock,
   TOOLBAR,
   formatSelection,
@@ -33,19 +32,20 @@ import "./notes.css";
 // put while the note scrolls.
 //
 // The note is cut into heading sections (see splitSections) and each renders
-// on its own, which is what lets one section flip into an editor in place.
-// Every block element carries the offsets of the markdown that produced it,
-// so a selection can be traced back to the source and wrapped in a <mark>.
+// on its own. Every block element carries the offsets of the markdown that
+// produced it, so a selection can be traced back to the source and wrapped in
+// a <mark> — and any one block (or list item) can open in place, as a plain
+// writing area, from the pen in its margin (see InlineEditor).
 // Personal notes are different: they are pinned to the rendered text (see
 // noteAnchors) and never touch the markdown, so they can sit on code too.
 
-// Elements tagged with their source span. `mark` and `code` are tagged for
-// removal and whole-span wrapping; the rest are the blocks a selection is
-// resolved against.
-const TRACKED = ["p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "summary", "details", "dt", "dd", "mark", "code"];
-const BLOCK_SELECTOR = TRACKED.filter((t) => t !== "mark" && t !== "code")
-  .map((t) => `${t}[data-s]`)
-  .join(",");
+// Elements tagged with their source span. The text blocks are what a
+// selection is resolved against; lists, quotes, tables and rules are tagged
+// so a whole one can open in the inline editor; `mark` and `code` are tagged
+// for removal and whole-span wrapping. (Code blocks: see notePre.)
+const TEXT_BLOCKS = ["p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "summary", "details", "dt", "dd"];
+const TRACKED = [...TEXT_BLOCKS, "ul", "ol", "blockquote", "table", "hr", "mark", "code"];
+const BLOCK_SELECTOR = TEXT_BLOCKS.map((t) => `${t}[data-s]`).join(",");
 
 function tracked(tag) {
   return function Tracked({ node, ...props }) {
@@ -84,13 +84,59 @@ export function noteImage(assets) {
 }
 
 // A fenced ```mermaid block draws as a diagram; every other block is the
-// usual <pre>.
+// usual <pre>. Both carry their source span, like the tracked elements.
 function notePre(dark) {
   return function Pre({ node, children, ...rest }) {
+    const pos = node && node.position;
+    const at = pos ? { "data-s": pos.start.offset, "data-e": pos.end.offset } : {};
     const code = mermaidCode(node);
-    if (code) return <Diagram code={hastText(code).trim()} dark={dark} />;
-    return <pre {...rest}>{children}</pre>;
+    if (code) {
+      return (
+        <div {...at}>
+          <Diagram code={hastText(code).trim()} dark={dark} />
+        </div>
+      );
+    }
+    return (
+      <pre {...rest} {...at}>
+        {children}
+      </pre>
+    );
   };
+}
+
+// ─── Inline editing: which part a pen opens, and putting it back ─────────────
+
+// The part of the note under the pointer: a list item, or else the top-level
+// block (paragraph, heading, list, code block, quote, table…). Offsets are
+// into its section's markdown.
+function unitAt(el) {
+  const section = el && el.closest && el.closest("section[data-sec]");
+  if (!section) return null;
+  const li = el.closest("li[data-s]");
+  let node = li && section.contains(li) ? li : null;
+  if (!node) {
+    node = el;
+    while (node.parentElement && !node.parentElement.classList.contains("wmde-markdown")) node = node.parentElement;
+    if (!node.parentElement || !section.contains(node) || node.dataset.s == null) return null;
+  }
+  return { el: node, sec: Number(section.dataset.sec), s: Number(node.dataset.s), e: Number(node.dataset.e), li: node.tagName === "LI" };
+}
+
+// The section's markdown without the block at [s, e): one blank line where it was.
+function dropBlock(src, s, e) {
+  const head = src.slice(0, s).replace(/\s+$/, "");
+  const rest = src.slice(e).replace(/^\s*\n/, "");
+  if (!head) return rest;
+  if (!rest) return head + src.match(/\s*$/)[0];
+  return head + "\n\n" + rest;
+}
+
+// …without the list item at [s, e): its whole lines go.
+function dropLines(src, s, e) {
+  const from = src.lastIndexOf("\n", s - 1) + 1;
+  const to = src[e] === "\n" ? e + 1 : e;
+  return src.slice(0, from) + src.slice(to);
 }
 
 const MarkdownBlock = memo(function MarkdownBlock({ source, components, colorMode }) {
@@ -156,7 +202,10 @@ export default function NoteReader({
     [assets, colorMode]
   );
 
-  const [editing, setEditing] = useState(null); // section index | "append" | null
+  // What's open for writing: { mode: "edit" | "insert", sec, s, e, li, source,
+  // indent, marker } for one part of a section, { mode: "append" } at the end.
+  const [editing, setEditing] = useState(null);
+  const [gutter, setGutter] = useState(null); // the part under the pointer, and where its pen goes
   const [toolbar, setToolbar] = useState(null); // selection toolbar
   const [markMenu, setMarkMenu] = useState(null); // clicked highlight
   const [notePop, setNotePop] = useState(null); // { mode: new|view|edit, id?, anchor?, top, left }
@@ -168,10 +217,9 @@ export default function NoteReader({
   const mdRef = useRef(null);
   const rangesRef = useRef(new Map()); // annotation id → live Range
 
-  // Section edits can outlive a re-split (a new heading adds sections).
-  const editingSection = typeof editing === "number" ? sections[editing] : null;
+  // An edit can outlive a re-split (a new heading adds sections).
   useEffect(() => {
-    if (typeof editing === "number" && !sections[editing]) setEditing(null);
+    if (editing?.sec != null && !sections[editing.sec]) setEditing(null);
   }, [editing, sections]);
 
   const isEmpty = !text.trim();
@@ -307,8 +355,8 @@ export default function NoteReader({
   // ── Selection → toolbar; click on a highlight or a noted passage → its menu ──
   const onMouseUp = useCallback(
     (e) => {
-      if (readOnly) return;
-      if (e.target.closest("textarea, button, input, .note-float, .note-editor, .note-ui")) return;
+      if (readOnly || editing) return;
+      if (e.target.closest("textarea, button, input, .note-float, .note-ui")) return;
       const target = e.target;
       const { clientX, clientY } = e;
       // Wait a tick: a click that clears the selection only lands after mouseup.
@@ -355,7 +403,7 @@ export default function NoteReader({
         setToolbar({ x: r.left + r.width / 2, y: r.top, range: range.cloneRange(), text: sel.toString(), inCode });
       }, 0);
     },
-    [openNote, readOnly]
+    [openNote, readOnly, editing]
   );
 
   const applyHighlight = useCallback(
@@ -486,18 +534,80 @@ export default function NoteReader({
     [annotations, onAnnotationsChange]
   );
 
-  const editFromSelection = useCallback(() => {
-    if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) {
+  // ── Inline writing ──
+  // Hovering a part shows its pen (edit it) and plus (write below it) in the
+  // left margin; on a touch screen, tapping it does.
+  const placeGutter = useCallback(
+    (target) => {
+      if (readOnly || editing) return;
+      const unit = unitAt(target);
+      const article = articleRef.current;
+      const md = mdRef.current;
+      if (!unit || !article || !md) return;
+      const a = article.getBoundingClientRect();
+      const r = unit.el.getBoundingClientRect();
+      const m = md.getBoundingClientRect();
+      const next = {
+        sec: unit.sec,
+        s: unit.s,
+        e: unit.e,
+        li: unit.li,
+        top: Math.round(r.top - a.top),
+        height: Math.round(r.height),
+        left: Math.round(m.left - a.left),
+        right: Math.round(m.right - a.left),
+      };
+      setGutter((g) => (g && ["sec", "s", "e", "top", "height", "left"].every((k) => g[k] === next[k]) ? g : next));
+    },
+    [readOnly, editing]
+  );
+  const hoverFrame = useRef(0);
+  const onMouseMove = useCallback(
+    (e) => {
+      const t = e.target;
+      if (hoverFrame.current || (t.closest && t.closest(".note-gutter"))) return;
+      hoverFrame.current = requestAnimationFrame(() => {
+        hoverFrame.current = 0;
+        placeGutter(t);
+      });
+    },
+    [placeGutter]
+  );
+  useEffect(() => () => cancelAnimationFrame(hoverFrame.current), []);
+
+  const startUnit = useCallback(
+    (mode, unit) => {
+      if (readOnly || !unit) return;
+      if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) return;
+      const sec = sections[unit.sec];
+      if (!sec) return;
+      const source = text.slice(sec.start, sec.end);
+      // Writing below a list item starts the next item: same indent, same marker.
+      let indent = "";
+      let marker = "";
+      if (unit.li) {
+        const lineStart = source.lastIndexOf("\n", unit.s - 1) + 1;
+        const lead = source.slice(lineStart, unit.s);
+        indent = /^[ \t]*$/.test(lead) ? lead : "";
+        const m = source.slice(unit.s, unit.e).match(/^(?:([-*+])|(\d+)([.)]))[ \t]+(\[[ xX]\][ \t]+)?/);
+        if (m) marker = m[2] ? `${Number(m[2]) + 1}${m[3]} ` : `${m[1]} ${m[4] ? "[ ] " : ""}`;
+      }
       setToolbar(null);
-      return;
-    }
+      setMarkMenu(null);
+      setNotePop(null);
+      setGutter(null);
+      setEditing({ mode, sec: unit.sec, s: unit.s, e: unit.e, li: unit.li, source, indent, marker });
+    },
+    [readOnly, sections, text]
+  );
+
+  const editFromSelection = useCallback(() => {
     const node = toolbar?.range.startContainer;
     const el = node && (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
-    const section = el && el.closest("section[data-sec]");
     window.getSelection()?.removeAllRanges();
     setToolbar(null);
-    if (section) setEditing(Number(section.dataset.sec));
-  }, [toolbar]);
+    startUnit("edit", el && unitAt(el));
+  }, [toolbar, startUnit]);
 
   const onMarkAction = useCallback(
     (color) => {
@@ -517,21 +627,54 @@ export default function NoteReader({
     [markMenu, sections, text, onCommit]
   );
 
-  const startEdit = useCallback((index) => {
+  const startAppend = useCallback(() => {
     if (readOnly) return;
     if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) return;
     setToolbar(null);
     setMarkMenu(null);
     setNotePop(null);
-    setEditing(index);
+    setGutter(null);
+    setEditing({ mode: "append" });
   }, [readOnly]);
 
-  const saveSection = useCallback(
-    (section, draft) => {
-      onCommit(spliceSection(text, section, draft));
+  // Save: the part goes back exactly where it came from. Emptied, it's
+  // removed. Nothing typed below a part adds nothing.
+  const saveUnit = useCallback(
+    (draft) => {
+      const ed = editing;
+      if (!ed) return;
+      const body = draft.replace(/\s+$/, "");
+      if (ed.mode === "append") {
+        if (body.trim()) onCommit(appendBlock(text, body));
+        setEditing(null);
+        return;
+      }
+      const sec = sections[ed.sec];
+      const src = sec ? text.slice(sec.start, sec.end) : null;
+      let { s, e } = ed;
+      // The note changed while you wrote (another device): find the same
+      // part again — or, failing that, keep your writing at the end.
+      if (src !== ed.source) {
+        const orig = ed.source.slice(s, e);
+        const at = src == null ? -1 : src.indexOf(orig);
+        if (at === -1) {
+          if (body.trim()) onCommit(appendBlock(text, body));
+          setEditing(null);
+          return;
+        }
+        s = at;
+        e = at + orig.length;
+      }
+      let out = src;
+      if (ed.mode === "edit") {
+        out = body.trim() ? src.slice(0, s) + body + src.slice(e) : ed.li ? dropLines(src, s, e) : dropBlock(src, s, e);
+      } else if (body.trim() && body.trim() !== ed.marker.trim()) {
+        out = ed.li ? src.slice(0, e) + "\n" + ed.indent + body + src.slice(e) : src.slice(0, e) + "\n\n" + body + src.slice(e);
+      }
+      if (out !== src) onCommit(text.slice(0, sec.start) + out + text.slice(sec.end));
       setEditing(null);
     },
-    [text, onCommit]
+    [editing, sections, text, onCommit]
   );
 
   const toc = useMemo(
@@ -592,6 +735,9 @@ export default function NoteReader({
             ref={articleRef}
             onMouseUp={onMouseUp}
             onMouseDown={() => setToolbar(null)}
+            onMouseMove={onMouseMove}
+            onMouseLeave={() => setGutter(null)}
+            onClick={(e) => window.matchMedia?.("(hover: none)").matches && placeGutter(e.target)}
             className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
           >
             {lead}
@@ -601,11 +747,11 @@ export default function NoteReader({
 
             <div ref={mdRef} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": `${fontSize}px` }}>
               {isEmpty && readOnly && <p className="py-16 text-center text-[15px] text-gray-500 dark:text-gray-400">This version was empty.</p>}
-              {isEmpty && !readOnly && editing !== "append" && (
+              {isEmpty && !readOnly && editing?.mode !== "append" && (
                 <EmptyNote
                   questions={starterQuestions}
                   accent={accent}
-                  onStart={() => startEdit("append")}
+                  onStart={startAppend}
                   onSeed={() => {
                     if (!requireAuth("Sign in to start your notes — they're saved to your account.")) return;
                     onCommit(
@@ -618,61 +764,92 @@ export default function NoteReader({
               )}
 
               {!isEmpty &&
-                sections.map((s, i) =>
-                  editing === i && editingSection ? (
-                    <SectionEditor
-                      key={`edit-${s.start}`}
-                      initial={text.slice(s.start, s.end).replace(/\s+$/, "")}
-                      onSave={(draft) => saveSection(s, draft)}
-                      onCancel={() => setEditing(null)}
-                      uploadInto={uploadInto}
-                      accent={accent}
-                      navTop={navTop}
-                      id={s.id}
-                    />
-                  ) : (
+                sections.map((s, i) => {
+                  const source = text.slice(s.start, s.end);
+                  if (editing?.sec === i) {
+                    // The section around the part being written: what comes
+                    // before it, the writing area in its place (or below it),
+                    // then the rest.
+                    const cut = editing.mode === "edit" ? editing.s : editing.e;
+                    const before = source.slice(0, cut);
+                    const after = source.slice(editing.e);
+                    return (
+                      <section key={`edit-${i}`} id={s.id} data-sec={i} data-level={s.level} className="note-sec relative" style={{ scrollMarginTop: navTop + 24 }}>
+                        {before.trim() && <MarkdownBlock source={before} components={components} colorMode={colorMode} />}
+                        <InlineEditor
+                          initial={editing.mode === "edit" ? source.slice(editing.s, editing.e) : editing.marker}
+                          onSave={saveUnit}
+                          onCancel={() => setEditing(null)}
+                          uploadInto={uploadInto}
+                          navTop={navTop}
+                        />
+                        {after.trim() && <MarkdownBlock source={after} components={components} colorMode={colorMode} />}
+                      </section>
+                    );
+                  }
+                  return (
                     <Section
                       key={i}
                       id={s.id}
                       index={i}
                       level={s.level}
-                      source={text.slice(s.start, s.end)}
+                      source={source}
                       components={components}
                       colorMode={colorMode}
                       navTop={navTop}
-                      onEdit={readOnly ? null : startEdit}
                       learnKey={readOnly ? null : topicKeys.get(i) || null}
                       learnt={!!learnt[topicKeys.get(i)]}
                       onToggleLearnt={toggleLearntTopic}
                     />
-                  )
-                )}
+                  );
+                })}
 
-              {editing === "append" ? (
-                <SectionEditor
-                  initial=""
-                  placeholder={"## New section\n\nWrite in markdown — paste a screenshot straight in."}
-                  onSave={(draft) => {
-                    onCommit(appendBlock(text, draft));
-                    setEditing(null);
-                  }}
-                  onCancel={() => setEditing(null)}
-                  uploadInto={uploadInto}
-                  accent={accent}
-                  navTop={navTop}
-                />
+              {editing?.mode === "append" ? (
+                <InlineEditor initial="" onSave={saveUnit} onCancel={() => setEditing(null)} uploadInto={uploadInto} navTop={navTop} />
               ) : (
                 !isEmpty &&
                 !readOnly && (
                   <button
-                    onClick={() => startEdit("append")}
+                    onClick={startAppend}
                     className="note-add mt-12 w-full rounded-2xl border-2 border-dashed border-gray-300/80 dark:border-white/10 py-4 text-[14px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-white/25 transition-colors"
                   >
-                    ＋ Add a section
+                    ＋ Write more
                   </button>
                 )
               )}
             </div>
+
+            {/* The part under the pointer: a line beside it, and its pen (edit
+                it) and plus (write below it) — in the left margin on a wide
+                screen, at its top-right corner on a narrow one. */}
+            {gutter && !editing && !readOnly && (
+              <>
+                <div aria-hidden className="note-gutter-line absolute pointer-events-none hidden lg:block" style={{ top: gutter.top, height: gutter.height, left: gutter.left - 5 }} />
+                <div
+                  className="note-ui note-gutter absolute z-20 flex items-center gap-0.5 rounded-lg bg-white/95 dark:bg-slate-800/95 border border-gray-200 dark:border-white/10 shadow-sm p-0.5 lg:-translate-x-full"
+                  style={window.matchMedia?.("(min-width: 1024px)").matches ? { top: gutter.top, left: gutter.left - 10 } : { top: gutter.top - 6, left: gutter.right - 58 }}
+                >
+                  <button
+                    onClick={() => startUnit("edit", gutter)}
+                    title="Edit this"
+                    className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+                      <path d="M11.2 2.3l2.5 2.5-8 8H3.2v-2.5l8-8z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => startUnit("insert", gutter)}
+                    title={gutter.li ? "Add an item below" : "Write below this"}
+                    className="w-6 h-6 rounded-md flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
+                      <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+              </>
+            )}
 
             {/* Margin markers for personal notes */}
             {placed.badges.map((b) => (
@@ -822,7 +999,6 @@ const Section = memo(function Section({
   components,
   colorMode,
   navTop,
-  onEdit,
   learnKey,
   learnt,
   onToggleLearnt,
@@ -837,16 +1013,6 @@ const Section = memo(function Section({
       style={{ scrollMarginTop: navTop + 24 }}
     >
       {learnKey && <LearntButton learnt={learnt} onClick={() => onToggleLearnt(learnKey)} />}
-      {/* Left gutter on wide screens, so the right one is free for note markers. */}
-      {onEdit && <button
-        onClick={() => onEdit(index)}
-        title="Edit this section"
-        className={`note-sec-edit absolute z-10 right-0 lg:right-auto lg:-left-12 lg:top-0 ${learnKey ? "top-11" : "top-0"} w-8 h-8 rounded-lg flex items-center justify-center bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 [@media(hover:none)]:opacity-60 transition-opacity`}
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-          <path d="M11.2 2.3l2.5 2.5-8 8H3.2v-2.5l8-8z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-        </svg>
-      </button>}
       <MarkdownBlock source={source} components={components} colorMode={colorMode} />
     </section>
   );
@@ -885,79 +1051,117 @@ function CheckCircle({ done, className = "w-4 h-4", onColor = "text-emerald-500"
   );
 }
 
-// In-place editor for one section (or a new one at the end). Anything typed is
-// kept even if the editor goes away without Save — switching views or leaving
-// the page commits the draft rather than dropping it.
-function SectionEditor({ initial, placeholder, onSave, onCancel, uploadInto, accent, navTop, id }) {
+// Writing in place, like in a notebook: the note's own font and size, no box
+// (just a line in the margin), and a small bar for bold, code and lists. ```
+// then Enter opens a code block and closes it for you; Tab indents. Nothing
+// reaches the note until Save (or Ctrl+Enter): Esc twice or Cancel drops it,
+// and closing the tab with unsaved writing asks first.
+const INLINE_TOOLS = ["bold", "italic", "code", "block", "ul", "ol", "h2"].map((k) => TOOLBAR.find((t) => t.key === k));
+
+function InlineEditor({ initial, onSave, onCancel, uploadInto, navTop }) {
   const [draft, setDraftState] = useState(initial);
   const [busy, setBusy] = useState(0);
+  const [armed, setArmed] = useState(false); // Esc pressed once over unsaved writing
   const ref = useRef(null);
   const draftRef = useRef(initial);
-  const doneRef = useRef(false);
-  const saveRef = useRef(onSave);
-  saveRef.current = onSave;
-
   const setDraft = useCallback((value) => {
     draftRef.current = value;
     setDraftState(value);
   }, []);
+  const dirty = draft !== initial;
+  const caretRef = useRef(null); // where the caret goes after a change made for you
 
+  // Grows with what's written, so it reads like the page, not a box. A caret
+  // set for you lands before the next keystroke can (a frame later is too late
+  // for fast typing).
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${el.scrollHeight + 6}px`;
+    el.style.height = `${el.scrollHeight + 2}px`;
+    if (caretRef.current != null) {
+      el.focus();
+      el.setSelectionRange(caretRef.current, caretRef.current);
+      caretRef.current = null;
+    }
   }, [draft]);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return undefined;
+    if (!el) return;
     el.focus({ preventScroll: true });
     el.setSelectionRange(el.value.length, el.value.length);
-    el.scrollIntoView({ block: "nearest" });
-    return () => {
-      if (!doneRef.current && draftRef.current !== initial) saveRef.current(draftRef.current);
-    };
+    const r = el.getBoundingClientRect();
+    if (r.top < navTop + 60 || r.top > window.innerHeight - 120) el.scrollIntoView({ block: "center", behavior: "smooth" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const finish = (save) => {
-    doneRef.current = true;
-    if (save) onSave(draftRef.current);
-    else onCancel();
+  useEffect(() => {
+    if (!dirty) return undefined;
+    const warn = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  // Put text in and the caret after it, the way typing would.
+  const edit = (next, caret) => {
+    caretRef.current = caret;
+    setDraft(next);
   };
-
-  const target = useMemo(() => ({ get el() { return ref.current; }, get: () => draftRef.current, set: setDraft }), [setDraft]);
-
   const format = (action) => {
     const el = ref.current;
     if (!el) return;
     const out = formatSelection(el.value, el.selectionStart, el.selectionEnd, action);
-    if (!out) return;
-    setDraft(out.next);
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(out.caret, out.caret);
-    });
+    if (out) edit(out.next, out.caret);
+  };
+  const save = () => {
+    if (!busy) onSave(draftRef.current);
   };
 
   const onKeyDown = (e) => {
     if (e.key === "Escape") {
       e.preventDefault();
-      finish(false);
+      if (dirty && !armed) {
+        setArmed(true);
+        setTimeout(() => setArmed(false), 2500);
+      } else onCancel();
       return;
     }
-    if (!(e.metaKey || e.ctrlKey)) return;
+    const mod = e.metaKey || e.ctrlKey;
     const key = e.key.toLowerCase();
-    if (key === "enter" || key === "s") {
+    if (mod && (key === "enter" || key === "s")) {
       e.preventDefault();
-      if (!busy) finish(true);
-    } else if (key === "b" || key === "i") {
+      save();
+      return;
+    }
+    if (mod && (key === "b" || key === "i")) {
       e.preventDefault();
       format(TOOLBAR.find((t) => t.key === (key === "b" ? "bold" : "italic")));
+      return;
+    }
+    const el = e.currentTarget;
+    const { selectionStart: a, selectionEnd: b, value: v } = el;
+    if (e.key === "Tab" && !e.shiftKey && !mod) {
+      e.preventDefault();
+      edit(v.slice(0, a) + "  " + v.slice(b), a + 2);
+      return;
+    }
+    // ``` then Enter: the code block opens, and is closed for you.
+    if (e.key === "Enter" && !e.shiftKey && !mod && a === b) {
+      const lineStart = v.lastIndexOf("\n", a - 1) + 1;
+      const m = v.slice(lineStart, a).match(/^(\s*)(`{3,}|~{3,})[\w+#.-]*\s*$/);
+      const fences = (part) => (part.match(/^\s*(`{3,}|~{3,})/gm) || []).length;
+      if (m && fences(v.slice(0, lineStart)) % 2 === 0 && fences(v.slice(a)) % 2 === 0) {
+        e.preventDefault();
+        edit(`${v.slice(0, a)}\n${m[1]}\n${m[1]}${m[2]}${v.slice(a)}`, a + 1 + m[1].length);
+      }
     }
   };
 
+  const target = useMemo(() => ({ get el() { return ref.current; }, get: () => draftRef.current, set: setDraft }), [setDraft]);
   const onPaste = async (e) => {
     const files = [...(e.clipboardData?.files || [])];
     if (!files.some((f) => f.type.startsWith("image/"))) return;
@@ -971,38 +1175,39 @@ function SectionEditor({ initial, placeholder, onSave, onCancel, uploadInto, acc
   };
 
   return (
-    <div id={id} className="note-editor my-6 rounded-2xl border-2 border-dashed p-2 sm:p-3" style={{ scrollMarginTop: navTop + 24 }}>
-      <div className="flex flex-wrap items-center gap-0.5 mb-2">
-        {TOOLBAR.map((action) => (
+    <div className="note-ui note-inline my-4" style={{ scrollMarginTop: navTop + 24 }}>
+      <div className="note-inline-bar sticky z-10 mb-1 flex flex-wrap items-center gap-0.5" style={{ top: navTop + 8 }}>
+        {INLINE_TOOLS.map((action) => (
           <button
             key={action.key}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => format(action)}
             title={action.title}
-            className={`min-w-[30px] h-7 px-1.5 rounded-md text-[12px] text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] hover:text-gray-900 dark:hover:text-white ${
+            className={`min-w-[28px] h-7 px-1.5 rounded-md text-[12px] text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white ${
               action.bold ? "font-extrabold" : ""
             } ${action.italic ? "italic font-serif" : ""}`}
           >
             {action.label}
           </button>
         ))}
-        {busy > 0 && <span className={`ml-2 text-[12px] font-semibold ${accent.text}`}>uploading…</span>}
-        <div className="ml-auto flex items-center gap-1.5">
-          <span className="hidden sm:inline text-[11px] text-gray-400 dark:text-gray-500 mr-1">Esc to cancel · Ctrl+Enter to save</span>
-          <button
-            onClick={() => finish(false)}
-            className="h-8 px-3 rounded-lg text-[12.5px] font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => finish(true)}
-            disabled={busy > 0}
-            className={`h-8 px-3.5 rounded-lg text-[12.5px] font-bold text-white shadow-md disabled:opacity-50 ${accent.button}`}
-          >
-            Save
-          </button>
-        </div>
+        <span className="ml-auto pl-2 hidden sm:inline text-[11px] text-gray-400 dark:text-gray-500">
+          {busy > 0 ? "uploading…" : armed ? "Esc again to discard" : "Ctrl+Enter to save · Esc to cancel"}
+        </span>
+        <button
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={onCancel}
+          className="ml-1 h-7 px-2.5 rounded-md text-[12px] font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.08]"
+        >
+          Cancel
+        </button>
+        <button
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={save}
+          disabled={busy > 0}
+          className="h-7 px-3 rounded-md text-[12px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+        >
+          Save
+        </button>
       </div>
       <textarea
         ref={ref}
@@ -1010,9 +1215,9 @@ function SectionEditor({ initial, placeholder, onSave, onCancel, uploadInto, acc
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={onKeyDown}
         onPaste={onPaste}
-        spellCheck={false}
-        placeholder={placeholder}
-        className={`note-editor-area w-full min-h-[8rem] resize-none rounded-xl px-4 py-3 font-mono text-[14.5px] leading-relaxed bg-white/80 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200 dark:border-white/[0.08] focus:outline-none focus:ring-2 ${accent.ring}`}
+        rows={1}
+        placeholder={"Write here… **bold**, `code`, or ``` and Enter for a code block"}
+        className="note-inline-area"
       />
     </div>
   );
