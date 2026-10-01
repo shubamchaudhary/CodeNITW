@@ -37,100 +37,14 @@ export const FIT_RANK = { "Very High": 4, High: 3, Medium: 2, Low: 1 };
 
 export const APPLIED_HIGHLIGHT_DAYS = 10;
 export const PAGE_SIZE = 60;
-export const RADAR_NEW_DAYS = 3;
-
-// Only surface openings you're a real fit for: the YoE-adjusted résumé-match
-// must clear this bar (0.8 → 80%).
-export const MIN_MATCH_SCORE = 80;
-// …and no more than this many years of experience required.
-export const MAX_YOE = 3;
 
 // A "watched the careers page" marker auto-expires after this many days, so it
 // keeps nudging you to re-check the page instead of staying green forever.
 export const CAREER_WATCH_DAYS = 15;
 
-// Title words that imply well over 3 YoE, used when the JD didn't state a
-// number (the radar drops JD-stated >3 at scan time; this catches the rest).
-const SENIOR_TITLE_RX = /\b(senior|sr\.?|staff|principal|lead|architect|distinguished|fellow|l[5-9])\b/i;
-
-// True when an opening fits the ≤3-YoE bar. A JD-parsed `minYoe` is
-// authoritative; otherwise fall back to the title seniority signal.
-export function withinYoe(o) {
-  if (typeof o.minYoe === "number") return o.minYoe <= MAX_YOE;
-  return !SENIOR_TITLE_RX.test(o.title || "");
-}
-
-// Years-of-experience weighting applied to the raw skill-match score. Roles
-// asking ≤2 yrs are an ideal fit (full weight); a 3-yr ask is a stretch, so its
-// score is scaled to 0.8× — it only survives the gate if the skill match is
-// otherwise excellent. (JD-stated >3 yrs is already dropped at scan time.)
-export function yoeMultiplier(o) {
-  return typeof o.minYoe === "number" && o.minYoe >= 3 ? 0.8 : 1;
-}
-
-// The YoE-adjusted résumé-match score (0–100) used for both ranking and the
-// eligibility gate. Rounded so badges show a clean integer. -1 when unscored.
-export function effectiveMatch(o) {
-  const score = typeof o.matchScore === "number" ? o.matchScore : -1;
-  return score < 0 ? -1 : Math.round(score * yoeMultiplier(o));
-}
-
-// The single gate the Openings list applies per row: YoE-adjusted match clears
-// the bar AND the role is within the experience ceiling.
-export function isOpeningEligible(o) {
-  return effectiveMatch(o) >= MIN_MATCH_SCORE && withinYoe(o);
-}
-
-export const RADAR_SOURCES = [
-  "https://raw.githubusercontent.com/shubamchaudhary/CodeNITW/main/radar/openings.json",
-  "https://raw.githubusercontent.com/shubamchaudhary/CodeNITW/claude/job-application-tracker-nqpn76/radar/openings.json",
-];
-
 // ── Utilities ────────────────────────────────────────────────────────────────
 export function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-export function normUrl(url) {
-  return (url || "").replace(/^https?:\/\//, "").replace(/[?#].*$/, "").replace(/\/$/, "").toLowerCase();
-}
-
-// Stable per-opening identity used to persist dismissals. Based purely on the
-// posting URL (unique per opening and stable across scans/redeploys), so a
-// dismissal survives new deployments and transient feed gaps. The radar's `key`
-// is deliberately NOT used — it can collide (Workday emits one id for several
-// postings) and its format isn't guaranteed stable. Falls back to `key` only
-// when an opening has no URL.
-export function uKeyOf(o) {
-  return normUrl(o.url) || o.key;
-}
-
-// Dismissed openings are retained for this long (6 months) regardless of
-// deployments or transient feed gaps, then purged by age so the map can't grow
-// forever.
-export const DISMISS_TTL_DAYS = 180;
-
-// One-time, idempotent migration of the dismissedOpenings map to the current
-// format: URL-only keys with numeric-timestamp values. Handles both legacy
-// shapes so crosses made before this change survive the deploy:
-//   • value `true`               → Date.now() (starts the 6-month clock now)
-//   • key `"<hash>|<normurl>"`    → "<normurl>" (drop the volatile hash prefix)
-//   • key `"<normurl>"`           → kept as-is
-//   • key `"<hash>"` (no url)     → kept as-is (can't recover a URL; harmless)
-// Returns { map, changed } so callers can persist only when something moved.
-export function migrateDismissals(dismissed) {
-  const out = {};
-  let changed = false;
-  for (const [rawKey, rawVal] of Object.entries(dismissed || {})) {
-    // A "<hash>|<url>" key: everything after the first "|" is the normalized URL.
-    const pipe = rawKey.indexOf("|");
-    const key = pipe === -1 ? rawKey : rawKey.slice(pipe + 1);
-    const val = typeof rawVal === "number" ? rawVal : Date.now();
-    if (key !== rawKey || val !== rawVal) changed = true;
-    // If two legacy keys collapse to the same URL, keep the newest timestamp.
-    out[key] = out[key] ? Math.max(out[key], val) : val;
-  }
-  return { map: out, changed };
 }
 
 export function normalizeUrl(url) {
@@ -151,6 +65,116 @@ export function daysSince(timestamp) {
   return Math.floor((Date.now() - timestamp) / (24 * 60 * 60 * 1000));
 }
 
+// "today", "3d ago" — or null when there's no date to show.
+export function agoLabel(timestamp) {
+  const d = daysSince(timestamp);
+  if (d === Infinity) return null;
+  return d === 0 ? "today" : `${d}d ago`;
+}
+
+// ── Pipeline stages ──────────────────────────────────────────────────────────
+// Every job link is in exactly one stage:
+//   toApply  — saved, not acted on yet
+//   referral — asked someone for a referral, waiting
+//   applied  — applied, directly or with a referral
+//   closed   — rejected, or a referral ask that never got a reply
+// The fields behind it: addedAt, applied/appliedAt (applied directly),
+// referral/referralAt (asked), referralAppliedAt (applied with that
+// referral), outcome/outcomeAt ("rejected"), closedReason/closedAt
+// ("noReply"), touchedAt (last moved), and the older referralOutcome
+// ("accepted"/"rejected") from before this model.
+
+const isAppliedLink = (l) => !!(l.applied || l.referralAppliedAt);
+
+export function linkStage(link, entry = {}) {
+  if (link.outcome === "rejected" || link.referralOutcome === "rejected" || link.closedReason) return "closed";
+  // A company marked Rejected closes every application to it.
+  if (isAppliedLink(link)) return entry.status === "rejected" ? "closed" : "applied";
+  return link.referral ? "referral" : "toApply";
+}
+
+// When it was applied for: the link's own date, else (older links) the company's.
+export function appliedTime(link, entry = {}) {
+  return link.referralAppliedAt || link.appliedAt || entry.appliedAt || null;
+}
+
+export function closedTime(link) {
+  return link.outcomeAt || link.closedAt || link.referralOutcomeAt || null;
+}
+
+// ── Erasing what's gone cold ─────────────────────────────────────────────────
+// A job link left untouched in its section for ERASE_AFTER_DAYS is erased —
+// except an application to a company at OA / Interview / Offer, which is live.
+// The company's own status and applied date (the Companies tab) are kept.
+export const ERASE_AFTER_DAYS = 45;
+// The last week before that, the card says so.
+export const ERASE_WARN_DAYS = 7;
+const LIVE_STATUSES = new Set(["oa", "interview", "offer"]);
+
+// When the link entered its current section.
+function stageTime(link, entry) {
+  switch (linkStage(link, entry)) {
+    case "toApply":
+      return link.addedAt;
+    case "referral":
+      return link.referralAt;
+    case "applied":
+      return appliedTime(link, entry);
+    default:
+      return closedTime(link) || appliedTime(link, entry);
+  }
+}
+
+// Days left before the link is erased; null when it never will be (a live
+// application, or a link with no date to go by).
+export function daysToErase(link, entry = {}) {
+  if (linkStage(link, entry) === "applied" && LIVE_STATUSES.has(entry.status)) return null;
+  const touched = Math.max(stageTime(link, entry) || 0, link.touchedAt || 0);
+  if (!touched) return null;
+  return ERASE_AFTER_DAYS - daysSince(touched);
+}
+
+// The companies map with the cold links erased, or null when none are. A
+// company whose every link went keeps its status — except "To Apply", which
+// only meant those links, so it's cleared too.
+export function eraseCold(companies) {
+  let erased = 0;
+  const next = {};
+  Object.entries(companies || {}).forEach(([id, entry]) => {
+    const links = entry.links || [];
+    const kept = links.filter((l) => {
+      const left = daysToErase(l, entry);
+      return left === null || left > 0;
+    });
+    erased += links.length - kept.length;
+    if (kept.length === links.length) next[id] = entry;
+    else next[id] = { ...entry, links: kept, ...(!kept.length && entry.status === "toApply" ? { status: "none" } : {}) };
+  });
+  return erased ? { companies: next, erased } : null;
+}
+
+// A company typed in that isn't in the list yet: same shape as the roster's.
+export function customCompany({ name, pay = "", location = "", category = "", careers = "" }) {
+  return {
+    id: `custom-${uid()}`,
+    name: name.trim(),
+    tier: "Custom",
+    category: category.trim(),
+    location: location.trim(),
+    remote: "",
+    culture: null,
+    pay: pay.trim(),
+    javaFit: "",
+    match: "",
+    template: "",
+    careers: careers ? normalizeUrl(careers) : "",
+    notes: "",
+    ncr: false,
+    score: 0,
+    customEntry: true,
+  };
+}
+
 export function isRecentlyApplied(entry) {
   if (!entry.appliedAt) return false;
   const status = entry.status || "none";
@@ -168,45 +192,6 @@ export function CultureStars({ n }) {
     </span>
   );
 }
-
-// ── Résumé-match score badge ─────────────────────────────────────────────────
-// `matchScore` (0–100) is precomputed by the radar (scripts/scoreOpening.mjs)
-// from your radar/skills.json against each opening's full job description.
-export function scoreBand(score) {
-  if (score == null) return "none";
-  if (score >= 75) return "high";
-  if (score >= 50) return "mid";
-  if (score >= 25) return "low";
-  return "min";
-}
-
-const SCORE_BAND_CLS = {
-  high: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200",
-  mid: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200",
-  low: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200",
-  min: "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400",
-};
-
-export function ScoreBadge({ score, matched, basis }) {
-  if (score == null) return null;
-  const band = scoreBand(score);
-  const title =
-    basis === "title"
-      ? "Estimate from title only (no job description available)"
-      : matched?.length
-      ? "Match: " + matched.map((m) => (m.type === "want" ? `${m.skill} (grow)` : m.skill)).join(", ")
-      : "No overlap with your skills list";
-  return (
-    <span
-      className={`shrink-0 inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded ${SCORE_BAND_CLS[band]}`}
-      title={title}
-    >
-      {score}
-      <span className="ml-0.5 font-semibold opacity-70">fit</span>
-    </span>
-  );
-}
-
 
 export function StatusSelect({ value, onChange }) {
   const v = value || "none";
@@ -317,7 +302,7 @@ export function LinksEditor({ links, onChange }) {
       toast.warn("Paste the job opening URL first");
       return;
     }
-    onChange([...links, { id: uid(), label: label.trim() || "Opening", url: u, applied: false }]);
+    onChange([...links, { id: uid(), label: label.trim() || "Opening", url: u, applied: false, addedAt: Date.now() }]);
     setLabel("");
     setUrl("");
   };
@@ -476,24 +461,7 @@ export function AddCompanyForm({ onAdd, onClose }) {
       toast.warn("Company name is required");
       return;
     }
-    onAdd({
-      id: `custom-${uid()}`,
-      name: form.name.trim(),
-      tier: "Custom",
-      category: form.category.trim(),
-      location: form.location.trim(),
-      remote: "",
-      culture: null,
-      pay: form.pay.trim(),
-      javaFit: "",
-      match: "",
-      template: "",
-      careers: normalizeUrl(form.careers),
-      notes: "",
-      ncr: false,
-      score: 0,
-      customEntry: true,
-    });
+    onAdd(customCompany(form));
     onClose();
   };
 

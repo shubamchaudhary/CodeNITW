@@ -6,56 +6,44 @@ import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { KEYS, loadJSON, saveJSON, subscribe, quietly } from "../../Data/planStore";
 import { requireAuth } from "../../Data/authGate";
+import { whenSynced } from "../../Data/cloudSync";
 import { isOwner } from "../../components/OwnerRoute";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
-import {
-  APPLIED_SET,
-  RADAR_SOURCES,
-  uid,
-  normUrl,
-  uKeyOf,
-  DISMISS_TTL_DAYS,
-  migrateDismissals,
-  isOpeningEligible,
-} from "./shared";
+import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, customCompany, eraseCold } from "./shared";
 import PipelineTab from "./PipelineTab";
 import CompaniesTab from "./CompaniesTab";
 
-// Contacts and Openings are the owner's alone: their code, the seeded HR
-// contacts and the referral templates are split into chunks that are only
-// ever requested for the owner account, so they never reach anyone else.
+// Contacts are the owner's alone: their code, the seeded HR contacts and the
+// referral templates are split into chunks that are only ever requested for
+// the owner account, so they never reach anyone else.
 const ContactsTab = lazy(() => import("./ContactsTab"));
-const OpeningsTab = lazy(() => import("./OpeningsTab"));
-const OWNER_TABS = new Set(["contacts", "openings"]);
+const OWNER_TABS = new Set(["contacts"]);
 
 // Bump this token to force a one-time clean slate for every user on next load.
 // Used when the company roster is regenerated (new IDs) so stale per-company
-// tracking + dismissals from the old roster don't linger.
+// tracking from the old roster doesn't linger.
 const PIPELINE_RESET_TOKEN = "v7-2026-07";
 
+// Only these fields are kept, so anything retired (the old Openings tab's
+// dismissed-openings map) drops out of storage with the next save.
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
-  // One-time reset: wipe all pipeline tracking (links/statuses) and dismissed
-  // openings so the tracker starts fresh against the v7 roster + stricter
-  // filters. Custom companies the user added are preserved.
+  // One-time reset: wipe all pipeline tracking (links/statuses) so the tracker
+  // starts fresh against the v7 roster. Custom companies the user added are
+  // preserved.
   if (s.pipelineReset !== PIPELINE_RESET_TOKEN) {
     // Contacts are independent of the company roster, so they survive the reset.
     return {
       companies: {},
       custom: s.custom || [],
-      dismissedOpenings: {},
       contacts: s.contacts || [],
       contactEdits: s.contactEdits || {},
       pipelineReset: PIPELINE_RESET_TOKEN,
     };
   }
-  // Upgrade any legacy dismissal entries so crosses made before the identity
-  // format changed keep working across this (and future) deployments.
-  const { map: dismissedOpenings } = migrateDismissals(s.dismissedOpenings || {});
   return {
     companies: s.companies || {},
     custom: s.custom || [],
-    dismissedOpenings,
     contacts: s.contacts || [],
     contactEdits: s.contactEdits || {},
     pipelineReset: s.pipelineReset,
@@ -65,7 +53,6 @@ function loadState() {
 const TABS = [
   { id: "pipeline", label: "Pipeline", emoji: "📋" },
   { id: "contacts", label: "Contacts", emoji: "📇" },
-  { id: "openings", label: "Openings", emoji: "📡" },
   { id: "companies", label: "Companies", emoji: "🏢" },
 ];
 
@@ -73,7 +60,6 @@ const TABS = [
 export default function JobTracker() {
   const [activeTab, setActiveTab] = useState("pipeline");
   const [state, setState] = useState(loadState);
-  const [radar, setRadar] = useState(null);
   const [user, setUser] = useState(undefined); // undefined while auth loads
   const owner = isOwner(user);
   const [ownerData, setOwnerData] = useState({ templates: null, seedContacts: [] });
@@ -103,55 +89,20 @@ export default function JobTracker() {
     []
   );
 
-  // Persist the one-time reset / migrated dismissal map once on mount so the
-  // change is written back to storage (and pushed to cloud sync), not just held
-  // in memory.
+  // Persist the one-time reset once on mount so it's written back to storage
+  // (and pushed to cloud sync), not just held in memory.
   useEffect(() => {
     const raw = loadJSON(KEYS.JOB_TRACKER, {});
     if (raw.pipelineReset !== PIPELINE_RESET_TOKEN) {
       quietly(() => saveJSON(KEYS.JOB_TRACKER, {
         companies: {},
         custom: raw.custom || [],
-        dismissedOpenings: {},
         contacts: raw.contacts || [],
         contactEdits: raw.contactEdits || {},
         pipelineReset: PIPELINE_RESET_TOKEN,
       }));
-      return;
     }
-    const { map, changed } = migrateDismissals(raw.dismissedOpenings || {});
-    if (changed) {
-      const next = { ...raw, companies: raw.companies || {}, custom: raw.custom || [], dismissedOpenings: map };
-      quietly(() => saveJSON(KEYS.JOB_TRACKER, next));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Load the daily radar output (first source that answers wins) — it feeds the
-  // owner's Openings tab and "auto" badges, so only the owner fetches it.
-  useEffect(() => {
-    if (!owner) {
-      setRadar(null);
-      return undefined;
-    }
-    let alive = true;
-    (async () => {
-      for (const src of RADAR_SOURCES) {
-        try {
-          const res = await fetch(`${src}?t=${Date.now()}`);
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (alive && Array.isArray(data.openings)) {
-            setRadar(data);
-            return;
-          }
-        } catch (_) {}
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [owner]);
 
   const persist = useCallback((next) => {
     setState(next);
@@ -193,6 +144,41 @@ export default function JobTracker() {
     },
     [state, persist]
   );
+
+  // A job link added from the Pipeline: the company is picked by name (a name
+  // not in the list becomes a company of your own), and the link starts in the
+  // section it was added from. One write, so the new company and its link
+  // can't come apart. Returns false when a guest is asked to sign in instead.
+  const addJob = useCallback(({ companyName, url, role, stage }) => {
+    if (!requireAuth("Sign in to track your applications — your pipeline is saved to your account.")) return false;
+    // Ids and the time are made once, outside the updater, which may run twice.
+    const name = companyName.trim();
+    const fresh = customCompany({ name });
+    const now = Date.now();
+    const link = { id: uid(), label: role || "Opening", url, applied: false, addedAt: now };
+    setState((prev) => {
+      let company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name.toLowerCase());
+      let custom = prev.custom;
+      if (!company) {
+        company = fresh;
+        custom = [...custom, company];
+      }
+      const added = { ...link };
+      if (stage === "referral") Object.assign(added, { referral: true, referralAt: now });
+      if (stage === "applied") Object.assign(added, { applied: true, appliedAt: now });
+      const entry = prev.companies[company.id] || {};
+      const status = entry.status || "none";
+      const merged = { ...entry, links: [...(entry.links || []), added] };
+      if (stage === "applied" && !APPLIED_SET.has(status)) {
+        merged.status = "applied";
+        merged.appliedAt = entry.appliedAt || now;
+      } else if (status === "none") merged.status = "toApply";
+      const next = { ...prev, custom, companies: { ...prev.companies, [company.id]: merged } };
+      saveJSON(KEYS.JOB_TRACKER, next);
+      return next;
+    });
+    return true;
+  }, []);
 
   // ── HR contacts ────────────────────────────────────────────────────────────
   // Contacts come from three places: the seeded vCard import, hrContacts saved
@@ -274,6 +260,46 @@ export default function JobTracker() {
     [persistState]
   );
 
+  // Erase job links left untouched for ERASE_AFTER_DAYS (the rules are in
+  // shared.jsx). Only for a signed-in account, and only once this session has
+  // caught up with the cloud: erasing a stale local copy would push it over
+  // edits made on another device. Says what went, with an Undo.
+  useEffect(() => {
+    if (!user) return undefined;
+    return whenSynced(() => {
+      const before = loadState().companies;
+      const result = eraseCold(before);
+      if (!result) return;
+      persistState((prev) => {
+        const r = eraseCold(prev.companies);
+        return r ? { ...prev, companies: r.companies } : prev;
+      });
+      const changed = Object.keys(before).filter((id) => result.companies[id] !== before[id]);
+      const undo = () =>
+        persistState((prev) => ({
+          ...prev,
+          companies: { ...prev.companies, ...Object.fromEntries(changed.map((id) => [id, before[id]])) },
+        }));
+      toast.info(
+        ({ closeToast }) => (
+          <span className="text-sm">
+            Erased {result.erased} job{result.erased === 1 ? "" : "s"} untouched for {ERASE_AFTER_DAYS}+ days{" "}
+            <button
+              onClick={() => {
+                undo();
+                closeToast();
+              }}
+              className="underline font-semibold"
+            >
+              Undo
+            </button>
+          </span>
+        ),
+        { autoClose: 8000 }
+      );
+    });
+  }, [user, persistState]);
+
   // Tab badge count — mirrors the merge the Contacts tab does.
   const contactCount = useMemo(() => {
     const edits = state.contactEdits;
@@ -290,130 +316,22 @@ export default function JobTracker() {
 
   const entryOf = useCallback((id) => state.companies[id] || {}, [state.companies]);
 
-  const companiesById = useMemo(() => Object.fromEntries(allCompanies.map((c) => [c.id, c])), [allCompanies]);
-
-  const radarCoveredIds = useMemo(
-    () => new Set(radar?.summary?.coveredCompanyIds || []),
-    [radar]
-  );
-
-  // Radar with each opening stamped with a collision-proof `uKey` and a
-  // `tracked` flag (already saved as a link). Tracked openings are kept in the
-  // data — not filtered out — so a company's group stays visible even after its
-  // last opening is queued; OpeningsTab just hides tracked rows from the list.
-  const radarVisible = useMemo(() => {
-    if (!radar) return null;
-    const trackedUrls = new Set();
-    Object.values(state.companies).forEach((e) =>
-      (e.links || []).forEach((l) => trackedUrls.add(normUrl(l.url)))
-    );
-    // Dedupe by uKey (the posting URL). Some boards emit several distinct-titled
-    // rows that point at the exact same apply URL — those are the same
-    // application, so collapse them to one row. Without this, tracking one would
-    // mark every sibling `tracked` (same URL) and hide them while queuing only
-    // one, making the others look "lost". Keep the earliest firstSeen.
-    const byKey = new Map();
-    for (const o of radar.openings) {
-      const uKey = uKeyOf(o);
-      const existing = byKey.get(uKey);
-      if (!existing) {
-        byKey.set(uKey, { ...o, uKey });
-      } else if (new Date(o.firstSeen) < new Date(existing.firstSeen)) {
-        byKey.set(uKey, { ...existing, firstSeen: o.firstSeen });
-      }
-    }
-    const openings = [...byKey.values()].map((o) => ({
-      ...o,
-      tracked: trackedUrls.has(normUrl(o.url)),
-    }));
-    return { ...radar, openings };
-  }, [radar, state.companies]);
-
-  // Purge dismissals only by age — NOT by whether the opening is in the current
-  // scan. This keeps a crossed-out opening dismissed across redeploys and
-  // transient feed gaps; it only expires after DISMISS_TTL_DAYS.
-  useEffect(() => {
-    if (!radar) return;
-    const cutoff = Date.now() - DISMISS_TTL_DAYS * 24 * 60 * 60 * 1000;
-    setState((prev) => {
-      const stale = Object.entries(prev.dismissedOpenings)
-        .filter(([, v]) => typeof v === "number" && v < cutoff)
-        .map(([k]) => k);
-      if (stale.length === 0) return prev;
-      const dismissedOpenings = { ...prev.dismissedOpenings };
-      stale.forEach((k) => delete dismissedOpenings[k]);
-      const next = { ...prev, dismissedOpenings };
-      saveJSON(KEYS.JOB_TRACKER, next);
-      return next;
-    });
-  }, [radar]);
-
-  const trackOpening = useCallback(
-    (o) => {
-      const entry = state.companies[o.companyId] || {};
-      const patch = {
-        links: [...(entry.links || []), { id: uid(), label: o.title, url: o.url, applied: false }],
-      };
-      if (!entry.status || entry.status === "none") patch.status = "toApply";
-      patchCompany(o.companyId, patch);
-    },
-    [state.companies, patchCompany]
-  );
-
-  const manualAddOpening = useCallback(
-    (company, label, url) => {
-      const entry = state.companies[company.id] || {};
-      const patch = {
-        links: [...(entry.links || []), { id: uid(), label, url, applied: false }],
-      };
-      if (!entry.status || entry.status === "none") patch.status = "toApply";
-      patchCompany(company.id, patch);
-    },
-    [state.companies, patchCompany]
-  );
-
-  // No confirmation dialog — direct dismiss per user request. Store the dismiss
-  // time so the map can be aged out later without resurrecting recent crosses.
-  const rejectOpening = useCallback((o) => {
-    const k = o.uKey || uKeyOf(o);
-    setState((prev) => {
-      const next = { ...prev, dismissedOpenings: { ...prev.dismissedOpenings, [k]: Date.now() } };
-      saveJSON(KEYS.JOB_TRACKER, next);
-      return next;
-    });
-  }, []);
-
-  const unrejectOpening = useCallback((o) => {
-    const k = o.uKey || uKeyOf(o);
-    setState((prev) => {
-      const dismissedOpenings = { ...prev.dismissedOpenings };
-      delete dismissedOpenings[k];
-      const next = { ...prev, dismissedOpenings };
-      saveJSON(KEYS.JOB_TRACKER, next);
-      return next;
-    });
-  }, []);
-
+  // Job links per pipeline stage (see linkStage), plus company-level progress.
   const stats = useMemo(() => {
+    const n = { toApply: 0, referral: 0, applied: 0, closed: 0 };
     let inProcess = 0;
     let offers = 0;
-    let pendingOpenings = 0;
-    let referralOpenings = 0;
-    let appliedOpenings = 0;
     allCompanies.forEach((c) => {
       const e = state.companies[c.id] || {};
       const status = e.status || "none";
-      const links = e.links || [];
-      pendingOpenings += links.filter((l) => !l.applied && !l.referral).length;
-      referralOpenings += links.filter((l) => l.referral).length;
-      appliedOpenings += links.filter((l) => l.applied).length;
+      (e.links || []).forEach((l) => {
+        n[linkStage(l, e)] += 1;
+      });
       if (status === "oa" || status === "interview") inProcess += 1;
       if (status === "offer") offers += 1;
     });
-    return { total: allCompanies.length, toApply: pendingOpenings, referral: referralOpenings, applied: appliedOpenings, inProcess, offers };
+    return { total: allCompanies.length, ...n, inProcess, offers };
   }, [allCompanies, state.companies]);
-
-  const activeOpeningsCount = radarVisible?.openings.filter((o) => !o.tracked && !state.dismissedOpenings[o.uKey] && isOpeningEligible(o)).length || 0;
 
   const statTiles = [
     { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },
@@ -427,7 +345,7 @@ export default function JobTracker() {
   if (user === undefined) return <PageSkeleton />;
 
   // Everyone gets Pipeline and Companies (their own tracking, the shared company
-  // list). Contacts and Openings exist only for the owner.
+  // list). Contacts exist only for the owner.
   const tabs = owner ? TABS : TABS.filter((t) => !OWNER_TABS.has(t.id));
   const currentTab = tabs.some((t) => t.id === activeTab) ? activeTab : "pipeline";
 
@@ -458,7 +376,6 @@ export default function JobTracker() {
             let count = null;
             if (tab.id === "pipeline") count = stats.toApply + stats.referral + stats.applied;
             if (tab.id === "contacts") count = contactCount;
-            if (tab.id === "openings") count = activeOpeningsCount;
             if (tab.id === "companies") count = stats.total;
             return (
               <button
@@ -494,6 +411,7 @@ export default function JobTracker() {
             allCompanies={allCompanies}
             entryOf={entryOf}
             patchCompany={patchCompany}
+            addJob={addJob}
           />
         )}
 
@@ -512,28 +430,12 @@ export default function JobTracker() {
           </Suspense>
         )}
 
-        {currentTab === "openings" && (
-          <Suspense fallback={null}>
-          <OpeningsTab
-            radarVisible={radarVisible}
-            companiesById={companiesById}
-            allCompanies={allCompanies}
-            rejectedKeys={state.dismissedOpenings}
-            onTrack={trackOpening}
-            onReject={rejectOpening}
-            onUnreject={unrejectOpening}
-            onManualAdd={manualAddOpening}
-          />
-          </Suspense>
-        )}
-
         {currentTab === "companies" && (
           <CompaniesTab
             allCompanies={allCompanies}
             companies={state.companies}
             patchCompany={patchCompany}
             addCustom={addCustom}
-            radarCoveredIds={radarCoveredIds}
             entryOf={entryOf}
             templates={ownerData.templates}
           />
