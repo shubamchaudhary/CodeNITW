@@ -6,9 +6,10 @@ import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { KEYS, loadJSON, saveJSON, subscribe, quietly } from "../../Data/planStore";
 import { requireAuth } from "../../Data/authGate";
+import { whenSynced } from "../../Data/cloudSync";
 import { isOwner } from "../../components/OwnerRoute";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
-import { APPLIED_SET, uid, linkStage, customCompany } from "./shared";
+import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, customCompany, eraseCold } from "./shared";
 import PipelineTab from "./PipelineTab";
 import CompaniesTab from "./CompaniesTab";
 
@@ -258,6 +259,46 @@ export default function JobTracker() {
     },
     [persistState]
   );
+
+  // Erase job links left untouched for ERASE_AFTER_DAYS (the rules are in
+  // shared.jsx). Only for a signed-in account, and only once this session has
+  // caught up with the cloud: erasing a stale local copy would push it over
+  // edits made on another device. Says what went, with an Undo.
+  useEffect(() => {
+    if (!user) return undefined;
+    return whenSynced(() => {
+      const before = loadState().companies;
+      const result = eraseCold(before);
+      if (!result) return;
+      persistState((prev) => {
+        const r = eraseCold(prev.companies);
+        return r ? { ...prev, companies: r.companies } : prev;
+      });
+      const changed = Object.keys(before).filter((id) => result.companies[id] !== before[id]);
+      const undo = () =>
+        persistState((prev) => ({
+          ...prev,
+          companies: { ...prev.companies, ...Object.fromEntries(changed.map((id) => [id, before[id]])) },
+        }));
+      toast.info(
+        ({ closeToast }) => (
+          <span className="text-sm">
+            Erased {result.erased} job{result.erased === 1 ? "" : "s"} untouched for {ERASE_AFTER_DAYS}+ days{" "}
+            <button
+              onClick={() => {
+                undo();
+                closeToast();
+              }}
+              className="underline font-semibold"
+            >
+              Undo
+            </button>
+          </span>
+        ),
+        { autoClose: 8000 }
+      );
+    });
+  }, [user, persistState]);
 
   // Tab badge count — mirrors the merge the Contacts tab does.
   const contactCount = useMemo(() => {

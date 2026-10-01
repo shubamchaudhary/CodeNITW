@@ -78,13 +78,11 @@ export function agoLabel(timestamp) {
 //   referral — asked someone for a referral, waiting
 //   applied  — applied, directly or with a referral
 //   closed   — rejected, or a referral ask that never got a reply
-// The fields behind it: applied/appliedAt (applied directly), referral/
-// referralAt (asked), referralAppliedAt (applied with that referral),
-// outcome/outcomeAt ("rejected"), closedReason/closedAt ("noReply"), and the
-// older referralOutcome ("accepted"/"rejected") from before this model.
-
-// A referral ask with no news for this long is offered for cleanup.
-export const STALE_ASK_DAYS = 30;
+// The fields behind it: addedAt, applied/appliedAt (applied directly),
+// referral/referralAt (asked), referralAppliedAt (applied with that
+// referral), outcome/outcomeAt ("rejected"), closedReason/closedAt
+// ("noReply"), touchedAt (last moved), and the older referralOutcome
+// ("accepted"/"rejected") from before this model.
 
 const isAppliedLink = (l) => !!(l.applied || l.referralAppliedAt);
 
@@ -102,6 +100,57 @@ export function appliedTime(link, entry = {}) {
 
 export function closedTime(link) {
   return link.outcomeAt || link.closedAt || link.referralOutcomeAt || null;
+}
+
+// ── Erasing what's gone cold ─────────────────────────────────────────────────
+// A job link left untouched in its section for ERASE_AFTER_DAYS is erased —
+// except an application to a company at OA / Interview / Offer, which is live.
+// The company's own status and applied date (the Companies tab) are kept.
+export const ERASE_AFTER_DAYS = 45;
+// The last week before that, the card says so.
+export const ERASE_WARN_DAYS = 7;
+const LIVE_STATUSES = new Set(["oa", "interview", "offer"]);
+
+// When the link entered its current section.
+function stageTime(link, entry) {
+  switch (linkStage(link, entry)) {
+    case "toApply":
+      return link.addedAt;
+    case "referral":
+      return link.referralAt;
+    case "applied":
+      return appliedTime(link, entry);
+    default:
+      return closedTime(link) || appliedTime(link, entry);
+  }
+}
+
+// Days left before the link is erased; null when it never will be (a live
+// application, or a link with no date to go by).
+export function daysToErase(link, entry = {}) {
+  if (linkStage(link, entry) === "applied" && LIVE_STATUSES.has(entry.status)) return null;
+  const touched = Math.max(stageTime(link, entry) || 0, link.touchedAt || 0);
+  if (!touched) return null;
+  return ERASE_AFTER_DAYS - daysSince(touched);
+}
+
+// The companies map with the cold links erased, or null when none are. A
+// company whose every link went keeps its status — except "To Apply", which
+// only meant those links, so it's cleared too.
+export function eraseCold(companies) {
+  let erased = 0;
+  const next = {};
+  Object.entries(companies || {}).forEach(([id, entry]) => {
+    const links = entry.links || [];
+    const kept = links.filter((l) => {
+      const left = daysToErase(l, entry);
+      return left === null || left > 0;
+    });
+    erased += links.length - kept.length;
+    if (kept.length === links.length) next[id] = entry;
+    else next[id] = { ...entry, links: kept, ...(!kept.length && entry.status === "toApply" ? { status: "none" } : {}) };
+  });
+  return erased ? { companies: next, erased } : null;
 }
 
 // A company typed in that isn't in the list yet: same shape as the roster's.

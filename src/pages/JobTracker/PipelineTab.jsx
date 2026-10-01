@@ -4,9 +4,10 @@ import { toast } from "react-toastify";
 import { HiOutlineExternalLink, HiCheck, HiX, HiPlus, HiChevronDown, HiReply } from "react-icons/hi";
 import {
   APPLIED_SET,
-  STALE_ASK_DAYS,
+  ERASE_AFTER_DAYS,
+  ERASE_WARN_DAYS,
   StatusSelect,
-  daysSince,
+  daysToErase,
   agoLabel,
   linkStage,
   appliedTime,
@@ -17,7 +18,9 @@ import {
 // The pipeline: every job link moves To Apply → Asked for Referral → Applied,
 // and ends in Closed (rejected, or a referral ask that never got a reply).
 // Each section is a stack — the newest company on top, the rest peeking out
-// behind it — that deals out into a full list on "Show all".
+// behind it — that deals out into a full list on "Show all". A link left
+// untouched for ERASE_AFTER_DAYS is erased (JobTracker runs it; the rules are
+// in shared.jsx); its last week, the card counts down.
 
 // ── Moving a link between stages ────────────────────────────────────────────
 const without = (obj, keys) => {
@@ -62,7 +65,8 @@ function makeMover(entryOf, patchCompany) {
     const entry = entryOf(companyId);
     const status = entry.status || "none";
     const now = Date.now();
-    const links = (entry.links || []).map((l) => (ids.has(l.id) ? moveLink(l, to, now) : l));
+    // Any move restarts the link's erase clock.
+    const links = (entry.links || []).map((l) => (ids.has(l.id) ? { ...moveLink(l, to, now), touchedAt: now } : l));
     const patch = { links };
     if ((to === "applied" || to === "appliedViaReferral") && !APPLIED_SET.has(status)) patch.status = "applied";
     if (to === "reopen" && status === "rejected") patch.status = "applied";
@@ -352,15 +356,6 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   });
   const count = (stage) => groups[stage].reduce((n, g) => n + g.links.length, 0);
 
-  const stale = groups.referral.flatMap((g) =>
-    g.links.filter((l) => daysSince(l.referralAt) >= STALE_ASK_DAYS).map((l) => ({ companyId: g.company.id, id: l.id }))
-  );
-  const closeStale = () => {
-    const byCompany = {};
-    stale.forEach((s) => (byCompany[s.companyId] = [...(byCompany[s.companyId] || []), s.id]));
-    Object.entries(byCompany).forEach(([companyId, ids]) => move(companyId, ids, "noReply"));
-  };
-
   const clearClosed = () => {
     const before = groups.closed.map((g) => ({ id: g.company.id, links: g.entry.links || [] }));
     const n = count("closed");
@@ -390,7 +385,18 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const addForm = (stage) =>
     adding === stage && <AddJobForm stage={stage} allCompanies={allCompanies} onAdd={addJob} onClose={() => setAdding(null)} />;
   const toggleAdd = (stage) => () => setAdding((s) => (s === stage ? null : stage));
-  const rowProps = (g, l) => ({ link: l, onRemove: () => removeLink(g.company.id, l.id) });
+  // A row's date, plus a countdown in its last week before it's erased.
+  const rowProps = (g, l, label, cls) => {
+    const left = daysToErase(l, g.entry);
+    const soon = label && left !== null && left <= ERASE_WARN_DAYS;
+    return {
+      link: l,
+      onRemove: () => removeLink(g.company.id, l.id),
+      // Past due only while this session's sync hasn't caught up yet.
+      meta: soon ? `${label} · ${left > 0 ? `erased in ${left}d` : "erased soon"}` : label,
+      metaCls: soon ? "text-amber-600 dark:text-amber-300" : cls,
+    };
+  };
   const mv = (g, l, to) => () => move(g.company.id, l.id, to);
 
   const toApplyCards = groups.toApply.map((g) => ({
@@ -403,7 +409,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
         {g.links.map((l) => {
           const added = agoLabel(l.addedAt);
           return (
-            <Row key={l.id} {...rowProps(g, l)} icon="○" iconCls="text-amber-500" meta={added && `added ${added}`}>
+            <Row key={l.id} {...rowProps(g, l, added && `added ${added}`)} icon="○" iconCls="text-amber-500">
               <Btn kind="emerald" onClick={mv(g, l, "applied")} title="You applied directly">
                 <HiCheck className="w-3.5 h-3.5" /> Applied
               </Btn>
@@ -425,16 +431,13 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
     node: (
       <JobCard company={g.company}>
         {g.links.map((l) => {
-          const isStale = daysSince(l.referralAt) >= STALE_ASK_DAYS;
           const asked = agoLabel(l.referralAt);
           return (
             <Row
               key={l.id}
-              {...rowProps(g, l)}
+              {...rowProps(g, l, asked && `asked ${asked}`)}
               icon="↗"
               iconCls="text-violet-500"
-              meta={asked && (isStale ? `no reply · ${asked}` : `asked ${asked}`)}
-              metaCls={isStale ? "text-amber-600 dark:text-amber-300" : undefined}
               onBack={mv(g, l, "back")}
               backTitle="Move back to To Apply"
             >
@@ -461,10 +464,9 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
           return (
             <Row
               key={l.id}
-              {...rowProps(g, l)}
+              {...rowProps(g, l, when && `applied ${when}`)}
               icon="✓"
               iconCls="text-emerald-500"
-              meta={when && `applied ${when}`}
               onBack={mv(g, l, "back")}
               backTitle={viaReferral ? "Move back to Asked for Referral" : "Move back to To Apply"}
             >
@@ -490,12 +492,10 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
           return (
             <Row
               key={l.id}
-              {...rowProps(g, l)}
+              {...rowProps(g, l, when ? `${reason} · ${when}` : reason, reason === "Rejected" ? "text-rose-500 dark:text-rose-300" : undefined)}
               icon="•"
               iconCls="text-gray-400"
               linkCls="text-gray-500 dark:text-gray-400"
-              meta={when ? `${reason} · ${when}` : reason}
-              metaCls={reason === "Rejected" ? "text-rose-500 dark:text-rose-300" : undefined}
             >
               <Btn kind="grayLine" onClick={mv(g, l, "reopen")} title="Put it back where it was">
                 Reopen
@@ -508,41 +508,36 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   }));
 
   return (
-    <div className="grid gap-6 lg:grid-cols-3 items-start">
-      <Section stage="toApply" title="To Apply" count={count("toApply")} hint="Jobs you plan to apply to. Mark each one when you act on it." onAdd={toggleAdd("toApply")}>
-        {addForm("toApply")}
-        <Stack items={toApplyCards} empty="Nothing to apply to yet. Add a job link." />
-      </Section>
-
-      <Section stage="referral" title="Asked for Referral" count={count("referral")} hint="Waiting on a referral. Mark Applied once you apply with it." onAdd={toggleAdd("referral")}>
-        {addForm("referral")}
-        {stale.length > 0 && (
-          <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-300/60 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
-            <span className="flex-1">
-              {stale.length} {stale.length === 1 ? "ask has" : "asks have"} had no reply for {STALE_ASK_DAYS}+ days.
-            </span>
-            <button onClick={closeStale} className="shrink-0 font-bold underline">
-              Move to Closed
-            </button>
-          </div>
-        )}
-        <Stack items={referralCards} empty="No referral asks waiting." />
-      </Section>
-
-      <div className="space-y-8 min-w-0">
-        <Section stage="applied" title="Applied" count={count("applied")} hint="Applied directly or with a referral. Set the stage as it moves." onAdd={toggleAdd("applied")}>
-          {addForm("applied")}
-          <Stack items={appliedCards} empty="No applications yet." />
+    <div>
+      <p className="mb-4 text-xs text-gray-400 dark:text-gray-500">
+        A job left untouched for {ERASE_AFTER_DAYS} days is erased automatically. Live applications (OA, Interview, Offer) stay.
+      </p>
+      <div className="grid gap-6 lg:grid-cols-3 items-start">
+        <Section stage="toApply" title="To Apply" count={count("toApply")} hint="Jobs you plan to apply to. Mark each one when you act on it." onAdd={toggleAdd("toApply")}>
+          {addForm("toApply")}
+          <Stack items={toApplyCards} empty="Nothing to apply to yet. Add a job link." />
         </Section>
 
-        {closedCards.length > 0 && (
-          <Section stage="closed" title="Closed" count={count("closed")} hint="Rejected or no reply. Out of the way, not lost.">
-            <Stack items={closedCards} empty="" />
-            <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400">
-              Clear all closed
-            </button>
+        <Section stage="referral" title="Asked for Referral" count={count("referral")} hint="Waiting on a referral. Mark Applied once you apply with it." onAdd={toggleAdd("referral")}>
+          {addForm("referral")}
+          <Stack items={referralCards} empty="No referral asks waiting." />
+        </Section>
+
+        <div className="space-y-8 min-w-0">
+          <Section stage="applied" title="Applied" count={count("applied")} hint="Applied directly or with a referral. Set the stage as it moves." onAdd={toggleAdd("applied")}>
+            {addForm("applied")}
+            <Stack items={appliedCards} empty="No applications yet." />
           </Section>
-        )}
+
+          {closedCards.length > 0 && (
+            <Section stage="closed" title="Closed" count={count("closed")} hint="Rejected or no reply. Out of the way until it's erased.">
+              <Stack items={closedCards} empty="" />
+              <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400">
+                Clear all closed
+              </button>
+            </Section>
+          )}
+        </div>
       </div>
     </div>
   );
