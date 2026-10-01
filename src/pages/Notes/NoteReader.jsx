@@ -107,6 +107,9 @@ function notePre(dark) {
 
 // ─── Inline editing: which part a pen opens, and putting it back ─────────────
 
+// How far into the text the left-margin hover zone reaches, in px.
+const GUTTER_ZONE = 16;
+
 // The part of the note under the pointer: a list item, or else the top-level
 // block (paragraph, heading, list, code block, quote, table…). Offsets are
 // into its section's markdown.
@@ -535,8 +538,8 @@ export default function NoteReader({
   );
 
   // ── Inline writing ──
-  // Hovering a part shows its pen (edit it) and plus (write below it) in the
-  // left margin; on a touch screen, tapping it does.
+  // Hovering the left margin beside a part shows its pen (edit it) and plus
+  // (write below it); on a touch screen, tapping the part does.
   const placeGutter = useCallback(
     (target) => {
       if (readOnly || editing) return;
@@ -561,14 +564,30 @@ export default function NoteReader({
     },
     [readOnly, editing]
   );
+  // On a wide screen the pen shows only while the pointer is in the left
+  // margin, beside a part: reading the text itself stays undisturbed.
   const hoverFrame = useRef(0);
   const onMouseMove = useCallback(
     (e) => {
       const t = e.target;
       if (hoverFrame.current || (t.closest && t.closest(".note-gutter"))) return;
+      const { clientX: x, clientY: y } = e;
       hoverFrame.current = requestAnimationFrame(() => {
         hoverFrame.current = 0;
-        placeGutter(t);
+        const md = mdRef.current;
+        if (!md || !window.matchMedia?.("(min-width: 1024px)").matches) return placeGutter(t);
+        const left = md.getBoundingClientRect().left;
+        if (x > left + GUTTER_ZONE) return setGutter(null);
+        // The part on this line: probe across its start, preferring the
+        // innermost list item (a list's own padding sits left of its text).
+        let hit = null;
+        for (const dx of [12, 40, 70, 100]) {
+          const el = document.elementFromPoint(left + dx, y);
+          const unit = el && md.contains(el) ? unitAt(el) : null;
+          if (unit && (!hit || unit.li)) hit = { el, li: unit.li };
+        }
+        if (hit) placeGutter(hit.el);
+        else setGutter(null);
       });
     },
     [placeGutter]
