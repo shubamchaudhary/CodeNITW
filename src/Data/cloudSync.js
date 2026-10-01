@@ -131,6 +131,35 @@ function setStatus(state, detail = "") {
   });
 }
 
+// The first server snapshot of a session has been reconciled: from then on,
+// local storage holds the latest data, and a change written now can't undo an
+// edit another device made meanwhile.
+const readyListeners = new Set();
+function markServerReady() {
+  if (serverReady) return;
+  serverReady = true;
+  [...readyListeners].forEach((fn) => {
+    try {
+      fn();
+    } catch (_) {}
+  });
+}
+
+// Run fn once this session has caught up with the server (right away if it
+// already has). Returns a function that cancels it.
+export function whenSynced(fn) {
+  if (currentUid && serverReady) {
+    fn();
+    return () => {};
+  }
+  const once = () => {
+    readyListeners.delete(once);
+    fn();
+  };
+  readyListeners.add(once);
+  return () => readyListeners.delete(once);
+}
+
 export function getSyncStatus() {
   return status;
 }
@@ -729,7 +758,7 @@ export function startCloudSync(uid) {
           if (VERSIONED.has(key) && isMap(local)) recordPending(uid, key, Object.keys(local), { prev: {}, baseRev: 0 });
           else recordPending(uid, key, null);
         }
-        serverReady = true;
+        markServerReady();
         schedulePush(0);
         return;
       }
@@ -751,7 +780,7 @@ export function startCloudSync(uid) {
       }
       finishNotes(after);
 
-      if (fromServer) serverReady = true;
+      if (fromServer) markServerReady();
       if (hasPending(uid)) schedulePush(serverReady ? PUSH_DEBOUNCE_MS : 0);
       else if (serverReady) setStatus("synced");
     },

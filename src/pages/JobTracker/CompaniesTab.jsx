@@ -22,7 +22,7 @@ import {
 } from "./shared";
 
 // ── Company card (accordion) ─────────────────────────────────────────────────
-const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onToggle, onPatch, autoCovered, templates }) {
+const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onToggle, onPatch, templates }) {
   const status = entry.status || "none";
   const links = entry.links || [];
   const pending = links.filter((l) => !l.applied).length;
@@ -75,14 +75,6 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
             {company.customEntry && (
               <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300">
                 MINE
-              </span>
-            )}
-            {autoCovered && (
-              <span
-                className="text-[9px] font-bold px-1 py-0.5 rounded bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300"
-                title="Job board watched automatically"
-              >
-                📡 AUTO
               </span>
             )}
             {company.careers && (
@@ -186,7 +178,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
 });
 
 // ── Companies tab ────────────────────────────────────────────────────────────
-export default function CompaniesTab({ allCompanies, companies, patchCompany, addCustom, radarCoveredIds, entryOf, templates }) {
+export default function CompaniesTab({ allCompanies, companies, patchCompany, addCustom, entryOf, templates }) {
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -327,7 +319,6 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
             expanded={expandedId === c.id}
             onToggle={() => setExpandedId((e) => (e === c.id ? null : c.id))}
             onPatch={(patch) => patchCompany(c.id, patch)}
-            autoCovered={radarCoveredIds.has(c.id)}
             templates={templates}
           />
         ))}
