@@ -959,7 +959,7 @@ function EmptyNote({ questions, accent, onStart, onSeed }) {
     return (
       <div className="text-center py-16">
         <p className="text-[15px] text-gray-500 dark:text-gray-400">This note is empty.</p>
-        <button onClick={onStart} className={`mt-4 px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}>
+        <button data-tour="start-blank" onClick={onStart} className={`mt-4 px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}>
           Start writing
         </button>
       </div>
@@ -981,6 +981,7 @@ function EmptyNote({ questions, accent, onStart, onSeed }) {
           Start notes from these questions
         </button>
         <button
+          data-tour="start-blank"
           onClick={onStart}
           className="px-4 h-9 rounded-xl text-[13px] font-bold text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05]"
         >
