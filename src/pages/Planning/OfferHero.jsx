@@ -47,7 +47,7 @@ export default function OfferHero({ onTour, onSignIn }) {
   return (
     <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-violet-500/60 via-fuchsia-500/40 to-indigo-500/60 overflow-hidden">
       <div className="relative rounded-[15px] bg-white/90 dark:bg-[#100e26]/95 light:bg-white px-5 sm:px-8 py-7 sm:py-8 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -top-24 -left-10 w-[32rem] h-48 rounded-full bg-violet-500/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -top-24 -left-10 w-[32rem] h-48 rounded-full bg-violet-500/20 blur-3xl" />
 
         {/* The pitch on the left, the actions on the right (stacked below on a
             phone). */}
@@ -70,7 +70,7 @@ export default function OfferHero({ onTour, onSignIn }) {
 
             <div className="mt-3 flex gap-1.5" aria-hidden>
               {LINES.map((_, k) => (
-                <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/15"}`} />
+                <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/20"}`} />
               ))}
             </div>
           </div>

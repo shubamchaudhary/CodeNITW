@@ -1,99 +1,79 @@
 import React, { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { HiOutlineExternalLink, HiCheck, HiX, HiPlus } from "react-icons/hi";
-import { GLASS_PANEL } from "../../components/glass";
-import { APPLIED_SET, StatusSelect, daysSince, uid, normalizeUrl } from "./shared";
+import { HiOutlineExternalLink, HiCheck, HiX, HiPlus, HiChevronDown, HiReply } from "react-icons/hi";
+import {
+  APPLIED_SET,
+  STALE_ASK_DAYS,
+  StatusSelect,
+  daysSince,
+  agoLabel,
+  linkStage,
+  appliedTime,
+  closedTime,
+  normalizeUrl,
+} from "./shared";
 
-// ── Referral step constants ─────────────────────────────────────────────────
-// Each referral opening progresses through: asked → appliedViaReferral → accepted/rejected
-const REFERRAL_STEPS = [
-  { key: "referralAt", label: "Asked" },
-  { key: "referralAppliedAt", label: "Applied via Referral" },
-  { key: "referralOutcomeAt", label: null },
-];
+// The pipeline: every job link moves To Apply → Asked for Referral → Applied,
+// and ends in Closed (rejected, or a referral ask that never got a reply).
+// Each section is a stack — the newest company on top, the rest peeking out
+// behind it — that deals out into a full list on "Show all".
 
-function referralStepLabel(link) {
-  if (link.referralOutcome === "accepted") return "Accepted";
-  if (link.referralOutcome === "rejected") return "Rejected";
-  if (link.referralAppliedAt) return "Applied via Referral";
-  return "Asked for Referral";
+// ── Moving a link between stages ────────────────────────────────────────────
+const without = (obj, keys) => {
+  const copy = { ...obj };
+  keys.forEach((k) => delete copy[k]);
+  return copy;
+};
+
+function moveLink(l, to, now) {
+  switch (to) {
+    case "applied": // applied directly
+      return { ...l, applied: true, appliedAt: l.appliedAt || now };
+    case "referral": // asked someone for a referral
+      return { ...l, referral: true, referralAt: l.referralAt || now };
+    case "appliedViaReferral":
+      return { ...l, referral: true, referralAt: l.referralAt || now, referralAppliedAt: l.referralAppliedAt || now };
+    case "noReply":
+      return { ...l, closedReason: "noReply", closedAt: now };
+    case "rejected":
+      return { ...l, outcome: "rejected", outcomeAt: now };
+    case "reopen": {
+      const keys = ["outcome", "outcomeAt", "closedReason", "closedAt"];
+      if (l.referralOutcome === "rejected") keys.push("referralOutcome", "referralOutcomeAt");
+      return without(l, keys);
+    }
+    case "back": // one step back, for a mis-click
+      if (l.referralAppliedAt) return without(l, ["referralAppliedAt"]);
+      if (l.applied) return without({ ...l, applied: false }, ["appliedAt"]);
+      if (l.referral) return without({ ...l, referral: false }, ["referralAt"]);
+      return l;
+    default:
+      return l;
+  }
 }
 
-function StepTimeline({ link }) {
-  const steps = [];
-
-  if (link.referralAt) {
-    steps.push({ label: "Asked", ts: link.referralAt, active: true });
-  }
-  if (link.referralAppliedAt) {
-    steps.push({ label: "Applied via Referral", ts: link.referralAppliedAt, active: true });
-  }
-  if (link.referralOutcome) {
-    const label = link.referralOutcome === "accepted" ? "Accepted" : "Rejected";
-    steps.push({ label, ts: link.referralOutcomeAt, active: true });
-  }
-
-  if (steps.length === 0) return null;
-
-  return (
-    <div className="flex items-center gap-1 flex-wrap mt-1">
-      {steps.map((s, i) => {
-        const d = daysSince(s.ts);
-        const ago = d === 0 ? "today" : `${d}d ago`;
-        const isLast = i === steps.length - 1;
-        const isOutcome = s.label === "Accepted" || s.label === "Rejected";
-        let cls = "text-violet-600 dark:text-violet-300";
-        if (isOutcome) {
-          cls = s.label === "Accepted"
-            ? "text-emerald-600 dark:text-emerald-300"
-            : "text-red-500 dark:text-red-400";
-        }
-        return (
-          <React.Fragment key={s.label}>
-            {i > 0 && <span className="text-gray-300 dark:text-gray-600 text-[10px]">→</span>}
-            <span
-              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                isOutcome
-                  ? s.label === "Accepted"
-                    ? "bg-emerald-100 dark:bg-emerald-900/50"
-                    : "bg-red-100 dark:bg-red-900/50"
-                  : isLast
-                  ? "bg-violet-100 dark:bg-violet-900/50"
-                  : "bg-gray-100 dark:bg-slate-700"
-              } ${cls}`}
-            >
-              {s.label} · {ago}
-            </span>
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
-}
-
-// Toggle a single opening's state. Actions: "applied", "referral", "pending".
-// Applied and referral are mutually exclusive. When an opening is marked
-// applied and the company isn't already in an applied status, auto-bump it.
-function makeToggle(entryOf, patchCompany) {
-  return (companyId, linkId, action) => {
+// Move one or more of a company's links, keeping the company's own status in
+// step: applying makes it Applied, reopening a rejected company makes it
+// Applied again, and taking back its only application returns it to To Apply.
+function makeMover(entryOf, patchCompany) {
+  return (companyId, linkIds, to) => {
+    const ids = new Set([].concat(linkIds));
     const entry = entryOf(companyId);
-    const links = (entry.links || []).map((l) => {
-      if (l.id !== linkId) return l;
-      if (action === "applied") return { ...l, applied: true, referral: false };
-      if (action === "referral")
-        return { ...l, applied: false, referral: true, referralAt: l.referralAt || Date.now() };
-      return { ...l, applied: false, referral: false };
-    });
+    const status = entry.status || "none";
+    const now = Date.now();
+    const links = (entry.links || []).map((l) => (ids.has(l.id) ? moveLink(l, to, now) : l));
     const patch = { links };
-    if (action === "applied" && !APPLIED_SET.has(entry.status || "none")) patch.status = "applied";
+    if ((to === "applied" || to === "appliedViaReferral") && !APPLIED_SET.has(status)) patch.status = "applied";
+    if (to === "reopen" && status === "rejected") patch.status = "applied";
+    if (to === "back" && status === "applied" && !links.some((l) => l.applied || l.referralAppliedAt)) patch.status = "toApply";
     patchCompany(companyId, patch);
   };
 }
 
 function makeRemove(entryOf, patchCompany) {
   return (companyId, linkId) => {
-    const entry = entryOf(companyId);
-    const prevLinks = entry.links || [];
+    const prevLinks = entryOf(companyId).links || [];
     const removed = prevLinks.find((l) => l.id === linkId);
     patchCompany(companyId, { links: prevLinks.filter((l) => l.id !== linkId) });
     toast.info(
@@ -101,8 +81,11 @@ function makeRemove(entryOf, patchCompany) {
         <span className="text-sm">
           Removed <span className="font-semibold">{(removed?.label || "opening").slice(0, 40)}</span>{" "}
           <button
-            onClick={() => { patchCompany(companyId, { links: prevLinks }); closeToast(); }}
-            className="underline font-semibold text-indigo-600 dark:text-indigo-300"
+            onClick={() => {
+              patchCompany(companyId, { links: prevLinks });
+              closeToast();
+            }}
+            className="underline font-semibold"
           >
             Undo
           </button>
@@ -113,521 +96,453 @@ function makeRemove(entryOf, patchCompany) {
   };
 }
 
-function makeAdvanceReferral(entryOf, patchCompany) {
-  return (companyId, linkId, action) => {
-    const entry = entryOf(companyId);
-    const links = (entry.links || []).map((l) => {
-      if (l.id !== linkId) return l;
-      if (action === "appliedViaReferral") {
-        return { ...l, referralAppliedAt: l.referralAppliedAt || Date.now() };
-      }
-      if (action === "accepted") {
-        return { ...l, referralOutcome: "accepted", referralOutcomeAt: Date.now() };
-      }
-      if (action === "rejected") {
-        return { ...l, referralOutcome: "rejected", referralOutcomeAt: Date.now() };
-      }
-      return l;
-    });
-    const patch = { links };
-    if (action === "appliedViaReferral" && !APPLIED_SET.has(entry.status || "none")) {
-      patch.status = "applied";
-    }
-    if (action === "accepted" && entry.status !== "offer") {
-      patch.status = "offer";
-    }
-    patchCompany(companyId, patch);
-  };
+// ── Look ────────────────────────────────────────────────────────────────────
+// Cards are opaque so the ones stacked behind don't show through.
+const CARD =
+  "bg-white dark:bg-[#121a30] border border-gray-200/90 dark:border-white/[0.09] shadow-[0_6px_18px_-10px_rgba(15,23,42,0.35)] dark:shadow-[0_8px_22px_-8px_rgba(0,0,0,0.7)]";
+// The two cards peeking out behind the top one: each a step dimmer.
+const BEHIND_1 = "bg-gray-50 dark:bg-[#141c33] border border-gray-200 dark:border-white/[0.09]";
+const BEHIND_2 = "bg-gray-100/80 dark:bg-[#111830] border border-gray-200 dark:border-white/[0.07]";
+
+const TONES = {
+  toApply: {
+    title: "text-amber-600 dark:text-amber-300",
+    pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200",
+    add: "bg-amber-500 hover:bg-amber-600",
+  },
+  referral: {
+    title: "text-violet-600 dark:text-violet-300",
+    pill: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200",
+    add: "bg-violet-600 hover:bg-violet-700",
+  },
+  applied: {
+    title: "text-emerald-600 dark:text-emerald-300",
+    pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200",
+    add: "bg-emerald-600 hover:bg-emerald-700",
+  },
+  closed: {
+    title: "text-gray-500 dark:text-gray-400",
+    pill: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300",
+  },
+};
+
+const BTN = {
+  emerald: "bg-emerald-600 hover:bg-emerald-700 text-white",
+  violet: "bg-violet-600 hover:bg-violet-700 text-white",
+  violetLine: "border border-violet-300 dark:border-violet-500/40 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-500/10",
+  grayLine: "border border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05]",
+  roseLine: "border border-rose-300 dark:border-rose-500/40 text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10",
+};
+
+function Btn({ kind, onClick, title, children }) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg transition-colors ${BTN[kind]}`}
+    >
+      {children}
+    </button>
+  );
 }
 
-// ── Manual referral add form ────────────────────────────────────────────────
-function ReferralAddForm({ allCompanies, patchCompany, entryOf, onClose }) {
-  const [companyName, setCompanyName] = useState("");
-  const [role, setRole] = useState("");
-  const [url, setUrl] = useState("");
-
-  const submit = () => {
-    const company = allCompanies.find((c) => c.name.toLowerCase() === companyName.trim().toLowerCase());
-    if (!company) {
-      toast.warn("Company not found — add it via the Companies tab first");
-      return;
-    }
-    const u = normalizeUrl(url);
-    if (!u) {
-      toast.warn("Paste the job opening URL");
-      return;
-    }
-    const entry = entryOf(company.id);
-    const newLink = {
-      id: uid(),
-      label: role.trim() || "Opening",
-      url: u,
-      applied: false,
-      referral: true,
-      referralAt: Date.now(),
-    };
-    const patch = { links: [...(entry.links || []), newLink] };
-    if (!entry.status || entry.status === "none") patch.status = "toApply";
-    patchCompany(company.id, patch);
-    setRole("");
-    setUrl("");
-  };
-
-  const inputCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
-
+// ── Stack ───────────────────────────────────────────────────────────────────
+// Collapsed: the first card, with the edges of the next two peeking out below
+// it like a deck. "Show all" deals the rest out underneath. Acting on the top
+// card sends it off and the next one rises into place.
+function Stack({ items, empty }) {
+  const [open, setOpen] = useState(false);
+  if (items.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-gray-300 dark:border-white/10 px-4 py-6 text-center text-xs text-gray-400 dark:text-gray-500">
+        {empty}
+      </div>
+    );
+  }
+  const behind = items.length - 1;
+  const shown = open ? items : items.slice(0, 1);
+  const enter = open ? { opacity: 0, y: -24, scale: 0.97 } : { opacity: 0, y: 14, scale: 0.96 };
   return (
-    <div className={`${GLASS_PANEL} rounded-xl p-3 mb-3`}>
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-bold uppercase tracking-wide text-violet-600 dark:text-violet-300">
-          Add referral opening
-        </span>
-        <button onClick={onClose} className="text-gray-400 hover:text-red-500" title="Close">
-          <HiX />
-        </button>
+    <div>
+      <div className={`relative ${open || !behind ? "" : behind > 1 ? "pb-5" : "pb-2.5"}`}>
+        {!open && behind > 1 && <div aria-hidden className={`absolute inset-x-6 bottom-0 h-12 rounded-xl ${BEHIND_2}`} />}
+        {!open && behind > 0 && (
+          <div aria-hidden className={`absolute inset-x-3 ${behind > 1 ? "bottom-2.5" : "bottom-0"} h-12 rounded-xl ${BEHIND_1}`} />
+        )}
+        <div className="relative space-y-3">
+          <AnimatePresence initial={false} mode="popLayout">
+            {shown.map((it, i) => (
+              <motion.div
+                key={it.key}
+                layout="position"
+                initial={enter}
+                animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.24, delay: open ? Math.min(i, 10) * 0.035 : 0 } }}
+                exit={{ opacity: 0, y: -16, scale: 0.97, transition: { duration: 0.15 } }}
+              >
+                {it.node}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          list="referral-company-names"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          placeholder="Company"
-          className={`${inputCls} w-48`}
-          autoFocus
-        />
-        <datalist id="referral-company-names">
-          {allCompanies.map((c) => (
-            <option key={c.id} value={c.name} />
-          ))}
-        </datalist>
-        <input
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          placeholder="Role (e.g. SDE-2 Backend)"
-          className={`${inputCls} w-44`}
-        />
-        <input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder="https://… job opening link"
-          className={`${inputCls} flex-1 min-w-[200px]`}
-        />
+      {behind > 0 && (
         <button
-          onClick={submit}
-          className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-700 text-white"
+          onClick={() => setOpen((o) => !o)}
+          className="mt-2 w-full flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100/70 dark:hover:bg-white/[0.04] transition-colors"
         >
-          <HiPlus /> Add Referral
+          {open ? "Show less" : `Show all ${items.length}`}
+          <HiChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
-      </div>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
-        Found an opening on a careers site and asked for a referral on LinkedIn? Add it here.
-      </p>
+      )}
     </div>
   );
 }
 
-// ── Opening row ─────────────────────────────────────────────────────────────
-function OpeningRow({ link, onToggle, onRemove }) {
-  const isReferral = !!link.referral;
-  const isApplied = !!link.applied;
-
+// ── Cards and rows ──────────────────────────────────────────────────────────
+function JobCard({ company, aside, children }) {
   return (
-    <li className="flex items-center gap-2 text-sm rounded-lg px-1.5 py-1 hover:bg-indigo-50/70 dark:hover:bg-slate-700/50 transition-colors">
-      <span className={`shrink-0 ${isApplied ? "text-emerald-500" : isReferral ? "text-violet-500" : "text-amber-500"}`}>
-        {isApplied ? "✓" : isReferral ? "↗" : "○"}
-      </span>
-      <a
-        href={link.url}
-        target="_blank"
-        rel="noreferrer"
-        className={`hover:underline truncate ${
-          isApplied
-            ? "text-emerald-600 dark:text-emerald-300"
-            : isReferral
-            ? "text-violet-600 dark:text-violet-300"
-            : "text-indigo-600 dark:text-indigo-400"
-        }`}
-        title={link.url}
-      >
-        {link.label}
-      </a>
-      <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
-      <button
-        onClick={onRemove}
-        className="text-gray-400 hover:text-red-500 text-xs px-0.5 shrink-0"
-        title="Remove from pipeline"
-      >
-        <HiX />
-      </button>
-      {isReferral && link.referralAt && !link.referralAppliedAt && !link.referralOutcome && (
-        <span className="text-[11px] font-semibold text-violet-500 dark:text-violet-300 shrink-0">
-          {daysSince(link.referralAt) === 0 ? "today" : `${daysSince(link.referralAt)}d ago`}
-        </span>
-      )}
-      <div className="ml-auto flex gap-1.5 shrink-0">
-        <button
-          onClick={() => onToggle(isReferral ? "pending" : "referral")}
-          className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg transition-colors ${
-            isReferral
-              ? "bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-200 hover:bg-violet-200 dark:hover:bg-violet-900"
-              : "border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30"
-          }`}
-          title={isReferral ? "Undo referral request" : "Ask for referral on LinkedIn"}
-        >
-          ↗ {isReferral ? "Referral" : "Referral?"}
-        </button>
-        <button
-          onClick={() => onToggle(isApplied ? "pending" : "applied")}
-          className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg transition-colors ${
-            isApplied
-              ? "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-200 dark:hover:bg-emerald-900"
-              : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-          }`}
-          title={isApplied ? "Mark as not applied" : "Mark this opening as applied"}
-        >
-          <HiCheck className="w-3.5 h-3.5" />
-          {isApplied ? "Applied" : "Applied?"}
-        </button>
-      </div>
-    </li>
-  );
-}
-
-// ── Referral opening row (multi-step) ───────────────────────────────────────
-function ReferralOpeningRow({ link, onToggle, onRemove, onAdvance }) {
-  const hasAppliedViaReferral = !!link.referralAppliedAt;
-  const outcome = link.referralOutcome;
-
-  return (
-    <li className="rounded-lg px-1.5 py-1.5 hover:bg-violet-50/70 dark:hover:bg-slate-700/50 transition-colors">
-      <div className="flex items-center gap-2 text-sm">
-        <span className="shrink-0 text-violet-500">↗</span>
-        <a
-          href={link.url}
-          target="_blank"
-          rel="noreferrer"
-          className={`hover:underline truncate ${
-            outcome === "accepted"
-              ? "text-emerald-600 dark:text-emerald-300"
-              : outcome === "rejected"
-              ? "text-red-500 dark:text-red-400 line-through"
-              : "text-violet-600 dark:text-violet-300"
-          }`}
-          title={link.url}
-        >
-          {link.label}
-        </a>
-        <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
-        <button
-          onClick={onRemove}
-          className="text-gray-400 hover:text-red-500 text-xs px-0.5 shrink-0"
-          title="Remove from pipeline"
-        >
-          <HiX />
-        </button>
-        <div className="ml-auto flex gap-1.5 shrink-0">
-          {!outcome && !hasAppliedViaReferral && (
-            <button
-              onClick={() => onAdvance("appliedViaReferral")}
-              className="text-[11px] font-bold px-2 py-1 rounded-lg bg-violet-600 hover:bg-violet-700 text-white shadow-sm transition-colors"
-              title="Mark as applied through this referral"
-            >
-              Applied via Referral
-            </button>
-          )}
-          {!outcome && hasAppliedViaReferral && (
-            <>
-              <button
-                onClick={() => onAdvance("accepted")}
-                className="text-[11px] font-bold px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
-                title="Referral application accepted"
-              >
-                Accepted
-              </button>
-              <button
-                onClick={() => onAdvance("rejected")}
-                className="text-[11px] font-bold px-2 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors"
-                title="Referral application rejected"
-              >
-                Rejected
-              </button>
-            </>
-          )}
-          {outcome && (
-            <span
-              className={`text-[11px] font-bold px-2 py-1 rounded-lg ${
-                outcome === "accepted"
-                  ? "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200"
-                  : "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-300"
-              }`}
-            >
-              {outcome === "accepted" ? "Accepted" : "Rejected"}
-            </span>
-          )}
-        </div>
-      </div>
-      <StepTimeline link={link} />
-    </li>
-  );
-}
-
-function CompanyCard({ company, links, entry, toggleLink, removeLink, showStatus, patchCompany, badge, advanceReferral, isReferralSection }) {
-  const status = entry.status || "none";
-  let ring = "";
-  if (showStatus) {
-    if (status === "offer") ring = "ring-2 ring-emerald-400/50";
-    else if (status === "interview") ring = "ring-2 ring-violet-400/40";
-    else if (status === "oa") ring = "ring-2 ring-cyan-400/40";
-  }
-
-  return (
-    <div className={`${GLASS_PANEL} rounded-xl p-4 hover:shadow-md transition-shadow ${ring}`}>
-      <div className="flex items-center justify-between gap-2 mb-2">
+    <div className={`${CARD} rounded-xl p-3.5`}>
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-semibold text-gray-800 dark:text-gray-100">{company.name}</span>
-            {company.pay && (
-              <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">₹{company.pay} LPA</span>
-            )}
+            {company.pay && <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">₹{company.pay} LPA</span>}
             {company.careers && (
               <a href={company.careers} target="_blank" rel="noreferrer" className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400" title="Careers page">
                 <HiOutlineExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
           </div>
-          {company.location && (
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">{company.location}</p>
-          )}
+          {company.location && <p className="text-[11px] text-gray-400 dark:text-gray-500">{company.location}</p>}
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {badge}
-          {showStatus && (
-            <StatusSelect value={status} onChange={(v) => patchCompany(company.id, { status: v })} />
-          )}
-        </div>
+        {aside}
       </div>
-      {links.length > 0 ? (
-        <ul className="space-y-0.5 mt-1">
-          {links.map((l) =>
-            isReferralSection ? (
-              <ReferralOpeningRow
-                key={l.id}
-                link={l}
-                onToggle={(action) => toggleLink(company.id, l.id, action)}
-                onRemove={() => removeLink(company.id, l.id)}
-                onAdvance={(action) => advanceReferral(company.id, l.id, action)}
-              />
-            ) : (
-              <OpeningRow
-                key={l.id}
-                link={l}
-                onToggle={(action) => toggleLink(company.id, l.id, action)}
-                onRemove={() => removeLink(company.id, l.id)}
-              />
-            )
-          )}
-        </ul>
-      ) : (
-        <p className="text-xs text-gray-400 dark:text-gray-500 italic">
-          Marked "To Apply" — add openings from the Companies tab.
-        </p>
-      )}
-      {entry.note && (
-        <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500 truncate">{entry.note}</p>
-      )}
+      <ul className="mt-2.5 space-y-2.5">{children}</ul>
     </div>
   );
 }
 
-export default function PipelineTab({ allCompanies, entryOf, patchCompany }) {
-  const toggleLink = makeToggle(entryOf, patchCompany);
+function Row({ link, icon, iconCls, linkCls = "text-gray-800 dark:text-gray-100", meta, metaCls, onBack, backTitle, onRemove, children }) {
+  return (
+    <li>
+      <div className="flex items-center gap-1.5 text-sm min-w-0">
+        <span className={`shrink-0 w-4 text-center ${iconCls}`}>{icon}</span>
+        <a href={link.url} target="_blank" rel="noreferrer" title={link.url} className={`truncate font-medium hover:underline ${linkCls}`}>
+          {link.label}
+        </a>
+        <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
+        {onBack && (
+          <button onClick={onBack} title={backTitle} className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+            <HiReply className="w-3.5 h-3.5" />
+          </button>
+        )}
+        <button onClick={onRemove} title="Remove from pipeline" className="shrink-0 text-gray-400 hover:text-red-500">
+          <HiX className="w-3.5 h-3.5" />
+        </button>
+        {meta && <span className={`ml-auto pl-2 shrink-0 text-[11px] font-medium ${metaCls || "text-gray-400 dark:text-gray-500"}`}>{meta}</span>}
+      </div>
+      {children && <div className="mt-1.5 pl-5 flex flex-wrap items-center gap-1.5">{children}</div>}
+    </li>
+  );
+}
+
+const Tag = ({ cls, children }) => <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${cls}`}>{children}</span>;
+
+// ── Add form ────────────────────────────────────────────────────────────────
+// A job link straight into a section. The company is matched by name; a name
+// that isn't in the list becomes a company of your own.
+const ADD_TITLE = { toApply: "Add a job to apply to", referral: "Add a referral you asked for", applied: "Add a job you applied to" };
+
+function AddJobForm({ stage, allCompanies, onAdd, onClose }) {
+  const [company, setCompany] = useState("");
+  const [url, setUrl] = useState("");
+  const [role, setRole] = useState("");
+  const name = company.trim();
+  const ready = name && url.trim();
+  const isNew = name && !allCompanies.some((c) => c.name.toLowerCase() === name.toLowerCase());
+  const submit = () => {
+    if (ready && onAdd({ companyName: name, url: normalizeUrl(url), role: role.trim(), stage })) onClose();
+  };
+  const keys = (e) => {
+    if (e.key === "Enter") submit();
+    if (e.key === "Escape") onClose();
+  };
+  const input =
+    "w-full text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40";
+  const listId = `pipeline-companies-${stage}`;
+  return (
+    <div className={`${CARD} rounded-xl p-3 mb-3 space-y-2`}>
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{ADD_TITLE[stage]}</span>
+        <button onClick={onClose} className="text-gray-400 hover:text-red-500" title="Close">
+          <HiX />
+        </button>
+      </div>
+      <input list={listId} value={company} onChange={(e) => setCompany(e.target.value)} onKeyDown={keys} placeholder="Company" className={input} autoFocus />
+      <datalist id={listId}>
+        {allCompanies.map((c) => (
+          <option key={c.id} value={c.name} />
+        ))}
+      </datalist>
+      {isNew && <p className="text-[11px] text-gray-400 dark:text-gray-500 -mt-1">New company: it'll be added to your list too.</p>}
+      <input value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={keys} placeholder="Job link (https://…)" className={input} />
+      <input value={role} onChange={(e) => setRole(e.target.value)} onKeyDown={keys} placeholder="Role (optional, e.g. SDE-2 Backend)" className={input} />
+      <div className="flex justify-end">
+        <button
+          onClick={submit}
+          disabled={!ready}
+          className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <HiPlus className="w-3.5 h-3.5" /> Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Section({ stage, title, count, hint, onAdd, children }) {
+  const t = TONES[stage];
+  return (
+    <section className="min-w-0">
+      <div className="flex items-center gap-2 mb-1">
+        <h2 className={`text-lg font-bold ${t.title}`}>{title}</h2>
+        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${t.pill}`}>{count}</span>
+        {onAdd && (
+          <button onClick={onAdd} className={`ml-auto inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg text-white shadow-sm ${t.add}`}>
+            <HiPlus className="w-3 h-3" /> Add
+          </button>
+        )}
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">{hint}</p>
+      {children}
+    </section>
+  );
+}
+
+// ── Pipeline ────────────────────────────────────────────────────────────────
+const STAGE_TIME = {
+  toApply: (l) => l.addedAt,
+  referral: (l) => l.referralAt,
+  applied: appliedTime,
+  closed: closedTime,
+};
+
+export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJob }) {
+  const move = makeMover(entryOf, patchCompany);
   const removeLink = makeRemove(entryOf, patchCompany);
-  const advanceReferral = makeAdvanceReferral(entryOf, patchCompany);
-  const [addingReferral, setAddingReferral] = useState(false);
+  const [adding, setAdding] = useState(null); // the section whose Add form is open
 
-  const toApplyGroups = [];
-  const referralGroups = [];
-  const appliedGroups = [];
-
-  allCompanies.forEach((c) => {
-    const entry = entryOf(c.id);
+  // One card per company per section, holding that company's links in it.
+  const groups = { toApply: [], referral: [], applied: [], closed: [] };
+  allCompanies.forEach((company) => {
+    const entry = entryOf(company.id);
     const links = entry.links || [];
-    const status = entry.status || "none";
-
-    const pending = links.filter((l) => !l.applied && !l.referral);
-    const referral = links.filter((l) => l.referral);
-    const applied = links.filter((l) => l.applied);
-
-    if (pending.length > 0 || (status === "toApply" && links.length === 0)) {
-      toApplyGroups.push({ company: c, links: pending, entry });
-    }
-    if (referral.length > 0) {
-      referralGroups.push({ company: c, links: referral, entry });
-    }
-    if (applied.length > 0) {
-      appliedGroups.push({ company: c, links: applied, entry });
-    }
+    const by = { toApply: [], referral: [], applied: [], closed: [] };
+    links.forEach((l) => by[linkStage(l, entry)].push(l));
+    Object.keys(by).forEach((stage) => {
+      if (by[stage].length) groups[stage].push({ company, entry, links: by[stage] });
+    });
+    // Marked "To Apply" in Companies without a job link yet.
+    if (!links.length && entry.status === "toApply") groups.toApply.push({ company, entry, links: [] });
   });
-
-  referralGroups.sort((a, b) => {
-    const aMax = Math.max(...a.links.map((l) => l.referralAt || 0));
-    const bMax = Math.max(...b.links.map((l) => l.referralAt || 0));
-    return bMax - aMax;
+  // Newest first, so the top of each stack is what you touched last.
+  Object.entries(groups).forEach(([stage, list]) => {
+    const newest = (g) => Math.max(0, ...g.links.map((l) => STAGE_TIME[stage](l, g.entry) || 0));
+    list.sort((a, b) => newest(b) - newest(a));
   });
+  const count = (stage) => groups[stage].reduce((n, g) => n + g.links.length, 0);
 
-  const totalPending = toApplyGroups.reduce((s, g) => s + g.links.length, 0);
-  const totalReferral = referralGroups.reduce((s, g) => s + g.links.length, 0);
-  const totalApplied = appliedGroups.reduce((s, g) => s + g.links.length, 0);
+  const stale = groups.referral.flatMap((g) =>
+    g.links.filter((l) => daysSince(l.referralAt) >= STALE_ASK_DAYS).map((l) => ({ companyId: g.company.id, id: l.id }))
+  );
+  const closeStale = () => {
+    const byCompany = {};
+    stale.forEach((s) => (byCompany[s.companyId] = [...(byCompany[s.companyId] || []), s.id]));
+    Object.entries(byCompany).forEach(([companyId, ids]) => move(companyId, ids, "noReply"));
+  };
+
+  const clearClosed = () => {
+    const before = groups.closed.map((g) => ({ id: g.company.id, links: g.entry.links || [] }));
+    const n = count("closed");
+    before.forEach(({ id, links }) => {
+      const entry = entryOf(id);
+      patchCompany(id, { links: links.filter((l) => linkStage(l, entry) !== "closed") });
+    });
+    toast.info(
+      ({ closeToast }) => (
+        <span className="text-sm">
+          Cleared {n} closed{" "}
+          <button
+            onClick={() => {
+              before.forEach(({ id, links }) => patchCompany(id, { links }));
+              closeToast();
+            }}
+            className="underline font-semibold"
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { autoClose: 5000 }
+    );
+  };
+
+  const addForm = (stage) =>
+    adding === stage && <AddJobForm stage={stage} allCompanies={allCompanies} onAdd={addJob} onClose={() => setAdding(null)} />;
+  const toggleAdd = (stage) => () => setAdding((s) => (s === stage ? null : stage));
+  const rowProps = (g, l) => ({ link: l, onRemove: () => removeLink(g.company.id, l.id) });
+  const mv = (g, l, to) => () => move(g.company.id, l.id, to);
+
+  const toApplyCards = groups.toApply.map((g) => ({
+    key: g.company.id,
+    node: (
+      <JobCard company={g.company}>
+        {g.links.length === 0 && (
+          <li className="text-xs text-gray-400 dark:text-gray-500 italic">Marked "To Apply" in Companies. Add its job link with + Add.</li>
+        )}
+        {g.links.map((l) => {
+          const added = agoLabel(l.addedAt);
+          return (
+            <Row key={l.id} {...rowProps(g, l)} icon="○" iconCls="text-amber-500" meta={added && `added ${added}`}>
+              <Btn kind="emerald" onClick={mv(g, l, "applied")} title="You applied directly">
+                <HiCheck className="w-3.5 h-3.5" /> Applied
+              </Btn>
+              <Btn kind="violetLine" onClick={mv(g, l, "referral")} title="You asked someone for a referral">
+                Asked referral
+              </Btn>
+              <Btn kind="violetLine" onClick={mv(g, l, "appliedViaReferral")} title="You got a referral and applied with it">
+                Applied via referral
+              </Btn>
+            </Row>
+          );
+        })}
+      </JobCard>
+    ),
+  }));
+
+  const referralCards = groups.referral.map((g) => ({
+    key: g.company.id,
+    node: (
+      <JobCard company={g.company}>
+        {g.links.map((l) => {
+          const isStale = daysSince(l.referralAt) >= STALE_ASK_DAYS;
+          const asked = agoLabel(l.referralAt);
+          return (
+            <Row
+              key={l.id}
+              {...rowProps(g, l)}
+              icon="↗"
+              iconCls="text-violet-500"
+              meta={asked && (isStale ? `no reply · ${asked}` : `asked ${asked}`)}
+              metaCls={isStale ? "text-amber-600 dark:text-amber-300" : undefined}
+              onBack={mv(g, l, "back")}
+              backTitle="Move back to To Apply"
+            >
+              <Btn kind="violet" onClick={mv(g, l, "appliedViaReferral")} title="You applied with this referral">
+                <HiCheck className="w-3.5 h-3.5" /> Applied
+              </Btn>
+              <Btn kind="grayLine" onClick={mv(g, l, "noReply")} title="No reply: move it to Closed">
+                No reply
+              </Btn>
+            </Row>
+          );
+        })}
+      </JobCard>
+    ),
+  }));
+
+  const appliedCards = groups.applied.map((g) => ({
+    key: g.company.id,
+    node: (
+      <JobCard company={g.company} aside={<StatusSelect value={g.entry.status} onChange={(v) => patchCompany(g.company.id, { status: v })} />}>
+        {g.links.map((l) => {
+          const when = agoLabel(appliedTime(l, g.entry));
+          const viaReferral = !!l.referralAppliedAt;
+          return (
+            <Row
+              key={l.id}
+              {...rowProps(g, l)}
+              icon="✓"
+              iconCls="text-emerald-500"
+              meta={when && `applied ${when}`}
+              onBack={mv(g, l, "back")}
+              backTitle={viaReferral ? "Move back to Asked for Referral" : "Move back to To Apply"}
+            >
+              {viaReferral && <Tag cls="bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">via referral</Tag>}
+              {l.referralOutcome === "accepted" && <Tag cls="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">Accepted</Tag>}
+              <Btn kind="roseLine" onClick={mv(g, l, "rejected")} title="Rejected: move it to Closed">
+                Rejected
+              </Btn>
+            </Row>
+          );
+        })}
+      </JobCard>
+    ),
+  }));
+
+  const closedCards = groups.closed.map((g) => ({
+    key: g.company.id,
+    node: (
+      <JobCard company={g.company}>
+        {g.links.map((l) => {
+          const when = agoLabel(closedTime(l));
+          const reason = l.closedReason === "noReply" ? "No reply" : "Rejected";
+          return (
+            <Row
+              key={l.id}
+              {...rowProps(g, l)}
+              icon="•"
+              iconCls="text-gray-400"
+              linkCls="text-gray-500 dark:text-gray-400"
+              meta={when ? `${reason} · ${when}` : reason}
+              metaCls={reason === "Rejected" ? "text-rose-500 dark:text-rose-300" : undefined}
+            >
+              <Btn kind="grayLine" onClick={mv(g, l, "reopen")} title="Put it back where it was">
+                Reopen
+              </Btn>
+            </Row>
+          );
+        })}
+      </JobCard>
+    ),
+  }));
 
   return (
-    <div className="grid lg:grid-cols-2 gap-6 items-start">
-      {/* ── To Apply Queue ─────────────────────────────────────────────── */}
-      <section>
-        <div className="flex items-center gap-2 mb-1">
-          <h2 className="text-lg font-bold text-amber-600 dark:text-amber-300">To Apply</h2>
-          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-200">
-            {totalPending}
-          </span>
-        </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-          Pending openings — hit "Applied?" or "Referral?" on each opening.
-        </p>
-        <div className="space-y-3">
-          {toApplyGroups.length === 0 && (
-            <div className={`${GLASS_PANEL} rounded-xl p-8 text-center`}>
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                Nothing queued. Mark companies "To Apply" from the Companies tab, or track openings from Openings.
-              </p>
-            </div>
-          )}
-          {toApplyGroups.map((g) => {
-            const allLinks = g.entry.links || [];
-            const doneCount = allLinks.filter((l) => l.applied || l.referral).length;
-            return (
-              <CompanyCard
-                key={g.company.id}
-                company={g.company}
-                links={g.links}
-                entry={g.entry}
-                toggleLink={toggleLink}
-                removeLink={removeLink}
-                patchCompany={patchCompany}
-                badge={
-                  allLinks.length > 0 && (
-                    <span
-                      className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                        doneCount
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200"
-                          : "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200"
-                      }`}
-                    >
-                      {doneCount}/{allLinks.length} done
-                    </span>
-                  )
-                }
-              />
-            );
-          })}
-        </div>
-      </section>
+    <div className="grid gap-6 lg:grid-cols-3 items-start">
+      <Section stage="toApply" title="To Apply" count={count("toApply")} hint="Jobs you plan to apply to. Mark each one when you act on it." onAdd={toggleAdd("toApply")}>
+        {addForm("toApply")}
+        <Stack items={toApplyCards} empty="Nothing to apply to yet. Add a job link." />
+      </Section>
 
-      {/* ── Right column: Referral + Applied ───────────────────────────── */}
-      <div className="space-y-6">
-        {/* ── Asked for Referral ──────────────────────────────────────── */}
-        <section>
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-lg font-bold text-violet-600 dark:text-violet-300">Asked for Referral</h2>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-200">
-              {totalReferral}
+      <Section stage="referral" title="Asked for Referral" count={count("referral")} hint="Waiting on a referral. Mark Applied once you apply with it." onAdd={toggleAdd("referral")}>
+        {addForm("referral")}
+        {stale.length > 0 && (
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-300/60 dark:border-amber-400/25 bg-amber-50 dark:bg-amber-400/10 px-3 py-2 text-xs text-amber-800 dark:text-amber-200">
+            <span className="flex-1">
+              {stale.length} {stale.length === 1 ? "ask has" : "asks have"} had no reply for {STALE_ASK_DAYS}+ days.
             </span>
-            <button
-              onClick={() => setAddingReferral((s) => !s)}
-              className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-violet-600 hover:bg-violet-700 text-white shadow-sm ml-auto"
-            >
-              <HiPlus className="w-3 h-3" /> Add
+            <button onClick={closeStale} className="shrink-0 font-bold underline">
+              Move to Closed
             </button>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-            Track referral progress: Asked → Applied via Referral → Accepted / Rejected.
-          </p>
+        )}
+        <Stack items={referralCards} empty="No referral asks waiting." />
+      </Section>
 
-          {addingReferral && (
-            <ReferralAddForm
-              allCompanies={allCompanies}
-              patchCompany={patchCompany}
-              entryOf={entryOf}
-              onClose={() => setAddingReferral(false)}
-            />
-          )}
+      <div className="space-y-8 min-w-0">
+        <Section stage="applied" title="Applied" count={count("applied")} hint="Applied directly or with a referral. Set the stage as it moves." onAdd={toggleAdd("applied")}>
+          {addForm("applied")}
+          <Stack items={appliedCards} empty="No applications yet." />
+        </Section>
 
-          <div className="space-y-3">
-            {referralGroups.length === 0 && !addingReferral && (
-              <div className={`${GLASS_PANEL} rounded-xl p-8 text-center`}>
-                <p className="text-sm text-gray-400 dark:text-gray-500">
-                  No referrals requested yet — hit "Referral?" on openings or use the Add button above.
-                </p>
-              </div>
-            )}
-            {referralGroups.map((g) => (
-              <CompanyCard
-                key={g.company.id}
-                company={g.company}
-                links={g.links}
-                entry={g.entry}
-                toggleLink={toggleLink}
-                removeLink={removeLink}
-                patchCompany={patchCompany}
-                advanceReferral={advanceReferral}
-                isReferralSection
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* ── Applied ─────────────────────────────────────────────────── */}
-        <section>
-          <div className="flex items-center gap-2 mb-1">
-            <h2 className="text-lg font-bold text-emerald-600 dark:text-emerald-300">Applied</h2>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200">
-              {totalApplied}
-            </span>
-          </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-            Track progress — Applied → OA → Interview → Offer. Update status as you advance.
-          </p>
-          <div className="space-y-3">
-            {appliedGroups.length === 0 && (
-              <div className={`${GLASS_PANEL} rounded-xl p-8 text-center`}>
-                <p className="text-sm text-gray-400 dark:text-gray-500">
-                  No applications yet — hit "Applied?" on an opening to start tracking.
-                </p>
-              </div>
-            )}
-            {appliedGroups.map((g) => {
-              const appliedDays = daysSince(g.entry.appliedAt);
-              return (
-                <CompanyCard
-                  key={g.company.id}
-                  company={g.company}
-                  links={g.links}
-                  entry={g.entry}
-                  toggleLink={toggleLink}
-                  removeLink={removeLink}
-                  showStatus
-                  patchCompany={patchCompany}
-                  badge={
-                    appliedDays !== Infinity && (
-                      <span className="text-[11px] text-gray-400 dark:text-gray-500 shrink-0">
-                        {appliedDays === 0 ? "today" : `${appliedDays}d ago`}
-                      </span>
-                    )
-                  }
-                />
-              );
-            })}
-          </div>
-        </section>
+        {closedCards.length > 0 && (
+          <Section stage="closed" title="Closed" count={count("closed")} hint="Rejected or no reply. Out of the way, not lost.">
+            <Stack items={closedCards} empty="" />
+            <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400">
+              Clear all closed
+            </button>
+          </Section>
+        )}
       </div>
     </div>
   );
