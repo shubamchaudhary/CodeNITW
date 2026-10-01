@@ -38,7 +38,7 @@ import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
 // in place; Write keeps the raw-markdown editor for longer sessions.
 
 const VIEWS = [
-  { key: "read", label: "Read", title: "Read — edit any section in place, select text to highlight or add a note" },
+  { key: "read", label: "Read", title: "Read — hover any part to edit it or write below it; select text to highlight or add a note" },
   { key: "write", label: "Write", title: "Markdown editor" },
 ];
 

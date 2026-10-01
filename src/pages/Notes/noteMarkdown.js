@@ -65,18 +65,6 @@ export function plainText(md) {
     .trim();
 }
 
-// Section edits come back without their trailing blank lines (the textarea
-// trims them); put the original separator back so the next heading still
-// starts a new block.
-export function spliceSection(text, section, edited) {
-  const original = text.slice(section.start, section.end);
-  const tail = original.match(/\s*$/)[0];
-  const isLast = section.end >= text.length;
-  const body = edited.replace(/\s+$/, "");
-  const sep = isLast ? tail : tail.includes("\n\n") ? tail : "\n\n";
-  return text.slice(0, section.start) + (body ? body + sep : "") + text.slice(section.end);
-}
-
 export function appendBlock(text, block) {
   const body = block.replace(/\s+$/, "");
   if (!body) return text;
@@ -93,7 +81,7 @@ export function noteStats(text) {
 // ─── Formatting toolbar ──────────────────────────────────────────────────────
 // `wrap` surrounds the selection, `line` prefixes each selected line, `block`
 // fences it, `insert` drops text at the caret. Shared by the full editor and
-// the in-place section editor.
+// the inline editor.
 
 export const TOOLBAR = [
   { key: "h2", label: "H", title: "Heading", line: "## " },
