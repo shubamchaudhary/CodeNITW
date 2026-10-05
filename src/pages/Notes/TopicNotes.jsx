@@ -685,6 +685,7 @@ export default function TopicNotes() {
               uploadInto={uploadFiles}
               topOffset={topOffset}
               immersive={immersive}
+              railTop={immersive ? null : fullScreenButton}
               annotations={preview ? preview.annotations || [] : annotations}
               onAnnotationsChange={preview ? blocked : changeAnnotations}
               learnt={preview ? {} : learnt}

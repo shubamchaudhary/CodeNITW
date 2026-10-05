@@ -197,6 +197,7 @@ export default function NoteReader({
   onAnnotationsChange,
   learnt = {},
   onToggleLearnt,
+  railTop = null, // pinned at the top of the side column (e.g. the full screen button)
 }) {
   const navTop = topOffset;
   const sections = useMemo(() => splitSections(text), [text]);
@@ -903,6 +904,7 @@ export default function NoteReader({
           {/* The side column: part of the same page, pinned while the note scrolls. */}
           <aside className="hidden xl:block border-l border-gray-200/90 dark:border-white/[0.07]">
             <div className="sticky px-7 pt-10 pb-6" style={{ top: navTop }}>
+              {railTop && <div className="mb-6 flex justify-end">{railTop}</div>}
               <SidePanel
                 panel={panel}
                 setPanel={setPanel}
@@ -912,7 +914,7 @@ export default function NoteReader({
                 progress={progress}
                 onJump={jumpTo}
                 accent={accent}
-                topOffset={navTop}
+                topOffset={navTop + (railTop ? 60 : 0)}
                 notes={placed.order.map((id) => byId.get(id)).filter(Boolean)}
                 orphans={placed.orphans}
                 openNoteId={notePop?.id}
