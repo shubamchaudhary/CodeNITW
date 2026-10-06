@@ -58,6 +58,8 @@ export const TOPICS = [
     resources: [{ csv: "CC-J#23" }, { csv: "CC-J#26" }],
     inherit: "P0-05",
     questions: [
+      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
+      "ConcurrentLinkedQueue vs LinkedBlockingQueue — when would you pick the non-blocking one?",
       "HashMap allows one null key — where does it live? Why do ConcurrentHashMap and Hashtable reject null keys and values?",
       "Is get-then-put on a ConcurrentHashMap thread-safe? What do you use instead? (computeIfAbsent / compute / merge.)",
       "Can any object be a HashMap key? What must it guarantee, and what is the cheapest way to get it right? (Immutable + equals/hashCode — or a record.)",
@@ -235,7 +237,7 @@ export const TOPICS = [
   // ─── Concurrency ───────────────────────────────────────────────────────────
   // In the playlist's own order (Concept && Coding, JAVA from Basics to
   // Advanced, #30–#39), one video per card, so it can be followed start to end.
-  // The cards with no playlist video (collections, coding drills, @Async,
+  // The cards with no playlist video (coding drills, @Async,
   // production debugging) come after it.
   {
     id: "CONC-07",
@@ -324,6 +326,8 @@ export const TOPICS = [
       "Name all 7 ThreadPoolExecutor constructor parameters and what each controls.",
       "core=5, max=10, unbounded LinkedBlockingQueue. How many threads actually run under load? Why is this a production incident?",
       "Full task submission flow: when does it use a core thread vs queue vs spawn to max vs reject?",
+      "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
+      "put/take vs offer/poll on a BlockingQueue — which blocks, which returns false? Which one does ThreadPoolExecutor call?",
       "Name the 4 rejection policies. Which would you pick for a payment API and why?",
       "How do you size a pool for CPU-bound vs IO-bound work? Give the formula.",
       "What happens to an uncaught exception in a pooled task submitted via execute() vs submit()?",
@@ -398,34 +402,6 @@ export const TOPICS = [
       "How does ThreadLocal behave with virtual threads?",
       "Scoped Values (final in Java 25) vs ThreadLocal — what problem do they fix for virtual threads?",
       "Where does Spring itself use ThreadLocal? (Transactions, SecurityContextHolder, request scope.)",
-    ],
-  },
-  {
-    id: "CONC-12",
-    section: "concurrency",
-    priority: "P1",
-    title: "Concurrent collections — ConcurrentHashMap, BlockingQueue, CopyOnWrite",
-    why: "Not in the playlist. ConcurrentHashMap internals are on the HashMap card (JAVA-01); this card is about using these collections correctly — the check-then-act bug is the classic follow-up.",
-    resources: [
-      {
-        doc: {
-          title: "java.util.concurrent — package summary (Concurrent Collections section)",
-          site: "docs.oracle.com",
-          url: "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html",
-          note: "Read the Concurrent Collections section, then the BlockingQueue and ConcurrentHashMap class pages.",
-          minutes: 25,
-          estimate: true,
-        },
-      },
-    ],
-    questions: [
-      "Is if (!map.containsKey(k)) map.put(k, v) thread-safe on a ConcurrentHashMap? What do you use instead? (putIfAbsent / computeIfAbsent / merge.)",
-      "Why does ConcurrentHashMap reject null keys and values?",
-      "Fail-fast vs weakly consistent iterators — which does ConcurrentHashMap give you?",
-      "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
-      "put/take vs offer/poll on a BlockingQueue — which blocks, which returns false?",
-      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
-      "ConcurrentLinkedQueue vs LinkedBlockingQueue — when would you pick the non-blocking one?",
     ],
   },
   {
@@ -1373,7 +1349,10 @@ export const TOPICS = [
      • Shutdown/scheduling (shutdown vs shutdownNow, awaitTermination, two-
        phase termination)  → CONC-10 split out at P1.
      • Thread priority and StampedLock are rarely asked: kept, marked "skim".
-     • New cards: CONC-07..14. Old ids kept their closest content: CONC-01 is
+     • Concurrent collections stayed on JAVA-01 (CopyOnWrite and the
+       non-blocking queue added there; BlockingQueue choice on CONC-01). No
+       separate card, so CONC-12 is retired and must not be reused.
+     • New cards: CONC-07..11, 13, 14. Old ids kept their closest content: CONC-01 is
        now only the pool video, CONC-03 only the locks video, CONC-04 only
        CompletableFuture (@Async → CONC-14). Virtual threads left JAVA-05 for
        CONC-11. Video #32 (join/daemon/priority, 45m) added to the CSV from
