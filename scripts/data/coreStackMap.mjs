@@ -58,6 +58,8 @@ export const TOPICS = [
     resources: [{ csv: "CC-J#23" }, { csv: "CC-J#26" }],
     inherit: "P0-05",
     questions: [
+      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
+      "ConcurrentLinkedQueue vs LinkedBlockingQueue — when would you pick the non-blocking one?",
       "HashMap allows one null key — where does it live? Why do ConcurrentHashMap and Hashtable reject null keys and values?",
       "Is get-then-put on a ConcurrentHashMap thread-safe? What do you use instead? (computeIfAbsent / compute / merge.)",
       "Can any object be a HashMap key? What must it guarantee, and what is the cheapest way to get it right? (Immutable + equals/hashCode — or a record.)",
@@ -165,26 +167,18 @@ export const TOPICS = [
     id: "JAVA-05",
     section: "java",
     priority: "P1",
-    title: "Java 17 → 25 — records, sealed types, pattern matching, virtual threads",
-    why: "2026 write-ups treat Java 17 features as assumed knowledge, \"Java 8 vs 11 vs 17\" is asked by name, and virtual threads are now a live topic. Java 25 is the current LTS and finalised Scoped Values. You ship Java 17 — being vague here reads badly.",
+    title: "Java 17 → 25 — records, sealed types & pattern matching",
+    why: "2026 write-ups treat Java 17 features as assumed knowledge and \"Java 8 vs 11 vs 17\" is asked by name. Java 25 is the current LTS. You ship Java 17 — being vague here reads badly. Virtual threads moved to CONC-11, beside the rest of the threads playlist.",
     resources: [
       { csv: "CC-J#42" },
       { csv: "CC-J#43" },
       { csv: "CC-J#44" },
       { csv: "CC-J#45" },
       { csv: "CC-J#46" },
-      { csv: "CC-J#39" },
     ],
     inherit: "P2-36",
     questions: [
       "Java 8 → 11 → 17 → 21 → 25: name the one change in each that you would actually use in a Spring service.",
-      "Platform thread vs virtual thread — what actually changes, and what does not?",
-      "What is pinning, what causes it, and how would you detect it? What did JDK 24 (JEP 491) change about synchronized, and what still pins?",
-      "Why are thread pools mostly pointless with virtual threads — and where do you still want one?",
-      "Virtual threads vs reactive (WebFlux/Reactor) — what problem does each solve? Which would you pick now?",
-      "Where do virtual threads NOT help? (CPU-bound work — say so plainly.)",
-      "spring.threads.virtual.enabled=true — what does Spring Boot switch over, and what do you check first? (Connection-pool limits: a million threads still share ten connections.)",
-      "Scoped Values (final in Java 25) vs ThreadLocal — what problem do they fix for virtual threads?",
       "Which of Java 17/21's features have you actually used at work, and which would you adopt next?",
     ],
   },
@@ -241,23 +235,75 @@ export const TOPICS = [
   },
 
   // ─── Concurrency ───────────────────────────────────────────────────────────
+  // In the playlist's own order (Concept && Coding, JAVA from Basics to
+  // Advanced, #30–#39), one video per card, so it can be followed start to end.
+  // The cards with no playlist video (coding drills, @Async,
+  // production debugging) come after it.
   {
-    id: "CONC-01",
+    id: "CONC-07",
     section: "concurrency",
     priority: "P0",
-    title: "Threads, executors & ThreadPoolExecutor",
-    why: "Your resume says Multithreading & Concurrency and Asynchronous Processing. Expect a whole round.",
-    resources: [
-      { csv: "CC-J#30" },
-      { csv: "CC-J#35" },
-      { csv: "CC-J#38" },
-    ],
-    inherit: "P0-07",
+    title: "Threads vs processes & what each thread owns",
+    why: "The usual opener of a multithreading round, and the base for everything after it: what threads share (the heap) and what each keeps to itself (its stack) is why race conditions exist at all.",
+    resources: [{ csv: "CC-J#30" }],
     questions: [
-      "Runnable vs Callable; start() vs run() — what happens if you call run() directly?",
+      "Process vs thread — what does each own, and what do threads of one process share?",
+      "Which JVM memory areas are per thread and which are shared? Why does that make count++ unsafe?",
+      "Concurrency vs parallelism — explain with a one-core and a four-core machine.",
+      "What is a context switch, and why do more threads than cores stop helping CPU-bound work?",
+      "Why does multithreading help an IO-bound Spring service even on one core?",
+      "What limits how many platform threads one JVM can run? (Stack memory per thread, OS limits.)",
+      "What is a race condition? Show one with two threads incrementing a shared counter.",
+    ],
+  },
+  {
+    id: "CONC-08",
+    section: "concurrency",
+    priority: "P0",
+    title: "Creating threads, the thread lifecycle & wait/notify",
+    why: "start() vs run(), the six thread states and wait vs sleep are asked in nearly every Java round, and wait/notify is what the live producer–consumer question is built on.",
+    resources: [{ csv: "CC-J#31" }],
+    questions: [
+      "Three ways to create a thread: extend Thread, Runnable, Callable. Which do you use, and why not extend Thread?",
+      "start() vs run() — what happens if you call run() directly?",
+      "Name all six thread states and what moves a thread between them.",
+      "BLOCKED vs WAITING — what is each thread waiting for?",
+      "wait() vs sleep() — which one releases the lock?",
+      "Why must wait()/notify() be called inside synchronized? What is thrown if not?",
+      "Why must wait() sit inside a while loop that rechecks the condition? (Spurious wakeups.)",
+      "notify() vs notifyAll() — what is the lost-wakeup problem?",
+      "synchronized method vs block; instance lock vs class lock (static synchronized) — can two threads run them at the same time?",
+      "Can you call start() twice on the same thread?",
+    ],
+  },
+  {
+    id: "CONC-09",
+    section: "concurrency",
+    priority: "P1",
+    title: "join, daemon threads, interrupts & priority",
+    why: "join and daemon threads come up as quick checks, and \"how do you stop a thread?\" is a common follow-up. Thread priority is rarely asked — skim that part.",
+    resources: [{ csv: "CC-J#32", note: "Thread priority: skim. The OS may ignore it and it is rarely asked." }],
+    questions: [
+      "What does join() do? What does join(1000) do if the thread is still running after a second?",
       "Daemon vs user thread — what happens to a daemon thread when main returns?",
-      "scheduleAtFixedRate vs scheduleWithFixedDelay — and what happens to the schedule if one run throws?",
-      "Tomcat already has a thread pool. When does your Spring service need its own executor, and how do you size it against the DB connection pool?",
+      "Why should a daemon thread never write a file or commit to a database?",
+      "Can you call setDaemon(true) after start()? (IllegalThreadStateException.)",
+      "How do you stop a thread properly? Why is Thread.stop() deprecated?",
+      "What does interrupt() actually do to a sleeping thread vs a running one? Why restore the interrupt flag after catching InterruptedException?",
+      "Why is relying on thread priority a bad idea?",
+    ],
+  },
+  {
+    id: "CONC-03",
+    section: "concurrency",
+    priority: "P0",
+    title: "Locks & Conditions — ReentrantLock, ReadWrite, Stamped, Semaphore",
+    why: "\"synchronized vs ReentrantLock\" is one of the most reported concurrency questions. StampedLock is depth — skim it.",
+    resources: [{ csv: "CC-J#33", note: "StampedLock: skim, it is P2 depth." }],
+    inherit: "P0-10",
+    questions: [
+      "Condition.await()/signal() vs wait()/notify() — what does one lock with two Conditions let you do that wait/notify can't?",
+      "Limit a downstream call to 10 at a time with a Semaphore. What happens to the 11th caller?",
     ],
   },
   {
@@ -270,42 +316,123 @@ export const TOPICS = [
     inherit: "P0-09",
   },
   {
-    id: "CONC-03",
+    id: "CONC-01",
     section: "concurrency",
     priority: "P0",
-    title: "Locks, wait/notify & coordination primitives",
-    why: "This is where the classic live-coding ask lands: N threads printing in strict sequence, or producer–consumer. Defog #18 builds the wait/notify version; Defog #21 covers the latch/barrier question the locks video skips.",
-    resources: [
-      { csv: "CC-J#33" },
-      { csv: "CC-J#31" },
-      { csv: "DT#18" },
-      { csv: "DT#21" },
-    ],
-    inherit: "P0-10",
+    title: "Thread pools & ThreadPoolExecutor",
+    why: "Your resume says Multithreading & Concurrency and Asynchronous Processing. \"What happens when the queue is full?\" and pool sizing are asked in nearly every backend loop.",
+    resources: [{ csv: "CC-J#35" }],
     questions: [
-      "Three threads must print 1,2,3,1,2,3… in strict order. Write it with wait/notify, then with Semaphores. Which would you ship?",
-      "Print odd/even alternately with two threads — where does the naive version deadlock or miss a signal?",
-      "Why notifyAll() over notify()? What is the lost-wakeup problem?",
-      "Why must wait() always sit inside a loop that rechecks the condition?",
-      "Producer–consumer with a bounded buffer: implement it with BlockingQueue, then say what BlockingQueue is doing for you underneath.",
+      "Name all 7 ThreadPoolExecutor constructor parameters and what each controls.",
+      "core=5, max=10, unbounded LinkedBlockingQueue. How many threads actually run under load? Why is this a production incident?",
+      "Full task submission flow: when does it use a core thread vs queue vs spawn to max vs reject?",
       "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
-      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
+      "put/take vs offer/poll on a BlockingQueue — which blocks, which returns false? Which one does ThreadPoolExecutor call?",
+      "Name the 4 rejection policies. Which would you pick for a payment API and why?",
+      "How do you size a pool for CPU-bound vs IO-bound work? Give the formula.",
+      "What happens to an uncaught exception in a pooled task submitted via execute() vs submit()?",
+      "Why is Executors.newFixedThreadPool() discouraged in production code?",
+      "What is thread starvation? How would you detect it in production?",
+      "Tomcat already has a thread pool. When does your Spring service need its own executor, and how do you size it against the DB connection pool?",
     ],
   },
   {
     id: "CONC-04",
     section: "concurrency",
     priority: "P0",
-    title: "CompletableFuture & @Async",
-    why: "Directly backs the async/sync-fallback work on your resume. \"Long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
-    resources: [
-      { csv: "CC-J#36" },
-      { csv: "CC-SB#16" },
-      { csv: "CC-SB#17" },
-      { csv: "DT#19" },
-    ],
-    inherit: "P0-08",
+    title: "Future, Callable & CompletableFuture",
+    why: "CompletableFuture is asked by name in 2025–26 SDE-2 loops (PayPal, others): chaining, combining, error handling and which pool runs it. Defog #19 is the scatter–gather build they ask you to write.",
+    resources: [{ csv: "CC-J#36" }, { csv: "DT#19" }],
     questions: [
+      "Future vs CompletableFuture — what does Future fundamentally not let you do?",
+      "thenApply vs thenCompose vs thenCombine. When is thenCompose mandatory?",
+      "thenApply vs thenApplyAsync — which thread runs the callback in each?",
+      "How do you handle exceptions? exceptionally vs handle vs whenComplete.",
+      "allOf vs anyOf — how do you collect results from allOf?",
+      "What thread pool does CompletableFuture use by default? Why is that a problem in a web app?",
+      "How would you implement a timeout on a CompletableFuture? (orTimeout / completeOnTimeout.)",
+      "get() vs join() — what does each throw?",
+      "Scatter-gather: 5 parallel service calls, aggregate, fail fast if any fails. Write it.",
+    ],
+  },
+  {
+    id: "CONC-05",
+    section: "concurrency",
+    priority: "P1",
+    title: "ForkJoinPool, work stealing & the Executors factory pools",
+    why: "Raised from P2: the common ForkJoinPool runs both parallel streams and default CompletableFutures, so its traps come up whenever those do. The video also covers fixed vs cached pools — a frequent question.",
+    resources: [{ csv: "CC-J#37" }, { csv: "DT#20" }],
+    inherit: "P2-33",
+    questions: [
+      "newFixedThreadPool vs newCachedThreadPool vs newWorkStealingPool — what is the hidden danger in each?",
+      "How many threads does the common pool have on a 4-core machine, and why is blocking IO in a parallel stream a bug?",
+      "How do you run a parallel stream in your own ForkJoinPool instead of the common one?",
+    ],
+  },
+  {
+    id: "CONC-10",
+    section: "concurrency",
+    priority: "P1",
+    title: "Scheduled executors & graceful shutdown",
+    why: "Shutdown order is what production-minded interviewers probe: what happens to in-flight work when a pod stops. Scheduling questions follow from any @Scheduled job on your resume.",
+    resources: [{ csv: "CC-J#38" }],
+    questions: [
+      "schedule vs scheduleAtFixedRate vs scheduleWithFixedDelay — and what happens if one run takes longer than the period?",
+      "A scheduled task throws once. What happens to the rest of the schedule? How do you notice?",
+      "shutdown() vs shutdownNow() vs awaitTermination() — write the two-phase shutdown pattern.",
+      "Does shutdownNow() stop a running task? (It only interrupts it.)",
+      "Kubernetes sends SIGTERM to your pod. What happens to queued and running tasks, and what do you configure so none are lost?",
+    ],
+  },
+  {
+    id: "CONC-11",
+    section: "concurrency",
+    priority: "P1",
+    title: "Virtual threads & ThreadLocal",
+    why: "Virtual threads are now asked in 2026 Java loops, usually with the pinning and ThreadLocal follow-ups. Moved here from the Java 17 → 25 card so the playlist stays in order.",
+    resources: [{ csv: "CC-J#39" }, { csv: "DT#2" }],
+    questions: [
+      "Platform thread vs virtual thread — what actually changes, and what does not?",
+      "What is pinning, what causes it, and how would you detect it? What did JDK 24 (JEP 491) change about synchronized, and what still pins?",
+      "Why are thread pools mostly pointless with virtual threads — and where do you still want one?",
+      "Virtual threads vs reactive (WebFlux/Reactor) — what problem does each solve? Which would you pick now?",
+      "Where do virtual threads NOT help? (CPU-bound work — say so plainly.)",
+      "spring.threads.virtual.enabled=true — what does Spring Boot switch over, and what do you check first? (Connection-pool limits: a million threads still share ten connections.)",
+      "Why is ThreadLocal a leak risk in a pooled thread, and what is the fix?",
+      "How does ThreadLocal behave with virtual threads?",
+      "Scoped Values (final in Java 25) vs ThreadLocal — what problem do they fix for virtual threads?",
+      "Where does Spring itself use ThreadLocal? (Transactions, SecurityContextHolder, request scope.)",
+    ],
+  },
+  {
+    id: "CONC-13",
+    section: "concurrency",
+    priority: "P0",
+    title: "Concurrency coding drills — print in order, odd/even, producer–consumer",
+    why: "The live-coding half of a multithreading round. 2025 SDE-2 reports: \"print 1 to 100 using 5 threads\" (Arrise), two threads printing two arrays alternately (Paytm), a hand-built blocking queue (SAP). Write each one without help, then time yourself.",
+    resources: [{ csv: "DT#18" }, { csv: "DT#21" }],
+    questions: [
+      "Three threads must print 1,2,3,1,2,3… in strict order. Write it with wait/notify, then with Semaphores. Which would you ship?",
+      "Print odd/even alternately with two threads — where does the naive version deadlock or miss a signal?",
+      "Print 1 to 100 using 5 threads, each number printed by the next thread in turn.",
+      "Producer–consumer with a bounded buffer: implement it with BlockingQueue, then say what BlockingQueue is doing for you underneath.",
+      "Build your own bounded blocking queue: first with wait/notify, then with ReentrantLock and two Conditions.",
+      "Start 3 workers and make main wait for all of them — with CountDownLatch, then with CompletableFuture.allOf.",
+      "Semaphore vs CountDownLatch vs CyclicBarrier vs Phaser — one line each, and one drill each would solve.",
+    ],
+  },
+  {
+    id: "CONC-14",
+    section: "concurrency",
+    priority: "P0",
+    title: "Spring Boot @Async & @Scheduled",
+    why: "From the Spring Boot playlist, not the Java one. Directly backs the async/sync-fallback work on your resume; \"long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
+    resources: [{ csv: "CC-SB#16" }, { csv: "CC-SB#17" }],
+    questions: [
+      "Why does @Async silently not work when called from within the same class?",
+      "What must @Async methods return? What happens if one returns void and throws?",
+      "How do you configure a custom executor for @Async? What breaks if you don't?",
+      "Does the security context / @Transactional context propagate into @Async? Why not?",
       "A client triggers a 10-minute job over HTTP. @Async, a queue, or a scheduler? What does the client get back, and how does it learn the result?",
       "An @Scheduled job runs on all three pods. How do you make it run once? (ShedLock / leader election / a K8s CronJob.)",
     ],
@@ -315,10 +442,9 @@ export const TOPICS = [
     section: "concurrency",
     priority: "P1",
     title: "Production JVM debugging — thread dumps, deadlocks, high CPU & leaks",
-    why: "Raised from P2 and widened. SDE-2 loops increasingly ask you to walk a production incident, and the 2026 scenario questions (low CPU but requests timing out; a pool exhausted) are all answered with a thread dump. This card is the toolkit; JAVA-04 covers the heap side.",
+    why: "SDE-2 loops increasingly ask you to walk a production incident, and the 2026 scenario questions (low CPU but requests timing out; a pool exhausted) are all answered with a thread dump. This card is the toolkit; JAVA-04 covers the heap side.",
     resources: [
       { csv: "DT#25" },
-      { csv: "DT#2" },
       {
         doc: {
           title: "Java SE 21 Troubleshooting Guide — Diagnostic Tools",
@@ -335,18 +461,8 @@ export const TOPICS = [
       "One pod sits at 100% CPU. Find the guilty thread. (top -H → thread id in hex → nid in a jcmd Thread.print dump.)",
       "p99 latency doubled after a deploy but CPU is flat. What are you looking for in a thread dump? (Threads BLOCKED or WAITING on a pool or a lock.)",
       "What would you switch on in production ahead of time so the next incident is debuggable? (JFR, GC logs, HeapDumpOnOutOfMemoryError.)",
-      "Why is ThreadLocal a leak risk in a pooled thread, and what is the fix?",
-      "How does ThreadLocal behave with virtual threads?",
       "A request-scoped ThreadLocal leaks into the next request. How does that happen and how do you prove it?",
     ],
-  },
-  {
-    id: "CONC-05",
-    section: "concurrency",
-    priority: "P2",
-    title: "ForkJoinPool, work stealing & parallel streams",
-    resources: [{ csv: "CC-J#37" }, { csv: "DT#20" }],
-    inherit: "P2-33",
   },
 
   // ─── Spring Boot & Data Access ─────────────────────────────────────────────
@@ -1213,6 +1329,34 @@ export const TOPICS = [
        API versioning, @Retryable, JSpecify. Java 25 LTS — Scoped Values final
        (openjdk.org, JEP 506).
      • The resume's lead bullet (priority allocation) had no card → SELF-06.
+
+   Third pass (Oct 2026) — the concurrency section, re-cut to follow the
+   playlist (CC-J #30–#39) one video per card, so it can be studied in order:
+     • 2025 SDE-2 reports with a multithreading round: "print 1 to 100 using 5
+       threads" with full working code (Arrise Solutions, July 2025); two
+       threads printing two arrays alternately (Paytm SDE-2); a hand-built
+       blocking queue with 2 producers / 2 consumers (SAP); "multithreading and
+       Java 8 were the main focus" (Deloitte SDE-2, Oct 2025).  leetcode.com,
+       jointaro.com  → CONC-13 coding drills added at P0.
+     • 2026 question banks (kore1.com, hirist.tech, interviewbit.com,
+       codebegun.com) — pool internals and "what happens when the queue is
+       full", synchronized vs ReentrantLock vs ReadWriteLock, volatile vs
+       synchronized, deadlock detection, BlockingQueue implementations,
+       CompletableFuture, virtual threads as the newly asked topic.
+     • Common-pool traps (parallelStream and default CompletableFuture share
+       one pool of cores−1 threads; blocking IO there is the bug)  → CONC-05
+       raised P2 → P1.
+     • Shutdown/scheduling (shutdown vs shutdownNow, awaitTermination, two-
+       phase termination)  → CONC-10 split out at P1.
+     • Thread priority and StampedLock are rarely asked: kept, marked "skim".
+     • Concurrent collections stayed on JAVA-01 (CopyOnWrite and the
+       non-blocking queue added there; BlockingQueue choice on CONC-01). No
+       separate card, so CONC-12 is retired and must not be reused.
+     • New cards: CONC-07..11, 13, 14. Old ids kept their closest content: CONC-01 is
+       now only the pool video, CONC-03 only the locks video, CONC-04 only
+       CompletableFuture (@Async → CONC-14). Virtual threads left JAVA-05 for
+       CONC-11. Video #32 (join/daemon/priority, 45m) added to the CSV from
+       the live playlist.
 
    Playlist positions and runtimes were re-checked against the live YouTube
    playlists on 23 Sep 2026. The Java playlist has 52 videos including
