@@ -91,6 +91,8 @@ export const CORE_STACK_TOPICS = [
       "Why is resizing a HashMap dangerous under concurrent access?",
       "ArrayList vs LinkedList — when is LinkedList actually the right choice? (Almost never. Say why.)",
       "Fail-fast vs fail-safe iterators. What is modCount?",
+      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
+      "ConcurrentLinkedQueue vs LinkedBlockingQueue — when would you pick the non-blocking one?",
       "HashMap allows one null key — where does it live? Why do ConcurrentHashMap and Hashtable reject null keys and values?",
       "Is get-then-put on a ConcurrentHashMap thread-safe? What do you use instead? (computeIfAbsent / compute / merge.)",
       "Can any object be a HashMap key? What must it guarantee, and what is the cheapest way to get it right? (Immutable + equals/hashCode — or a record.)"
@@ -784,6 +786,8 @@ export const CORE_STACK_TOPICS = [
       "Name all 7 ThreadPoolExecutor constructor parameters and what each controls.",
       "core=5, max=10, unbounded LinkedBlockingQueue. How many threads actually run under load? Why is this a production incident?",
       "Full task submission flow: when does it use a core thread vs queue vs spawn to max vs reject?",
+      "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
+      "put/take vs offer/poll on a BlockingQueue — which blocks, which returns false? Which one does ThreadPoolExecutor call?",
       "Name the 4 rejection policies. Which would you pick for a payment API and why?",
       "How do you size a pool for CPU-bound vs IO-bound work? Give the formula.",
       "What happens to an uncaught exception in a pooled task submitted via execute() vs submit()?",
@@ -954,37 +958,6 @@ export const CORE_STACK_TOPICS = [
       "How does ThreadLocal behave with virtual threads?",
       "Scoped Values (final in Java 25) vs ThreadLocal — what problem do they fix for virtual threads?",
       "Where does Spring itself use ThreadLocal? (Transactions, SecurityContextHolder, request scope.)"
-    ]
-  },
-  {
-    "id": "CONC-12",
-    "section": "concurrency",
-    "sectionLabel": "Concurrency & Multithreading",
-    "priority": "P1",
-    "title": "Concurrent collections — ConcurrentHashMap, BlockingQueue, CopyOnWrite",
-    "why": "Not in the playlist. ConcurrentHashMap internals are on the HashMap card (JAVA-01); this card is about using these collections correctly — the check-then-act bug is the classic follow-up.",
-    "resources": [
-      {
-        "id": "CONC-12-r1",
-        "kind": "doc",
-        "title": "java.util.concurrent — package summary (Concurrent Collections section)",
-        "source": "docs.oracle.com",
-        "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html",
-        "minutes": 25,
-        "estimate": true,
-        "note": "Read the Concurrent Collections section, then the BlockingQueue and ConcurrentHashMap class pages."
-      }
-    ],
-    "minutes": 25,
-    "duration": "≈25m",
-    "questions": [
-      "Is if (!map.containsKey(k)) map.put(k, v) thread-safe on a ConcurrentHashMap? What do you use instead? (putIfAbsent / computeIfAbsent / merge.)",
-      "Why does ConcurrentHashMap reject null keys and values?",
-      "Fail-fast vs weakly consistent iterators — which does ConcurrentHashMap give you?",
-      "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
-      "put/take vs offer/poll on a BlockingQueue — which blocks, which returns false?",
-      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
-      "ConcurrentLinkedQueue vs LinkedBlockingQueue — when would you pick the non-blocking one?"
     ]
   },
   {
@@ -2821,10 +2794,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 66;
+export const CORE_STACK_TOTAL = 65;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":28,"P1":25,"P2":13};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":28,"P1":24,"P2":13};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":14,"spring":17,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
+export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":17,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
 
-export const CORE_STACK_MINUTES = 3911;
+export const CORE_STACK_MINUTES = 3886;
