@@ -9,7 +9,7 @@ export function demoPlan(day) {
   const items = [
     { uid: "demo-lru", source: "dsa", refId: "lru-cache", title: "LRU Cache", meta: "Design", estimatedMinutes: 45 },
     { uid: "demo-hashmap", source: "dsa", refId: "design-hashmap", title: "Design HashMap", meta: "Hashing", estimatedMinutes: 45 },
-    { uid: "demo-threads", source: "corestack", refId: "CONC-01", title: "Threads, executors & ThreadPoolExecutor", meta: "P0", estimatedMinutes: 180 },
+    { uid: "demo-threads", source: "corestack", refId: "CONC-01", title: "Thread pools & ThreadPoolExecutor", meta: "P0", estimatedMinutes: 180 },
     { uid: "demo-hr", source: "custom", title: "Contact ABC HR", estimatedMinutes: 30, completed: true },
     { uid: "demo-xyz", source: "custom", title: "Finish XYZ task, check and reply emails", estimatedMinutes: 30 },
   ];
