@@ -137,7 +137,10 @@ function write(target, content, { at = Date.now(), reason = "edit", extra = {} }
     return;
   }
   const device = deviceInfo();
-  const id = `${at}-${device.id}`;
+  // A side copy is dated to the edit it keeps, which can be the very
+  // millisecond of the "before" version recorded for that edit; revisions
+  // can't be overwritten, so its reason keeps its id apart.
+  const id = `${at}-${device.id}${sideCopy ? `-${reason}` : ""}`;
   if (!sideCopy) setLastHash(target, hash);
   const revision = {
     text: content.text || "",

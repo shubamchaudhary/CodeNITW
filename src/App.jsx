@@ -55,7 +55,7 @@ function App() {
       onSyncNotice((n) => {
         if (n.type === "size") {
           toast.warn(
-            `Your synced notes and progress take ${Math.round(n.bytes / 1024)} KB of the 1 MB your account can store. Very long notes count towards it.`,
+            `Your main progress document is at ${Math.round(n.bytes / 1024)} KB of its 1 MB limit. New note edits are saved separately; older copies still count until they are cleared.`,
             { autoClose: false }
           );
         } else if (n.type === "merged") toast.info("A note was also edited on another device. Both sets of changes were merged.");

@@ -1,6 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { connectAuthEmulator, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import {
+  connectFirestoreEmulator,
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
@@ -29,3 +31,12 @@ const app = initializeApp(firebaseConfig);
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });
+
+// Local testing against the Firebase emulators (`firebase emulators:start`
+// with Firestore on 8080 and Auth on 9099): run the dev server with
+// VITE_USE_EMULATORS=1. Never active in a production build.
+if (import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS) {
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+  connectAuthEmulator(getAuth(app), "http://127.0.0.1:9099", { disableWarnings: true });
+  window.__emulatorSignIn = (email, password) => signInWithEmailAndPassword(getAuth(app), email, password);
+}

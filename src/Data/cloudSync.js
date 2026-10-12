@@ -3,6 +3,19 @@
 // Firestore so it follows the account across devices and survives a refresh
 // or re-login.
 //
+// Where it lives. A Firestore document holds at most 1 MB, so not everything
+// shares one:
+//   • userProgress/{uid}                the MAIN document: DSA progress and
+//                                       planning, read and written as before.
+//   • userProgress/{uid}/notes/{k}~{id} one document per note (note text and
+//                                       personal notes), with its own revision.
+//   • userProgress/{uid}/data/{key}     one document per other key (Core Stack
+//                                       ticks, the job tracker…).
+// Accounts from before the split still hold notes and the other keys in the
+// main document. Those copies are never written again, and never deleted
+// here: they're read as the fallback for anything that has no document of its
+// own yet. Copying them across, and later removing them, are separate steps.
+//
 // Design:
 //   • localStorage (namespaced per uid) is the instant local cache — the UI
 //     reads and writes it synchronously and never waits on the network.
@@ -31,7 +44,7 @@
 //
 // See firestore.rules for the server side of both.
 
-import { doc, onSnapshot, setDoc, getDoc, deleteField, FieldPath } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc, getDoc, deleteField, FieldPath } from "firebase/firestore";
 import { db } from "../firebase";
 import { KEYS, loadJSON, applyRemote, subscribe, setActiveUid, changedIds } from "./planStore";
 import { merge3, mergeById } from "./merge3";
@@ -79,13 +92,15 @@ export const VERSIONED = new Set([
   KEYS.IK_NOTES,
   KEYS.IP_NOTES,
 ]);
+// The keys that stay in the main document. Every other unversioned key gets a
+// document of its own under data/, every note one under notes/.
+const MAIN_KEYS = new Set([KEYS.DSA_COMPLETED, KEYS.DSA_TIMESTAMPS, KEYS.DSA_STARRED, KEYS.PLAN_DAYS, KEYS.TIME_LOG]);
 const TEXT_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.PJ_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
 // Personal notes (annotations) belong to the note text they're pinned to.
 const NOTES_OF = { [KEYS.CS_ANNOTATIONS]: KEYS.CS_NOTES, [KEYS.AI_ANNOTATIONS]: KEYS.AI_NOTES, [KEYS.PJ_ANNOTATIONS]: KEYS.PJ_NOTES };
 const WHOLE = "*"; // journal marker: the whole key changed, not single entries
 const META = "_meta"; // cloud: { key: { entryId: editedAtMs } } for unversioned keys
 const REV = "_rev"; // cloud: { key: { entryId: revision } } — each note's head
-const WRITE = "_write"; // cloud: { key, id, base } — what a note save changed, on top of what
 // Device clocks drift a little; "the cloud went back in time" only counts when
 // it went back by more than this, so two slightly-off clocks can't keep
 // undoing each other.
@@ -93,6 +108,9 @@ const SKEW_MS = 5 * 60 * 1000;
 
 let currentUid = null;
 let unsubscribeSnapshot = null;
+// The latest snapshot of each place the account lives (see the top of the
+// file): { main, data, notes }, each null until its first snapshot.
+let cloud = null;
 let applyingRemote = false;
 let serverReady = false; // this session has reconciled with the server
 let sessionStartedAt = 0;
@@ -107,6 +125,15 @@ const RETRY_MAX_MS = 30000;
 
 function userDocRef(uid) {
   return doc(db, "userProgress", uid);
+}
+const NOTES = "notes";
+const DATA = "data";
+const noteDocId = (key, id) => `${key}~${encodeURIComponent(id)}`;
+function noteDocRef(uid, key, id) {
+  return doc(db, "userProgress", uid, NOTES, noteDocId(key, id));
+}
+function dataDocRef(uid, key) {
+  return doc(db, "userProgress", uid, DATA, key);
 }
 
 const isMap = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
@@ -185,8 +212,9 @@ function notice(n) {
   });
 }
 
-// A Firestore document holds at most 1 MiB, and this one holds all of an
-// account's progress and notes. Say so well before a save gets refused.
+// A Firestore document holds at most 1 MiB. The main document only grows with
+// DSA progress and planning now, but an older account's copies of notes are
+// still in it until they're cleared. Say so well before a save gets refused.
 const SIZE_WARN_BYTES = 800 * 1024;
 let sizeWarned = false;
 let sizeCheckedAt = 0;
@@ -288,6 +316,61 @@ function setHead(uid, key, id, rev) {
   headStore.save(uid, heads);
 }
 
+// ─── The cloud as one document ───────────────────────────────────────────────
+// Everything below (reconcile, settleNotes) reasons about one document shaped
+// like the old main one: { [key]: value, _meta, _rev, updatedAt }. This builds
+// it from the three places, each newer place laid over the main document's
+// old copy entry by entry:
+//   • a data/{key} document's entries replace the main copy's, and one it has
+//     an edit time for but no value (a delete) removes it; one written as a
+//     whole replaces the main copy outright;
+//   • a notes/ document replaces that note, with its revision; one marked
+//     deleted removes it.
+// So an entry not yet written anywhere new still reads from the main copy.
+function buildView(main, dataDocs, noteDocs) {
+  const view = { ...main };
+  const meta = { ...(isMap(main[META]) ? main[META] : {}) };
+  const revs = { ...(isMap(main[REV]) ? main[REV] : {}) };
+
+  for (const [key, d] of dataDocs) {
+    if (!SYNCED.has(key) || MAIN_KEYS.has(key) || VERSIONED.has(key)) continue;
+    const own = d.value;
+    const ownMeta = isMap(d[META]) ? d[META] : {};
+    const old = main[key];
+    if (ownMeta[WHOLE] !== undefined || !isMap(own)) {
+      view[key] = own;
+    } else {
+      const merged = { ...(isMap(old) ? old : {}) };
+      for (const id of Object.keys(ownMeta)) if (!(id in own)) delete merged[id];
+      view[key] = Object.assign(merged, own);
+    }
+    meta[key] = { ...(isMap(meta[key]) ? meta[key] : {}), ...ownMeta };
+  }
+
+  for (const key of VERSIONED) {
+    view[key] = { ...(isMap(main[key]) ? main[key] : {}) };
+    revs[key] = { ...(isMap(revs[key]) ? revs[key] : {}) };
+  }
+  for (const n of noteDocs.values()) {
+    if (!VERSIONED.has(n.key) || typeof n.id !== "string") continue;
+    if (n.deleted) delete view[n.key][n.id];
+    else view[n.key][n.id] = n.value;
+    revs[n.key][n.id] = Number(n.rev) || 0;
+  }
+
+  view[META] = meta;
+  view[REV] = revs;
+  return view;
+}
+
+// One note as the cloud has it now — its own document, else the main copy —
+// in the same one-document shape, for settleNotes(…, [[key, id]]).
+async function fetchNoteView(uid, key, id) {
+  const [own, main] = await Promise.all([getDoc(noteDocRef(uid, key, id)), getDoc(userDocRef(uid))]);
+  const notes = new Map(own.exists() ? [[own.id, own.data()]] : []);
+  return buildView(main.exists() ? main.data() || {} : {}, new Map(), notes);
+}
+
 // ─── Deciding a note that both sides have touched ────────────────────────────
 // ours: this device's pending edit; theirs: the cloud's head at `theirRev`.
 // → { take: "ours" | "theirs" | "merged", value?, rebase? }
@@ -315,38 +398,22 @@ async function doPush(uid) {
   const keys = Object.keys(journal).filter((k) => SYNCED.has(k) && Object.keys(journal[k]).length);
   if (!keys.length) return;
 
-  // 1. Unversioned keys: one write, each entry with its edit time.
+  // 1. Unversioned keys, each entry with its edit time: one write to the main
+  //    document for the keys that live there, one per data/ document for the
+  //    rest.
   const plain = keys.filter((k) => !VERSIONED.has(k));
-  if (plain.length) {
-    const takenAt = Date.now();
-    const data = { updatedAt: takenAt, [META]: {} };
-    const fields = [new FieldPath("updatedAt")];
-    const sent = {};
-    for (const key of plain) {
-      const local = loadJSON(key, {});
-      const pending = journal[key];
-      sent[key] = { ...pending };
-      data[META][key] = {};
-      const ids = Object.keys(pending);
-      if (ids.includes(WHOLE) || !isMap(local)) {
-        data[key] = local;
-        fields.push(new FieldPath(key));
-        data[META][key][WHOLE] = pending[WHOLE] ?? Math.max(...Object.values(pending));
-        fields.push(new FieldPath(META, key, WHOLE));
-        continue;
-      }
-      data[key] = {};
-      for (const id of ids) {
-        data[key][id] = local[id] === undefined ? deleteField() : local[id];
-        fields.push(new FieldPath(key, id));
-        data[META][key][id] = pending[id]; // kept after a delete: a tombstone
-        fields.push(new FieldPath(META, key, id));
-      }
-    }
-    await setDoc(userDocRef(uid), data, { mergeFields: fields });
+  const inMain = plain.filter((k) => MAIN_KEYS.has(k));
+  const writes = [];
+  if (inMain.length) writes.push({ ref: userDocRef(uid), keys: inMain, where: (key) => ({ value: [key], meta: [META, key] }) });
+  for (const key of plain.filter((k) => !MAIN_KEYS.has(k))) {
+    writes.push({ ref: dataDocRef(uid, key), keys: [key], where: () => ({ value: ["value"], meta: [META] }) });
+  }
+  for (const w of writes) {
+    const { data, fields, sent } = plainWrite(journal, w.keys, w.where);
+    await setDoc(w.ref, data, { mergeFields: fields });
     if (currentUid !== uid) return;
     const j = loadJournal(uid);
-    for (const key of plain) {
+    for (const key of w.keys) {
       for (const [id, at] of Object.entries(sent[key])) if (j[key] && j[key][id] === at) delete j[key][id];
       if (j[key] && !Object.keys(j[key]).length) delete j[key];
     }
@@ -371,6 +438,38 @@ async function doPush(uid) {
   if (stuck) throw stuck;
 }
 
+// The write for some unversioned keys' pending entries. `where(key)` says
+// where a key's value and its edit times sit in the target document.
+function plainWrite(journal, keys, where) {
+  const data = {};
+  const fields = [];
+  const put = (path, value) => {
+    let o = data;
+    for (const part of path.slice(0, -1)) o = o[part] || (o[part] = {});
+    o[path[path.length - 1]] = value;
+    fields.push(new FieldPath(...path));
+  };
+  const sent = {};
+  put(["updatedAt"], Date.now());
+  for (const key of keys) {
+    const { value: at, meta } = where(key);
+    const local = loadJSON(key, {});
+    const pending = journal[key];
+    sent[key] = { ...pending };
+    const ids = Object.keys(pending);
+    if (ids.includes(WHOLE) || !isMap(local)) {
+      put(at, local);
+      put([...meta, WHOLE], pending[WHOLE] ?? Math.max(...Object.values(pending)));
+      continue;
+    }
+    for (const id of ids) {
+      put([...at, id], local[id] === undefined ? deleteField() : local[id]);
+      put([...meta, id], pending[id]); // kept after a delete: a tombstone
+    }
+  }
+  return { data, fields, sent };
+}
+
 async function pushNote(uid, key, id) {
   const journal = loadJournal(uid);
   const at = journal[key]?.[id];
@@ -379,30 +478,34 @@ async function pushNote(uid, key, id) {
   if (!base || base.rev === null) {
     // No known base (a brand-new note, or an edit from before this device
     // knew the cloud's revisions): let the server's current copy decide.
-    const snap = await getDoc(userDocRef(uid));
+    const view = await fetchNoteView(uid, key, id);
     if (currentUid !== uid) return;
-    settleNotes(uid, snap.exists() ? snap.data() || {} : {}, [[key, id]]);
+    settleNotes(uid, view, [[key, id]]);
     base = baseStore.load(uid)[key]?.[id];
     if (!base || base.rev === null || loadJournal(uid)[key]?.[id] === undefined) return;
   }
 
+  // The note's own document, whole: its value (or a "deleted" marker, so the
+  // main document's old copy can't come back), its new revision and the one
+  // it was built on. The rules refuse it unless that base is still the head.
   const value = loadJSON(key, {})[id];
   const rev = base.rev + 1;
-  const data = {
+  const note = {
+    key,
+    id,
+    value: value === undefined ? null : value,
+    deleted: value === undefined,
+    rev,
+    base: base.rev,
     updatedAt: Date.now(),
-    [key]: { [id]: value === undefined ? deleteField() : value },
-    [REV]: { [key]: { [id]: rev } },
-    [WRITE]: { key, id, base: base.rev },
   };
   try {
-    await setDoc(userDocRef(uid), data, {
-      mergeFields: [new FieldPath("updatedAt"), new FieldPath(key, id), new FieldPath(REV, key, id), new FieldPath(WRITE)],
-    });
+    await setDoc(noteDocRef(uid, key, id), note);
   } catch (err) {
     if (err?.code !== "permission-denied") throw err;
     // Refused: the head moved on. Fetch it and decide, exactly as a snapshot would.
-    const snap = await getDoc(userDocRef(uid));
-    if (currentUid === uid && snap.exists()) settleNotes(uid, snap.data() || {}, [[key, id]]);
+    const view = await fetchNoteView(uid, key, id);
+    if (currentUid === uid) settleNotes(uid, view, [[key, id]]);
     // Still pending on the same base: the head hadn't moved, so this wasn't a
     // conflict to resolve (e.g. rules that don't know this note field yet).
     // Fail the push so it backs off and retries, rather than spinning.
@@ -741,54 +844,108 @@ export function startCloudSync(uid) {
   // Scope all local reads/writes to this account before touching storage.
   setActiveUid(uid);
 
-  unsubscribeSnapshot = onSnapshot(
-    userDocRef(uid),
-    { includeMetadataChanges: true },
-    (snap) => {
-      if (currentUid !== uid) return;
-      const fromServer = !snap.metadata.fromCache;
-
-      if (!snap.exists()) {
-        // A cached "doesn't exist" proves nothing; wait for the server.
-        if (!fromServer) return;
-        // Fresh account → seed the cloud from whatever this account has locally.
-        for (const key of SYNC_KEYS) {
-          const local = loadJSON(key, undefined);
-          if (local === undefined) continue;
-          if (VERSIONED.has(key) && isMap(local)) recordPending(uid, key, Object.keys(local), { prev: {}, baseRev: 0 });
-          else recordPending(uid, key, null);
+  // One listener per place the account lives. Nothing is decided until all
+  // three have answered: a note's own document must never be judged against
+  // the main document's older copy of it alone.
+  cloud = { main: null, data: null, notes: null };
+  const opts = { includeMetadataChanges: true };
+  const failed = (err) => {
+    console.error("[cloudSync] listener failed:", err);
+    setStatus("error", err?.code || "");
+  };
+  const unsubs = [
+    onSnapshot(
+      userDocRef(uid),
+      opts,
+      (snap) => {
+        if (currentUid !== uid) return;
+        cloud.main = {
+          exists: snap.exists(),
+          data: snap.exists() ? snap.data() || {} : {},
+          fromServer: !snap.metadata.fromCache,
+          pending: snap.metadata.hasPendingWrites,
+        };
+        onCloud(uid);
+      },
+      failed
+    ),
+    ...[
+      [DATA, "data"],
+      [NOTES, "notes"],
+    ].map(([name, slot]) =>
+      onSnapshot(
+        collection(db, "userProgress", uid, name),
+        opts,
+        (snap) => {
+          if (currentUid !== uid) return;
+          cloud[slot] = {
+            docs: new Map(snap.docs.map((d) => [d.id, d.data()])),
+            fromServer: !snap.metadata.fromCache,
+            pending: snap.metadata.hasPendingWrites,
+          };
+          onCloud(uid);
+        },
+        (err) => {
+          failed(err);
+          // Refused (the rules for these documents aren't deployed yet): go on
+          // without them, so DSA progress and planning still sync. Saves to
+          // them keep failing and retrying until the rules are in place.
+          if (currentUid !== uid || err?.code !== "permission-denied") return;
+          cloud[slot] = { docs: new Map(), fromServer: true, pending: false };
+          onCloud(uid);
         }
-        markServerReady();
-        schedulePush(0);
-        return;
-      }
+      )
+    ),
+  ];
+  unsubscribeSnapshot = () => unsubs.forEach((u) => u());
+}
 
-      // Our own writes, not yet acknowledged: local already has them.
-      if (snap.metadata.hasPendingWrites) return;
+// A snapshot arrived from one of the three places: reconcile the whole picture.
+function onCloud(uid) {
+  const { main, data, notes } = cloud;
+  if (!main || !data || !notes) return;
+  const fromServer = main.fromServer && data.fromServer && notes.fromServer;
 
-      const data = snap.data() || {};
-      if (fromServer) {
-        migrateOnce(uid, data);
-        warnIfLarge(data);
-      }
-      const { data: merged, after } = reconcile(uid, data);
-      applyingRemote = true;
-      try {
-        applyRemote(merged);
-      } finally {
-        applyingRemote = false;
-      }
-      finishNotes(after);
-
-      if (fromServer) markServerReady();
-      if (hasPending(uid)) schedulePush(serverReady ? PUSH_DEBOUNCE_MS : 0);
-      else if (serverReady) setStatus("synced");
-    },
-    (err) => {
-      console.error("[cloudSync] listener failed:", err);
-      setStatus("error", err?.code || "");
+  if (!main.exists && !data.docs.size && !notes.docs.size) {
+    // A cached "doesn't exist" proves nothing; wait for the server.
+    if (!fromServer) return;
+    // Fresh account → create its main document (the rules for a note's first
+    // save look there), then seed the cloud from whatever this account has
+    // locally.
+    setDoc(userDocRef(uid), { updatedAt: Date.now() }, { merge: true }).catch((err) =>
+      console.error("[cloudSync] creating the progress document failed:", err)
+    );
+    for (const key of SYNC_KEYS) {
+      const local = loadJSON(key, undefined);
+      if (local === undefined) continue;
+      if (VERSIONED.has(key) && isMap(local)) recordPending(uid, key, Object.keys(local), { prev: {}, baseRev: 0 });
+      else recordPending(uid, key, null);
     }
-  );
+    markServerReady();
+    schedulePush(0);
+    return;
+  }
+
+  // Our own writes, not yet acknowledged: local already has them.
+  if (main.pending || data.pending || notes.pending) return;
+
+  const view = buildView(main.data, data.docs, notes.docs);
+  if (fromServer) {
+    migrateOnce(uid, view);
+    warnIfLarge(main.data);
+  }
+  const { data: merged, after } = reconcile(uid, view);
+  applyingRemote = true;
+  try {
+    applyRemote(merged);
+  } finally {
+    applyingRemote = false;
+  }
+  finishNotes(after);
+
+  if (fromServer) markServerReady();
+  if (hasPending(uid)) schedulePush(serverReady ? PUSH_DEBOUNCE_MS : 0);
+  else if (serverReady) setStatus("synced");
 }
 
 export function stopCloudSync() {
@@ -810,6 +967,7 @@ export function stopCloudSync() {
   retryDelay = 0;
   serverReady = false;
   currentUid = null;
+  cloud = null;
   setActiveUid(null);
 }
 
@@ -818,9 +976,10 @@ export function stopCloudSync() {
 export async function fetchIPCompletions(uid) {
   if (!uid) return {};
   try {
-    const snap = await getDoc(userDocRef(uid));
-    if (!snap.exists()) return {};
-    return snap.data()?.[KEYS.IP_COMPLETED] || {};
+    const key = KEYS.IP_COMPLETED;
+    const [main, own] = await Promise.all([getDoc(userDocRef(uid)), getDoc(dataDocRef(uid, key)).catch(() => null)]);
+    const view = buildView(main.exists() ? main.data() || {} : {}, new Map(own?.exists() ? [[key, own.data()]] : []), new Map());
+    return view[key] || {};
   } catch (err) {
     console.error("[cloudSync] fetchIPCompletions:", err);
     return {};

@@ -1,0 +1,18 @@
+{
+  "name": "sync-tests",
+  "private": true,
+  "type": "module",
+  "description": "Emulator tests for cloud sync (src/Data/cloudSync.js) and firestore.rules",
+  "scripts": {
+    "emulators": "firebase emulators:start --only firestore,auth --project demo-test",
+    "test:rules": "node rules.test.mjs",
+    "test:e2e": "node e2e.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
+    "firebase": "^10.14.1",
+    "firebase-admin": "^12.7.0",
+    "firebase-tools": "^13.35.1",
+    "playwright": "^1.48.0"
+  }
+}
