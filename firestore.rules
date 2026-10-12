@@ -1,9 +1,14 @@
 rules_version = '2';
 
-// One document per account holds that account's progress (completions, notes,
-// planning days, job tracker). Screenshots pasted into a notes page are stored
-// one-per-document in the noteAssets subcollection beneath it, so they never
-// bloat the progress document itself.
+// An account's progress lives under userProgress/{uid}:
+//   • the document itself: DSA progress and planning (and, for older
+//     accounts, the old copies of everything else, which the app now only
+//     reads);
+//   • notes/{key}~{id}: one document per note, versioned like git;
+//   • data/{key}: one document per other kind of progress (ticks, the job
+//     tracker…);
+//   • noteAssets/, history/: screenshots and note version history.
+// A Firestore document holds at most 1 MB, which is why notes are split out.
 //
 // Deploying this file REPLACES the rules currently configured in the Firebase
 // console — check they match before running `firebase deploy --only firestore`.
@@ -58,6 +63,46 @@ service cloud.firestore {
         allow create, update: if signedInAs(uid)
                               && request.resource.data.data is string
                               && request.resource.data.data.size() < 900000;
+      }
+
+      // One note per document, fast-forward only, like the note fields of the
+      // main document above: a save names the revision it was built on (base)
+      // and is refused unless that is still the head; the revision moves up
+      // by exactly one. A note's first document builds on the main document's
+      // copy of it, if there is one. Never deleted: a deleted note keeps its
+      // document, marked deleted, so the main document's old copy can't
+      // come back.
+      function validNote(noteId) {
+        let n = request.resource.data;
+        return n.keys().hasOnly(['key', 'id', 'value', 'deleted', 'rev', 'base', 'updatedAt'])
+          && n.key in noteFields()
+          && n.id is string
+          && n.deleted is bool
+          && n.rev is int
+          && n.base is int
+          && n.rev == n.base + 1
+          && noteId.matches(n.key + '~.+');
+      }
+
+      function mainHead(key, id) {
+        let main = /databases/$(database)/documents/userProgress/$(uid);
+        return exists(main) ? get(main).data.get('_rev', {}).get(key, {}).get(id, 0) : 0;
+      }
+
+      match /notes/{noteId} {
+        allow read: if signedInAs(uid);
+        allow create: if signedInAs(uid) && validNote(noteId)
+                      && request.resource.data.base == mainHead(request.resource.data.key, request.resource.data.id);
+        allow update: if signedInAs(uid) && validNote(noteId)
+                      && request.resource.data.key == resource.data.key
+                      && request.resource.data.id == resource.data.id
+                      && request.resource.data.base == resource.data.rev;
+      }
+
+      // Everything else, one document per key: { value, _meta, updatedAt }.
+      // Edits are decided per entry by edit time in the app. Not deletable.
+      match /data/{key} {
+        allow read, create, update: if signedInAs(uid);
       }
 
       // Version history: every saved version of each note, like commits in
