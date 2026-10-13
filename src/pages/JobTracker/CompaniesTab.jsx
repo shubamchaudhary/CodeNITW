@@ -8,7 +8,7 @@ import {
   HiCheck,
   HiEye,
 } from "react-icons/hi";
-import { GLASS } from "../../components/glass";
+import { GLASS, LIGHT_FIELD, LIGHT_PRIMARY } from "../../components/glass";
 import {
   FIT_CLS,
   FIT_RANK,
@@ -141,7 +141,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
               className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
                 activeApplied
                   ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                  : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600"
+                  : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600 light:bg-white light:text-slate-500 light:border-slate-900/[0.10] light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-emerald-50 light:hover:text-emerald-700 light:hover:border-emerald-600/25"
               }`}
               title={activeApplied ? "Click to un-mark applied" : "Mark this company as applied"}
             >
@@ -239,7 +239,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
   const visible = filtered.slice(0, limit);
 
   const selectCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer";
+    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer ${LIGHT_FIELD}`;
 
   return (
     <div>
@@ -247,7 +247,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
       <div className="flex justify-end mb-3">
         <button
           onClick={() => setAdding((a) => !a)}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md"
+          className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md ${LIGHT_PRIMARY}`}
         >
           <HiPlus /> Add company
         </button>
@@ -272,7 +272,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
               setLimit(PAGE_SIZE);
             }}
             placeholder="Search company, category, location…"
-            className="w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
+            className={`w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`}
           />
         </div>
         <select value={tierFilter} onChange={(e) => { setTierFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>

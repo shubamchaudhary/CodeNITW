@@ -2900,20 +2900,20 @@ export const DSA_TOPICS = [
 ];
 
 export const DSA_DIFFICULTY_CONFIG = {
-  Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-800",
+  Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-800 light:bg-emerald-50 light:text-emerald-700 light:border-emerald-600/15",
   Medium:
-    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800",
-  Hard: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800",
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 light:bg-amber-50 light:text-amber-700 light:border-amber-600/20",
+  Hard: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800 light:bg-rose-50 light:text-rose-700 light:border-rose-600/15",
 };
 
 // Ordered most-important first, so filters and lists can rely on the sequence.
 export const DSA_PRIORITIES = ["P0", "P1", "P2", "P3"];
 
 export const DSA_PRIORITY_CONFIG = {
-  P0: { label: "P0", blurb: "Asked constantly — do these first", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30 light:bg-gray-100 light:text-gray-900 light:border-gray-300" },
-  P1: { label: "P1", blurb: "Very common — expect these", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 light:bg-white light:text-gray-600 light:border-gray-200" },
-  P2: { label: "P2", blurb: "Shows up regularly", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30 light:bg-white light:text-gray-500 light:border-gray-200" },
-  P3: { label: "P3", blurb: "Rounds out topic coverage", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30 light:bg-white light:text-gray-400 light:border-gray-200" },
+  P0: { label: "P0", blurb: "Asked constantly — do these first", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30 light:bg-rose-50 light:text-rose-700 light:border-rose-600/15" },
+  P1: { label: "P1", blurb: "Very common — expect these", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 light:bg-amber-50 light:text-amber-700 light:border-amber-600/20" },
+  P2: { label: "P2", blurb: "Shows up regularly", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30 light:bg-sky-50 light:text-sky-700 light:border-sky-600/15" },
+  P3: { label: "P3", blurb: "Rounds out topic coverage", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30 light:bg-slate-50 light:text-slate-500 light:border-slate-900/10" },
 };
 
 // Flat list (id-keyed) for the Planning page picker and cross-page sync.

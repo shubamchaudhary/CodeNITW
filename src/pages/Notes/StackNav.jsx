@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { requireAuth } from "../../Data/authGate";
 import { loadJSON, saveJSON } from "../../Data/planStore";
 import { recordNow } from "../../Data/noteHistory";
+import { SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
 
 // The left column of the notes page: every topic of the stack, grouped by
 // section, with a tick for what's done — the course outline you'd find on a
@@ -57,26 +58,26 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-5 pt-6 pb-4 border-b border-gray-200/80 dark:border-white/[0.07]">
+      <div className="px-5 pt-6 pb-4 border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]">
         <div className="flex items-baseline justify-between">
-          <p className="text-[17px] font-bold tracking-tight text-gray-900 dark:text-gray-50">{stack.label}</p>
+          <p className="text-[17px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">{stack.label}</p>
           <span className="text-[12.5px] font-semibold tabular-nums text-gray-500 dark:text-gray-400">
             {done}/{total} done
           </span>
         </div>
-        <div className="mt-2.5 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] overflow-hidden">
+        <div className="mt-2.5 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden">
           <div className="h-full rounded-full bg-emerald-500 transition-[width] duration-300" style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
         </div>
         {stack.filters && (
-          <div className="mt-4 flex gap-1">
+          <div className="mt-4 flex gap-1 light:w-fit light:p-0.5 light:rounded-lg light:bg-slate-900/[0.045] light:shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)]">
             {["ALL", ...stack.filters].map((f) => (
               <button
                 key={f}
                 onClick={() => save({ ...prefs, filter: f })}
                 className={`h-7 px-2.5 rounded-md text-[12px] font-semibold transition-colors ${
                   (prefs.filter || "ALL") === f
-                    ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] hover:text-gray-800 dark:hover:text-gray-200"
+                    ? `bg-gray-900 text-white dark:bg-white dark:text-gray-900 ${SEGMENT_ON}`
+                    : `text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] hover:text-gray-800 dark:hover:text-gray-200 ${SEGMENT_OFF}`
                 }`}
               >
                 {f === "ALL" ? "All" : f}
@@ -95,9 +96,9 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
             <div key={s.key} className="mb-1.5">
               <button
                 onClick={() => save({ ...prefs, collapsed: { ...prefs.collapsed, [s.key]: open } })}
-                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-white/[0.03]"
+                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-white/[0.03] light:hover:bg-slate-900/[0.035]"
               >
-                <span className="flex-1 text-[14.5px] font-semibold text-gray-800 dark:text-gray-100">{s.label}</span>
+                <span className="flex-1 text-[14.5px] font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{s.label}</span>
                 <span className="text-[11.5px] tabular-nums text-gray-400 dark:text-gray-500">
                   {sDone}/{s.topics.length}
                 </span>
@@ -122,16 +123,16 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
                           onClick={() => onPick(t.id)}
                           className={`w-full flex items-start gap-2.5 pl-3 pr-2 py-[7px] rounded-lg text-left transition-colors ${
                             active
-                              ? "bg-emerald-50 dark:bg-emerald-400/10"
-                              : "hover:bg-gray-50 dark:hover:bg-white/[0.04]"
+                              ? "bg-emerald-50 dark:bg-emerald-400/10 light:bg-white light:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.06)]"
+                              : "hover:bg-gray-50 dark:hover:bg-white/[0.04] light:hover:bg-slate-900/[0.035]"
                           }`}
                         >
                           <DoneCircle done={isDone} className="w-[17px] h-[17px] mt-[1px]" />
                           <span
                             className={`flex-1 text-[14px] leading-snug ${
                               active
-                                ? "text-emerald-700 dark:text-emerald-300 font-medium"
-                                : "text-gray-700 dark:text-gray-300"
+                                ? "text-emerald-700 dark:text-emerald-300 font-medium light:text-slate-900"
+                                : "text-gray-700 dark:text-gray-300 light:text-slate-600"
                             }`}
                           >
                             {t.title}
@@ -151,7 +152,7 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
         })}
 
         {stack.skip && (
-          <div className="mt-4 mx-2 rounded-xl border border-gray-200/90 dark:border-white/[0.07] px-3 py-3">
+          <div className="mt-4 mx-2 rounded-xl border border-gray-200/90 dark:border-white/[0.07] light:bg-white light:border-slate-900/[0.07] px-3 py-3">
             <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Not studying</p>
             <p className="mt-1.5 text-[12.5px] leading-relaxed text-gray-500 dark:text-gray-400">
               {stack.skip.topics.map((t) => t.replace(/\.$/, "")).join(" · ")}

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { SiCodechef, SiCodeforces, SiLeetcode } from "react-icons/si";
 import PageShell from "../../components/PageShell";
-import { GLASS } from "../../components/glass";
+import { GLASS, LIGHT_PRIMARY } from "../../components/glass";
 import { requireAuth } from "../../Data/authGate";
 
 // Upcoming LeetCode, Codeforces and CodeChef contests, from /api/contests,
@@ -162,7 +162,7 @@ function AlertsButton({ alerts, signedIn }) {
     label = "Confirm in your inbox";
     title = `We sent a confirmation link to ${email}. Click to send it again.`;
   } else {
-    look = "text-white bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-600/25 hover:from-violet-500 hover:to-indigo-500";
+    look = `text-white bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-600/25 hover:from-violet-500 hover:to-indigo-500 ${LIGHT_PRIMARY}`;
     label = "Get email reminders";
     title = "An email a day before and an hour before each contest";
   }
@@ -240,11 +240,11 @@ export default function Contests() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  <h1 className="text-[26px] leading-none font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">
+                  <h1 className="text-[26px] leading-none font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400 light:bg-none light:text-slate-900">
                     Contests
                   </h1>
                   {data.status === "ready" && (
-                    <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-violet-500/10 dark:bg-violet-400/10 text-violet-600 dark:text-violet-300 border border-violet-500/25 dark:border-violet-400/25">
+                    <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-violet-500/10 dark:bg-violet-400/10 text-violet-600 dark:text-violet-300 border border-violet-500/25 dark:border-violet-400/25 light:bg-violet-50 light:text-violet-700 light:border-violet-600/15">
                       {upcoming.length} upcoming
                     </span>
                   )}
@@ -299,7 +299,7 @@ export default function Contests() {
                 return (
                   <div
                     key={day.key}
-                    className="border-t border-gray-200/70 dark:border-white/[0.06] px-3 sm:px-4 py-1.5 sm:grid sm:grid-cols-[5.5rem_1fr] sm:gap-2"
+                    className="border-t border-gray-200/70 dark:border-white/[0.06] light:border-slate-900/[0.06] px-3 sm:px-4 py-1.5 sm:grid sm:grid-cols-[5.5rem_1fr] sm:gap-2"
                   >
                     <div className="px-2 pt-3 pb-0.5 sm:pb-3 flex sm:block items-baseline gap-2">
                       <p className="text-[11px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-300">
@@ -310,7 +310,7 @@ export default function Contests() {
                         <span className="text-[13px] font-semibold text-gray-400 dark:text-gray-500">{monthShort(day.start)}</span>
                       </p>
                     </div>
-                    <div className="divide-y divide-gray-200/60 dark:divide-white/[0.05]">
+                    <div className="divide-y divide-gray-200/60 dark:divide-white/[0.05] light:divide-slate-900/[0.05]">
                       {day.contests.map((c) => (
                         <ContestRow key={c.id} contest={c} now={now} />
                       ))}
@@ -366,7 +366,7 @@ function NextUp({ contest: c, now }) {
             href={c.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl text-[13px] font-bold text-white bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-600/25 hover:from-violet-500 hover:to-indigo-500 whitespace-nowrap"
+            className={`inline-flex items-center gap-1.5 h-10 px-4 rounded-xl text-[13px] font-bold text-white bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-600/25 hover:from-violet-500 hover:to-indigo-500 ${LIGHT_PRIMARY} whitespace-nowrap`}
           >
             Open contest <OpenIcon />
           </a>
@@ -407,7 +407,7 @@ function ContestRow({ contest: c, now }) {
         href={c.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-lg text-[12.5px] font-bold text-gray-600 dark:text-gray-300 bg-white/60 dark:bg-white/[0.05] ring-1 ring-gray-200/90 dark:ring-white/[0.08] hover:text-violet-600 dark:hover:text-violet-300"
+        className="shrink-0 inline-flex items-center gap-1 h-8 px-3 rounded-lg text-[12.5px] font-bold text-gray-600 dark:text-gray-300 bg-white/60 dark:bg-white/[0.05] ring-1 ring-gray-200/90 dark:ring-white/[0.08] hover:text-violet-600 dark:hover:text-violet-300 light:bg-white light:ring-slate-900/[0.10] light:text-slate-600 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:text-slate-900"
       >
         Open <OpenIcon />
       </a>
@@ -416,7 +416,7 @@ function ContestRow({ contest: c, now }) {
 }
 
 function Skeleton() {
-  const bar = "bg-gray-200/70 dark:bg-white/[0.06] animate-pulse";
+  const bar = "bg-gray-200/70 dark:bg-white/[0.06] light:bg-slate-900/[0.06] animate-pulse";
   return (
     <div aria-hidden="true">
       <div className={`mb-5 rounded-3xl ${CARD} px-6 py-5 flex items-center gap-4`}>
