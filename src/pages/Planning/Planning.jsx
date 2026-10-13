@@ -13,7 +13,7 @@ import {
   AIStackTopicDetail,
   ProjectTopicDetail,
 } from "../../components/cardDetails";
-import { GLASS } from "../../components/glass";
+import { GLASS, GLASS_ROW, LIGHT_BUTTON } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
   CORE_STACK_TOPICS,
@@ -218,13 +218,13 @@ function playSound(type) {
 }
 
 const SOURCE_META = {
-  corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 light:bg-emerald-50 light:text-emerald-800 light:border light:border-emerald-200", border: "border-l-emerald-400" },
-  aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-violet-50 light:text-violet-800 light:border light:border-violet-200", border: "border-l-violet-400" },
-  projects: { label: "Project", badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300 light:bg-sky-50 light:text-sky-800 light:border light:border-sky-200", border: "border-l-sky-400" },
+  corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 light:bg-emerald-50 light:text-emerald-700 light:border light:border-emerald-600/15", border: "border-l-emerald-400" },
+  aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-violet-50 light:text-violet-700 light:border light:border-violet-600/15", border: "border-l-violet-400" },
+  projects: { label: "Project", badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300 light:bg-sky-50 light:text-sky-700 light:border light:border-sky-600/15", border: "border-l-sky-400" },
   // Retired Topics page. Kept so days planned before Core Stack still render.
-  interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 light:bg-gray-100 light:text-gray-700 light:border light:border-gray-200", border: "border-l-indigo-400" },
-  dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 light:bg-amber-50 light:text-amber-800 light:border light:border-amber-200", border: "border-l-orange-400" },
-  custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-gray-100 light:text-gray-700 light:border light:border-gray-200", border: "border-l-violet-400" },
+  interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 light:bg-indigo-50 light:text-indigo-700 light:border light:border-indigo-600/15", border: "border-l-indigo-400" },
+  dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 light:bg-orange-50 light:text-orange-700 light:border light:border-orange-600/15", border: "border-l-orange-400" },
+  custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-slate-100 light:text-slate-600 light:border light:border-slate-900/[0.08]", border: "border-l-violet-400" },
 };
 
 const WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -259,7 +259,7 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl border border-gray-200/70 dark:border-slate-700/60 bg-white dark:bg-slate-800 shadow-2xl p-4"
+      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl border border-gray-200/70 dark:border-slate-700/60 bg-white dark:bg-slate-800 shadow-2xl light:border-slate-900/[0.08] light:shadow-[0_24px_48px_-16px_rgba(15,23,42,0.22),0_4px_12px_-4px_rgba(15,23,42,0.06)] p-4"
     >
       <div className="flex items-center justify-between mb-3">
         <button onClick={prev} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">‹</button>
@@ -575,9 +575,9 @@ function DayCard({
       className={`transition-opacity ${isDragging ? "opacity-30" : ""}`}
     >
       {isOver && !isDragging && <div className="h-0.5 bg-violet-500 rounded-full mb-1 -mt-0.5" />}
-      <div className={`rounded-xl ${GLASS} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md light:border-l light:hover:border-gray-300 transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
+      <div className={`rounded-xl ${GLASS_ROW} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md light:border-l transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
         <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
-          <span className="hidden sm:flex text-gray-300 dark:text-gray-600 cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
+          <span className="hidden sm:flex text-gray-300 dark:text-gray-600 light:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" /><circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" /><circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" /></svg>
           </span>
 
@@ -586,7 +586,7 @@ function DayCard({
             onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
             disabled={!canComplete || parentAutoComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-              complete ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400"
+              complete ? "bg-green-500 border-green-500 light:bg-emerald-500 light:border-emerald-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400 light:border-slate-300 light:bg-white light:rounded-md light:hover:border-emerald-500"
             } ${(!canComplete || parentAutoComplete) ? "opacity-50 cursor-not-allowed" : ""}`}
             title={parentAutoComplete ? "Complete all sub-tasks to finish" : undefined}
           >
@@ -596,7 +596,7 @@ function DayCard({
           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${meta.badge}`}>{meta.label}</span>
 
           <div className="flex-1 min-w-0">
-            <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>{item.title}</h3>
+            <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500 light:text-slate-400" : "text-gray-800 dark:text-gray-200 light:text-slate-900 light:font-medium"}`}>{item.title}</h3>
             {hasSubs && (
               <p className="text-[10px] text-gray-400 dark:text-gray-500">
                 {subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}
@@ -608,7 +608,7 @@ function DayCard({
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
             {!hasSubs && daySec > 0 && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 light:bg-emerald-50 light:text-emerald-700 light:border light:border-emerald-200" title={`Time spent ${dayLabel}`}>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 light:bg-emerald-50 light:text-emerald-700 light:border light:border-emerald-600/15" title={`Time spent ${dayLabel}`}>
                 {fmtSpent(daySec)}
               </span>
             )}
@@ -651,7 +651,7 @@ function DayCard({
                         ? "bg-violet-500 text-white animate-pulse"
                         : pomoActive
                         ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
-                        : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50 light:bg-white light:border light:border-gray-300 light:text-gray-600 light:hover:border-violet-400 light:hover:text-violet-600 light:hover:bg-violet-50"
+                        : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50 light:bg-violet-50 light:border light:border-violet-600/15 light:text-violet-600 light:hover:bg-violet-600 light:hover:border-violet-600 light:hover:text-white"
                     }`}
                     title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
                   >
@@ -665,14 +665,14 @@ function DayCard({
               <button
                 onClick={onMove}
                 title={`Push to ${moveLabel}`}
-                className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 light:bg-white light:border-gray-300 light:text-gray-600 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 transition-colors"
+                className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 ${LIGHT_BUTTON} transition-colors`}
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 <span className="hidden sm:inline">{moveLabel}</span>
               </button>
             )}
 
-            <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 light:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove">
+            <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 light:text-slate-400 light:hover:text-rose-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
             </button>
           </div>
@@ -685,7 +685,7 @@ function DayCard({
         <AnimatePresence>
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-              <div className="border-t border-gray-100 dark:border-slate-700 light:border-gray-200 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
+              <div className="border-t border-gray-100 dark:border-slate-700 light:border-slate-900/[0.06] light:bg-slate-50/50 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-xs">
                   <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                     <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -724,7 +724,7 @@ function DayCard({
                     <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Sub-tasks</h4>
                     <div className="space-y-1.5">
                       {subs.map((s) => (
-                        <div key={s.uid} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${GLASS} ${s.completed ? "opacity-60" : ""}`}>
+                        <div key={s.uid} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${GLASS_ROW} ${s.completed ? "opacity-60" : ""}`}>
                           <button
                             onClick={() => onToggleSubItem(item.uid, s.uid)}
                             disabled={!canComplete}
@@ -887,10 +887,10 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
   return (
     <div className={`rounded-2xl ${GLASS} p-3 sm:p-4`}>
       <div className="flex items-center justify-between mb-1 px-1">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 light:text-gray-500">Time spent {dayLabel}</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 light:text-slate-500 light:font-semibold light:tracking-[0.08em]">Time spent {dayLabel}</h3>
         <span className="text-xs font-bold text-gray-700 dark:text-gray-200">{fmtSpent(total)}</span>
       </div>
-      <div className="divide-y divide-gray-100 dark:divide-white/5 light:divide-gray-200">
+      <div className="divide-y divide-gray-100 dark:divide-white/5 light:divide-slate-900/[0.06]">
         {rows.map((r) => (
           <div key={r.target} className="flex items-center gap-2 sm:gap-3 px-1 py-2">
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${(SOURCE_META[r.source] || SOURCE_META.custom).badge}`}>
@@ -993,17 +993,17 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-0 sm:p-4"
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm light:bg-slate-900/25 p-0 sm:p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
-        className="w-full sm:max-w-lg bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl max-h-[85vh] flex flex-col overflow-hidden"
+        className="w-full sm:max-w-lg bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl light:border-slate-900/[0.08] light:shadow-[0_32px_64px_-16px_rgba(15,23,42,0.28),0_0_0_1px_rgba(15,23,42,0.03)] max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700">
-          <h3 className="text-base font-bold text-gray-800 dark:text-gray-100">Add to plan</h3>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700 light:border-slate-900/[0.06]">
+          <h3 className="text-base font-bold text-gray-800 dark:text-gray-100 light:text-slate-900">Add to plan</h3>
           <button data-tour="picker-close" onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
@@ -1020,7 +1020,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
-                tab === t.key ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-600 hover:border-violet-400"
+                tab === t.key ? "bg-violet-600 text-white border-violet-600 light:shadow-[0_1px_2px_rgba(91,33,182,0.25)]" : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-600 hover:border-violet-400 light:border-slate-900/[0.10] light:text-slate-600 light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] light:hover:text-slate-900"
               }`}
             >
               {t.label}
@@ -1592,15 +1592,15 @@ const Planning = () => {
 
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 mb-4 px-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Planning</h1>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 light:text-slate-900 light:tracking-tight">Planning</h1>
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{relativeLabel(current)}</p>
-                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{doneCount}/{items.length} done</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 light:text-slate-500">{relativeLabel(current)}</p>
+                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200 light:text-slate-900">{doneCount}/{items.length} done</p>
                 </div>
                 <div className="relative w-12 h-12">
                   <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700" strokeWidth="4" />
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700 light:text-slate-900/[0.07]" strokeWidth="4" />
                     <circle cx="24" cy="24" r="19" fill="none" stroke="url(#planGrad)" strokeWidth="4" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 19}`}
                       strokeDashoffset={`${2 * Math.PI * 19 * (1 - pct / 100)}`}
@@ -1618,12 +1618,12 @@ const Planning = () => {
           </motion.div>
 
           <div className="flex items-center justify-between gap-2 mb-3 px-2 relative">
-            <button onClick={() => setCurrent(addDays(current, -1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none light:bg-white light:border-gray-300 light:text-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&lsaquo;</button>
+            <button onClick={() => setCurrent(addDays(current, -1))} className={`px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none ${LIGHT_BUTTON} text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all`}>&lsaquo;</button>
 
             <div className="relative text-center">
               <button onClick={() => setCalOpen(!calOpen)} className="group">
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{relativeLabel(current)}</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-200 light:text-slate-900 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{relativeLabel(current)}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 light:text-slate-500 flex items-center justify-center gap-1">
                   {prettyDate(current)}
                   <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 7h12M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
                 </p>
@@ -1635,9 +1635,9 @@ const Planning = () => {
 
             <div className="flex items-center gap-2">
               {!isToday && (
-                <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-semibold transition-all">Today</button>
+                <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 light:border-violet-600/20 light:text-violet-700 text-sm font-semibold transition-all">Today</button>
               )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className="px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none light:bg-white light:border-gray-300 light:text-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all">&rsaquo;</button>
+              <button onClick={() => setCurrent(addDays(current, 1))} className={`px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none ${LIGHT_BUTTON} text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all`}>&rsaquo;</button>
             </div>
           </div>
 
@@ -1647,10 +1647,10 @@ const Planning = () => {
                 <svg className="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-gray-700 dark:text-gray-300">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
-                    <span className="text-gray-400 dark:text-gray-500">{fmt(totalDone) || "0m"} done</span>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300 light:text-slate-800">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
+                    <span className="text-gray-400 dark:text-gray-500 light:text-slate-500">{fmt(totalDone) || "0m"} done</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-gray-200 dark:bg-slate-700 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-gray-200 dark:bg-slate-700 light:bg-slate-900/[0.06] overflow-hidden">
                     <motion.div
                       className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
                       initial={{ width: 0 }}
@@ -1679,12 +1679,12 @@ const Planning = () => {
           </div>
 
           <div className="px-2 mb-4">
-            <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md light:border light:border-solid light:border-gray-200 light:bg-white light:backdrop-filter-none p-3 sm:p-4 transition-colors">
+            <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md light:border light:border-solid light:border-slate-900/[0.08] light:bg-white light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_-4px_rgba(15,23,42,0.06)] light:backdrop-filter-none p-3 sm:p-4 transition-colors">
               <div className="flex items-center justify-between mb-3 px-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 light:text-gray-500">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 light:text-slate-500 light:font-semibold light:tracking-[0.08em]">
                   Tasks for {relativeLabel(current)}
                 </h3>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500">{doneCount}/{items.length} done</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 light:text-slate-400">{doneCount}/{items.length} done</span>
               </div>
 
               {items.length === 0 ? (
@@ -1741,7 +1741,7 @@ const Planning = () => {
               <button
                 data-tour="open-picker"
                 onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 light:border-gray-300 light:bg-white light:text-gray-700 light:hover:bg-gray-50 light:hover:border-gray-400 light:hover:text-gray-900 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 light:border-slate-900/[0.14] light:bg-transparent light:text-slate-600 light:hover:bg-violet-50/60 light:hover:border-violet-500/40 light:hover:text-violet-700 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 Add to {isToday ? "today's" : "this day's"} plan

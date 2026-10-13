@@ -14,6 +14,7 @@ import {
   closedTime,
   normalizeUrl,
 } from "./shared";
+import { LIGHT_BUTTON, LIGHT_FIELD } from "../../components/glass";
 
 // The pipeline: every job link moves To Apply → Asked for Referral → Applied,
 // and ends in Closed (rejected, or a referral ask that never got a reply).
@@ -150,39 +151,43 @@ function makeRemove(entryOf, patchCompany) {
 // ── Look ────────────────────────────────────────────────────────────────────
 // Cards are opaque so the ones stacked behind don't show through.
 const CARD =
-  "bg-white dark:bg-[#121a30] border border-gray-200/90 dark:border-white/[0.09] shadow-[0_6px_18px_-10px_rgba(15,23,42,0.35)] dark:shadow-[0_8px_22px_-8px_rgba(0,0,0,0.7)]";
+  "bg-white dark:bg-[#121a30] border border-gray-200/90 dark:border-white/[0.09] shadow-[0_6px_18px_-10px_rgba(15,23,42,0.35)] dark:shadow-[0_8px_22px_-8px_rgba(0,0,0,0.7)] light:border-slate-900/[0.08] light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_-4px_rgba(15,23,42,0.07)]";
 // The two cards peeking out behind the top one: each a step dimmer.
-const BEHIND_1 = "bg-gray-50 dark:bg-[#141c33] border border-gray-200 dark:border-white/[0.09]";
-const BEHIND_2 = "bg-gray-100/80 dark:bg-[#111830] border border-gray-200 dark:border-white/[0.07]";
+const BEHIND_1 = "bg-gray-50 dark:bg-[#141c33] border border-gray-200 dark:border-white/[0.09] light:bg-[#fbfbfc] light:border-slate-900/[0.07]";
+const BEHIND_2 = "bg-gray-100/80 dark:bg-[#111830] border border-gray-200 dark:border-white/[0.07] light:bg-[#f3f3f5] light:border-slate-900/[0.06]";
 
 const TONES = {
   toApply: {
     title: "text-amber-600 dark:text-amber-300",
-    pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200",
+    dot: "bg-amber-500",
+    pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200 light:bg-amber-50 light:ring-1 light:ring-inset light:ring-amber-600/20",
     add: "bg-amber-500 hover:bg-amber-600",
   },
   referral: {
     title: "text-violet-600 dark:text-violet-300",
-    pill: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200",
+    dot: "bg-violet-500",
+    pill: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200 light:bg-violet-50 light:ring-1 light:ring-inset light:ring-violet-600/15",
     add: "bg-violet-600 hover:bg-violet-700",
   },
   applied: {
     title: "text-emerald-600 dark:text-emerald-300",
-    pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200",
+    dot: "bg-emerald-500",
+    pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200 light:bg-emerald-50 light:ring-1 light:ring-inset light:ring-emerald-600/15",
     add: "bg-emerald-600 hover:bg-emerald-700",
   },
   closed: {
     title: "text-gray-500 dark:text-gray-400",
-    pill: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300",
+    dot: "bg-slate-400",
+    pill: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300 light:bg-slate-100 light:text-slate-600 light:ring-1 light:ring-inset light:ring-slate-900/[0.08]",
   },
 };
 
 const BTN = {
   emerald: "bg-emerald-600 hover:bg-emerald-700 text-white",
   violet: "bg-violet-600 hover:bg-violet-700 text-white",
-  violetLine: "border border-violet-300 dark:border-violet-500/40 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-500/10",
-  grayLine: "border border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05]",
-  roseLine: "border border-rose-300 dark:border-rose-500/40 text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10",
+  violetLine: "border border-violet-300 dark:border-violet-500/40 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-500/10 light:border-violet-600/25",
+  grayLine: "border border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05] light:border-slate-900/[0.12]",
+  roseLine: "border border-rose-300 dark:border-rose-500/40 text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 light:border-rose-600/25",
 };
 
 function Btn({ kind, onClick, title, children }) {
@@ -205,7 +210,7 @@ function Stack({ items, empty }) {
   const [open, setOpen] = useState(false);
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 dark:border-white/10 px-4 py-6 text-center text-xs text-gray-400 dark:text-gray-500">
+      <div className="rounded-xl border border-dashed border-gray-300 dark:border-white/10 light:border-slate-900/[0.12] light:text-slate-400 px-4 py-6 text-center text-xs text-gray-400 dark:text-gray-500">
         {empty}
       </div>
     );
@@ -258,7 +263,7 @@ function JobCard({ company, aside, children, drag, dimmed }) {
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-semibold text-gray-800 dark:text-gray-100">{company.name}</span>
+            <span className="font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{company.name}</span>
             {company.pay && <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">₹{company.pay} LPA</span>}
             {company.careers && (
               <a href={company.careers} target="_blank" rel="noreferrer" draggable={false} className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400" title="Careers page">
@@ -266,7 +271,7 @@ function JobCard({ company, aside, children, drag, dimmed }) {
               </a>
             )}
           </div>
-          {company.location && <p className="text-[11px] text-gray-400 dark:text-gray-500">{company.location}</p>}
+          {company.location && <p className="text-[11px] text-gray-400 dark:text-gray-500 light:text-slate-500">{company.location}</p>}
         </div>
         {aside}
       </div>
@@ -321,7 +326,7 @@ function AddJobForm({ stage, allCompanies, onAdd, onClose }) {
     if (e.key === "Escape") onClose();
   };
   const input =
-    "w-full text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40";
+    `w-full text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 ${LIGHT_FIELD}`;
   const listId = `pipeline-companies-${stage}`;
   return (
     <div className={`${CARD} rounded-xl p-3 mb-3 space-y-2`}>
@@ -366,15 +371,18 @@ function Section({ stage, title, count, hint, onAdd, drop, dropState, children }
   return (
     <section {...drop} className={`min-w-0 rounded-2xl transition-colors ${outline}`}>
       <div className="flex items-center gap-2 mb-1">
-        <h2 className={`text-lg font-bold ${t.title}`}>{title}</h2>
+        {/* Light mode titles the section in ink with a coloured status dot,
+            the way Linear heads a board column; dark keeps coloured titles. */}
+        <span aria-hidden className={`hidden light:inline-block w-2 h-2 rounded-full ${t.dot}`} />
+        <h2 className={`text-lg font-bold ${t.title} light:text-slate-900 light:font-semibold light:text-base`}>{title}</h2>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${t.pill}`}>{count}</span>
         {onAdd && (
-          <button onClick={onAdd} className={`ml-auto inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg text-white shadow-sm ${t.add}`}>
+          <button onClick={onAdd} className={`ml-auto inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg text-white shadow-sm ${t.add} ${LIGHT_BUTTON} light:border`}>
             <HiPlus className="w-3 h-3" /> Add
           </button>
         )}
       </div>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">{hint}</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500 light:text-slate-500 mb-3">{hint}</p>
       {children}
     </section>
   );

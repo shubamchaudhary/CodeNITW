@@ -100,8 +100,8 @@ export default function Header() {
     transition-all duration-200 ease-in-out rounded-lg
     ${
       isActiveItem
-        ? "text-violet-600 dark:text-violet-300 bg-violet-500/10 dark:bg-violet-500/[0.14] ring-1 ring-violet-500/20 dark:ring-violet-400/20"
-        : "text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-500/[0.07] dark:hover:bg-white/[0.05]"
+        ? "text-violet-600 dark:text-violet-300 bg-violet-500/10 dark:bg-violet-500/[0.14] ring-1 ring-violet-500/20 dark:ring-violet-400/20 light:text-violet-700 light:bg-violet-600/[0.07] light:ring-violet-600/[0.10]"
+        : "text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-500/[0.07] dark:hover:bg-white/[0.05] light:text-slate-600 light:hover:text-slate-900 light:hover:bg-slate-900/[0.04]"
     }
   `;
 
@@ -112,8 +112,10 @@ export default function Header() {
 
   return (
     <header>
-      {/* Frosted bar so the page's ambient wash shows through as it scrolls under */}
-      <nav className="backdrop-blur-xl bg-white/70 dark:bg-[#0b1020]/75 border-b border-gray-200/70 dark:border-white/[0.07] shadow-sm dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] px-3 lg:px-5 py-3 sticky top-0 z-50">
+      {/* Frosted bar so the page's ambient wash shows through as it scrolls
+          under. Light mode: Apple-style frost (saturated blur) over a single
+          hairline, no drop shadow. */}
+      <nav className="backdrop-blur-xl bg-white/70 dark:bg-[#0b1020]/75 border-b border-gray-200/70 dark:border-white/[0.07] shadow-sm dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] light:bg-white/75 light:backdrop-saturate-150 light:border-slate-900/[0.07] light:shadow-none px-3 lg:px-5 py-3 sticky top-0 z-50">
         {/* Full width, like the pages under it: the logo sits flush left over
             the topic list, the page links sit in the centre, account controls
             go far right. The two outer columns are equal, so the middle one is
@@ -132,7 +134,7 @@ export default function Header() {
           <div className="flex items-center gap-2 ml-auto lg:ml-0 lg:order-2 lg:justify-self-end">
             {user ? (
               <>
-                <div className={`hidden ${isOwner(user) ? "2xl:flex" : "xl:flex"} items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] px-2.5 py-1 rounded-lg`}>
+                <div className={`hidden ${isOwner(user) ? "2xl:flex" : "xl:flex"} items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] light:bg-slate-900/[0.03] light:border-slate-900/[0.06] light:text-slate-600 px-2.5 py-1 rounded-lg`}>
                   <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
                   <span className="max-w-[120px] truncate font-medium">{user.email}</span>
                 </div>
@@ -141,7 +143,7 @@ export default function Header() {
                   onClick={handleLogout}
                   title="Log out"
                   aria-label="Log out"
-                  className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 light:text-slate-500 transition-colors"
                 >
                   <HiLogout className="text-md" />
                   {/* Icon only until there's room: the owner's menu is long. */}
@@ -152,7 +154,7 @@ export default function Header() {
               authChecked && (
                 <button
                   onClick={() => requestSignIn()}
-                  className="h-8 px-3.5 rounded-lg text-[13px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm transition-colors"
+                  className="h-8 px-3.5 rounded-lg text-[13px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm light:bg-violet-600 light:hover:bg-violet-700 light:shadow-[0_1px_2px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors"
                 >
                   Sign in
                 </button>
@@ -162,7 +164,7 @@ export default function Header() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="text-gray-600 dark:text-gray-300 text-xl p-1.5 rounded-lg bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] transition-colors"
+              className="text-gray-600 dark:text-gray-300 text-xl p-1.5 rounded-lg bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] light:bg-white light:border-slate-900/[0.10] light:text-slate-600 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:text-slate-900 transition-colors"
               data-tour="theme"
               title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               onClick={() => setDarkMode(!darkMode)}
@@ -182,7 +184,7 @@ export default function Header() {
 
             <button
               type="button"
-              className="inline-flex items-center p-1.5 text-gray-600 dark:text-gray-300 rounded-lg lg:hidden bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] transition-colors"
+              className="inline-flex items-center p-1.5 text-gray-600 dark:text-gray-300 rounded-lg lg:hidden bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] light:bg-white light:border-slate-900/[0.10] light:text-slate-600 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] transition-colors"
               onClick={toggleMenu}
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -206,8 +208,8 @@ export default function Header() {
                 className={`
                   ${menuOpen ? "block" : "hidden"}
                   w-full lg:w-auto absolute lg:relative top-[58px] lg:top-auto left-0 lg:left-auto
-                  backdrop-blur-xl bg-white/90 dark:bg-[#0b1020]/95 lg:bg-transparent dark:lg:bg-transparent lg:backdrop-blur-none
-                  rounded-b-2xl lg:rounded-none border lg:border-0 border-gray-200/70 dark:border-white/[0.07]
+                  backdrop-blur-xl bg-white/90 dark:bg-[#0b1020]/95 lg:bg-transparent dark:lg:bg-transparent lg:backdrop-blur-none light:lg:backdrop-filter-none
+                  rounded-b-2xl lg:rounded-none border lg:border-0 border-gray-200/70 dark:border-white/[0.07] light:border-slate-900/[0.07]
                   shadow-lg lg:shadow-none lg:flex lg:order-1 lg:justify-self-center
                 `}
               >

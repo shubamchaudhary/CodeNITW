@@ -2789,9 +2789,9 @@ export const CORE_STACK_TOPICS = [
 export const CORE_STACK_PRIORITIES = ["P0","P1","P2"];
 
 export const CORE_STACK_PRIORITY_CONFIG = {
-  P0: { label: "P0", blurb: "Asked in nearly every loop, or a resume claim you can't fumble", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
-  P1: { label: "P1", blurb: "Very likely — do before any real interview", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" },
-  P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
+  P0: { label: "P0", blurb: "Asked in nearly every loop, or a resume claim you can't fumble", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30 light:bg-rose-50 light:text-rose-700 light:border-rose-600/15" },
+  P1: { label: "P1", blurb: "Very likely — do before any real interview", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 light:bg-amber-50 light:text-amber-700 light:border-amber-600/20" },
+  P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30 light:bg-sky-50 light:text-sky-700 light:border-sky-600/15" },
 };
 
 export const CORE_STACK_TOTAL = 65;

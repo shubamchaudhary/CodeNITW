@@ -45,9 +45,9 @@ function useTypewriter() {
 export default function OfferHero({ onTour, onSignIn }) {
   const { i, line, shown } = useTypewriter();
   return (
-    <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-violet-500/60 via-fuchsia-500/40 to-indigo-500/60 overflow-hidden">
+    <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-violet-500/60 via-fuchsia-500/40 to-indigo-500/60 light:from-violet-500/40 light:via-fuchsia-400/25 light:to-indigo-500/40 light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(124,58,237,0.20)] overflow-hidden">
       <div className="relative rounded-[15px] bg-white/90 dark:bg-[#100e26]/95 light:bg-white px-5 sm:px-8 py-7 sm:py-8 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -top-24 -left-10 w-[32rem] h-48 rounded-full bg-violet-500/20 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -top-24 -left-10 w-[32rem] h-48 rounded-full bg-violet-500/20 light:bg-violet-500/[0.12] blur-3xl" />
 
         {/* The pitch on the left, the actions on the right (stacked below on a
             phone). */}
@@ -70,7 +70,7 @@ export default function OfferHero({ onTour, onSignIn }) {
 
             <div className="mt-3 flex gap-1.5" aria-hidden>
               {LINES.map((_, k) => (
-                <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/20"}`} />
+                <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/20 light:bg-slate-900/15"}`} />
               ))}
             </div>
           </div>
@@ -78,12 +78,12 @@ export default function OfferHero({ onTour, onSignIn }) {
           <div className="shrink-0 flex flex-col items-start md:items-center gap-3">
             <button
               onClick={onTour}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold shadow-[0_10px_30px_-8px_rgba(139,92,246,0.7)] hover:brightness-110 transition"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold shadow-[0_10px_30px_-8px_rgba(139,92,246,0.7)] light:shadow-[0_8px_20px_-8px_rgba(124,58,237,0.55),inset_0_1px_0_rgba(255,255,255,0.2)] hover:brightness-110 transition"
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3l9 5-9 5z" /></svg>
               Take a quick tour
             </button>
-            <button onClick={onSignIn} className="text-sm font-semibold text-violet-600 dark:text-violet-300 hover:underline">
+            <button onClick={onSignIn} className="text-sm font-semibold text-violet-600 dark:text-violet-300 light:text-violet-700 light:underline-offset-4 hover:underline">
               Sign in to plan your own
             </button>
           </div>
