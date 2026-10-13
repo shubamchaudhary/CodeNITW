@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+import { LIGHT_PRIMARY } from "./glass";
 
 // One plain form for signing in, creating an account and resetting a password.
 // Used by the sign-in prompt (a guest trying to change something) and by the
@@ -101,12 +102,12 @@ export default function AuthForm({ mode, onModeChange, onDone, autoFocus = true 
   }
 
   const input =
-    "w-full h-11 px-3.5 rounded-xl text-[15px] bg-white dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-white/[0.12] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition";
-  const link = "font-semibold text-indigo-600 dark:text-indigo-400 hover:underline";
+    "w-full h-11 px-3.5 rounded-xl text-[15px] bg-white dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border border-gray-300 dark:border-white/[0.12] focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 light:border-slate-900/[0.12] light:shadow-[0_1px_1px_rgba(15,23,42,0.03)] light:focus:border-violet-500 light:focus:ring-4 light:focus:ring-violet-500/10 transition";
+  const link = "font-semibold text-indigo-600 dark:text-indigo-400 light:text-violet-700 light:underline-offset-4 hover:underline";
 
   return (
     <div>
-      <h2 className="text-[22px] font-bold tracking-tight text-gray-900 dark:text-gray-50">{COPY[mode].title}</h2>
+      <h2 className="text-[22px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">{COPY[mode].title}</h2>
 
       {mode === "reset" && (
         <p className="mt-1.5 text-[14px] text-gray-500 dark:text-gray-400">
@@ -120,15 +121,15 @@ export default function AuthForm({ mode, onModeChange, onDone, autoFocus = true 
             type="button"
             onClick={google}
             disabled={!!busy}
-            className="mt-5 w-full h-11 rounded-xl flex items-center justify-center gap-2.5 text-[15px] font-semibold text-gray-800 dark:text-gray-100 bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.12] hover:bg-gray-50 dark:hover:bg-white/[0.09] disabled:opacity-60 transition-colors"
+            className="mt-5 w-full h-11 rounded-xl flex items-center justify-center gap-2.5 text-[15px] font-semibold text-gray-800 dark:text-gray-100 bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.12] hover:bg-gray-50 dark:hover:bg-white/[0.09] light:border-slate-900/[0.12] light:shadow-[0_1px_2px_rgba(15,23,42,0.05)] disabled:opacity-60 transition-colors"
           >
             <FcGoogle className="text-xl" />
             {busy === "google" ? "Opening Google…" : COPY[mode].google}
           </button>
           <div className="my-5 flex items-center gap-3 text-[12px] text-gray-400 dark:text-gray-500">
-            <span className="h-px flex-1 bg-gray-200 dark:bg-white/[0.1]" />
+            <span className="h-px flex-1 bg-gray-200 dark:bg-white/[0.1] light:bg-slate-900/[0.08]" />
             or with email
-            <span className="h-px flex-1 bg-gray-200 dark:bg-white/[0.1]" />
+            <span className="h-px flex-1 bg-gray-200 dark:bg-white/[0.1] light:bg-slate-900/[0.08]" />
           </div>
         </>
       )}
@@ -187,7 +188,7 @@ export default function AuthForm({ mode, onModeChange, onDone, autoFocus = true 
           <button
             type="submit"
             disabled={!!busy}
-            className="w-full h-11 rounded-xl text-[15px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 shadow-sm transition-colors"
+            className={`w-full h-11 rounded-xl text-[15px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 shadow-sm ${LIGHT_PRIMARY} transition-colors`}
           >
             {busy === "form" ? "Please wait…" : COPY[mode].submit}
           </button>
