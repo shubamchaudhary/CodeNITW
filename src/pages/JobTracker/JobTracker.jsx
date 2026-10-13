@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from
 import PageSkeleton from "../../components/PageSkeleton";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
-import { GLASS } from "../../components/glass";
+import { GLASS, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { KEYS, loadJSON, saveJSON, subscribe, quietly } from "../../Data/planStore";
 import { requireAuth } from "../../Data/authGate";
@@ -353,7 +353,7 @@ export default function JobTracker() {
     <PageShell>
       <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
         {/* Header */}
-        <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 mb-5">
+        <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 light:bg-none light:text-slate-900 light:font-bold light:tracking-tight mb-5">
           Job Application Tracker
         </h1>
 
@@ -362,7 +362,7 @@ export default function JobTracker() {
           {statTiles.map((s) => (
             <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2.5 text-center`}>
               <div className={`text-2xl font-extrabold ${s.cls}`}>{s.value}</div>
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 light:text-slate-500">
                 {s.label}
               </div>
             </div>
@@ -370,7 +370,7 @@ export default function JobTracker() {
         </div>
 
         {/* Tab navigation */}
-        <div className={`${GLASS} rounded-xl p-1 mb-5 inline-flex gap-1`}>
+        <div className={`${GLASS_TRACK} rounded-xl p-1 mb-5 inline-flex gap-1`}>
           {tabs.map((tab) => {
             const isActive = currentTab === tab.id;
             let count = null;
@@ -383,8 +383,8 @@ export default function JobTracker() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                   isActive
-                    ? "bg-indigo-600 text-white shadow-md"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
+                    ? `bg-indigo-600 text-white shadow-md ${SEGMENT_ON}`
+                    : `text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 ${SEGMENT_OFF}`
                 }`}
               >
                 <span className="mr-1.5">{tab.emoji}</span>
@@ -393,8 +393,8 @@ export default function JobTracker() {
                   <span
                     className={`ml-1.5 text-xs font-bold px-1.5 py-0.5 rounded-full ${
                       isActive
-                        ? "bg-white/20 text-white"
-                        : "bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-gray-300"
+                        ? "bg-white/20 text-white light:bg-violet-600/10 light:text-violet-700"
+                        : "bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-gray-300 light:bg-slate-900/[0.06] light:text-slate-500"
                     }`}
                   >
                     {count}

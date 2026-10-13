@@ -30,6 +30,7 @@ import HistoryPanel, { describeVersion } from "./HistoryPanel";
 import useStackProgress from "./useStackProgress";
 import { STACKS, rememberTopic } from "./stacks";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
+import { SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
 
 // A topic's page, laid out like a course on a learning site: the stack's topic
 // list on the left, the topic in the middle — its header, what to watch, then
@@ -474,7 +475,7 @@ export default function TopicNotes() {
   const pick = (id) => navigate(`/notes/${source}/${id}`);
 
   const textSize = (
-    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14]" title="Text size">
+    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14] light:bg-white light:border-slate-900/[0.10] light:shadow-[0_1px_1px_rgba(15,23,42,0.04)]" title="Text size">
       <SmallButton
         onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
         disabled={prefs.fontSize <= FONT_MIN}
@@ -482,7 +483,7 @@ export default function TopicNotes() {
       >
         A−
       </SmallButton>
-      <span className="w-7 text-center text-[12px] font-semibold tabular-nums text-gray-500 dark:text-gray-400">{prefs.fontSize}</span>
+      <span className="w-7 text-center text-[12px] font-semibold tabular-nums text-gray-500 dark:text-gray-400 light:text-slate-500">{prefs.fontSize}</span>
       <SmallButton
         onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
         disabled={prefs.fontSize >= FONT_MAX}
@@ -498,7 +499,7 @@ export default function TopicNotes() {
       data-tour="fullscreen"
       onClick={immersive ? exitImmersive : enterImmersive}
       title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
-      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] transition-colors"
     >
       {immersive ? (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -510,7 +511,7 @@ export default function TopicNotes() {
   );
 
   const viewSwitch = (
-    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14] p-0.5">
+    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14] light:bg-slate-900/[0.045] light:border-slate-900/[0.04] light:shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] p-0.5">
       {VIEWS.map((v) => (
         <button
           key={v.key}
@@ -522,8 +523,8 @@ export default function TopicNotes() {
           title={v.title}
           className={`h-8 px-3.5 rounded-full text-[13px] font-semibold transition-colors ${
             view === v.key
-              ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+              ? `bg-gray-900 text-white dark:bg-white dark:text-gray-900 ${SEGMENT_ON}`
+              : `text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 ${SEGMENT_OFF}`
           }`}
         >
           {v.label}
@@ -537,7 +538,7 @@ export default function TopicNotes() {
       data-tour="history"
       onClick={() => setHistoryOpen(true)}
       title="Every saved version of this note"
-      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] transition-colors"
+      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] transition-colors"
     >
       <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path d="M2.6 8a5.4 5.4 0 1 0 1.6-3.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -628,7 +629,7 @@ export default function TopicNotes() {
         /* Full screen: a slim sticky bar instead of the site header */
         <div
           ref={barRef}
-          className="sticky top-0 z-40 px-4 sm:px-6 py-2.5 backdrop-blur-xl bg-white/90 dark:bg-[#0e1427]/90 border-b border-gray-200/90 dark:border-white/[0.07]"
+          className="sticky top-0 z-40 px-4 sm:px-6 py-2.5 backdrop-blur-xl bg-white/90 dark:bg-[#0e1427]/90 border-b border-gray-200/90 dark:border-white/[0.07] light:bg-white/80 light:backdrop-saturate-150 light:border-slate-900/[0.07]"
         >
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="min-w-0 flex-1 flex items-baseline gap-2.5">
@@ -643,18 +644,18 @@ export default function TopicNotes() {
 
       <div className="flex">
         {!immersive && (
-          <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07]">
+          <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
             <div className="sticky top-0 h-[100dvh]">{nav}</div>
           </aside>
         )}
 
         <main className="flex-1 min-w-0">
           {!immersive && (
-            <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur">
+            <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]">
               <button
                 data-tour="topics-drawer"
                 onClick={() => setDrawerOpen(true)}
-                className="h-9 px-3 rounded-full flex items-center gap-2 shrink-0 whitespace-nowrap text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14]"
+                className="h-9 px-3 rounded-full flex items-center gap-2 shrink-0 whitespace-nowrap text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)]"
               >
                 <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                   <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -784,7 +785,7 @@ export default function TopicNotes() {
       {drawerOpen && !immersive && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-[86%] max-w-[340px] bg-white dark:bg-[#0e1427] shadow-2xl">{nav}</div>
+          <div className="absolute inset-y-0 left-0 w-[86%] max-w-[340px] bg-white dark:bg-[#0e1427] shadow-2xl light:bg-[#fafafb]">{nav}</div>
         </div>
       )}
     </div>

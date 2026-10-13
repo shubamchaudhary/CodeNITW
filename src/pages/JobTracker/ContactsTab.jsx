@@ -11,7 +11,7 @@ import {
   HiPencil,
   HiChat,
 } from "react-icons/hi";
-import { GLASS, GLASS_PANEL } from "../../components/glass";
+import { GLASS, GLASS_PANEL, LIGHT_FIELD, LIGHT_PRIMARY, LIGHT_BUTTON } from "../../components/glass";
 import { SEED_HR_CONTACTS } from "../../Data/hrContacts";
 import { copyText, daysSince, PAGE_SIZE } from "./shared";
 
@@ -89,7 +89,7 @@ function ContactForm({ allCompanies, initial, onSave, onClose }) {
   };
 
   const inputCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
+    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
 
   return (
     <div className={`${GLASS} rounded-xl p-4 mb-4`}>
@@ -396,13 +396,13 @@ export default function ContactsTab({
   };
 
   const selectCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer";
+    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer ${LIGHT_FIELD}`;
 
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300">
+          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 light:text-slate-900 light:font-semibold">
             📇 HR &amp; Recruiter Contacts ({contacts.length})
           </h2>
           <span className="text-xs text-gray-400 dark:text-gray-500">
@@ -412,7 +412,7 @@ export default function ContactsTab({
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={copyAll}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
+            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 ${LIGHT_BUTTON} light:border`}
             title="Copy every contact currently listed"
           >
             <HiOutlineClipboardCopy /> Copy list
@@ -422,7 +422,7 @@ export default function ContactsTab({
               setEditing(null);
               setAdding((a) => !a);
             }}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md"
+            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md ${LIGHT_PRIMARY}`}
           >
             <HiPlus /> Add contact
           </button>
@@ -455,7 +455,7 @@ export default function ContactsTab({
               setLimit(PAGE_SIZE);
             }}
             placeholder="Search name, company, phone, email…"
-            className="w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
+            className={`w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`}
           />
         </div>
         <select
@@ -496,7 +496,7 @@ export default function ContactsTab({
             type="checkbox"
             checked={withEmail}
             onChange={(e) => setWithEmail(e.target.checked)}
-            className="w-4 h-4 accent-indigo-500 cursor-pointer"
+            className="w-4 h-4 accent-indigo-500 light:accent-violet-600 cursor-pointer"
           />
           Has email
         </label>

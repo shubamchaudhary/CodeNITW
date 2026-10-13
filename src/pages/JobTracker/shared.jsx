@@ -10,18 +10,18 @@ import {
   HiPhone,
   HiMail,
 } from "react-icons/hi";
-import { GLASS, GLASS_PANEL } from "../../components/glass";
+import { GLASS, GLASS_PANEL, LIGHT_FIELD } from "../../components/glass";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 export const STATUSES = {
-  none: { label: "Not Started", cls: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300" },
+  none: { label: "Not Started", cls: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300 light:bg-slate-100 light:text-slate-600" },
   toApply: { label: "To Apply", cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200" },
   applied: { label: "Applied", cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200" },
   oa: { label: "OA / Test", cls: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-200" },
   interview: { label: "Interview", cls: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200" },
   offer: { label: "Offer", cls: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200" },
   rejected: { label: "Rejected", cls: "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200" },
-  skip: { label: "Skipped", cls: "bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-gray-500" },
+  skip: { label: "Skipped", cls: "bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-gray-500 light:bg-slate-100 light:text-slate-400" },
 };
 
 export const APPLIED_SET = new Set(["applied", "oa", "interview", "offer", "rejected"]);
@@ -232,7 +232,7 @@ export function HRContactsEditor({ contacts, onChange }) {
   };
 
   const inputCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
+    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
 
   return (
     <div>
@@ -308,7 +308,7 @@ export function LinksEditor({ links, onChange }) {
   };
 
   const inputCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
+    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
 
   return (
     <div>
@@ -466,7 +466,7 @@ export function AddCompanyForm({ onAdd, onClose }) {
   };
 
   const inputCls =
-    "text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100";
+    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
   return (
     <div className={`${GLASS} rounded-xl p-4 mb-4`}>
       <div className="flex items-center justify-between mb-3">
