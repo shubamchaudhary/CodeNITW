@@ -1,0 +1,2824 @@
+// Core Stack — questions real interviews asked, per topic, with answers.
+//
+// GENERATED FILE. Edit scripts/data/askedQuestions.mjs and re-run
+// `node scripts/genCoreStack.mjs` — do not edit here. Loaded on demand by the
+// notes page, which shows it fixed under the reader's own note.
+
+export const CORE_STACK_ASKED_META = {
+  "window": "Oct 2024 – Oct 2026",
+  "posts": 1592,
+  "sources": "candidate-written interview write-ups on LeetCode Discuss, plus LinkedIn posts, Taro and GeeksforGeeks; question banks excluded"
+};
+
+export const CORE_STACK_ASKED = {
+  "CONC-07": {
+    "posts": 80,
+    "items": [
+      {
+        "q": "Process vs thread — what does each own, and what do threads share?",
+        "a": "- **Process**: its own address space (heap, code, open files). Isolated — one crashing doesn't take down another. Expensive to create and to switch.\n- **Thread**: runs inside a process. Threads **share the heap** and resources, but each has its **own stack** and program counter. Cheap to create and switch.\n\nThat sharing is the whole story of concurrency: shared heap → fast communication, but also race conditions.",
+        "n": 36,
+        "companies": [
+          "LinkedIn",
+          "Microsoft",
+          "Arista Networks",
+          "Cisco",
+          "Qualcomm",
+          "Safe Security",
+          "Bajaj Finserv Health",
+          "Blinkit",
+          "Flipkart",
+          "Goldman Sachs",
+          "Intuit",
+          "Meesho"
+        ]
+      },
+      {
+        "q": "What is a race condition, and how do you prevent one?",
+        "a": "Two threads touch shared data and the result depends on timing. Classic: `count++` is read → add → write; two threads can both read 5 and both write 6.\n\nPrevent it by making the critical step atomic:\n- `synchronized` / a `Lock` around the read-modify-write,\n- an atomic class (`AtomicInteger.incrementAndGet()`),\n- a thread-safe structure (`ConcurrentHashMap.merge`),\n- or avoid sharing (immutable objects, confinement, message passing).\n\nAcross services/databases: a unique constraint, `SELECT … FOR UPDATE`, or optimistic locking with a version column.",
+        "n": 30,
+        "companies": [
+          "Microsoft",
+          "Adobe",
+          "Alkira",
+          "Amazon",
+          "Cisco",
+          "Cleartrip",
+          "Flipkart",
+          "GoComet",
+          "Google",
+          "Info Edge",
+          "Informatica",
+          "Licious"
+        ]
+      },
+      {
+        "q": "What is multithreading, and why use it in a backend service?",
+        "a": "Running several threads in one process. In a backend it buys:\n- **Throughput**: Tomcat serves many requests at once, each on its own thread.\n- **Latency**: call three downstream services in parallel instead of one after another.\n- **Responsiveness**: push slow work (emails, reports) to a background pool.\n\nThe cost: shared-state bugs (races, deadlocks, visibility) — which is what the rest of this section is about.",
+        "n": 18,
+        "companies": [
+          "Walmart",
+          "Adobe",
+          "Amazon",
+          "Goldman Sachs",
+          "Informatica",
+          "LinkedIn",
+          "NetApp",
+          "Pragmatic Play",
+          "Rubrik",
+          "Safe Security",
+          "TripJack",
+          "UKG"
+        ]
+      },
+      {
+        "q": "What is context switching, and why do more threads stop helping?",
+        "a": "The OS saves one thread's registers/stack pointer and loads another's so a core can run it. It costs CPU time and flushes caches.\n\nFor CPU-bound work, more threads than cores just adds switching — throughput drops. For IO-bound work, extra threads help because most of them are waiting, not running.",
+        "n": 6,
+        "companies": [
+          "Blinkit",
+          "Cisco",
+          "Flipkart",
+          "Safe Security",
+          "Tekion",
+          "Uber"
+        ]
+      },
+      {
+        "q": "Concurrency vs parallelism?",
+        "a": "- **Concurrency**: dealing with many tasks at once — they make progress by interleaving (possible on one core).\n- **Parallelism**: actually running tasks at the same instant — needs multiple cores.\n\nA web server handling 200 requests on 8 cores is concurrent; it is parallel only up to 8 at a time.",
+        "n": 3,
+        "companies": [
+          "LinkedIn",
+          "Adobe"
+        ]
+      }
+    ]
+  },
+  "CONC-08": {
+    "posts": 28,
+    "items": [
+      {
+        "q": "How does synchronized work — method vs block, static vs instance lock?",
+        "a": "Every object has a **monitor**. `synchronized` acquires it on entry and releases it on exit (even on an exception). It's reentrant and also gives **visibility** (happens-before).\n\n- `synchronized void m()` → locks `this`.\n- `static synchronized void m()` → locks the `Class` object — so a static and an instance synchronized method can run at the same time (different locks).\n- `synchronized (obj) { … }` → lock only the critical part, on a chosen object. Smaller scope = less contention — interviewers like hearing that.",
+        "n": 11,
+        "companies": [
+          "Walmart",
+          "DP World",
+          "EPAM",
+          "Google",
+          "Microsoft",
+          "MobiKwik",
+          "Zycus"
+        ]
+      },
+      {
+        "q": "How do you create a thread — extend Thread vs implement Runnable?",
+        "a": "1. Extend `Thread` and override `run()`.\n2. Implement `Runnable` and pass it to a `Thread` (or an executor).\n3. Implement `Callable<V>` when you need a result or a checked exception (used with `ExecutorService`).\n\nPrefer **Runnable/Callable**: Java has single inheritance, and it separates *the task* from *how it runs* — so you can hand it to a thread pool. In real code you rarely call `new Thread()`; you submit to an `ExecutorService`.\n\n`start()` creates a new thread that calls `run()`; calling `run()` directly just runs it on the current thread.",
+        "n": 8,
+        "companies": [
+          "Adobe",
+          "D. E. Shaw",
+          "Deloitte",
+          "Goldman Sachs",
+          "Oracle",
+          "Safe Security"
+        ]
+      },
+      {
+        "q": "Explain the thread lifecycle (states).",
+        "a": "`Thread.State`:\n- **NEW** — created, not started.\n- **RUNNABLE** — running or ready to run.\n- **BLOCKED** — waiting to enter a `synchronized` block held by another thread.\n- **WAITING** — `wait()`, `join()`, `LockSupport.park()` with no timeout.\n- **TIMED_WAITING** — `sleep(ms)`, `wait(ms)`, `join(ms)`.\n- **TERMINATED** — `run()` finished.\n\nBLOCKED vs WAITING is the follow-up: BLOCKED waits for a monitor; WAITING waits for another thread's signal.",
+        "n": 5,
+        "companies": [
+          "Adobe",
+          "Goldman Sachs",
+          "Publicis Sapient",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "How do threads communicate with wait() / notify()? Why call wait() in a loop?",
+        "a": "```java\nsynchronized (lock) {\n  while (!condition) lock.wait();   // releases lock while waiting\n  // ... do the work\n  lock.notifyAll();\n}\n```\n\n- Must hold the monitor, or you get `IllegalMonitorStateException`.\n- Use **`while`, not `if`** — threads can wake spuriously, or another thread may have taken the item first.\n- Prefer `notifyAll` unless you're sure exactly one kind of waiter exists — `notify` can wake the wrong thread and stall (lost wake-up).\n\nModern code uses `BlockingQueue` or `Lock` + `Condition` instead.",
+        "n": 5,
+        "companies": [
+          "Cerner",
+          "DP World",
+          "LinkedIn",
+          "Microsoft"
+        ]
+      },
+      {
+        "q": "wait() vs sleep()?",
+        "a": "- `sleep(ms)` — a static `Thread` method; pauses the current thread; **keeps any locks** it holds.\n- `wait()` — an `Object` method; must be called while holding that object's monitor (inside `synchronized`), and it **releases the lock** until `notify()`/`notifyAll()` or a timeout.\n\nSo `wait` is for coordination between threads; `sleep` is just a pause.",
+        "n": 2,
+        "companies": [
+          "Oracle"
+        ]
+      }
+    ]
+  },
+  "CONC-09": {
+    "posts": 4,
+    "items": [
+      {
+        "q": "How do you stop a thread properly — what does interrupt() do?",
+        "a": "`Thread.stop()` is deprecated — it kills a thread mid-update and corrupts state.\n\nUse **interruption**, which is a polite request:\n- `t.interrupt()` sets a flag; if `t` is in `sleep/wait/join`, it throws `InterruptedException`.\n- The task checks `Thread.currentThread().isInterrupted()` in its loop and exits cleanly.\n- If you catch `InterruptedException` and can't exit, **restore the flag**: `Thread.currentThread().interrupt()`.\n\n`executor.shutdownNow()` works by interrupting workers.",
+        "n": 2,
+        "companies": [
+          "Rubrik",
+          "Uber"
+        ]
+      },
+      {
+        "q": "What does join() do?",
+        "a": "`t.join()` makes the current thread wait until `t` finishes. `join(1000)` waits at most a second, then carries on even if `t` is still running (check `t.isAlive()`).\n\nTypical use: start N workers, then join them all before reading their results — though `CountDownLatch` or `CompletableFuture.allOf` is usually cleaner.",
+        "n": 1,
+        "companies": [
+          "Walmart"
+        ]
+      },
+      {
+        "q": "What is a daemon thread?",
+        "a": "A background thread that does **not** keep the JVM alive: when only daemon threads remain, the JVM exits and kills them mid-work (no `finally`, no flush).\n\nSet with `setDaemon(true)` **before** `start()`. Good for housekeeping (cache cleanup, heartbeats). Never use one for work that must complete, like writing a file or committing to a database.",
+        "n": 1,
+        "companies": []
+      }
+    ]
+  },
+  "CONC-03": {
+    "posts": 113,
+    "items": [
+      {
+        "q": "Make this code thread-safe (a counter, a cache, a booking flow).",
+        "a": "Walk it in steps — that's what they're grading:\n1. **Find the shared mutable state** and the check-then-act steps (`if (!map.containsKey) map.put`, \"is seat free? then book\").\n2. Smallest fix first: a concurrent structure and its atomic method (`ConcurrentHashMap.computeIfAbsent/merge`, `AtomicInteger`).\n3. If several fields change together, guard them with **one** lock (`synchronized` block or `ReentrantLock`) — keep the critical section small.\n4. Read-heavy? `ReentrantReadWriteLock`. Per-key independence? lock per key (striping).\n5. Across instances/DB: unique constraint, `SELECT … FOR UPDATE`, or a version column.\n\nThen say what you'd test: many threads hammering it with a `CountDownLatch` start gate.",
+        "n": 50,
+        "companies": [
+          "Apple",
+          "Flipkart",
+          "Goldman Sachs",
+          "Oracle",
+          "Wise",
+          "Anakin",
+          "Arcesium",
+          "DocuSign",
+          "DoorDash",
+          "EPAM",
+          "Juspay",
+          "Kotak Mahindra Bank"
+        ]
+      },
+      {
+        "q": "What is a deadlock? Name the four conditions and how you prevent it.",
+        "a": "Two or more threads each hold a lock the other needs, and wait forever.\n\nAll four must hold (Coffman): **mutual exclusion**, **hold and wait**, **no preemption**, **circular wait**. Break any one:\n- Acquire locks in a **fixed global order** (most practical — e.g. always lock the lower account id first in a transfer).\n- Use `tryLock` with a timeout and back off.\n- Hold fewer locks, for less time.\n\nDetection: a thread dump (`jstack`, `jcmd Thread.print`) prints \"Found one Java-level deadlock\" with the threads and locks involved.",
+        "n": 33,
+        "companies": [
+          "Microsoft",
+          "Adobe",
+          "Alkira",
+          "Appian",
+          "Arista Networks",
+          "Cerner",
+          "Cisco",
+          "D. E. Shaw",
+          "Freshworks",
+          "GoComet",
+          "JPMorgan",
+          "Morgan Stanley"
+        ]
+      },
+      {
+        "q": "Semaphore vs mutex (lock)?",
+        "a": "- **Mutex / lock**: one owner at a time; the thread that locks must unlock.\n- **Semaphore**: a counter of permits; up to N threads proceed. No ownership — any thread can `release()`.\n\nUse a semaphore to **limit concurrency** — e.g. at most 10 concurrent calls to a fragile downstream: `if (sem.tryAcquire(200, MILLISECONDS)) try { call(); } finally { sem.release(); }`. A binary semaphore (1 permit) behaves like a mutex without ownership.",
+        "n": 32,
+        "companies": [
+          "LinkedIn",
+          "Microsoft",
+          "Adobe",
+          "NetApp",
+          "AMD",
+          "ASM Technologies",
+          "Alkira",
+          "Cisco",
+          "Google",
+          "Intuit",
+          "Juspay",
+          "Moxo"
+        ]
+      },
+      {
+        "q": "synchronized vs ReentrantLock — when would you choose ReentrantLock?",
+        "a": "Both are reentrant mutual-exclusion locks with the same memory-visibility guarantees.\n\nReentrantLock adds:\n- `tryLock()` / `tryLock(timeout)` — don't wait forever (helps avoid deadlocks),\n- `lockInterruptibly()`,\n- **fairness** option,\n- multiple `Condition`s per lock (e.g. `notFull` / `notEmpty`).\n\nCost: you must `unlock()` in a `finally`. Default to `synchronized` for simple critical sections; reach for ReentrantLock when you need one of those features. (With virtual threads, ReentrantLock also avoided pinning before JDK 24.)",
+        "n": 9,
+        "companies": [
+          "Walmart",
+          "Appian",
+          "Apple",
+          "Autodesk",
+          "EPAM",
+          "MobiKwik",
+          "Publicis Sapient",
+          "Rakuten"
+        ]
+      },
+      {
+        "q": "ReadWriteLock — when does it help?",
+        "a": "Many readers may hold the read lock together; a writer gets exclusive access. It helps when reads vastly outnumber writes **and** the read section is non-trivial (e.g. an in-memory config or cache).\n\nIt doesn't help if writes are frequent (writers starve or contend) or the section is tiny (lock bookkeeping costs more). `StampedLock` adds optimistic reads — mention it as depth only.",
+        "n": 3,
+        "companies": [
+          "Appian",
+          "Apple",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Deadlock vs livelock vs starvation?",
+        "a": "- **Deadlock**: threads blocked forever waiting on each other.\n- **Livelock**: threads keep running and reacting to each other but make no progress (two people stepping aside the same way in a corridor).\n- **Starvation**: a thread never gets the CPU or the lock because others always win (fix: fair locks, bounded queues).",
+        "n": 2,
+        "companies": [
+          "Rubrik"
+        ]
+      }
+    ]
+  },
+  "CONC-02": {
+    "posts": 34,
+    "items": [
+      {
+        "q": "What does volatile do — and why isn't it enough for count++?",
+        "a": "`volatile` guarantees **visibility** and **ordering**: a write goes straight to main memory and every read sees the latest value; it also stops reordering around it (happens-before).\n\nIt does **not** make compound actions atomic. `count++` is read-modify-write, so two threads can still lose updates.\n\nGood uses: a stop flag (`volatile boolean running`), publishing an immutable object, the instance field in double-checked locking.",
+        "n": 20,
+        "companies": [
+          "Rakuten",
+          "UKG",
+          "Walmart",
+          "Birdeye",
+          "EPAM",
+          "Informatica",
+          "JPMorgan",
+          "NPCI",
+          "Publicis Sapient",
+          "Qualcomm",
+          "TripJack",
+          "athenahealth"
+        ]
+      },
+      {
+        "q": "volatile vs synchronized vs AtomicInteger?",
+        "a": "- `volatile`: visibility only. No locking.\n- `synchronized`: visibility **and** atomicity of a whole block; blocks other threads.\n- `AtomicInteger`: atomic single-variable operations (`incrementAndGet`, `compareAndSet`) using **CAS** — no lock, no blocking.\n\nCounter? `AtomicInteger` (or `LongAdder` under heavy contention). Several fields that must change together? `synchronized`/a lock. A flag? `volatile`.",
+        "n": 10,
+        "companies": [
+          "Apple",
+          "Goldman Sachs",
+          "Google",
+          "NetApp",
+          "Publicis Sapient",
+          "Rakuten",
+          "TripJack",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "What is CAS (compare-and-swap)?",
+        "a": "A single CPU instruction: \"set the value to `new` only if it is still `expected`; tell me if it worked\". Atomic classes loop on it:\n\n```java\ndo { old = value.get(); } while (!value.compareAndSet(old, old + 1));\n```\n\nNo thread ever blocks, so no deadlock — but under heavy contention threads spin and retry. The **ABA problem** (value changed A→B→A) is solved with a version stamp (`AtomicStampedReference`).",
+        "n": 5,
+        "companies": [
+          "Alkira",
+          "Appian",
+          "Morgan Stanley",
+          "SentinelOne"
+        ]
+      },
+      {
+        "q": "What is the Java Memory Model — what does happens-before mean?",
+        "a": "Each thread may cache values (CPU caches, registers) and the compiler/CPU may reorder instructions, so one thread's write isn't automatically visible to another.\n\nThe JMM defines **happens-before** edges that guarantee visibility: unlocking a monitor → later locking it; writing a `volatile` → later reading it; `Thread.start()` → actions in the started thread; a thread's actions → another thread's successful `join()`.\n\nIf two threads share a variable without such an edge, there is a data race and anything goes.",
+        "n": 4,
+        "companies": [
+          "American Express",
+          "Apple",
+          "Kotak Mahindra Bank",
+          "Nexturn"
+        ]
+      },
+      {
+        "q": "transient vs volatile?",
+        "a": "Unrelated, despite sounding similar:\n- `transient` — **serialization**: skip this field when serializing.\n- `volatile` — **concurrency**: always read/write this field through main memory.\n- (`static` — one copy per class; says nothing about thread visibility.)",
+        "n": 3,
+        "companies": [
+          "EPAM",
+          "NPCI",
+          "UKG"
+        ]
+      }
+    ]
+  },
+  "CONC-01": {
+    "posts": 43,
+    "items": [
+      {
+        "q": "What is ExecutorService — why use a thread pool instead of new Thread()?",
+        "a": "Creating a thread per task is expensive (stack memory, OS calls) and unbounded — a traffic spike creates thousands of threads and the box falls over.\n\nA pool keeps N reusable worker threads and a queue of tasks:\n- bounded resource use,\n- faster (no creation cost per task),\n- lifecycle control (`shutdown`, `awaitTermination`),\n- results and errors via `Future`.\n\n```java\nExecutorService pool = Executors.newFixedThreadPool(8);\nFuture<Report> f = pool.submit(() -> buildReport(id));\n```",
+        "n": 34,
+        "companies": [
+          "Microsoft",
+          "Rubrik",
+          "Walmart",
+          "Goldman Sachs",
+          "LinkedIn",
+          "Oracle",
+          "Apple",
+          "Blackrock",
+          "Paytm",
+          "Publicis Sapient",
+          "S&P Global",
+          "SAP"
+        ]
+      },
+      {
+        "q": "What is a BlockingQueue, and which implementation do you pick?",
+        "a": "A queue whose `put()` blocks when full and `take()` blocks when empty — producer–consumer built in. (`offer`/`poll` return false/null instead, optionally with a timeout.)\n\n- `ArrayBlockingQueue` — bounded, one lock. Good default.\n- `LinkedBlockingQueue` — optionally bounded (unbounded by default — careful), separate put/take locks.\n- `SynchronousQueue` — no capacity; direct hand-off (used by `newCachedThreadPool`).\n- `PriorityBlockingQueue`, `DelayQueue` — ordering / delayed tasks.",
+        "n": 8,
+        "companies": [
+          "Salesforce",
+          "LinkedIn",
+          "Meesho",
+          "Oracle",
+          "Park+",
+          "Rubrik",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Build your own thread pool.",
+        "a": "Minimal version: a `BlockingQueue<Runnable>` plus N worker threads looping on `take()`:\n\n```java\nclass Pool {\n  private final BlockingQueue<Runnable> q = new LinkedBlockingQueue<>(1000);\n  private volatile boolean running = true;\n  Pool(int n) { for (int i = 0; i < n; i++) new Thread(() -> {\n      while (running || !q.isEmpty()) {\n        try { Runnable r = q.poll(100, MILLISECONDS); if (r != null) r.run(); }\n        catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }\n        catch (RuntimeException e) { /* log; keep the worker alive */ }\n      }}).start(); }\n  void submit(Runnable r) { if (!running || !q.offer(r)) throw new RejectedExecutionException(); }\n  void shutdown() { running = false; }\n}\n```\n\nThen discuss what's missing: bounded max threads, rejection policy, Futures, graceful vs immediate shutdown.",
+        "n": 8,
+        "companies": [
+          "Rubrik",
+          "LinkedIn",
+          "Microsoft",
+          "Uber",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "ThreadPoolExecutor: core size, max size, queue and rejection policy — what happens when the queue is full?",
+        "a": "Submission order:\n1. Fewer than **core** threads running → start a new thread.\n2. Else → put the task in the **queue**.\n3. Queue full → start threads up to **max**.\n4. At max and queue full → **rejection policy**: `AbortPolicy` (throw, default), `CallerRunsPolicy` (caller runs it — natural back-pressure), `DiscardPolicy`, `DiscardOldestPolicy`.\n\nTrap: with an **unbounded** `LinkedBlockingQueue`, step 3 never happens — you never exceed core threads and the queue grows until OOM. That's why `Executors.newFixedThreadPool` is discouraged in production.\n\nSizing: CPU-bound ≈ cores (+1); IO-bound ≈ cores × (1 + wait time / compute time).",
+        "n": 7,
+        "companies": [
+          "CoreWeave",
+          "Knot Solutions",
+          "Rubrik",
+          "Uber",
+          "Walmart"
+        ]
+      }
+    ]
+  },
+  "CONC-04": {
+    "posts": 15,
+    "items": [
+      {
+        "q": "What is CompletableFuture — how do you chain, combine and handle errors?",
+        "a": "A Future you can **compose** without blocking:\n\n```java\nCompletableFuture<User> u = supplyAsync(() -> users.get(id), ioPool);\nCompletableFuture<List<Order>> o = supplyAsync(() -> orders.find(id), ioPool);\nCompletableFuture<Profile> p = u.thenCombine(o, Profile::new)        // two results\n        .orTimeout(2, SECONDS)\n        .exceptionally(ex -> Profile.empty());                        // fallback\n```\n\n- `thenApply` (map), `thenCompose` (flatMap — next step is itself async), `thenCombine` (zip two), `allOf`/`anyOf`.\n- Errors: `exceptionally`, `handle`, `whenComplete`.\n- **Pass your own executor** — the default is the common ForkJoinPool, which is sized for CPU work, not blocking IO.",
+        "n": 8,
+        "companies": [
+          "EPAM",
+          "Apple",
+          "NPCI",
+          "Oracle",
+          "S&P Global"
+        ]
+      },
+      {
+        "q": "Runnable vs Callable?",
+        "a": "- `Runnable.run()` — returns nothing, can't throw checked exceptions.\n- `Callable<V>.call()` — returns a value and may throw checked exceptions.\n\n`ExecutorService.submit()` accepts both and returns a `Future` (for a Runnable, `get()` returns null). `Thread` itself only takes a Runnable.",
+        "n": 4,
+        "companies": [
+          "Apple"
+        ]
+      },
+      {
+        "q": "Call several services in parallel and combine the results (scatter-gather).",
+        "a": "```java\nList<CompletableFuture<Price>> calls = vendors.stream()\n        .map(v -> supplyAsync(() -> v.quote(item), ioPool)\n                 .completeOnTimeout(Price.NONE, 800, MILLISECONDS))\n        .toList();\nList<Price> prices = CompletableFuture.allOf(calls.toArray(CompletableFuture[]::new))\n        .thenApply(x -> calls.stream().map(CompletableFuture::join).toList())\n        .join();\n```\n\nTalk through: a dedicated IO pool, a timeout per call, what \"fail fast\" vs \"best effort\" means for the user, and total latency ≈ the slowest call instead of the sum.",
+        "n": 4,
+        "companies": [
+          "6Sense",
+          "Apple",
+          "Astrotalk",
+          "Swiggy"
+        ]
+      },
+      {
+        "q": "Future vs CompletableFuture — what does Future not let you do?",
+        "a": "A plain `Future` can only be polled (`isDone`) or **blocked on** (`get()`). You can't attach a callback, chain the next step, combine two futures, or complete it yourself.\n\nCompletableFuture adds all of that (`thenApply`, `thenCombine`, `allOf`, `complete()`, `exceptionally`) and still implements Future. ExecutorService runs tasks; CompletableFuture composes their results — you usually use both.",
+        "n": 3,
+        "companies": [
+          "Apple",
+          "Oracle",
+          "Publicis Sapient"
+        ]
+      }
+    ]
+  },
+  "CONC-05": {
+    "posts": 4,
+    "items": [
+      {
+        "q": "Stream vs parallel stream — how does parallelStream work, and when does it hurt?",
+        "a": "`parallelStream()` splits the source and runs chunks on the **common ForkJoinPool** (cores − 1 threads), then merges.\n\nIt helps for large, CPU-heavy, easily-splittable data (arrays, ArrayList) with no shared state. It hurts when:\n- the work is **blocking IO** (it starves the common pool — which CompletableFuture also uses by default),\n- the data is small or hard to split (LinkedList, `iterate`),\n- the operations have side effects or need order (`forEachOrdered`, `limit`).",
+        "n": 2,
+        "companies": [
+          "Meesho"
+        ]
+      },
+      {
+        "q": "newFixedThreadPool vs newCachedThreadPool vs newSingleThreadExecutor — what's the hidden danger in each?",
+        "a": "- **Fixed(n)**: n threads, **unbounded** queue → memory grows without limit under overload.\n- **Cached**: unbounded **threads** (SynchronousQueue) → a spike creates thousands of threads.\n- **SingleThread**: one thread, unbounded queue → same queue risk; useful for strict ordering.\n- **Scheduled(n)**: delayed / periodic tasks.\n- **WorkStealing**: a ForkJoinPool.\n\nIn production, build a `ThreadPoolExecutor` yourself with a **bounded queue**, named threads and an explicit rejection policy.",
+        "n": 2,
+        "companies": [
+          "Goldman Sachs",
+          "S&P Global"
+        ]
+      }
+    ]
+  },
+  "CONC-10": {
+    "posts": 9,
+    "items": [
+      {
+        "q": "shutdown() vs shutdownNow() — how do you shut a pool down gracefully?",
+        "a": "- `shutdown()`: stop accepting tasks, finish queued and running ones.\n- `shutdownNow()`: interrupt running tasks and **return** the queued ones that never ran.\n\nTwo-phase pattern:\n\n```java\npool.shutdown();\nif (!pool.awaitTermination(30, SECONDS)) {\n  pool.shutdownNow();\n  pool.awaitTermination(10, SECONDS);\n}\n```\n\nIn Kubernetes, SIGTERM gives you a grace period — Spring Boot's `server.shutdown=graceful` plus the executor's `awaitTerminationSeconds` is how in-flight work isn't lost.",
+        "n": 5,
+        "companies": [
+          "Rubrik",
+          "Adobe",
+          "LinkedIn",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Build a scheduler that runs tasks after a delay or periodically (ScheduledExecutorService).",
+        "a": "Library: `ScheduledExecutorService.schedule(task, 5, SECONDS)`, `scheduleAtFixedRate` (start-to-start), `scheduleWithFixedDelay` (end-to-start). If a periodic task throws, **later runs are silently cancelled** — catch inside the task.\n\nFrom scratch: a `DelayQueue<ScheduledTask>` (or a `PriorityQueue` ordered by run time + a lock/condition), N worker threads blocking on `take()`, and for periodic tasks re-enqueue with the next run time. Add cancellation and graceful shutdown.",
+        "n": 5,
+        "companies": [
+          "Microsoft",
+          "Rubrik",
+          "Salesforce",
+          "Spinny",
+          "Uber"
+        ]
+      }
+    ]
+  },
+  "CONC-11": {
+    "posts": 4,
+    "items": [
+      {
+        "q": "Virtual threads — how are they different from platform threads, and do they block on I/O?",
+        "a": "A virtual thread is a lightweight thread managed by the JVM, **mounted** on a small pool of carrier (platform) threads. When it blocks on I/O, the JVM **unmounts** it and the carrier runs another one — so you can have millions, and simple blocking code scales like async code.\n\n- Great for **IO-bound** request handling (`spring.threads.virtual.enabled=true`).\n- No gain for CPU-bound work.\n- Don't pool them; limit concurrency to a resource with a `Semaphore`.\n- **Pinning**: before JDK 24 a virtual thread blocking inside `synchronized` pinned its carrier; native calls still pin.\n- The DB connection pool is still the real limit.",
+        "n": 4,
+        "companies": [
+          "Apple",
+          "Fidelity",
+          "Kotak Mahindra Bank",
+          "MobiKwik"
+        ]
+      }
+    ]
+  },
+  "CONC-13": {
+    "posts": 43,
+    "items": [
+      {
+        "q": "Print odd and even numbers alternately using two threads.",
+        "a": "```java\nclass OddEven {\n  private int n = 1; private final int max = 20;\n  synchronized void print(boolean wantOdd) throws InterruptedException {\n    while (n <= max) {\n      while (n <= max && (n % 2 == 1) != wantOdd) wait();\n      if (n <= max) { System.out.println(Thread.currentThread().getName() + \" \" + n++); }\n      notifyAll();\n    }\n  }\n}\nOddEven p = new OddEven();\nnew Thread(() -> { try { p.print(true); } catch (InterruptedException ignored) {} }, \"odd\").start();\nnew Thread(() -> { try { p.print(false); } catch (InterruptedException ignored) {} }, \"even\").start();\n```\n\nAlternatives: two `Semaphore`s (odd starts with 1 permit, even with 0, each releases the other) — often the cleanest to explain.",
+        "n": 23,
+        "companies": [
+          "DP World",
+          "Arize",
+          "D. E. Shaw",
+          "Delivery Hero",
+          "Flipkart",
+          "Goldman Sachs",
+          "IBM",
+          "Informatica",
+          "Licious",
+          "MobiKwik",
+          "Oblivious",
+          "Pocketpills"
+        ]
+      },
+      {
+        "q": "Implement producer–consumer with a bounded buffer.",
+        "a": "First the honest answer — use the JDK:\n\n```java\nBlockingQueue<Job> q = new ArrayBlockingQueue<>(100);\n// producer: q.put(job);   consumer: Job j = q.take();\n```\n\nThen show you know what it does underneath:\n\n```java\nclass Buffer<T> {\n  private final Queue<T> q = new ArrayDeque<>(); private final int cap;\n  Buffer(int cap) { this.cap = cap; }\n  synchronized void put(T t) throws InterruptedException {\n    while (q.size() == cap) wait();\n    q.add(t); notifyAll();\n  }\n  synchronized T take() throws InterruptedException {\n    while (q.isEmpty()) wait();\n    T t = q.poll(); notifyAll(); return t;\n  }\n}\n```\n\nPoints they check: `while` not `if`, `notifyAll`, and a clean way to stop consumers (a poison-pill item or interruption).",
+        "n": 13,
+        "companies": [
+          "Microsoft",
+          "Rubrik",
+          "AMD",
+          "Adobe",
+          "Cisco",
+          "Intuit",
+          "NAB",
+          "ReliaQuest"
+        ]
+      },
+      {
+        "q": "N threads must print 1, 2, 3 … in order, each thread taking its turn.",
+        "a": "Generalise odd/even: a shared counter, and thread `i` waits until `counter % N == i`.\n\n```java\nsynchronized void run(int id) throws InterruptedException {\n  while (true) {\n    while (counter <= max && counter % N != id) wait();\n    if (counter > max) { notifyAll(); return; }\n    System.out.println(\"T\" + id + \": \" + counter++);\n    notifyAll();\n  }\n}\n```\n\nOr an array of N semaphores where thread `i` releases semaphore `(i + 1) % N`. Mention that `notifyAll` wakes everyone (N−1 go back to sleep) — semaphores avoid that waste.",
+        "n": 5,
+        "companies": [
+          "Arize",
+          "Arrise Solutions",
+          "Goldman Sachs",
+          "SentinelOne"
+        ]
+      },
+      {
+        "q": "Implement a thread-safe blocking queue yourself.",
+        "a": "With `ReentrantLock` and two conditions — the version that impresses:\n\n```java\nclass BQ<T> {\n  private final Deque<T> q = new ArrayDeque<>(); private final int cap;\n  private final ReentrantLock lock = new ReentrantLock();\n  private final Condition notFull = lock.newCondition(), notEmpty = lock.newCondition();\n  BQ(int cap) { this.cap = cap; }\n  void put(T t) throws InterruptedException {\n    lock.lock(); try { while (q.size() == cap) notFull.await(); q.add(t); notEmpty.signal(); } finally { lock.unlock(); }\n  }\n  T take() throws InterruptedException {\n    lock.lock(); try { while (q.isEmpty()) notEmpty.await(); T t = q.poll(); notFull.signal(); return t; } finally { lock.unlock(); }\n  }\n}\n```\n\nTwo conditions mean producers only wake consumers and vice versa — no `notifyAll` stampede.",
+        "n": 5,
+        "companies": [
+          "Rubrik",
+          "Adobe",
+          "Microsoft"
+        ]
+      },
+      {
+        "q": "CountDownLatch vs CyclicBarrier vs Semaphore — which solves what?",
+        "a": "- **CountDownLatch(n)**: one-shot. Threads `countDown()`; waiters `await()` until it hits zero. \"Main waits for 3 workers to finish\" or \"all workers start together\".\n- **CyclicBarrier(n)**: n threads wait for **each other** at a point, then all continue; reusable for rounds.\n- **Semaphore(n)**: at most n threads in a section at once.\n- **Phaser**: a reusable, dynamic barrier — depth only.",
+        "n": 2,
+        "companies": [
+          "Rakuten"
+        ]
+      }
+    ]
+  },
+  "CONC-14": {
+    "posts": 10,
+    "items": [
+      {
+        "q": "@Async or a message queue for long-running background work?",
+        "a": "`@Async` runs work in the **same JVM's memory**: if the pod restarts, queued and running tasks are lost, there's no retry, and you can't spread load across instances.\n\nA queue (Kafka/SQS/RabbitMQ) or a jobs table gives **durability, retries, back-pressure and horizontal scaling**.\n\nRule: `@Async` for best-effort, short, losable work (send a notification, warm a cache). A queue or job store for anything the user is waiting on or that must not be lost — return `202 Accepted` with a job id and let the client poll or get a callback.",
+        "n": 6,
+        "companies": [
+          "Adobe",
+          "Kotak Mahindra Bank",
+          "Microsoft",
+          "Paytm",
+          "ServiceNow"
+        ]
+      },
+      {
+        "q": "@Async — how does it work, and why does it sometimes run synchronously?",
+        "a": "`@EnableAsync` makes Spring wrap the bean in a **proxy**; calls to an `@Async` method through the proxy are submitted to an executor and return immediately (`void` or `CompletableFuture<T>`).\n\nIt silently runs **synchronously** when:\n- called from **the same class** (`this.method()` skips the proxy),\n- the method is `private`/`final` or the class isn't a Spring bean,\n- `@EnableAsync` is missing.\n\nAlways define your own `ThreadPoolTaskExecutor` (bounded queue, named threads). Exceptions from `void` methods go to an `AsyncUncaughtExceptionHandler`, and the security/transaction context does **not** follow into the new thread.",
+        "n": 2,
+        "companies": [
+          "Kotak Mahindra Bank"
+        ]
+      },
+      {
+        "q": "@Scheduled jobs — how do you stop a cron job running on every instance?",
+        "a": "`@Scheduled(cron = \"0 0 2 * * *\")` (with `@EnableScheduling`) runs on **every** instance — three pods, three runs.\n\nWays to run it once:\n- **ShedLock** — a lock row in the DB (or Redis) taken before the job runs.\n- A **Kubernetes CronJob** instead of in-app scheduling.\n- Leader election.\n- Make the job **idempotent** anyway (claim rows with `SELECT … FOR UPDATE SKIP LOCKED` or a status update), so overlap can't double-process.\n\nAlso: by default all `@Scheduled` methods share **one** thread — a slow job delays the others.",
+        "n": 2,
+        "companies": [
+          "Visa"
+        ]
+      },
+      {
+        "q": "How do you configure the executor for @Async (ThreadPoolTaskExecutor)?",
+        "a": "```java\n@Bean(name = \"ioExecutor\")\nThreadPoolTaskExecutor ioExecutor() {\n  var ex = new ThreadPoolTaskExecutor();\n  ex.setCorePoolSize(8); ex.setMaxPoolSize(32); ex.setQueueCapacity(500);\n  ex.setThreadNamePrefix(\"io-\");\n  ex.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());\n  ex.setWaitForTasksToCompleteOnShutdown(true); ex.setAwaitTerminationSeconds(30);\n  return ex;\n}\n// @Async(\"ioExecutor\") on the method\n```\n\nBounded queue, named threads, a rejection policy, and graceful shutdown — say each and why.",
+        "n": 2,
+        "companies": [
+          "NPCI",
+          "Rubrik"
+        ]
+      }
+    ]
+  },
+  "CONC-06": {
+    "posts": 45,
+    "items": [
+      {
+        "q": "A service gets slow (high latency) in production — how do you debug it?",
+        "a": "Narrow it down before guessing:\n1. **Scope** — all endpoints or one? since a deploy? one pod or all? (dashboards: p99, error rate, throughput).\n2. **Where the time goes** — tracing (Micrometer/OpenTelemetry) shows the slow span: DB, downstream call, or our code.\n3. **Resource saturation** — CPU, heap/GC pauses, DB connection pool (Hikari pending), Tomcat threads, downstream timeouts.\n4. **Thread dump** (2–3, a few seconds apart) — many threads BLOCKED on one lock or WAITING on a pool means contention, not CPU.\n5. Fix, then add the alert that would have caught it.\n\nLow CPU but slow requests usually means **waiting** (pool exhaustion, a slow downstream with no timeout, lock contention).",
+        "n": 19,
+        "companies": [
+          "Microsoft",
+          "Goldman Sachs",
+          "PayPal",
+          "Arista Networks",
+          "Astrotalk",
+          "Autodesk",
+          "DocuSign",
+          "Fidelity",
+          "Mastercard",
+          "Paytm",
+          "Qualcomm",
+          "Sunking"
+        ]
+      },
+      {
+        "q": "How do you find a memory leak — what is a heap dump and when do you take one?",
+        "a": "Symptoms: old-gen usage climbs after every full GC, then `OutOfMemoryError` or long GC pauses.\n\nSteps:\n1. Confirm with GC logs / metrics (heap after GC keeps rising).\n2. Take a **heap dump** — `jcmd <pid> GC.heap_dump file.hprof`, or automatically with `-XX:+HeapDumpOnOutOfMemoryError`.\n3. Open it in **Eclipse MAT**: dominator tree / leak suspects → which objects hold the most retained memory, and the GC-root path keeping them alive.\n4. Usual culprits: unbounded static caches/maps, listeners not removed, `ThreadLocal` in pools, unclosed resources.\n\nA heap dump pauses the JVM and is large — take it from one pod, not the whole fleet.",
+        "n": 14,
+        "companies": [
+          "Adobe",
+          "American Express",
+          "Apple",
+          "Coforge",
+          "Info Edge",
+          "Microsoft",
+          "Qualcomm",
+          "Verizon",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "What do you monitor for JVM health — GC pauses, GC logs, JVM flags?",
+        "a": "- Heap used **after GC** (rising = leak), GC pause time and frequency, allocation rate.\n- Thread count and states, CPU, Metaspace.\n- App level: p99 latency, error rate, connection-pool usage.\n\nTurn these on **before** the incident: GC logging (`-Xlog:gc*`), `-XX:+HeapDumpOnOutOfMemoryError`, Micrometer + Prometheus metrics, JFR available. In containers set `-XX:MaxRAMPercentage` so the heap fits the pod limit.",
+        "n": 9,
+        "companies": [
+          "Publicis Sapient",
+          "Apple",
+          "Arctic Wolf",
+          "Autodesk",
+          "Knot Solutions",
+          "Microsoft",
+          "PayPal"
+        ]
+      },
+      {
+        "q": "How do you detect and resolve a deadlock in a running system?",
+        "a": "**In the JVM**: a thread dump prints `Found one Java-level deadlock` with the threads and which lock each holds and waits for. Fix the code with a consistent lock order or `tryLock` with a timeout; restart to recover now.\n\n**In the database**: Postgres/MySQL detect it and abort one transaction (`deadlock detected`) — check the DB logs for the two statements. Fix by touching rows in the same order in every transaction, keeping transactions short, and retrying the aborted one.",
+        "n": 5,
+        "companies": [
+          "Alkira",
+          "Cisco",
+          "Microsoft",
+          "Morgan Stanley",
+          "Zomato"
+        ]
+      },
+      {
+        "q": "One pod is at 100% CPU — how do you find the guilty thread?",
+        "a": "1. `top -H -p <pid>` → the thread id using the CPU.\n2. Convert it to hex (`printf '%x' <tid>`).\n3. Take a thread dump (`jcmd <pid> Thread.print` or `jstack`) and find `nid=0x<hex>` — that stack trace is the hot code.\n4. Repeat a few times: a stack that's always in the same place is your loop, regex or serialization. If the hot threads are GC threads, it's memory pressure, not your code.\n\nJava Flight Recorder (`jcmd <pid> JFR.start`) gives the same answer as a profile with little overhead.",
+        "n": 3,
+        "companies": [
+          "Capgemini",
+          "Fidelity",
+          "Info Edge"
+        ]
+      }
+    ]
+  },
+  "JAVA-01": {
+    "posts": 135,
+    "items": [
+      {
+        "q": "How does HashMap work internally — hashing, buckets and collisions?",
+        "a": "`put(k, v)`: compute `k.hashCode()`, spread the bits (`h ^ (h >>> 16)`), pick a bucket with `(n - 1) & hash`. If the bucket is empty, store a node. If not, walk the bucket and use `equals()` to find a matching key — replace its value, or append a new node.\n\n`get(k)` does the same hash → bucket → `equals()` walk.\n\n- Many keys landing in one bucket = a **collision**. Java 8+ turns a bucket into a red-black tree after 8 nodes (if the table has ≥ 64 buckets), so the worst case is O(log n), not O(n).\n- **Say:** \"hashCode picks the bucket, equals finds the key.\"\n- **Don't say** \"HashMap is O(1)\" without \"on average, with a good hashCode\".",
+        "n": 68,
+        "companies": [
+          "Goldman Sachs",
+          "Walmart",
+          "Amazon",
+          "Arista Networks",
+          "EPAM",
+          "Morgan Stanley",
+          "Publicis Sapient",
+          "Rakuten",
+          "Visa",
+          "American Express",
+          "Arcesium",
+          "BharatPe"
+        ]
+      },
+      {
+        "q": "HashMap vs ConcurrentHashMap — how does ConcurrentHashMap stay thread-safe without locking the whole map?",
+        "a": "HashMap is not thread-safe: two threads resizing together can lose entries.\n\nConcurrentHashMap (Java 8+):\n- **Reads** take no lock (fields are `volatile`).\n- **Writes** to an empty bucket use **CAS**; writes to a non-empty bucket lock **only that bucket's first node** (`synchronized`). Other buckets stay free.\n- Resizing is done cooperatively by several threads.\n- Java 7 used ~16 \"segments\" (lock striping) — mention it only as history.\n\nAlso: no `null` keys or values (a `null` from `get` would be ambiguous), and iterators are weakly consistent — they never throw `ConcurrentModificationException`.",
+        "n": 37,
+        "companies": [
+          "EPAM",
+          "Oracle",
+          "D. E. Shaw",
+          "Kotak Mahindra Bank",
+          "TripJack",
+          "Apple",
+          "Arcesium",
+          "Birdeye",
+          "Cohesity",
+          "Goldman Sachs",
+          "Google",
+          "IBM"
+        ]
+      },
+      {
+        "q": "ArrayList vs LinkedList — and how does an ArrayList grow?",
+        "a": "- **ArrayList**: a resizable array. Index access O(1). Insert/remove in the middle O(n) (shifting). When full it grows by **1.5×** and copies.\n- **LinkedList**: doubly linked nodes. Insert/remove at a known node O(1), but **finding** the node is O(n), and every node costs extra memory and cache misses.\n\nIn practice ArrayList wins almost always — say so. LinkedList only makes sense as a queue/deque, and even there `ArrayDeque` is usually better.",
+        "n": 16,
+        "companies": [
+          "Goldman Sachs",
+          "ADP",
+          "Blinkit",
+          "Cognizant",
+          "EPAM",
+          "Google",
+          "JPMorgan",
+          "Marsh McLennan",
+          "Rakuten",
+          "Sprinklr",
+          "Volvo Cars"
+        ]
+      },
+      {
+        "q": "What changed in HashMap in Java 8 (treeification)?",
+        "a": "Before Java 8 a bucket was always a linked list, so a bad hash (or an attack sending colliding keys) made lookups O(n).\n\nJava 8: when one bucket holds **more than 8** entries and the table has **≥ 64** buckets, that bucket becomes a **red-black tree** (O(log n)). It turns back into a list below **6**. If the table is smaller than 64, Java resizes instead.\n\nTrade-off: tree nodes use about twice the memory, which is why it only happens for crowded buckets. Keys that implement `Comparable` order better inside the tree.",
+        "n": 12,
+        "companies": [
+          "Adobe",
+          "D. E. Shaw",
+          "EPAM",
+          "Games24x7",
+          "Lowe's",
+          "Publicis Sapient",
+          "Yes Madam",
+          "Zomato"
+        ]
+      },
+      {
+        "q": "What are load factor, resizing and rehashing in a HashMap?",
+        "a": "- Default capacity **16**, load factor **0.75** → when size passes 12, the table **doubles**.\n- On resize every entry moves to the new table. Java 8 is clever: each node either stays at index `i` or moves to `i + oldCapacity` (one extra bit of the hash decides) — no full rehash.\n- Resizing is O(n) and memory-heavy, so if you know the size, pass an initial capacity (`expected / 0.75 + 1`).\n- Lower load factor = fewer collisions, more memory; higher = the reverse.",
+        "n": 11,
+        "companies": [
+          "Google",
+          "EPAM",
+          "Goldman Sachs",
+          "Publicis Sapient",
+          "TomTom"
+        ]
+      },
+      {
+        "q": "Fail-fast vs fail-safe iterators — what is ConcurrentModificationException?",
+        "a": "- **Fail-fast** (ArrayList, HashMap): the iterator checks a `modCount`; if the collection was changed structurally (not through the iterator itself), it throws `ConcurrentModificationException`. Happens even in **one** thread — e.g. `list.remove()` inside a for-each.\n- **Fail-safe / weakly consistent** (`CopyOnWriteArrayList`, `ConcurrentHashMap`): iterate over a snapshot or tolerate changes, never throw.\n\nFix for the single-thread case: `iterator.remove()` or `list.removeIf(...)`.",
+        "n": 9,
+        "companies": [
+          "Wise",
+          "EPAM",
+          "JPMorgan",
+          "Optum",
+          "Oracle",
+          "Publicis Sapient",
+          "S&P Global"
+        ]
+      },
+      {
+        "q": "Explain the Collections framework hierarchy.",
+        "a": "`Iterable` → `Collection` → three branches:\n- `List` (ordered, duplicates): ArrayList, LinkedList\n- `Set` (no duplicates): HashSet, LinkedHashSet, TreeSet\n- `Queue` / `Deque`: ArrayDeque, PriorityQueue, LinkedList\n\n`Map` is **separate** (not a Collection): HashMap, LinkedHashMap, TreeMap, ConcurrentHashMap.\n\n`Collection` is the interface; `Collections` is the utility class (`sort`, `unmodifiableList`, `synchronizedList`).",
+        "n": 9,
+        "companies": [
+          "Cognizant",
+          "LSEG",
+          "NoBroker",
+          "Paytm",
+          "Sprinklr",
+          "Swiggy"
+        ]
+      },
+      {
+        "q": "How does HashSet work internally, and how does it detect duplicates?",
+        "a": "A HashSet is a HashMap underneath: your element is the **key**, and the value is one shared dummy object (`PRESENT`).\n\n`add(e)` is `map.put(e, PRESENT) == null`. So a duplicate is whatever HashMap thinks is the same key: same `hashCode()` **and** `equals()` returns true.\n\nFollow-up they like: \"make HashSet treat employees with the same name as duplicates\" → override `equals()` and `hashCode()` on `name` only.",
+        "n": 8,
+        "companies": [
+          "Apple",
+          "EPAM",
+          "Goldman Sachs",
+          "Google",
+          "OneLap",
+          "TomTom"
+        ]
+      },
+      {
+        "q": "Implement your own HashMap (put / get) from scratch.",
+        "a": "Keep it small and explain as you go:\n\n```java\nclass MyMap<K, V> {\n  static class Node<K, V> { final K k; V v; Node<K, V> next; Node(K k, V v, Node<K, V> n) { this.k = k; this.v = v; next = n; } }\n  Node<K, V>[] t = new Node[16]; int size;\n  int idx(Object k) { return k == null ? 0 : (k.hashCode() & 0x7fffffff) % t.length; }\n  V get(K k) { for (Node<K, V> n = t[idx(k)]; n != null; n = n.next) if (Objects.equals(n.k, k)) return n.v; return null; }\n  void put(K k, V v) {\n    int i = idx(k);\n    for (Node<K, V> n = t[i]; n != null; n = n.next) if (Objects.equals(n.k, k)) { n.v = v; return; }\n    t[i] = new Node<>(k, v, t[i]);\n    if (++size > t.length * 3 / 4) resize();\n  }\n  void resize() { Node<K, V>[] old = t; t = new Node[old.length * 2]; size = 0;\n    for (Node<K, V> h : old) for (Node<K, V> n = h; n != null; n = n.next) put(n.k, n.v); }\n}\n```\n\nThen name what you skipped: treeification, `remove`, thread safety.",
+        "n": 7,
+        "companies": [
+          "Goldman Sachs",
+          "Google",
+          "LinkedIn"
+        ]
+      },
+      {
+        "q": "Which collections are thread-safe — CopyOnWriteArrayList, synchronizedList, ConcurrentHashMap?",
+        "a": "- `Collections.synchronizedList/Map`: wraps every call in one lock. Simple, slow under contention, and you still must lock manually while iterating.\n- `CopyOnWriteArrayList`: every write copies the whole array; reads are lock-free. Great for **read-mostly** lists (listeners, config); terrible for frequent writes.\n- `ConcurrentHashMap`: per-bucket locking + CAS. The default thread-safe map.\n- `BlockingQueue` (ArrayBlockingQueue, LinkedBlockingQueue): producer–consumer hand-off.",
+        "n": 6,
+        "companies": [
+          "Oracle",
+          "Adobe",
+          "MobiKwik",
+          "Paytm"
+        ]
+      },
+      {
+        "q": "HashMap vs Hashtable (and why can HashMap hold one null key)?",
+        "a": "- **Hashtable**: every method `synchronized` (one lock for the whole table), no nulls, legacy (Java 1.0). Don't use it.\n- **HashMap**: not synchronized, allows **one null key** (always stored in bucket 0) and many null values.\n- Need thread safety? Use **ConcurrentHashMap**, not Hashtable or `Collections.synchronizedMap` — finer-grained locking, much better under contention.",
+        "n": 4,
+        "companies": [
+          "Lenovo",
+          "ServiceNow",
+          "Volvo Cars",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Can a custom object be a HashMap key? What must it guarantee?",
+        "a": "Yes, if it overrides **both** `equals()` and `hashCode()` consistently, and the fields they use **never change** while it is in the map.\n\nIf a key's fields change after insertion, its hash changes, it now \"lives\" in the wrong bucket, and `get()` can't find it — a silent leak.\n\nSafest: make key classes immutable — or use a `record`, which generates correct `equals`/`hashCode` for you.",
+        "n": 1,
+        "companies": []
+      }
+    ]
+  },
+  "JAVA-09": {
+    "posts": 105,
+    "items": [
+      {
+        "q": "Implement an LRU cache with O(1) get and put.",
+        "a": "Classic answer: **HashMap + doubly linked list**. The map gives O(1) lookup of a node; the list keeps recency order (most recent at the head, evict from the tail).\n\n- `get(k)`: find the node, move it to the head.\n- `put(k, v)`: update and move to head, or insert at head; if over capacity, remove the tail node and its map entry.\n\nJava shortcut (mention it, but be ready to write the manual version):\n\n```java\nclass LRU<K, V> extends LinkedHashMap<K, V> {\n  final int cap;\n  LRU(int cap) { super(16, 0.75f, true); this.cap = cap; }   // true = access order\n  protected boolean removeEldestEntry(Map.Entry<K, V> e) { return size() > cap; }\n}\n```\n\nFollow-ups: make it thread-safe (lock, or `ConcurrentHashMap` + `ConcurrentLinkedDeque` with care), add TTL, LFU.",
+        "n": 63,
+        "companies": [
+          "Apple",
+          "Goldman Sachs",
+          "Amazon",
+          "Freshworks",
+          "LinkedIn",
+          "Oracle",
+          "Paytm",
+          "Walmart",
+          "Microsoft",
+          "PayPal",
+          "Salesforce",
+          "Sprinklr"
+        ]
+      },
+      {
+        "q": "HashMap vs LinkedHashMap vs TreeMap — how does each order keys, and how does TreeMap work inside?",
+        "a": "- **HashMap**: no order. O(1) average.\n- **LinkedHashMap**: HashMap + a doubly linked list through the entries → **insertion order** (or **access order**, which is how you build an LRU).\n- **TreeMap**: a **red-black tree** → keys sorted (natural order or a Comparator). `get/put` O(log n). Gives `floorKey`, `ceilingKey`, `headMap`, `subMap` — use it when you need ranges.\n\nTreeSet is a TreeMap with dummy values, like HashSet is a HashMap.",
+        "n": 18,
+        "companies": [
+          "EPAM",
+          "Google",
+          "Atlassian",
+          "Goldman Sachs",
+          "Microsoft",
+          "Oracle",
+          "Publicis Sapient",
+          "Rakuten",
+          "True Balance",
+          "Truemeds",
+          "Workday",
+          "Yahoo"
+        ]
+      },
+      {
+        "q": "Implement an LFU cache.",
+        "a": "Keep three maps:\n- `key → value`\n- `key → frequency`\n- `frequency → LinkedHashSet of keys` (insertion order breaks ties by recency)\n- plus `minFreq`.\n\n`get`: bump the key from freq `f` to `f+1`; if bucket `f` empties and `f == minFreq`, increment `minFreq`.\n`put` at capacity: evict the first key in bucket `minFreq`, then insert with freq 1 and set `minFreq = 1`.\n\nAll operations O(1).",
+        "n": 15,
+        "companies": [
+          "Adobe",
+          "Autodesk",
+          "Blinkit",
+          "Freshworks",
+          "Goldman Sachs",
+          "LinkedIn",
+          "Meesho",
+          "Salesforce",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Comparable vs Comparator — when do you use which?",
+        "a": "- **Comparable**: the class defines its own *natural order* — `compareTo()` inside the class (String, Integer, LocalDate). One order only.\n- **Comparator**: an order defined *outside* the class; as many as you like.\n\n```java\nlist.sort(Comparator.comparing(Emp::getDept)\n                    .thenComparing(Emp::getSalary, Comparator.reverseOrder()));\n```\n\nIn practice you reach for Comparator. Keep `compareTo` consistent with `equals` or TreeSet/TreeMap will \"lose\" elements.",
+        "n": 13,
+        "companies": [
+          "EPAM",
+          "Oracle",
+          "Apple",
+          "Interactive Brokers",
+          "JPMorgan",
+          "NPCI",
+          "Nike",
+          "True Balance",
+          "Volvo Cars"
+        ]
+      },
+      {
+        "q": "Sort a list of custom objects by one or more fields.",
+        "a": "```java\nemployees.sort(Comparator.comparing(Employee::getDept)\n                         .thenComparing(Employee::getSalary, Comparator.reverseOrder())\n                         .thenComparing(Employee::getName));\n```\n\n- Streams version: `employees.stream().sorted(...).toList()`.\n- Null-safe: `Comparator.nullsLast(Comparator.naturalOrder())`.\n- Don't write `(a, b) -> a.getSalary() - b.getSalary()` — subtraction overflows for big ints. Use `Integer.compare` or `comparingInt`.",
+        "n": 11,
+        "companies": [
+          "EPAM",
+          "Freshworks",
+          "Goldman Sachs",
+          "Google",
+          "JPMorgan",
+          "NPCI",
+          "Visa"
+        ]
+      },
+      {
+        "q": "How does a PriorityQueue work — and can you build one from scratch?",
+        "a": "It's a **binary min-heap** stored in an array: children of `i` are `2i+1` and `2i+2`.\n\n- `offer`: add at the end, **sift up** while smaller than the parent — O(log n).\n- `poll`: take the root, move the last element to the root, **sift down** — O(log n).\n- `peek`: O(1). Iteration order is **not** sorted.\n\nMax-heap: `new PriorityQueue<>(Comparator.reverseOrder())`. Not thread-safe — use `PriorityBlockingQueue`.",
+        "n": 7,
+        "companies": [
+          "Goldman Sachs",
+          "Amazon",
+          "Google",
+          "JPMorgan",
+          "Microsoft"
+        ]
+      }
+    ]
+  },
+  "JAVA-02": {
+    "posts": 56,
+    "items": [
+      {
+        "q": "What is a lambda expression, and how does it relate to functional interfaces?",
+        "a": "A lambda is a short way to write an implementation of a functional interface:\n\n```java\nComparator<String> byLen = (a, b) -> Integer.compare(a.length(), b.length());\n```\n\n- It can use local variables only if they are **effectively final**.\n- It is not an anonymous inner class: no new `this`, and the JVM creates it via `invokedynamic` (cheaper).\n- Method references (`String::length`) are shorthand for lambdas that just call one method.",
+        "n": 27,
+        "companies": [
+          "Oracle",
+          "Accolite",
+          "Apple",
+          "BukuWarung",
+          "Deutsche Bank",
+          "EPAM",
+          "Freshworks",
+          "Google",
+          "Marsh McLennan",
+          "Mastercard",
+          "NPCI",
+          "Nagarro"
+        ]
+      },
+      {
+        "q": "What is a functional interface? Name the built-in ones.",
+        "a": "An interface with **exactly one abstract method**, so a lambda can implement it. `@FunctionalInterface` makes the compiler check that (default/static methods don't count).\n\nBuilt-ins in `java.util.function`:\n- `Function<T,R>` — T → R\n- `Predicate<T>` — T → boolean\n- `Consumer<T>` — T → void\n- `Supplier<T>` — () → T\n- `BiFunction`, `UnaryOperator`, `BinaryOperator`\n\nOlder ones that also qualify: `Runnable`, `Callable`, `Comparator`.",
+        "n": 18,
+        "companies": [
+          "EPAM",
+          "Accolite",
+          "American Express",
+          "Delivery Hero",
+          "Deutsche Bank",
+          "JPMorgan",
+          "Mastercard",
+          "Nagarro",
+          "Publicis Sapient",
+          "Salesforce",
+          "UKG"
+        ]
+      },
+      {
+        "q": "What are the main Java 8 features?",
+        "a": "Name the ones you use, with a line each:\n- **Lambdas + functional interfaces** — behaviour as a value.\n- **Stream API** — declarative filter/map/collect over collections.\n- **Optional** — an explicit \"maybe empty\" return type.\n- **Default and static methods in interfaces** — evolve interfaces without breaking implementers.\n- **java.time** (LocalDate, Instant) — replaced the broken Date/Calendar.\n- **CompletableFuture** — composable async.\n- Smaller: method references, `Collectors`, ConcurrentHashMap rewrite, Metaspace replaced PermGen.",
+        "n": 16,
+        "companies": [
+          "EPAM",
+          "Accolite",
+          "Ciena",
+          "D. E. Shaw",
+          "Deutsche Bank",
+          "IDFC First Bank",
+          "TripJack",
+          "Visa",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "What is a method reference?",
+        "a": "Shorthand for a lambda that only calls an existing method. Four kinds:\n- static: `Integer::parseInt`\n- instance method of a particular object: `System.out::println`\n- instance method of an arbitrary object of a type: `String::toUpperCase`\n- constructor: `ArrayList::new`\n\nUse it when it reads clearer than the lambda — not everywhere.",
+        "n": 6,
+        "companies": [
+          "EPAM",
+          "BukuWarung",
+          "Lenovo",
+          "Nagarro",
+          "Publicis Sapient"
+        ]
+      },
+      {
+        "q": "findFirst vs findAny — and toList() vs collect(Collectors.toList())?",
+        "a": "- `findFirst` respects encounter order; `findAny` may return any element — faster on **parallel** streams. Same on sequential.\n- `stream.toList()` (Java 16+) returns an **unmodifiable** list; `collect(Collectors.toList())` returns a mutable ArrayList (not guaranteed by spec, but in practice). Use `toList()` unless you need to modify the result.",
+        "n": 6,
+        "companies": [
+          "Dezerv",
+          "JPMorgan",
+          "Lowe's",
+          "Meta",
+          "S&P Global",
+          "Sprinto"
+        ]
+      },
+      {
+        "q": "Intermediate vs terminal operations — and why are streams lazy?",
+        "a": "- **Intermediate** (`filter`, `map`, `sorted`, `distinct`) return a new Stream and do **nothing** yet.\n- **Terminal** (`collect`, `forEach`, `count`, `findFirst`, `reduce`) start the work.\n\nLazy means elements flow one at a time through the whole pipeline, so `filter(...).findFirst()` stops at the first match — it doesn't filter the full list first.\n\nA stream can be consumed **once**; reusing it throws `IllegalStateException`.",
+        "n": 4,
+        "companies": [
+          "American Express",
+          "Lenovo"
+        ]
+      },
+      {
+        "q": "map vs flatMap?",
+        "a": "- `map`: one input → one output. `Stream<List<String>>` stays a stream of lists.\n- `flatMap`: one input → a **stream** of outputs, then flattens them into one stream.\n\n```java\nList<List<String>> nested = ...;\nList<String> all = nested.stream().flatMap(List::stream).toList();\n```\n\nSame idea on `Optional`: use `flatMap` when the mapper itself returns an Optional, to avoid `Optional<Optional<T>>`.",
+        "n": 3,
+        "companies": [
+          "EPAM"
+        ]
+      },
+      {
+        "q": "How do you handle exceptions inside a stream or lambda?",
+        "a": "Functional interfaces like `Function` can't throw checked exceptions, so `map(this::readFile)` won't compile if `readFile` throws `IOException`.\n\nOptions:\n- Catch inside the lambda and wrap in an unchecked exception (`UncheckedIOException`).\n- Catch and return a fallback / `Optional.empty()` / a Result object, then filter.\n- Move the risky call out of the stream into a plain loop if error handling is the point.\n\nDon't silently swallow — log or carry the failure forward.",
+        "n": 3,
+        "companies": [
+          "NPCI",
+          "Rakuten"
+        ]
+      }
+    ]
+  },
+  "JAVA-10": {
+    "posts": 77,
+    "items": [
+      {
+        "q": "Group employees by department with streams — then count, average or list names per group.",
+        "a": "```java\nMap<String, List<Employee>> byDept = emps.stream().collect(groupingBy(Employee::getDept));\nMap<String, Long> count = emps.stream().collect(groupingBy(Employee::getDept, counting()));\nMap<String, Double> avg = emps.stream().collect(groupingBy(Employee::getDept, averagingDouble(Employee::getSalary)));\nMap<String, String> names = emps.stream().collect(groupingBy(Employee::getDept,\n        mapping(Employee::getName, joining(\", \"))));\nMap<String, Optional<Employee>> top = emps.stream().collect(groupingBy(Employee::getDept,\n        maxBy(comparingDouble(Employee::getSalary))));\n```\n\nWant the map sorted by key? `groupingBy(f, TreeMap::new, downstream)`.",
+        "n": 28,
+        "companies": [
+          "Visa",
+          "ADP",
+          "Adyen",
+          "Bajaj Finserv Health",
+          "Cisco",
+          "Cognizant",
+          "Gartner",
+          "Google",
+          "Hyperverge",
+          "Knot Solutions",
+          "Ltm",
+          "Marsh McLennan"
+        ]
+      },
+      {
+        "q": "Split numbers into odd and even (or any two groups) with a single stream.",
+        "a": "```java\nMap<Boolean, List<Integer>> parts = nums.stream()\n        .collect(partitioningBy(n -> n % 2 == 0));\nList<Integer> evens = parts.get(true), odds = parts.get(false);\n```\n\n`partitioningBy` always gives both keys (`true` and `false`), even if one list is empty — unlike `groupingBy`, which only has keys that occurred.",
+        "n": 15,
+        "companies": [
+          "Target",
+          "Adobe",
+          "Agoda",
+          "Atlassian",
+          "JPMorgan",
+          "Lenovo",
+          "LinkedIn",
+          "Salesforce",
+          "Swiggy",
+          "Tekion",
+          "Wise"
+        ]
+      },
+      {
+        "q": "Find the second-highest (or Nth highest) salary using streams.",
+        "a": "```java\nOptional<Double> second = emps.stream()\n        .map(Employee::getSalary)\n        .distinct()\n        .sorted(Comparator.reverseOrder())\n        .skip(1)            // n - 1 for the Nth\n        .findFirst();\n```\n\nSay why `distinct()` is there (ties), and that it returns Optional because there may be no second salary. Want the employee, not the number? Sort employees by salary desc and `skip(1)` — but then ask how ties should behave.\n\nThey often ask the SQL version next: `DENSE_RANK()` (see the SQL card).",
+        "n": 14,
+        "companies": [
+          "EPAM",
+          "Oracle",
+          "Birdeye",
+          "Ciena",
+          "Cognizant",
+          "DigiCert",
+          "LSEG",
+          "Marsh McLennan",
+          "Qualcomm",
+          "TripJack"
+        ]
+      },
+      {
+        "q": "Given a list of employees, filter / sort / find the max with streams.",
+        "a": "```java\nList<Employee> over25 = emps.stream()\n        .filter(e -> e.getAge() > 25)\n        .sorted(comparing(Employee::getName))\n        .toList();\n\nOptional<Employee> richest = emps.stream().max(comparingDouble(Employee::getSalary));\ndouble revenue = orders.stream().mapToDouble(Order::getAmount).sum();\nList<String> names = emps.stream().filter(e -> e.getName().startsWith(\"S\")).map(Employee::getName).toList();\n```\n\nUse `mapToDouble/mapToInt` for sums — avoids boxing, and gives `sum()`/`average()`.",
+        "n": 14,
+        "companies": [
+          "Visa",
+          "American Express",
+          "EPAM",
+          "Lenovo",
+          "Rakuten",
+          "Rippling",
+          "Salesforce",
+          "Swiggy",
+          "Target"
+        ]
+      },
+      {
+        "q": "Count character (or word) frequency in a string using streams.",
+        "a": "```java\nMap<Character, Long> freq = s.chars()\n        .mapToObj(c -> (char) c)\n        .collect(groupingBy(Function.identity(), LinkedHashMap::new, counting()));\n\nMap<String, Long> words = Arrays.stream(text.toLowerCase().split(\"\\\\W+\"))\n        .filter(w -> !w.isBlank())\n        .collect(groupingBy(w -> w, counting()));\n```\n\n`LinkedHashMap::new` keeps first-seen order — that matters for the \"first non-repeating\" follow-up.",
+        "n": 6,
+        "companies": [
+          "Deutsche Bank",
+          "Kotak Mahindra Bank",
+          "Optum",
+          "Rakuten Symphony",
+          "TomTom"
+        ]
+      },
+      {
+        "q": "Find the first non-repeating (or first repeating) character using streams.",
+        "a": "```java\nOptional<Character> firstUnique = s.chars().mapToObj(c -> (char) c)\n        .collect(groupingBy(Function.identity(), LinkedHashMap::new, counting()))\n        .entrySet().stream()\n        .filter(e -> e.getValue() == 1)   // == 2 / > 1 for \"first repeating\"\n        .map(Map.Entry::getKey)\n        .findFirst();\n```\n\nThe key detail is `LinkedHashMap` — a plain `groupingBy` gives a HashMap with no order, so \"first\" would be wrong.",
+        "n": 4,
+        "companies": [
+          "Mastercard",
+          "Oracle",
+          "Piramal Group"
+        ]
+      },
+      {
+        "q": "Remove (or find) duplicates from a list using streams.",
+        "a": "```java\nList<Integer> unique = list.stream().distinct().toList();\n\nSet<Integer> seen = new HashSet<>();\nSet<Integer> dups = list.stream().filter(x -> !seen.add(x)).collect(toSet());   // O(n)\n\nSet<Integer> dups2 = list.stream()\n        .collect(groupingBy(x -> x, counting()))\n        .entrySet().stream().filter(e -> e.getValue() > 1).map(Map.Entry::getKey).collect(toSet());\n```\n\nThe `seen.add` trick uses a side effect — fine for a sequential stream, wrong for parallel. Say that.",
+        "n": 4,
+        "companies": [
+          "American Express",
+          "EPAM",
+          "JPMorgan"
+        ]
+      },
+      {
+        "q": "Convert a List to a Map with streams — what happens on duplicate keys?",
+        "a": "```java\nMap<Integer, Employee> byId = emps.stream()\n        .collect(toMap(Employee::getId, Function.identity()));\n```\n\n`toMap` throws `IllegalStateException` on a duplicate key. Pass a merge function to decide:\n\n```java\ntoMap(Employee::getDept, Employee::getSalary, Double::sum)          // sum per dept\ntoMap(Employee::getId, e -> e, (a, b) -> a, LinkedHashMap::new)    // keep first, keep order\n```\n\nIt also throws on `null` values — use `groupingBy` or a loop if values can be null.",
+        "n": 2,
+        "companies": [
+          "EPAM",
+          "NPCI"
+        ]
+      },
+      {
+        "q": "Sort a map by its values (or keys) using streams.",
+        "a": "```java\nLinkedHashMap<String, Integer> byValueDesc = map.entrySet().stream()\n        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())\n        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a, LinkedHashMap::new));\n```\n\nThe `LinkedHashMap::new` is the part people forget — collecting into a plain HashMap throws the order away. By key: `comparingByKey()`, or just `new TreeMap<>(map)`.",
+        "n": 2,
+        "companies": [
+          "Morgan Stanley",
+          "UKG"
+        ]
+      }
+    ]
+  },
+  "JAVA-03": {
+    "posts": 201,
+    "items": [
+      {
+        "q": "Explain the four pillars of OOP with real examples.",
+        "a": "Use examples from your own code, not animals:\n- **Encapsulation** — keep state private, expose behaviour: an `Order` changes status only through `confirm()`/`cancel()`, never a public setter.\n- **Abstraction** — callers see *what*, not *how*: `PaymentGateway.charge()` hides Razorpay vs Stripe.\n- **Inheritance** — reuse an \"is-a\" relationship: `SavingsAccount extends Account`. Use sparingly.\n- **Polymorphism** — one call, many behaviours: `gateway.charge()` runs whichever implementation was injected (runtime); `print(int)` vs `print(String)` (compile time).",
+        "n": 129,
+        "companies": [
+          "Cognizant",
+          "Microsoft",
+          "Adobe",
+          "Amazon",
+          "Infosys",
+          "Oracle",
+          "SAP",
+          "Goldman Sachs",
+          "TCS",
+          "Apple",
+          "Autodesk",
+          "D. E. Shaw"
+        ]
+      },
+      {
+        "q": "Abstract class vs interface — which do you pick after Java 8?",
+        "a": "- **Interface**: a capability/contract. A class can implement many. Since Java 8 it can have `default` and `static` methods, but **no instance state**.\n- **Abstract class**: a partial base class. Can hold **fields and constructors**; single inheritance only.\n\nRule of thumb: start with an interface; use an abstract class when implementations must share state or a template method (`final process()` calling abstract steps).",
+        "n": 37,
+        "companies": [
+          "Cognizant",
+          "Amazon",
+          "Goldman Sachs",
+          "Oracle Health",
+          "Sprinklr",
+          "ASM Technologies",
+          "Adobe",
+          "Cisco",
+          "Coupa",
+          "D. E. Shaw",
+          "Delivery Hero",
+          "EPAM"
+        ]
+      },
+      {
+        "q": "How does exception handling work — the hierarchy, try/catch/finally and propagation?",
+        "a": "`Throwable` → `Error` (OutOfMemoryError, StackOverflowError — don't catch) and `Exception` → `RuntimeException` (unchecked) + the rest (checked).\n\nA thrown exception unwinds the stack frame by frame until a matching `catch`; if none, the thread dies and the default handler prints the trace.\n\n`finally` always runs — except on `System.exit()`, a JVM crash, or a thread that never finishes. A `return` inside `finally` swallows the exception — never do it.\n\nCatch the narrowest type you can handle; don't catch `Exception` just to log and continue.",
+        "n": 26,
+        "companies": [
+          "Cognizant",
+          "ADP",
+          "Agoda",
+          "Amazon",
+          "Arcesium",
+          "D. E. Shaw",
+          "Deloitte",
+          "EPAM",
+          "EXL",
+          "IBS",
+          "Infosys",
+          "LSEG"
+        ]
+      },
+      {
+        "q": "Method overloading vs overriding — compile-time vs runtime polymorphism.",
+        "a": "- **Overloading**: same name, different parameters, same class. Picked at **compile time** from the declared types.\n- **Overriding**: subclass re-implements a parent method with the same signature. Picked at **runtime** from the actual object (dynamic dispatch).\n\nTraps: `static` and `private` methods can't be overridden (a static one is *hidden*); an override can't reduce visibility or throw broader checked exceptions; return type may be narrower (covariant).",
+        "n": 23,
+        "companies": [
+          "Cognizant",
+          "ASM Technologies",
+          "Bajaj Finserv Health",
+          "Cisco",
+          "D. E. Shaw",
+          "Goldman Sachs",
+          "Infosys",
+          "Lenskart",
+          "Marsh McLennan",
+          "Microsoft",
+          "NAB",
+          "Oracle"
+        ]
+      },
+      {
+        "q": "final vs finally vs finalize — and what does the static keyword do?",
+        "a": "- `final`: variable can't be reassigned, method can't be overridden, class can't be extended.\n- `finally`: block that runs after try/catch.\n- `finalize()`: old GC callback — deprecated for removal; use try-with-resources or `Cleaner`.\n\n`static` belongs to the class, not an instance: one copy of a static field; static methods can't use `this` and can't be overridden (only hidden); a static block runs once when the class loads.",
+        "n": 19,
+        "companies": [
+          "Cognizant",
+          "LinkedIn",
+          "Apple",
+          "Demandbase",
+          "Goldman Sachs",
+          "Nykaa",
+          "Optum",
+          "Oracle",
+          "Rakuten Symphony",
+          "Salesforce",
+          "ServiceNow"
+        ]
+      },
+      {
+        "q": "Diamond problem — how does Java handle multiple inheritance?",
+        "a": "Java has no multiple inheritance of **classes**, so the classic diamond can't happen with state.\n\nWith Java 8 **default methods**, a class implementing two interfaces that both define `hello()` gets a compile error until it overrides it:\n\n```java\nclass C implements A, B {\n  public void hello() { A.super.hello(); }   // pick one explicitly\n}\n```\n\nRule: class method wins over interface default; a more specific interface wins over its parent.",
+        "n": 12,
+        "companies": [
+          "ASM Technologies",
+          "Cisco",
+          "Cognizant",
+          "Infosys",
+          "Paytm",
+          "ServiceNow",
+          "Sprinklr",
+          "Sunking",
+          "dunnhumby"
+        ]
+      },
+      {
+        "q": "Is Java pass-by-value or pass-by-reference?",
+        "a": "Always **pass-by-value**. For objects, the value copied is the **reference**.\n\nSo a method can change the object's fields (both copies point to the same object), but reassigning the parameter (`p = new Person()`) doesn't affect the caller. A swap method on two objects can't work — that's the proof.",
+        "n": 9,
+        "companies": [
+          "D. E. Shaw",
+          "Demandbase",
+          "Infosys",
+          "Paytm",
+          "Tennr",
+          "Visa"
+        ]
+      },
+      {
+        "q": "Checked vs unchecked exceptions — which do you throw from a service?",
+        "a": "- **Checked** (`IOException`, `SQLException`): subclass of `Exception`; the compiler forces you to catch or declare them. For recoverable conditions the caller can act on.\n- **Unchecked** (`RuntimeException`: `IllegalArgumentException`, `NullPointerException`): not enforced; usually bugs or business rule violations.\n\nIn a Spring service, throw **unchecked** domain exceptions (`OrderNotFoundException extends RuntimeException`) and map them to HTTP responses in `@ControllerAdvice`. Bonus: `@Transactional` rolls back on unchecked exceptions by default, **not** on checked ones.",
+        "n": 8,
+        "companies": [
+          "Cognizant",
+          "EPAM",
+          "Marsh McLennan",
+          "NPCI",
+          "Visa",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "What are default methods in interfaces, and why were they added?",
+        "a": "Java 8 let interfaces ship method **bodies** with `default`, so library authors could add methods (like `Collection.stream()`) without breaking every existing implementation.\n\nImplementers may override them. Conflicts between two interfaces must be resolved explicitly (`A.super.m()`). Interfaces still can't hold instance fields.",
+        "n": 8,
+        "companies": [
+          "Apple",
+          "Arrise Solutions",
+          "Autodesk",
+          "Lenovo",
+          "Nike",
+          "Rakuten"
+        ]
+      },
+      {
+        "q": "throw vs throws, and how do you write a custom exception?",
+        "a": "- `throw` — the statement that throws one exception object.\n- `throws` — in the method signature; declares checked exceptions it may throw.\n\nCustom exception: extend `RuntimeException` (usually), keep the cause, add useful context:\n\n```java\npublic class OrderNotFoundException extends RuntimeException {\n  public OrderNotFoundException(long id) { super(\"Order \" + id + \" not found\"); }\n}\n```",
+        "n": 8,
+        "companies": [
+          "EPAM",
+          "IBS",
+          "MobiKwik",
+          "Rakuten",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Composition vs inheritance — when do you prefer composition?",
+        "a": "Inheritance = \"is-a\", fixed at compile time, and the subclass depends on the parent's internals (fragile base class).\n\nComposition = \"has-a\": hold an object and delegate. You can swap it at runtime and test it with a mock.\n\nPrefer composition by default — that's what Spring DI is: a service *has* a repository, it doesn't extend one. Use inheritance only for a true, stable \"is-a\".",
+        "n": 7,
+        "companies": [
+          "ASM Technologies",
+          "Amazon",
+          "D. E. Shaw",
+          "EPAM",
+          "Marsh McLennan",
+          "Zeta"
+        ]
+      }
+    ]
+  },
+  "JAVA-06": {
+    "posts": 111,
+    "items": [
+      {
+        "q": "Write a thread-safe Singleton — then make it lazy with double-checked locking. Why is volatile needed?",
+        "a": "```java\npublic final class Config {\n  private static volatile Config instance;\n  private Config() {}\n  public static Config get() {\n    if (instance == null) {                    // 1st check, no lock\n      synchronized (Config.class) {\n        if (instance == null) instance = new Config();   // 2nd check\n      }\n    }\n    return instance;\n  }\n}\n```\n\n**Why volatile:** `new Config()` is allocate → construct → assign. Without volatile the JVM may reorder so another thread sees a non-null `instance` that isn't constructed yet.\n\nSimpler and better: the **holder idiom** (`static class Holder { static final Config I = new Config(); }`) or an **enum** singleton — thread-safe by class loading, and enum also survives reflection and serialization.\n\n\"Without `synchronized`?\" → holder idiom or enum.",
+        "n": 69,
+        "companies": [
+          "Goldman Sachs",
+          "Adobe",
+          "Microsoft",
+          "Walmart",
+          "Amazon",
+          "EPAM",
+          "MakeMyTrip",
+          "Oracle",
+          "Rakuten",
+          "Visa",
+          "athenahealth",
+          "ASM Technologies"
+        ]
+      },
+      {
+        "q": "equals() and hashCode() — what is the contract, and what breaks if you override only one?",
+        "a": "Contract: if `a.equals(b)` then `a.hashCode() == b.hashCode()`. (Equal hashes do **not** require equal objects.)\n\nOverride only `equals` → two \"equal\" objects land in different buckets, so a HashSet keeps both and `map.get()` misses. Override only `hashCode` → same bucket, but `equals` still compares references, so no match.\n\nUse the same fields in both, keep them immutable, and let a `record` or `Objects.hash(...)` do the work.",
+        "n": 19,
+        "companies": [
+          "Apple",
+          "EPAM",
+          "Visa",
+          "Arrise Solutions",
+          "JPMorgan",
+          "SentinelOne",
+          "TomTom",
+          "Walmart",
+          "Zycus"
+        ]
+      },
+      {
+        "q": "Why are Strings immutable? What is the String pool?",
+        "a": "Immutable because:\n- **Pooling**: literals are shared in the String pool (heap, since Java 7) — safe only if nobody can change them.\n- **Security**: class names, file paths, URLs, DB credentials can't be altered after a check.\n- **Thread safety** for free.\n- **Hash caching**: `hashCode` is computed once, which makes Strings great HashMap keys.\n\n`String a = \"hi\"` uses the pool; `new String(\"hi\")` always creates a new heap object (and the literal may also be pooled). `intern()` returns the pooled copy. `==` compares references — use `equals()`.",
+        "n": 19,
+        "companies": [
+          "Oracle",
+          "Walmart",
+          "Arcesium",
+          "Autodesk",
+          "D. E. Shaw",
+          "EXL",
+          "Goldman Sachs",
+          "PayU",
+          "Pelocal",
+          "Rubrik",
+          "Zycus"
+        ]
+      },
+      {
+        "q": "How do you create an immutable class?",
+        "a": "1. `final` class (no subclass can add mutability).\n2. All fields `private final`.\n3. No setters.\n4. Set everything in the constructor, **defensively copying** mutable inputs (`this.items = List.copyOf(items)`).\n5. Return copies or unmodifiable views from getters.\n\nThe one people forget is #4/#5 — a `final List` field is still a mutable list. Immutable objects are thread-safe without locks. A `record` gives you 2–3 for free (still copy mutable fields).",
+        "n": 14,
+        "companies": [
+          "Apple",
+          "Arcesium",
+          "Cerner",
+          "Coupa",
+          "EPAM",
+          "IBS",
+          "JPMorgan",
+          "Publicis Sapient",
+          "UKG",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Shallow copy vs deep copy?",
+        "a": "- **Shallow copy**: a new object, but its fields point to the **same** nested objects. Change a nested list in the copy → the original changes too. `Object.clone()` is shallow by default.\n- **Deep copy**: nested mutable objects are copied as well.\n\nPrefer copy constructors or static factories over `Cloneable` (which is awkward and easy to get wrong).",
+        "n": 12,
+        "companies": [
+          "Adobe",
+          "Capgemini",
+          "Cerner",
+          "Cisco",
+          "EPAM",
+          "Goldman Sachs",
+          "JPMorgan",
+          "PayPal",
+          "Publicis Sapient",
+          "Truemeds",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "String vs StringBuilder vs StringBuffer — when do you use each?",
+        "a": "- **String**: immutable; every `+` in a loop creates a new object → O(n²) copying.\n- **StringBuilder**: mutable, **not** synchronized, fast. The default for building strings.\n- **StringBuffer**: same API but every method synchronized — legacy; you almost never need it.\n\nThe compiler already turns a single-line `a + b + c` into efficient code; the problem is concatenation **inside loops**.",
+        "n": 11,
+        "companies": [
+          "Autodesk",
+          "Cognizant",
+          "D. E. Shaw",
+          "EPAM",
+          "Marsh McLennan",
+          "Meta",
+          "Nike",
+          "Oracle",
+          "Rakuten",
+          "ServiceNow"
+        ]
+      },
+      {
+        "q": "How does autoboxing work — and what is the Integer cache?",
+        "a": "Autoboxing converts `int` ↔ `Integer` automatically (`Integer.valueOf(i)` / `i.intValue()`).\n\n`Integer.valueOf` caches **-128 to 127**, so `Integer a = 127, b = 127; a == b` is `true`, but with 128 it's `false` — `==` compares references. Always compare wrappers with `equals()`.\n\nTraps: unboxing a `null` Integer throws `NullPointerException`; boxing in hot loops creates garbage.",
+        "n": 4,
+        "companies": [
+          "Cognizant",
+          "Goldman Sachs",
+          "Rakuten"
+        ]
+      },
+      {
+        "q": "How can a Singleton be broken (reflection, serialization, cloning) — and how do you stop it?",
+        "a": "- **Reflection**: `setAccessible(true)` on the private constructor → throw from the constructor if `instance != null`.\n- **Serialization**: deserializing creates a new object → add `readResolve() { return instance; }`.\n- **Cloning**: don't implement `Cloneable` (or throw in `clone()`).\n\nOr use an **enum** singleton: the JVM blocks reflective creation of enums and handles serialization — all three closed at once.",
+        "n": 3,
+        "companies": [
+          "ServiceNow",
+          "Visa",
+          "Zeta"
+        ]
+      }
+    ]
+  },
+  "JAVA-04": {
+    "posts": 108,
+    "items": [
+      {
+        "q": "Stack vs heap memory — what lives where?",
+        "a": "- **Stack** — one per thread: method frames, local primitives, and **references**. Freed automatically when the method returns. Too deep recursion → `StackOverflowError`.\n- **Heap** — shared by all threads: every object and array. Managed by GC. Full → `OutOfMemoryError: Java heap space`.\n\n`Person p = new Person()` → `p` (the reference) on the stack, the `Person` object on the heap. Because the heap is shared, objects on it need synchronization; locals on the stack don't.",
+        "n": 61,
+        "companies": [
+          "Adobe",
+          "Cisco",
+          "LinkedIn",
+          "Microsoft",
+          "Publicis Sapient",
+          "Rubrik",
+          "Alkira",
+          "Amazon",
+          "American Express",
+          "Apple",
+          "Avathon",
+          "Citi"
+        ]
+      },
+      {
+        "q": "How does garbage collection work — when is an object eligible, and what are the generations?",
+        "a": "An object is eligible when no chain of references reaches it from a **GC root** (live thread stacks, static fields, JNI refs). Cycles don't matter — unreachable is unreachable.\n\nGenerational heap (most objects die young):\n- **Young gen** (Eden + 2 Survivor spaces): new objects; cleaned often by fast **minor GCs**; survivors move between Survivor spaces and get **promoted** to Old after a few cycles.\n- **Old gen**: long-lived objects; cleaned by **major/mixed** collections.\n- **Metaspace** (native memory): class metadata.\n\nGC is automatic; `System.gc()` is only a hint.",
+        "n": 45,
+        "companies": [
+          "Microsoft",
+          "Goldman Sachs",
+          "LinkedIn",
+          "Publicis Sapient",
+          "Walmart",
+          "Adobe",
+          "Appian",
+          "Apple",
+          "Avathon",
+          "Birdeye",
+          "Blackrock",
+          "Cognizant"
+        ]
+      },
+      {
+        "q": "OutOfMemoryError — what causes it, and what is a memory leak in Java?",
+        "a": "Types: `Java heap space` (too many live objects), `Metaspace` (too many classes, e.g. classloader leaks), `GC overhead limit exceeded` (GC running nonstop for little gain), `unable to create native thread`.\n\nA leak in Java = objects still **reachable** but never used again:\n- static maps/caches that only grow,\n- listeners never removed,\n- `ThreadLocal` values in pooled threads,\n- unclosed resources.\n\nHandling it: you don't \"catch and continue\". Add `-XX:+HeapDumpOnOutOfMemoryError`, analyse the dump (Eclipse MAT: dominator tree), fix the reference, or bound the cache.",
+        "n": 18,
+        "companies": [
+          "Adobe",
+          "Goldman Sachs",
+          "American Express",
+          "Apple",
+          "Coforge",
+          "Info Edge",
+          "Microsoft",
+          "Nexturn",
+          "PayPal",
+          "Qualcomm",
+          "Verizon"
+        ]
+      },
+      {
+        "q": "Explain the JVM architecture — class loader, runtime areas, JIT. JDK vs JRE vs JVM?",
+        "a": "- **JVM**: runs bytecode. **JRE** = JVM + core libraries. **JDK** = JRE + tools (javac, jcmd, jshell). (Since Java 11 there's no separate JRE download.)\n\nInside the JVM:\n1. **Class loader subsystem** — Bootstrap → Platform → Application loaders, parent-first delegation.\n2. **Runtime data areas** — heap & Metaspace (shared); stack, PC register, native stack (per thread).\n3. **Execution engine** — interpreter + **JIT** (C1/C2) compiling hot methods to native code, and the GC.\n\nJava 8 replaced PermGen with **Metaspace** (native memory, grows by default).",
+        "n": 13,
+        "companies": [
+          "Appian",
+          "Birdeye",
+          "EPAM",
+          "Info Edge",
+          "Marsh McLennan",
+          "PayPay",
+          "Swiggy",
+          "TCS",
+          "Visa2fly"
+        ]
+      },
+      {
+        "q": "Which GC algorithms do you know — Serial, Parallel, G1, ZGC? Which would you pick?",
+        "a": "- **Serial**: single thread; small heaps / containers with 1 CPU.\n- **Parallel**: many threads, stop-the-world; best **throughput** for batch jobs.\n- **G1** (default since Java 9): heap split into regions, collects the most-garbage regions first, aims for a **pause target** (`-XX:MaxGCPauseMillis`, 200 ms default). The right default for services.\n- **ZGC / Shenandoah**: mostly concurrent, **sub-millisecond pauses** even on huge heaps; costs a bit of throughput and CPU. Generational ZGC since Java 21.\n\nAnswer for a Spring API: G1 by default; ZGC if p99 latency matters and heaps are large.",
+        "n": 8,
+        "companies": [
+          "Publicis Sapient",
+          "Appian",
+          "EPAM",
+          "Meesho",
+          "Salesforce",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "Strong vs weak vs soft vs phantom references?",
+        "a": "- **Strong** (normal `=`): never collected while reachable.\n- **Soft**: collected only when memory is low — old-style caches.\n- **Weak**: collected at the next GC once only weakly reachable — `WeakHashMap` keys, canonicalising maps.\n- **Phantom**: already finalised; used with a `ReferenceQueue` for cleanup (`Cleaner`).\n\nModern caches (Caffeine) use size/TTL bounds rather than soft references.",
+        "n": 1,
+        "companies": [
+          "DigiCert"
+        ]
+      },
+      {
+        "q": "What does System.gc() do?",
+        "a": "It **requests** a full GC; the JVM may ignore it (and does with `-XX:+DisableExplicitGC`). Calling it in production code is a smell — it can trigger long stop-the-world pauses. Let the collector decide; tune heap and GC choice instead.",
+        "n": 1,
+        "companies": [
+          "Yes Madam"
+        ]
+      }
+    ]
+  },
+  "JAVA-05": {
+    "posts": 18,
+    "items": [
+      {
+        "q": "Java 8 vs 11 vs 17 vs 21 — what changed that you actually use?",
+        "a": "- **8**: lambdas, streams, Optional, java.time.\n- **11** (LTS): `var` in lambdas, `HttpClient`, `String.isBlank/strip/lines`, single-file `java Foo.java`.\n- **17** (LTS): **records**, **sealed classes**, pattern matching for `instanceof`, text blocks, switch expressions, better NPE messages.\n- **21** (LTS): **virtual threads**, pattern matching for `switch`, record patterns, sequenced collections.\n- **25** (current LTS): scoped values final, compact source files.\n\nThen say which you shipped: \"We run Java 17 — records for DTOs, switch expressions, text blocks for SQL.\"",
+        "n": 13,
+        "companies": [
+          "Cognizant",
+          "Walmart",
+          "EPAM",
+          "Goldman Sachs",
+          "JPMorgan",
+          "Morgan Stanley",
+          "TripJack",
+          "Visa"
+        ]
+      },
+      {
+        "q": "What are sealed classes, and what do they give you?",
+        "a": "`sealed interface Shape permits Circle, Square {}` — only the listed types may implement it (each must be `final`, `sealed` or `non-sealed`).\n\nWhy: a **closed hierarchy** the compiler knows about. With pattern-matching `switch` it can check you handled every case — no `default` needed, and adding a new subtype breaks compilation where it isn't handled. Good for domain states (`PaymentResult = Success | Failure | Pending`).",
+        "n": 4,
+        "companies": []
+      },
+      {
+        "q": "Pattern matching, switch expressions and text blocks — show an example.",
+        "a": "```java\nif (obj instanceof String s && !s.isBlank()) use(s);          // instanceof pattern (16)\n\nString label = switch (status) {                               // switch expression (14)\n  case NEW, PENDING -> \"open\";\n  case DONE -> \"closed\";\n};\n\ndouble area = switch (shape) {                                 // switch patterns (21)\n  case Circle c -> Math.PI * c.r() * c.r();\n  case Square s -> s.side() * s.side();\n};\n\nString sql = \"\"\"\n    SELECT id FROM orders\n    WHERE status = 'NEW'\n    \"\"\";                                                     // text block (15)\n```",
+        "n": 4,
+        "companies": [
+          "TomTom",
+          "Verizon"
+        ]
+      },
+      {
+        "q": "What are records — and when is a record the wrong choice?",
+        "a": "`record Point(int x, int y) {}` — a final, immutable data carrier. The compiler generates the constructor, accessors (`x()`), `equals`, `hashCode`, `toString`.\n\nUse for DTOs, API responses, map keys, value objects. You can add a **compact constructor** for validation.\n\nWrong choice for: JPA entities (need a no-arg constructor, mutable state, proxies), classes needing inheritance, or anything with mutable state. Fields are shallowly final — copy mutable lists.",
+        "n": 1,
+        "companies": []
+      }
+    ]
+  },
+  "JAVA-07": {
+    "posts": 8,
+    "items": [
+      {
+        "q": "What are generics, and what do they buy you?",
+        "a": "Type parameters checked at **compile time**: `List<String>` stops you adding an Integer and removes casts.\n\n- Generic class: `class Box<T> { T value; }`\n- Generic method: `static <T extends Comparable<T>> T max(List<T> xs)`\n- Bounded type: `<T extends Number>` lets you call Number methods on `T`.\n\nWhy it matters: errors move from runtime (`ClassCastException`) to compile time, and code is reusable across types.",
+        "n": 6,
+        "companies": [
+          "Recruit CRM",
+          "Rippling",
+          "Truemeds",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Make your class (e.g. the LRU cache you just wrote) generic.",
+        "a": "Replace the concrete types with type parameters and keep the logic:\n\n```java\nclass LruCache<K, V> {\n  private final Map<K, Node<K, V>> map = new HashMap<>();\n  ...\n  V get(K key) { ... }\n  void put(K key, V value) { ... }\n}\n```\n\nMention bounds only if you need them (`K extends Comparable<K>` for a TreeMap-backed version), and that a generic array (`new Node[cap]`) needs an unchecked cast because of erasure.",
+        "n": 3,
+        "companies": [
+          "Rippling",
+          "Visa",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Wildcards: ? extends vs ? super — what is PECS?",
+        "a": "**Producer Extends, Consumer Super.**\n- `List<? extends Number>` — you can **read** Numbers out, but can't add (it might be a `List<Integer>`).\n- `List<? super Integer>` — you can **add** Integers, but reading gives `Object`.\n\n```java\nstatic void copy(List<? super T> dst, List<? extends T> src)   // Collections.copy\n```\n\n`List<Integer>` is **not** a `List<Number>` (generics are invariant) — wildcards are how you get flexibility safely.",
+        "n": 1,
+        "companies": [
+          "Microsoft"
+        ]
+      }
+    ]
+  },
+  "JAVA-08": {
+    "posts": 7,
+    "items": [
+      {
+        "q": "What is Optional for — and where should you not use it?",
+        "a": "A return type that says \"there may be no result\", forcing the caller to decide: `findById(id).orElseThrow(...)`.\n\nUse it for **return values**. Don't use it for fields, method parameters, collections (return an empty list instead), or JPA entities — it isn't Serializable and adds noise.\n\n`get()` without checking is the same NPE with extra steps — prefer `orElse`, `orElseGet`, `orElseThrow`, `map`, `ifPresent`.",
+        "n": 7,
+        "companies": [
+          "EPAM",
+          "Accolite",
+          "Nagarro",
+          "Visa"
+        ]
+      }
+    ]
+  },
+  "JAVA-11": {
+    "posts": 27,
+    "items": [
+      {
+        "q": "Serialization — what do Serializable, transient and serialVersionUID do?",
+        "a": "- `Serializable`: marker interface allowing Java's built-in binary serialization.\n- `transient`: field skipped (passwords, caches, non-serializable references).\n- `serialVersionUID`: version number checked on deserialization; if it doesn't match → `InvalidClassException`. Declare it explicitly so harmless class changes don't break old data.\n\nIn practice services send JSON/Protobuf, not Java serialization — native serialization is slow and a known security hole when reading untrusted bytes.",
+        "n": 17,
+        "companies": [
+          "EPAM",
+          "Oracle",
+          "Publicis Sapient",
+          "Cerner",
+          "Delivery Hero",
+          "Google",
+          "NPCI",
+          "SAP",
+          "Walmart",
+          "Zeta"
+        ]
+      },
+      {
+        "q": "What is reflection, and where do frameworks use it?",
+        "a": "Inspecting and calling classes at runtime: `Class.forName`, `getDeclaredMethods`, `field.setAccessible(true)`, `method.invoke`.\n\nFrameworks live on it: Spring finds `@Component` classes and injects fields, Hibernate reads/writes entity fields, Jackson maps JSON, JUnit finds `@Test` methods.\n\nCosts: slower than direct calls (JIT can't inline as well), bypasses encapsulation, breaks with the module system unless opened, and errors move to runtime.",
+        "n": 4,
+        "companies": [
+          "EPAM",
+          "ServiceNow",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "How does class loading work — and ClassNotFoundException vs NoClassDefFoundError?",
+        "a": "Loaders: **Bootstrap** (core JDK) → **Platform** → **Application** (your classpath). **Parent-first delegation**: a loader asks its parent before loading itself, so nobody can replace `java.lang.String`.\n\n- `ClassNotFoundException` (checked): you asked to load a class by name (`Class.forName`) and it isn't on the classpath.\n- `NoClassDefFoundError` (Error): the class was there at compile time but is missing or **failed to initialise** at runtime (a static initialiser threw, or a dependency jar is missing/version-clashed).",
+        "n": 4,
+        "companies": [
+          "Sprinklr"
+        ]
+      },
+      {
+        "q": "How do you create a custom annotation, and what does @Retention do?",
+        "a": "```java\n@Retention(RetentionPolicy.RUNTIME)\n@Target(ElementType.METHOD)\npublic @interface LogExecutionTime {}\n```\n\n- `@Retention`: `SOURCE` (dropped by the compiler, e.g. `@Override`), `CLASS` (in bytecode, not visible at runtime — default), `RUNTIME` (readable by reflection — what Spring needs).\n- `@Target`: where it may be placed.\n\nAn annotation **does nothing on its own**. Something must read it — an AOP aspect (`@Around(\"@annotation(LogExecutionTime)\")`), a BeanPostProcessor, or an annotation processor at compile time.",
+        "n": 3,
+        "companies": [
+          "DigiCert",
+          "Gartner",
+          "MobiKwik"
+        ]
+      }
+    ]
+  },
+  "SPRING-01": {
+    "posts": 42,
+    "items": [
+      {
+        "q": "What are the isolation levels, and what does each prevent?",
+        "a": "| Level | Dirty read | Non-repeatable read | Phantom |\n|---|---|---|---|\n| READ UNCOMMITTED | ✗ possible | possible | possible |\n| READ COMMITTED (Postgres/Oracle default) | prevented | possible | possible |\n| REPEATABLE READ (MySQL InnoDB default) | prevented | prevented | possible* |\n| SERIALIZABLE | prevented | prevented | prevented |\n\n*InnoDB and Postgres block most phantoms at REPEATABLE READ anyway.\n\nSet per method: `@Transactional(isolation = Isolation.REPEATABLE_READ)`. Higher isolation = fewer anomalies, more locking/retries.",
+        "n": 18,
+        "companies": [
+          "Paytm",
+          "Adobe",
+          "Agoda",
+          "Autodesk",
+          "Cisco",
+          "Cognizant",
+          "Locus",
+          "Park+",
+          "PayPay",
+          "Safe Security",
+          "Target",
+          "True Balance"
+        ]
+      },
+      {
+        "q": "What does @Transactional do, and where should you put it?",
+        "a": "It makes a method run inside one database transaction: everything commits together or rolls back together.\n\nPut it on **service** methods (a use case), not on controllers or repositories. Keep transactions short: no remote HTTP calls or long waits inside — they hold a DB connection and locks the whole time.\n\n`@Transactional(readOnly = true)` for queries: Hibernate skips dirty checking and the driver may route to a replica.",
+        "n": 12,
+        "companies": [
+          "Cognizant",
+          "EPAM",
+          "Knot Solutions",
+          "Morgan Stanley",
+          "Paytm",
+          "Qualcomm",
+          "True Balance",
+          "Yes Madam",
+          "athenahealth"
+        ]
+      },
+      {
+        "q": "Transaction propagation — REQUIRED vs REQUIRES_NEW (and the others)?",
+        "a": "- **REQUIRED** (default): join the current transaction or start one.\n- **REQUIRES_NEW**: suspend the current one and run in a brand-new transaction that commits/rolls back on its own — e.g. write an **audit log** that must survive the outer rollback.\n- **NESTED**: savepoint inside the current transaction (JDBC only).\n- **SUPPORTS / NOT_SUPPORTED / MANDATORY / NEVER**: use / suspend / require / forbid an existing transaction.\n\nREQUIRES_NEW needs a second DB connection — under load it can exhaust the pool.",
+        "n": 7,
+        "companies": [
+          "Google",
+          "Blinkit",
+          "Rakuten",
+          "Uber",
+          "Waymo"
+        ]
+      },
+      {
+        "q": "Which exceptions roll back a @Transactional method by default?",
+        "a": "By default: **unchecked** exceptions (`RuntimeException`, `Error`) roll back; **checked** exceptions **commit**.\n\nChange it with `@Transactional(rollbackFor = Exception.class)` or `noRollbackFor`.\n\nTraps: catching the exception inside the method (nothing propagates → commit); a `REQUIRED` inner method that throws marks the shared transaction **rollback-only**, so the outer commit fails with `UnexpectedRollbackException`.",
+        "n": 6,
+        "companies": [
+          "Cleartrip",
+          "Knot Solutions",
+          "Paytm",
+          "Visa"
+        ]
+      },
+      {
+        "q": "An order touches payment, inventory and receipt services — how do you roll back across them?",
+        "a": "`@Transactional` covers **one** database. Across services there is no shared transaction (2PC is slow and brittle), so use a **saga**:\n- each service commits its local step and publishes an event,\n- on failure, run **compensating actions** in reverse (release inventory, refund payment),\n- make every step and compensation **idempotent**, and use the **outbox pattern** so the DB write and the event can't diverge.\n\nChoreography (events) for simple flows, orchestration (one coordinator) when there are many steps.",
+        "n": 4,
+        "companies": [
+          "Lenovo",
+          "Salesforce"
+        ]
+      },
+      {
+        "q": "How does @Transactional work under the hood — and why does it fail on self-invocation?",
+        "a": "Spring wraps the bean in a **proxy** (CGLIB or JDK). A call that comes *through the proxy* opens a transaction (via `PlatformTransactionManager`), calls your method, then commits — or rolls back on an exception.\n\n`this.save()` inside the same class **skips the proxy**, so the inner annotation is ignored. Same story for `private`/`final` methods and objects created with `new`.\n\nFixes: move the method to another bean, inject the bean into itself (`@Lazy` self-reference), or use `TransactionTemplate`.",
+        "n": 2,
+        "companies": [
+          "Mastercard",
+          "Paytm"
+        ]
+      }
+    ]
+  },
+  "SPRING-17": {
+    "posts": 22,
+    "items": [
+      {
+        "q": "Spring vs Spring Boot — what does Boot actually add?",
+        "a": "Spring is the framework (IoC container, MVC, data, transactions). Spring Boot is an **opinionated way to run it**:\n- **Auto-configuration** — beans created from what's on the classpath and in properties.\n- **Starters** — one dependency pulls a tested set of libraries.\n- **Embedded server** — run `java -jar`, no WAR deployment to an external Tomcat.\n- **Externalised config + profiles**, **Actuator** for health/metrics.\n\nSame Spring underneath — Boot removes the XML/boilerplate setup.",
+        "n": 11,
+        "companies": [
+          "Apple",
+          "BharatPe",
+          "Cognizant",
+          "Goldman Sachs",
+          "Lenskart",
+          "Rakuten",
+          "Sunking",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "What happens when a request hits a Spring Boot application? Explain the DispatcherServlet flow.",
+        "a": "1. Tomcat accepts the connection and gives the request to a **worker thread**.\n2. The **filter chain** runs (Spring Security, logging, CORS).\n3. **DispatcherServlet** (the front controller) asks the `HandlerMapping` which controller method matches.\n4. Interceptors' `preHandle` run.\n5. The `HandlerAdapter` resolves arguments (`@PathVariable`, `@RequestBody` via an `HttpMessageConverter` — Jackson for JSON) and calls your controller.\n6. The return value is written back through a message converter; exceptions go to `@ControllerAdvice`.\n7. Interceptors' `afterCompletion`, filters unwind, the thread returns to the pool.",
+        "n": 9,
+        "companies": [
+          "Cerner",
+          "Marsh McLennan",
+          "Microsoft",
+          "Oblivious",
+          "Target",
+          "Visa"
+        ]
+      },
+      {
+        "q": "Which embedded server does Spring Boot use — and how do you change the port or swap it?",
+        "a": "**Tomcat** by default (from `spring-boot-starter-web`). Change the port with `server.port=8081` (or `SERVER_PORT` env var, or `--server.port`).\n\nSwap servers by excluding `spring-boot-starter-tomcat` and adding `spring-boot-starter-jetty`/`-undertow`. WebFlux apps use **Netty**.\n\nTomcat's request threads: `server.tomcat.threads.max` (default 200).",
+        "n": 4,
+        "companies": [
+          "EPAM",
+          "Infosys",
+          "Lenskart",
+          "Oracle"
+        ]
+      }
+    ]
+  },
+  "SPRING-02": {
+    "posts": 73,
+    "items": [
+      {
+        "q": "What are dependency injection and Inversion of Control — and what do they buy you?",
+        "a": "**IoC**: your classes don't create their collaborators; the container does and hands them in. **DI** is how: through constructors (preferred), setters or fields.\n\n```java\n@Service\nclass OrderService {\n  private final PaymentClient payments;\n  OrderService(PaymentClient payments) { this.payments = payments; }   // injected\n}\n```\n\nBenefits: loose coupling (depend on interfaces), easy testing (pass a mock), one place to configure lifecycles (singletons, proxies for `@Transactional`).",
+        "n": 45,
+        "companies": [
+          "EPAM",
+          "Visa",
+          "Adobe",
+          "Agoda",
+          "Amazon",
+          "Apple",
+          "Astrotalk",
+          "Bajaj Finserv Health",
+          "BharatPe",
+          "DP World",
+          "DoorDash",
+          "Expedia"
+        ]
+      },
+      {
+        "q": "@Component vs @Service vs @Repository vs @Bean — is the difference only semantic?",
+        "a": "`@Service`, `@Repository`, `@Controller` are all `@Component` — picked up by component scanning. Mostly semantic, **except**:\n- `@Repository` enables **exception translation** (SQLException → Spring's `DataAccessException`).\n- `@Controller`/`@RestController` are wired into Spring MVC.\n\n`@Bean` is different: a method in a `@Configuration` class that **builds** the bean yourself — use it for third-party classes you can't annotate (e.g. an `ObjectMapper`, a `RestClient`).",
+        "n": 18,
+        "companies": [
+          "DP World",
+          "Blackrock",
+          "EPAM",
+          "JPMorgan",
+          "Lenovo",
+          "Mastercard",
+          "MobiKwik",
+          "Nike",
+          "Truemeds",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "Circular dependency — how does Spring handle it, and how do you fix it?",
+        "a": "A needs B, B needs A.\n- **Constructor injection**: impossible to build → `BeanCurrentlyInCreationException`. Since Boot 2.6 circular references are **rejected by default** even for field injection.\n- Spring *can* break field/setter cycles by exposing an early reference (the \"three-level cache\"), but that's what got disabled.\n\nReal fix: **redesign** — extract the shared logic into a third bean, or use events. Stop-gap: `@Lazy` on one injection point (injects a proxy).",
+        "n": 13,
+        "companies": [
+          "Google",
+          "Astrotalk",
+          "D. E. Shaw",
+          "Fancode",
+          "Lenskart",
+          "LinkedIn",
+          "Microsoft",
+          "Oracle",
+          "Truemeds",
+          "Visa",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "Explain the Spring bean lifecycle.",
+        "a": "1. Bean definition read (component scan / `@Bean`).\n2. **Instantiate** (constructor; constructor injection happens here).\n3. **Populate** properties (setter/field injection).\n4. `*Aware` callbacks (`BeanNameAware`, `ApplicationContextAware`).\n5. `BeanPostProcessor.postProcessBeforeInitialization`.\n6. **Init**: `@PostConstruct` → `InitializingBean.afterPropertiesSet()` → custom `initMethod`.\n7. `BeanPostProcessor.postProcessAfterInitialization` — **this is where AOP proxies are created** (`@Transactional`, `@Async`).\n8. Bean in use.\n9. On shutdown: `@PreDestroy` → `DisposableBean.destroy()` → `destroyMethod`. (Prototype beans are never destroyed by the container.)",
+        "n": 11,
+        "companies": [
+          "Blackrock",
+          "EPAM",
+          "Gartner",
+          "JPMorgan",
+          "Kotak Mahindra Bank",
+          "Mastercard",
+          "Nagarro",
+          "Nike",
+          "Oracle Health",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "Constructor vs setter vs field injection — which is better and why?",
+        "a": "**Constructor injection** — Spring's recommendation:\n- dependencies can be `final` (immutable, never null),\n- the class can be built in a plain unit test without Spring,\n- a constructor with 8 parameters is a visible smell (the class does too much),\n- circular dependencies fail fast at startup instead of hiding.\n\nSetter injection for genuinely optional dependencies. Avoid field injection (`@Autowired` on a private field): hidden dependencies, needs reflection, hard to test. With one constructor, `@Autowired` isn't needed.",
+        "n": 8,
+        "companies": [
+          "Bajaj Finserv Health",
+          "Celonis",
+          "Coupa",
+          "EPAM",
+          "Mastercard",
+          "Swiggy",
+          "Truemeds",
+          "Yes Madam"
+        ]
+      },
+      {
+        "q": "Two beans of the same type — how does Spring choose? (@Qualifier vs @Primary)",
+        "a": "Without help, injection fails with `NoUniqueBeanDefinitionException`.\n\n- `@Primary` on one bean → the default choice.\n- `@Qualifier(\"razorpay\")` at the injection point → pick explicitly (wins over `@Primary`).\n- Inject `List<PaymentGateway>` or `Map<String, PaymentGateway>` to get all of them — handy for a strategy pattern.",
+        "n": 6,
+        "companies": [
+          "Autodesk",
+          "EPAM",
+          "Mastercard"
+        ]
+      },
+      {
+        "q": "ApplicationContext vs BeanFactory — how does the IoC container work?",
+        "a": "`BeanFactory` is the basic container: creates beans lazily on request.\n\n`ApplicationContext` extends it and is what you always use: eagerly creates singletons at startup (so config errors fail fast), runs `BeanPostProcessor`s (AOP, `@Autowired`), publishes events, resolves messages (i18n), and reads `Environment`/profiles.\n\nStartup: scan → register bean definitions → run post-processors → instantiate singletons in dependency order → publish `ContextRefreshedEvent`.",
+        "n": 5,
+        "companies": [
+          "Apple",
+          "NoBroker",
+          "Swiggy"
+        ]
+      },
+      {
+        "q": "What is component scanning?",
+        "a": "At startup Spring scans the packages under your `@SpringBootApplication` class (or `@ComponentScan(basePackages=…)`) for classes annotated with `@Component` and its stereotypes, and registers them as beans.\n\nA bean in a package outside that tree isn't found — a classic \"No qualifying bean\" cause.",
+        "n": 1,
+        "companies": [
+          "Lenovo"
+        ]
+      }
+    ]
+  },
+  "SPRING-21": {
+    "posts": 11,
+    "items": [
+      {
+        "q": "What bean scopes does Spring have?",
+        "a": "- **singleton** (default): one instance per container.\n- **prototype**: a new instance every time it's requested.\n- Web: **request** (one per HTTP request), **session**, **application**, **websocket**.\n\nReal prototype example: a stateful builder or parser object you don't want shared.",
+        "n": 8,
+        "companies": [
+          "JPMorgan",
+          "Lenovo",
+          "Mastercard",
+          "Oracle",
+          "Publicis Sapient",
+          "Zycus"
+        ]
+      },
+      {
+        "q": "Is a singleton bean thread-safe? How is a Spring singleton different from the Singleton pattern?",
+        "a": "Spring guarantees **one instance**, not thread safety. Every request thread calls the same object, so a singleton must be **stateless** (only final, thread-safe dependencies). Storing request data in a field is a race.\n\nGoF Singleton: one instance per **class loader**, enforced by the class itself (private constructor). Spring singleton: one per **container**, managed by Spring — you can still `new` it, and you can have two beans of the same class.",
+        "n": 4,
+        "companies": [
+          "Goldman Sachs",
+          "Oracle",
+          "Visa",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "A prototype bean injected into a singleton — does it stay prototype?",
+        "a": "No. The singleton is created **once**, so the prototype is injected **once** — you get the same instance forever.\n\nFixes: inject `ObjectProvider<MyProto>` and call `getObject()` each time, use a `@Lookup` method, or make it a **scoped proxy** (`@Scope(value = \"prototype\", proxyMode = TARGET_CLASS)`).\n\nSame problem with a request-scoped bean in a singleton: it fails at startup unless it's a scoped proxy, which resolves the right instance per request (via a ThreadLocal).",
+        "n": 3,
+        "companies": [
+          "Publicis Sapient",
+          "Visa",
+          "Zycus"
+        ]
+      }
+    ]
+  },
+  "SPRING-03": {
+    "posts": 10,
+    "items": [
+      {
+        "q": "How does Spring Boot auto-configuration work?",
+        "a": "1. `@EnableAutoConfiguration` loads the list of auto-config classes from `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` (older: `spring.factories`).\n2. Each is a `@Configuration` guarded by **conditions**: `@ConditionalOnClass` (is the library on the classpath?), `@ConditionalOnMissingBean` (did the user define their own?), `@ConditionalOnProperty`.\n3. Matching ones create beans — e.g. HikariCP on the classpath + `spring.datasource.url` set → a `DataSource`.\n\nYour own bean wins thanks to `@ConditionalOnMissingBean`. Debug with `--debug` (conditions report) or `/actuator/conditions`. Exclude with `@SpringBootApplication(exclude = …)`.",
+        "n": 5,
+        "companies": [
+          "Citi",
+          "EPAM",
+          "Truemeds"
+        ]
+      },
+      {
+        "q": "What does @SpringBootApplication do?",
+        "a": "It's three annotations in one:\n- `@SpringBootConfiguration` (a `@Configuration`),\n- `@EnableAutoConfiguration` — turn on auto-configuration,\n- `@ComponentScan` — scan this package and below.\n\nSo its package position decides what gets scanned.",
+        "n": 4,
+        "companies": [
+          "IBS",
+          "Rakuten Symphony",
+          "Truemeds"
+        ]
+      },
+      {
+        "q": "What are Spring Boot starters?",
+        "a": "Curated dependency bundles: `spring-boot-starter-web` brings Spring MVC, Jackson, embedded Tomcat and validation at versions tested together. Versions come from the Spring Boot BOM, so you rarely write version numbers.\n\nStarter = dependencies; auto-configuration = the beans that get created because those dependencies are present.",
+        "n": 4,
+        "companies": [
+          "EPAM",
+          "Truemeds"
+        ]
+      },
+      {
+        "q": "How do you create a bean only under some condition (e.g. per environment)?",
+        "a": "```java\n@Bean\n@ConditionalOnProperty(name = \"payments.mode\", havingValue = \"stub\")\nPaymentClient stubPayments() { return new StubPaymentClient(); }\n```\n\nOthers: `@Profile(\"dev\")`, `@ConditionalOnClass`, `@ConditionalOnMissingBean`. All are evaluated **at startup** — to flip behaviour at runtime you need a feature-flag check in code, not a condition.",
+        "n": 1,
+        "companies": [
+          "Oracle"
+        ]
+      }
+    ]
+  },
+  "SPRING-18": {
+    "posts": 12,
+    "items": [
+      {
+        "q": "How do you manage configuration across dev / staging / prod?",
+        "a": "- Common settings in `application.yml`; per-environment overrides in `application-dev.yml`, `application-prod.yml`.\n- Activate with `spring.profiles.active=prod` (usually an env var in the deployment).\n- **Secrets never in the repo**: env vars, Kubernetes Secrets, or a vault (Azure Key Vault).\n- Beans that differ per environment: `@Profile(\"dev\")` or `@ConditionalOnProperty`.\n\nPrecedence (high → low): command-line args > env vars > profile-specific file > `application.yml`.",
+        "n": 6,
+        "companies": [
+          "Walmart",
+          "Infosys",
+          "JPMorgan",
+          "Truemeds"
+        ]
+      },
+      {
+        "q": "How would you design feature flags — and handle a flag that breaks production?",
+        "a": "- Store flags outside the code (DB / config service / a vendor), cache them in memory with a short TTL or push updates, so a flip needs **no redeploy**.\n- Evaluate per request with context (tenant, user %, region) for gradual rollout.\n- A flag that causes a bug: **flip it off** — that's the point; no rollback deploy needed. Keep a kill switch and an audit log of who changed what.\n- Remove flags once rolled out, or they become permanent branches.\n\n`@ConditionalOnProperty` is **not** a runtime flag — it's read once at startup.",
+        "n": 5,
+        "companies": [
+          "PayPal",
+          "Pharmeasy",
+          "Slice",
+          "Swiggy",
+          "Visa"
+        ]
+      },
+      {
+        "q": "@Value vs @ConfigurationProperties — how do you read properties?",
+        "a": "- `@Value(\"${payments.timeout:2s}\")` — one value, quick, but scattered and stringly typed.\n- `@ConfigurationProperties(prefix = \"payments\")` on a class/record — a typed group of settings, supports nested objects and lists, and `@Validated` fails startup on bad config.\n\nUse `@ConfigurationProperties` for anything more than one or two values. In tests, override with `@TestPropertySource` or `properties = …` on `@SpringBootTest`.",
+        "n": 1,
+        "companies": [
+          "Walmart"
+        ]
+      },
+      {
+        "q": "How do you change configuration without restarting the service?",
+        "a": "Options:\n- **Spring Cloud Config** + `@RefreshScope` beans + `/actuator/refresh` (or Cloud Bus to refresh all instances).\n- A feature-flag / config service the app polls or subscribes to.\n- Kubernetes ConfigMap mounted as a file + a watcher.\n\nRisk: beans holding the old value, half the fleet refreshed — keep refreshable config small and validated.",
+        "n": 1,
+        "companies": [
+          "Apple"
+        ]
+      }
+    ]
+  },
+  "SPRING-06": {
+    "posts": 7,
+    "items": [
+      {
+        "q": "What is AOP, and how does Spring AOP work internally?",
+        "a": "**AOP** pulls cross-cutting concerns (logging, transactions, security, metrics) out of business code.\n\nSpring AOP is **proxy-based**: at startup a `BeanPostProcessor` wraps matching beans in a proxy; calls go proxy → advice → your method. Terms: **aspect** (the class), **advice** (the code: `@Before`, `@After`, `@AfterReturning`, `@AfterThrowing`, `@Around`), **pointcut** (which methods), **join point** (a method call).\n\n`@Transactional`, `@Async`, `@Cacheable`, `@PreAuthorize` all work this way — which is why they all fail on self-invocation.",
+        "n": 7,
+        "companies": [
+          "Citi",
+          "EPAM",
+          "Kotak Mahindra Bank",
+          "Mastercard",
+          "MobiKwik",
+          "Paytm"
+        ]
+      },
+      {
+        "q": "Write a custom annotation with an @Around aspect (e.g. log execution time).",
+        "a": "```java\n@Retention(RUNTIME) @Target(METHOD)\npublic @interface LogTime {}\n\n@Aspect @Component\nclass LogTimeAspect {\n  @Around(\"@annotation(LogTime)\")\n  Object time(ProceedingJoinPoint pjp) throws Throwable {\n    long t = System.nanoTime();\n    try { return pjp.proceed(); }\n    finally { log.info(\"{} took {} ms\", pjp.getSignature(), (System.nanoTime() - t) / 1_000_000); }\n  }\n}\n```\n\nMention it won't fire for calls from inside the same class.",
+        "n": 1,
+        "companies": [
+          "MobiKwik"
+        ]
+      }
+    ]
+  },
+  "SPRING-05": {
+    "posts": 88,
+    "items": [
+      {
+        "q": "How do you make an API idempotent — e.g. a payment POST that gets retried?",
+        "a": "Client sends an **Idempotency-Key** header (a UUID per logical operation).\n\nServer:\n1. Insert the key with status `IN_PROGRESS` under a **unique constraint** (or Redis `SET NX` with a TTL).\n2. If the insert fails, the key exists → return the **stored response** (or 409 if still in progress).\n3. Do the work, store the result against the key, return it.\n\nKeep keys for the retry window (e.g. 24 h). GET, PUT and DELETE are idempotent by definition; POST and PATCH are not unless you build this.",
+        "n": 26,
+        "companies": [
+          "JPMorgan",
+          "American Express",
+          "Astrotalk",
+          "Blinkit",
+          "Goldman Sachs",
+          "Groww",
+          "MakeMyTrip",
+          "Microsoft",
+          "MobiKwik",
+          "Nexturn",
+          "Oracle",
+          "PayPay"
+        ]
+      },
+      {
+        "q": "@Controller vs @RestController — and @RequestParam vs @PathVariable vs @RequestBody?",
+        "a": "- `@RestController` = `@Controller` + `@ResponseBody`: return values are written as JSON instead of resolved as view names.\n- `@PathVariable` — identifies a resource: `/orders/{id}`.\n- `@RequestParam` — filters/options: `/orders?status=NEW&page=2`.\n- `@RequestBody` — the JSON payload, deserialised by Jackson (`HttpMessageConverter`). Combine with `@Valid`.",
+        "n": 23,
+        "companies": [
+          "Infosys",
+          "Mastercard",
+          "Cerner",
+          "Ciena",
+          "Deloitte",
+          "EPAM",
+          "IBS",
+          "Lenovo",
+          "Lenskart",
+          "MobiKwik",
+          "NPCI",
+          "Nagarro"
+        ]
+      },
+      {
+        "q": "How do you design a REST API — naming, versioning, pagination?",
+        "a": "- **Nouns, plural, hierarchical**: `GET /customers/42/orders`, not `/getOrders`.\n- **Versioning**: in the URL (`/v1/…` — simple, visible) or a header — pick one and keep old versions alive during migration.\n- **Pagination**: `limit` + `cursor` (keyset) for large or changing data; `page`/`size` offset only for small sets. Return the next cursor.\n- Filtering/sorting via query params; consistent error body; idempotency keys on POST; `201` + `Location` on create.",
+        "n": 17,
+        "companies": [
+          "Publicis Sapient",
+          "Target",
+          "Walmart",
+          "Autodesk",
+          "Bajaj Finserv Health",
+          "Flipkart",
+          "Hyperverge",
+          "Informatica",
+          "JPMorgan",
+          "Livspace",
+          "Qualys",
+          "Toast"
+        ]
+      },
+      {
+        "q": "PUT vs POST vs PATCH (and GET vs POST) — which are idempotent?",
+        "a": "- **GET**: read, safe, idempotent, cacheable. No body semantics.\n- **POST**: create / trigger an action. Not idempotent (two calls → two orders).\n- **PUT**: replace the whole resource at a known URI. Idempotent.\n- **PATCH**: partial update. Not guaranteed idempotent (`{\"op\":\"increment\"}`).\n- **DELETE**: idempotent (second call → 404 or 204, same end state).",
+        "n": 16,
+        "companies": [
+          "Cisco",
+          "Epsilon",
+          "Fidelity",
+          "Google",
+          "IBS",
+          "Lenskart",
+          "Marsh McLennan",
+          "Mastercard",
+          "NPCI",
+          "Paytm",
+          "SAP",
+          "Visa"
+        ]
+      },
+      {
+        "q": "Which HTTP status codes do you return — 200, 201, 204, 400, 401, 403, 404, 409, 500?",
+        "a": "- **200** OK with body; **201** Created (+ `Location` header); **202** Accepted (async job); **204** No Content.\n- **400** bad input; **401** not authenticated; **403** authenticated but not allowed; **404** not found; **409** conflict (duplicate, version clash); **422** valid JSON but fails business rules; **429** rate limited.\n- **500** our bug; **502/503/504** downstream or overload.\n\nNever return 200 with `{\"error\": …}` in the body.",
+        "n": 15,
+        "companies": [
+          "Apple",
+          "Cisco",
+          "Confluent",
+          "Deutsche Bank",
+          "Goldman Sachs",
+          "JPMorgan",
+          "Lenovo",
+          "Marsh McLennan",
+          "Oracle Health",
+          "Publicis Sapient",
+          "SAP",
+          "Syfe"
+        ]
+      },
+      {
+        "q": "How do you validate incoming requests?",
+        "a": "Bean Validation on the DTO + `@Valid` on the parameter:\n\n```java\nrecord CreateOrder(@NotNull Long customerId, @Positive int qty, @Email String email) {}\n@PostMapping(\"/orders\")\nResponseEntity<?> create(@Valid @RequestBody CreateOrder req) { … }\n```\n\nFailures throw `MethodArgumentNotValidException` → map it in `@ControllerAdvice` to a 400 with field errors. Business rules (stock available?) belong in the service, not annotations.",
+        "n": 5,
+        "companies": [
+          "Knot Solutions",
+          "Marsh McLennan",
+          "MobiKwik"
+        ]
+      },
+      {
+        "q": "REST vs SOAP — what makes an API RESTful?",
+        "a": "REST: resources identified by URIs, standard HTTP methods and status codes, **stateless** requests, cacheable responses, usually JSON.\n\nSOAP: an XML envelope protocol with a strict WSDL contract and built-in WS-* standards (security, transactions) — heavier, still common in banking/legacy integrations.",
+        "n": 3,
+        "companies": [
+          "Lowe's",
+          "Mastercard",
+          "Swiggy"
+        ]
+      }
+    ]
+  },
+  "SPRING-08": {
+    "posts": 20,
+    "items": [
+      {
+        "q": "How do you implement global exception handling in Spring Boot?",
+        "a": "```java\n@RestControllerAdvice\nclass ApiErrors {\n  @ExceptionHandler(OrderNotFoundException.class)\n  ResponseEntity<ProblemDetail> notFound(OrderNotFoundException e) {\n    return ResponseEntity.status(404).body(ProblemDetail.forStatusAndDetail(NOT_FOUND, e.getMessage()));\n  }\n  @ExceptionHandler(MethodArgumentNotValidException.class)\n  ResponseEntity<ProblemDetail> invalid(MethodArgumentNotValidException e) { … 400 with field errors … }\n  @ExceptionHandler(Exception.class)\n  ResponseEntity<ProblemDetail> unexpected(Exception e) { log.error(\"…\", e); … 500, no stack trace … }\n}\n```\n\nServices throw meaningful domain exceptions; one place maps them to HTTP. Never leak stack traces.",
+        "n": 19,
+        "companies": [
+          "Aditya Birla",
+          "Deloitte",
+          "EPAM",
+          "Goldman Sachs",
+          "IBS",
+          "Infosys",
+          "Mastercard",
+          "MobiKwik",
+          "NPCI",
+          "Nike",
+          "Optum",
+          "Target"
+        ]
+      },
+      {
+        "q": "What should an error response look like? (ProblemDetail / RFC 9457)",
+        "a": "One consistent shape for every error. Spring Boot 3 supports **ProblemDetail** (RFC 9457, formerly 7807):\n\n```json\n{ \"type\": \"https://api.example.com/errors/out-of-stock\", \"title\": \"Out of stock\",\n  \"status\": 409, \"detail\": \"SKU 123 has 0 units\", \"instance\": \"/orders\", \"traceId\": \"…\" }\n```\n\nInclude a machine-readable type/code and a trace id for support; never internal details.",
+        "n": 3,
+        "companies": [
+          "ServiceNow",
+          "Walmart",
+          "dunnhumby"
+        ]
+      },
+      {
+        "q": "@ControllerAdvice vs @RestControllerAdvice vs @ExceptionHandler — what's the scope of each?",
+        "a": "- `@ExceptionHandler` inside a controller → handles exceptions from **that controller only**.\n- `@ControllerAdvice` → a class whose handlers apply to **all controllers** (or a subset via `basePackages`).\n- `@RestControllerAdvice` = `@ControllerAdvice` + `@ResponseBody`.\n\nThe most specific exception type wins. Exceptions thrown in **filters** (e.g. Spring Security) happen before DispatcherServlet, so advice doesn't see them.",
+        "n": 2,
+        "companies": [
+          "Infosys"
+        ]
+      }
+    ]
+  },
+  "SPRING-11": {
+    "posts": 6,
+    "items": [
+      {
+        "q": "Filter vs interceptor — where does each run, and which would you use?",
+        "a": "- **Filter** (Servlet API): runs **before DispatcherServlet**, sees every request including static files and errors. Spring Security is a chain of filters. Good for auth, CORS, request logging, tenant resolution from a header.\n- **Interceptor** (Spring MVC): runs **around the controller** (`preHandle`, `postHandle`, `afterCompletion`) and knows which **handler method** was chosen. Good for checks that need the handler's annotations.\n- **AOP**: around any bean method, not just web calls.\n\nOrder for one request: filter → DispatcherServlet → interceptor → controller (→ aspects).",
+        "n": 6,
+        "companies": [
+          "Demandbase",
+          "Mastercard",
+          "Visa",
+          "Zinier"
+        ]
+      }
+    ]
+  },
+  "SPRING-04": {
+    "posts": 29,
+    "items": [
+      {
+        "q": "Optimistic vs pessimistic locking in JPA — when do you use each?",
+        "a": "- **Optimistic**: add `@Version` to the entity. UPDATE includes `WHERE version = ?`; if another transaction changed the row, you get `OptimisticLockException` → retry or tell the user. No locks held — best when conflicts are **rare** (editing a profile).\n- **Pessimistic**: `@Lock(PESSIMISTIC_WRITE)` → `SELECT … FOR UPDATE`; other writers wait. Best when conflicts are **frequent and costly** (decrementing stock, booking the last seat).\n\nKeep pessimistic transactions short, and lock rows in a consistent order to avoid deadlocks.",
+        "n": 20,
+        "companies": [
+          "Paytm",
+          "Walmart",
+          "Autodesk",
+          "Bloomberg",
+          "Cisco",
+          "Coupa",
+          "Google",
+          "Kotak Mahindra Bank",
+          "Meesho",
+          "Microsoft",
+          "MobiKwik",
+          "Oracle"
+        ]
+      },
+      {
+        "q": "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
+        "a": "- **JPA**: the specification (annotations, `EntityManager`, JPQL).\n- **Hibernate**: the most common JPA **implementation** (plus extras).\n- **Spring Data JPA**: repositories on top — `interface OrderRepo extends JpaRepository<Order, Long>` with derived queries — so you write almost no DAO code.\n\nWhy an ORM: maps rows ↔ objects, dirty checking, caching, portable queries. Cost: hidden queries (N+1) — you must still understand the SQL.",
+        "n": 7,
+        "companies": [
+          "Lenovo",
+          "Mastercard",
+          "Nike",
+          "Rakuten Symphony",
+          "Truemeds",
+          "Visa"
+        ]
+      },
+      {
+        "q": "EntityManager vs CrudRepository vs JpaRepository?",
+        "a": "- `EntityManager` — the raw JPA API (`persist`, `find`, `merge`, queries).\n- `CrudRepository` — Spring Data: save/find/delete/count.\n- `PagingAndSortingRepository` — adds `Pageable`/`Sort`.\n- `JpaRepository` — adds JPA specifics: `flush`, `saveAndFlush`, batch deletes, `getReferenceById`.\n\nUse `JpaRepository`; drop to `EntityManager` for complex or bulk operations.",
+        "n": 2,
+        "companies": [
+          "Visa"
+        ]
+      },
+      {
+        "q": "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
+        "a": "Entity states: **new** → **managed** (in the persistence context) → **detached** (context closed) → **removed**.\n\n- Managed entities are **dirty-checked**: change a field inside a transaction and Hibernate issues the UPDATE at flush/commit — no `save()` needed.\n- `save()` = `persist` for new entities, `merge` for detached ones. It doesn't hit the DB immediately.\n- `saveAndFlush()` forces the SQL now (useful to surface constraint errors early).\n- `merge` copies a detached object's state onto a managed copy and returns **that** copy.\n\nThe persistence context is the first-level cache: the same id is loaded once per transaction.",
+        "n": 1,
+        "companies": [
+          "Target"
+        ]
+      },
+      {
+        "q": "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?",
+        "a": "- **Dialect**: tells Hibernate which SQL flavour to generate (auto-detected in Boot 3).\n- `spring.jpa.hibernate.ddl-auto`: `validate` in prod (schema managed by Flyway/Liquibase), `update`/`create-drop` only locally.\n- See the SQL: `spring.jpa.show-sql=true` or `logging.level.org.hibernate.SQL=debug` (+ bind parameters) — the first thing to switch on when hunting N+1.",
+        "n": 1,
+        "companies": [
+          "Mastercard"
+        ]
+      }
+    ]
+  },
+  "SPRING-07": {
+    "posts": 10,
+    "items": [
+      {
+        "q": "One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)?",
+        "a": "The **owning side** holds the foreign key and is the one Hibernate reads when writing; the other side says `mappedBy`:\n\n```java\n@Entity class Order {\n  @OneToMany(mappedBy = \"order\", cascade = ALL, orphanRemoval = true)\n  List<OrderLine> lines = new ArrayList<>();\n}\n@Entity class OrderLine {\n  @ManyToOne(fetch = LAZY) @JoinColumn(name = \"order_id\")   // owning side\n  Order order;\n}\n```\n\nFor one-to-one, the side with the FK column owns it; `@MapsId` shares the primary key. Bidirectional pairs serialised to JSON recurse forever — return DTOs.",
+        "n": 8,
+        "companies": [
+          "Blinkit",
+          "Target",
+          "Urban Company",
+          "VMware",
+          "Yes Madam",
+          "Zomato"
+        ]
+      },
+      {
+        "q": "What is cascade in JPA — which cascade types are safe?",
+        "a": "Cascade passes an operation from parent to children: `CascadeType.PERSIST`, `MERGE`, `REMOVE`, `REFRESH`, `DETACH`, `ALL`.\n\nUse cascading only for real **ownership** (Order → OrderLines). `CascadeType.ALL`/`REMOVE` on a `@ManyToOne` or `@ManyToMany` can delete shared data (delete one order, lose the customer).\n\n`orphanRemoval = true` deletes a child when it's removed from the parent's collection — different from `REMOVE`, which only fires when the parent is deleted.",
+        "n": 2,
+        "companies": [
+          "EPAM"
+        ]
+      }
+    ]
+  },
+  "SPRING-22": {
+    "posts": 4,
+    "items": [
+      {
+        "q": "How do you model a many-to-many relationship (e.g. Person ↔ Job)?",
+        "a": "```java\n@ManyToMany\n@JoinTable(name = \"person_job\", joinColumns = @JoinColumn(name = \"person_id\"),\n           inverseJoinColumns = @JoinColumn(name = \"job_id\"))\nSet<Job> jobs = new HashSet<>();\n```\n\nUse a `Set`, never cascade REMOVE. As soon as the link needs its own data (applied_at, status) — and it usually does — replace it with an explicit **join entity** (`Application` with two `@ManyToOne`s).",
+        "n": 3,
+        "companies": [
+          "Microsoft",
+          "Paytm",
+          "eBay"
+        ]
+      },
+      {
+        "q": "Which side should own a one-to-many — and why keep collections in sync?",
+        "a": "Make the **`@ManyToOne` (child) side the owner** — the FK lives in the child table. A unidirectional `@OneToMany` without `mappedBy` makes Hibernate create a join table and extra UPDATEs.\n\nIn a bidirectional pair, set both sides in a helper:\n\n```java\nvoid addLine(OrderLine l) { lines.add(l); l.setOrder(this); }\n```\n\nDefault fetch: `@ManyToOne`/`@OneToOne` are **EAGER** — set them to `LAZY`; collections are lazy already.",
+        "n": 2,
+        "companies": [
+          "Target",
+          "eBay"
+        ]
+      }
+    ]
+  },
+  "SPRING-20": {
+    "posts": 34,
+    "items": [
+      {
+        "q": "Lazy vs eager loading — and what causes LazyInitializationException?",
+        "a": "- **Lazy**: load the association only when it's accessed (Hibernate puts a proxy there).\n- **Eager**: load it with the parent every time.\n\n`LazyInitializationException`: the transaction/session has closed, then something touches a lazy field — classically Jackson serialising an entity in the controller.\n\nFix: fetch what you need inside the service (`JOIN FETCH`/entity graph) and return **DTOs**. Leaving `spring.jpa.open-in-view` on hides the error by keeping the session open for the whole request — and holds a DB connection that long.",
+        "n": 13,
+        "companies": [
+          "American Express",
+          "Arctic Wolf",
+          "Fortinet",
+          "IBM",
+          "Oracle",
+          "Publicis Sapient",
+          "ServiceNow",
+          "TripJack",
+          "Uniphore",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "What is the N+1 problem in Hibernate, and how do you fix it?",
+        "a": "Loading 100 orders runs **1** query, then touching `order.getCustomer()` (lazy) runs **100** more.\n\nFixes:\n- `JOIN FETCH` in JPQL: `select o from Order o join fetch o.customer`.\n- `@EntityGraph(attributePaths = \"customer\")` on the repository method.\n- Batch fetching: `@BatchSize(size = 50)` / `hibernate.default_batch_fetch_size` → `IN (...)` queries.\n- A **DTO projection** query that selects only the columns you need.\n\nFind it by turning on SQL logging or asserting query counts in tests. Don't \"fix\" it by switching to EAGER — that loads too much everywhere.",
+        "n": 11,
+        "companies": [
+          "Citi",
+          "DocuSign",
+          "Google",
+          "Info Edge",
+          "Microsoft",
+          "Oracle",
+          "Publicis Sapient",
+          "Rakuten",
+          "Target",
+          "athenahealth"
+        ]
+      },
+      {
+        "q": "How do you paginate in Spring Data — and why is a deep OFFSET slow?",
+        "a": "`Page<Order> findByStatus(Status s, Pageable p)` with `PageRequest.of(page, size, Sort.by(\"createdAt\").descending())`. `Page` runs an extra **count** query; return `Slice` if you don't need totals.\n\n`OFFSET 100000 LIMIT 20` still reads and throws away 100,000 rows. For deep or infinite scrolling use **keyset (cursor) pagination**: `WHERE (created_at, id) < (:lastTs, :lastId) ORDER BY created_at DESC, id DESC LIMIT 20` — uses the index, stable under inserts.",
+        "n": 9,
+        "companies": [
+          "Agoda",
+          "Adobe",
+          "LinkedIn",
+          "Mastercard",
+          "Truemeds",
+          "Uber",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "Derived queries vs JPQL vs native SQL — how do you write complex queries in JPA?",
+        "a": "- **Derived**: `findByStatusAndCreatedAtAfter(...)` — fine for simple filters; unreadable past ~3 conditions.\n- **JPQL** with `@Query(\"select o from Order o where …\")` — entity-based, portable.\n- **Native** `@Query(nativeQuery = true)` — DB-specific features (window functions, `ON CONFLICT`, JSONB), returns rows/projections.\n- Dynamic filters: Specifications / Criteria / Querydsl.\n\nReturn **projections** (interfaces or DTO constructor expressions) for read paths instead of full entities.",
+        "n": 3,
+        "companies": [
+          "Knot Solutions",
+          "Publicis Sapient",
+          "Rakuten Symphony"
+        ]
+      }
+    ]
+  },
+  "SPRING-16": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "First-level vs second-level cache in Hibernate — when does L2 help or hurt?",
+        "a": "- **L1**: the persistence context — per transaction/session, always on. Same id → same object, one SELECT.\n- **L2**: shared across sessions (Ehcache, Caffeine, Redis via a provider), opt-in per entity with `@Cacheable` + a concurrency strategy.\n\nL2 helps for **read-mostly reference data** (countries, product catalogue). It hurts for frequently-updated data (invalidation churn) and with **multiple instances** unless the cache is distributed or invalidated across nodes. The query cache is usually a trap — any write to the table invalidates it.",
+        "n": 0,
+        "companies": []
+      }
+    ],
+    "note": "No write-up in the last two years named this topic, so these are the questions banks ask — useful depth, low odds."
+  },
+  "SPRING-12": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you build dynamic queries — Criteria API vs Specifications?",
+        "a": "When filters are optional (search screen with 8 fields), string-concatenated JPQL becomes unreadable and injection-prone.\n\n- **Criteria API**: type-safe, programmatic — but verbose.\n- **Spring Data Specifications**: small reusable predicates you combine:\n\n```java\nSpecification<Order> s = where(hasStatus(st)).and(createdAfter(from)).and(customerIs(id));\nrepo.findAll(s, pageable);   // repo extends JpaSpecificationExecutor<Order>\n```\n\nEach `null` filter just returns `null` and is skipped. Parameters are bound, so no SQL injection.",
+        "n": 0,
+        "companies": []
+      }
+    ],
+    "note": "No write-up in the last two years named this topic, so these are the questions banks ask — useful depth, low odds."
+  },
+  "SPRING-15": {
+    "posts": 11,
+    "items": [
+      {
+        "q": "What is SQL injection — and how do PreparedStatement and ORMs prevent it?",
+        "a": "Untrusted input concatenated into SQL becomes code: `\"… WHERE name = '\" + input + \"'\"` with `' OR '1'='1`.\n\nPrevent: **bind parameters** (`PreparedStatement`, JPA `:param`) — the value is sent separately and never parsed as SQL. ORMs do this for you unless you build JPQL/native strings by concatenation. Also validate input and give the DB user least privilege.",
+        "n": 4,
+        "companies": [
+          "Fortinet",
+          "JPMorgan"
+        ]
+      },
+      {
+        "q": "XSS — and why is storing a JWT in localStorage risky?",
+        "a": "XSS: attacker-supplied script runs in your page (stored or reflected). Any script on the page can read **localStorage**, so a token there is one XSS bug away from being stolen.\n\nSafer: an **HttpOnly, Secure, SameSite** cookie (JS can't read it) — then add CSRF protection. Plus escape output, a Content-Security-Policy, and short-lived access tokens.",
+        "n": 4,
+        "companies": [
+          "Apple",
+          "Swiggy"
+        ]
+      },
+      {
+        "q": "What is CSRF — and why can a stateless JWT API disable CSRF protection?",
+        "a": "CSRF: a malicious site makes your browser send a request to a site where you're logged in; the browser attaches your **session cookie** automatically.\n\nDefences: CSRF token (Spring Security default for session apps), `SameSite` cookies.\n\nA stateless API that reads a JWT from the `Authorization` header is not exposed — the browser doesn't add that header automatically — so `csrf().disable()` is fine there. If the JWT lives in a cookie, you need CSRF protection again.",
+        "n": 3,
+        "companies": [
+          "Fortinet",
+          "Fynd"
+        ]
+      },
+      {
+        "q": "What is CORS, and who enforces it?",
+        "a": "The **browser** enforces the same-origin policy; CORS is how a server says which other origins may call it (`Access-Control-Allow-Origin`, methods, headers, credentials). Non-simple requests send an `OPTIONS` **preflight** first.\n\nIt is not server-side security — curl ignores it. In Spring: `@CrossOrigin` or a `CorsConfigurationSource` registered with Spring Security (so preflights aren't blocked by auth).",
+        "n": 3,
+        "companies": [
+          "Apple",
+          "Delivery Hero",
+          "Flipkart"
+        ]
+      }
+    ]
+  },
+  "SPRING-09": {
+    "posts": 50,
+    "items": [
+      {
+        "q": "How does Spring Security work — the filter chain and the authentication flow?",
+        "a": "Requests pass a `SecurityFilterChain` (a `DelegatingFilterProxy` in the servlet filter chain) **before** DispatcherServlet.\n\nLogin flow: an auth filter builds an unauthenticated `Authentication` → `AuthenticationManager` (`ProviderManager`) → an `AuthenticationProvider` (e.g. `DaoAuthenticationProvider` → `UserDetailsService` loads the user → `PasswordEncoder` checks the password) → on success the `SecurityContextHolder` gets the authenticated principal (ThreadLocal) → `AuthorizationFilter` checks access.\n\nBoot 3 config is a `SecurityFilterChain` bean — `WebSecurityConfigurerAdapter` is gone.",
+        "n": 21,
+        "companies": [
+          "Publicis Sapient",
+          "Citi",
+          "EPAM",
+          "Goldman Sachs",
+          "Google",
+          "Mastercard",
+          "Oracle",
+          "Paytm",
+          "S&P Global",
+          "Salesforce",
+          "Visa"
+        ]
+      },
+      {
+        "q": "Authentication vs authorization — and 401 vs 403?",
+        "a": "- **Authentication**: who are you? (login, token validation) → failure = **401 Unauthorized**.\n- **Authorization**: what may you do? (roles, scopes, ownership) → failure = **403 Forbidden**.\n\nIn Spring Security, authentication fills the `SecurityContext`; authorization rules (`authorizeHttpRequests`, `@PreAuthorize`) read it.",
+        "n": 17,
+        "companies": [
+          "Mastercard",
+          "Adobe",
+          "Avathon",
+          "Epsilon",
+          "Freshworks",
+          "Goldman Sachs",
+          "Hyperverge",
+          "JPMorgan",
+          "Marsh McLennan",
+          "Oracle",
+          "Qualys",
+          "Rakuten Symphony"
+        ]
+      },
+      {
+        "q": "Stateful (session) vs stateless (token) authentication?",
+        "a": "- **Session**: server stores the session; the browser holds a session-id cookie. Easy to revoke, but needs sticky sessions or a shared store (Redis) to scale.\n- **Stateless token (JWT)**: the token carries the claims, any instance can verify it with the key — scales easily, but revoking before expiry is hard.\n\nSpring: `sessionCreationPolicy(STATELESS)` for token APIs. Basic auth = username/password on every request — only over HTTPS and for internal tools.",
+        "n": 10,
+        "companies": [
+          "Adobe",
+          "Delivery Hero",
+          "Fynd",
+          "Okta",
+          "OneLap",
+          "Oracle",
+          "Safe Security",
+          "Tekion",
+          "UKG"
+        ]
+      },
+      {
+        "q": "Where do users and passwords come from — UserDetailsService and password hashing?",
+        "a": "Implement `UserDetailsService.loadUserByUsername()` to load the user and roles from your table; Spring compares the submitted password using a `PasswordEncoder`.\n\nStore passwords with a **slow, salted** hash — `BCryptPasswordEncoder` (or Argon2). Never plain SHA-256 (too fast to brute-force), never reversible encryption. Roles become `GrantedAuthority` objects (`ROLE_ADMIN`).",
+        "n": 5,
+        "companies": [
+          "Cleartrip",
+          "Hyperverge",
+          "UKG",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "How do you secure REST APIs in a Spring Boot service?",
+        "a": "- **Authenticate** every request statelessly: validate a JWT/OAuth2 access token (`spring-boot-starter-oauth2-resource-server`), or mTLS / client credentials between services.\n- **Authorize** at the URL level and on methods (`@PreAuthorize`), and check **ownership** (user 42 can only read order 42's).\n- HTTPS only, validate input, rate-limit, don't leak stack traces, keep secrets in a vault, add CORS rules, log security events.",
+        "n": 3,
+        "companies": [
+          "Publicis Sapient",
+          "Mastercard"
+        ]
+      }
+    ]
+  },
+  "SPRING-23": {
+    "posts": 32,
+    "items": [
+      {
+        "q": "How does JWT work — structure and verification?",
+        "a": "`header.payload.signature`, each Base64URL-encoded:\n- header: algorithm (`RS256`/`HS256`),\n- payload: claims (`sub`, `exp`, `iat`, roles),\n- signature: sign(header + payload, key).\n\nThe server **verifies the signature** and `exp` on every request — no DB lookup. It is **signed, not encrypted**: anyone can read the payload, so no secrets in it. RS256 lets services verify with a public key without holding the signing key.",
+        "n": 29,
+        "companies": [
+          "Apple",
+          "Goldman Sachs",
+          "Avathon",
+          "Delivery Hero",
+          "Hyperverge",
+          "IBM",
+          "Lenovo",
+          "Marsh McLennan",
+          "Mastercard",
+          "Microsoft",
+          "Okta",
+          "Publicis Sapient"
+        ]
+      },
+      {
+        "q": "Where is the JWT validated in the Spring Security filter chain — how do you write a JWT filter?",
+        "a": "Either use the built-in resource server (`oauth2ResourceServer().jwt()` → `BearerTokenAuthenticationFilter`), or write a `OncePerRequestFilter` added **before** `UsernamePasswordAuthenticationFilter`:\n\n1. Read `Authorization: Bearer <token>`.\n2. Verify signature and expiry.\n3. Build an `Authentication` with the user and authorities and set it in `SecurityContextHolder`.\n4. Continue the chain.\n\nInvalid/expired token → don't set the context; the `AuthenticationEntryPoint` returns **401**. Exceptions here happen before DispatcherServlet, so `@ControllerAdvice` won't format them.",
+        "n": 4,
+        "companies": [
+          "Mastercard",
+          "Publicis Sapient",
+          "S&P Global"
+        ]
+      },
+      {
+        "q": "Access token vs refresh token — where should tokens live on the client?",
+        "a": "- **Access token**: short-lived, sent on every API call.\n- **Refresh token**: long-lived, sent only to the auth endpoint to get a new access token; rotate it on each use and detect reuse.\n\nStorage: refresh token in an **HttpOnly Secure SameSite** cookie; access token in memory. localStorage is readable by any XSS script. Keep the refresh call out of your token-attaching interceptor, or it loops.",
+        "n": 4,
+        "companies": [
+          "Capgemini",
+          "Hyperverge",
+          "Paytm",
+          "Publicis Sapient"
+        ]
+      },
+      {
+        "q": "How do you revoke or invalidate a JWT before it expires?",
+        "a": "You can't \"un-sign\" it, so:\n- **Short-lived access tokens** (5–15 min) + refresh tokens — revoke the refresh token on logout.\n- A **denylist** of token ids (`jti`) in Redis until their `exp` (a lookup per request, but tiny).\n- A per-user **token version** in the DB/claims — bump it to kill all of a user's tokens.\n- Rotate the signing key for an emergency mass revocation.",
+        "n": 2,
+        "companies": [
+          "S&P Global"
+        ]
+      }
+    ]
+  },
+  "SPRING-10": {
+    "posts": 10,
+    "items": [
+      {
+        "q": "Explain the OAuth 2.0 flow — authorization code vs client credentials.",
+        "a": "Roles: resource owner (user), client (your app), authorization server, resource server (the API).\n\n- **Authorization Code + PKCE** (users): browser is redirected to the auth server, user logs in, the app gets a short **code**, then exchanges it server-side (with the PKCE verifier) for access + refresh tokens.\n- **Client Credentials** (service-to-service, no user): the service posts its client id + secret (or a certificate) to get an access token. This is what machine-to-machine calls use.\n- Implicit and password grants are **deprecated** (RFC 9700).\n- **OIDC** adds an ID token — *who* the user is — on top of OAuth's *what you may access*.",
+        "n": 10,
+        "companies": [
+          "Apple",
+          "Avathon",
+          "Fortinet",
+          "Goldman Sachs",
+          "IBM",
+          "Microsoft",
+          "Paytm",
+          "Walmart"
+        ]
+      },
+      {
+        "q": "OAuth 2.0 vs JWT — how are they related?",
+        "a": "Not alternatives. **OAuth 2.0** is a *protocol* for obtaining an access token. **JWT** is a *token format*. OAuth access tokens are very often JWTs, but they can also be opaque strings checked via introspection.",
+        "n": 2,
+        "companies": [
+          "Apple",
+          "Avathon"
+        ]
+      }
+    ]
+  },
+  "SPRING-13": {
+    "posts": 13,
+    "items": [
+      {
+        "q": "How do you implement role-based access control in Spring (@PreAuthorize)?",
+        "a": "Enable with `@EnableMethodSecurity`, then:\n\n```java\n@PreAuthorize(\"hasRole('ADMIN') or #userId == authentication.name\")\npublic Order get(String userId, long orderId) { … }\n```\n\n- URL-level rules in `SecurityFilterChain` (`.requestMatchers(\"/admin/**\").hasRole(\"ADMIN\")`).\n- `@PostAuthorize` checks the returned object (e.g. `returnObject.owner == authentication.name`) — the method has already run, so never use it for writes.\n- Roles come from the JWT claims or DB as `GrantedAuthority`. It's AOP — so self-invocation bypasses it too.",
+        "n": 13,
+        "companies": [
+          "Amazon",
+          "Arctic Wolf",
+          "Citi",
+          "Gartner",
+          "Goldman Sachs",
+          "Lowe's",
+          "Mastercard",
+          "Okta",
+          "Pan Science Innovations(PSI)",
+          "PayPay"
+        ]
+      }
+    ]
+  },
+  "SPRING-14": {
+    "posts": 34,
+    "items": [
+      {
+        "q": "How do you monitor a Spring Boot service in production?",
+        "a": "- **Metrics**: Micrometer → Prometheus → Grafana: request rate, error rate, p95/p99 latency, JVM heap/GC, DB pool usage. Alert on symptoms (latency, errors), not on CPU alone.\n- **Logs**: structured JSON with a trace id (ELK/Splunk).\n- **Traces**: Micrometer Tracing / OpenTelemetry to see where time goes across services.\n- **Health probes**: liveness = the process is alive (keep it shallow); readiness = can take traffic (DB reachable) — a DB outage should fail readiness, not restart pods.",
+        "n": 30,
+        "companies": [
+          "Microsoft",
+          "Autodesk",
+          "Agoda",
+          "Apple",
+          "BharatPe",
+          "EPAM",
+          "Freshworks",
+          "HackerRank",
+          "IBM",
+          "Knot Solutions",
+          "Paytm",
+          "Swiggy"
+        ]
+      },
+      {
+        "q": "What is Spring Boot Actuator — which endpoints, and how do you secure them?",
+        "a": "Production endpoints: `/actuator/health` (liveness/readiness groups for Kubernetes), `/metrics` and `/prometheus` (Micrometer), `/info`, `/loggers` (change log level at runtime), `/env`, `/heapdump`, `/threaddump`, `/conditions`.\n\nExpose only what you need (`management.endpoints.web.exposure.include=health,info,prometheus`), put them on a separate management port, and secure the rest — `/env` and `/heapdump` leak secrets. Custom health: implement `HealthIndicator`.",
+        "n": 7,
+        "companies": [
+          "EPAM",
+          "Cerner",
+          "Knot Solutions",
+          "UKG"
+        ]
+      }
+    ]
+  },
+  "SPRING-19": {
+    "posts": 6,
+    "items": [
+      {
+        "q": "Maven lifecycle and pom.xml — what happens on mvn package?",
+        "a": "Default lifecycle phases run in order: `validate → compile → test → package → verify → install → deploy`. `mvn package` runs everything up to `package` (compile, run tests, build the jar). Plugins bind **goals** to phases.\n\nScopes: `compile` (default), `provided` (container supplies it), `runtime`, `test`. `spring-boot-starter-parent` gives managed versions and plugin defaults; `spring-boot-maven-plugin` builds the executable fat jar.",
+        "n": 4,
+        "companies": [
+          "Infosys",
+          "Rakuten Symphony"
+        ]
+      },
+      {
+        "q": "How do you resolve dependency version conflicts in Maven or Gradle?",
+        "a": "Maven picks the **nearest** version in the tree (first declared wins on a tie) — which may not be the newest.\n\n- See it: `mvn dependency:tree` (Gradle: `gradle dependencies`).\n- Fix it: pin the version in `<dependencyManagement>` (or import a BOM), or `<exclusions>` on the dependency bringing the wrong one.\n- Symptom in prod: `NoSuchMethodError` / `NoClassDefFoundError` at runtime.",
+        "n": 3,
+        "companies": [
+          "Autodesk",
+          "Rakuten Symphony"
+        ]
+      }
+    ]
+  }
+};

@@ -192,6 +192,7 @@ export default function NoteReader({
   flat = false, // part of a page that is already the reading surface: no card
   lead = null, // shown at the top of the article column (topic header, videos)
   starterQuestions = null, // offered when the note is empty
+  footer = null, // fixed below the note, outside it: never edited, never annotated
   readOnly = false, // an old version being previewed: look, don't touch
   annotations = [],
   onAnnotationsChange,
@@ -839,6 +840,7 @@ export default function NoteReader({
                 )
               )}
             </div>
+            {footer}
 
             {/* The part under the pointer: a line beside it, and its pen (edit
                 it) and plus (write below it) — in the left margin on a wide
