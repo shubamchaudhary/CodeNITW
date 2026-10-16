@@ -157,9 +157,9 @@ export const TOPICS = [
   {
     id: "JAVA-04",
     section: "java",
-    priority: "P1",
+    priority: "P0",
     title: "JVM memory model & garbage collection",
-    why: "Standard at this level, and your K8s pods make the container-vs-heap question personal.",
+    why: "Raised from P1. Once a Java round gets past collections it usually reaches memory: young vs old generation, G1 vs Parallel, the OutOfMemoryError types, heap vs stack and strong/weak/soft references all show up in 2025–26 write-ups (an MNC Java backend round, a JPMorgan SDE-2 loop). One video, and your K8s pods make the container-vs-heap question personal.",
     resources: [{ csv: "CC-J#10" }],
     inherit: "P1-22",
   },
@@ -168,12 +168,10 @@ export const TOPICS = [
     section: "java",
     priority: "P1",
     title: "Java 17 → 25 — records, sealed types & pattern matching",
-    why: "2026 write-ups treat Java 17 features as assumed knowledge and \"Java 8 vs 11 vs 17\" is asked by name. Java 25 is the current LTS. You ship Java 17 — being vague here reads badly. Virtual threads moved to CONC-11, beside the rest of the threads playlist.",
+    why: "Trimmed from five videos to three. What rounds name is records, sealed types and \"Java 8 vs 11 vs 17\" (a 2026 MNC Java round asked sealed classes, records and switch expressions). Switch expressions (#43) and instanceof pattern matching (#44) are syntax you can read in five minutes, not 32 minutes of video. You ship Java 17; Java 25 is the current LTS. Virtual threads are on CONC-11.",
     resources: [
       { csv: "CC-J#42" },
-      { csv: "CC-J#43" },
-      { csv: "CC-J#44" },
-      { csv: "CC-J#45" },
+      { csv: "CC-J#45", note: "Assumes switch expressions (case ->, yield). If those are new, read them up first — five minutes." },
       { csv: "CC-J#46" },
     ],
     inherit: "P2-36",
@@ -185,8 +183,9 @@ export const TOPICS = [
   {
     id: "JAVA-07",
     section: "java",
-    priority: "P1",
+    priority: "P2",
     title: "Generics & type erasure",
+    why: "Lowered to P2. Of the SDE-2 write-ups behind this map only one (HSBC) names generics; the rest spend the time on collections, streams, concurrency, GC and Spring. When it does come up it is a two-minute quick-fire — type erasure, ? extends vs ? super — not a round.",
     resources: [{ csv: "CC-J#12" }],
     inherit: "P1-24",
   },
@@ -212,7 +211,19 @@ export const TOPICS = [
     section: "java",
     priority: "P2",
     title: "Optional — the API and its misuse",
-    resources: [{ csv: "CC-J#48" }],
+    why: "The playlist video (#48) runs 74 minutes. For a P2 card whose questions a 20-minute read answers, that is the wrong trade under a deadline — watch it later if you want the whole API.",
+    resources: [
+      {
+        doc: {
+          title: "Guide To Java Optional",
+          site: "baeldung.com",
+          url: "https://www.baeldung.com/java-optional",
+          note: "Read creation, orElse vs orElseGet and map/flatMap. Skim the rest.",
+          minutes: 20,
+          estimate: true,
+        },
+      },
+    ],
     inherit: "P2-37",
   },
   {
@@ -220,8 +231,8 @@ export const TOPICS = [
     section: "java",
     priority: "P2",
     title: "Reflection, annotations, serialization & class loading",
-    why: "NEW. What Spring is built on. Rarely a round of its own, but \"how does Spring find your @Component?\" and \"write a custom annotation\" land here (a Gartner SDE-2 loop asked about custom annotations in the Spring lifecycle), and ClassNotFoundException vs NoClassDefFoundError is a classic production question.",
-    resources: [{ csv: "CC-J#18" }, { csv: "CC-J#19" }],
+    why: "What Spring is built on. Rarely a round of its own, but \"how does Spring find your @Component?\" and \"write a custom annotation\" land here (a Gartner SDE-2 loop asked about custom annotations in the Spring lifecycle), and ClassNotFoundException vs NoClassDefFoundError is a classic production question. Trimmed to the reflection video: the 71-minute annotations video (#19) is too long for a P2 — retention is one fact below, and you build a custom annotation for real on SPRING-06.",
+    resources: [{ csv: "CC-J#18" }],
     questions: [
       "Retention policies — SOURCE, CLASS, RUNTIME. Which one must an annotation Spring reads at runtime use, and why?",
       "You write @LogExecutionTime. What makes it do anything? (Nothing — until an aspect or a processor reads it. See SPRING-06.)",
@@ -427,7 +438,10 @@ export const TOPICS = [
     priority: "P0",
     title: "Spring Boot @Async & @Scheduled",
     why: "From the Spring Boot playlist, not the Java one. Directly backs the async/sync-fallback work on your resume; \"long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
-    resources: [{ csv: "CC-SB#16" }, { csv: "CC-SB#17" }],
+    resources: [
+      { csv: "CC-SB#16", note: "The ThreadPoolExecutor part repeats CONC-01 — skim it, and slow down for how @Async picks its executor." },
+      { csv: "CC-SB#17" },
+    ],
     questions: [
       "Why does @Async silently not work when called from within the same class?",
       "What must @Async methods return? What happens if one returns void and throws?",
@@ -466,6 +480,10 @@ export const TOPICS = [
   },
 
   // ─── Spring Boot & Data Access ─────────────────────────────────────────────
+  // Fourth pass (Oct 2026): one sitting per card — about one video, rarely
+  // over 90 minutes — following the Spring Boot playlist (Concept && Coding).
+  // Bulky cards were split and low-yield videos dropped; SPRING-01 is done and
+  // untouched. Ids are storage keys: split-off halves got new ids (18–23).
   {
     id: "SPRING-01",
     section: "spring",
@@ -474,48 +492,6 @@ export const TOPICS = [
     why: "The self-invocation question is reported by name in interview write-ups. Highest-yield Spring topic there is.",
     resources: [{ csv: "CC-SB#13" }, { csv: "CC-SB#14" }, { csv: "CC-SB#15" }],
     inherit: "P0-01",
-  },
-  {
-    id: "SPRING-02",
-    section: "spring",
-    priority: "P0",
-    title: "Bean lifecycle, IoC, DI & scopes",
-    why: "\"Spring lifecycle\", @Component vs @Bean vs @Qualifier, DI styles and circular dependencies — reported repeatedly, including in 2026 SDE-2 loops.",
-    resources: [{ csv: "CC-SB#6" }, { csv: "CC-SB#7" }, { csv: "CC-SB#8" }],
-    inherit: "P0-03",
-    questions: [
-      "Spring Boot 2.6+ refuses circular references by default. What fails at startup, and why shouldn't you just set spring.main.allow-circular-references=true?",
-    ],
-  },
-  {
-    id: "SPRING-03",
-    section: "spring",
-    priority: "P0",
-    title: "Spring Boot fundamentals — starters, auto-configuration, profiles, config & Maven",
-    why: "\"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and HERE's SDE-2 first round listed Maven by name. Add \"what changed in Boot 3 and 4?\" — a fair question now that Boot 4 has shipped.",
-    resources: [
-      { csv: "CC-SB#10" },
-      { csv: "CC-SB#11" },
-      { csv: "CC-SB#44" },
-      { csv: "CC-SB#4" },
-    ],
-    inherit: "P1-14",
-    questions: [
-      "What does @SpringBootApplication actually expand to? Name all three annotations and what each does.",
-      "Walk auto-configuration end to end: what reads spring.factories / AutoConfiguration.imports, and when does a condition get evaluated?",
-      "@ConditionalOnMissingBean — why is it the backbone of auto-configuration, and how do you override an auto-configured bean?",
-      "How do you debug why a bean you expected was NOT created? (--debug / the conditions report.)",
-      "What is a starter, and what would you put in one if you wrote your own?",
-      "Property resolution order: env var vs application.yml vs profile-specific yml vs CLI arg — which wins?",
-      "@Value vs @ConfigurationProperties — when does the latter win, and how do you validate it?",
-      "How does an embedded server get chosen and started? What changes if you exclude Tomcat?",
-      "Fat jar layout — why can't a plain java -cp run it, and what does the loader do?",
-      "mvn package — which lifecycle phases run, and what is the difference between a phase and a plugin goal?",
-      "Two libraries pull different versions of the same dependency. Which wins in Maven, and how do you force one? (Nearest wins; dependencyManagement / a BOM; mvn dependency:tree.)",
-      "Dependency scopes — compile, provided, runtime, test: where does each end up?",
-      "Spring Boot 2 → 3: what broke when you upgraded? (javax → jakarta, the Java 17 baseline, Sleuth → Micrometer Tracing.)",
-      "What did Spring Boot 4 / Spring Framework 7 add that you would actually use? (Built-in API versioning, @Retryable and @ConcurrencyLimit in core, JSpecify null-safety, modular auto-configuration.)",
-    ],
   },
   {
     id: "SPRING-17",
@@ -558,17 +534,101 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SPRING-04",
+    id: "SPRING-02",
     section: "spring",
     priority: "P0",
-    title: "JPA core — entity lifecycle, L1 cache & the N+1 problem",
-    why: "N+1 and lazy loading are named explicitly in current interview guides. Spring Data JPA is your loudest resume claim.",
-    resources: [{ csv: "CC-SB#24" }, { csv: "CC-SB#25" }, { csv: "CC-SB#30" }],
-    inherit: "P0-04",
+    title: "IoC, bean lifecycle & dependency injection",
+    why: "Split: scopes are now SPRING-21, so this is one sitting. \"Spring lifecycle\", @Component vs @Bean vs @Qualifier, DI styles and circular dependencies are reported again and again, including in 2026 SDE-2 loops.",
+    resources: [{ csv: "CC-SB#6" }, { csv: "CC-SB#7" }],
     questions: [
-      "CrudRepository vs PagingAndSortingRepository vs JpaRepository — what does each add?",
-      "spring.jpa.open-in-view is on by default. What does it do, why does Boot log a warning about it, and why turn it off?",
-      "@Transactional(readOnly = true) — what does it change in Hibernate, and what does it NOT do?",
+      "Walk the full bean lifecycle from instantiation to destruction. Name the callbacks.",
+      "@PostConstruct vs InitializingBean vs initMethod — which runs first?",
+      "What is a BeanPostProcessor, and where in the lifecycle does it run? (It is where Spring swaps your bean for an AOP proxy — the reason @Transactional works at all.)",
+      "ApplicationContext vs BeanFactory — what does the first one add?",
+      "@Component vs @Service vs @Repository vs @Bean. Is it purely semantic?",
+      "What does @Repository actually do beyond marking a bean?",
+      "Two beans of the same type — how does Spring pick one? (@Primary, @Qualifier.)",
+      "Constructor vs setter vs field injection. Which does Spring recommend, and why?",
+      "Two beans depend on each other. Constructor injection fails, field injection works. Why is the \"working\" one worse?",
+      "How do you legitimately break a circular dependency? (@Lazy, redesign, ApplicationContextAware.)",
+      "Spring Boot 2.6+ refuses circular references by default. What fails at startup, and why shouldn't you just set spring.main.allow-circular-references=true?",
+    ],
+  },
+  {
+    id: "SPRING-21",
+    section: "spring",
+    priority: "P0",
+    title: "Bean scopes — singleton vs prototype, request scope & thread safety",
+    why: "NEW — split from SPRING-02. \"Is a singleton bean thread-safe?\" and \"a prototype inside a singleton\" are two of the most repeated Spring questions, and the first ties straight back to the concurrency you just finished.",
+    resources: [{ csv: "CC-SB#8" }],
+    questions: [
+      "Name the scopes. Which is the default, and which exist only in a web app?",
+      "Is a singleton bean thread-safe? (No — the container guarantees one instance, not safety.) What makes a @Service safe anyway?",
+      "You keep the current user in a field of a singleton @Service. What happens under load?",
+      "Inject a prototype bean into a singleton. How many instances get created? Give three fixes. (ObjectProvider, @Lookup, a scoped proxy.)",
+      "Are prototype beans destroyed by the container? Why not — and who cleans them up?",
+      "How can a request-scoped bean be injected into a singleton controller at all? (A scoped proxy, and the ThreadLocal behind it.)",
+      "Spring singleton vs the GoF Singleton pattern — what is the difference? (One per container vs one per class loader.)",
+    ],
+  },
+  {
+    id: "SPRING-03",
+    section: "spring",
+    priority: "P0",
+    title: "Auto-configuration & starters — what @SpringBootApplication really does",
+    why: "\"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and no video in the playlist teaches it head-on — so this card pairs the conditional-bean video with the reference page. Profiles and config moved to SPRING-18, Maven to SPRING-19, so this is one sitting.",
+    resources: [
+      { csv: "CC-SB#10", note: "Conditions are what auto-configuration is built from — and @ConditionalOnProperty is how your routing flags are wired." },
+      {
+        doc: {
+          title: "Spring Boot reference — Creating Your Own Auto-configuration",
+          site: "docs.spring.io",
+          url: "https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html",
+          note: "Read the first three sections: auto-configured beans, locating candidates, condition annotations. Skip testing and the starter how-to.",
+          minutes: 20,
+          estimate: true,
+        },
+      },
+    ],
+    questions: [
+      "What does @SpringBootApplication actually expand to? Name all three annotations and what each does.",
+      "Walk auto-configuration end to end: what reads spring.factories / AutoConfiguration.imports, and when does a condition get evaluated?",
+      "@ConditionalOnMissingBean — why is it the backbone of auto-configuration, and how do you override an auto-configured bean?",
+      "@ConditionalOnProperty vs @Profile — both switch beans on at startup. When do you reach for each?",
+      "How do you debug why a bean you expected was NOT created? (--debug / the conditions report.)",
+      "What is a starter, and what would you put in one if you wrote your own?",
+      "How does an embedded server get chosen and started? What changes if you exclude Tomcat?",
+      "Fat jar layout — why can't a plain java -cp run it, and what does the loader do?",
+      "Spring Boot 2 → 3: what broke when you upgraded? (javax → jakarta, the Java 17 baseline, Sleuth → Micrometer Tracing.)",
+      "What did Spring Boot 4 / Spring Framework 7 add that you would actually use? (Built-in API versioning, @Retryable and @ConcurrencyLimit in core, JSpecify null-safety, modular auto-configuration.)",
+    ],
+  },
+  {
+    id: "SPRING-18",
+    section: "spring",
+    priority: "P1",
+    title: "Profiles & externalized config — @Profile, @ConfigurationProperties & feature flags",
+    why: "NEW — split from SPRING-03. \"How do you manage dev/stage/prod config?\" is a routine practical question, and this card backs the feature-flag routing on your resume — the flag questions below are the ones you cannot fumble.",
+    resources: [{ csv: "CC-SB#11" }, { csv: "CC-SB#44" }],
+    inherit: "P1-14",
+    questions: [
+      "How do you activate a profile per environment, and what loads when none is active?",
+      "How do you make a bad config fail at startup instead of at 3 a.m.? (@ConfigurationProperties + @Validated.)",
+      "Where do secrets belong — application.yml, env vars or a vault — and what does each one leak?",
+    ],
+  },
+  {
+    id: "SPRING-06",
+    section: "spring",
+    priority: "P1",
+    title: "AOP & the proxy mechanism",
+    why: "The mechanism under @Transactional, @Async and @Cacheable — reach for it whenever a self-invocation follow-up lands. \"JDK vs CGLIB proxies\" is on current SDE-2 lists.",
+    resources: [
+      { csv: "CC-SB#12", note: "Long. Of the pointcut types, execution(...) and @annotation(...) are the two you will actually write — skim the rest." },
+    ],
+    inherit: "P0-02",
+    questions: [
+      "Write a custom @LogExecutionTime annotation and the @Around aspect behind it. Why won't it fire on a call from inside the same class?",
     ],
   },
   {
@@ -601,59 +661,95 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SPRING-06",
+    id: "SPRING-11",
     section: "spring",
     priority: "P1",
-    title: "AOP & the proxy mechanism",
-    why: "The mechanism under @Transactional, @Async and @Cacheable — reach for it whenever a self-invocation follow-up lands. \"JDK vs CGLIB proxies\" is on current SDE-2 lists.",
-    resources: [{ csv: "CC-SB#12" }],
-    inherit: "P0-02",
+    title: "Filters vs interceptors — and where tenant resolution goes",
+    why: "Raised from P2. \"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, and both of your real cases live here: JWT validation (a filter) and tenant resolution.",
+    resources: [{ csv: "CC-SB#18" }, { csv: "CC-SB#19" }],
+    inherit: "P2-28",
     questions: [
-      "Write a custom @LogExecutionTime annotation and the @Around aspect behind it. Why won't it fire on a call from inside the same class?",
+      "One request passes a filter, an interceptor and an @Around aspect. In what order do they run, and what can each one see?",
+      "How do you register a filter in Spring Boot and control its order and URL pattern? (A @Component filter, or FilterRegistrationBean.)",
+      "preHandle, postHandle, afterCompletion — which of them still runs when the controller throws?",
+    ],
+  },
+  {
+    id: "SPRING-04",
+    section: "spring",
+    priority: "P0",
+    title: "JPA core — persistence context, entity lifecycle & L1 cache",
+    why: "Split: queries and N+1 are now SPRING-20. Entity states, dirty checking and save vs merge are the JPA warm-ups, and Spring Data JPA is your loudest resume claim.",
+    resources: [
+      { csv: "CC-SB#24", note: "Setup comes first — skim it. The JPA architecture (EntityManager, persistence context) and the entity lifecycle are what gets asked." },
+      { csv: "CC-SB#25" },
+    ],
+    questions: [
+      "Name the 4 entity states and every transition between them.",
+      "You load an entity, change a field, never call save(). Is it persisted? Why?",
+      "What is dirty checking, and when does it run?",
+      "What is the persistence context? What is its scope by default?",
+      "save() vs saveAndFlush() vs persist() vs merge().",
+      "Difference between getReference() and findById().",
+      "Why is the L1 cache not a cache you can rely on for performance?",
+      "@Transactional(readOnly = true) — what does it change in Hibernate, and what does it NOT do?",
     ],
   },
   {
     id: "SPRING-07",
     section: "spring",
     priority: "P1",
-    title: "JPA relationships, fetching & cascades",
-    why: "Mapping questions are routine, and they are where N+1 actually originates.",
-    resources: [{ csv: "CC-SB#28" }, { csv: "CC-SB#29" }],
-    inherit: "P2-26",
-  },
-  {
-    id: "SPRING-09",
-    section: "spring",
-    priority: "P1",
-    title: "Spring Security architecture, JWT & stateless auth",
-    why: "The filter chain and JWT are one story in an interview. A 2026 SDE-2 loop asked exactly where the JWT is validated in the chain, what happens when validation fails, how to revoke one, and why localStorage is risky.",
-    resources: [{ csv: "CC-SB#34" }, { csv: "CC-SB#35" }, { csv: "CC-SB#37" }, { csv: "CC-SB#38" }],
-    inherit: "P2-29",
-    extraInherit: "P1-19",
+    title: "JPA relationships I — @OneToOne, owning side & cascades",
+    why: "Split into two cards, one video each. Mapping questions are routine at 2–5 years, and they are where N+1 starts. This one carries owning side, mappedBy, cascades and fetch defaults.",
+    resources: [{ csv: "CC-SB#28" }],
     questions: [
-      "Where exactly is the JWT validated in the filter chain, and what does the client get if validation fails part-way?",
-      "Where should token refresh live — frontend, backend or gateway? How do you stop the refresh call itself from being intercepted in a loop?",
+      "Who owns a bidirectional relationship? What does mappedBy do?",
+      "Default fetch type for @OneToOne, @ManyToOne, @OneToMany and @ManyToMany — which two are EAGER, and why does that hurt?",
+      "CascadeType.ALL — when is it dangerous?",
+      "What is orphan removal, and how does it differ from CascadeType.REMOVE?",
+      "A bidirectional pair serialised to JSON recurses forever. Give two fixes — and say why returning a DTO is the better one.",
     ],
   },
   {
-    id: "SPRING-10",
+    id: "SPRING-22",
     section: "spring",
     priority: "P1",
-    title: "OAuth 2.0 & service-to-service tokens",
-    why: "Your Snowflake B2C auth and adaptive S2S tokens live here.",
-    resources: [{ csv: "CC-SB#40" }, { csv: "CC-SB#41" }],
-    inherit: "P1-18",
+    title: "JPA relationships II — @OneToMany, @ManyToOne & @ManyToMany",
+    why: "NEW — the second half of the old relationships card. One-to-many is the mapping you will actually draw in an interview; many-to-many is the one you should argue against.",
+    resources: [{ csv: "CC-SB#29" }],
     questions: [
-      "How do you secure service-to-service calls when there is no user in the loop? (Client credentials, token audience, mTLS.)",
+      "Why does @OneToMany without mappedBy create a join table?",
+      "In a one-to-many, which side should own the relationship, and why is it almost always the @ManyToOne side?",
+      "Adding a child to a bidirectional collection — why do you need a helper method that sets both sides?",
+      "Why avoid @ManyToMany in real systems? What do you model when the link needs its own columns? (An explicit join entity.)",
     ],
   },
   {
-    id: "SPRING-11",
+    id: "SPRING-20",
+    section: "spring",
+    priority: "P0",
+    title: "Spring Data queries — derived queries, JPQL, N+1 & pagination",
+    why: "NEW — split from SPRING-04. N+1 and lazy loading are the most-named JPA questions in current guides, and N+1 is the one you get asked to fix live. Comes after the relationship cards because N+1 lives on lazy associations.",
+    resources: [{ csv: "CC-SB#30" }],
+    questions: [
+      "Explain N+1. Show a query that causes it and three fixes (JOIN FETCH, @EntityGraph, batch size).",
+      "How would you catch N+1 before a user does? (SQL logging, Hibernate statistics, a query-count assertion in a test.)",
+      "Return a JPA entity from a @RestController → LazyInitializationException. Trace the full sequence.",
+      "Why is FetchType.EAGER the wrong fix for that? Give the right ones.",
+      "spring.jpa.open-in-view is on by default. What does it do, why does Boot log a warning about it, and why turn it off?",
+      "Pagination + JOIN FETCH on a collection → why does Hibernate warn and load everything into memory?",
+      "Derived query methods vs JPQL vs native — when do you reach for each?",
+      "CrudRepository vs PagingAndSortingRepository vs JpaRepository — what does each add?",
+      "Return DTOs instead of entities — how? (Constructor expressions or interface projections.)",
+    ],
+  },
+  {
+    id: "SPRING-16",
     section: "spring",
     priority: "P2",
-    title: "Filters vs interceptors — and where tenant resolution goes",
-    resources: [{ csv: "CC-SB#18" }, { csv: "CC-SB#19" }],
-    inherit: "P2-28",
+    title: "JPA second-level cache",
+    resources: [{ csv: "CC-SB#26" }],
+    inherit: "P2-25",
   },
   {
     id: "SPRING-12",
@@ -662,6 +758,55 @@ export const TOPICS = [
     title: "Criteria API & Specifications — dynamic queries",
     resources: [{ csv: "CC-SB#31" }, { csv: "CC-SB#32" }],
     inherit: "P2-27",
+  },
+  {
+    id: "SPRING-15",
+    section: "spring",
+    priority: "P1",
+    title: "Web attacks — CSRF, XSS, CORS, SQL injection",
+    why: "Raised from P2. 25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
+    resources: [{ csv: "CC-SB#33" }],
+    inherit: "P2-32",
+  },
+  {
+    id: "SPRING-09",
+    section: "spring",
+    priority: "P1",
+    title: "Spring Security architecture — filter chain & authentication flow",
+    why: "Split: JWT is now SPRING-23 (P0). The filter chain is the frame every security question hangs off. The users-in-a-DB video (#35, 47m) is mostly wiring and is off the card — watch it only if the UserDetailsService → PasswordEncoder flow is still fuzzy after #34.",
+    resources: [{ csv: "CC-SB#34" }, { csv: "CC-SB#37" }],
+    inherit: "P2-29",
+    questions: [
+      "Boot 3 removed WebSecurityConfigurerAdapter. How do you configure security now? (A SecurityFilterChain bean.)",
+      "A username and password arrive. What do they pass through before the SecurityContext is set? (AuthenticationManager → AuthenticationProvider → UserDetailsService → PasswordEncoder.)",
+      "Session-based vs stateless auth — what does SessionCreationPolicy.STATELESS change, and what do you give up?",
+    ],
+  },
+  {
+    id: "SPRING-23",
+    section: "spring",
+    priority: "P0",
+    title: "JWT — structure, stateless auth, revocation & refresh",
+    why: "NEW — split from SPRING-09 and raised to P0. JWT is the security topic SDE-2 loops actually spend time on: a 2026 Java SDE-2 loop asked where the token is validated in the filter chain, what happens when validation fails, how to revoke one, where refresh lives and why localStorage is risky. Do SPRING-09 first.",
+    resources: [{ csv: "CC-SB#38" }],
+    inherit: "P1-19",
+    questions: [
+      "Where exactly is the JWT validated in the filter chain, and what does the client get if validation fails part-way?",
+      "Write the filter: which class do you extend, where do you register it, and what goes into the SecurityContext? (OncePerRequestFilter, added before UsernamePasswordAuthenticationFilter.)",
+      "Where should token refresh live — frontend, backend or gateway? How do you stop the refresh call itself from being intercepted in a loop?",
+    ],
+  },
+  {
+    id: "SPRING-10",
+    section: "spring",
+    priority: "P1",
+    title: "OAuth 2.0 & service-to-service tokens",
+    why: "Your Snowflake B2C auth and adaptive S2S tokens live here. Trimmed to the concept video: interviews ask you to walk the grants and tokens, not to configure Spring's OAuth2 support, so the 52-minute implementation video (#41) is off the card. Current spec: RFC 9700 (Jan 2025) says not to use the implicit or password grants.",
+    resources: [{ csv: "CC-SB#40" }],
+    inherit: "P1-18",
+    questions: [
+      "How do you secure service-to-service calls when there is no user in the loop? (Client credentials, token audience, mTLS.)",
+    ],
   },
   {
     id: "SPRING-13",
@@ -680,20 +825,18 @@ export const TOPICS = [
     inherit: "P2-31",
   },
   {
-    id: "SPRING-15",
+    id: "SPRING-19",
     section: "spring",
     priority: "P2",
-    title: "Web attacks — CSRF, XSS, CORS, SQL injection",
-    resources: [{ csv: "CC-SB#33" }],
-    inherit: "P2-32",
-  },
-  {
-    id: "SPRING-16",
-    section: "spring",
-    priority: "P2",
-    title: "JPA second-level cache",
-    resources: [{ csv: "CC-SB#26" }],
-    inherit: "P2-25",
+    title: "Maven — build lifecycle, scopes & dependency conflicts",
+    why: "NEW — split from SPRING-03 and lowered to P2. One SDE-2 write-up (HERE) listed Maven by name; most never reach it. When it does come up, it is the dependency-conflict question.",
+    resources: [{ csv: "CC-SB#4" }],
+    questions: [
+      "mvn package — which lifecycle phases run, and what is the difference between a phase and a plugin goal?",
+      "Two libraries pull different versions of the same dependency. Which wins in Maven, and how do you force one? (Nearest wins; dependencyManagement / a BOM; mvn dependency:tree.)",
+      "Dependency scopes — compile, provided, runtime, test: where does each end up?",
+      "What does spring-boot-starter-parent give you that a plain pom does not? (Managed versions, plugin defaults.)",
+    ],
   },
 
   // ─── Databases & Caching ───────────────────────────────────────────────────
@@ -1357,6 +1500,32 @@ export const TOPICS = [
        CompletableFuture (@Async → CONC-14). Virtual threads left JAVA-05 for
        CONC-11. Video #32 (join/daemon/priority, 45m) added to the CSV from
        the live playlist.
+
+   Fourth pass (Oct 2026) — Java Core and Spring cut down to one sitting per
+   card; done cards untouched. Checked against the full Concept && Coding
+   notes index (Java 1–51, Spring Boot 1–43) and 2025–26 reports:
+     • GC/memory came up in an MNC Java backend round (young/old gen, G1 vs
+       Parallel, OOM types) and a JPMorgan SDE-2 loop (heap vs stack, weak/
+       soft references).  linkedin.com, devbrainiac.com  → JAVA-04 P1 → P0.
+     • Generics named in one write-up of the set (HSBC), as a quick-fire.
+       → JAVA-07 P1 → P2.
+     • The 2026 Java SDE-2 loop spent its security time on JWT (filter-chain
+       placement, failure, revocation, refresh, localStorage).  → JWT split
+       from SPRING-09 as SPRING-23 at P0; web attacks (XSS/CSRF/CORS, the
+       JWT follow-ups) SPRING-15 P2 → P1.
+     • Filter vs interceptor vs AOP order is a stock question in 2025–26
+       Spring banks (besthub.dev, gurubase.io).  → SPRING-11 P2 → P1.
+     • Auto-configuration and N+1 head every 2026 bank for experienced devs
+       (golinuxcloud.com, devrimozcay.medium.com); no playlist video teaches
+       auto-configuration head-on → SPRING-03 pairs #10 with the reference.
+     • OAuth: banks ask grants, PKCE and RFC 9700 (secondtalent.com), not
+       Spring wiring → implementation video #41 dropped from SPRING-10.
+     • Splits (new ids): SPRING-02 → +21 scopes; SPRING-03 → +18 config, +19
+       Maven (P2); SPRING-04 → +20 queries/N+1; SPRING-07 → +22; SPRING-09
+       → +23 JWT.  Dropped as too long for what is asked: CC-J #43, #44
+       (switch / instanceof syntax), #19 (annotations, 71m), #48 (Optional,
+       74m → a 20m read), CC-SB #35 (users in a DB), #41 (OAuth wiring).
+     • No video was added, so the CSV index is unchanged.
 
    Playlist positions and runtimes were re-checked against the live YouTube
    playlists on 23 Sep 2026. The Java playlist has 52 videos including
