@@ -462,6 +462,22 @@ export default function TopicNotes() {
     [topic, completed, stampRev, stack]
   );
 
+  // One Full screen button on screen at a time: the toolbar's while it's in
+  // view, and once it scrolls up under the site header, a copy at the top of
+  // the side column, which stays pinned. With no toolbar button (an older
+  // version open), the side column's shows from the start.
+  const [toolbarFsEl, setToolbarFsEl] = useState(null);
+  const [toolbarFsSeen, setToolbarFsSeen] = useState(true);
+  useEffect(() => {
+    if (!toolbarFsEl) return undefined;
+    const observer = new IntersectionObserver(([entry]) => setToolbarFsSeen(entry.isIntersecting), {
+      rootMargin: `-${headerOffset}px 0px 0px 0px`,
+    });
+    observer.observe(toolbarFsEl);
+    return () => observer.disconnect();
+  }, [toolbarFsEl, headerOffset]);
+  const toolbarFsInView = !!toolbarFsEl && toolbarFsSeen;
+
   if (!authReady) return <PageSkeleton />;
   if (!config) return <Navigate to="/core-stack" replace />;
   if (config.ownerOnly && !isOwner(user)) return <Navigate to="/core-stack" replace />;
@@ -494,9 +510,12 @@ export default function TopicNotes() {
     </div>
   );
 
-  const fullScreenButton = (
+  // `place`: "toolbar" (beside the text size), "bar" (full screen's slim bar)
+  // or "rail" (the side column, for when the toolbar has scrolled away).
+  const fullScreenButton = (place) => (
     <button
-      data-tour="fullscreen"
+      ref={place === "toolbar" ? setToolbarFsEl : undefined}
+      data-tour={place === "rail" ? undefined : "fullscreen"}
       onClick={immersive ? exitImmersive : enterImmersive}
       title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
       className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] transition-colors"
@@ -611,7 +630,7 @@ export default function TopicNotes() {
             {viewSwitch}
             {historyButton}
             {isRead && textSize}
-            {isRead && fullScreenButton}
+            {isRead && fullScreenButton("toolbar")}
           </>
         )
       }
@@ -637,7 +656,7 @@ export default function TopicNotes() {
               <span className="truncate text-[15px] font-bold tracking-tight text-gray-900 dark:text-gray-50">{topic.title}</span>
             </div>
             {textSize}
-            {fullScreenButton}
+            {fullScreenButton("bar")}
           </div>
         </div>
       )}
@@ -686,6 +705,8 @@ export default function TopicNotes() {
               uploadInto={uploadFiles}
               topOffset={topOffset}
               immersive={immersive}
+              railTop={immersive ? null : fullScreenButton("rail")}
+              railTopShown={!immersive && !toolbarFsInView}
               annotations={preview ? preview.annotations || [] : annotations}
               onAnnotationsChange={preview ? blocked : changeAnnotations}
               learnt={preview ? {} : learnt}
