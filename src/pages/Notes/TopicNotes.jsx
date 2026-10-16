@@ -26,6 +26,7 @@ import { recordNow, restoreVersion } from "../../Data/noteHistory";
 import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import StackNav from "./StackNav";
 import TopicLead from "./TopicLead";
+import AskedQuestions from "./AskedQuestions";
 import HistoryPanel, { describeVersion } from "./HistoryPanel";
 import useStackProgress from "./useStackProgress";
 import { STACKS, rememberTopic } from "./stacks";
@@ -612,6 +613,9 @@ export default function TopicNotes() {
     </span>
   );
 
+  // Real interview questions for this topic, fixed under the note in both views.
+  const asked = source === "corestack" && topic.asked ? <AskedQuestions topicId={topic.id} colorMode={colorMode} /> : null;
+
   const lead = (
     <TopicLead
       stack={config}
@@ -695,7 +699,8 @@ export default function TopicNotes() {
                   {lead}
                 </>
               }
-              starterQuestions={topic.questions}
+              starterQuestions={asked ? null : topic.questions}
+              footer={asked}
               text={preview ? preview.text || "" : text}
               onCommit={preview ? blocked : commit}
               assets={assets}
@@ -780,6 +785,7 @@ export default function TopicNotes() {
                   </div>
                 )}
               </div>
+              {asked}
             </div>
           )}
         </main>

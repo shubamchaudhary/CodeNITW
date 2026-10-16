@@ -10,6 +10,12 @@
      scripts/data/javaSpringPrepHandoff.md
                                           the original per-topic question sets,
                                           inherited by id so nothing is retyped.
+     scripts/data/askedQuestions.mjs      questions real interviews asked in the
+                                          last two years, with counts, companies
+                                          and answers. Where a topic has them they
+                                          REPLACE its question list, and the full
+                                          entries go to src/Data/CoreStackAsked.js
+                                          (loaded only by the notes page).
 
    The point of the split: the map is opinion (what to study, in what order),
    the CSV is fact (what a video is called and how long it runs). A `csv:` ref
@@ -23,11 +29,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SECTIONS, TOPICS } from "./data/coreStackMap.mjs";
+import { ASKED, ASKED_META } from "./data/askedQuestions.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CSV_PATH = resolve(HERE, "data/javaSpringPrepTracker.csv");
 const MD_PATH = resolve(HERE, "data/javaSpringPrepHandoff.md");
 const OUT_PATH = resolve(HERE, "../src/Data/CoreStack.js");
+const ASKED_PATH = resolve(HERE, "../src/Data/CoreStackAsked.js");
 
 // ─── CSV: the verified video index ───────────────────────────────────────────
 function parseCsv(text) {
@@ -257,7 +265,18 @@ const topics = TOPICS.map((t) => {
   const questions = [...inherited, ...(t.questions || [])].filter(
     (q, i, arr) => arr.findIndex((x) => x.toLowerCase() === q.toLowerCase()) === i
   );
-  if (!questions.length) errors.push(`${t.id}: no questions`);
+  // Real asked questions, where the topic has them, stand in for the list.
+  const asked = ASKED[t.id];
+  if (asked) {
+    if (!Array.isArray(asked.items) || !asked.items.length) errors.push(`${t.id}: asked entry has no items`);
+    for (const [i, it] of (asked.items || []).entries()) {
+      if (!it.q || !it.a) errors.push(`${t.id}: asked item ${i + 1} needs q and a`);
+      if (!Number.isInteger(it.n) || it.n < 0) errors.push(`${t.id}: asked item ${i + 1} needs a count n`);
+      if (!Array.isArray(it.companies)) errors.push(`${t.id}: asked item ${i + 1} needs companies[]`);
+    }
+  }
+  const shown = asked ? asked.items.map((it) => it.q) : questions;
+  if (!shown.length) errors.push(`${t.id}: no questions`);
 
   const minutes = resources.reduce((sum, r) => sum + r.minutes, 0);
   // A topic whose resources include an untimed item can only state a floor.
@@ -273,9 +292,14 @@ const topics = TOPICS.map((t) => {
     resources,
     minutes,
     duration: minutes ? `${approx ? "≈" : ""}${fmtMinutes(minutes)}` : "—",
-    questions,
+    questions: shown,
+    asked: asked ? { posts: asked.posts, items: asked.items.length } : null,
   };
 });
+
+for (const id of Object.keys(ASKED)) {
+  if (!TOPICS.some((t) => t.id === id)) errors.push(`askedQuestions.mjs: unknown topic id ${id}`);
+}
 
 if (errors.length) {
   console.error("REFUSING TO WRITE — unresolved references:\n  " + errors.join("\n  "));
@@ -317,6 +341,20 @@ const out =
   `export const CORE_STACK_MINUTES = ${topics.reduce((n, t) => n + t.minutes, 0)};\n`;
 
 writeFileSync(OUT_PATH, out);
+
+writeFileSync(
+  ASKED_PATH,
+  `// Core Stack — questions real interviews asked, per topic, with answers.
+//
+// GENERATED FILE. Edit scripts/data/askedQuestions.mjs and re-run
+// \`node scripts/genCoreStack.mjs\` — do not edit here. Loaded on demand by the
+// notes page, which shows it fixed under the reader's own note.
+
+export const CORE_STACK_ASKED_META = ${JSON.stringify(ASKED_META, null, 2)};
+
+export const CORE_STACK_ASKED = ${JSON.stringify(ASKED, null, 2)};
+`
+);
 
 console.log(
   `Wrote ${OUT_PATH}\n` +

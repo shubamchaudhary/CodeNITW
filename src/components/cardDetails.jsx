@@ -196,7 +196,12 @@ export function CoreStackTopicDetail({ topic, note, checkedDays }) {
         linkHover="hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300"
       />
 
-      <QuestionList questions={topic.questions} barClass="from-emerald-400 to-teal-400" prompt="answer cold, before watching" />
+      <QuestionList
+        questions={topic.questions}
+        barClass="from-emerald-400 to-teal-400"
+        title={topic.asked ? "Asked in interviews" : "Interview questions"}
+        prompt={topic.asked ? "answers are in the notes" : "answer cold, before watching"}
+      />
 
       <NotesLink
         source="corestack"
@@ -303,13 +308,13 @@ function ResourceList({ resources, duration, barClass, linkHover }) {
   );
 }
 
-function QuestionList({ questions, barClass, prompt }) {
+function QuestionList({ questions, barClass, prompt, title = "Interview questions" }) {
   if (!questions || !questions.length) return null;
   return (
     <div className="mb-4">
       <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
         <span className={`w-1 h-4 rounded-full bg-gradient-to-b ${barClass}`} />
-        Interview questions
+        {title}
         <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">· {prompt}</span>
       </h4>
       <ol className="space-y-1.5">

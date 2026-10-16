@@ -79,24 +79,23 @@ export const CORE_STACK_TOPICS = [
     "minutes": 99,
     "duration": "1h 39m",
     "questions": [
-      "Walk through put() step by step: hash → index → collision → resize.",
-      "Why is default capacity 16 and load factor 0.75?",
-      "What is treeification? At what threshold, and why does it need a second condition (table size ≥ 64)?",
-      "Why does HashMap re-hash the key's hashCode() instead of using it directly?",
-      "Explain the equals/hashCode contract. What breaks if you override one only?",
-      "You mutate a field used in hashCode() after inserting into a HashMap. What does get() return? Why?",
-      "Why can't that happen with String keys?",
-      "HashMap vs Hashtable vs ConcurrentHashMap vs Collections.synchronizedMap.",
-      "How does ConcurrentHashMap achieve thread safety in Java 8+? (Not segment locking any more — say this.)",
-      "Why is resizing a HashMap dangerous under concurrent access?",
-      "ArrayList vs LinkedList — when is LinkedList actually the right choice? (Almost never. Say why.)",
-      "Fail-fast vs fail-safe iterators. What is modCount?",
-      "CopyOnWriteArrayList — when is it the right choice, and what does every write cost?",
-      "ConcurrentLinkedQueue vs LinkedBlockingQueue — when would you pick the non-blocking one?",
-      "HashMap allows one null key — where does it live? Why do ConcurrentHashMap and Hashtable reject null keys and values?",
-      "Is get-then-put on a ConcurrentHashMap thread-safe? What do you use instead? (computeIfAbsent / compute / merge.)",
-      "Can any object be a HashMap key? What must it guarantee, and what is the cheapest way to get it right? (Immutable + equals/hashCode — or a record.)"
-    ]
+      "How does HashMap work internally — hashing, buckets and collisions?",
+      "HashMap vs ConcurrentHashMap — how does ConcurrentHashMap stay thread-safe without locking the whole map?",
+      "ArrayList vs LinkedList — and how does an ArrayList grow?",
+      "What changed in HashMap in Java 8 (treeification)?",
+      "What are load factor, resizing and rehashing in a HashMap?",
+      "Fail-fast vs fail-safe iterators — what is ConcurrentModificationException?",
+      "Explain the Collections framework hierarchy.",
+      "How does HashSet work internally, and how does it detect duplicates?",
+      "Implement your own HashMap (put / get) from scratch.",
+      "Which collections are thread-safe — CopyOnWriteArrayList, synchronizedList, ConcurrentHashMap?",
+      "HashMap vs Hashtable (and why can HashMap hold one null key)?",
+      "Can a custom object be a HashMap key? What must it guarantee?"
+    ],
+    "asked": {
+      "posts": 135,
+      "items": 12
+    }
   },
   {
     "id": "JAVA-02",
@@ -132,19 +131,19 @@ export const CORE_STACK_TOPICS = [
     "minutes": 107,
     "duration": "1h 47m",
     "questions": [
-      "Intermediate vs terminal operations. Why are streams lazy?",
-      "map vs flatMap — give a concrete case where only flatMap works.",
-      "Can you reuse a stream? What happens if you try?",
-      "When does parallelStream() make things slower? Name two mechanisms.",
-      "Why is parallelStream() dangerous inside a web request thread? (Shared common ForkJoinPool.)",
-      "Collectors.groupingBy with a downstream collector — write one.",
-      "reduce vs collect — when does each apply?",
-      "findFirst vs findAny — what changes in parallel?",
-      "What is a functional interface? Name four built-in ones and their signatures.",
-      "Method reference types — four kinds, give an example of each.",
-      "Why must variables captured by a lambda be effectively final?",
-      "Are streams always better than a for loop? (No. Say when.)"
-    ]
+      "What is a lambda expression, and how does it relate to functional interfaces?",
+      "What is a functional interface? Name the built-in ones.",
+      "What are the main Java 8 features?",
+      "What is a method reference?",
+      "findFirst vs findAny — and toList() vs collect(Collectors.toList())?",
+      "Intermediate vs terminal operations — and why are streams lazy?",
+      "map vs flatMap?",
+      "How do you handle exceptions inside a stream or lambda?"
+    ],
+    "asked": {
+      "posts": 56,
+      "items": 8
+    }
   },
   {
     "id": "JAVA-10",
@@ -168,19 +167,20 @@ export const CORE_STACK_TOPICS = [
     "minutes": 20,
     "duration": "≈20m",
     "questions": [
-      "Transaction(customerId, amount): return the customerIds whose total amount exceeds 5000, sorted by total descending.",
-      "Employee(name, dept, salary): the second-highest distinct salary overall. Then the same per department.",
-      "Highest-paid employee per department as Map<String, Employee> — groupingBy + maxBy, then collectingAndThen to unwrap the Optional.",
-      "Average salary per department, sorted by that average, collected into a LinkedHashMap.",
-      "Frequency of each character in a string; then the first non-repeating character.",
-      "Duplicates in a List<Integer> — two ways (Set.add trick vs groupingBy + counting). Which is O(n)?",
-      "Split employees into salary > 50k and the rest. partitioningBy vs groupingBy — what differs in the result?",
-      "Flatten List<List<String>>, then return the distinct words sorted by length, then alphabetically.",
-      "Employee names per department as one comma-separated string. (joining as a downstream collector.)",
-      "Top 3 most frequent words in a paragraph, ties broken alphabetically.",
-      "Collectors.toMap throws on a duplicate key — why, and what does the merge function fix?",
-      "Turn a nested loop with an early break into a stream. Should you? (anyMatch / takeWhile — or keep the loop, and say why.)"
-    ]
+      "Group employees by department with streams — then count, average or list names per group.",
+      "Split numbers into odd and even (or any two groups) with a single stream.",
+      "Find the second-highest (or Nth highest) salary using streams.",
+      "Given a list of employees, filter / sort / find the max with streams.",
+      "Count character (or word) frequency in a string using streams.",
+      "Find the first non-repeating (or first repeating) character using streams.",
+      "Remove (or find) duplicates from a list using streams.",
+      "Convert a List to a Map with streams — what happens on duplicate keys?",
+      "Sort a map by its values (or keys) using streams."
+    ],
+    "asked": {
+      "posts": 77,
+      "items": 9
+    }
   },
   {
     "id": "JAVA-03",
@@ -216,22 +216,22 @@ export const CORE_STACK_TOPICS = [
     "minutes": 172,
     "duration": "2h 52m",
     "questions": [
-      "Four pillars of OOP — give a real example of each from code you have written, not a textbook one.",
-      "Abstract class vs interface in Java 17. When does an interface with default methods win?",
-      "Two interfaces give you the same default method. What does the compiler make you do?",
-      "Is Java pass-by-value or pass-by-reference? Prove it with a swap method.",
-      "What is the superclass of every exception? Where do Error and RuntimeException sit?",
-      "Checked vs unchecked — which do you throw from a service layer, and why?",
-      "How does exception propagation work through a call stack? What does the JVM do if nothing catches?",
-      "try-with-resources — what does it compile to, and what happens if both the body and close() throw?",
-      "Why is catching Exception (or Throwable) usually wrong? When is it right?",
-      "Overloading vs overriding — what is resolved at compile time and what at runtime?",
-      "Can you override a static method? What actually happens if you try?",
-      "Custom exception: checked or unchecked, and what do you put in it beyond a message?",
-      "finally runs when? Name two cases where it does not.",
-      "final vs finally vs finalize — and why is finalize deprecated for removal?",
-      "What is the cost of throwing an exception, and why is exception-as-control-flow discouraged?"
-    ]
+      "Explain the four pillars of OOP with real examples.",
+      "Abstract class vs interface — which do you pick after Java 8?",
+      "How does exception handling work — the hierarchy, try/catch/finally and propagation?",
+      "Method overloading vs overriding — compile-time vs runtime polymorphism.",
+      "final vs finally vs finalize — and what does the static keyword do?",
+      "Diamond problem — how does Java handle multiple inheritance?",
+      "Is Java pass-by-value or pass-by-reference?",
+      "Checked vs unchecked exceptions — which do you throw from a service?",
+      "What are default methods in interfaces, and why were they added?",
+      "throw vs throws, and how do you write a custom exception?",
+      "Composition vs inheritance — when do you prefer composition?"
+    ],
+    "asked": {
+      "posts": 201,
+      "items": 11
+    }
   },
   {
     "id": "JAVA-06",
@@ -278,21 +278,19 @@ export const CORE_STACK_TOPICS = [
     "minutes": 79,
     "duration": "1h 19m",
     "questions": [
-      "List every rule for making a class truly immutable. Which one do people forget? (Defensive copy of mutable fields.)",
-      "Why is immutability inherently thread-safe?",
-      "Is String immutable? What is the string pool and why does it exist?",
-      "Write a thread-safe singleton four ways. Rank them.",
-      "Why is enum singleton the best? What does it defend against that others don't?",
-      "How can reflection or serialization break a singleton? How do you prevent it?",
-      "Why is double-checked locking broken without volatile?",
-      "String s = new String(\"abc\") — how many objects can that create, and where does each live?",
-      "== vs equals on Strings. What does intern() do, and when would you ever call it?",
-      "String vs StringBuilder vs StringBuffer — and why is + inside a loop slow?",
-      "Why is String final as well as immutable? Give the security, hashCode-caching and pooling reasons.",
-      "Integer a = 127, b = 127; a == b? Now 128. Explain. (The Integer cache behind valueOf.)",
-      "Where can autoboxing throw a NullPointerException you did not see coming?",
-      "Why keep a password in a char[] rather than a String?"
-    ]
+      "Write a thread-safe Singleton — then make it lazy with double-checked locking. Why is volatile needed?",
+      "equals() and hashCode() — what is the contract, and what breaks if you override only one?",
+      "Why are Strings immutable? What is the String pool?",
+      "How do you create an immutable class?",
+      "Shallow copy vs deep copy?",
+      "String vs StringBuilder vs StringBuffer — when do you use each?",
+      "How does autoboxing work — and what is the Integer cache?",
+      "How can a Singleton be broken (reflection, serialization, cloning) — and how do you stop it?"
+    ],
+    "asked": {
+      "posts": 111,
+      "items": 8
+    }
   },
   {
     "id": "JAVA-04",
@@ -317,17 +315,18 @@ export const CORE_STACK_TOPICS = [
     "minutes": 49,
     "duration": "49m",
     "questions": [
-      "Draw the JVM memory layout. Which regions are per-thread vs shared?",
-      "Stack vs heap — what lives where, and who cleans each?",
-      "Young gen / old gen / metaspace — why the generational split?",
-      "Minor vs major vs full GC. Which pauses the app and for how long?",
-      "G1 vs Parallel vs ZGC — when would you pick each?",
-      "Your pod OOM-kills in Kubernetes but heap dumps look fine. Where did the memory go? (Metaspace, direct buffers, thread stacks, native — container limit ≠ heap limit.)",
-      "OutOfMemoryError: Java heap space vs Metaspace vs GC overhead limit exceeded — different causes.",
-      "What is a memory leak in a GC'd language? Give a real example.",
-      "How do you diagnose one in production? (Heap dump, MAT, jmap, jcmd.)",
-      "Strong vs weak vs soft vs phantom references."
-    ]
+      "Stack vs heap memory — what lives where?",
+      "How does garbage collection work — when is an object eligible, and what are the generations?",
+      "OutOfMemoryError — what causes it, and what is a memory leak in Java?",
+      "Explain the JVM architecture — class loader, runtime areas, JIT. JDK vs JRE vs JVM?",
+      "Which GC algorithms do you know — Serial, Parallel, G1, ZGC? Which would you pick?",
+      "Strong vs weak vs soft vs phantom references?",
+      "What does System.gc() do?"
+    ],
+    "asked": {
+      "posts": 108,
+      "items": 7
+    }
   },
   {
     "id": "JAVA-05",
@@ -374,14 +373,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 66,
     "duration": "1h 6m",
     "questions": [
-      "What is a record and what does it generate?",
-      "When is a record the wrong choice?",
-      "What do sealed classes enable that final doesn't?",
-      "How do sealed types + pattern matching give exhaustiveness?",
-      "Which of these have you actually used on Java 17 at work?",
-      "Java 8 → 11 → 17 → 21 → 25: name the one change in each that you would actually use in a Spring service.",
-      "Which of Java 17/21's features have you actually used at work, and which would you adopt next?"
-    ]
+      "Java 8 vs 11 vs 17 vs 21 — what changed that you actually use?",
+      "What are sealed classes, and what do they give you?",
+      "Pattern matching, switch expressions and text blocks — show an example.",
+      "What are records — and when is a record the wrong choice?"
+    ],
+    "asked": {
+      "posts": 18,
+      "items": 4
+    }
   },
   {
     "id": "JAVA-07",
@@ -406,14 +406,14 @@ export const CORE_STACK_TOPICS = [
     "minutes": 52,
     "duration": "52m",
     "questions": [
-      "What is type erasure? Name two things it makes impossible.",
-      "List<Object> vs List<?> vs List<? extends Object> — what can you add to each?",
-      "Explain PECS. Give a real method signature using it.",
-      "Why can't you create new T[]?",
-      "Why is List<String> not a subtype of List<Object>?",
-      "Bounded type parameters — write a generic method that only accepts Comparable.",
-      "What is a bridge method?"
-    ]
+      "What are generics, and what do they buy you?",
+      "Make your class (e.g. the LRU cache you just wrote) generic.",
+      "Wildcards: ? extends vs ? super — what is PECS?"
+    ],
+    "asked": {
+      "posts": 8,
+      "items": 3
+    }
   },
   {
     "id": "JAVA-09",
@@ -460,14 +460,17 @@ export const CORE_STACK_TOPICS = [
     "minutes": 119,
     "duration": "1h 59m",
     "questions": [
-      "Comparable vs Comparator — which one changes the class, and which one do you reach for in practice?",
-      "Sort a list of objects by two fields, second descending. Write it with Comparator chaining.",
-      "What breaks if your comparator is inconsistent with equals? Where does it bite you? (TreeMap/TreeSet.)",
-      "HashSet vs LinkedHashSet vs TreeSet — ordering, cost, and when each is the right pick.",
-      "How does TreeMap achieve ordering, and what is the complexity of get/put?",
-      "LinkedHashMap in access-order mode — how do you build an LRU cache from it in five lines?",
-      "Your comparator throws \"Comparison method violates its general contract\" in production. What happened?"
-    ]
+      "Implement an LRU cache with O(1) get and put.",
+      "HashMap vs LinkedHashMap vs TreeMap — how does each order keys, and how does TreeMap work inside?",
+      "Implement an LFU cache.",
+      "Comparable vs Comparator — when do you use which?",
+      "Sort a list of custom objects by one or more fields.",
+      "How does a PriorityQueue work — and can you build one from scratch?"
+    ],
+    "asked": {
+      "posts": 105,
+      "items": 6
+    }
   },
   {
     "id": "JAVA-08",
@@ -491,12 +494,12 @@ export const CORE_STACK_TOPICS = [
     "minutes": 20,
     "duration": "≈20m",
     "questions": [
-      "What was Optional designed for? (Return types — not fields, not params.)",
-      "Why is Optional as an entity field a bad idea?",
-      "orElse vs orElseGet — which eagerly evaluates?",
-      "Why is Optional.get() a code smell?",
-      "Is Optional serializable?"
-    ]
+      "What is Optional for — and where should you not use it?"
+    ],
+    "asked": {
+      "posts": 7,
+      "items": 1
+    }
   },
   {
     "id": "JAVA-11",
@@ -521,15 +524,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 38,
     "duration": "38m",
     "questions": [
-      "Retention policies — SOURCE, CLASS, RUNTIME. Which one must an annotation Spring reads at runtime use, and why?",
-      "You write @LogExecutionTime. What makes it do anything? (Nothing — until an aspect or a processor reads it. See SPRING-06.)",
-      "How does Spring find your @Component classes at startup, and what does that scanning cost at boot?",
-      "How can reflection break a singleton or an immutable class, and how do you defend against it?",
-      "ClassNotFoundException vs NoClassDefFoundError — which is checked, and what usually causes the second one in production?",
-      "ClassLoader hierarchy and parent delegation — what does delegation protect you from?",
-      "Serializable, transient and serialVersionUID — what happens if the class changes after an object was serialised?",
-      "Why is native Java serialization discouraged for anything crossing a trust boundary?"
-    ]
+      "Serialization — what do Serializable, transient and serialVersionUID do?",
+      "What is reflection, and where do frameworks use it?",
+      "How does class loading work — and ClassNotFoundException vs NoClassDefFoundError?",
+      "How do you create a custom annotation, and what does @Retention do?"
+    ],
+    "asked": {
+      "posts": 27,
+      "items": 4
+    }
   },
   {
     "id": "CONC-07",
@@ -554,14 +557,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 48,
     "duration": "48m",
     "questions": [
-      "Process vs thread — what does each own, and what do threads of one process share?",
-      "Which JVM memory areas are per thread and which are shared? Why does that make count++ unsafe?",
-      "Concurrency vs parallelism — explain with a one-core and a four-core machine.",
-      "What is a context switch, and why do more threads than cores stop helping CPU-bound work?",
-      "Why does multithreading help an IO-bound Spring service even on one core?",
-      "What limits how many platform threads one JVM can run? (Stack memory per thread, OS limits.)",
-      "What is a race condition? Show one with two threads incrementing a shared counter."
-    ]
+      "Process vs thread — what does each own, and what do threads share?",
+      "What is a race condition, and how do you prevent one?",
+      "What is multithreading, and why use it in a backend service?",
+      "What is context switching, and why do more threads stop helping?",
+      "Concurrency vs parallelism?"
+    ],
+    "asked": {
+      "posts": 80,
+      "items": 5
+    }
   },
   {
     "id": "CONC-08",
@@ -586,17 +591,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 68,
     "duration": "1h 8m",
     "questions": [
-      "Three ways to create a thread: extend Thread, Runnable, Callable. Which do you use, and why not extend Thread?",
-      "start() vs run() — what happens if you call run() directly?",
-      "Name all six thread states and what moves a thread between them.",
-      "BLOCKED vs WAITING — what is each thread waiting for?",
-      "wait() vs sleep() — which one releases the lock?",
-      "Why must wait()/notify() be called inside synchronized? What is thrown if not?",
-      "Why must wait() sit inside a while loop that rechecks the condition? (Spurious wakeups.)",
-      "notify() vs notifyAll() — what is the lost-wakeup problem?",
-      "synchronized method vs block; instance lock vs class lock (static synchronized) — can two threads run them at the same time?",
-      "Can you call start() twice on the same thread?"
-    ]
+      "How does synchronized work — method vs block, static vs instance lock?",
+      "How do you create a thread — extend Thread vs implement Runnable?",
+      "Explain the thread lifecycle (states).",
+      "How do threads communicate with wait() / notify()? Why call wait() in a loop?",
+      "wait() vs sleep()?"
+    ],
+    "asked": {
+      "posts": 28,
+      "items": 5
+    }
   },
   {
     "id": "CONC-09",
@@ -621,14 +625,14 @@ export const CORE_STACK_TOPICS = [
     "minutes": 45,
     "duration": "45m",
     "questions": [
-      "What does join() do? What does join(1000) do if the thread is still running after a second?",
-      "Daemon vs user thread — what happens to a daemon thread when main returns?",
-      "Why should a daemon thread never write a file or commit to a database?",
-      "Can you call setDaemon(true) after start()? (IllegalThreadStateException.)",
-      "How do you stop a thread properly? Why is Thread.stop() deprecated?",
-      "What does interrupt() actually do to a sleeping thread vs a running one? Why restore the interrupt flag after catching InterruptedException?",
-      "Why is relying on thread priority a bad idea?"
-    ]
+      "How do you stop a thread properly — what does interrupt() do?",
+      "What does join() do?",
+      "What is a daemon thread?"
+    ],
+    "asked": {
+      "posts": 4,
+      "items": 3
+    }
   },
   {
     "id": "CONC-03",
@@ -653,19 +657,17 @@ export const CORE_STACK_TOPICS = [
     "minutes": 47,
     "duration": "47m",
     "questions": [
-      "ReentrantLock vs synchronized — name four things ReentrantLock gives you.",
-      "What is lock fairness? What does it cost?",
-      "Why must unlock() be in a finally block?",
-      "When does ReadWriteLock actually beat a plain lock? When does it lose?",
-      "What is writer starvation in ReadWriteLock?",
-      "StampedLock optimistic read — how does it work and what's the catch?",
-      "Semaphore vs CountDownLatch vs CyclicBarrier — one line each.",
-      "How do you detect a deadlock in a running production JVM?",
-      "Four conditions for deadlock. Which one do you break in practice?",
-      "tryLock() with timeout — give a real use case.",
-      "Condition.await()/signal() vs wait()/notify() — what does one lock with two Conditions let you do that wait/notify can't?",
-      "Limit a downstream call to 10 at a time with a Semaphore. What happens to the 11th caller?"
-    ]
+      "Make this code thread-safe (a counter, a cache, a booking flow).",
+      "What is a deadlock? Name the four conditions and how you prevent it.",
+      "Semaphore vs mutex (lock)?",
+      "synchronized vs ReentrantLock — when would you choose ReentrantLock?",
+      "ReadWriteLock — when does it help?",
+      "Deadlock vs livelock vs starvation?"
+    ],
+    "asked": {
+      "posts": 113,
+      "items": 6
+    }
   },
   {
     "id": "CONC-02",
@@ -712,19 +714,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 60,
     "duration": "1h",
     "questions": [
-      "What exactly does volatile guarantee? What does it NOT guarantee?",
-      "Give a concrete case where volatile fixes visibility but the code is still broken.",
-      "What is the happens-before relationship? Name three ways to establish one.",
-      "How does CAS work at the hardware level? What is the ABA problem?",
-      "AtomicInteger.incrementAndGet() vs synchronized counter — which is faster and when does that flip?",
-      "What is LongAdder and when does it beat AtomicLong?",
-      "Double-checked locking — why is volatile mandatory on the instance field?",
-      "What is instruction reordering? Why does it exist?",
-      "Race condition vs data race — are they the same thing?",
-      "Is synchronized reentrant? What would break if it weren't?",
-      "Where is the memory barrier inserted for a volatile write vs read?",
-      "When would you choose lock-free over locking in real code?"
-    ]
+      "What does volatile do — and why isn't it enough for count++?",
+      "volatile vs synchronized vs AtomicInteger?",
+      "What is CAS (compare-and-swap)?",
+      "What is the Java Memory Model — what does happens-before mean?",
+      "transient vs volatile?"
+    ],
+    "asked": {
+      "posts": 34,
+      "items": 5
+    }
   },
   {
     "id": "CONC-01",
@@ -749,18 +748,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 77,
     "duration": "1h 17m",
     "questions": [
-      "Name all 7 ThreadPoolExecutor constructor parameters and what each controls.",
-      "core=5, max=10, unbounded LinkedBlockingQueue. How many threads actually run under load? Why is this a production incident?",
-      "Full task submission flow: when does it use a core thread vs queue vs spawn to max vs reject?",
-      "ArrayBlockingQueue vs LinkedBlockingQueue vs SynchronousQueue — which one does newCachedThreadPool use, and why?",
-      "put/take vs offer/poll on a BlockingQueue — which blocks, which returns false? Which one does ThreadPoolExecutor call?",
-      "Name the 4 rejection policies. Which would you pick for a payment API and why?",
-      "How do you size a pool for CPU-bound vs IO-bound work? Give the formula.",
-      "What happens to an uncaught exception in a pooled task submitted via execute() vs submit()?",
-      "Why is Executors.newFixedThreadPool() discouraged in production code?",
-      "What is thread starvation? How would you detect it in production?",
-      "Tomcat already has a thread pool. When does your Spring service need its own executor, and how do you size it against the DB connection pool?"
-    ]
+      "What is ExecutorService — why use a thread pool instead of new Thread()?",
+      "What is a BlockingQueue, and which implementation do you pick?",
+      "Build your own thread pool.",
+      "ThreadPoolExecutor: core size, max size, queue and rejection policy — what happens when the queue is full?"
+    ],
+    "asked": {
+      "posts": 43,
+      "items": 4
+    }
   },
   {
     "id": "CONC-04",
@@ -796,16 +792,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 76,
     "duration": "1h 16m",
     "questions": [
-      "Future vs CompletableFuture — what does Future fundamentally not let you do?",
-      "thenApply vs thenCompose vs thenCombine. When is thenCompose mandatory?",
-      "thenApply vs thenApplyAsync — which thread runs the callback in each?",
-      "How do you handle exceptions? exceptionally vs handle vs whenComplete.",
-      "allOf vs anyOf — how do you collect results from allOf?",
-      "What thread pool does CompletableFuture use by default? Why is that a problem in a web app?",
-      "How would you implement a timeout on a CompletableFuture? (orTimeout / completeOnTimeout.)",
-      "get() vs join() — what does each throw?",
-      "Scatter-gather: 5 parallel service calls, aggregate, fail fast if any fails. Write it."
-    ]
+      "What is CompletableFuture — how do you chain, combine and handle errors?",
+      "Runnable vs Callable?",
+      "Call several services in parallel and combine the results (scatter-gather).",
+      "Future vs CompletableFuture — what does Future not let you do?"
+    ],
+    "asked": {
+      "posts": 15,
+      "items": 4
+    }
   },
   {
     "id": "CONC-05",
@@ -841,14 +836,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 52,
     "duration": "52m",
     "questions": [
-      "What is work stealing?",
-      "Why does ForkJoinPool use a deque per thread?",
-      "Why is blocking IO inside a ForkJoinPool task a bug?",
-      "Who else uses the common pool by default? (parallelStream — link to P0-06.)",
-      "newFixedThreadPool vs newCachedThreadPool vs newWorkStealingPool — what is the hidden danger in each?",
-      "How many threads does the common pool have on a 4-core machine, and why is blocking IO in a parallel stream a bug?",
-      "How do you run a parallel stream in your own ForkJoinPool instead of the common one?"
-    ]
+      "Stream vs parallel stream — how does parallelStream work, and when does it hurt?",
+      "newFixedThreadPool vs newCachedThreadPool vs newSingleThreadExecutor — what's the hidden danger in each?"
+    ],
+    "asked": {
+      "posts": 4,
+      "items": 2
+    }
   },
   {
     "id": "CONC-10",
@@ -873,20 +867,21 @@ export const CORE_STACK_TOPICS = [
     "minutes": 23,
     "duration": "23m",
     "questions": [
-      "schedule vs scheduleAtFixedRate vs scheduleWithFixedDelay — and what happens if one run takes longer than the period?",
-      "A scheduled task throws once. What happens to the rest of the schedule? How do you notice?",
-      "shutdown() vs shutdownNow() vs awaitTermination() — write the two-phase shutdown pattern.",
-      "Does shutdownNow() stop a running task? (It only interrupts it.)",
-      "Kubernetes sends SIGTERM to your pod. What happens to queued and running tasks, and what do you configure so none are lost?"
-    ]
+      "shutdown() vs shutdownNow() — how do you shut a pool down gracefully?",
+      "Build a scheduler that runs tasks after a delay or periodically (ScheduledExecutorService)."
+    ],
+    "asked": {
+      "posts": 9,
+      "items": 2
+    }
   },
   {
     "id": "CONC-11",
     "section": "concurrency",
     "sectionLabel": "Concurrency & Multithreading",
-    "priority": "P1",
+    "priority": "P2",
     "title": "Virtual threads & ThreadLocal",
-    "why": "Virtual threads are now asked in 2026 Java loops, usually with the pinning and ThreadLocal follow-ups. Moved here from the Java 17 → 25 card so the playlist stays in order.",
+    "why": "Lowered to P2: only 4 write-ups in two years asked about virtual threads (Kotak, MobiKwik, Fidelity, LinkedIn) — usually \"have you used them, and do they block on I/O?\". Know the one-paragraph answer; skip the depth under time pressure.",
     "resources": [
       {
         "id": "CONC-11-r1",
@@ -914,17 +909,12 @@ export const CORE_STACK_TOPICS = [
     "minutes": 34,
     "duration": "34m",
     "questions": [
-      "Platform thread vs virtual thread — what actually changes, and what does not?",
-      "What is pinning, what causes it, and how would you detect it? What did JDK 24 (JEP 491) change about synchronized, and what still pins?",
-      "Why are thread pools mostly pointless with virtual threads — and where do you still want one?",
-      "Virtual threads vs reactive (WebFlux/Reactor) — what problem does each solve? Which would you pick now?",
-      "Where do virtual threads NOT help? (CPU-bound work — say so plainly.)",
-      "spring.threads.virtual.enabled=true — what does Spring Boot switch over, and what do you check first? (Connection-pool limits: a million threads still share ten connections.)",
-      "Why is ThreadLocal a leak risk in a pooled thread, and what is the fix?",
-      "How does ThreadLocal behave with virtual threads?",
-      "Scoped Values (final in Java 25) vs ThreadLocal — what problem do they fix for virtual threads?",
-      "Where does Spring itself use ThreadLocal? (Transactions, SecurityContextHolder, request scope.)"
-    ]
+      "Virtual threads — how are they different from platform threads, and do they block on I/O?"
+    ],
+    "asked": {
+      "posts": 4,
+      "items": 1
+    }
   },
   {
     "id": "CONC-13",
@@ -960,14 +950,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 25,
     "duration": "25m",
     "questions": [
-      "Three threads must print 1,2,3,1,2,3… in strict order. Write it with wait/notify, then with Semaphores. Which would you ship?",
-      "Print odd/even alternately with two threads — where does the naive version deadlock or miss a signal?",
-      "Print 1 to 100 using 5 threads, each number printed by the next thread in turn.",
-      "Producer–consumer with a bounded buffer: implement it with BlockingQueue, then say what BlockingQueue is doing for you underneath.",
-      "Build your own bounded blocking queue: first with wait/notify, then with ReentrantLock and two Conditions.",
-      "Start 3 workers and make main wait for all of them — with CountDownLatch, then with CompletableFuture.allOf.",
-      "Semaphore vs CountDownLatch vs CyclicBarrier vs Phaser — one line each, and one drill each would solve."
-    ]
+      "Print odd and even numbers alternately using two threads.",
+      "Implement producer–consumer with a bounded buffer.",
+      "N threads must print 1, 2, 3 … in order, each thread taking its turn.",
+      "Implement a thread-safe blocking queue yourself.",
+      "CountDownLatch vs CyclicBarrier vs Semaphore — which solves what?"
+    ],
+    "asked": {
+      "posts": 43,
+      "items": 5
+    }
   },
   {
     "id": "CONC-14",
@@ -1003,13 +995,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 70,
     "duration": "1h 10m",
     "questions": [
-      "Why does @Async silently not work when called from within the same class?",
-      "What must @Async methods return? What happens if one returns void and throws?",
-      "How do you configure a custom executor for @Async? What breaks if you don't?",
-      "Does the security context / @Transactional context propagate into @Async? Why not?",
-      "A client triggers a 10-minute job over HTTP. @Async, a queue, or a scheduler? What does the client get back, and how does it learn the result?",
-      "An @Scheduled job runs on all three pods. How do you make it run once? (ShedLock / leader election / a K8s CronJob.)"
-    ]
+      "@Async or a message queue for long-running background work?",
+      "@Async — how does it work, and why does it sometimes run synchronously?",
+      "@Scheduled jobs — how do you stop a cron job running on every instance?",
+      "How do you configure the executor for @Async (ThreadPoolTaskExecutor)?"
+    ],
+    "asked": {
+      "posts": 10,
+      "items": 4
+    }
   },
   {
     "id": "CONC-06",
@@ -1044,15 +1038,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 41,
     "duration": "≈41m",
     "questions": [
-      "Detect a deadlock in a live JVM — what tools?",
-      "What does a thread dump show?",
-      "Lock ordering as prevention — how do you enforce it?",
-      "Livelock vs deadlock vs starvation.",
-      "One pod sits at 100% CPU. Find the guilty thread. (top -H → thread id in hex → nid in a jcmd Thread.print dump.)",
-      "p99 latency doubled after a deploy but CPU is flat. What are you looking for in a thread dump? (Threads BLOCKED or WAITING on a pool or a lock.)",
-      "What would you switch on in production ahead of time so the next incident is debuggable? (JFR, GC logs, HeapDumpOnOutOfMemoryError.)",
-      "A request-scoped ThreadLocal leaks into the next request. How does that happen and how do you prove it?"
-    ]
+      "A service gets slow (high latency) in production — how do you debug it?",
+      "How do you find a memory leak — what is a heap dump and when do you take one?",
+      "What do you monitor for JVM health — GC pauses, GC logs, JVM flags?",
+      "How do you detect and resolve a deadlock in a running system?",
+      "One pod is at 100% CPU — how do you find the guilty thread?"
+    ],
+    "asked": {
+      "posts": 45,
+      "items": 5
+    }
   },
   {
     "id": "SPRING-01",
@@ -1099,19 +1094,17 @@ export const CORE_STACK_TOPICS = [
     "minutes": 102,
     "duration": "1h 42m",
     "questions": [
-      "methodA() (no annotation) calls this.methodB() (@Transactional) in the same class. Does a transaction start? Why not?",
-      "Give three ways to fix self-invocation. Trade-off of each.",
-      "Why doesn't @Transactional work on private / final methods?",
-      "Explain all 7 propagation levels. Which have you actually used and why?",
-      "REQUIRES_NEW inside a REQUIRED outer txn. Outer rolls back — what happens to the inner?",
-      "Default rollback behaviour: which exceptions roll back, which don't? Why that default?",
-      "How do you force rollback on a checked exception?",
-      "Explain the 4 isolation levels via the anomaly each prevents (dirty read, non-repeatable read, phantom).",
-      "What isolation does PostgreSQL actually default to? Does it differ from the JPA default?",
-      "Where does the transaction actually open and commit in the call stack?",
-      "@Transactional on a method that also spawns a @Async call — what happens to the transaction context?",
-      "Long-running transaction holding a DB connection — what breaks at 1,000 tenants?"
-    ]
+      "What are the isolation levels, and what does each prevent?",
+      "What does @Transactional do, and where should you put it?",
+      "Transaction propagation — REQUIRED vs REQUIRES_NEW (and the others)?",
+      "Which exceptions roll back a @Transactional method by default?",
+      "An order touches payment, inventory and receipt services — how do you roll back across them?",
+      "How does @Transactional work under the hood — and why does it fail on self-invocation?"
+    ],
+    "asked": {
+      "posts": 42,
+      "items": 6
+    }
   },
   {
     "id": "SPRING-17",
@@ -1156,16 +1149,14 @@ export const CORE_STACK_TOPICS = [
     "minutes": 81,
     "duration": "≈1h 21m",
     "questions": [
-      "A request hits your Spring Boot app. Walk it end to end: Tomcat connector → pooled thread → filter chain → DispatcherServlet → HandlerMapping → HandlerAdapter → argument resolvers → controller → HttpMessageConverter → response.",
-      "What is the DispatcherServlet, and why is it called a front controller?",
-      "Who turns your JSON body into a Java object, and who decides it is Jackson? (HttpMessageConverter + content negotiation.)",
-      "Where on that path do filters, interceptors, Spring Security and @ControllerAdvice each sit?",
-      "How many requests can a default Spring Boot app serve at once? What happens to request 201? (server.tomcat.threads.max, accept-count, max-connections.)",
-      "Every request thread is blocked on a slow downstream and CPU is at 10%. What is actually saturated, and what do you change?",
-      "Spring vs Spring MVC vs Spring Boot — what does each layer actually add?",
-      "Servlet stack (Tomcat) vs reactive stack (Netty/WebFlux) — how does the threading model differ, and when is WebFlux worth it?",
-      "What does the request thread look like once virtual threads are enabled?"
-    ]
+      "Spring vs Spring Boot — what does Boot actually add?",
+      "What happens when a request hits a Spring Boot application? Explain the DispatcherServlet flow.",
+      "Which embedded server does Spring Boot use — and how do you change the port or swap it?"
+    ],
+    "asked": {
+      "posts": 22,
+      "items": 3
+    }
   },
   {
     "id": "SPRING-02",
@@ -1201,26 +1192,27 @@ export const CORE_STACK_TOPICS = [
     "minutes": 73,
     "duration": "1h 13m",
     "questions": [
-      "Walk the full bean lifecycle from instantiation to destruction. Name the callbacks.",
-      "@PostConstruct vs InitializingBean vs initMethod — which runs first?",
-      "What is a BeanPostProcessor, and where in the lifecycle does it run? (It is where Spring swaps your bean for an AOP proxy — the reason @Transactional works at all.)",
-      "ApplicationContext vs BeanFactory — what does the first one add?",
-      "@Component vs @Service vs @Repository vs @Bean. Is it purely semantic?",
-      "What does @Repository actually do beyond marking a bean?",
-      "Two beans of the same type — how does Spring pick one? (@Primary, @Qualifier.)",
-      "Constructor vs setter vs field injection. Which does Spring recommend, and why?",
-      "Two beans depend on each other. Constructor injection fails, field injection works. Why is the \"working\" one worse?",
-      "How do you legitimately break a circular dependency? (@Lazy, redesign, ApplicationContextAware.)",
-      "Spring Boot 2.6+ refuses circular references by default. What fails at startup, and why shouldn't you just set spring.main.allow-circular-references=true?"
-    ]
+      "What are dependency injection and Inversion of Control — and what do they buy you?",
+      "@Component vs @Service vs @Repository vs @Bean — is the difference only semantic?",
+      "Circular dependency — how does Spring handle it, and how do you fix it?",
+      "Explain the Spring bean lifecycle.",
+      "Constructor vs setter vs field injection — which is better and why?",
+      "Two beans of the same type — how does Spring choose? (@Qualifier vs @Primary)",
+      "ApplicationContext vs BeanFactory — how does the IoC container work?",
+      "What is component scanning?"
+    ],
+    "asked": {
+      "posts": 73,
+      "items": 8
+    }
   },
   {
     "id": "SPRING-21",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
+    "priority": "P1",
     "title": "Bean scopes — singleton vs prototype, request scope & thread safety",
-    "why": "NEW — split from SPRING-02. \"Is a singleton bean thread-safe?\" and \"a prototype inside a singleton\" are two of the most repeated Spring questions, and the first ties straight back to the concurrency you just finished.",
+    "why": "Split from SPRING-02. Lowered to P1: 11 of the last two years' write-ups asked it (Visa, Oracle, Mastercard, Publicis Sapient, Goldman Sachs) — usually as a follow-up inside a DI question, not on its own. \"Is a singleton bean thread-safe?\" ties straight back to the concurrency you finished.",
     "resources": [
       {
         "id": "SPRING-21-r1",
@@ -1237,14 +1229,14 @@ export const CORE_STACK_TOPICS = [
     "minutes": 40,
     "duration": "40m",
     "questions": [
-      "Name the scopes. Which is the default, and which exist only in a web app?",
-      "Is a singleton bean thread-safe? (No — the container guarantees one instance, not safety.) What makes a @Service safe anyway?",
-      "You keep the current user in a field of a singleton @Service. What happens under load?",
-      "Inject a prototype bean into a singleton. How many instances get created? Give three fixes. (ObjectProvider, @Lookup, a scoped proxy.)",
-      "Are prototype beans destroyed by the container? Why not — and who cleans them up?",
-      "How can a request-scoped bean be injected into a singleton controller at all? (A scoped proxy, and the ThreadLocal behind it.)",
-      "Spring singleton vs the GoF Singleton pattern — what is the difference? (One per container vs one per class loader.)"
-    ]
+      "What bean scopes does Spring have?",
+      "Is a singleton bean thread-safe? How is a Spring singleton different from the Singleton pattern?",
+      "A prototype bean injected into a singleton — does it stay prototype?"
+    ],
+    "asked": {
+      "posts": 11,
+      "items": 3
+    }
   },
   {
     "id": "SPRING-03",
@@ -1279,17 +1271,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 40,
     "duration": "≈40m",
     "questions": [
-      "What does @SpringBootApplication actually expand to? Name all three annotations and what each does.",
-      "Walk auto-configuration end to end: what reads spring.factories / AutoConfiguration.imports, and when does a condition get evaluated?",
-      "@ConditionalOnMissingBean — why is it the backbone of auto-configuration, and how do you override an auto-configured bean?",
-      "@ConditionalOnProperty vs @Profile — both switch beans on at startup. When do you reach for each?",
-      "How do you debug why a bean you expected was NOT created? (--debug / the conditions report.)",
-      "What is a starter, and what would you put in one if you wrote your own?",
-      "How does an embedded server get chosen and started? What changes if you exclude Tomcat?",
-      "Fat jar layout — why can't a plain java -cp run it, and what does the loader do?",
-      "Spring Boot 2 → 3: what broke when you upgraded? (javax → jakarta, the Java 17 baseline, Sleuth → Micrometer Tracing.)",
-      "What did Spring Boot 4 / Spring Framework 7 add that you would actually use? (Built-in API versioning, @Retryable and @ConcurrencyLimit in core, JSpecify null-safety, modular auto-configuration.)"
-    ]
+      "How does Spring Boot auto-configuration work?",
+      "What does @SpringBootApplication do?",
+      "What are Spring Boot starters?",
+      "How do you create a bean only under some condition (e.g. per environment)?"
+    ],
+    "asked": {
+      "posts": 10,
+      "items": 4
+    }
   },
   {
     "id": "SPRING-18",
@@ -1325,18 +1315,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 72,
     "duration": "1h 12m",
     "questions": [
-      "Your feature flag flips mid-request. What happens? (His actual system.)",
-      "@ConditionalOnProperty is evaluated at startup. So how do you build a runtime-togglable flag?",
-      "What is the property resolution order in Spring Boot? (env var vs application.yml vs CLI arg.)",
-      "@Value vs @ConfigurationProperties — when does the latter win?",
-      "How do you refresh config without restarting? What are the risks?",
-      "How do you scope a feature flag per tenant across 1,000+ tenants?",
-      "How do you test both sides of a feature flag in CI?",
-      "What's your rollback plan when a flag causes an incident?",
-      "How do you activate a profile per environment, and what loads when none is active?",
-      "How do you make a bad config fail at startup instead of at 3 a.m.? (@ConfigurationProperties + @Validated.)",
-      "Where do secrets belong — application.yml, env vars or a vault — and what does each one leak?"
-    ]
+      "How do you manage configuration across dev / staging / prod?",
+      "How would you design feature flags — and handle a flag that breaks production?",
+      "@Value vs @ConfigurationProperties — how do you read properties?",
+      "How do you change configuration without restarting the service?"
+    ],
+    "asked": {
+      "posts": 12,
+      "items": 4
+    }
   },
   {
     "id": "SPRING-06",
@@ -1361,17 +1348,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 69,
     "duration": "1h 9m",
     "questions": [
-      "JDK dynamic proxy vs CGLIB — when does Spring pick which?",
-      "Why can't CGLIB proxy a final class or final method?",
-      "Explain the 5 advice types and their execution order.",
-      "Difference between @Around and @Before + @After combined.",
-      "Two aspects on the same method — how do you control ordering?",
-      "What is a pointcut expression? Write one matching all methods in a package returning List.",
-      "How does AOP relate to @Transactional, @Async, and @Cacheable? (Same mechanism — say this.)",
-      "Performance cost of AOP. When is it the wrong tool?",
-      "What is a BeanPostProcessor, and how does it relate to proxy creation?",
-      "Write a custom @LogExecutionTime annotation and the @Around aspect behind it. Why won't it fire on a call from inside the same class?"
-    ]
+      "What is AOP, and how does Spring AOP work internally?",
+      "Write a custom annotation with an @Around aspect (e.g. log execution time)."
+    ],
+    "asked": {
+      "posts": 7,
+      "items": 2
+    }
   },
   {
     "id": "SPRING-05",
@@ -1407,19 +1390,18 @@ export const CORE_STACK_TOPICS = [
     "minutes": 78,
     "duration": "1h 18m",
     "questions": [
-      "401 vs 403. 400 vs 422. 409 — when?",
-      "PUT vs PATCH vs POST — which are idempotent? Is POST ever?",
-      "What does idempotency mean for an API, and how do you implement an idempotency key?",
-      "Async job accepted but not finished — what status code, what response body?",
-      "How do you version a REST API? Trade-offs of URL vs header versioning.",
-      "When should a POST return 201 vs 200?",
-      "Design pagination for a large collection. Offset vs cursor — which and why?",
-      "@Controller vs @RestController — what does the difference actually change at runtime?",
-      "@RequestParam vs @PathVariable vs @RequestBody — and when is each the wrong choice?",
-      "How do you validate a request body, and what does the failure response look like end to end?",
-      "Design the idempotency-key flow for a POST that creates a payment. Where do you store the key, and for how long?",
-      "A client retries a timed-out POST. Walk through what your server does — twice."
-    ]
+      "How do you make an API idempotent — e.g. a payment POST that gets retried?",
+      "@Controller vs @RestController — and @RequestParam vs @PathVariable vs @RequestBody?",
+      "How do you design a REST API — naming, versioning, pagination?",
+      "PUT vs POST vs PATCH (and GET vs POST) — which are idempotent?",
+      "Which HTTP status codes do you return — 200, 201, 204, 400, 401, 403, 404, 409, 500?",
+      "How do you validate incoming requests?",
+      "REST vs SOAP — what makes an API RESTful?"
+    ],
+    "asked": {
+      "posts": 88,
+      "items": 7
+    }
   },
   {
     "id": "SPRING-08",
@@ -1444,16 +1426,14 @@ export const CORE_STACK_TOPICS = [
     "minutes": 56,
     "duration": "56m",
     "questions": [
-      "@ControllerAdvice vs @ExceptionHandler vs @ResponseStatus — scope of each.",
-      "Two handlers could match the same exception. Which wins?",
-      "Checked vs unchecked — which do you throw from a service layer and why?",
-      "How do you return a consistent error response shape across all endpoints?",
-      "Why should you never leak a stack trace in an API response?",
-      "How do you handle validation errors (MethodArgumentNotValidException) cleanly?",
-      "Does @ControllerAdvice catch exceptions thrown from a filter? (No — say why.)",
-      "Where should exception translation happen in a layered service — repository, service, or controller advice? What does each layer know that the others don't?",
-      "ProblemDetail (RFC 9457) — what is it, and how does Spring Boot 3 let you return it?"
-    ]
+      "How do you implement global exception handling in Spring Boot?",
+      "What should an error response look like? (ProblemDetail / RFC 9457)",
+      "@ControllerAdvice vs @RestControllerAdvice vs @ExceptionHandler — what's the scope of each?"
+    ],
+    "asked": {
+      "posts": 20,
+      "items": 3
+    }
   },
   {
     "id": "SPRING-11",
@@ -1489,14 +1469,12 @@ export const CORE_STACK_TOPICS = [
     "minutes": 54,
     "duration": "54m",
     "questions": [
-      "Where does each sit in the request pipeline?",
-      "Which one can see the handler method?",
-      "Which runs first?",
-      "Where do you put tenant resolution in a multi-tenant app, and why?",
-      "One request passes a filter, an interceptor and an @Around aspect. In what order do they run, and what can each one see?",
-      "How do you register a filter in Spring Boot and control its order and URL pattern? (A @Component filter, or FilterRegistrationBean.)",
-      "preHandle, postHandle, afterCompletion — which of them still runs when the controller throws?"
-    ]
+      "Filter vs interceptor — where does each run, and which would you use?"
+    ],
+    "asked": {
+      "posts": 6,
+      "items": 1
+    }
   },
   {
     "id": "SPRING-04",
@@ -1532,15 +1510,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 87,
     "duration": "1h 27m",
     "questions": [
-      "Name the 4 entity states and every transition between them.",
-      "You load an entity, change a field, never call save(). Is it persisted? Why?",
-      "What is dirty checking, and when does it run?",
-      "What is the persistence context? What is its scope by default?",
-      "save() vs saveAndFlush() vs persist() vs merge().",
-      "Difference between getReference() and findById().",
-      "Why is the L1 cache not a cache you can rely on for performance?",
-      "@Transactional(readOnly = true) — what does it change in Hibernate, and what does it NOT do?"
-    ]
+      "Optimistic vs pessimistic locking in JPA — when do you use each?",
+      "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
+      "EntityManager vs CrudRepository vs JpaRepository?",
+      "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
+      "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?"
+    ],
+    "asked": {
+      "posts": 29,
+      "items": 5
+    }
   },
   {
     "id": "SPRING-07",
@@ -1565,12 +1544,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 66,
     "duration": "1h 6m",
     "questions": [
-      "Who owns a bidirectional relationship? What does mappedBy do?",
-      "Default fetch type for @OneToOne, @ManyToOne, @OneToMany and @ManyToMany — which two are EAGER, and why does that hurt?",
-      "CascadeType.ALL — when is it dangerous?",
-      "What is orphan removal, and how does it differ from CascadeType.REMOVE?",
-      "A bidirectional pair serialised to JSON recurses forever. Give two fixes — and say why returning a DTO is the better one."
-    ]
+      "One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)?",
+      "What is cascade in JPA — which cascade types are safe?"
+    ],
+    "asked": {
+      "posts": 10,
+      "items": 2
+    }
   },
   {
     "id": "SPRING-22",
@@ -1595,11 +1575,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 59,
     "duration": "59m",
     "questions": [
-      "Why does @OneToMany without mappedBy create a join table?",
-      "In a one-to-many, which side should own the relationship, and why is it almost always the @ManyToOne side?",
-      "Adding a child to a bidirectional collection — why do you need a helper method that sets both sides?",
-      "Why avoid @ManyToMany in real systems? What do you model when the link needs its own columns? (An explicit join entity.)"
-    ]
+      "How do you model a many-to-many relationship (e.g. Person ↔ Job)?",
+      "Which side should own a one-to-many — and why keep collections in sync?"
+    ],
+    "asked": {
+      "posts": 4,
+      "items": 2
+    }
   },
   {
     "id": "SPRING-20",
@@ -1624,16 +1606,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 59,
     "duration": "59m",
     "questions": [
-      "Explain N+1. Show a query that causes it and three fixes (JOIN FETCH, @EntityGraph, batch size).",
-      "How would you catch N+1 before a user does? (SQL logging, Hibernate statistics, a query-count assertion in a test.)",
-      "Return a JPA entity from a @RestController → LazyInitializationException. Trace the full sequence.",
-      "Why is FetchType.EAGER the wrong fix for that? Give the right ones.",
-      "spring.jpa.open-in-view is on by default. What does it do, why does Boot log a warning about it, and why turn it off?",
-      "Pagination + JOIN FETCH on a collection → why does Hibernate warn and load everything into memory?",
-      "Derived query methods vs JPQL vs native — when do you reach for each?",
-      "CrudRepository vs PagingAndSortingRepository vs JpaRepository — what does each add?",
-      "Return DTOs instead of entities — how? (Constructor expressions or interface projections.)"
-    ]
+      "Lazy vs eager loading — and what causes LazyInitializationException?",
+      "What is the N+1 problem in Hibernate, and how do you fix it?",
+      "How do you paginate in Spring Data — and why is a deep OFFSET slow?",
+      "Derived queries vs JPQL vs native SQL — how do you write complex queries in JPA?"
+    ],
+    "asked": {
+      "posts": 34,
+      "items": 4
+    }
   },
   {
     "id": "SPRING-16",
@@ -1658,12 +1639,12 @@ export const CORE_STACK_TOPICS = [
     "minutes": 41,
     "duration": "41m",
     "questions": [
-      "L1 vs L2 — scope and lifetime of each.",
-      "When does L2 hurt?",
-      "How do you invalidate L2 across multiple app instances?",
-      "Query cache — why is it usually a trap?",
-      "How does Redis fit as an L2 provider?"
-    ]
+      "First-level vs second-level cache in Hibernate — when does L2 help or hurt?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 1
+    }
   },
   {
     "id": "SPRING-12",
@@ -1699,11 +1680,12 @@ export const CORE_STACK_TOPICS = [
     "minutes": 58,
     "duration": "58m",
     "questions": [
-      "When do you need dynamic queries?",
-      "Criteria API vs Specification — what problem does Specification solve?",
-      "How do you compose filters safely without SQL injection?",
-      "Why is Criteria API considered unreadable?"
-    ]
+      "How do you build dynamic queries — Criteria API vs Specifications?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 1
+    }
   },
   {
     "id": "SPRING-15",
@@ -1728,11 +1710,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 25,
     "duration": "25m",
     "questions": [
-      "Why can you disable CSRF for a stateless JWT API?",
-      "CORS is enforced by whom — server or browser?",
-      "How does a PreparedStatement actually prevent SQL injection?",
-      "Stored vs reflected XSS."
-    ]
+      "What is SQL injection — and how do PreparedStatement and ORMs prevent it?",
+      "XSS — and why is storing a JWT in localStorage risky?",
+      "What is CSRF — and why can a stateless JWT API disable CSRF protection?",
+      "What is CORS, and who enforces it?"
+    ],
+    "asked": {
+      "posts": 11,
+      "items": 4
+    }
   },
   {
     "id": "SPRING-09",
@@ -1779,17 +1765,16 @@ export const CORE_STACK_TOPICS = [
     "minutes": 85,
     "duration": "1h 25m",
     "questions": [
-      "Walk the filter chain top to bottom.",
-      "What is SecurityContextHolder and where is it stored by default?",
-      "Does the security context propagate to a child thread?",
-      "How do you add a custom filter at the right position?",
-      "Why BCrypt over SHA-256 for passwords?",
-      "Load users from your own table — what do you implement, and when does Spring call it? (UserDetailsService.loadUserByUsername.)",
-      "Users have roles. Where do the roles live, and how do they become the GrantedAuthority that hasRole() checks?",
-      "Boot 3 removed WebSecurityConfigurerAdapter. How do you configure security now? (A SecurityFilterChain bean.)",
-      "A username and password arrive. What do they pass through before the SecurityContext is set? (AuthenticationManager → AuthenticationProvider → UserDetailsService → PasswordEncoder.)",
-      "Session-based vs stateless auth — what does SessionCreationPolicy.STATELESS change, and what do you give up?"
-    ]
+      "How does Spring Security work — the filter chain and the authentication flow?",
+      "Authentication vs authorization — and 401 vs 403?",
+      "Stateful (session) vs stateless (token) authentication?",
+      "Where do users and passwords come from — UserDetailsService and password hashing?",
+      "How do you secure REST APIs in a Spring Boot service?"
+    ],
+    "asked": {
+      "posts": 50,
+      "items": 5
+    }
   },
   {
     "id": "SPRING-23",
@@ -1814,18 +1799,15 @@ export const CORE_STACK_TOPICS = [
     "minutes": 49,
     "duration": "49m",
     "questions": [
-      "Three parts of a JWT. What's in each?",
-      "Is a JWT encrypted? (No — signed. Correct anyone who says encrypted.)",
-      "How do you invalidate a JWT before expiry? (The hard one. Blocklist, short TTL + refresh, token versioning.)",
-      "JWT vs session ID — what do you trade away?",
-      "Where do you store a JWT client-side? localStorage vs httpOnly cookie — which attack does each expose?",
-      "HS256 vs RS256 — when is asymmetric required?",
-      "What is the alg: none attack?",
-      "How do you rotate signing keys without logging everyone out?",
-      "Where exactly is the JWT validated in the filter chain, and what does the client get if validation fails part-way?",
-      "Write the filter: which class do you extend, where do you register it, and what goes into the SecurityContext? (OncePerRequestFilter, added before UsernamePasswordAuthenticationFilter.)",
-      "Where should token refresh live — frontend, backend or gateway? How do you stop the refresh call itself from being intercepted in a loop?"
-    ]
+      "How does JWT work — structure and verification?",
+      "Where is the JWT validated in the Spring Security filter chain — how do you write a JWT filter?",
+      "Access token vs refresh token — where should tokens live on the client?",
+      "How do you revoke or invalidate a JWT before it expires?"
+    ],
+    "asked": {
+      "posts": 32,
+      "items": 4
+    }
   },
   {
     "id": "SPRING-10",
@@ -1861,18 +1843,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 87,
     "duration": "1h 27m",
     "questions": [
-      "Name the four roles in OAuth 2.0.",
-      "Authorization Code vs Client Credentials vs Implicit vs Password grant. Which is deprecated and why?",
-      "Which grant did you use for machine-to-machine Snowflake auth? Why that one? (Client Credentials.)",
-      "What is PKCE and what attack does it prevent?",
-      "Why an access token AND a refresh token? Why not one long-lived token?",
-      "Where do you store the client secret? (His answer: Azure Key Vault. Expect a follow-up on rotation.)",
-      "OAuth vs OIDC — what does OIDC add?",
-      "How do you revoke a token before it expires?",
-      "How do you secure service-to-service calls when there is no user in the loop? (Client credentials, token audience, mTLS.)",
-      "Your service receives a bearer token from another service. What does a resource server check before trusting it? (Signature against the JWKS, issuer, audience, expiry, scopes.)",
-      "Client credentials tokens expire. Where do you cache them, and how do you refresh without a thundering herd of token calls?"
-    ]
+      "Explain the OAuth 2.0 flow — authorization code vs client credentials.",
+      "OAuth 2.0 vs JWT — how are they related?"
+    ],
+    "asked": {
+      "posts": 10,
+      "items": 2
+    }
   },
   {
     "id": "SPRING-13",
@@ -1897,10 +1874,12 @@ export const CORE_STACK_TOPICS = [
     "minutes": 29,
     "duration": "29m",
     "questions": [
-      "@PreAuthorize vs @Secured vs @RolesAllowed.",
-      "@PreAuthorize vs @PostAuthorize — when is Post necessary and what's the risk?",
-      "Why does method security also fail on self-invocation? (Same proxy mechanism — link back to P0-02.)"
-    ]
+      "How do you implement role-based access control in Spring (@PreAuthorize)?"
+    ],
+    "asked": {
+      "posts": 13,
+      "items": 1
+    }
   },
   {
     "id": "SPRING-14",
@@ -1925,11 +1904,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 31,
     "duration": "31m",
     "questions": [
-      "Liveness vs readiness probe — what does K8s do differently with each?",
-      "Which endpoints must never be public?",
-      "How do you add a custom health indicator?",
-      "How do actuator metrics reach Prometheus?"
-    ]
+      "How do you monitor a Spring Boot service in production?",
+      "What is Spring Boot Actuator — which endpoints, and how do you secure them?"
+    ],
+    "asked": {
+      "posts": 34,
+      "items": 2
+    }
   },
   {
     "id": "SPRING-19",
@@ -1954,11 +1935,13 @@ export const CORE_STACK_TOPICS = [
     "minutes": 49,
     "duration": "49m",
     "questions": [
-      "mvn package — which lifecycle phases run, and what is the difference between a phase and a plugin goal?",
-      "Two libraries pull different versions of the same dependency. Which wins in Maven, and how do you force one? (Nearest wins; dependencyManagement / a BOM; mvn dependency:tree.)",
-      "Dependency scopes — compile, provided, runtime, test: where does each end up?",
-      "What does spring-boot-starter-parent give you that a plain pom does not? (Managed versions, plugin defaults.)"
-    ]
+      "Maven lifecycle and pom.xml — what happens on mvn package?",
+      "How do you resolve dependency version conflicts in Maven or Gradle?"
+    ],
+    "asked": {
+      "posts": 6,
+      "items": 2
+    }
   },
   {
     "id": "DATA-01",
@@ -1994,7 +1977,8 @@ export const CORE_STACK_TOPICS = [
       "How do you find the slow query in production in the first place? (pg_stat_statements, auto_explain.)",
       "Your ORM generated the query. How do you see the real SQL and its plan?",
       "When is a full table scan the RIGHT plan?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "DATA-02",
@@ -2040,7 +2024,8 @@ export const CORE_STACK_TOPICS = [
       "Redis is single-threaded — why is that a feature, and what does it mean for a slow command?",
       "How do you cap memory, and what does each eviction policy do? (allkeys-lru vs volatile-ttl vs noeviction.)",
       "Your cache hit rate drops from 95% to 40% overnight. Walk your investigation."
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "DATA-04",
@@ -2085,7 +2070,8 @@ export const CORE_STACK_TOPICS = [
       "UNION vs UNION ALL — which is cheaper, and why?",
       "Normalise this table to 3NF — then tell me when you would deliberately denormalise.",
       "When would you NOT put this data in Postgres? (SQL vs NoSQL — argue from the access pattern, not the brand.)"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "DATA-03",
@@ -2122,7 +2108,8 @@ export const CORE_STACK_TOPICS = [
       "Your @Transactional method makes an HTTP call in the middle. What is wrong with that at 1,000 tenants?",
       "Optimistic vs pessimistic locking in JPA — which did you use, and what does @Version cost you?",
       "Deadlock in production: how do you find the two statements involved?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "KAFKA-01",
@@ -2182,7 +2169,8 @@ export const CORE_STACK_TOPICS = [
       "Spring Kafka listener concurrency = 10 on a 6-partition topic. How many threads do real work?",
       "Your consumer takes 40s per message and max.poll.interval.ms is 300000 with max.poll.records 500. What goes wrong?",
       "Which metrics tell you a consumer is falling behind vs failing to commit? (records-lag-max vs commit-rate.)"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "KAFKA-02",
@@ -2228,7 +2216,8 @@ export const CORE_STACK_TOPICS = [
       "Kafka transactions — what do they cover and what do they not?",
       "enable.idempotence=true is set. Can a downstream sink still see duplicates? Why?",
       "Where exactly do you commit the offset relative to the durable write, and what does each ordering cost you?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "KAFKA-03",
@@ -2258,7 +2247,8 @@ export const CORE_STACK_TOPICS = [
       "How do you design a DLT? What metadata goes on the message?",
       "How do you replay from a DLT safely?",
       "Retryable vs non-retryable exceptions — how do you classify them?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-01",
@@ -2290,7 +2280,8 @@ export const CORE_STACK_TOPICS = [
       "Design an idempotency key for an at-least-once consumer. What do you key on, and where does state live? ← your fingerprint-keyed upserts",
       "Eventual consistency: how do you explain the user-visible behaviour to a product manager?",
       "How do you test a saga's failure paths?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-02",
@@ -2334,7 +2325,8 @@ export const CORE_STACK_TOPICS = [
       "Why is naive retry dangerous during an outage? (Retry storm, thundering herd.)",
       "What is exponential backoff with jitter and why the jitter?",
       "Bulkhead vs circuit breaker — what does each protect?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-08",
@@ -2366,7 +2358,8 @@ export const CORE_STACK_TOPICS = [
       "Retries on a POST — when are they safe? (Only behind an idempotency key.)",
       "REST vs gRPC between internal services — what do you gain, and what do you give up?",
       "HTTP interface clients (@HttpExchange) vs Feign — what is the difference, and why did Spring add its own?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-03",
@@ -2409,7 +2402,8 @@ export const CORE_STACK_TOPICS = [
       "How did you verify zero downtime in your dual-gateway migration? What was your rollback trigger?",
       "How does the gateway propagate identity to downstream services?",
       "Isn't the gateway a single point of failure? How do you address that?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-04",
@@ -2451,7 +2445,8 @@ export const CORE_STACK_TOPICS = [
       "Your JVM inside a container ignores the memory limit and gets OOM-killed. What's the fix? (Container-aware flags / MaxRAMPercentage.)",
       "Where do logs and config belong for a containerised service, and why not in the image?",
       "How would you debug a container that exits immediately on start?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-05",
@@ -2502,7 +2497,8 @@ export const CORE_STACK_TOPICS = [
       "What does the control plane do?",
       "Which Service type for external traffic?",
       "What happens when a pod fails a liveness probe?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-06",
@@ -2543,7 +2539,8 @@ export const CORE_STACK_TOPICS = [
       "ConfigMap vs Secret — is a Secret encrypted by default?",
       "Rolling update — how does K8s guarantee zero downtime?",
       "How do config changes reach a running pod?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "PLAT-07",
@@ -2575,7 +2572,8 @@ export const CORE_STACK_TOPICS = [
       "What is sampling and why can't you trace 100% in production?",
       "Sleuth is gone in Spring Boot 3. What replaced it, and what did you have to change?",
       "How do you get the trace ID into every log line? (MDC.)"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "TEST-01",
@@ -2608,7 +2606,8 @@ export const CORE_STACK_TOPICS = [
       "90% coverage and a bug still shipped. What was the test suite not measuring?",
       "How do you test time-dependent code without Thread.sleep?",
       "How do you test a @Transactional method's rollback behaviour?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "TEST-02",
@@ -2651,7 +2650,8 @@ export const CORE_STACK_TOPICS = [
       "Walk me through the regression framework you built: what gates a merge, and what happens when it goes red?",
       "How do you test a Kafka consumer end to end?",
       "Flaky integration test — how do you find the cause instead of retrying it?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "TEST-03",
@@ -2689,7 +2689,8 @@ export const CORE_STACK_TOPICS = [
       "A regression suite takes 40 minutes. How do you decide what runs per PR vs nightly?",
       "How do you roll back a bad deploy, and how fast can you actually do it?",
       "What makes a build reproducible? Where does your pipeline break that?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "SELF-06",
@@ -2720,7 +2721,8 @@ export const CORE_STACK_TOPICS = [
       "You changed a schema other teams depend on. How did you roll it out without breaking them? (Expand → migrate → contract; backward-compatible API versions.)",
       "How do you test ranking logic that runs in every customer's allocation? What would a regression look like, and who would notice first?",
       "If you rebuilt it today, what would you change?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "SELF-01",
@@ -2753,7 +2755,8 @@ export const CORE_STACK_TOPICS = [
       "A single tenant's load degrades everyone (noisy neighbour). How would you contain it?",
       "How did you test the sharded path? What did you not test?",
       "The 10% batch runtime cut — where did the time actually go, and how did you measure it?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "SELF-02",
@@ -2782,7 +2785,8 @@ export const CORE_STACK_TOPICS = [
       "Constant-heap ingest at any file size — how? What is the actual memory ceiling and what sets it?",
       "One window-aligned byte range fails permanently. What happens to the rest of the file?",
       "How would you prove, after a run, that nothing was double-counted?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "SELF-03",
@@ -2811,7 +2815,8 @@ export const CORE_STACK_TOPICS = [
       "The underlying data changed while the approval was pending. Now what?",
       "Two planners stage conflicting overlays on the same rows. How is that resolved?",
       "How would you make the approval step survive a pod restart?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "SELF-04",
@@ -2839,7 +2844,8 @@ export const CORE_STACK_TOPICS = [
       "What is an adaptive S2S token, and what problem forced it?",
       "What broke first in staging, and what did that teach you?",
       "Isn't the gateway a single point of failure? How is that addressed?"
-    ]
+    ],
+    "asked": null
   },
   {
     "id": "SELF-05",
@@ -2867,7 +2873,8 @@ export const CORE_STACK_TOPICS = [
       "How do you avoid doing the work twice when the sync call actually succeeded after the timeout?",
       "Why a feature flag here — what were you protecting against?",
       "How would you design this today with virtual threads available?"
-    ]
+    ],
+    "asked": null
   }
 ];
 
@@ -2881,7 +2888,7 @@ export const CORE_STACK_PRIORITY_CONFIG = {
 
 export const CORE_STACK_TOTAL = 71;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":41,"P1":22,"P2":8};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":40,"P1":22,"P2":9};
 
 export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":23,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
 

@@ -398,9 +398,9 @@ export const TOPICS = [
   {
     id: "CONC-11",
     section: "concurrency",
-    priority: "P1",
+    priority: "P2",
     title: "Virtual threads & ThreadLocal",
-    why: "Virtual threads are now asked in 2026 Java loops, usually with the pinning and ThreadLocal follow-ups. Moved here from the Java 17 → 25 card so the playlist stays in order.",
+    why: "Lowered to P2: only 4 write-ups in two years asked about virtual threads (Kotak, MobiKwik, Fidelity, LinkedIn) — usually \"have you used them, and do they block on I/O?\". Know the one-paragraph answer; skip the depth under time pressure.",
     resources: [{ csv: "CC-J#39" }, { csv: "DT#2" }],
     questions: [
       "Platform thread vs virtual thread — what actually changes, and what does not?",
@@ -557,9 +557,9 @@ export const TOPICS = [
   {
     id: "SPRING-21",
     section: "spring",
-    priority: "P0",
+    priority: "P1",
     title: "Bean scopes — singleton vs prototype, request scope & thread safety",
-    why: "NEW — split from SPRING-02. \"Is a singleton bean thread-safe?\" and \"a prototype inside a singleton\" are two of the most repeated Spring questions, and the first ties straight back to the concurrency you just finished.",
+    why: "Split from SPRING-02. Lowered to P1: 11 of the last two years' write-ups asked it (Visa, Oracle, Mastercard, Publicis Sapient, Goldman Sachs) — usually as a follow-up inside a DI question, not on its own. \"Is a singleton bean thread-safe?\" ties straight back to the concurrency you finished.",
     resources: [{ csv: "CC-SB#8" }],
     questions: [
       "Name the scopes. Which is the default, and which exist only in a web app?",
@@ -1539,6 +1539,14 @@ export const TOPICS = [
      • AOP: 0 loops; it only arrives as the self-invocation follow-up.
        → SPRING-06 P1 → P2.
      • Confirmed: SPRING-02 (18 loops), JAVA-04 (9), JAVA-10 (9) at P0.
+   Sixth pass (Oct 2026) — real asked questions. 1,592 candidate write-ups
+   (LeetCode Discuss via its search API, 16 Oct 2024 – 16 Oct 2026, plus LinkedIn,
+   Taro, GfG), counted per question. Every Java, Concurrency and Spring card now
+   shows those questions instead of the curated lists below (the generator swaps
+   them in from askedQuestions.mjs; the notes page shows them with answers).
+   Method and per-card counts: scripts/data/interviewEvidence.md.
+     • SPRING-21 bean scopes P0 → P1 (11 write-ups); CONC-11 virtual threads &
+       ThreadLocal P1 → P2 (4). Done cards and owner-set priorities untouched.
    Owner-set priorities — leave as they are unless the owner asks:
      JAVA-05, CONC-06, SPRING-07/09/10/11/12/13/14/15/16/18/22, and CC-SB #35
      and #41 kept on SPRING-09 / SPRING-10.
