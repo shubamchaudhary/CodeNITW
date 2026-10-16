@@ -333,9 +333,9 @@ export const CORE_STACK_TOPICS = [
     "id": "JAVA-05",
     "section": "java",
     "sectionLabel": "Java Core",
-    "priority": "P1",
+    "priority": "P0",
     "title": "Java 17 → 25 — records, sealed types & pattern matching",
-    "why": "Trimmed from five videos to three. What rounds name is records, sealed types and \"Java 8 vs 11 vs 17\" (a 2026 MNC Java round asked sealed classes, records and switch expressions). Switch expressions (#43) and instanceof pattern matching (#44) are syntax you can read in five minutes, not 32 minutes of video. You ship Java 17; Java 25 is the current LTS. Virtual threads are on CONC-11.",
+    "why": "Trimmed from five videos to three. What rounds name is records, sealed types and \"Java 8 vs 11 vs 17\" (Paytm, EPAM, and a 2026 MNC Java round that asked sealed classes, records and switch expressions). Switch expressions (#43) and instanceof pattern matching (#44) are syntax you can read in five minutes, not 32 minutes of video. Java 25 is the current LTS. Virtual threads are on CONC-11.",
     "resources": [
       {
         "id": "JAVA-05-r1",
@@ -387,9 +387,9 @@ export const CORE_STACK_TOPICS = [
     "id": "JAVA-07",
     "section": "java",
     "sectionLabel": "Java Core",
-    "priority": "P2",
+    "priority": "P1",
     "title": "Generics & type erasure",
-    "why": "Lowered to P2. Of the SDE-2 write-ups behind this map only one (HSBC) names generics; the rest spend the time on collections, streams, concurrency, GC and Spring. When it does come up it is a two-minute quick-fire — type erasure, ? extends vs ? super — not a round.",
+    "why": "Named in four 2024–26 loops (Truemeds, EPAM, HSBC, and a Walmart SDE-3 round that had candidates add generics to an LRU cache they had just written). Usually a quick-fire — type erasure, ? extends vs ? super — or a twist inside a coding round, not a round of its own.",
     "resources": [
       {
         "id": "JAVA-07-r1",
@@ -502,9 +502,9 @@ export const CORE_STACK_TOPICS = [
     "id": "JAVA-11",
     "section": "java",
     "sectionLabel": "Java Core",
-    "priority": "P2",
+    "priority": "P1",
     "title": "Reflection, annotations, serialization & class loading",
-    "why": "What Spring is built on. Rarely a round of its own, but \"how does Spring find your @Component?\" and \"write a custom annotation\" land here (a Gartner SDE-2 loop asked about custom annotations in the Spring lifecycle), and ClassNotFoundException vs NoClassDefFoundError is a classic production question. Trimmed to the reflection video: the 71-minute annotations video (#19) is too long for a P2 — retention is one fact below, and you build a custom annotation for real on SPRING-06.",
+    "why": "What Spring is built on. Rarely a round of its own, but it surfaces as a follow-up: reflection in a Jan 2026 Yes Madam SDE-2 round, custom annotations in the Spring lifecycle at Gartner, a reflection-proof singleton at Goldman Sachs. ClassNotFoundException vs NoClassDefFoundError is a classic production question. Trimmed to the reflection video: the 71-minute annotations video (#19) is too long for what gets asked — retention is one fact below, and SPRING-06 builds a custom annotation for real.",
     "resources": [
       {
         "id": "JAVA-11-r1",
@@ -1015,7 +1015,7 @@ export const CORE_STACK_TOPICS = [
     "id": "CONC-06",
     "section": "concurrency",
     "sectionLabel": "Concurrency & Multithreading",
-    "priority": "P1",
+    "priority": "P0",
     "title": "Production JVM debugging — thread dumps, deadlocks, high CPU & leaks",
     "why": "SDE-2 loops increasingly ask you to walk a production incident, and the 2026 scenario questions (low CPU but requests timing out; a pool exhausted) are all answered with a thread dump. This card is the toolkit; JAVA-04 covers the heap side.",
     "resources": [
@@ -1295,9 +1295,9 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-18",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P0",
     "title": "Profiles & externalized config — @Profile, @ConfigurationProperties & feature flags",
-    "why": "NEW — split from SPRING-03. \"How do you manage dev/stage/prod config?\" is a routine practical question, and this card backs the feature-flag routing on your resume — the flag questions below are the ones you cannot fumble.",
+    "why": "NEW — split from SPRING-03. \"How do you manage dev/stage/prod config?\" is a routine practical question, and feature flags — fixed at startup vs togglable at runtime — are where it goes deep.",
     "resources": [
       {
         "id": "SPRING-18-r1",
@@ -1342,9 +1342,9 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-06",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P2",
     "title": "AOP & the proxy mechanism",
-    "why": "The mechanism under @Transactional, @Async and @Cacheable — reach for it whenever a self-invocation follow-up lands. \"JDK vs CGLIB proxies\" is on current SDE-2 lists.",
+    "why": "Lowered to P2: none of the ~45 2024–26 loops behind this map asked AOP on its own. It arrives as the reason @Transactional and @Async fail on self-invocation — which SPRING-01 already taught you. Do it for depth: \"JDK vs CGLIB proxies\" is still on SDE-2 question lists.",
     "resources": [
       {
         "id": "SPRING-06-r1",
@@ -1459,9 +1459,9 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-11",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P0",
     "title": "Filters vs interceptors — and where tenant resolution goes",
-    "why": "Raised from P2. \"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, and both of your real cases live here: JWT validation (a filter) and tenant resolution.",
+    "why": "\"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, sometimes with a code example asked for. JWT validation (a filter) and tenant resolution both live here.",
     "resources": [
       {
         "id": "SPRING-11-r1",
@@ -1546,7 +1546,7 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-07",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P0",
     "title": "JPA relationships I — @OneToOne, owning side & cascades",
     "why": "Split into two cards, one video each. Mapping questions are routine at 2–5 years, and they are where N+1 starts. This one carries owning side, mappedBy, cascades and fetch defaults.",
     "resources": [
@@ -1576,7 +1576,7 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-22",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P0",
     "title": "JPA relationships II — @OneToMany, @ManyToOne & @ManyToMany",
     "why": "NEW — the second half of the old relationships card. One-to-many is the mapping you will actually draw in an interview; many-to-many is the one you should argue against.",
     "resources": [
@@ -1639,7 +1639,7 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-16",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P2",
+    "priority": "P1",
     "title": "JPA second-level cache",
     "why": "",
     "resources": [
@@ -1669,7 +1669,7 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-12",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P2",
+    "priority": "P1",
     "title": "Criteria API & Specifications — dynamic queries",
     "why": "",
     "resources": [
@@ -1709,9 +1709,9 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-15",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P0",
     "title": "Web attacks — CSRF, XSS, CORS, SQL injection",
-    "why": "Raised from P2. 25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
+    "why": "25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
     "resources": [
       {
         "id": "SPRING-15-r1",
@@ -1738,9 +1738,9 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-09",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
-    "title": "Spring Security architecture — filter chain & authentication flow",
-    "why": "Split: JWT is now SPRING-23 (P0). The filter chain is the frame every security question hangs off. The users-in-a-DB video (#35, 47m) is mostly wiring and is off the card — watch it only if the UserDetailsService → PasswordEncoder flow is still fuzzy after #34.",
+    "priority": "P0",
+    "title": "Spring Security architecture — filter chain, users & authentication flow",
+    "why": "Split: JWT is now SPRING-23. The filter chain is the frame every security question hangs off, and #35 is where users and passwords actually come from — in memory, then a database — so the login path is wired end to end before stateless auth in #37.",
     "resources": [
       {
         "id": "SPRING-09-r1",
@@ -1756,6 +1756,17 @@ export const CORE_STACK_TOPICS = [
       {
         "id": "SPRING-09-r2",
         "kind": "video",
+        "title": "Spring boot: Security (Part-2) | Multiple User Creation & Storing Username & Password | inMemory, DB",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 35,
+        "minutes": 47,
+        "note": ""
+      },
+      {
+        "id": "SPRING-09-r3",
+        "kind": "video",
         "title": "Spring boot: Security (Part-4) | Basic Authentication & Authorization | Stateless Authentication",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
@@ -1765,14 +1776,16 @@ export const CORE_STACK_TOPICS = [
         "note": ""
       }
     ],
-    "minutes": 38,
-    "duration": "38m",
+    "minutes": 85,
+    "duration": "1h 25m",
     "questions": [
       "Walk the filter chain top to bottom.",
       "What is SecurityContextHolder and where is it stored by default?",
       "Does the security context propagate to a child thread?",
       "How do you add a custom filter at the right position?",
       "Why BCrypt over SHA-256 for passwords?",
+      "Load users from your own table — what do you implement, and when does Spring call it? (UserDetailsService.loadUserByUsername.)",
+      "Users have roles. Where do the roles live, and how do they become the GrantedAuthority that hasRole() checks?",
       "Boot 3 removed WebSecurityConfigurerAdapter. How do you configure security now? (A SecurityFilterChain bean.)",
       "A username and password arrive. What do they pass through before the SecurityContext is set? (AuthenticationManager → AuthenticationProvider → UserDetailsService → PasswordEncoder.)",
       "Session-based vs stateless auth — what does SessionCreationPolicy.STATELESS change, and what do you give up?"
@@ -1818,9 +1831,9 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-10",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
+    "priority": "P0",
     "title": "OAuth 2.0 & service-to-service tokens",
-    "why": "Your Snowflake B2C auth and adaptive S2S tokens live here. Trimmed to the concept video: interviews ask you to walk the grants and tokens, not to configure Spring's OAuth2 support, so the 52-minute implementation video (#41) is off the card. Current spec: RFC 9700 (Jan 2025) says not to use the implicit or password grants.",
+    "why": "Grants, tokens and service-to-service auth. #40 walks the protocol with real requests and responses; #41 builds it in Spring Security, so you can say where each step lives in code. Current spec: RFC 9700 (Jan 2025) says not to use the implicit or password grants.",
     "resources": [
       {
         "id": "SPRING-10-r1",
@@ -1832,10 +1845,21 @@ export const CORE_STACK_TOPICS = [
         "position": 40,
         "minutes": 35,
         "note": ""
+      },
+      {
+        "id": "SPRING-10-r2",
+        "kind": "video",
+        "title": "Spring boot: Security (Part-8) | OAUTH2 Authentication Implementation",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 41,
+        "minutes": 52,
+        "note": ""
       }
     ],
-    "minutes": 35,
-    "duration": "35m",
+    "minutes": 87,
+    "duration": "1h 27m",
     "questions": [
       "Name the four roles in OAuth 2.0.",
       "Authorization Code vs Client Credentials vs Implicit vs Password grant. Which is deprecated and why?",
@@ -1845,14 +1869,16 @@ export const CORE_STACK_TOPICS = [
       "Where do you store the client secret? (His answer: Azure Key Vault. Expect a follow-up on rotation.)",
       "OAuth vs OIDC — what does OIDC add?",
       "How do you revoke a token before it expires?",
-      "How do you secure service-to-service calls when there is no user in the loop? (Client credentials, token audience, mTLS.)"
+      "How do you secure service-to-service calls when there is no user in the loop? (Client credentials, token audience, mTLS.)",
+      "Your service receives a bearer token from another service. What does a resource server check before trusting it? (Signature against the JWKS, issuer, audience, expiry, scopes.)",
+      "Client credentials tokens expire. Where do you cache them, and how do you refresh without a thundering herd of token calls?"
     ]
   },
   {
     "id": "SPRING-13",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P2",
+    "priority": "P1",
     "title": "Method security — @PreAuthorize & @PostAuthorize",
     "why": "",
     "resources": [
@@ -1880,7 +1906,7 @@ export const CORE_STACK_TOPICS = [
     "id": "SPRING-14",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P2",
+    "priority": "P1",
     "title": "Actuator, health probes & metrics",
     "why": "",
     "resources": [
@@ -2855,8 +2881,8 @@ export const CORE_STACK_PRIORITY_CONFIG = {
 
 export const CORE_STACK_TOTAL = 71;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":32,"P1":26,"P2":13};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":41,"P1":22,"P2":8};
 
 export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":23,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
 
-export const CORE_STACK_MINUTES = 3650;
+export const CORE_STACK_MINUTES = 3749;
