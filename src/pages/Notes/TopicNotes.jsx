@@ -67,6 +67,21 @@ export default function TopicNotes() {
   const sandbox = useTourSandbox();
   const colorMode = isDark ? "dark" : "light";
   const headerOffset = useStickyHeaderOffset();
+
+  // The site footer sits below this page's columns. A sticky sidebar as tall as
+  // the window gets pushed up by it at the very bottom of the page, then snaps
+  // back the moment the page grows (an answer opening) — the page seems to
+  // jump. Leaving the footer's height out of the sidebar means it never moves.
+  const [footerHeight, setFooterHeight] = useState(0);
+  useEffect(() => {
+    const footer = document.querySelector("#page-root + footer");
+    if (!footer) return undefined;
+    const update = () => setFooterHeight(Math.round(footer.getBoundingClientRect().height));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
   const { completed, planned, setDone, togglePlanned, stampRev } = useStackProgress(stack);
 
   // Already known when the page is opened after the app has loaded.
@@ -668,7 +683,9 @@ export default function TopicNotes() {
       <div className="flex">
         {!immersive && (
           <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
-            <div className="sticky top-0 h-[100dvh]">{nav}</div>
+            <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
+              {nav}
+            </div>
           </aside>
         )}
 
