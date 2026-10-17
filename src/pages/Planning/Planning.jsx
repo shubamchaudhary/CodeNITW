@@ -137,6 +137,46 @@ function logPomoTime(p) {
   return { ...p, flushedSec: pomoElapsedWorkSeconds(p) };
 }
 
+// Same timer? Each start gets its own id (one saved before ids existed is
+// told apart by its card and day).
+function sameTimer(a, b) {
+  return !!a && !!b && a.id === b.id && a.itemUid === b.itemUid
+    && (a.subItemUid || null) === (b.subItemUid || null) && a.day === b.day;
+}
+
+// Log a timer's unlogged seconds, brought up to this moment first so a pause
+// or stop logs every second. Another tab or device may have logged some of
+// them already, and its save says how many, so none is logged twice; if
+// what's saved is another timer or none, this one was stopped elsewhere,
+// which logged it. Returns the timer, marked as logged up to now.
+function flushPomo(p) {
+  if (!p) return null;
+  const now = advancePomo(p).pomo;
+  const saved = loadJSON(KEYS.POMO_STATE, null);
+  if (!sameTimer(saved, now)) return { ...now, flushedSec: pomoElapsedWorkSeconds(now) };
+  return logPomoTime({ ...now, flushedSec: Math.max(now.flushedSec || 0, saved.flushedSec || 0) });
+}
+
+// The timer as saved (and synced to the account): while it runs, rewound to
+// its first session, with `anchor` moved back by the time it has run. It
+// counts down just the same, but holds still while it runs, so it's written
+// only when something happens (start, pause, resume, extend, finish, stop),
+// not every second.
+function storedPomo(p) {
+  if (!p) return null;
+  const { updatedAt, ...rest } = p; // saves used to be stamped every second
+  if (p.status !== "running") return rest;
+  let ran = p.sessions[p.currentIdx].duration - p.remaining;
+  for (let i = 0; i < p.currentIdx; i++) ran += p.sessions[i].duration;
+  const anchor = p.anchor ?? updatedAt ?? Date.now();
+  return { ...rest, currentIdx: 0, remaining: p.sessions[0].duration, anchor: anchor - ran * 1000 };
+}
+
+// The saved timer, brought up to now.
+function loadPomo() {
+  return advancePomo(loadJSON(KEYS.POMO_STATE, null)).pomo;
+}
+
 // "tomorrow", "yesterday", "Oct 2"…
 function dayName(key, today) {
   if (key === today) return "today";
@@ -1245,13 +1285,22 @@ const Planning = () => {
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
 
-  const [pomo, setPomo] = useState(() => advancePomo(loadJSON(KEYS.POMO_STATE, null)).pomo);
-  const pomoRef = useRef(null);
-  const flushRef = useRef(null);
+  // The timer is saved to the account, so a refresh, another tab or another
+  // device picks it up where it is.
+  const [pomo, setPomo] = useState(loadPomo);
+  const pomoRef = useRef(pomo);
   useEffect(() => { pomoRef.current = pomo; }, [pomo]);
-  useEffect(() => {
-    saveJSON(KEYS.POMO_STATE, pomo ? { ...pomo, updatedAt: Date.now() } : null);
-  }, [pomo]);
+  const showPomo = useCallback((next) => {
+    pomoRef.current = next;
+    setPomo(next);
+  }, []);
+  // A change made here: shown, and saved. Only these are saved — never a
+  // timer this page merely loaded, which may be the signed-out one (see the
+  // subscription below) and would overwrite the account's running timer.
+  const commitPomo = useCallback((next) => {
+    showPomo(next);
+    saveJSON(KEYS.POMO_STATE, storedPomo(next));
+  }, [showPomo]);
 
   const [dragIdx, setDragIdx] = useState(null);
   const [overIdx, setOverIdx] = useState(null);
@@ -1281,8 +1330,14 @@ const Planning = () => {
           // Deferred: not a write from inside the sync layer's own update.
           if (info.remote || info.account) setTimeout(migrateCardTime, 0);
         }
+        // The timer changed in another tab or on another device — or the
+        // account changed: on a refresh this page opens before sign-in is
+        // restored, so at first it read the signed-out timer (none).
+        if (key === KEYS.POMO_STATE && (info.remote || info.external || info.account || info.blocked)) {
+          showPomo(loadPomo());
+        }
       }),
-    []
+    [showPomo]
   );
 
   const isRunning = pomo?.status === "running";
@@ -1297,12 +1352,16 @@ const Planning = () => {
       const last = entered[entered.length - 1];
       if (last === "complete") playSound("timerDone");
       else if (last !== undefined) playSound(advanced.sessions[last].type === "work" ? "focusStart" : "breakStart");
-      let next = advanced;
-      pomoRef.current = next;
-      if (next.status === "complete" && flushRef.current) {
-        next = flushRef.current() || next;
+      if (advanced.status !== "complete") {
+        showPomo(advanced);
+        return;
       }
-      setPomo(next);
+      // Finished: log its time and save it as done — going by the saved
+      // timer, which another tab or device may have paused, extended, stopped
+      // or finished already (that change may not have reached this page yet).
+      const saved = loadPomo();
+      if (sameTimer(saved, advanced) && saved.status === "complete") commitPomo(flushPomo(saved));
+      else showPomo(saved);
     };
     // Twice a second, so the display never skips a second through timer
     // jitter; each tick advances by the clock, however late it runs.
@@ -1316,7 +1375,7 @@ const Planning = () => {
       clearInterval(id);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [isRunning]);
+  }, [isRunning, showPomo, commitPomo]);
 
   const toggleStar = useCallback((id) => {
     const next = !dsaStarred[id];
@@ -1329,27 +1388,15 @@ const Planning = () => {
     setDay(current, next);
   }, [current]);
 
-  // Write the running pomo's unlogged seconds to the time log (brought up to
-  // this moment first, so a pause or stop logs every second).
-  const flushPomo = useCallback(() => {
-    const p = pomoRef.current;
-    if (!p) return null;
-    const np = logPomoTime(advancePomo(p).pomo);
-    pomoRef.current = np;
-    return np;
-  }, []);
-  useEffect(() => { flushRef.current = flushPomo; }, [flushPomo]);
-
   // Log the timer's time and stop it, if it's timing this card — or, given a
   // subUid, that sub-task (null: the card itself, not one of its sub-tasks).
   const stopPomoOn = useCallback((itemUid, subUid) => {
     const p = pomoRef.current;
     if (!p || p.itemUid !== itemUid) return;
     if (subUid !== undefined && (p.subItemUid || null) !== subUid) return;
-    logPomoTime(advancePomo(p).pomo);
-    pomoRef.current = null;
-    setPomo(null);
-  }, []);
+    flushPomo(p);
+    commitPomo(null);
+  }, [commitPomo]);
 
   const resolve = useCallback((item) => {
     if (demo) return { complete: demo.complete.has(item.uid), note: "" };
@@ -1467,7 +1514,8 @@ const Planning = () => {
     const sessions = buildSessions(mins);
     if (!sessions.length) return;
     playSound("focusStart");
-    setPomo({
+    commitPomo({
+      id: uid(),
       itemUid: item.uid,
       subItemUid: subItem?.uid || null,
       // Its time is logged against this card, on the day it started.
@@ -1481,18 +1529,16 @@ const Planning = () => {
       anchor: Date.now(),
       flushedSec: 0,
     });
-  }, []);
+  }, [commitPomo]);
 
   const extendPomo = useCallback((addMinutes) => {
-    setPomo((p) => {
-      if (!p) return null;
-      const extra = buildSessions(addMinutes);
-      if (!extra.length) return p;
-      const sessions = [...p.sessions, ...extra];
-      return { ...p, sessions, currentIdx: p.sessions.length, remaining: extra[0].duration, status: "running", anchor: Date.now() };
-    });
+    const p = pomoRef.current;
+    const extra = buildSessions(addMinutes);
+    if (!p || !extra.length) return;
+    const sessions = [...p.sessions, ...extra];
+    commitPomo({ ...p, sessions, currentIdx: p.sessions.length, remaining: extra[0].duration, status: "running", anchor: Date.now() });
     playSound("focusStart");
-  }, []);
+  }, [commitPomo]);
 
   const handleDragStart = useCallback((e, idx) => {
     setDragIdx(idx);
@@ -1668,10 +1714,10 @@ const Planning = () => {
               {pomo && (
                 <PomodoroTimer
                   pomo={pomo}
-                  onPause={() => { const np = flushPomo(); setPomo(np ? { ...np, status: "paused", anchor: undefined } : null); }}
-                  onResume={() => setPomo((p) => p ? { ...p, status: "running", anchor: Date.now() } : null)}
-                  onStop={() => { flushPomo(); setPomo(null); }}
-                  onDismiss={() => { flushPomo(); setPomo(null); }}
+                  onPause={() => { const np = flushPomo(pomoRef.current); commitPomo(np ? { ...np, status: "paused", anchor: undefined } : null); }}
+                  onResume={() => { const p = pomoRef.current; if (p) commitPomo({ ...p, status: "running", anchor: Date.now() }); }}
+                  onStop={() => { flushPomo(pomoRef.current); commitPomo(null); }}
+                  onDismiss={() => { flushPomo(pomoRef.current); commitPomo(null); }}
                   onExtend={extendPomo}
                 />
               )}
