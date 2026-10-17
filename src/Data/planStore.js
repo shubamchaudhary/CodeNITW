@@ -70,9 +70,9 @@ function nsKey(base) {
 
 // ─── Guests can read everything but change nothing ────────────────────────────
 // Everything a person would expect to keep is refused for a guest; they're asked
-// to sign in instead. The Pomodoro timer's state is a device convenience, not
-// progress, so it stays usable signed out.
-const USER_DATA = new Set(Object.values(KEYS).filter((k) => k !== KEYS.POMO_STATE));
+// to sign in instead. That includes the Pomodoro timer: it belongs to the
+// account, and follows it to every tab and device.
+const USER_DATA = new Set(Object.values(KEYS));
 
 // Writes made by the app itself (one-off migrations and backfills on page
 // load) are refused silently for a guest — only a person's action should pop
