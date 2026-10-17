@@ -1,7 +1,7 @@
 // Cloud persistence: mirrors all progress (interview/DSA completion, notes,
-// highlights, personal notes, stars, timestamps and the planning days) to
-// Firestore so it follows the account across devices and survives a refresh
-// or re-login.
+// highlights, personal notes, stars, timestamps, the planning days and the
+// focus timer) to Firestore so it follows the account across devices and
+// survives a refresh or re-login.
 //
 // Where it lives. A Firestore document holds at most 1 MB, so not everything
 // shares one:
@@ -77,8 +77,13 @@ const SYNC_KEYS = [
   KEYS.PLAN_DAYS,
   KEYS.TIME_LOG,
   KEYS.JOB_TRACKER,
+  KEYS.POMO_STATE,
 ];
 const SYNCED = new Set(SYNC_KEYS);
+// Keys that are one value, not a map of entries, though stored as an object:
+// the newer edit wins as a whole. The timer's fields (session, time left,
+// paused or not) only make sense together.
+const WHOLE_KEYS = new Set([KEYS.POMO_STATE]);
 // Versioned, fast-forward-only keys. Keep in step with noteFields() in
 // firestore.rules.
 export const VERSIONED = new Set([
@@ -717,7 +722,7 @@ export function reconcile(uid, data, since = sessionStartedAt) {
     const wentBack = (id) => rMeta[id] !== undefined && (lMeta[id] || 0) - rMeta[id] > SKEW_MS;
 
     // A key that isn't a map (or changed as a whole) is decided as one entry.
-    if (!isMap(remote) || !isMap(local) || (pending && pending[WHOLE])) {
+    if (WHOLE_KEYS.has(key) || !isMap(remote) || !isMap(local) || (pending && pending[WHOLE])) {
       if (pending) {
         const localAt = pending[WHOLE] ?? Math.max(...Object.values(pending));
         if (localAt > remoteAt(WHOLE, localAt)) continue; // ours is newer: keep it, push it
@@ -782,7 +787,7 @@ function migrateOnce(uid, data) {
         recordPending(uid, key, VERSIONED.has(key) && isMap(local) ? Object.keys(local) : null, { at: lastRev });
         continue;
       }
-      const ids = changedIds(remote, local);
+      const ids = WHOLE_KEYS.has(key) ? null : changedIds(remote, local);
       if (ids === null) {
         if (!same(remote, local)) recordPending(uid, key, null, { at: lastRev });
       } else {
@@ -810,7 +815,7 @@ function attachListeners() {
     // Only a real local save is ours to push — not cloud data, another tab's
     // write, an account switch, or a guest's refused write.
     if (info.remote || info.external || info.account || info.blocked) return;
-    recordPending(currentUid, key, info.ids, { prev: info.prev || {} });
+    recordPending(currentUid, key, WHOLE_KEYS.has(key) ? null : info.ids, { prev: info.prev || {} });
     schedulePush();
   });
 
