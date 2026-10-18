@@ -1,11 +1,21 @@
-"""Count how often each HelloInterview problem is reported as an HLD question in LeetCode Discuss posts.
+"""Rank HelloInterview's problem breakdowns by how often interviews ask them.
 
-Step 2 of the HLD page's ranking: reads what collect.py saved, prints the
-table, and with --write rewrites the RANKING block of src/Data/HLDPrep.js.
---samples <slug> prints the lines that matched one problem, to check the
-patterns by eye.
+Step 2 of the HLD page's ranking. Two sets of real interview reports, weighted
+equally:
+  • LeetCode Discuss posts (collect.py): this finds the system design question
+    each interview report names. Mostly Indian product companies.
+  • HelloInterview's own question database (collect_hi.py): every report is
+    already tagged with company, level and date. Mostly US big tech.
+Within each source a problem's score is its share of the mid-level (SDE2)
+reports, blended 3:1 with its share of reports at every level, normalised over
+the 32 problems so neither source outweighs the other.
 
-usage: python -I scripts/hld/analyze.py <data_dir> [--write src/Data/HLDPrep.js] [--samples slug]
+Prints the table, and with --write rewrites the RANKING block of
+src/Data/HLDPrep.js. --samples <slug> prints the LeetCode lines that matched
+one problem, to check the patterns by eye.
+
+usage: python -I scripts/hld/analyze.py <data_dir> --hi <data_dir>/hi_questions.json --since 2024
+           [--write src/Data/HLDPrep.js] [--samples slug]
 """
 import json, re, sys, os, collections, io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
@@ -16,18 +26,54 @@ def _opt(name):
 SAMPLE = _opt("--samples")
 WRITE = _opt("--write")  # src/Data/HLDPrep.js: replaces the block between the RANKING markers
 SINCE = _opt("--since") or "0000"  # only reports posted in this year or later
+HI = _opt("--hi")  # HelloInterview's question database, from collect_hi.py
 
-# The score (mostly the share of SDE2-level reports naming a problem) that
-# puts it in each tier. Cut on the score, so a tier is a run of ranks.
-TIERS = [("P0", 0.06), ("P1", 0.035), ("P2", 0.0175), ("P3", 0.0)]
+# The blended score (a problem's share of all 32 problems' reports) that puts
+# it in each tier. Cut on the score, so a tier is a run of ranks.
+TIERS = [("P0", 0.05), ("P1", 0.035), ("P2", 0.02), ("P3", 0.0)]
 
-# How many of the 11 published "most asked" lists PracHub merged (June 2026)
-# include each problem; None: not in their top 30.
-# https://prachub.com/resources/top-30-system-design-questions-ranked-by-how-often-they-re-asked
-LISTS = {"bitly": 11, "whatsapp": 10, "fb-news-feed": 10, "youtube": 10, "uber": 9, "distributed-rate-limiter": 9,
-         "dropbox": 8, "web-crawler": 8, "notification-system": 7, "yelp": 7, "instagram": 6, "ticketmaster": 6,
-         "distributed-cache": 6, "payment-system": 6, "google-docs": 6, "ad-click-aggregator": 5, "metrics-monitoring": 5,
-         "job-scheduler": 5, "gopuff": 4, "robinhood": 4, "chatgpt": 3, "top-k": 3, "tinder": 2}
+# HelloInterview questions that are the same problem as a breakdown but aren't
+# linked to it (yet), by question slug. Only same-problem matches: a game
+# leaderboard is not Top K, a hotel booking is not Ticketmaster.
+HI_SAME_PROBLEM = {
+    "online-chess-platform": "online-chess",
+    "online-multiplayer-tictactoe": "online-chess",
+    "skill-matchmaking-system": "online-chess",
+    "notification-system-scale": "notification-system",
+    "marketing-notification-system": "notification-system",
+    "metrics-aggregator": "metrics-monitoring",
+    "metrics-monitoring-alerts": "metrics-monitoring",
+    "server-health-monitor": "metrics-monitoring",
+    "infrastructure-health-monitor": "metrics-monitoring",
+    "distributed-logging-system": "metrics-monitoring",
+    "logger-system": "metrics-monitoring",
+    "video-streaming-platform": "youtube",
+    "music-streaming-platform": "youtube",
+    "chatbot-design": "chatgpt",
+    "web-crawler-restricted-communication": "web-crawler",
+    "wikipedia-crawler": "web-crawler",
+    "nearby-restaurants-app": "gopuff",
+    "instacart-product-catalogue": "gopuff",
+    "food-item-reviews": "yelp",
+    "food-review-rewards": "yelp",
+    "user-proximity-service": "yelp",
+    "stock-trading-platform": "robinhood",
+    "stock-trading-service": "robinhood",
+    "stock-price-alerts": "camelcamelcamel",
+    "flight-deal-alerts": "camelcamelcamel",
+    "flash-sale-system": "flash-sale",
+    "social-feed-generation": "fb-news-feed",
+    "twitter-amazon-product": "fb-news-feed",
+    "spotify-top-songs": "top-k",
+    "internal-ledger-system": "payment-system",
+    "merchant-payout-system": "payment-system",
+    "visa-transaction-processing": "payment-system",
+    "delayed-payment-scheduler": "job-scheduler",
+    "scheduler-event-staging": "job-scheduler",
+    "timer-service": "job-scheduler",
+    "airline-reservation-system": "ticketmaster",
+}
+HI_BREAKDOWN = "/learn/system-design/problem-breakdowns/"
 
 W = r"[\s\-_]*"  # flexible separator
 
@@ -334,26 +380,64 @@ def main():
         return
     print(f"posts={n_posts} with_hld_question={n_hld} mid_level={n_mid} mid_2025+={n_recent_mid}")
     print("levels", dict(levels)); print("years", dict(sorted(years.items())))
-    out = []
-    for s in P:
-        a, m, rm = tot[s], mid[s], recent_mid[s]
-        out.append(dict(slug=s, all=a, mid=m, mid_recent=rm,
-                        all_share=a / max(n_hld, 1), mid_share=m / max(n_mid, 1)))
-    for o in out:
-        o["score"] = 0.75 * o["mid_share"] + 0.25 * o["all_share"]
-    out.sort(key=lambda o: -o["score"])
-    print(f"{'#':>2} {'slug':26} {'all':>5} {'mid':>5} {'mid25+':>6} {'mid%':>6} {'all%':>6}")
-    for i, o in enumerate(out, 1):
-        print(f"{i:>2} {o['slug']:26} {o['all']:>5} {o['mid']:>5} {o['mid_recent']:>6} {100*o['mid_share']:>5.1f}% {100*o['all_share']:>5.1f}%")
     print("\nGaps (not on HelloInterview):")
     for g, c in gap_tot.most_common():
         print(f"   {g:34} all={c:>5} mid={gap_mid[g]:>5} mid%={100*gap_mid[g]/max(n_mid,1):.1f}")
+
+    lc = {s: {"mid": mid[s], "all": tot[s]} for s in P}
+    hi, hi_tot = hi_counts(HI) if HI else ({s: {"mid": 0, "all": 0} for s in P}, {"mid": 0, "all": 0})
+    lc_score, hi_score = source_score(lc), source_score(hi)
+    weight = 0.5 if HI else 0.0
+    out = [dict(slug=s, lc=lc[s], hi=hi[s], lc_score=lc_score[s], hi_score=hi_score[s],
+                score=(1 - weight) * lc_score[s] + weight * hi_score[s]) for s in P]
+    out.sort(key=lambda o: -o["score"])
+    lc_rank = {s: i for i, s in enumerate(sorted(P, key=lambda s: -lc_score[s]), 1)}
+    hi_rank = {s: i for i, s in enumerate(sorted(P, key=lambda s: -hi_score[s]), 1)}
+    print(f"\nHelloInterview reports: {hi_tot['all']} ({hi_tot['mid']} mid-level)")
+    print(f"{'#':>2} {'slug':26} {'score':>6} | {'LC mid':>6} {'all':>4} {'rank':>4} | {'HI mid':>6} {'all':>4} {'rank':>4}")
+    for i, o in enumerate(out, 1):
+        s = o["slug"]
+        print(f"{i:>2} {s:26} {100*o['score']:5.2f}% | {lc[s]['mid']:>6} {lc[s]['all']:>4} {lc_rank[s]:>4} | {hi[s]['mid']:>6} {hi[s]['all']:>4} {hi_rank[s]:>4}")
     dates = sorted(d for d in dates if d)
     if WRITE:
-        write_ranking(WRITE, out, n_hld, n_mid, dates[0], dates[-1])
-    json.dump(dict(n_posts=n_posts, n_hld=n_hld, n_mid=n_mid, n_recent_mid=n_recent_mid, ranking=out,
+        write_ranking(WRITE, out, n_mid, hi_tot, dates[0], dates[-1])
+    json.dump(dict(n_posts=n_posts, n_hld=n_hld, n_mid=n_mid, ranking=out,
                    gaps={g: dict(all=gap_tot[g], mid=gap_mid[g]) for g in GAPS}),
               open(os.path.join(DATA, "ranking.json"), "w"), indent=1)
+
+def source_score(counts):
+    """Share of mid-level reports, blended 3:1 with share of all reports, each
+    normalised over the 32 problems."""
+    mid_t = sum(c["mid"] for c in counts.values()) or 1
+    all_t = sum(c["all"] for c in counts.values()) or 1
+    return {s: 0.75 * c["mid"] / mid_t + 0.25 * c["all"] / all_t for s, c in counts.items()}
+
+def hi_counts(path):
+    """Reports per breakdown in HelloInterview's question database: a question
+    counts toward a breakdown when HelloInterview links it, or when it's the
+    same problem under another title (HI_SAME_PROBLEM)."""
+    qs = json.load(open(path, encoding="utf-8"))
+    slugs = {q["slug"] for q in qs}
+    missing = [k for k in HI_SAME_PROBLEM if k not in slugs]
+    if missing:
+        print("HI_SAME_PROBLEM slugs no longer in the database:", missing)
+    counts = {s: {"mid": 0, "all": 0} for s in P}
+    total = {"mid": 0, "all": 0}
+    for q in qs:
+        if q.get("defaultInterviewType") != "SYSTEM_DESIGN":
+            continue
+        link = q.get("detailsLink") or ""
+        b = link[len(HI_BREAKDOWN):] if link.startswith(HI_BREAKDOWN) else HI_SAME_PROBLEM.get(q["slug"])
+        for u in q.get("upvotes") or []:
+            if (u.get("approxAskedOn") or "")[:4] < SINCE:
+                continue
+            is_mid = u.get("level") == "MID_LEVEL"
+            total["all"] += 1
+            total["mid"] += is_mid
+            if b in counts:
+                counts[b]["all"] += 1
+                counts[b]["mid"] += is_mid
+    return counts, total
 
 MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split()
 
@@ -361,21 +445,20 @@ def month(ym):
     y, m = ym.split("-")
     return f"{MONTHS[int(m) - 1]} {y}"
 
-def write_ranking(path, out, n_hld, n_mid, first, last):
+def write_ranking(path, out, lc_mid, hi_tot, first, last):
     lines = ["// RANKING_START",
              "// Written by scripts/hld/analyze.py — rerun it rather than editing by hand.",
-             "// [id, priority, seen in interview reports { mid: SDE2-level, mid2025: of those since 2025, all: any level }, lists]",
-             "// lists: how many of 11 published \"most asked\" lists include it (null: not in their top 30).",
+             "// [id, priority, reports naming it { lc: LeetCode Discuss, hi: HelloInterview; mid: SDE2-level, all: any level }]",
              "const RANKING = ["]
     for o in out:
         tier = next(t for t, cut in TIERS if o["score"] >= cut)
-        lists = LISTS.get(o["slug"])
-        lines.append(f'  ["{o["slug"]}", "{tier}", {{ mid: {o["mid"]}, mid2025: {o["mid_recent"]}, all: {o["all"]} }}, {"null" if lists is None else lists}],')
+        lc, hi = o["lc"], o["hi"]
+        lines.append(f'  ["{o["slug"]}", "{tier}", {{ lc: {{ mid: {lc["mid"]}, all: {lc["all"]} }}, hi: {{ mid: {hi["mid"]}, all: {hi["all"]} }} }}],')
     lines += ["];", "",
               "export const HLD_EVIDENCE = {",
-              f"  posts: {n_hld},",
-              f"  midPosts: {n_mid},",
-              f'  summary: "Ranked by how often each problem is named as the system design question in {n_mid} SDE2-level (SDE2 / 2–5 YOE) interview reports on LeetCode Discuss, {month(first)} – {month(last)}, out of {n_hld} reports at all levels.",',
+              f"  lcMid: {lc_mid},",
+              f"  hiMid: {hi_tot['mid']},",
+              f'  summary: "Ranked on real interview reports from two places, weighted equally: {lc_mid} SDE2-level (2–5 YOE) reports on LeetCode Discuss, mostly Indian companies, and {hi_tot["mid"]} mid-level reports in HelloInterview\'s question database, mostly US big tech. {month(first)} – {month(last)}.",',
               "};",
               "// RANKING_END"]
     src = open(path, encoding="utf-8").read()

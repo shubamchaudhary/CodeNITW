@@ -362,9 +362,9 @@ function ProblemRow({ problem, isDone, isStarred, isNext, onToggleDone, onToggle
               )}
               <Detail label="Why this rank">
                 <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-300 light:text-slate-700">
-                  Named in <b>{problem.seen.mid}</b> SDE2-level interview reports ({problem.seen.mid2025} since 2025) and{" "}
-                  <b>{problem.seen.all}</b> reports at any level, out of {HLD_EVIDENCE.midPosts} and {HLD_EVIDENCE.posts} on LeetCode Discuss.
-                  {problem.lists != null && <> On {problem.lists} of 11 published "most asked" lists.</>}
+                  Asked in <b>{problem.seen.lc.mid}</b> of {HLD_EVIDENCE.lcMid} SDE2-level interview reports on LeetCode Discuss
+                  ({problem.seen.lc.all} at any level), and <b>{problem.seen.hi.mid}</b> of {HLD_EVIDENCE.hiMid} mid-level
+                  reports on HelloInterview ({problem.seen.hi.all} at any level), since 2024.
                 </p>
               </Detail>
             </div>
