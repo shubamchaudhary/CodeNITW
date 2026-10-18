@@ -36,6 +36,10 @@ export const KEYS = {
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
   DSA_STARRED: "DSAPrepStarred",
+  // HLD: the system design breakdowns, ticked as each one is done.
+  HLD_COMPLETED: "HLDPrepCompleted",
+  HLD_TIMESTAMPS: "HLDPrepDoneTimestamps",
+  HLD_STARRED: "HLDPrepStarred",
   // Interview Kit checklists (behavioral, STAR, HR, design, Java, LogLens).
   IK_COMPLETED: "InterviewKitCompleted",
   IK_NOTES: "InterviewKitNotes",
@@ -208,6 +212,8 @@ function keysFor(source) {
   if (source === "corestack") return { completed: KEYS.CS_COMPLETED, notes: KEYS.CS_NOTES };
   if (source === "aistack") return { completed: KEYS.AI_COMPLETED, notes: KEYS.AI_NOTES };
   if (source === "projects") return { completed: KEYS.PJ_COMPLETED, notes: KEYS.PJ_NOTES };
+  // HLD keeps no notes: the breakdowns themselves live on HelloInterview.
+  if (source === "hld") return { completed: KEYS.HLD_COMPLETED, notes: null };
   if (source === "interviewkit") return { completed: KEYS.IK_COMPLETED, notes: KEYS.IK_NOTES };
   return { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
 }
@@ -283,8 +289,12 @@ export function setSourceComplete(source, id, value) {
     else delete ts[id];
     saveJSON(KEYS.CS_TIMESTAMPS, ts);
   }
-  // AI Stack and Projects, same idea, each its own store.
-  const stampsKey = source === "aistack" ? KEYS.AI_TIMESTAMPS : source === "projects" ? KEYS.PJ_TIMESTAMPS : null;
+  // AI Stack, Projects and HLD, same idea, each its own store.
+  const stampsKey =
+    source === "aistack" ? KEYS.AI_TIMESTAMPS
+    : source === "projects" ? KEYS.PJ_TIMESTAMPS
+    : source === "hld" ? KEYS.HLD_TIMESTAMPS
+    : null;
   if (stampsKey) {
     const ts = loadJSON(stampsKey, {});
     if (value) ts[id] = Date.now();
@@ -305,6 +315,16 @@ export function aiStackDaysSinceChecked(id) {
 
 export function projectDaysSinceChecked(id) {
   return daysSinceStamp(KEYS.PJ_TIMESTAMPS, id);
+}
+
+export function hldDaysSinceDone(id) {
+  return daysSinceStamp(KEYS.HLD_TIMESTAMPS, id);
+}
+
+export function setHldStarred(id, value) {
+  const map = loadJSON(KEYS.HLD_STARRED, {});
+  map[id] = value;
+  saveJSON(KEYS.HLD_STARRED, map);
 }
 
 function daysSinceStamp(key, id) {
