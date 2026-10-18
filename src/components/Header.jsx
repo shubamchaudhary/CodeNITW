@@ -13,6 +13,8 @@ import Brand, { SITE_NAME } from "./Brand";
 const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
   { path: "/dsa-prep", label: "DSA" },
+  // Owner-only (see OWNER_NAV_ITEMS), but it sits beside DSA, its sibling.
+  { path: "/hld-prep", label: "HLD", ownerOnly: true },
   { path: "/planning", label: "PLANNING" },
   { path: "/job-tracker", label: "JOBS" },
   { path: "/contests", label: "CONTESTS" },
@@ -214,7 +216,7 @@ export default function Header() {
                 `}
               >
                 <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-1 xl:space-x-2 lg:mt-0 lg:items-center">
-                  {[...NAV_ITEMS, ...(isOwner(user) ? OWNER_NAV_ITEMS : [])].map((item) => (
+                  {[...NAV_ITEMS.filter((i) => !i.ownerOnly || isOwner(user)), ...(isOwner(user) ? OWNER_NAV_ITEMS : [])].map((item) => (
                     <li key={item.path}>
                       <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path))}>
                         {item.label}
