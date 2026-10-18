@@ -1,25 +1,32 @@
 // HelloInterview's system design problem breakdowns, in the order to study
 // them for an SDE2 loop (about 2–5 years of experience).
 //
-// The order is measured, not judgement. scripts/hld/collect.py pulls every
-// LeetCode Discuss post the forum's search returns for "HLD", "system design",
-// "high level design" and "design round" (about 15,000 posts).
-// scripts/hld/analyze.py keeps the interview reports posted since 2024 and
-// finds the system design question each one names, under any of its names
-// ("BookMyShow" is Ticketmaster, "Ola" is Uber). It skips LLD, machine-coding
-// and DSA rounds, and a component mentioned inside another design ("the API
-// gateway does auth and rate limiting" is not a rate limiter question).
-// Older reports are left out on purpose: before 2024 they lean to the classic
-// Meta-style feed questions, and the mix has moved since.
+// The order is measured, not judgement, from real interview reports in two
+// places that sample different interviews, weighted equally:
 //
-// A problem's rank is its share of SDE2-level reports (titled SDE2, SSE, L4,
-// MTS-2…, or 2–5 years of experience), blended 3:1 with its share of reports
-// at every level. Tiers cut that same score: P0 at 6% or more, P1 3.5%, P2
-// 1.75%, P3 the rest. `lists` cross-checks against 11 published "most asked"
-// lists (PracHub's June 2026 merge); it doesn't move the order.
+//   • LeetCode Discuss, mostly Indian product companies. scripts/hld/collect.py
+//     pulls every post the forum's search returns for "HLD", "system design",
+//     "high level design" and "design round" (about 15,000). analyze.py finds
+//     the system design question each interview report names, under any of
+//     its names ("BookMyShow" is Ticketmaster, "Ola" is Uber), skipping LLD,
+//     machine-coding and DSA rounds and components mentioned inside another
+//     design. SDE2-level: titled SDE2, SSE, L4, MTS-2…, or 2–5 years.
+//   • HelloInterview's own question database, mostly US big tech
+//     (scripts/hld/collect_hi.py). Each report there already carries its
+//     company, level and date; mid-level is their SDE2 band. Questions that
+//     are a breakdown's problem under another title count toward it ("Design
+//     Online Chess" isn't linked to its breakdown, but it is that problem).
 //
-// Refresh the RANKING block below with:
-//   python -I scripts/hld/analyze.py <data_dir> --since 2024 --write src/Data/HLDPrep.js
+// Both use reports from 2024 on. Within each source a problem scores its
+// share of SDE2-level reports, blended 3:1 with its share at every level,
+// over the 32 problems; the rank is the average of the two. Tiers cut that
+// score: P0 at 5% or more, P1 3.5%, P2 2%, P3 the rest.
+//
+// HelloInterview's "Asked at" badges count companies, not reports: Yelp shows
+// four logos for 18 reports. They don't enter the ranking.
+//
+// Refresh the RANKING block below with (both collectors first):
+//   python -I scripts/hld/analyze.py <data_dir> --hi <data_dir>/hi_questions.json --since 2024 --write src/Data/HLDPrep.js
 
 const BREAKDOWN = "https://www.hellointerview.com/learn/system-design/problem-breakdowns/";
 
@@ -191,47 +198,46 @@ const PROBLEMS = {
 
 // RANKING_START
 // Written by scripts/hld/analyze.py — rerun it rather than editing by hand.
-// [id, priority, seen in interview reports { mid: SDE2-level, mid2025: of those since 2025, all: any level }, lists]
-// lists: how many of 11 published "most asked" lists include it (null: not in their top 30).
+// [id, priority, reports naming it { lc: LeetCode Discuss, hi: HelloInterview; mid: SDE2-level, all: any level }]
 const RANKING = [
-  ["distributed-rate-limiter", "P0", { mid: 60, mid2025: 50, all: 99 }, 9],
-  ["notification-system", "P0", { mid: 62, mid2025: 53, all: 87 }, 7],
-  ["ticketmaster", "P0", { mid: 55, mid2025: 39, all: 85 }, 6],
-  ["fb-news-feed", "P0", { mid: 45, mid2025: 31, all: 88 }, 10],
-  ["whatsapp", "P0", { mid: 44, mid2025: 30, all: 72 }, 10],
-  ["metrics-monitoring", "P0", { mid: 44, mid2025: 33, all: 64 }, 5],
-  ["youtube", "P0", { mid: 42, mid2025: 26, all: 68 }, 10],
-  ["payment-system", "P0", { mid: 42, mid2025: 34, all: 61 }, 6],
-  ["bitly", "P1", { mid: 35, mid2025: 28, all: 57 }, 11],
-  ["job-scheduler", "P1", { mid: 36, mid2025: 28, all: 52 }, 5],
-  ["top-k", "P1", { mid: 33, mid2025: 22, all: 59 }, 3],
-  ["uber", "P1", { mid: 25, mid2025: 20, all: 54 }, 9],
-  ["instagram", "P1", { mid: 27, mid2025: 15, all: 44 }, 6],
-  ["gopuff", "P2", { mid: 22, mid2025: 13, all: 40 }, 4],
-  ["web-crawler", "P2", { mid: 21, mid2025: 15, all: 41 }, 8],
-  ["dropbox", "P2", { mid: 19, mid2025: 11, all: 40 }, 8],
-  ["robinhood", "P2", { mid: 21, mid2025: 16, all: 27 }, 4],
-  ["google-docs", "P2", { mid: 18, mid2025: 11, all: 30 }, 6],
-  ["fb-post-search", "P2", { mid: 14, mid2025: 10, all: 25 }, null],
-  ["ad-click-aggregator", "P2", { mid: 13, mid2025: 10, all: 24 }, 5],
-  ["flash-sale", "P2", { mid: 13, mid2025: 11, all: 21 }, null],
-  ["leetcode", "P3", { mid: 10, mid2025: 7, all: 19 }, null],
-  ["online-auction", "P3", { mid: 9, mid2025: 9, all: 19 }, null],
-  ["online-chess", "P3", { mid: 8, mid2025: 3, all: 22 }, null],
-  ["distributed-cache", "P3", { mid: 7, mid2025: 5, all: 16 }, 6],
-  ["google-news", "P3", { mid: 7, mid2025: 3, all: 14 }, null],
-  ["chatgpt", "P3", { mid: 7, mid2025: 6, all: 14 }, 3],
-  ["camelcamelcamel", "P3", { mid: 8, mid2025: 8, all: 9 }, null],
-  ["fb-live-comments", "P3", { mid: 6, mid2025: 3, all: 14 }, null],
-  ["yelp", "P3", { mid: 4, mid2025: 3, all: 10 }, 7],
-  ["tinder", "P3", { mid: 1, mid2025: 1, all: 2 }, 2],
-  ["strava", "P3", { mid: 0, mid2025: 0, all: 2 }, null],
+  ["whatsapp", "P0", { lc: { mid: 44, all: 72 }, hi: { mid: 46, all: 239 } }],
+  ["ticketmaster", "P0", { lc: { mid: 55, all: 85 }, hi: { mid: 37, all: 153 } }],
+  ["notification-system", "P0", { lc: { mid: 62, all: 87 }, hi: { mid: 21, all: 78 } }],
+  ["distributed-rate-limiter", "P0", { lc: { mid: 60, all: 99 }, hi: { mid: 20, all: 67 } }],
+  ["metrics-monitoring", "P0", { lc: { mid: 44, all: 64 }, hi: { mid: 31, all: 142 } }],
+  ["job-scheduler", "P0", { lc: { mid: 36, all: 52 }, hi: { mid: 34, all: 205 } }],
+  ["top-k", "P0", { lc: { mid: 33, all: 59 }, hi: { mid: 36, all: 173 } }],
+  ["youtube", "P1", { lc: { mid: 42, all: 68 }, hi: { mid: 22, all: 91 } }],
+  ["payment-system", "P1", { lc: { mid: 42, all: 61 }, hi: { mid: 18, all: 136 } }],
+  ["web-crawler", "P1", { lc: { mid: 21, all: 41 }, hi: { mid: 31, all: 150 } }],
+  ["instagram", "P1", { lc: { mid: 27, all: 44 }, hi: { mid: 28, all: 108 } }],
+  ["fb-news-feed", "P1", { lc: { mid: 45, all: 88 }, hi: { mid: 11, all: 25 } }],
+  ["leetcode", "P1", { lc: { mid: 10, all: 19 }, hi: { mid: 38, all: 187 } }],
+  ["bitly", "P1", { lc: { mid: 35, all: 57 }, hi: { mid: 17, all: 67 } }],
+  ["dropbox", "P2", { lc: { mid: 19, all: 40 }, hi: { mid: 22, all: 72 } }],
+  ["ad-click-aggregator", "P2", { lc: { mid: 13, all: 24 }, hi: { mid: 23, all: 145 } }],
+  ["online-chess", "P2", { lc: { mid: 8, all: 22 }, hi: { mid: 26, all: 164 } }],
+  ["online-auction", "P2", { lc: { mid: 9, all: 19 }, hi: { mid: 23, all: 86 } }],
+  ["yelp", "P2", { lc: { mid: 4, all: 10 }, hi: { mid: 26, all: 103 } }],
+  ["fb-post-search", "P2", { lc: { mid: 14, all: 25 }, hi: { mid: 17, all: 66 } }],
+  ["uber", "P2", { lc: { mid: 25, all: 54 }, hi: { mid: 6, all: 21 } }],
+  ["gopuff", "P2", { lc: { mid: 22, all: 40 }, hi: { mid: 7, all: 28 } }],
+  ["camelcamelcamel", "P2", { lc: { mid: 8, all: 9 }, hi: { mid: 21, all: 60 } }],
+  ["google-news", "P3", { lc: { mid: 7, all: 14 }, hi: { mid: 14, all: 103 } }],
+  ["robinhood", "P3", { lc: { mid: 21, all: 27 }, hi: { mid: 4, all: 45 } }],
+  ["google-docs", "P3", { lc: { mid: 18, all: 30 }, hi: { mid: 7, all: 26 } }],
+  ["chatgpt", "P3", { lc: { mid: 7, all: 14 }, hi: { mid: 11, all: 43 } }],
+  ["distributed-cache", "P3", { lc: { mid: 7, all: 16 }, hi: { mid: 8, all: 51 } }],
+  ["fb-live-comments", "P3", { lc: { mid: 6, all: 14 }, hi: { mid: 9, all: 51 } }],
+  ["flash-sale", "P3", { lc: { mid: 13, all: 21 }, hi: { mid: 1, all: 8 } }],
+  ["tinder", "P3", { lc: { mid: 1, all: 2 }, hi: { mid: 2, all: 3 } }],
+  ["strava", "P3", { lc: { mid: 0, all: 2 }, hi: { mid: 1, all: 1 } }],
 ];
 
 export const HLD_EVIDENCE = {
-  posts: 1105,
-  midPosts: 672,
-  summary: "Ranked by how often each problem is named as the system design question in 672 SDE2-level (SDE2 / 2–5 YOE) interview reports on LeetCode Discuss, Jan 2024 – Oct 2026, out of 1105 reports at all levels.",
+  lcMid: 672,
+  hiMid: 954,
+  summary: "Ranked on real interview reports from two places, weighted equally: 672 SDE2-level (2–5 YOE) reports on LeetCode Discuss, mostly Indian companies, and 954 mid-level reports in HelloInterview's question database, mostly US big tech. Jan 2024 – Oct 2026.",
 };
 // RANKING_END
 
@@ -250,12 +256,11 @@ export const HLD_TIERS = [
   { key: "P3", title: "Rare at SDE2", blurb: "Worth it for the patterns they teach" },
 ];
 
-export const HLD_PROBLEMS = RANKING.map(([id, priority, seen, lists], i) => ({
+export const HLD_PROBLEMS = RANKING.map(([id, priority, seen], i) => ({
   id,
   rank: i + 1,
   priority,
   link: BREAKDOWN + id,
   seen,
-  lists,
   ...PROBLEMS[id],
 }));
