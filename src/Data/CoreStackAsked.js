@@ -2399,6 +2399,21 @@ export const CORE_STACK_ASKED = {
         "companies": [
           "Mastercard"
         ]
+      },
+      {
+        "q": "JDBC vs Hibernate — why use an ORM, and when would you still drop to plain JDBC (JdbcTemplate)?",
+        "a": "- **JDBC / `JdbcTemplate`**: you write the SQL; `JdbcTemplate` removes the boilerplate (connections, `PreparedStatement`, closing, exception translation) and maps rows with a `RowMapper`. Full control, no hidden queries.\n- **ORM (JPA/Hibernate)**: maps rows ↔ objects, dirty checking, L1 cache, relationships, portable JPQL — far less code for CRUD-heavy domains.\n\nReach for `JdbcTemplate` (or `JdbcClient` in Boot 3.2+) for reporting, bulk writes and hand-tuned SQL; both can live in one app and share the same `DataSource` and `@Transactional`.",
+        "n": 2,
+        "companies": [
+          "Walmart",
+          "Fortinet"
+        ]
+      },
+      {
+        "q": "First-level vs second-level cache in Hibernate — when does L2 help or hurt?",
+        "a": "- **L1**: the persistence context — per transaction/session, always on. Same id → same object, one SELECT.\n- **L2**: shared across sessions (Ehcache, Caffeine, Redis via a provider), opt-in per entity with `@Cacheable` + a concurrency strategy.\n\nL2 helps for **read-mostly reference data** (countries, product catalogue). It hurts for frequently-updated data (invalidation churn) and with **multiple instances** unless the cache is distributed or invalidated across nodes. The query cache is usually a trap — any write to the table invalidates it.",
+        "n": 0,
+        "companies": []
       }
     ]
   },
@@ -2512,32 +2527,14 @@ export const CORE_STACK_ASKED = {
           "Publicis Sapient",
           "Rakuten Symphony"
         ]
-      }
-    ]
-  },
-  "SPRING-16": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "First-level vs second-level cache in Hibernate — when does L2 help or hurt?",
-        "a": "- **L1**: the persistence context — per transaction/session, always on. Same id → same object, one SELECT.\n- **L2**: shared across sessions (Ehcache, Caffeine, Redis via a provider), opt-in per entity with `@Cacheable` + a concurrency strategy.\n\nL2 helps for **read-mostly reference data** (countries, product catalogue). It hurts for frequently-updated data (invalidation churn) and with **multiple instances** unless the cache is distributed or invalidated across nodes. The query cache is usually a trap — any write to the table invalidates it.",
-        "n": 0,
-        "companies": []
-      }
-    ],
-    "note": "No write-up in the last two years named this topic, so these are the questions banks ask — useful depth, low odds."
-  },
-  "SPRING-12": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "How do you build dynamic queries — Criteria API vs Specifications?",
         "a": "When filters are optional (search screen with 8 fields), string-concatenated JPQL becomes unreadable and injection-prone.\n\n- **Criteria API**: type-safe, programmatic — but verbose.\n- **Spring Data Specifications**: small reusable predicates you combine:\n\n```java\nSpecification<Order> s = where(hasStatus(st)).and(createdAfter(from)).and(customerIs(id));\nrepo.findAll(s, pageable);   // repo extends JpaSpecificationExecutor<Order>\n```\n\nEach `null` filter just returns `null` and is skipped. Parameters are bound, so no SQL injection.",
         "n": 0,
         "companies": []
       }
-    ],
-    "note": "No write-up in the last two years named this topic, so these are the questions banks ask — useful depth, low odds."
+    ]
   },
   "SPRING-15": {
     "posts": 11,

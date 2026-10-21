@@ -74,8 +74,6 @@ note (`askedQuestions.mjs`).
 | SPRING-07 JPA relationships I | P0 | 10 | One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)? (8) | Blinkit, Target, Urban Company, VMware, Yes Madam |
 | SPRING-22 JPA relationships II | P0 | 4 | How do you model a many-to-many relationship (e.g. Person ↔ Job)? (3) | Microsoft, Paytm, eBay, Target |
 | SPRING-20 Spring Data queries | P0 | 34 | Lazy vs eager loading — and what causes LazyInitializationException? (13) | American Express, Arctic Wolf, Fortinet, IBM, Oracle |
-| SPRING-16 JPA second-level cache | P1 | 0 | — | — |
-| SPRING-12 Criteria API & Specifications | P1 | 0 | — | — |
 | SPRING-15 Web attacks | P0 | 11 | What is SQL injection — and how do PreparedStatement and ORMs prevent it? (4) | Fortinet, JPMorgan, Apple, Swiggy, Fynd |
 | SPRING-09 Spring Security architecture | P0 | 50 | How does Spring Security work — the filter chain and the authentication flow? (21) | Publicis Sapient, Citi, EPAM, Goldman Sachs, Google |
 | SPRING-23 JWT | P0 | 32 | How does JWT work — structure and verification? (29) | Apple, Goldman Sachs, Avathon, Delivery Hero, Hyperverge |
@@ -94,9 +92,37 @@ Cards with 0 write-ups still show their questions, labelled "question banks only
   lifecycle (73), Spring Security (50), production debugging (45).
 - **Lowered**: bean scopes P0 → P1 (11), virtual threads & ThreadLocal P1 → P2 (4).
 - **Kept although rare**, because they are owner-set (resume) priorities: filters
-  vs interceptors (6), JPA relationships (10 and 4), Criteria and the L2 cache (0).
+  vs interceptors (6), JPA relationships (10 and 4).
+- **Retired (JPA pass, below)**: the L2 cache card (SPRING-16) and the Criteria /
+  Specifications card (SPRING-12) — 0 write-ups each.
 - **Worth noting**: LRU cache was asked in 63 write-ups (it lives on the
   Comparator / TreeMap / LinkedHashMap card, already done); optimistic vs
   pessimistic locking in about 20 (now on the JPA core card).
 
 Priorities of cards already marked done were not changed.
+
+## JPA pass — which of the ten JPA videos to watch (Oct 2026)
+
+The owner asked which of the playlist's ten JPA videos (CC-SB #23–32) interviews
+actually reach. A fresh LeetCode Discuss pull for 25 JPA / Spring terms
+(16 Oct 2024 – 21 Oct 2026): 5,283 posts with interview-like titles, 539 of them
+mentioning Spring, JPA, Hibernate or JDBC. Each was tagged by the video whose
+topic it asks; the GfG and InterviewBit Hibernate banks were read as a second
+signal.
+
+| Video | Topic | Write-ups | In the banks? | Verdict |
+|---|---|---:|---|---|
+| #23 Part 1 | JDBC Template | 2 (both "JDBC vs Hibernate / why ORM") | yes, as a definition | Skip — one-liner on SPRING-04 |
+| #24 Part 2 | Architecture & entity lifecycle | 4 (save vs saveAndFlush, what is JPA) | yes | **Watch** (SPRING-04) |
+| #25 Part 3 | L1 cache | 0 by name; it is the persistence context | yes | **Watch** (SPRING-04, 24m) |
+| #26 Part 4 | L2 cache | 0 | yes, "L1 vs L2" | Skip — one-liner on SPRING-04 |
+| #27 Part 5 | DTO → table (@Table, @Column, @Embeddable) | 2 (basic @Entity/@Column) | composite keys only | Skip |
+| #28 Part 6 | @OneToOne, owning side, cascades | 4 | partly | **Watch** (SPRING-07) |
+| #29 Part 7 | @OneToMany / @ManyToOne / @ManyToMany | 5 | yes | **Watch** (SPRING-22) |
+| #30 Part 8 | JPQL, derived queries, N+1, pagination | 24 (lazy/eager 10, N+1 5) | yes | **Watch first in importance** (SPRING-20) |
+| #31 Part 9 | Native query & Criteria API | 0 | yes | Skip — one-liner on SPRING-20 |
+| #32 Part 10 | Specification API | 0 | no | Skip — same one-liner |
+
+Optimistic vs pessimistic locking (9 write-ups here, 20 in the main pull) is
+not in these ten videos; it stays on SPRING-04's asked list and the database
+card.
