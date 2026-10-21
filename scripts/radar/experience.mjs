@@ -1,4 +1,6 @@
-// Experience check for the radar: the years an opening asks for.
+// Experience check for the radar: the range of years an opening asks for, and
+// whether YOUR_YEARS falls inside it. "0-2", "1-3", "2-5" and "1+" do; "3+" and
+// "3-5" ask for more (no callback at 2.2 years), "0-1" for less.
 //
 // Signals, most trusted first: the board's own experience field (Naukri's
 // "5-10 Yrs"), a range in the title ("Software Engineer, 4-8 Yrs"), then the
@@ -7,26 +9,31 @@
 // In a description, the overall ask ("3+ years of professional software
 // development experience") is what counts, not a side skill ("2+ years with
 // Kafka"), so: only the text before any "preferred / nice to have" section;
-// the largest number on a line about professional/industry/software
-// experience; failing that, the smallest number next to "experience".
+// the highest floor on a line about professional/industry/software
+// experience; failing that, the lowest floor next to "experience".
 
-export const FITS_MAX = 2; // asks for this many years or fewer → "fits"
-export const STRETCH_MAX = 3; // one more year → "stretch"; anything above is dropped
+export const YOUR_YEARS = 2;
 
-const RANGE_RX = /(\d{1,2})\s*(?:-|–|to)\s*\d{1,2}\s*(?:yrs?|years?)|(\d{1,2})\s*\+\s*(?:yrs?|years?)/i;
+// { min, max } — max is null for an open-ended ask ("3+ years", "3 years").
+const RANGE_RX = /(\d{1,2})\s*(?:(?:-|–|—|to)\s*(\d{1,2})|(\+))?\s*\+?\s*(?:yrs?|years?)\b/i;
 
-function fromRange(s) {
-  const m = RANGE_RX.exec(s || "");
-  if (!m) return undefined;
-  return parseInt(m[1] ?? m[2], 10);
+function toRange(m) {
+  const min = parseInt(m[1], 10);
+  const max = m[2] !== undefined ? parseInt(m[2], 10) : null;
+  return { min, max: max !== null && max >= min ? max : null };
 }
 
-const YEARS_RX = /(\d{1,2})\s*(?:\+|-|–|—|to)?\s*(?:\d{1,2})?\s*\+?\s*(?:years?|yrs?)\b/g;
+function fromField(s) {
+  const m = RANGE_RX.exec(s || "");
+  return m ? toRange(m) : undefined;
+}
+
+const YEARS_RX = new RegExp(RANGE_RX.source, "gi");
 const PREFERRED_RX = /\b(preferred qualifications|preferred skills|nice[ -]to[ -]have|good to have|bonus points|preferred:)/;
 const CORE_RX =
   /\b(professional|industry|overall|total|relevant|software (development|engineering)|engineering experience|development experience|work experience|working experience|hands[- ]on)\b/;
 
-export function yearsFromDescription(text) {
+export function rangeFromDescription(text) {
   if (!text) return undefined;
   let t = String(text).toLowerCase();
   const pref = t.search(PREFERRED_RX);
@@ -34,29 +41,29 @@ export function yearsFromDescription(text) {
   const core = [];
   const any = [];
   for (const m of t.matchAll(YEARS_RX)) {
-    const n = parseInt(m[1], 10);
-    if (n > 20) continue;
+    const r = toRange(m);
+    if (r.min > 20) continue;
     const around = t.slice(Math.max(0, m.index - 40), m.index + m[0].length + 70);
     if (!/\bexp(erience|ertise)?\b/.test(around)) continue;
-    any.push(n);
-    if (CORE_RX.test(around)) core.push(n);
+    any.push(r);
+    if (CORE_RX.test(around)) core.push(r);
   }
-  if (core.length) return Math.max(...core);
-  if (any.length) return Math.min(...any);
+  if (core.length) return core.reduce((a, b) => (b.min > a.min ? b : a));
+  if (any.length) return any.reduce((a, b) => (b.min < a.min ? b : a));
   return undefined;
 }
 
-export function minYears(job) {
-  const field = fromRange(job.experienceRange);
-  if (field !== undefined) return field;
-  const title = fromRange(job.title);
-  if (title !== undefined) return title;
-  return yearsFromDescription(job.desc);
+// The first number of the range, for callers that only need the floor.
+export const yearsFromDescription = (text) => rangeFromDescription(text)?.min;
+
+export function experienceRange(job) {
+  return fromField(job.experienceRange) || fromField(job.title) || rangeFromDescription(job.desc);
 }
 
-export function experienceTag(years) {
-  if (years === undefined) return "unknown";
-  if (years <= FITS_MAX) return "fits";
-  if (years <= STRETCH_MAX) return "stretch";
-  return "too-senior";
+// "fits" (YOUR_YEARS is inside the range), "unknown", "too-senior" or "too-junior".
+export function experienceTag(range) {
+  if (!range) return "unknown";
+  if (range.min > YOUR_YEARS) return "too-senior";
+  if (range.max !== null && range.max !== undefined && range.max < YOUR_YEARS) return "too-junior";
+  return "fits";
 }

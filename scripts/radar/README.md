@@ -44,9 +44,11 @@ Every job, from any source, goes through the same checks:
 
 1. **Role and place**: a backend/SDE/Java/platform/GenAI title, not senior or lead
    levels, not QA, frontend or mobile, located in India (or remote that includes India).
-2. **Experience**: the fewest years it asks for, from Naukri's experience
-   field, a range in the title, or the job description. 0–2 years = "fits",
-   3 = "stretch", more is dropped.
+2. **Experience**: the range of years it asks for, from Naukri's experience
+   field, a range in the title, or the job description, must include 2
+   (`YOUR_YEARS` in `experience.mjs`). "0–2", "1–3", "2–5" and "1+" stay; "3+"
+   and "3–5" ask for more, "0–1" for less, and are dropped. A posting that
+   doesn't say is kept, unless its title is senior.
 3. **Pay** against your 25 LPA minimum CTC. Only one thing drops a role: the
    employer's own posted salary topping out under 22L. Everything else is kept
    with a label, so no role that could pay 25L+ is lost to an average:
@@ -63,6 +65,11 @@ Every job, from any source, goes through the same checks:
 
    levels.fyi figures are company-wide for software engineers in India, cached 30 days.
 4. **Skills match**: a 0–100 score against your resume's skills (see above).
+   An opening with 0 (no skill in common) is dropped.
+
+An opening a run drops is also sent to the API to delete, so one stored under
+earlier rules goes the next time a run sees it. Openings are always listed
+newest first.
 
 The same opening on several sources becomes one row, linking to the
 employer's own page when one of the sources has it. It counts as still
@@ -95,13 +102,13 @@ any device ──GET /api/radar──▶ newest first, paged   (the Jobs page's 
 
 | Call | Token | Does |
 |---|---|---|
-| `POST /api/radar` | `RADAR_INGEST_TOKEN` | body `{ summary, openings }`: creates new openings, updates known ones, then deletes those older than 15 days. Answers `{ created, updated, tooOld, rejected, deleted }` |
+| `POST /api/radar` | `RADAR_INGEST_TOKEN` | body `{ summary, openings, remove }`: creates new openings, updates known ones, deletes the stored copies of those in `remove` (seen, but now rejected by the rules), then deletes those older than 15 days. Answers `{ created, updated, tooOld, rejected, removed, deleted }` |
 | `GET /api/radar` | `RADAR_READ_TOKEN` (or the owner's login) | `?limit=50` (1–200), `?cursor=` (the previous page's `nextCursor`), `?since=2026-10-15`. Answers `{ openings, nextCursor, total, summary }`, newest opening first |
 | `DELETE /api/radar` | `RADAR_INGEST_TOKEN` | deletes openings that opened more than 15 days ago; `?days=N` for another age |
 
 Each opening has `id`, `company`, `openingId`, `title`, `location`, `url`,
 `source`, `sources`, `postedAt`, `openedAt`, `firstSeen`, `lastSeen`, `active`
-(a source listed it in the last week), `exp`, `minYoe`, `pay` (`verdict`,
+(a source listed it in the last week), `exp`, `minYoe`, `maxYoe`, `pay` (`verdict`,
 `text`), `matchScore`, `matched`, `missing` and `snippet`.
 
 ```bash

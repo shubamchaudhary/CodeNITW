@@ -17,12 +17,21 @@ const NEW_HOURS = 30; // "new" = first stored by a run in roughly the last day
 const API_PAGE = 200; // openings per /api/radar request
 const MAX_API_PAGES = 10;
 
-const EXP_LABEL = { fits: "≤2 yrs", stretch: "3 yrs", unknown: "yrs ?" };
+// The radar keeps only openings whose asked range includes 2 years ("fits") or
+// that don't say ("unknown"). Anything else still stored from older rules, and
+// any 0 skills match, is hidden here until the next run deletes it.
+const EXP_LABEL = { fits: "2 yrs in range", unknown: "yrs ?" };
 const EXP_CLS = {
   fits: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  stretch: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
   unknown: "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400",
 };
+const relevant = (o) => (o.exp === "fits" || o.exp === "unknown" || !o.exp) && o.matchScore > 0;
+
+// "1–3 yrs", "2+ yrs", or null when the posting doesn't say.
+function yearsText(o) {
+  if (o.minYoe == null) return null;
+  return o.maxYoe != null ? `${o.minYoe}–${o.maxYoe} yrs` : `${o.minYoe}+ yrs`;
+}
 // Pay against the 25 LPA minimum (scripts/radar/pay.mjs). Nothing that could
 // reach it is dropped by the radar, so every label is shown by default.
 const PAY_LABEL = {
@@ -124,12 +133,11 @@ function Chip({ on, onClick, children, title }) {
 export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, addJob }) {
   const [radar, setRadar] = useState(null);
   const [error, setError] = useState(null);
-  const [exp, setExp] = useState({ fits: true, stretch: true, unknown: true });
+  const [exp, setExp] = useState({ fits: true, unknown: true });
   const [pay, setPay] = useState(() => Object.fromEntries(Object.keys(PAY_LABEL).map((k) => [k, true])));
   const [source, setSource] = useState("all");
   const [newOnly, setNewOnly] = useState(false);
   const [listedOnly, setListedOnly] = useState(true);
-  const [sort, setSort] = useState("new");
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
 
@@ -146,11 +154,12 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
   const openings = radar?.openings || [];
   const isNew = (o) => Date.now() - (o.firstSeen || 0) < NEW_HOURS * 3600000;
 
-  // The API already returns newest-opened first.
+  // Always newest first: the API returns them by opening time, and filtering keeps that order.
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const list = openings.filter(
+    return openings.filter(
       (o) =>
+        relevant(o) &&
         !hidden[o.id] &&
         (!listedOnly || o.active) &&
         exp[o.exp || "unknown"] !== false &&
@@ -159,10 +168,8 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
         (!newOnly || isNew(o)) &&
         (!q || `${o.company} ${o.title} ${o.location}`.toLowerCase().includes(q))
     );
-    if (sort === "match") list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
-    return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, listedOnly, exp, pay, source, newOnly, sort, query]);
+  }, [openings, hidden, listedOnly, exp, pay, source, newOnly, query]);
 
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
@@ -217,21 +224,18 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
             placeholder="Search company, role, city"
             className="text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 w-56"
           />
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
-          >
-            <option value="new">Newest</option>
-            <option value="match">Best skills match</option>
-          </select>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
           {Object.keys(EXP_LABEL).map((k) => (
-            <Chip key={k} on={exp[k]} onClick={() => toggle(setExp)(k)} title="Years of experience the posting asks for">
+            <Chip
+              key={k}
+              on={exp[k]}
+              onClick={() => toggle(setExp)(k)}
+              title={k === "fits" ? "The years it asks for include 2 (0–2, 1–3, 2–5, 1+…)" : "The posting doesn't say how many years"}
+            >
               {EXP_LABEL[k]}
             </Chip>
           ))}
@@ -308,9 +312,9 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
               </div>
               <span
                 className={`hidden sm:inline shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${EXP_CLS[o.exp] || EXP_CLS.unknown}`}
-                title={o.minYoe != null ? `Asks for ${o.minYoe}+ years` : "Experience not stated"}
+                title={yearsText(o) ? `Asks for ${yearsText(o)}` : "Experience not stated"}
               >
-                {o.minYoe != null ? `${o.minYoe}+ yrs` : EXP_LABEL.unknown}
+                {yearsText(o) || EXP_LABEL.unknown}
               </span>
               <span
                 className={`hidden sm:inline shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${PAY_CLS[o.pay?.verdict] || PAY_CLS.unknown}`}

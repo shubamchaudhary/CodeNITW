@@ -8,10 +8,13 @@ import { OWNER_EMAIL } from "./_lib/visits.mjs";
 // GitHub Actions.)
 //
 //   POST  Authorization: Bearer <RADAR_INGEST_TOKEN>
-//         body { summary, openings: [{ company, openingId, title, url, postedAt, seenSince, … }] }
+//         body { summary, openings: [{ company, openingId, title, url, postedAt, seenSince, … }],
+//                remove: [{ company, openingId }] }
 //         Every opening a run found. New ones are created, known ones updated
-//         (lastSeen, pay, score…). Then it runs the DELETE below, so the
-//         collection only ever holds the last KEEP_DAYS days.
+//         (lastSeen, pay, score…). `remove` lists openings the run saw but its
+//         rules now reject (experience, skills match, pay); any stored copy is
+//         deleted. Then it runs the DELETE below, so the collection only ever
+//         holds the last KEEP_DAYS days.
 //
 //   DELETE Authorization: Bearer <RADAR_INGEST_TOKEN>
 //         Deletes openings that opened more than KEEP_DAYS days ago, and run
@@ -74,6 +77,7 @@ function fields(o) {
     ats: str(o.ats, 20),
     postedAt: str(o.postedAt, 10),
     minYoe: num(o.minYoe),
+    maxYoe: num(o.maxYoe),
     exp: str(o.exp, 12),
     pay: o.pay && typeof o.pay === "object" ? { verdict: str(o.pay.verdict, 12) || "unknown", text: str(o.pay.text, 160) || "" } : undefined,
     matchScore: num(o.matchScore),
@@ -150,15 +154,8 @@ export async function POST(request) {
     if (!incoming.has(base)) incoming.set(base, { company, o });
   }
 
-  // Which of them are already stored (Firestore's "in" takes 30 values at a time).
-  const bases = [...incoming.keys()];
-  const existing = new Map();
   const col = db().collection(OPENINGS);
-  const chunks = [];
-  for (let i = 0; i < bases.length; i += 30) chunks.push(bases.slice(i, i + 30));
-  for (const snap of await Promise.all(chunks.map((c) => col.where("base", "in", c).get()))) {
-    for (const d of snap.docs) if (!existing.has(d.get("base"))) existing.set(d.get("base"), d);
-  }
+  const existing = await storedByBase(col, [...incoming.keys()]);
 
   const keepCut = now - KEEP_DAYS * DAY;
   let created = 0;
@@ -204,13 +201,44 @@ export async function POST(request) {
   if (ops) writes.push(batch.commit());
   await Promise.all(writes);
 
+  // Openings the run saw but its rules now reject: delete any stored copy
+  // (never one this same upload just stored).
+  const removeBases = [
+    ...new Set(
+      (Array.isArray(body.remove) ? body.remove : [])
+        .slice(0, MAX_OPENINGS)
+        .map((r) => [slug(str(r?.company, 120)), cleanId(r?.openingId)])
+        .filter(([c, id]) => c && id)
+        .map(([c, id]) => `${c}:${id}`)
+        .filter((b) => !incoming.has(b))
+    ),
+  ];
+  const stale = [...(await storedByBase(col, removeBases)).values()];
+  for (let i = 0; i < stale.length; i += 450) {
+    const del = db().batch();
+    stale.slice(i, i + 450).forEach((d) => del.delete(d.ref));
+    await del.commit();
+  }
+  const removed = stale.length;
+
   // The DELETE, run in-process after every upload to keep the collection thin.
   const deleted = await prune(KEEP_DAYS, now);
 
   const summary = body.summary && typeof body.summary === "object" ? body.summary : {};
-  const run = { ...summary, receivedAt: now, received: body.openings.length, created, updated, tooOld, rejected, deleted };
+  const run = { ...summary, receivedAt: now, received: body.openings.length, created, updated, tooOld, rejected, removed, deleted };
   await Promise.all([db().collection(RUNS).doc(String(now)).set(run), db().collection("appCache").doc("radar").set({ latestRun: run })]);
-  return json({ created, updated, tooOld, rejected, deleted });
+  return json({ created, updated, tooOld, rejected, removed, deleted });
+}
+
+// Stored openings by their company:openingId (Firestore's "in" takes 30 values at a time).
+async function storedByBase(col, bases) {
+  const found = new Map();
+  const chunks = [];
+  for (let i = 0; i < bases.length; i += 30) chunks.push(bases.slice(i, i + 30));
+  for (const snap of await Promise.all(chunks.map((c) => col.where("base", "in", c).get()))) {
+    for (const d of snap.docs) if (!found.has(d.get("base"))) found.set(d.get("base"), d);
+  }
+  return found;
 }
 
 // ── GET: read openings, newest first ──────────────────────────────────────────
