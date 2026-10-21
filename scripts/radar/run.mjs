@@ -1,6 +1,6 @@
-// Daily job radar — runs on your own PC (Windows Task Scheduler, see
-// setup.ps1), never in GitHub Actions: the old Actions radar got the GitHub
-// account blocked.
+// Job radar — runs on your own PC five times a day (Windows Task Scheduler,
+// see setup.ps1), never in GitHub Actions: the old Actions radar got the
+// GitHub account blocked.
 //
 // Sources, all fetched in parallel:
 //   board     — the tracked company boards (scripts/jobRadar.mjs)
@@ -17,16 +17,18 @@
 // a skills match score with the skills it asks for that your resume lacks.
 // Duplicates across sources collapse into one opening.
 //
-// Results live in .radar/ (gitignored): store.json keeps every opening seen
-// in the last week with the day it first appeared. Each run uploads the list
-// to the site's /api/radar, which the Jobs page's Openings tab reads.
+// Each run POSTs every opening it found to the site's /api/radar, which keeps
+// them in Firestore — the permanent record, readable from any device through
+// GET /api/radar (see api/radar.mjs) and shown in the Jobs page's Openings tab.
+// .radar/ (gitignored) only caches: first-seen dates, pay lookups, uploads
+// that failed and wait for the next run.
 //
 // Run:  node scripts/radar/run.mjs            (full run + upload)
 //       node scripts/radar/run.mjs --dry-run  (no upload)
 //       node scripts/radar/run.mjs --only=riley,jobspy,careerops --days=3
 //       node scripts/radar/run.mjs --linkedin (also sweep LinkedIn; off by default)
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, appendFileSync, readdirSync, rmSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { createHash } from "crypto";
@@ -38,13 +40,16 @@ import { fetchCareerOpsJobs, writeCv } from "./careerops.mjs";
 import { minYears, experienceTag } from "./experience.mjs";
 import { makePayChecker } from "./pay.mjs";
 import { DEFAULT_RESUME_PDF, loadResumeText, resumeProfile } from "./resume.mjs";
+import { openingIdOf } from "./ids.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const STATE = join(ROOT, ".radar");
-const KEEP_UNSEEN_DAYS = 7; // an opening no source has shown for a week is gone
-const MAX_AGE_DAYS = 30; // and none older than this, however often re-listed
-const MAX_UPLOAD = 600;
-const DEFAULT_UPLOAD_URL = "https://interviewplanprep.vercel.app/api/radar";
+// The local store is only a cache (first-seen dates, scores of jobs whose
+// description isn't re-fetched); Firestore, through /api/radar, is the record.
+// An opening stays cached while a source still lists it, so its first-seen
+// date never resets; one no source has shown for a week is dropped.
+const KEEP_UNSEEN_DAYS = 7;
+const DEFAULT_API_URL = "https://interviewplanprep.vercel.app/api/radar";
 
 // Which copy of a duplicate wins: the employer's own board link first.
 const SOURCE_RANK = { board: 0, riley: 1, careerops: 2, indeed: 3, naukri: 4, glassdoor: 5, linkedin: 6 };
@@ -72,7 +77,7 @@ const loadJSON = (name, fallback) => {
 };
 const saveJSON = (name, data) => writeFileSync(join(STATE, name), JSON.stringify(data, null, 1));
 
-// KEY=VALUE lines from .radar/.env (CRON_SECRET, RADAR_UPLOAD_URL).
+// KEY=VALUE lines from .radar/.env (RADAR_INGEST_TOKEN, RADAR_API_URL, RESUME_PDF).
 function localEnv() {
   const p = join(STATE, ".env");
   if (!existsSync(p)) return {};
@@ -125,6 +130,46 @@ function clip(s, max = 200) {
   return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
 }
 
+// Upload to /api/radar. A failed upload is kept in .radar/pending/ and sent
+// before the next run's, so a day without internet, a wrong token or an API
+// not deployed yet loses nothing (the last MAX_PENDING uploads are kept).
+const MAX_PENDING = 15; // three days of runs at five a day
+
+async function upload(payload, env) {
+  const url = env.RADAR_API_URL || DEFAULT_API_URL;
+  const pendingDir = join(STATE, "pending");
+  mkdirSync(pendingDir, { recursive: true });
+  const waiting = readdirSync(pendingDir).filter((f) => f.endsWith(".json")).sort();
+  for (const f of waiting.slice(0, Math.max(0, waiting.length - (MAX_PENDING - 1)))) rmSync(join(pendingDir, f), { force: true });
+  const queue = waiting
+    .slice(-(MAX_PENDING - 1))
+    .filter((f) => existsSync(join(pendingDir, f)))
+    .map((f) => ({ file: join(pendingDir, f), body: readFileSync(join(pendingDir, f), "utf8") }));
+  const current = { file: join(pendingDir, `${Date.now()}.json`), body: JSON.stringify(payload) };
+  writeFileSync(current.file, current.body);
+  queue.push(current);
+
+  for (const item of queue) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        signal: AbortSignal.timeout(120000),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.RADAR_INGEST_TOKEN}` },
+        body: item.body,
+      });
+      const text = (await res.text()).slice(0, 300);
+      log(`Upload ${item === current ? "" : "(retry) "}to ${url}: ${res.status} ${text}`);
+      // Only a rejected body (400) or one too large (413) won't get better by retrying.
+      if (res.ok || res.status === 400 || res.status === 413) rmSync(item.file, { force: true });
+      if (!res.ok) process.exitCode = 1;
+    } catch (e) {
+      log(`Upload failed (${e.message}); kept for the next run`);
+      process.exitCode = 1;
+      break;
+    }
+  }
+}
+
 async function main() {
   const started = Date.now();
   const now = new Date().toISOString();
@@ -171,7 +216,7 @@ async function main() {
 
   const batches = await Promise.all([
     run("board", () => fetchBoardJobs({ atsCache, linkedin: flag("linkedin"), log })),
-    run("riley", () => fetchRileyJobs({ days: DAYS, keep: keepDataset, known: knownUrls, log })),
+    run("riley", () => fetchRileyJobs({ days: DAYS, keep: keepDataset, known: knownUrls, cacheFile: join(STATE, "riley-cache.json"), log })),
     run("jobspy", () => fetchJobspyJobs({ stateDir: STATE, terms: resume?.searchTerms, hoursOld: Math.min(DAYS, 7) * 24, log })),
     run("careerops", () => fetchCareerOpsJobs({ stateDir: STATE, titleKeywords, sinceDays: Math.max(DAYS, 14), log })),
   ]);
@@ -261,51 +306,35 @@ async function main() {
   }
   saveJSON("payCache.json", payCache);
 
-  // ── Prune and publish ──────────────────────────────────────────────────────
+  // ── Cache upkeep and upload ─────────────────────────────────────────────────
   const unseenCut = Date.now() - KEEP_UNSEEN_DAYS * 86400000;
-  const ageCut = Date.now() - MAX_AGE_DAYS * 86400000;
-  for (const [k, o] of Object.entries(store)) {
-    if (Date.parse(o.lastSeen) < unseenCut || Date.parse(o.firstSeen) < ageCut) delete store[k];
-  }
+  for (const [k, o] of Object.entries(store)) if (Date.parse(o.lastSeen) < unseenCut) delete store[k];
   saveJSON("store.json", store);
 
-  const openings = Object.values(store).sort(
-    (a, b) => b.firstSeen.slice(0, 10).localeCompare(a.firstSeen.slice(0, 10)) || (b.matchScore || 0) - (a.matchScore || 0)
-  );
+  // Everything this run found goes up; the API keeps the record and the history.
+  const found = Object.values(store)
+    .filter((o) => o.lastSeen === now)
+    .map((o) => ({ ...o, openingId: openingIdOf(o.url), seenSince: o.firstSeen }));
   const summary = {
-    updatedAt: now,
+    ranAt: now,
     seconds: Math.round((Date.now() - started) / 1000),
     sources,
     dropped,
-    openings: openings.length,
-    newThisRun: openings.filter((o) => o.firstSeen === now).length,
-    seenThisRun: seenNow.size,
+    found: found.length,
+    newToThisPc: found.filter((o) => o.firstSeen === now).length,
     linkedin: flag("linkedin"),
     resume: resume ? { headline: resume.headline, skills: resume.skills.length, searchTerms: resume.searchTerms } : null,
   };
-  const payload = { summary, openings: openings.slice(0, MAX_UPLOAD) };
+  const payload = { summary, openings: found };
   saveJSON("openings.json", payload);
   log(JSON.stringify(summary));
-
-  const top = openings.filter((o) => o.firstSeen === now).slice(0, 15);
-  for (const o of top) log(`  NEW  ${o.exp.padEnd(7)} ${o.pay.verdict.padEnd(7)} ${String(o.matchScore ?? "").padStart(3)}  ${o.company} — ${o.title} (${o.location})`);
+  for (const o of found.filter((x) => x.firstSeen === now).slice(0, 15)) {
+    log(`  NEW  ${o.exp.padEnd(7)} ${o.pay.verdict.padEnd(8)} ${String(o.matchScore ?? "").padStart(3)}  ${o.company} — ${o.title} (${o.location})`);
+  }
 
   if (flag("dry-run")) return log("Dry run: not uploading.");
-  if (!env.CRON_SECRET) return log("Not uploading: set CRON_SECRET in .radar/.env (same value as on Vercel).");
-  const url = env.RADAR_UPLOAD_URL || DEFAULT_UPLOAD_URL;
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      signal: AbortSignal.timeout(60000),
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.CRON_SECRET}` },
-      body: JSON.stringify(payload),
-    });
-    log(`Upload to ${url}: ${res.status} ${(await res.text()).slice(0, 200)}`);
-    if (!res.ok) process.exitCode = 1;
-  } catch (e) {
-    log(`Upload failed: ${e.message}`);
-    process.exitCode = 1;
-  }
+  if (!env.RADAR_INGEST_TOKEN) return log("Not uploading: set RADAR_INGEST_TOKEN in .radar/.env (the same value as on Vercel).");
+  await upload(payload, env);
 }
 
 main().catch((e) => {

@@ -2,6 +2,9 @@
   "functions": {
     "api/contest-reminders.mjs": {
       "maxDuration": 60
+    },
+    "api/radar.mjs": {
+      "maxDuration": 60
     }
   },
   "crons": [

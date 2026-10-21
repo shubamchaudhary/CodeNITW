@@ -11,6 +11,7 @@
 // fetch the description from the board's own public API (Greenhouse, Lever,
 // Workday) for the experience and skills checks.
 
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { gunzipSync } from "zlib";
 import { stripHtml } from "../jobRadar.mjs";
 
@@ -66,37 +67,52 @@ async function fetchDetail(job) {
 //   [{ source, ats, id, company, companySlug, title, location, url, postedAt, desc }]
 // `keep(title, location)` decides relevance; `known` holds URLs the radar
 // already has, whose descriptions needn't be fetched again.
-export async function fetchRileyJobs({ days = 7, keep, known = new Set(), log = console.log } = {}) {
+// The dataset changes once a day, so with several runs a day the ~70 MB
+// download is skipped when `cacheFile` already holds this version's matches.
+export async function fetchRileyJobs({ days = 7, keep, known = new Set(), cacheFile, log = console.log } = {}) {
   const manifest = await getJSON(`${BASE}/jobs_manifest.json?t=${Date.now()}`);
-  log(`Riley dataset: ${manifest.totalJobs} jobs in ${manifest.chunks.length} chunks, updated ${manifest.last_updated}`);
   const cutoff = Date.now() - days * 86400000;
   const v = encodeURIComponent(manifest.last_updated);
+  let cache = null;
+  try {
+    cache = cacheFile && existsSync(cacheFile) ? JSON.parse(readFileSync(cacheFile, "utf8")) : null;
+  } catch (_) {
+    cache = null;
+  }
 
-  const hits = [];
-  let ci = 0;
-  let failedChunks = 0;
-  await Promise.all(
-    Array.from({ length: 4 }, async () => {
-      while (ci < manifest.chunks.length) {
-        const name = manifest.chunks[ci++];
-        let data;
-        try {
-          data = await getGz(`${BASE}/${name}?v=${v}`);
-        } catch (e) {
-          failedChunks += 1;
-          continue;
+  let hits = [];
+  if (cache?.lastUpdated === manifest.last_updated && cache.days === days) {
+    hits = cache.hits.filter((j) => Date.parse(j.first_seen || "") >= cutoff);
+    log(`Riley dataset: unchanged since ${manifest.last_updated}, ${hits.length} fresh matches from the last download`);
+  } else {
+    log(`Riley dataset: ${manifest.totalJobs} jobs in ${manifest.chunks.length} chunks, updated ${manifest.last_updated}`);
+    let ci = 0;
+    let failedChunks = 0;
+    await Promise.all(
+      Array.from({ length: 4 }, async () => {
+        while (ci < manifest.chunks.length) {
+          const name = manifest.chunks[ci++];
+          let data;
+          try {
+            data = await getGz(`${BASE}/${name}?v=${v}`);
+          } catch (e) {
+            failedChunks += 1;
+            continue;
+          }
+          for (const j of Array.isArray(data) ? data : []) {
+            if (j.is_recruiter) continue;
+            const seen = Date.parse(j.first_seen || "");
+            if (!(seen >= cutoff)) continue;
+            if (!keep(j.title || "", j.location || "")) continue;
+            hits.push(j);
+          }
         }
-        for (const j of Array.isArray(data) ? data : []) {
-          if (j.is_recruiter) continue;
-          const seen = Date.parse(j.first_seen || "");
-          if (!(seen >= cutoff)) continue;
-          if (!keep(j.title || "", j.location || "")) continue;
-          hits.push(j);
-        }
-      }
-    })
-  );
-  log(`Riley dataset: ${hits.length} fresh matches${failedChunks ? `, ${failedChunks} chunks failed` : ""}`);
+      })
+    );
+    log(`Riley dataset: ${hits.length} fresh matches${failedChunks ? `, ${failedChunks} chunks failed` : ""}`);
+    // Only a complete download is worth reusing.
+    if (cacheFile && !failedChunks) writeFileSync(cacheFile, JSON.stringify({ lastUpdated: manifest.last_updated, days, hits }));
+  }
 
   const jobs = hits
     .sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""))

@@ -1,7 +1,9 @@
 # Job radar
 
-Finds fresh backend openings in India once a day and shows them in the Jobs
-page's **Openings** tab (owner account only).
+Finds fresh backend openings in India five times a day (06:00, 09:00, 13:00,
+16:00 and 22:00 IST), stores them in Firestore
+through the site's `/api/radar`, and serves them back to any device with a
+token, and to the Jobs page's **Openings** tab (owner account only).
 
 It runs on your own PC through Windows Task Scheduler. **Never move it to
 GitHub Actions**: the old Actions radar got the GitHub account blocked.
@@ -63,8 +65,48 @@ Every job, from any source, goes through the same checks:
 4. **Skills match**: a 0–100 score against your resume's skills (see above).
 
 The same opening on several sources becomes one row, linking to the
-employer's own page when one of the sources has it. An opening stays listed
-until no source has shown it for a week (30 days at most).
+employer's own page when one of the sources has it. It counts as still
+listed while a source showed it in the last week, and is kept 15 days after
+it opened.
+
+## Where the data goes
+
+Firestore is the record; the PC keeps only a cache.
+
+```
+PC, 5×/day POST /api/radar──▶ interviewplanprep (Vercel) ──▶ Firestore: radarOpenings
+             every opening      upsert by company:openingID,     one document per opening,
+             this run found     then delete what opened          key company:openingID:timestamp
+                                more than 15 days ago
+
+any device ──GET /api/radar──▶ newest first, paged   (the Jobs page's Openings tab reads it too)
+```
+
+- **Key** `company:openingID:timestamp`: the company as a slug, the job's own id
+  on its board (Greenhouse, Workday, Naukri…, read from its URL by `ids.mjs`),
+  and when it opened (epoch ms: the posting date, else the day this PC first saw
+  it). The timestamp is fixed when the opening is first stored; later runs find
+  it by company:openingID and update it, so nothing is stored twice.
+- **Kept 15 days** after it opened. Every POST also deletes older openings and
+  run logs (the same as `DELETE /api/radar`).
+- **A failed upload** waits in `.radar\pending\` and is sent before the next run's.
+
+### The API (`api/radar.mjs`)
+
+| Call | Token | Does |
+|---|---|---|
+| `POST /api/radar` | `RADAR_INGEST_TOKEN` | body `{ summary, openings }`: creates new openings, updates known ones, then deletes those older than 15 days. Answers `{ created, updated, tooOld, rejected, deleted }` |
+| `GET /api/radar` | `RADAR_READ_TOKEN` (or the owner's login) | `?limit=50` (1–200), `?cursor=` (the previous page's `nextCursor`), `?since=2026-10-15`. Answers `{ openings, nextCursor, total, summary }`, newest opening first |
+| `DELETE /api/radar` | `RADAR_INGEST_TOKEN` | deletes openings that opened more than 15 days ago; `?days=N` for another age |
+
+Each opening has `id`, `company`, `openingId`, `title`, `location`, `url`,
+`source`, `sources`, `postedAt`, `openedAt`, `firstSeen`, `lastSeen`, `active`
+(a source listed it in the last week), `exp`, `minYoe`, `pay` (`verdict`,
+`text`), `matchScore`, `matched`, `missing` and `snippet`.
+
+```bash
+curl -H "Authorization: Bearer $RADAR_READ_TOKEN" "https://interviewplanprep.vercel.app/api/radar?limit=50"
+```
 
 ## Setup (once)
 
@@ -73,13 +115,19 @@ powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1
 ```
 
 This creates `.radar\venv` with JobSpy, checks out career-ops in
-`.radar\career-ops`, creates `.radar\.env`, and registers the
-**CodeNITW Job Radar** task (daily at 20:00, or as soon as the PC is on
-if it was off then). Pass `-Time 09:30` for another time, `-SkipTask` to skip
-the task, `-RemoveTask` to delete it.
+`.radar\career-ops`, creates `.radar\.env` with two new tokens, and registers the
+**CodeNITW Job Radar** task: every day at 06:00, 09:00, 13:00, 16:00 and 22:00
+Indian time (pinned to IST, whatever the PC's time zone). If the PC is off at a
+run time, it runs once as soon as it's next on; a run never overlaps one still
+going. Pass `-Times 07:00,19:00` for other times, `-SkipTask` to skip the task,
+`-RemoveTask` to delete it.
 
-Then put the site's `CRON_SECRET` (the same value as on Vercel) into
-`.radar\.env`, so each run uploads to `/api/radar`.
+The Riley dataset changes once a day, so later runs that day reuse its last
+download (`.radar\riley-cache.json`) instead of fetching 70 MB again.
+
+Then add both tokens from `.radar\.env` to the Vercel project's environment
+variables under the same names (`RADAR_INGEST_TOKEN`, `RADAR_READ_TOKEN`) and
+redeploy. Share only the read token with other devices.
 
 ## Running it by hand
 
@@ -90,5 +138,5 @@ node scripts\radar\run.mjs --only=riley,careerops # some sources only (board, ri
 node scripts\radar\run.mjs --days=3               # dataset window (default 7)
 ```
 
-A run takes about 5–10 minutes. Logs: `.radar\logs\YYYY-MM-DD.log`. The latest
-list is also in `.radar\openings.json`.
+A run takes about 5–10 minutes. Logs: `.radar\logs\YYYY-MM-DD.log`. What the
+last run sent is also in `.radar\openings.json`.
