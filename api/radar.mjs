@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "crypto";
+import { gunzipSync, gzipSync } from "zlib";
 import { FieldPath, FieldValue } from "firebase-admin/firestore";
 import { adminConfigured, db, verifiedUser } from "./_lib/admin.mjs";
 import { OWNER_EMAIL } from "./_lib/visits.mjs";
@@ -25,6 +26,13 @@ import { OWNER_EMAIL } from "./_lib/visits.mjs";
 //         ?since=2026-10-01 (opened on or after; a date or epoch ms)
 //         → { openings, nextCursor, total (first page only), summary (latest run) }
 //         Newest opening first.
+//         ?all=1 → every opening in one response, from the snapshot below
+//         (one Firestore read instead of a query per page); falls back to the
+//         first page, with its nextCursor, if there's no snapshot.
+//
+// The data only changes when the radar uploads (five times a day), so each
+// POST and DELETE writes a snapshot of every opening, newest first, gzipped
+// into one document (appCache/radarOpenings).
 //
 // One document per opening in radarOpenings, keyed company:openingId:timestamp:
 //   company   — the company name as a slug ("amazon")
@@ -47,6 +55,24 @@ const MAX_OPENINGS = 2000;
 const DAY = 86400000;
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
+
+// ── Snapshot: every opening in one document ──────────────────────────────────
+const snapshotDoc = () => db().collection("appCache").doc("radarOpenings");
+const SNAPSHOT_MAX = 900 * 1024; // a Firestore document holds at most 1 MiB
+
+async function writeSnapshot(now) {
+  const snap = await db().collection(OPENINGS).orderBy("openedAt", "desc").orderBy(FieldPath.documentId(), "desc").get();
+  const openings = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  const data = gzipSync(Buffer.from(JSON.stringify(openings))).toString("base64");
+  // Far more openings than the radar keeps; readers then page instead.
+  await snapshotDoc().set(data.length > SNAPSHOT_MAX ? { tooBig: true, at: now } : { data, count: openings.length, at: now });
+}
+
+async function readSnapshot() {
+  const doc = await snapshotDoc().get();
+  if (!doc.exists || !doc.get("data")) return null;
+  return JSON.parse(gunzipSync(Buffer.from(doc.get("data"), "base64")).toString("utf8"));
+}
 
 function tokenMatches(request, secret) {
   const m = /^Bearer (.+)$/.exec(request.headers.get("authorization") || "");
@@ -125,7 +151,10 @@ export async function DELETE(request) {
   if (!tokenMatches(request, process.env.RADAR_INGEST_TOKEN)) return json({ error: "unauthorized" }, 401);
   const days = Number(new URL(request.url).searchParams.get("days")) || KEEP_DAYS;
   if (!(days >= 1)) return json({ error: "bad-days" }, 400);
-  return json({ deleted: await prune(days, Date.now()), olderThanDays: days });
+  const now = Date.now();
+  const deleted = await prune(days, now);
+  await writeSnapshot(now);
+  return json({ deleted, olderThanDays: days });
 }
 
 // ── POST: store a run ─────────────────────────────────────────────────────────
@@ -226,7 +255,11 @@ export async function POST(request) {
 
   const summary = body.summary && typeof body.summary === "object" ? body.summary : {};
   const run = { ...summary, receivedAt: now, received: body.openings.length, created, updated, tooOld, rejected, removed, deleted };
-  await Promise.all([db().collection(RUNS).doc(String(now)).set(run), db().collection("appCache").doc("radar").set({ latestRun: run })]);
+  await Promise.all([
+    db().collection(RUNS).doc(String(now)).set(run),
+    db().collection("appCache").doc("radar").set({ latestRun: run }),
+    writeSnapshot(now),
+  ]);
   return json({ created, updated, tooOld, rejected, removed, deleted });
 }
 
@@ -253,6 +286,20 @@ export async function GET(request) {
   if (!(await canRead(request))) return json({ error: "not-found" }, 404);
 
   const params = new URL(request.url).searchParams;
+  const activeCut = Date.now() - ACTIVE_DAYS * DAY;
+
+  if (params.get("all") === "1") {
+    const [all, latest] = await Promise.all([readSnapshot(), db().collection("appCache").doc("radar").get()]);
+    if (all) {
+      return json({
+        openings: all.map((o) => ({ ...o, active: o.lastSeen >= activeCut })),
+        nextCursor: null,
+        total: all.length,
+        summary: latest.exists ? latest.get("latestRun") : null,
+      });
+    }
+  }
+
   const limit = Math.min(200, Math.max(1, Number(params.get("limit")) || 50));
   const cursor = params.get("cursor");
   const sinceRaw = params.get("since");
@@ -274,7 +321,6 @@ export async function GET(request) {
     cursor ? null : (since != null ? db().collection(OPENINGS).where("openedAt", ">=", since) : db().collection(OPENINGS)).count().get(),
     db().collection("appCache").doc("radar").get(),
   ]);
-  const activeCut = Date.now() - ACTIVE_DAYS * DAY;
   const openings = snap.docs.map((d) => {
     const o = d.data();
     return { id: d.id, ...o, active: o.lastSeen >= activeCut };

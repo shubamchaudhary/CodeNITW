@@ -14,6 +14,9 @@ import { normalizeUrl } from "./shared";
 // topping out under 22 LPA. The pay label says how likely it is to reach the
 // 25 LPA minimum.
 //
+// The last load is kept on this device for CACHE_TTL (30 min), so the tab
+// opens instantly; past that it's still shown while a fresh copy loads.
+//
 // It's a triage board: BATCH cards at a time, newest first, each with its
 // title, pay, years and skills right above its three buttons (skip, open,
 // To Apply), so deciding takes no travel across the screen. A decided card
@@ -111,7 +114,8 @@ function ago(t) {
   return h < 24 ? "today" : `${Math.floor(h / 24)}d ago`;
 }
 
-// Every stored opening (newest first), following the API's page cursor.
+// Every stored opening (newest first): one request for the API's snapshot,
+// following its page cursor only if there's no snapshot yet.
 async function loadRadar() {
   const user = getAuth().currentUser;
   const token = user && (await user.getIdToken());
@@ -120,7 +124,7 @@ async function loadRadar() {
   let summary = null;
   let cursor = null;
   for (let page = 0; page < MAX_API_PAGES; page++) {
-    const q = `?limit=${API_PAGE}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
+    const q = cursor ? `?limit=${API_PAGE}&cursor=${encodeURIComponent(cursor)}` : `?all=1&limit=${API_PAGE}`;
     const res = await fetch(`/api/radar${q}`, { headers });
     const data = await res.json().catch(() => null);
     if (!res.ok || !data) throw new Error(data?.error || `HTTP ${res.status}`);
@@ -130,6 +134,34 @@ async function loadRadar() {
     if (!cursor) break;
   }
   return { summary, openings };
+}
+
+// The last load, kept on this device so the tab opens instantly. Older than
+// CACHE_TTL it's still shown at once, and refreshed in the background (the
+// radar only uploads five times a day, so it's rarely far behind).
+const CACHE_KEY = "radarOpeningsCache.v1";
+const CACHE_TTL = 30 * 60 * 1000;
+
+function readCache() {
+  try {
+    const c = JSON.parse(localStorage.getItem(CACHE_KEY));
+    return c?.data?.openings ? c : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function writeCache(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), data }));
+  } catch (_) {
+    // full or unavailable: the tab just loads from the API next time
+  }
+}
+
+function minutesAgo(t) {
+  const m = Math.floor((Date.now() - t) / 60000);
+  return m < 1 ? "just now" : m < 60 ? `${m} min ago` : `${Math.floor(m / 60)} h ago`;
 }
 
 function Chip({ on, onClick, children, title }) {
@@ -263,7 +295,10 @@ function Pager({ page, pages, from, to, total, onPage }) {
 }
 
 export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob }) {
-  const [radar, setRadar] = useState(null);
+  const [cached] = useState(readCache);
+  const [radar, setRadar] = useState(cached?.data || null);
+  const [loadedAt, setLoadedAt] = useState(cached?.at || null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [exp, setExp] = useState({ fits: true, unknown: true });
   const [pay, setPay] = useState(() => Object.fromEntries(Object.keys(PAY_LABEL).map((k) => [k, true])));
@@ -272,29 +307,44 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
   const [listedOnly, setListedOnly] = useState(true);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
+  const [sort, setSort] = useState("recent"); // "recent" | "score"
 
+  // Fetch when there's no copy on this device or it's older than CACHE_TTL;
+  // a copy that's there is shown meanwhile. `refresh` forces it.
+  const [reloads, setReloads] = useState(0);
+  const refresh = () => setReloads((n) => n + 1);
   useEffect(() => {
+    if (reloads === 0 && cached && Date.now() - cached.at < CACHE_TTL) return undefined;
     let alive = true;
+    setLoading(true);
     loadRadar()
-      .then((d) => alive && setRadar(d))
-      .catch((e) => alive && setError(e.message));
+      .then((d) => {
+        if (!alive) return;
+        setRadar(d);
+        setLoadedAt(Date.now());
+        setError(null);
+        writeCache(d);
+      })
+      .catch((e) => alive && setError(e.message))
+      .finally(() => alive && setLoading(false));
     return () => {
       alive = false;
     };
-  }, []);
+  }, [reloads, cached]);
 
   // A filter change starts again from the newest.
-  useEffect(() => setPage(0), [exp, pay, source, newOnly, listedOnly, query]);
+  useEffect(() => setPage(0), [exp, pay, source, newOnly, listedOnly, query, sort]);
 
   const openings = radar?.openings || [];
   const isNew = (o) => Date.now() - (o.firstSeen || 0) < NEW_HOURS * 3600000;
   const urlOf = (o) => normalizeUrl(o.url) || o.url;
 
-  // The ones still to decide, newest first (the API's order): not skipped,
-  // not already in the pipeline, and through the filters.
+  // The ones still to decide: not skipped, not already in the pipeline, and
+  // through the filters. Most recent first (the API's order), or by score
+  // (newest first among equal scores).
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return openings.filter(
+    const list = openings.filter(
       (o) =>
         relevant(o) &&
         !hidden[o.id] &&
@@ -306,13 +356,18 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
         (!newOnly || isNew(o)) &&
         (!q || `${o.company} ${o.title} ${o.location}`.toLowerCase().includes(q))
     );
+    // Array sort is stable, so equal scores keep the newest-first order.
+    if (sort === "score") list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, queuedUrls, listedOnly, exp, pay, source, newOnly, query]);
+  }, [openings, hidden, queuedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
 
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
 
-  if (error) {
+  // An error only blocks the tab when there's nothing to show; otherwise the
+  // header says the refresh failed and the copy stays up.
+  if (error && !radar) {
     return (
       <div className={`${GLASS} rounded-xl p-8 text-center text-sm text-gray-500 dark:text-gray-400`}>
         {error === "not-found"
@@ -392,6 +447,14 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
             📡 Openings to decide ({shown.length})
           </h2>
           <div className="text-xs text-gray-400 dark:text-gray-500">
+            <span className="mr-2">
+              {loading ? "Refreshing…" : error ? `Refresh failed (${error})` : loadedAt ? `Loaded ${minutesAgo(loadedAt)}` : ""}
+              {!loading && (
+                <button onClick={refresh} className="ml-1.5 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                  Refresh
+                </button>
+              )}
+            </span>
             {s.created > 0 && <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{s.created} new in last run</span>}
             {s.receivedAt ? `scanned ${new Date(s.receivedAt).toLocaleString()}` : "never scanned"}
             {s.sources &&
@@ -433,6 +496,14 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
               {PAY_LABEL[k]}
             </Chip>
           ))}
+        </div>
+        <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
+          <Chip on={sort === "recent"} onClick={() => setSort("recent")} title="Newest opening first">
+            Most recent
+          </Chip>
+          <Chip on={sort === "score"} onClick={() => setSort("score")} title="Highest skills match first">
+            Highest score
+          </Chip>
         </div>
         <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
           <Chip on={newOnly} onClick={() => setNewOnly((v) => !v)}>
