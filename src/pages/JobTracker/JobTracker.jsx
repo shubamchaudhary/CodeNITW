@@ -17,7 +17,10 @@ import CompaniesTab from "./CompaniesTab";
 // referral templates are split into chunks that are only ever requested for
 // the owner account, so they never reach anyone else.
 const ContactsTab = lazy(() => import("./ContactsTab"));
-const OWNER_TABS = new Set(["contacts"]);
+// Openings come from the owner's own job radar (scripts/radar), tuned to the
+// owner's profile, so they are the owner's alone too.
+const OpeningsTab = lazy(() => import("./OpeningsTab"));
+const OWNER_TABS = new Set(["contacts", "openings"]);
 
 // Bump this token to force a one-time clean slate for every user on next load.
 // Used when the company roster is regenerated (new IDs) so stale per-company
@@ -26,6 +29,7 @@ const PIPELINE_RESET_TOKEN = "v7-2026-07";
 
 // Only these fields are kept, so anything retired (the old Openings tab's
 // dismissed-openings map) drops out of storage with the next save.
+// radarHidden is the new Openings tab's "hide" list: opening key → time hidden.
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
   // One-time reset: wipe all pipeline tracking (links/statuses) so the tracker
@@ -38,6 +42,7 @@ function loadState() {
       custom: s.custom || [],
       contacts: s.contacts || [],
       contactEdits: s.contactEdits || {},
+      radarHidden: s.radarHidden || {},
       pipelineReset: PIPELINE_RESET_TOKEN,
     };
   }
@@ -46,12 +51,14 @@ function loadState() {
     custom: s.custom || [],
     contacts: s.contacts || [],
     contactEdits: s.contactEdits || {},
+    radarHidden: s.radarHidden || {},
     pipelineReset: s.pipelineReset,
   };
 }
 
 const TABS = [
   { id: "pipeline", label: "Pipeline", emoji: "📋" },
+  { id: "openings", label: "Openings", emoji: "📡" },
   { id: "contacts", label: "Contacts", emoji: "📇" },
   { id: "companies", label: "Companies", emoji: "🏢" },
 ];
@@ -99,6 +106,7 @@ export default function JobTracker() {
         custom: raw.custom || [],
         contacts: raw.contacts || [],
         contactEdits: raw.contactEdits || {},
+        radarHidden: raw.radarHidden || {},
         pipelineReset: PIPELINE_RESET_TOKEN,
       }));
     }
@@ -192,6 +200,24 @@ export default function JobTracker() {
       return next;
     });
   }, []);
+
+  // ── Radar openings ─────────────────────────────────────────────────────────
+  // The radar drops an opening within a month, so older hides are let go.
+  const hideOpening = useCallback(
+    (key) =>
+      persistState((prev) => {
+        const cut = Date.now() - 60 * 24 * 60 * 60 * 1000;
+        const kept = Object.fromEntries(Object.entries(prev.radarHidden || {}).filter(([, t]) => t > cut));
+        return { ...prev, radarHidden: { ...kept, [key]: Date.now() } };
+      }),
+    [persistState]
+  );
+  const unhideOpenings = useCallback(() => persistState((prev) => ({ ...prev, radarHidden: {} })), [persistState]);
+  // Every job link already in the pipeline, so an opening shows "✓ queued".
+  const queuedUrls = useMemo(
+    () => new Set(Object.values(state.companies).flatMap((e) => (e.links || []).map((l) => l.url))),
+    [state.companies]
+  );
 
   const addContact = useCallback(
     (data) => {
@@ -413,6 +439,18 @@ export default function JobTracker() {
             patchCompany={patchCompany}
             addJob={addJob}
           />
+        )}
+
+        {currentTab === "openings" && (
+          <Suspense fallback={null}>
+            <OpeningsTab
+              queuedUrls={queuedUrls}
+              hidden={state.radarHidden}
+              onHide={hideOpening}
+              onUnhideAll={unhideOpenings}
+              addJob={addJob}
+            />
+          </Suspense>
         )}
 
         {currentTab === "contacts" && (

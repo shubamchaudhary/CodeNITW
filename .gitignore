@@ -24,3 +24,5 @@ yarn-error.log*
 
 #api keys
 .env
+# job radar state (runs locally, see scripts/radar/README.md)
+/.radar/

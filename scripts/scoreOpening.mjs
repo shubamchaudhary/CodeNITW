@@ -1,12 +1,14 @@
-// Opening → skills match scoring (runs in the radar GitHub Action, Node ESM).
+// Opening → skills match scoring (used by the job radar, scripts/radar/run.mjs).
 //
 // Approach (borrowed from Job_search_agent's LLM scorer, reworked to run free &
 // deterministically): score each opening by how much of the tech it requires is
-// covered by *your* skills. Your skills come from radar/skills.json (have/want
-// lists you edit), and the opening's tech is detected from its FULL job
-// description. Every score is explainable — we return the exact matched skills.
+// covered by *your* skills. Your skills come from your resume (see
+// scripts/radar/resume.mjs) plus radar/skills.json's extras and want list, and
+// the opening's tech is detected from its FULL job description. Every score is
+// explainable — we return the exact matched skills, and the ones it asks for
+// that you haven't listed.
 //
-// The score is precomputed here and written into radar/openings.json, so the
+// The score is precomputed by the radar and uploaded with each opening, so the
 // web app only sorts/displays it (no scoring, no résumé handling client-side).
 
 // ── Skill dictionary ─────────────────────────────────────────────────────────
@@ -39,7 +41,9 @@ export const SKILL_DEFS = [
   ["Quarkus", B("quarkus"), 2],
   ["Ktor", B("ktor"), 2],
   ["Node.js", B("node(?:\\.?js)?"), 3],
-  ["Express", B("express(?:\\.?js)?"), 2],
+  // A bare "express" is usually English or American Express, so only Express.js
+  // or Express named next to Node counts.
+  ["Express", B("express\\.?js|node(?:\\.?js)?\\s*(?:/|,|&|and)\\s*express"), 2],
   ["NestJS", B("nest\\.?js"), 2],
   ["Django", B("django"), 3],
   ["Flask", B("flask"), 2],
@@ -186,6 +190,7 @@ export function buildScorer({ have = [], want = [] } = {}) {
     let openingW = 0;
     let matchedW = 0;
     const matched = [];
+    const missing = []; // skills the opening asks for that you haven't listed
     for (const d of extract(body)) {
       const w = titleHits.has(d.label) ? d.w * 2 : d.w;
       openingW += w;
@@ -196,13 +201,21 @@ export function buildScorer({ have = [], want = [] } = {}) {
       } else if (wantSet.has(low)) {
         matchedW += w * WANT_FACTOR;
         matched.push({ skill: d.label, type: "want", w });
+      } else {
+        missing.push({ skill: d.label, w });
       }
     }
 
     if (openingW > 0) {
       const s = Math.max(0, Math.min(100, Math.round((100 * matchedW) / Math.max(openingW, MIN_DENOM))));
       matched.sort((a, b) => b.w - a.w);
-      return { score: s, matched: matched.slice(0, 8).map(({ skill, type }) => ({ skill, type })), basis: "skills" };
+      missing.sort((a, b) => b.w - a.w);
+      return {
+        score: s,
+        matched: matched.slice(0, 8).map(({ skill, type }) => ({ skill, type })),
+        missing: missing.slice(0, 6).map((m) => m.skill),
+        basis: "skills",
+      };
     }
 
     // Title-only fallback (big-company postings with no description): approximate
