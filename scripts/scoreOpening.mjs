@@ -145,13 +145,33 @@ export const SKILL_DEFS = [
   ["Agile", B("agile|scrum|kanban"), 1],
   ["Backend", B("back\\s?end|server\\s?side"), 2],
   ["Full Stack", B("full[-\\s]?stack"), 1],
+  // Whole other stacks. Nobody's resume here lists them, so a role built on one
+  // shows them as missing and scores low, instead of scoring on the Java it
+  // also mentions.
+  ["Mainframe", B("mainframe|cobol|\\bjcl\\b|\\bcics\\b|z/os|\\bvsam\\b|\\bdb2\\b"), 5],
+  ["SAP ABAP", B("\\babap\\b|sap hana|sap s/?4"), 5],
+  ["Salesforce", B("salesforce|\\bapex\\b|lightning web components?"), 5],
 ];
+
+// Skills nearly every engineering JD mentions. They say nothing about whether
+// the stack is yours, so they count neither for nor against the score, and
+// aren't listed as matched or missing.
+const GENERIC = new Set(
+  [
+    "Agile", "Testing", "Git", "GitHub Actions", "CI/CD", "Data Structures", "Design Patterns", "REST", "REST APIs",
+    "Backend", "Full Stack", "System Design", "Caching", "Concurrency", "Multithreading and Concurrency", "Security",
+    "Observability", "Linux", "SQL", "JUnit", "Mockito", "Gradle",
+  ].map((s) => s.toLowerCase())
+);
+
+// Bump when scoring changes: the radar then re-scores every opening it has.
+export const SCORE_VERSION = 2;
 
 // Title words that mark a relevant engineering role — used for the low-signal
 // fallback score when an opening exposes only a title (no description).
 const ROLE_RX = /\b(software|engineer|developer|sde|swe|backend|back-end|full[- ]?stack|platform|distributed|architect)\b/i;
 
-const MIN_DENOM = 8; // breadth floor so a thin JD (few detected skills) can't auto-score 100
+const MIN_DENOM = 12; // breadth floor: a JD naming only two or three technologies can't score 100
 const WANT_FACTOR = 0.7; // a "want to learn" skill is a partial fit, not full
 
 function escapeRegex(s) {
@@ -192,6 +212,7 @@ export function buildScorer({ have = [], want = [] } = {}) {
     const matched = [];
     const missing = []; // skills the opening asks for that you haven't listed
     for (const d of extract(body)) {
+      if (GENERIC.has(d.label.toLowerCase())) continue;
       const w = titleHits.has(d.label) ? d.w * 2 : d.w;
       openingW += w;
       const low = d.label.toLowerCase();
