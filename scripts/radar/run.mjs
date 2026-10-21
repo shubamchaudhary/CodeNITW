@@ -11,7 +11,8 @@
 // Your resume PDF supplies the keywords (resume.mjs): JobSpy's search terms,
 // career-ops' title filter, and the skills each opening is scored against.
 // Every job then gets the same checks: backend title in India (or remote that
-// includes India), the experience it asks for (≤3 years kept, ≤2 "fits"), pay
+// includes India), the experience it asks for (its range must include 2
+// years: "0-2", "1-3", "2-5" stay, "3+" and "0-1" go), a skills match above 0, pay
 // against your 25 LPA minimum (labelled from the posted salary or levels.fyi;
 // only a posted salary topping out under 22L drops a role, see pay.mjs), and
 // a skills match score with the skills it asks for that your resume lacks.
@@ -37,7 +38,7 @@ import { buildScorer } from "../scoreOpening.mjs";
 import { fetchRileyJobs } from "./riley.mjs";
 import { fetchJobspyJobs } from "./jobspy.mjs";
 import { fetchCareerOpsJobs, writeCv } from "./careerops.mjs";
-import { minYears, experienceTag } from "./experience.mjs";
+import { experienceRange, experienceTag } from "./experience.mjs";
 import { makePayChecker } from "./pay.mjs";
 import { DEFAULT_RESUME_PDF, loadResumeText, resumeProfile } from "./resume.mjs";
 import { openingIdOf } from "./ids.mjs";
@@ -223,7 +224,7 @@ async function main() {
   saveJSON("atsCache.json", atsCache);
 
   // ── Relevance + de-duplication ──────────────────────────────────────────────
-  const dropped = { notRelevant: 0, tooSenior: 0, payBelow: 0, duplicate: 0 };
+  const dropped = { notRelevant: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0 };
   const byFp = new Map();
   for (const raw of batches.flat()) {
     if (!keep(raw.title, raw.location)) {
@@ -250,38 +251,53 @@ async function main() {
     });
   }
 
-  // ── Experience, pay, score ─────────────────────────────────────────────────
+  // ── Experience, skills match, pay ──────────────────────────────────────────
+  // An opening dropped here is also sent to the API to delete, in case an
+  // earlier run (or earlier rules) stored it.
   const seenNow = new Set();
   const candidates = [];
+  const remove = [];
+  const drop = (counter, key, j) => {
+    dropped[counter] += 1;
+    delete store[key];
+    remove.push({ company: j.company, openingId: openingIdOf(j.url) });
+  };
   for (const j of byFp.values()) {
     const key = hash(urlKey(j.url));
     const old = store[key];
     seenNow.add(key);
-    const years = j.desc || j.experienceRange || !old ? minYears(j) : old.minYoe;
-    const exp = experienceTag(years);
-    if (exp === "too-senior" || (exp === "unknown" && SENIOR_RX.test(j.title))) {
-      dropped.tooSenior += 1;
-      delete store[key];
-      continue;
-    }
-    candidates.push({ j, key, old, years, exp });
-  }
-  // levels.fyi lookups are capped per run, so the best-fitting roles get them first.
-  const EXP_ORDER = { fits: 0, stretch: 1, unknown: 2 };
-  candidates.sort((a, b) => EXP_ORDER[a.exp] - EXP_ORDER[b.exp]);
-
-  const checkPay = makePayChecker({ cache: payCache });
-  for (const { j, key, old, years, exp } of candidates) {
-    const pay = await checkPay(j);
-    if (pay.verdict === "below") {
-      dropped.payBelow += 1;
-      delete store[key];
+    const range =
+      j.desc || j.experienceRange || !old
+        ? experienceRange(j)
+        : old.minYoe !== undefined
+          ? { min: old.minYoe, max: old.maxYoe ?? null }
+          : undefined;
+    const exp = experienceTag(range);
+    // 2 years must be inside what it asks; a senior title that doesn't say is out too.
+    if (exp === "too-senior" || exp === "too-junior" || (exp === "unknown" && SENIOR_RX.test(j.title))) {
+      drop("experience", key, j);
       continue;
     }
     const scored =
       j.desc || !old || resumeChanged
         ? scorer.score({ title: j.title, desc: j.desc, location: j.location })
         : { score: old.matchScore, matched: old.matched, missing: old.missing };
+    if (!(scored.score > 0)) {
+      drop("noSkillMatch", key, j);
+      continue;
+    }
+    candidates.push({ j, key, old, range, exp, scored });
+  }
+  // levels.fyi lookups are capped per run, so the roles that fit get them first.
+  candidates.sort((a, b) => (a.exp === "fits" ? 0 : 1) - (b.exp === "fits" ? 0 : 1));
+
+  const checkPay = makePayChecker({ cache: payCache });
+  for (const { j, key, old, range, exp, scored } of candidates) {
+    const pay = await checkPay(j);
+    if (pay.verdict === "below") {
+      drop("payBelow", key, j);
+      continue;
+    }
 
     store[key] = {
       key,
@@ -295,7 +311,7 @@ async function main() {
       ...(j.postedAt ? { postedAt: String(j.postedAt).slice(0, 10) } : {}),
       firstSeen: old?.firstSeen || now,
       lastSeen: now,
-      ...(years !== undefined ? { minYoe: years } : {}),
+      ...(range ? { minYoe: range.min, ...(range.max !== null ? { maxYoe: range.max } : {}) } : {}),
       exp,
       pay,
       matchScore: scored.score,
@@ -325,7 +341,7 @@ async function main() {
     linkedin: flag("linkedin"),
     resume: resume ? { headline: resume.headline, skills: resume.skills.length, searchTerms: resume.searchTerms } : null,
   };
-  const payload = { summary, openings: found };
+  const payload = { summary, openings: found, remove };
   saveJSON("openings.json", payload);
   log(JSON.stringify(summary));
   for (const o of found.filter((x) => x.firstSeen === now).slice(0, 15)) {
