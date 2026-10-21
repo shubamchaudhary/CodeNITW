@@ -6,13 +6,16 @@ import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF } from "../../
 import { normalizeUrl } from "./shared";
 
 // Owner-only feed from the job radar (scripts/radar/run.mjs). The radar runs on
-// the owner's PC once a day and uploads to /api/radar; this tab only reads it.
+// the owner's PC once a day and POSTs to /api/radar, which keeps the openings
+// of the last 15 days in Firestore; this tab reads them back, page by page.
 // Each opening has already passed the radar's checks: backend title in India,
 // at most 3 years asked, and no posted salary topping out under 22 LPA. The pay
 // label says how likely it is to reach the 25 LPA minimum.
 
 const PAGE = 60;
-const NEW_HOURS = 30; // "new" = first seen by a run in roughly the last day
+const NEW_HOURS = 30; // "new" = first stored by a run in roughly the last day
+const API_PAGE = 200; // openings per /api/radar request
+const MAX_API_PAGES = 10;
 
 const EXP_LABEL = { fits: "≤2 yrs", stretch: "3 yrs", unknown: "yrs ?" };
 const EXP_CLS = {
@@ -75,20 +78,33 @@ function scoreCls(s) {
   return "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400";
 }
 
-function ago(iso) {
-  const t = Date.parse(iso || "");
-  if (!t) return "";
-  const h = Math.floor((Date.now() - t) / 3600000);
+// "today" / "3d ago" from epoch ms or a date string.
+function ago(t) {
+  const ms = typeof t === "number" ? t : Date.parse(t || "");
+  if (!ms) return "";
+  const h = Math.floor((Date.now() - ms) / 3600000);
   return h < 24 ? "today" : `${Math.floor(h / 24)}d ago`;
 }
 
+// Every stored opening (newest first), following the API's page cursor.
 async function loadRadar() {
   const user = getAuth().currentUser;
   const token = user && (await user.getIdToken());
-  const res = await fetch("/api/radar", { headers: token ? { Authorization: `Bearer ${token}` } : {} });
-  const data = await res.json().catch(() => null);
-  if (!res.ok || !data) throw new Error(data?.error || `HTTP ${res.status}`);
-  return data;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const openings = [];
+  let summary = null;
+  let cursor = null;
+  for (let page = 0; page < MAX_API_PAGES; page++) {
+    const q = `?limit=${API_PAGE}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
+    const res = await fetch(`/api/radar${q}`, { headers });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data) throw new Error(data?.error || `HTTP ${res.status}`);
+    if (page === 0) summary = data.summary;
+    openings.push(...data.openings);
+    cursor = data.nextCursor;
+    if (!cursor) break;
+  }
+  return { summary, openings };
 }
 
 function Chip({ on, onClick, children, title }) {
@@ -112,6 +128,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
   const [pay, setPay] = useState(() => Object.fromEntries(Object.keys(PAY_LABEL).map((k) => [k, true])));
   const [source, setSource] = useState("all");
   const [newOnly, setNewOnly] = useState(false);
+  const [listedOnly, setListedOnly] = useState(true);
   const [sort, setSort] = useState("new");
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(PAGE);
@@ -127,13 +144,15 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
   }, []);
 
   const openings = radar?.openings || [];
-  const isNew = (o) => Date.now() - Date.parse(o.firstSeen || 0) < NEW_HOURS * 3600000;
+  const isNew = (o) => Date.now() - (o.firstSeen || 0) < NEW_HOURS * 3600000;
 
+  // The API already returns newest-opened first.
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = openings.filter(
       (o) =>
-        !hidden[o.key] &&
+        !hidden[o.id] &&
+        (!listedOnly || o.active) &&
         exp[o.exp || "unknown"] !== false &&
         pay[o.pay?.verdict || "unknown"] !== false &&
         (source === "all" || o.source === source || o.sources?.includes(source)) &&
@@ -143,10 +162,10 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
     if (sort === "match") list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, exp, pay, source, newOnly, sort, query]);
+  }, [openings, hidden, listedOnly, exp, pay, source, newOnly, sort, query]);
 
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
-  const hiddenCount = openings.filter((o) => hidden[o.key]).length;
+  const hiddenCount = openings.filter((o) => hidden[o.id]).length;
 
   if (error) {
     return (
@@ -177,8 +196,8 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
             📡 Openings ({shown.length})
           </h2>
           <div className="text-xs text-gray-400 dark:text-gray-500">
-            {s.newThisRun > 0 && <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{s.newThisRun} new in last run</span>}
-            {s.updatedAt ? `scanned ${new Date(s.updatedAt).toLocaleString()}` : "never scanned"}
+            {s.created > 0 && <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{s.created} new in last run</span>}
+            {s.receivedAt ? `scanned ${new Date(s.receivedAt).toLocaleString()}` : "never scanned"}
             {s.sources &&
               " · " +
                 Object.entries(s.sources)
@@ -228,6 +247,13 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
           <Chip on={newOnly} onClick={() => setNewOnly((v) => !v)}>
             New only
           </Chip>
+          <Chip
+            on={listedOnly}
+            onClick={() => setListedOnly((v) => !v)}
+            title="Only openings a source still listed in the last week; off shows all 15 days kept"
+          >
+            Still listed
+          </Chip>
         </div>
         <select
           value={source}
@@ -252,7 +278,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
         {shown.slice(0, limit).map((o) => {
           const queued = queuedUrls.has(normalizeUrl(o.url) || o.url);
           return (
-            <li key={o.key} className={`${GLASS_PANEL} rounded-xl px-3 py-2 flex items-center gap-2 text-sm`}>
+            <li key={o.id} className={`${GLASS_PANEL} rounded-xl px-3 py-2 flex items-center gap-2 text-sm`}>
               {isNew(o) && (
                 <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200 shrink-0">
                   NEW
@@ -277,7 +303,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
                   <span className="font-semibold text-gray-700 dark:text-gray-200">{o.company}</span>
                   {o.location && ` · ${o.location}`}
                   {` · ${(o.sources || [o.source]).map((k) => SOURCE_LABEL[k] || k).join(" + ")}`}
-                  {` · ${o.postedAt ? `posted ${ago(o.postedAt)}` : `seen ${ago(o.firstSeen)}`}`}
+                  {` · ${o.postedAt ? "posted" : "first seen"} ${ago(o.openedAt)}`}
                 </div>
               </div>
               <span
@@ -303,7 +329,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhideAll, a
                   → To Apply
                 </button>
               )}
-              <button onClick={() => onHide(o.key)} className="shrink-0 text-gray-400 hover:text-red-500" title="Not for me — hide">
+              <button onClick={() => onHide(o.id)} className="shrink-0 text-gray-400 hover:text-red-500" title="Not for me — hide">
                 <HiX />
               </button>
             </li>

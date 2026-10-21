@@ -63,17 +63,25 @@ if ((git -C $CareerOps rev-parse --verify --quiet HEAD) -ne $CareerOpsCommit) {
 }
 Write-Host "career-ops ready in $CareerOps at $($CareerOpsCommit.Substring(0, 7))"
 
-# 3. Upload secret and resume path
+# 3. API tokens and resume path. Two fresh random tokens; copy both into the
+#    Vercel project's environment variables under the same names.
+function New-Token {
+  $bytes = New-Object byte[] 32
+  [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+  [Convert]::ToBase64String($bytes).TrimEnd("=").Replace("+", "-").Replace("/", "_")
+}
 $EnvFile = Join-Path $State ".env"
 if (-not (Test-Path $EnvFile)) {
   @(
-    "# Same value as the CRON_SECRET environment variable on Vercel.",
-    "CRON_SECRET=",
+    "# Lets this PC upload (POST/DELETE /api/radar). Set the same value as RADAR_INGEST_TOKEN on Vercel.",
+    "RADAR_INGEST_TOKEN=$(New-Token)",
+    "# Lets any device read (GET /api/radar). Set the same value as RADAR_READ_TOKEN on Vercel; share only this one.",
+    "RADAR_READ_TOKEN=$(New-Token)",
     "# The resume the radar takes its keywords from (this is the default).",
     "# RESUME_PDF=$env:USERPROFILE\Downloads\SHUBAM_CHAUDHARY_RESUME_SDE.pdf",
-    "# RADAR_UPLOAD_URL=https://interviewplanprep.vercel.app/api/radar"
+    "# RADAR_API_URL=https://interviewplanprep.vercel.app/api/radar"
   ) | Set-Content -Path $EnvFile -Encoding UTF8
-  Write-Host "Created $EnvFile - put your CRON_SECRET in it so runs upload to the site."
+  Write-Host "Created $EnvFile with two new tokens - add both to the Vercel project's environment variables."
 }
 
 # 4. Daily scheduled task
