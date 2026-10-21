@@ -1,0 +1,25 @@
+# Companies the radar scans through career-ops (github.com/career-ops-hq/career-ops).
+#
+# Only employers that no other radar source reaches belong here: career-ops
+# knows hiring systems our board list and the Riley dataset don't read (IBM's
+# own search, Oracle Recruiting Cloud, SuccessFactors, iCIMS, Avature, Eightfold,
+# Phenom, …). Big Workday, Greenhouse, Lever and Ashby employers are already in
+# the Riley dataset. Entries use career-ops' portals.yml format (see
+# .radar/career-ops/templates/portals.example.yml); each was checked to return
+# jobs on 2026-10-21. Walmart and Dell refuse these requests and SAP answers 403,
+# so they're left out.
+
+- name: IBM
+  provider: ibm
+  careers_url: https://www.ibm.com/careers/search
+  ibm:
+    country: India
+  enabled: true
+
+- name: Oracle
+  careers_url: https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_45001/jobs
+  enabled: true
+
+- name: Qualcomm
+  careers_url: https://qualcomm.wd12.myworkdayjobs.com/External
+  enabled: true

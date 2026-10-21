@@ -1,27 +1,21 @@
-// Daily job-openings radar. (Manual refresh: push a change to this file, or
-// use the Actions "Run workflow" button — workflow_dispatch is enabled.)
+// Company-board source for the job radar (scripts/radar/run.mjs).
 //
-// Reads the ATS mapping discovered by atsProbe (scripts/ats-probe-report.json),
-// fetches every readable job board, filters for SDE-2/backend/Java roles in
-// India/Remote, and diffs against previously seen job keys. Results are
-// committed by the workflow:
-//   radar/openings.json  — every currently-live relevant opening (+firstSeen)
-//   radar/seen.json      — job keys already surfaced, so "new" stays stable
-//   radar/atsCache.json  — resolved Workday board URLs (avoids re-sniffing)
+// Reads the ATS mapping discovered by atsProbe (scripts/ats-probe-report.json)
+// and the deep-probe board map, fetches every readable job board and returns
+// the relevant SDE/backend/Java roles in India or remote. Filtering by
+// experience, pay and the skills score happens in the radar, so every source
+// is judged the same way.
 //
-// The tracker UI fetches radar/openings.json from raw.githubusercontent.com at
-// runtime, so a radar run needs no app redeploy and no server.
-//
-// Run: node scripts/jobRadar.mjs   (needs unrestricted egress — runs in CI)
+// This used to run as a GitHub Actions workflow. It must NOT go back there:
+// that workflow got the GitHub account blocked. The radar runs on your own
+// PC instead (see scripts/radar/README.md).
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createHash } from "crypto";
-import { buildScorer } from "./scoreOpening.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const RADAR_DIR = join(__dirname, "../radar");
 
 // ── Relevance filter ─────────────────────────────────────────────────────────
 // Tuned for a ~2 YoE backend/GenAI SDE-2 profile (Java/Spring, Kafka,
@@ -35,9 +29,9 @@ const TITLE_RX =
   /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems|kafka|kubernetes|k8s|gen\s?ai|genai|llm|agentic|ai engineer)\b/i;
 const TITLE_EXCLUDE_RX =
   /\b(intern|staff|principal|director|manager|vp|head of|lead|architect|phd|early career|campus|university|new grad|graduate|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded|firmware|computer vision)\b/i;
-const INDIA_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai)\b/i;
+export const INDIA_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai|kolkata|ahmedabad|kochi|trivandrum|thiruvananthapuram|jaipur|indore|coimbatore|chandigarh|mohali)\b/i;
 
-function isRelevant(title, location) {
+export function isRelevant(title, location) {
   if (!TITLE_RX.test(title || "")) return false;
   if (TITLE_EXCLUDE_RX.test(title || "")) return false;
   if (location && !INDIA_RX.test(location) && !/remote/i.test(location)) return false;
@@ -78,7 +72,7 @@ async function get(url, opts = {}) {
   }
 }
 
-function jobKey(ats, id, url) {
+export function jobKey(ats, id, url) {
   const raw = id ? `${ats}:${id}` : `${ats}:${(url || "").replace(/[?#].*$/, "")}`;
   return createHash("sha1").update(raw).digest("hex").slice(0, 16);
 }
@@ -86,7 +80,7 @@ function jobKey(ats, id, url) {
 // Turn an ATS job description (HTML or plain text) into clean plain text for the
 // skills scorer. Strips tags/entities; capped generously so a long JD still
 // yields plenty of skill keywords without keeping megabytes in memory.
-function stripHtml(s, max = 8000) {
+export function stripHtml(s, max = 8000) {
   if (!s) return "";
   const text = String(s)
     .replace(/<[^>]*>/g, " ")
@@ -102,23 +96,12 @@ function stripHtml(s, max = 8000) {
   return text.length > max ? text.slice(0, max) : text;
 }
 
-// Short snippet stored on each opening for a UI "why" tooltip (the full JD is
-// only used transiently for scoring, never committed).
-function clip(s, max = 220) {
-  const t = s || "";
-  return t.length > max ? t.slice(0, max).trimEnd() + "…" : t;
-}
-
-// Openings requiring more than this many years of experience are dropped
-// (profile is ~2 YoE; 0-2 preferred, 3 max).
-const MAX_YOE = 3;
-
 // Best-effort minimum-years-of-experience parse from a full JD. Scans for
 // "N years", "N+ years", "N-M years", "minimum N years" etc., but only counts a
 // number when "experience" sits nearby, so unrelated counts ("team of 10",
 // "5 services") don't leak in. Returns the smallest required floor, or undefined
 // when the JD says nothing about experience.
-function parseMinYoe(text) {
+export function parseMinYoe(text) {
   if (!text) return undefined;
   const t = text.toLowerCase();
   let min;
@@ -885,21 +868,15 @@ async function fetchWorkday(board) {
   return out;
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-async function main() {
+// ── Fetch ─────────────────────────────────────────────────────────────────────
+// Every relevant opening on the tracked company boards, as raw jobs:
+//   { source, ats, id, companyId, company, title, location, url, desc }
+// `desc` is the full JD as plain text (used for the experience and skills
+// checks, never stored). `atsCache` is the caller's Workday-resolution cache
+// and is filled in place. The LinkedIn keyword sweep is off unless asked for.
+export async function fetchBoardJobs({ atsCache = {}, linkedin = false, log = console.log } = {}) {
   const report = loadJSON(join(__dirname, "ats-probe-report.json"), null);
   if (!report) throw new Error("scripts/ats-probe-report.json missing — run atsProbe first");
-
-  mkdirSync(RADAR_DIR, { recursive: true });
-  const seen = loadJSON(join(RADAR_DIR, "seen.json"), {});
-  const atsCache = loadJSON(join(RADAR_DIR, "atsCache.json"), {});
-  const now = new Date().toISOString();
-
-  // Build the résumé-match scorer from your editable skills list. If the file is
-  // missing/empty, openings are still emitted — just without a matchScore.
-  const skills = loadJSON(join(RADAR_DIR, "skills.json"), { have: [], want: [] });
-  const scorer = buildScorer({ have: skills.have || [], want: skills.want || [] });
-  console.log(`Scoring against ${skills.have?.length || 0} have + ${skills.want?.length || 0} want skills`);
 
   // Verified board configs from the deep probe (extracted from each company's
   // own careers pages, so no slug collisions).
@@ -907,7 +884,7 @@ async function main() {
 
   // Route every company to its best fetcher: manual override > deep-probe
   // board map > probe API mapping > sniffed-Workday resolution. Everything
-  // else stays uncovered (and the LinkedIn sweep picks up the high-match ones).
+  // else stays uncovered.
   const jobsSources = [];
   for (const r of report.results) {
     const ov = OVERRIDES[r.id];
@@ -933,51 +910,39 @@ async function main() {
       });
     }
   }
-  console.log(`Radar: ${jobsSources.length} boards to fetch`);
+  log(`Boards: ${jobsSources.length} to fetch`);
 
-  const openings = [];
-  const errors = [];
+  const jobs = [];
+  const failed = [];
   const covered = [];
   let done = 0;
 
   async function processCompany(c, fetchJobs) {
-    const jobs = await fetchJobs();
+    const list = await fetchJobs().catch(() => null);
     done += 1;
-    if (done % 25 === 0) console.log(`…${done} boards`);
-    if (!jobs) {
-      errors.push(c.name);
+    if (done % 25 === 0) log(`  …${done} boards`);
+    if (!list) {
+      failed.push(c.name);
       return;
     }
     covered.push(c.id);
-    for (const j of jobs) {
+    for (const j of list) {
       if (!isRelevant(j.title, j.location)) continue;
-      const key = jobKey(c.ats, j.id, j.url);
-      if (!seen[key]) seen[key] = now;
-      // Score on the FULL job description, then store only the score + matched
-      // skills + a short snippet (the full JD is never committed).
-      const fullDesc = stripHtml(j.desc);
-      const minYoe = parseMinYoe(fullDesc);
-      if (minYoe !== undefined && minYoe > MAX_YOE) continue; // too senior for this profile
-      const { score, matched } = scorer.score({ title: j.title, desc: fullDesc, location: j.location });
-      openings.push({
-        key,
+      jobs.push({
+        source: "board",
+        ats: c.ats,
+        id: j.id,
         companyId: c.id,
         company: c.name,
-        ats: c.ats,
         title: j.title,
         location: j.location,
         url: j.url,
-        desc: clip(fullDesc),
-        matchScore: score,
-        matched,
-        ...(minYoe !== undefined ? { minYoe } : {}),
-        firstSeen: seen[key],
+        desc: stripHtml(j.desc),
       });
     }
   }
 
   const queue = jobsSources.map(({ c, fetch }) => () => processCompany(c, fetch));
-
   const CONCURRENCY = 10;
   let qi = 0;
   await Promise.all(
@@ -986,63 +951,29 @@ async function main() {
     })
   );
 
-  // LinkedIn keyword scan runs after the per-board fetches: it's a separate,
-  // best-effort source that can surface openings at companies no board
-  // adapter reaches at all.
-  let linkedinCount = 0;
-  try {
-    const existingUrls = new Set(openings.map((o) => o.url));
-    const linkedinJobs = await linkedinScan(report.results, new Set(covered));
-    for (const j of linkedinJobs) {
-      if (existingUrls.has(j.url)) continue; // already surfaced via that company's own board
-      const key = jobKey("linkedin", j.id, j.url);
-      if (!seen[key]) seen[key] = now;
-      // Score on the full JD fetched by linkedinScan when available; otherwise
-      // the scorer's title fallback gives a low-but-real number so the opening
-      // still ranks and shows a fit badge.
-      const fullDesc = stripHtml(j.desc);
-      const minYoe = parseMinYoe(fullDesc);
-      if (minYoe !== undefined && minYoe > MAX_YOE) continue; // too senior for this profile
-      const { score, matched } = scorer.score({ title: j.title, desc: fullDesc, location: j.location });
-      openings.push({
-        key,
-        companyId: j.companyId,
-        company: j.companyName,
-        ats: "linkedin",
-        title: j.title,
-        location: j.location,
-        url: j.url,
-        desc: clip(fullDesc),
-        matchScore: score,
-        matched,
-        ...(minYoe !== undefined ? { minYoe } : {}),
-        firstSeen: seen[key],
-      });
-      linkedinCount += 1;
+  // LinkedIn keyword sweep: opt-in only. It scrapes LinkedIn's guest pages,
+  // which LinkedIn rate-limits by IP.
+  if (linkedin) {
+    try {
+      const existingUrls = new Set(jobs.map((o) => o.url));
+      for (const j of await linkedinScan(report.results, new Set(covered))) {
+        if (existingUrls.has(j.url)) continue; // already surfaced via that company's own board
+        jobs.push({
+          source: "linkedin",
+          ats: "linkedin",
+          id: j.id,
+          companyId: j.companyId,
+          company: j.companyName,
+          title: j.title,
+          location: j.location,
+          url: j.url,
+          desc: stripHtml(j.desc),
+        });
+      }
+    } catch (e) {
+      log("LinkedIn scan failed:", e.message);
     }
-  } catch (e) {
-    console.log("LinkedIn scan failed:", e.message);
   }
 
-  openings.sort((a, b) => b.firstSeen.localeCompare(a.firstSeen) || a.company.localeCompare(b.company));
-
-  covered.sort();
-  const newToday = openings.filter((o) => o.firstSeen === now).length;
-  const summary = {
-    updatedAt: now,
-    boards: jobsSources.length,
-    boardsFailed: errors.length,
-    liveRelevantOpenings: openings.length,
-    newThisRun: newToday,
-    linkedinOpenings: linkedinCount,
-    coveredCompanyIds: covered,
-  };
-  console.log(JSON.stringify(summary, null, 2));
-  if (errors.length) console.log("Failed boards:", errors.slice(0, 20).join(", "));
-
-  writeFileSync(join(RADAR_DIR, "openings.json"), JSON.stringify({ summary, openings }, null, 1));
-  writeFileSync(join(RADAR_DIR, "seen.json"), JSON.stringify(seen, null, 1));
-  writeFileSync(join(RADAR_DIR, "atsCache.json"), JSON.stringify(atsCache, null, 1));
+  return { jobs, boards: jobsSources.length, failed };
 }
-
-main();

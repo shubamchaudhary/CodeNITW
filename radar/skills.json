@@ -1,5 +1,5 @@
 {
-  "_readme": "Edit these two lists to control how openings are ranked. 'have' = skills you already have (full match weight). 'want' = skills you want to grow into (counted as a partial match, shown as a blue 'grow' chip). Names are matched case-insensitively against each opening's FULL job description. Known skills (Java, Kafka, Kubernetes, GenAI, ...) use smart aliases automatically (e.g. 'Kubernetes' also matches 'k8s'); any other name you add is matched literally. After editing, re-run the 'Job openings radar' action (or wait for the daily run) to re-score.",
+  "_readme": "The job radar (scripts/radar) reads your resume PDF for your skills, so you rarely need to edit this. 'have' = extra skills added on top of the resume's (ones it implies without naming, e.g. Backend, System Design). 'want' = skills you want to grow into (counted as a partial match, shown as a blue 'grow' chip). Names are matched case-insensitively against each opening's FULL job description. Known skills (Java, Kafka, Kubernetes, GenAI, ...) use smart aliases automatically (e.g. 'Kubernetes' also matches 'k8s'); any other name you add is matched literally. The next daily radar run re-scores with your changes.",
   "have": [
     "Java",
     "Python",
