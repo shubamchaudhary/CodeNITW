@@ -80,14 +80,19 @@ export function jobKey(ats, id, url) {
 // Turn an ATS job description (HTML or plain text) into clean plain text for the
 // skills scorer. Strips tags/entities; capped generously so a long JD still
 // yields plenty of skill keywords without keeping megabytes in memory.
+// Some boards (Greenhouse) send the HTML itself escaped ("&lt;p&gt;"), so
+// escaped tags are unescaped first and then stripped with the real ones.
 export function stripHtml(s, max = 8000) {
   if (!s) return "";
   const text = String(s)
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
+    .replace(/&amp;(lt|gt);/gi, "&$1;")
     .replace(/&lt;/gi, "<")
     .replace(/&gt;/gi, ">")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&amp;/gi, "&")
     .replace(/&#39;|&rsquo;|&lsquo;/gi, "'")
     .replace(/&quot;|&ldquo;|&rdquo;/gi, '"')
     .replace(/&[a-z]+;/gi, " ")

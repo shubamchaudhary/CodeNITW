@@ -34,7 +34,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { createHash } from "crypto";
 import { fetchBoardJobs, isRelevant, INDIA_RX } from "../jobRadar.mjs";
-import { buildScorer } from "../scoreOpening.mjs";
+import { buildScorer, SCORE_VERSION } from "../scoreOpening.mjs";
 import { fetchRileyJobs } from "./riley.mjs";
 import { fetchJobspyJobs } from "./jobspy.mjs";
 import { fetchCareerOpsJobs, writeCv } from "./careerops.mjs";
@@ -183,10 +183,13 @@ async function main() {
   // Skills to score against: the resume's, plus radar/skills.json's extras
   // (skills the resume implies without naming) and its want list.
   const listed = JSON.parse(readFileSync(join(ROOT, "radar/skills.json"), "utf8"));
-  const { text: resumeText, changed: resumeChanged } = loadResumeText({ stateDir: STATE, pdfPath: env.RESUME_PDF || DEFAULT_RESUME_PDF, log });
+  const { text: resumeText, changed: resumeTextChanged } = loadResumeText({ stateDir: STATE, pdfPath: env.RESUME_PDF || DEFAULT_RESUME_PDF, log });
   const resume = resumeText ? resumeProfile(resumeText) : null;
-  // A changed resume means every opening is re-scored, so the dataset source
-  // re-fetches descriptions it would otherwise skip.
+  // A changed resume or a new way of scoring means every opening is re-scored,
+  // so the dataset source re-fetches descriptions it would otherwise skip.
+  const scoreVersionChanged = loadJSON("score-version.json", {}).version !== SCORE_VERSION;
+  const resumeChanged = resumeTextChanged || scoreVersionChanged;
+  if (scoreVersionChanged) log(`Scoring changed (v${SCORE_VERSION}): re-scoring every opening`);
   const knownUrls = resumeChanged ? new Set() : new Set(Object.values(store).map((o) => o.url));
   const have = [...new Set([...(resume?.skills || []), ...(listed.have || [])])];
   const haveLow = new Set(have.map((s) => s.toLowerCase()));
@@ -326,6 +329,7 @@ async function main() {
   const unseenCut = Date.now() - KEEP_UNSEEN_DAYS * 86400000;
   for (const [k, o] of Object.entries(store)) if (Date.parse(o.lastSeen) < unseenCut) delete store[k];
   saveJSON("store.json", store);
+  saveJSON("score-version.json", { version: SCORE_VERSION });
 
   // Everything this run found goes up; the API keeps the record and the history.
   const found = Object.values(store)

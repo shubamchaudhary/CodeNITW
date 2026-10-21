@@ -188,6 +188,22 @@ export default function JobTracker() {
     return true;
   }, []);
 
+  // Undo for addJob from the Openings tab: take that link back out. A company
+  // left with no links goes back from "To Apply" to untracked, as in Pipeline.
+  const removeJob = useCallback(({ companyName, url }) => {
+    setState((prev) => {
+      const name = companyName.trim().toLowerCase();
+      const company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name);
+      const entry = company && prev.companies[company.id];
+      if (!entry) return prev;
+      const links = (entry.links || []).filter((l) => l.url !== url);
+      const merged = { ...entry, links, ...(!links.length && entry.status === "toApply" ? { status: "none" } : {}) };
+      const next = { ...prev, companies: { ...prev.companies, [company.id]: merged } };
+      saveJSON(KEYS.JOB_TRACKER, next);
+      return next;
+    });
+  }, []);
+
   // ── HR contacts ────────────────────────────────────────────────────────────
   // Contacts come from three places: the seeded vCard import, hrContacts saved
   // on a company card, and ones added in the Contacts tab. Only the last kind
@@ -213,6 +229,14 @@ export default function JobTracker() {
     [persistState]
   );
   const unhideOpenings = useCallback(() => persistState((prev) => ({ ...prev, radarHidden: {} })), [persistState]);
+  const unhideOpening = useCallback(
+    (key) =>
+      persistState((prev) => {
+        const { [key]: _, ...rest } = prev.radarHidden || {};
+        return { ...prev, radarHidden: rest };
+      }),
+    [persistState]
+  );
   // Every job link already in the pipeline, so an opening shows "✓ queued".
   const queuedUrls = useMemo(
     () => new Set(Object.values(state.companies).flatMap((e) => (e.links || []).map((l) => l.url))),
@@ -447,8 +471,10 @@ export default function JobTracker() {
               queuedUrls={queuedUrls}
               hidden={state.radarHidden}
               onHide={hideOpening}
+              onUnhide={unhideOpening}
               onUnhideAll={unhideOpenings}
               addJob={addJob}
+              removeJob={removeJob}
             />
           </Suspense>
         )}
