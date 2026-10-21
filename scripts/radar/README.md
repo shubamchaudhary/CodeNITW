@@ -1,6 +1,7 @@
 # Job radar
 
-Finds fresh backend openings in India once a day, stores them in Firestore
+Finds fresh backend openings in India five times a day (06:00, 09:00, 13:00,
+16:00 and 22:00 IST), stores them in Firestore
 through the site's `/api/radar`, and serves them back to any device with a
 token, and to the Jobs page's **Openings** tab (owner account only).
 
@@ -73,7 +74,7 @@ it opened.
 Firestore is the record; the PC keeps only a cache.
 
 ```
-PC, daily ──POST /api/radar──▶ interviewplanprep (Vercel) ──▶ Firestore: radarOpenings
+PC, 5×/day POST /api/radar──▶ interviewplanprep (Vercel) ──▶ Firestore: radarOpenings
              every opening      upsert by company:openingID,     one document per opening,
              this run found     then delete what opened          key company:openingID:timestamp
                                 more than 15 days ago
@@ -115,9 +116,14 @@ powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1
 
 This creates `.radar\venv` with JobSpy, checks out career-ops in
 `.radar\career-ops`, creates `.radar\.env` with two new tokens, and registers the
-**CodeNITW Job Radar** task (daily at 20:00, or as soon as the PC is on
-if it was off then). Pass `-Time 09:30` for another time, `-SkipTask` to skip
-the task, `-RemoveTask` to delete it.
+**CodeNITW Job Radar** task: every day at 06:00, 09:00, 13:00, 16:00 and 22:00
+Indian time (pinned to IST, whatever the PC's time zone). If the PC is off at a
+run time, it runs once as soon as it's next on; a run never overlaps one still
+going. Pass `-Times 07:00,19:00` for other times, `-SkipTask` to skip the task,
+`-RemoveTask` to delete it.
+
+The Riley dataset changes once a day, so later runs that day reuse its last
+download (`.radar\riley-cache.json`) instead of fetching 70 MB again.
 
 Then add both tokens from `.radar\.env` to the Vercel project's environment
 variables under the same names (`RADAR_INGEST_TOKEN`, `RADAR_READ_TOKEN`) and

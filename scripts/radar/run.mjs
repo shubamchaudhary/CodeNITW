@@ -1,6 +1,6 @@
-// Daily job radar — runs on your own PC (Windows Task Scheduler, see
-// setup.ps1), never in GitHub Actions: the old Actions radar got the GitHub
-// account blocked.
+// Job radar — runs on your own PC five times a day (Windows Task Scheduler,
+// see setup.ps1), never in GitHub Actions: the old Actions radar got the
+// GitHub account blocked.
 //
 // Sources, all fetched in parallel:
 //   board     — the tracked company boards (scripts/jobRadar.mjs)
@@ -132,8 +132,8 @@ function clip(s, max = 200) {
 
 // Upload to /api/radar. A failed upload is kept in .radar/pending/ and sent
 // before the next run's, so a day without internet, a wrong token or an API
-// not deployed yet loses nothing (the last MAX_PENDING runs are kept).
-const MAX_PENDING = 7;
+// not deployed yet loses nothing (the last MAX_PENDING uploads are kept).
+const MAX_PENDING = 15; // three days of runs at five a day
 
 async function upload(payload, env) {
   const url = env.RADAR_API_URL || DEFAULT_API_URL;
@@ -216,7 +216,7 @@ async function main() {
 
   const batches = await Promise.all([
     run("board", () => fetchBoardJobs({ atsCache, linkedin: flag("linkedin"), log })),
-    run("riley", () => fetchRileyJobs({ days: DAYS, keep: keepDataset, known: knownUrls, log })),
+    run("riley", () => fetchRileyJobs({ days: DAYS, keep: keepDataset, known: knownUrls, cacheFile: join(STATE, "riley-cache.json"), log })),
     run("jobspy", () => fetchJobspyJobs({ stateDir: STATE, terms: resume?.searchTerms, hoursOld: Math.min(DAYS, 7) * 24, log })),
     run("careerops", () => fetchCareerOpsJobs({ stateDir: STATE, titleKeywords, sinceDays: Math.max(DAYS, 14), log })),
   ]);

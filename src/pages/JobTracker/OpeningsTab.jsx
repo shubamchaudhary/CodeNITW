@@ -6,7 +6,7 @@ import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF } from "../../
 import { normalizeUrl } from "./shared";
 
 // Owner-only feed from the job radar (scripts/radar/run.mjs). The radar runs on
-// the owner's PC once a day and POSTs to /api/radar, which keeps the openings
+// the owner's PC five times a day and POSTs to /api/radar, which keeps the openings
 // of the last 15 days in Firestore; this tab reads them back, page by page.
 // Each opening has already passed the radar's checks: backend title in India,
 // at most 3 years asked, and no posted salary topping out under 22 LPA. The pay

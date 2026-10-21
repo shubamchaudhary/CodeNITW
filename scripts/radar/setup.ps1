@@ -3,13 +3,14 @@
 #   1. Creates .radar\venv with JobSpy (Naukri / Indeed / Glassdoor source).
 #   2. Checks out career-ops into .radar\career-ops at a pinned, tested commit
 #      (its scanner is a radar source). Change $CareerOpsCommit to update it.
-#   3. Creates .radar\.env for the upload secret and resume path, if missing.
-#   4. Registers the "CodeNITW Job Radar" scheduled task: daily at -Time, and
-#      as soon as the PC is next on if it was off at that time.
+#   3. Creates .radar\.env with the API tokens and resume path, if missing.
+#   4. Registers the "CodeNITW Job Radar" scheduled task: every day at each of
+#      -Times, Indian time (IST, UTC+05:30, whatever the PC's time zone), and as
+#      soon as the PC is next on if it was off then (one catch-up run).
 #
 # Usage (from the repo root):
 #   powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1
-#   powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1 -Time 21:00
+#   powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1 -Times 07:00,19:00
 #   powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1 -SkipTask
 #   powershell -ExecutionPolicy Bypass -File scripts\radar\setup.ps1 -RemoveTask
 #
@@ -17,12 +18,17 @@
 # account blocked.
 
 param(
-  [string]$Time = "20:00",
+  [string[]]$Times = @("06:00", "09:00", "13:00", "16:00", "22:00"),
   [switch]$SkipTask,
   [switch]$RemoveTask
 )
 
 $ErrorActionPreference = "Stop"
+# Through -File, "-Times 07:00,19:00" arrives as one string.
+$Times = @($Times -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+foreach ($t in $Times) {
+  if ($t -notmatch '^([01]\d|2[0-3]):[0-5]\d$') { throw "Times must be HH:mm (24-hour), got '$t'" }
+}
 $TaskName = "CodeNITW Job Radar"
 $CareerOpsRepo = "https://github.com/career-ops-hq/career-ops.git"
 $CareerOpsCommit = "c87e0f05a5bf3b0e7bff1f6c87fd0865191e7da7" # main on 2026-10-20, tested with the radar
@@ -84,15 +90,22 @@ if (-not (Test-Path $EnvFile)) {
   Write-Host "Created $EnvFile with two new tokens - add both to the Vercel project's environment variables."
 }
 
-# 4. Daily scheduled task
+# 4. Scheduled task, one daily trigger per time
 if (-not $SkipTask) {
   $node = (Get-Command node).Source
   # conhost --headless runs it without opening a console window.
   $action = New-ScheduledTaskAction -Execute "conhost.exe" -Argument "--headless `"$node`" scripts\radar\run.mjs" -WorkingDirectory $Root
-  $trigger = New-ScheduledTaskTrigger -Daily -At $Time
+  $today = (Get-Date).ToString("yyyy-MM-dd")
+  $triggers = foreach ($t in $Times) {
+    $trigger = New-ScheduledTaskTrigger -Daily -At $t
+    # An explicit +05:30 offset pins the trigger to IST ("synchronize across time zones").
+    $trigger.StartBoundary = "$($today)T$($t):00+05:30"
+    $trigger
+  }
   $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -RunOnlyIfNetworkAvailable `
-    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 1)
-  Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Settings $settings `
-    -Description "Daily job radar for CodeNITW (scripts/radar/run.mjs). Logs in .radar\logs." -Force | Out-Null
-  Write-Host "Scheduled '$TaskName' daily at $Time (runs when the PC is next on if it was off)."
+    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
+    -MultipleInstances IgnoreNew
+  Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $triggers -Settings $settings `
+    -Description "Job radar for CodeNITW (scripts/radar/run.mjs), daily at $($Times -join ', ') IST. Logs in .radar\logs." -Force | Out-Null
+  Write-Host "Scheduled '$TaskName' daily at $($Times -join ', ') IST (a missed time runs when the PC is next on)."
 }
