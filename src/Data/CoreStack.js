@@ -1482,7 +1482,7 @@ export const CORE_STACK_TOPICS = [
     "sectionLabel": "Spring Boot & Data Access",
     "priority": "P0",
     "title": "JPA core — persistence context, entity lifecycle & L1 cache",
-    "why": "Split: queries and N+1 are now SPRING-20. Entity states, dirty checking and save vs merge are the JPA warm-ups, and Spring Data JPA is your loudest resume claim.",
+    "why": "Entity states, dirty checking and save vs saveAndFlush are the JPA warm-ups, and Spring Data JPA is your loudest resume claim. Two of the playlist's ten JPA videos sit here; the JDBC Template (#23), L2 cache (#26) and DTO-to-table (#27) videos are skipped — their interview question is one line each, answered on this card.",
     "resources": [
       {
         "id": "SPRING-04-r1",
@@ -1504,7 +1504,7 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 25,
         "minutes": 24,
-        "note": ""
+        "note": "The L1 cache is the persistence context seen from the read side — same id, one SELECT. Hold on to \"L1 vs L2\": that comparison is the whole L2 question in interviews."
       }
     ],
     "minutes": 87,
@@ -1514,11 +1514,13 @@ export const CORE_STACK_TOPICS = [
       "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
       "EntityManager vs CrudRepository vs JpaRepository?",
       "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
-      "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?"
+      "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?",
+      "JDBC vs Hibernate — why use an ORM, and when would you still drop to plain JDBC (JdbcTemplate)?",
+      "First-level vs second-level cache in Hibernate — when does L2 help or hurt?"
     ],
     "asked": {
       "posts": 29,
-      "items": 5
+      "items": 7
     }
   },
   {
@@ -1589,7 +1591,7 @@ export const CORE_STACK_TOPICS = [
     "sectionLabel": "Spring Boot & Data Access",
     "priority": "P0",
     "title": "Spring Data queries — derived queries, JPQL, N+1 & pagination",
-    "why": "NEW — split from SPRING-04. N+1 and lazy loading are the most-named JPA questions in current guides, and N+1 is the one you get asked to fix live. Comes after the relationship cards because N+1 lives on lazy associations.",
+    "why": "The most-asked JPA video in the playlist: lazy vs eager, LazyInitializationException and N+1 come up in more write-ups than every other JPA topic combined, and N+1 is the one you get asked to fix live. Comes after the relationship cards because N+1 lives on lazy associations. Native queries, Criteria and Specifications (#31, #32) are skipped — no write-up asked them; the one-line answer is on this card.",
     "resources": [
       {
         "id": "SPRING-20-r1",
@@ -1609,82 +1611,12 @@ export const CORE_STACK_TOPICS = [
       "Lazy vs eager loading — and what causes LazyInitializationException?",
       "What is the N+1 problem in Hibernate, and how do you fix it?",
       "How do you paginate in Spring Data — and why is a deep OFFSET slow?",
-      "Derived queries vs JPQL vs native SQL — how do you write complex queries in JPA?"
-    ],
-    "asked": {
-      "posts": 34,
-      "items": 4
-    }
-  },
-  {
-    "id": "SPRING-16",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
-    "title": "JPA second-level cache",
-    "why": "",
-    "resources": [
-      {
-        "id": "SPRING-16-r1",
-        "kind": "video",
-        "title": "Spring boot: JPA (Part-4) | Second Level Caching | L2 Caching",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 26,
-        "minutes": 41,
-        "note": ""
-      }
-    ],
-    "minutes": 41,
-    "duration": "41m",
-    "questions": [
-      "First-level vs second-level cache in Hibernate — when does L2 help or hurt?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 1
-    }
-  },
-  {
-    "id": "SPRING-12",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P1",
-    "title": "Criteria API & Specifications — dynamic queries",
-    "why": "",
-    "resources": [
-      {
-        "id": "SPRING-12-r1",
-        "kind": "video",
-        "title": "Spring boot: JPA (Part-9) | Native Query and Criteria API",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 31,
-        "minutes": 44,
-        "note": ""
-      },
-      {
-        "id": "SPRING-12-r2",
-        "kind": "video",
-        "title": "Spring boot: JPA (Part-10) | Specification API, Problem with Criteria API and its solution",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 32,
-        "minutes": 14,
-        "note": ""
-      }
-    ],
-    "minutes": 58,
-    "duration": "58m",
-    "questions": [
+      "Derived queries vs JPQL vs native SQL — how do you write complex queries in JPA?",
       "How do you build dynamic queries — Criteria API vs Specifications?"
     ],
     "asked": {
-      "posts": 0,
-      "items": 1
+      "posts": 34,
+      "items": 5
     }
   },
   {
@@ -2886,10 +2818,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 71;
+export const CORE_STACK_TOTAL = 69;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":40,"P1":22,"P2":9};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":40,"P1":20,"P2":9};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":23,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
+export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":21,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
 
-export const CORE_STACK_MINUTES = 3749;
+export const CORE_STACK_MINUTES = 3650;

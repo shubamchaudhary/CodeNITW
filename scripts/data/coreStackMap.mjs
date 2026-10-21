@@ -679,10 +679,10 @@ export const TOPICS = [
     section: "spring",
     priority: "P0",
     title: "JPA core — persistence context, entity lifecycle & L1 cache",
-    why: "Split: queries and N+1 are now SPRING-20. Entity states, dirty checking and save vs merge are the JPA warm-ups, and Spring Data JPA is your loudest resume claim.",
+    why: "Entity states, dirty checking and save vs saveAndFlush are the JPA warm-ups, and Spring Data JPA is your loudest resume claim. Two of the playlist's ten JPA videos sit here; the JDBC Template (#23), L2 cache (#26) and DTO-to-table (#27) videos are skipped — their interview question is one line each, answered on this card.",
     resources: [
       { csv: "CC-SB#24", note: "Setup comes first — skim it. The JPA architecture (EntityManager, persistence context) and the entity lifecycle are what gets asked." },
-      { csv: "CC-SB#25" },
+      { csv: "CC-SB#25", note: "The L1 cache is the persistence context seen from the read side — same id, one SELECT. Hold on to \"L1 vs L2\": that comparison is the whole L2 question in interviews." },
     ],
     questions: [
       "Name the 4 entity states and every transition between them.",
@@ -729,7 +729,7 @@ export const TOPICS = [
     section: "spring",
     priority: "P0",
     title: "Spring Data queries — derived queries, JPQL, N+1 & pagination",
-    why: "NEW — split from SPRING-04. N+1 and lazy loading are the most-named JPA questions in current guides, and N+1 is the one you get asked to fix live. Comes after the relationship cards because N+1 lives on lazy associations.",
+    why: "The most-asked JPA video in the playlist: lazy vs eager, LazyInitializationException and N+1 come up in more write-ups than every other JPA topic combined, and N+1 is the one you get asked to fix live. Comes after the relationship cards because N+1 lives on lazy associations. Native queries, Criteria and Specifications (#31, #32) are skipped — no write-up asked them; the one-line answer is on this card.",
     resources: [{ csv: "CC-SB#30" }],
     questions: [
       "Explain N+1. Show a query that causes it and three fixes (JOIN FETCH, @EntityGraph, batch size).",
@@ -742,22 +742,6 @@ export const TOPICS = [
       "CrudRepository vs PagingAndSortingRepository vs JpaRepository — what does each add?",
       "Return DTOs instead of entities — how? (Constructor expressions or interface projections.)",
     ],
-  },
-  {
-    id: "SPRING-16",
-    section: "spring",
-    priority: "P1",
-    title: "JPA second-level cache",
-    resources: [{ csv: "CC-SB#26" }],
-    inherit: "P2-25",
-  },
-  {
-    id: "SPRING-12",
-    section: "spring",
-    priority: "P1",
-    title: "Criteria API & Specifications — dynamic queries",
-    resources: [{ csv: "CC-SB#31" }, { csv: "CC-SB#32" }],
-    inherit: "P2-27",
   },
   {
     id: "SPRING-15",
@@ -1547,8 +1531,18 @@ export const TOPICS = [
    Method and per-card counts: scripts/data/interviewEvidence.md.
      • SPRING-21 bean scopes P0 → P1 (11 write-ups); CONC-11 virtual threads &
        ThreadLocal P1 → P2 (4). Done cards and owner-set priorities untouched.
+   Seventh pass (Oct 2026) — the ten JPA videos (CC-SB #23–32), at the owner's
+   request. 5,283 LeetCode Discuss posts for 25 JPA/Spring terms, 539 of them
+   Spring write-ups, tagged per video topic; cross-checked against the GfG
+   and InterviewBit Hibernate banks. Kept: #24, #25, #28, #29, #30 (lazy/eager
+   10 write-ups, N+1 5, relationships 4–5, lifecycle 4). Retired — must not be
+   reused: SPRING-16 (L2 cache, #26: 0 write-ups, a bank-only "L1 vs L2") and
+   SPRING-12 (Criteria/Specifications, #31–32: 0). Never carded: #23 JDBC
+   Template (2 write-ups, both "JDBC vs Hibernate", not the API) and #27
+   DTO-to-table (2, basic @Entity/@Column). Their questions moved onto
+   SPRING-04 and SPRING-20 as one-liners.
    Owner-set priorities — leave as they are unless the owner asks:
-     JAVA-05, CONC-06, SPRING-07/09/10/11/12/13/14/15/16/18/22, and CC-SB #35
+     JAVA-05, CONC-06, SPRING-07/09/10/11/13/14/15/18/22, and CC-SB #35
      and #41 kept on SPRING-09 / SPRING-10.
 
    Playlist positions and runtimes were re-checked against the live YouTube
