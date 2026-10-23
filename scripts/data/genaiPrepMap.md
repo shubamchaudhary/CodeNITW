@@ -1,17 +1,24 @@
 # GenAI Interview Prep Map
 
-Source for `scripts/genAIStack.mjs` — one resource, one depth ceiling and one
-question set per topic. Companion to the Java + Spring Boot topic map.
+Source for `scripts/genAIStack.mjs` — the first fifteen topics (A1–D3): title,
+depth ceiling, resume flag, question set and the one written resource each.
+Companion to the Java + Spring Boot topic map.
+
+`scripts/data/aiStackMap.mjs` sits on top of this file. It gives every topic its
+priority, its "why" and its videos, adds the newer topics (the resume-defence
+cards, Python, LLM fundamentals, system design, beyond the core), and decides
+the order on the page. Edit that file for what to watch and in what order; edit
+this one for the original topics' questions and ceilings.
 
 ---
 
 ## Rules
 
-1. **One resource per topic. No alternatives listed.** If it's not here, don't read it.
+1. **Videos first, then the one written resource.** A topic lists a few videos (the map says which part of a long one to watch) and, for the original topics, the single document below. Every video is verified against YouTube — see `scripts/verifyAIVideos.mjs` — so nothing on the page is a made-up title.
 2. **Every topic has a DEPTH CEILING.** Stop there. Going deeper is wasted time.
 3. **The ceiling is set by what you built.** You're positioned as *a backend engineer who ships GenAI*, not an AI researcher. Your answers should sound like someone who's debugged this at 2am, not someone who read a paper.
 
-**Total: ~8h 30m.** Part A (RAG) and Part C (evals) are weighted heaviest.
+**Order:** the page runs top to bottom by priority — resume-defence cards and the concepts under your resume claims (P0), then what nearly every loop asks (P1), then system design and production (P2), then differentiators (P3). The hours are on each card.
 
 ---
 
@@ -313,11 +320,11 @@ A confident *"we didn't do that, and here's the tradeoff we accepted"* beats a h
 
 ---
 
-# PART E — SKIP
+# PART X — SKIP
 
-Transformer internals · attention math · training/RLHF · quantization · vLLM/GPU serving · model architecture comparisons.
+Transformer internals · attention math · pretraining from scratch · GPU kernels and serving internals · model architecture comparisons · multimodal and voice.
 
-**If asked:** *"I work at the application layer — I've shipped agents and RAG in production, but I haven't trained or served models myself."*
+**If asked:** *"I work at the application layer — I've shipped agents and RAG in production, and I understand fine-tuning and serving at the concept level, but I haven't trained or served models myself."*
 
 Honest, positions you correctly, closes the thread. **Do not bluff here.** It's the one area where someone who does know will catch you in a single follow-up.
 
@@ -325,24 +332,16 @@ Honest, positions you correctly, closes the thread. **Do not bluff here.** It's 
 
 # Execution
 
-**Order:** A1 → A2 → A4 → C1 → C2 → B2 → B3 → A3 → A5 → B1 → B4 → C3 → D1 → D2 → D3
+**Order:** the page, top to bottom — it is already sorted by priority (see `aiStackMap.mjs`).
 
-Evals (C1, C2) come early — before LangGraph — because "how do you know it works" is the question most candidates fail and it reframes everything you say afterward.
+Evals come early — before LangGraph — because "how do you know it works" is the question most candidates fail and it reframes everything you say afterward.
 
-**Per topic:** attempt the questions cold → read the one resource → say the answers out loud, recorded → mock. Done = you can answer without notes, not "I read it."
-
-| Part | Hours |
-|---|---|
-| A — RAG | 2h 40m |
-| B — LangChain/LangGraph | 2h 20m |
-| C — Evaluation | 2h 00m |
-| D — Production | 1h 30m |
-| **Total** | **8h 30m** |
+**Per topic:** attempt the questions cold → watch the videos (the note says which part) → say the answers out loud, recorded → mock. Done = you can answer without notes, not "I watched it."
 
 ---
 
 ## The line this document does not cross
 
-Six topics are marked ⚠️. At each, the general concept is necessary but not sufficient — knowing what post-filtered recall loss *is* isn't the same as saying why you chose per-session chunk tables to avoid it.
+The topics marked ⚠️, and every card in "Your systems — resume defence", are the ones where the general concept is necessary but not sufficient — knowing what post-filtered recall loss *is* isn't the same as saying why you chose per-session chunk tables to avoid it.
 
 That half is your codebase. Re-read it and write down the *why* for every decision. No document substitutes for that.

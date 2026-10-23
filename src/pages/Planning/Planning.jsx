@@ -997,7 +997,12 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
   const aiStackResults = useMemo(() => {
     if (tab !== "aistack" || !showAI) return [];
     return AI_STACK_TOPICS.filter(
-      (t) => !q || t.title.toLowerCase().includes(q) || t.id.toLowerCase() === q || t.section.toLowerCase().includes(q)
+      (t) =>
+        !q ||
+        t.title.toLowerCase().includes(q) ||
+        t.id.toLowerCase() === q ||
+        t.priority.toLowerCase() === q ||
+        t.sectionLabel.toLowerCase().includes(q)
     );
   }, [tab, q, showAI]);
 

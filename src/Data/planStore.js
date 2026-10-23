@@ -639,15 +639,16 @@ export function coreStackPlanItem(topic) {
   };
 }
 
-// Build the plan item for an AI Stack topic.
+// Build the plan item for an AI Stack topic — like a Core Stack topic, the
+// estimate is its own watch time, and the link is its first linked resource.
 export function aiStackPlanItem(topic) {
   return {
     uid: planItemUid(),
     source: "aistack",
     refId: topic.id,
     title: topic.title,
-    meta: topic.id,
-    link: topic.resource?.url,
+    meta: topic.priority,
+    link: (topic.resources || []).find((r) => r.url)?.url,
     estimatedMinutes: topic.minutes || 30,
   };
 }

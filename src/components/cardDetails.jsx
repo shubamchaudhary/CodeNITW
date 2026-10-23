@@ -233,13 +233,13 @@ function ResourceRow({ resource: r, linkHover }) {
           className={`mt-0.5 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border tabular-nums ${
             r.kind === "self"
               ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25"
-              : r.kind === "doc"
+              : r.kind === "doc" || r.kind === "course"
               ? "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/25"
               : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25"
           }`}
           title={isPlaylistVideo ? `Position ${r.position} in "${r.playlist}"` : r.kind}
         >
-          {isPlaylistVideo ? `#${r.position}` : r.kind === "doc" ? "DOC" : r.kind === "self" ? "YOU" : "▶"}
+          {isPlaylistVideo ? `#${r.position}` : r.kind === "doc" ? "DOC" : r.kind === "course" ? "COURSE" : r.kind === "self" ? "YOU" : "▶"}
         </span>
 
         <div className="flex-1 min-w-0">
@@ -278,7 +278,7 @@ function ResourceRow({ resource: r, linkHover }) {
               className={`inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 transition-all ${linkHover}`}
               title={r.url}
             >
-              {r.kind === "doc" ? "Read" : "Watch"}
+              {r.kind === "doc" ? "Read" : r.kind === "course" ? "Open" : "Watch"}
               <ExternalIcon />
             </a>
           )}
@@ -395,15 +395,22 @@ function ExternalIcon() {
   );
 }
 
-// Shared expandable body for an AI Stack topic — the single resource for it,
-// the depth ceiling (what is enough, and where reading further stops paying),
-// the interview questions, and the way into its notes page.
+// Shared expandable body for an AI Stack topic — why it sits at its priority,
+// the resources behind it (videos first), the depth ceiling (what is enough, and
+// where going further stops paying), the interview questions, and the way into
+// its notes page.
 export function AIStackTopicDetail({ topic, note, checkedDays }) {
   if (!topic) return null;
-  const r = topic.resource;
 
   return (
     <div>
+      {topic.why && (
+        <div className="mb-3 flex items-start gap-2 rounded-lg px-3 py-2 bg-slate-500/[0.07] border border-slate-500/20">
+          <span className="text-[13px] shrink-0">🎯</span>
+          <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{topic.why}</p>
+        </div>
+      )}
+
       {/* The map marks these topics as ones a resume claim will be probed on —
           the general concept alone isn't enough there, so it's said out loud. */}
       {topic.resumeLinked && topic.flag && (
@@ -413,45 +420,12 @@ export function AIStackTopicDetail({ topic, note, checkedDays }) {
         </div>
       )}
 
-      <div className="mb-4">
-        <h4 className="text-[12px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-fuchsia-400" />
-          Resource
-          <span className="font-semibold normal-case tracking-normal text-gray-400 dark:text-gray-500">
-            · {topic.duration}
-          </span>
-        </h4>
-
-        <div className={`${GLASS_PANEL} rounded-xl px-3 py-2.5`}>
-          <p className="text-[14px] font-semibold text-gray-800 dark:text-gray-100 leading-snug">{r.name}</p>
-          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">
-            {[r.publisher, r.path && `→ ${r.path}`].filter(Boolean).join(" ")}
-          </p>
-          {r.readNote && (
-            <p className="text-[12px] text-amber-600 dark:text-amber-300/90 mt-1">↳ {r.readNote}</p>
-          )}
-
-          <div className="flex flex-wrap items-center gap-1.5 mt-2">
-            <CopyButton value={r.name} label="Copy title" title="Copy the resource title to search for it" />
-            {r.url && (
-              <a
-                href={r.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-[12px] font-bold px-2.5 py-1 rounded-md bg-white/70 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-300 transition-all"
-                title={r.url}
-              >
-                Open
-                <ExternalIcon />
-              </a>
-            )}
-          </div>
-        </div>
-
-        {topic.note && (
-          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">{topic.note}</p>
-        )}
-      </div>
+      <ResourceList
+        resources={topic.resources}
+        duration={topic.duration}
+        barClass="from-violet-400 to-fuchsia-400"
+        linkHover="hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-300"
+      />
 
       {(topic.ceiling?.enough || topic.ceiling?.tooDeep) && (
         <div className="mb-4">
