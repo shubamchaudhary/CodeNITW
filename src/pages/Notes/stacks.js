@@ -23,6 +23,7 @@ const PRIORITY_TEXT = {
   P0: "text-rose-500 dark:text-rose-400",
   P1: "text-amber-500 dark:text-amber-400",
   P2: "text-sky-500 dark:text-sky-400",
+  P3: "text-slate-400 dark:text-slate-500",
 };
 
 export const STACKS = {
@@ -69,13 +70,13 @@ export const STACKS = {
     sections: AI_STACK_SECTIONS.map((s) => ({
       key: s.key,
       label: s.label,
-      topics: AI_STACK_TOPICS.filter((t) => t.part === s.key),
+      topics: AI_STACK_TOPICS.filter((t) => t.section === s.key),
     })),
-    filters: null, // 15 topics in four parts — the sections are filter enough
-    matchFilter: () => true,
-    tag: (topic) => ({ label: topic.id, cls: "text-violet-500 dark:text-violet-400" }),
-    eyebrow: (topic) => topic.section,
-    summary: (topic) => topic.note || "",
+    filters: ["P0", "P1", "P2", "P3"],
+    matchFilter: (topic, f) => topic.priority === f,
+    tag: (topic) => ({ label: topic.priority, cls: PRIORITY_TEXT[topic.priority] || "text-gray-400" }),
+    eyebrow: (topic) => topic.sectionLabel,
+    summary: (topic) => topic.why,
     planItem: aiStackPlanItem,
     daysSinceDone: aiStackDaysSinceChecked,
     skip: AI_STACK_SKIP,
@@ -123,25 +124,9 @@ export const STACKS = {
 };
 
 // A topic's reading list, in one shape for every stack (Projects has none):
-//   { id, kind: video|doc|self, title, source, meta, minutes, estimate, note,
-//     url?, playlistUrl?, position? }
+//   { id, kind: video|doc|course|self, title, source, meta, minutes, estimate,
+//     note, url?, playlistUrl?, position? }
 export function readingList(stack, topic) {
-  if (stack.key === "aistack") {
-    const r = topic.resource;
-    if (!r) return [];
-    return [
-      {
-        id: `${topic.id}-r1`,
-        kind: "doc",
-        title: r.name,
-        source: [r.publisher, r.path && `→ ${r.path}`].filter(Boolean).join(" "),
-        minutes: topic.minutes || 0,
-        estimate: true,
-        note: r.readNote || "",
-        url: r.url,
-      },
-    ];
-  }
   return (topic.resources || []).map((r) => ({
     ...r,
     source: [r.source, r.playlist].filter(Boolean).join(" · "),

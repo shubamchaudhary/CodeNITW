@@ -117,7 +117,8 @@ function WatchFirst({ items }) {
 function WatchItem({ r, n }) {
   const href = r.url || r.playlistUrl;
   const isPlaylist = r.kind === "video" && !r.url && r.playlistUrl;
-  const label = r.kind === "doc" ? "Read" : isPlaylist ? "Open playlist" : "Watch";
+  const isRead = r.kind === "doc" || r.kind === "course";
+  const label = r.kind === "doc" ? "Read" : r.kind === "course" ? "Open course" : isPlaylist ? "Open playlist" : "Watch";
   const where = [
     r.source,
     isPlaylist && r.position ? `#${r.position} in playlist` : null,
@@ -133,7 +134,7 @@ function WatchItem({ r, n }) {
       </span>
       <div className="flex-1 min-w-0">
         <p className="text-[15px] font-semibold leading-snug text-gray-900 dark:text-gray-50 light:text-slate-900">{r.title}</p>
-        {where && <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400 light:text-slate-500">{r.kind === "self" ? "Your own codebase" : where}</p>}
+        {where && <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400 light:text-slate-500">{r.kind === "self" ? r.source || "Your own codebase" : where}</p>}
         {r.note && <p className="mt-1 text-[13px] leading-relaxed text-amber-700 dark:text-amber-300/90">↳ {r.note}</p>}
       </div>
       {r.kind !== "self" && (
@@ -156,7 +157,7 @@ function WatchItem({ r, n }) {
               title={isPlaylist ? `Video #${r.position} in this playlist` : href}
               className="h-9 pl-3 pr-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-white bg-rose-500 hover:bg-rose-600 shadow-sm shadow-rose-500/25 light:bg-red-600 light:hover:bg-red-700 light:shadow-[0_1px_2px_rgba(185,28,28,0.25),inset_0_1px_0_rgba(255,255,255,0.16)]"
             >
-              {r.kind === "doc" ? (
+              {isRead ? (
                 <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
                   <path d="M4 2h5l3 3v9H4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
                 </svg>
