@@ -5,11 +5,26 @@
 // stored in the owner's own progress document and never ship with the site.
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
+// The Kafka plan is the exception: its topics carry a fixed `plan` (from
+// KafkaPlan.js) shown above the notes, which can't be edited on the page; its
+// ticks sync like any other progress and the notes below stay yours.
+
+import { KAFKA_PLAN } from "./KafkaPlan";
 
 export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
   { key: "loglens", label: "LogLens" },
+  { key: "kafkaplan", label: "Kafka plan" },
 ];
+
+const kafkaPlanTopic = (id, title, summary) => ({
+  id,
+  section: "kafkaplan",
+  sectionLabel: "Kafka plan",
+  title,
+  summary,
+  plan: KAFKA_PLAN[id],
+});
 
 export const PROJECT_TOPICS = [
   {
@@ -132,6 +147,13 @@ export const PROJECT_TOPICS = [
     title: "Kafka deep dive",
     summary: "Kafka top down: partitions, groups, replication, rebalancing, exactly-once; then how LogLens uses each piece, its gaps, and the question banks.",
   },
+  kafkaPlanTopic("KP-01", "How to use this plan", "Survive a 1-hour Kafka round: five phases, about 13 hours, then a mock. What the round looks like and the one rule for every phase."),
+  kafkaPlanTopic("KP-02", "Phase 1: HelloInterview deep dive", "1 h. The video or write-up, chapter by chapter, then three questions with the tab closed."),
+  kafkaPlanTopic("KP-03", "Phase 2: Trimmed playlist", "5.5 h at 1.5x. 13 of the 27 Concept && Coding videos, in order, and when the other 14 are worth it."),
+  kafkaPlanTopic("KP-04", "Phase 3: Core concepts", "2 h. Twenty concepts to explain without notes, from partitions and groups to EOS, rebalancing and backpressure."),
+  kafkaPlanTopic("KP-05", "Phase 4: Interview questions", "2 h. Questions from real SDE-2 reports and the general bank: answer out loud, then open the answer."),
+  kafkaPlanTopic("KP-06", "Phase 5: DeepLogLens defence", "2 h. Your own config cold, then every resume-grilling question, answered from your code in the notes."),
+  kafkaPlanTopic("KP-07", "Mock 1-hour round", "The mock with Claude, the pass bar, and the sources behind the plan."),
 ];
 
 const BY_ID = Object.fromEntries(PROJECT_TOPICS.map((t) => [t.id, t]));
