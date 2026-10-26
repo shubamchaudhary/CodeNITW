@@ -32,8 +32,6 @@ export const KEYS = {
   PJ_TIMESTAMPS: "ProjectsCheckedTimestamps",
   PJ_ANNOTATIONS: "ProjectsAnnotations",
   PJ_LEARNT: "ProjectsLearntSections",
-  // The Kafka plan's own ticks (Projects → Kafka plan): { itemId: tickedAtMs }.
-  KP_CHECKED: "KafkaPlanChecked",
   DSA_COMPLETED: "DSAPrepCompleted",
   DSA_NOTES: "DSAPrepNotes",
   DSA_TIMESTAMPS: "DSAPrepSolvedTimestamps",
@@ -261,15 +259,6 @@ export function setLearnt(source, id, marks) {
   if (Object.keys(marks).length) map[id] = marks;
   else delete map[id];
   saveJSON(key, map);
-}
-
-// Tick or untick one item of the Kafka plan. An untick removes the entry, so
-// the map only ever holds what's ticked, with when.
-export function setPlanItemChecked(id, value) {
-  const map = loadJSON(KEYS.KP_CHECKED, {});
-  if (value) map[id] = Date.now();
-  else delete map[id];
-  return saveJSON(KEYS.KP_CHECKED, map);
 }
 
 export function setAnnotations(source, id, list) {

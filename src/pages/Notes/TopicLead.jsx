@@ -2,7 +2,6 @@ import React from "react";
 import { toast } from "react-toastify";
 import { readingList } from "./stacks";
 import { DoneCircle } from "./StackNav";
-import PlanBlocks from "./PlanBlocks";
 
 // The top of a topic page, laid out like an article: where it sits, its title,
 // why it matters, the two things you do with a topic (finish it, plan it), and
@@ -67,7 +66,6 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
 
       {items.length > 0 && <WatchFirst items={items} />}
       {stack.key === "aistack" && <AIDepth topic={topic} />}
-      {topic.plan && <PlanBlocks blocks={topic.plan} />}
     </header>
   );
 }
