@@ -9,7 +9,33 @@
 export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
   { key: "loglens", label: "LogLens" },
+  { key: "kafka", label: "Kafka" },
 ];
+
+// Kafka, learnt from the Concept && Coding playlist: one topic per video, its
+// notes written while watching, then a question bank to finish.
+const KAFKA_PLAYLIST = "https://www.youtube.com/playlist?list=PL6W8uoQQ2c62YCR2kkE-0tg3-y1QwaIWk";
+const kafkaVideo = (n, position, videoId, title, minutes, summary) => ({
+  id: `KFK-${String(n).padStart(2, "0")}`,
+  section: "kafka",
+  sectionLabel: "Kafka",
+  title,
+  summary,
+  resources: [
+    {
+      id: `KFK-${String(n).padStart(2, "0")}-r1`,
+      kind: "video",
+      title,
+      source: "Concept && Coding - by Shrayansh",
+      playlist: "Event Driven Architecture (with Kafka) from Basics to Advanced",
+      playlistUrl: KAFKA_PLAYLIST,
+      url: `https://www.youtube.com/watch?v=${videoId}&list=PL6W8uoQQ2c62YCR2kkE-0tg3-y1QwaIWk&index=${position}`,
+      position,
+      minutes,
+      note: "",
+    },
+  ],
+});
 
 export const PROJECT_TOPICS = [
   {
@@ -124,6 +150,26 @@ export const PROJECT_TOPICS = [
     sectionLabel: "LogLens",
     title: "Stories & interview kit",
     summary: "Design decisions, trade-offs, the pitch and demo, likely questions and answers for LogLens.",
+  },
+  kafkaVideo(1, 2, "fsmhYmzU-2M", "Kafka Architecture - Part 1", 32, "Topic, partition, offset, broker."),
+  kafkaVideo(2, 3, "75iKJ0sISKU", "Kafka Architecture - Part 2", 31, "Consumer groups and partition assignment."),
+  kafkaVideo(3, 4, "TQLGDfJdXrQ", "Kafka Architecture - Part 3", 33, "Replication, leader and ISR."),
+  kafkaVideo(4, 5, "5phy_mbrOBw", "Kafka Architecture - Part 4", 29, "The controller, KRaft vs ZooKeeper."),
+  kafkaVideo(5, 6, "OaBkjyqS7jU", "Kafka Architecture - Part 5", 17, "Remaining internals: retention and segments."),
+  kafkaVideo(6, 8, "eR_BYV-8WOQ", "How Kafka Producer Works Internally", 46, "acks, batching, retries, the partitioner — \"why is Kafka fast\" and latency vs throughput."),
+  kafkaVideo(7, 10, "oNlds6FQym0", "Kafka Producer Idempotency Internals", 34, "PID, sequence numbers and duplicate prevention."),
+  kafkaVideo(8, 11, "f8lYPOvNGrU", "Kafka Consumer Setup - Part 1", 48, "The poll loop, offset commits, auto vs manual commit."),
+  kafkaVideo(9, 13, "b61vljmLVLY", "Kafka Consumer Exception Handling & Dead Letter Topic", 59, "Retries, poison messages and the DLT."),
+  kafkaVideo(10, 14, "Jwgh9h44h7s", "Kafka Consumer Advanced Configurations - Part 3", 36, "max.poll.interval.ms, session timeout, rebalancing edge cases."),
+  kafkaVideo(11, 15, "3IR7JSag5JY", "Kafka Producer Transaction Handling", 62, "Transaction coordinator, epoch, PID, zombie fencing."),
+  kafkaVideo(12, 16, "QqKzDe5NB5E", "Kafka Consumer Transaction Handling", 45, "EOS, LSO, read_committed and aborts — why exactly-once stops at Kafka."),
+  kafkaVideo(13, 18, "sgWmFGzHpdU", "Kafka: Outbox Pattern (Part 1) - Polling Strategy", 19, "The dual-write problem and the polling outbox."),
+  {
+    id: "KFK-14",
+    section: "kafka",
+    sectionLabel: "Kafka",
+    title: "Question bank",
+    summary: "Kafka interview questions, each with a detailed explanation — after all 13 videos.",
   },
 ];
 
