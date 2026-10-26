@@ -125,13 +125,6 @@ export const PROJECT_TOPICS = [
     title: "Stories & interview kit",
     summary: "Design decisions, trade-offs, the pitch and demo, likely questions and answers for LogLens.",
   },
-  {
-    id: "LL-08",
-    section: "loglens",
-    sectionLabel: "LogLens",
-    title: "Kafka deep dive",
-    summary: "Kafka top down: partitions, groups, replication, rebalancing, exactly-once; then how LogLens uses each piece, its gaps, and the question banks.",
-  },
 ];
 
 const BY_ID = Object.fromEntries(PROJECT_TOPICS.map((t) => [t.id, t]));
