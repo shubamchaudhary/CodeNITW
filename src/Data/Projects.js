@@ -5,25 +5,36 @@
 // stored in the owner's own progress document and never ship with the site.
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
-// The Kafka plan is the exception: its topics carry a fixed `plan` (from
-// KafkaPlan.js) shown above the notes, which can't be edited on the page; its
-// ticks sync like any other progress and the notes below stay yours.
-
-import { KAFKA_PLAN } from "./KafkaPlan";
 
 export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
   { key: "loglens", label: "LogLens" },
-  { key: "kafkaplan", label: "Kafka plan" },
+  { key: "kafka", label: "Kafka" },
 ];
 
-const kafkaPlanTopic = (id, title, summary) => ({
-  id,
-  section: "kafkaplan",
-  sectionLabel: "Kafka plan",
+// Kafka, learnt from the Concept && Coding playlist: one topic per video, its
+// notes written while watching, then a question bank to finish.
+const KAFKA_PLAYLIST = "https://www.youtube.com/playlist?list=PL6W8uoQQ2c62YCR2kkE-0tg3-y1QwaIWk";
+const kafkaVideo = (n, position, videoId, title, minutes, summary) => ({
+  id: `KFK-${String(n).padStart(2, "0")}`,
+  section: "kafka",
+  sectionLabel: "Kafka",
   title,
   summary,
-  plan: KAFKA_PLAN[id],
+  resources: [
+    {
+      id: `KFK-${String(n).padStart(2, "0")}-r1`,
+      kind: "video",
+      title,
+      source: "Concept && Coding - by Shrayansh",
+      playlist: "Event Driven Architecture (with Kafka) from Basics to Advanced",
+      playlistUrl: KAFKA_PLAYLIST,
+      url: `https://www.youtube.com/watch?v=${videoId}&list=PL6W8uoQQ2c62YCR2kkE-0tg3-y1QwaIWk&index=${position}`,
+      position,
+      minutes,
+      note: "",
+    },
+  ],
 });
 
 export const PROJECT_TOPICS = [
@@ -140,20 +151,26 @@ export const PROJECT_TOPICS = [
     title: "Stories & interview kit",
     summary: "Design decisions, trade-offs, the pitch and demo, likely questions and answers for LogLens.",
   },
+  kafkaVideo(1, 2, "fsmhYmzU-2M", "Kafka Architecture - Part 1", 32, "Topic, partition, offset, broker."),
+  kafkaVideo(2, 3, "75iKJ0sISKU", "Kafka Architecture - Part 2", 31, "Consumer groups and partition assignment."),
+  kafkaVideo(3, 4, "TQLGDfJdXrQ", "Kafka Architecture - Part 3", 33, "Replication, leader and ISR."),
+  kafkaVideo(4, 5, "5phy_mbrOBw", "Kafka Architecture - Part 4", 29, "The controller, KRaft vs ZooKeeper."),
+  kafkaVideo(5, 6, "OaBkjyqS7jU", "Kafka Architecture - Part 5", 17, "Remaining internals: retention and segments."),
+  kafkaVideo(6, 8, "eR_BYV-8WOQ", "How Kafka Producer Works Internally", 46, "acks, batching, retries, the partitioner — \"why is Kafka fast\" and latency vs throughput."),
+  kafkaVideo(7, 10, "oNlds6FQym0", "Kafka Producer Idempotency Internals", 34, "PID, sequence numbers and duplicate prevention."),
+  kafkaVideo(8, 11, "f8lYPOvNGrU", "Kafka Consumer Setup - Part 1", 48, "The poll loop, offset commits, auto vs manual commit."),
+  kafkaVideo(9, 13, "b61vljmLVLY", "Kafka Consumer Exception Handling & Dead Letter Topic", 59, "Retries, poison messages and the DLT."),
+  kafkaVideo(10, 14, "Jwgh9h44h7s", "Kafka Consumer Advanced Configurations - Part 3", 36, "max.poll.interval.ms, session timeout, rebalancing edge cases."),
+  kafkaVideo(11, 15, "3IR7JSag5JY", "Kafka Producer Transaction Handling", 62, "Transaction coordinator, epoch, PID, zombie fencing."),
+  kafkaVideo(12, 16, "QqKzDe5NB5E", "Kafka Consumer Transaction Handling", 45, "EOS, LSO, read_committed and aborts — why exactly-once stops at Kafka."),
+  kafkaVideo(13, 18, "sgWmFGzHpdU", "Kafka: Outbox Pattern (Part 1) - Polling Strategy", 19, "The dual-write problem and the polling outbox."),
   {
-    id: "LL-08",
-    section: "loglens",
-    sectionLabel: "LogLens",
-    title: "Kafka deep dive",
-    summary: "Kafka top down: partitions, groups, replication, rebalancing, exactly-once; then how LogLens uses each piece, its gaps, and the question banks.",
+    id: "KFK-14",
+    section: "kafka",
+    sectionLabel: "Kafka",
+    title: "Question bank",
+    summary: "Kafka interview questions, each with a detailed explanation — after all 13 videos.",
   },
-  kafkaPlanTopic("KP-01", "How to use this plan", "Survive a 1-hour Kafka round: five phases, about 13 hours, then a mock. What the round looks like and the one rule for every phase."),
-  kafkaPlanTopic("KP-02", "Phase 1: HelloInterview deep dive", "1 h. The video or write-up, chapter by chapter, then three questions with the tab closed."),
-  kafkaPlanTopic("KP-03", "Phase 2: Trimmed playlist", "5.5 h at 1.5x. 13 of the 27 Concept && Coding videos, in order, and when the other 14 are worth it."),
-  kafkaPlanTopic("KP-04", "Phase 3: Core concepts", "2 h. Twenty concepts to explain without notes, from partitions and groups to EOS, rebalancing and backpressure."),
-  kafkaPlanTopic("KP-05", "Phase 4: Interview questions", "2 h. Questions from real SDE-2 reports and the general bank: answer out loud, then open the answer."),
-  kafkaPlanTopic("KP-06", "Phase 5: DeepLogLens defence", "2 h. Your own config cold, then every resume-grilling question, answered from your code in the notes."),
-  kafkaPlanTopic("KP-07", "Mock 1-hour round", "The mock with Claude, the pass bar, and the sources behind the plan."),
 ];
 
 const BY_ID = Object.fromEntries(PROJECT_TOPICS.map((t) => [t.id, t]));
