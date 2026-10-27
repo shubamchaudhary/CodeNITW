@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { isOwner } from "./OwnerRoute";
 import { requestSignIn } from "../Data/authGate";
 import Brand, { SITE_NAME } from "./Brand";
+import { WEB_BASICS_PATHS } from "../Data/WebBasics";
 
 const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
@@ -24,6 +25,8 @@ const NAV_ITEMS = [
 // users never see any hint these pages exist.
 const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
+  // One entry for the three question banks; the page switches between them.
+  { path: "/javascript", label: "JS · REACT · NODE", also: WEB_BASICS_PATHS },
   { path: "/projects", label: "PROJECTS" },
 ];
 
@@ -75,8 +78,10 @@ export default function Header() {
   // A stack's topic pages live under /notes/<stack>/…, so its nav item stays
   // lit while you read.
   const NOTES_OF = { "/core-stack": "/notes/corestack/", "/ai-stack": "/notes/aistack/", "/projects": "/notes/projects/" };
-  const isActive = (path) =>
-    location.pathname === path || (NOTES_OF[path] && location.pathname.startsWith(NOTES_OF[path]));
+  const isActive = (path, also) =>
+    location.pathname === path ||
+    (also && also.includes(location.pathname)) ||
+    (NOTES_OF[path] && location.pathname.startsWith(NOTES_OF[path]));
 
   const handleLogout = () => {
     if (user) {
@@ -218,7 +223,7 @@ export default function Header() {
                 <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-1 xl:space-x-2 lg:mt-0 lg:items-center">
                   {[...NAV_ITEMS.filter((i) => !i.ownerOnly || isOwner(user)), ...(isOwner(user) ? OWNER_NAV_ITEMS : [])].map((item) => (
                     <li key={item.path}>
-                      <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path))}>
+                      <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path, item.also))}>
                         {item.label}
                       </button>
                     </li>

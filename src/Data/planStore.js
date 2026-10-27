@@ -40,6 +40,9 @@ export const KEYS = {
   HLD_COMPLETED: "HLDPrepCompleted",
   HLD_TIMESTAMPS: "HLDPrepDoneTimestamps",
   HLD_STARRED: "HLDPrepStarred",
+  // JS · React · Node basics (owner-only): one map for all three question
+  // banks, keyed by question id (js01, re01, nd01...).
+  WB_COMPLETED: "WebBasicsCompleted",
   // Interview Kit checklists (behavioral, STAR, HR, design, Java, LogLens).
   IK_COMPLETED: "InterviewKitCompleted",
   IK_NOTES: "InterviewKitNotes",
@@ -214,6 +217,7 @@ function keysFor(source) {
   if (source === "projects") return { completed: KEYS.PJ_COMPLETED, notes: KEYS.PJ_NOTES };
   // HLD keeps no notes: the breakdowns themselves live on HelloInterview.
   if (source === "hld") return { completed: KEYS.HLD_COMPLETED, notes: null };
+  if (source === "webbasics") return { completed: KEYS.WB_COMPLETED, notes: null };
   if (source === "interviewkit") return { completed: KEYS.IK_COMPLETED, notes: KEYS.IK_NOTES };
   return { completed: KEYS.IP_COMPLETED, notes: KEYS.IP_NOTES };
 }
