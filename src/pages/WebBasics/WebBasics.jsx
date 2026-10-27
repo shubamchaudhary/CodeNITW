@@ -29,7 +29,6 @@ const COLORS = [
 ];
 
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const fmt = (min) => (min >= 60 ? `${(min / 60).toFixed(1)}h` : `${min}m`);
 
 // Parsed banks, kept for the life of the tab: switching banks never reloads.
 const banks = {};
@@ -119,6 +118,38 @@ export default function WebBasics({ techKey }) {
     setHighlights(loadJSON(KEYS.WB_HIGHLIGHTS, {}));
   }, []);
 
+  // Full screen, as on Core Stack: the site header, footer and the module list
+  // go away (the "notes-immersive" class, see notes.css), and the browser goes
+  // full screen where it can. Esc, or leaving browser full screen, ends it.
+  const [immersive, setImmersive] = useState(false);
+  const enterImmersive = useCallback(() => {
+    setImmersive(true);
+    document.documentElement.requestFullscreen?.().catch(() => {});
+  }, []);
+  const exitImmersive = useCallback(() => {
+    setImmersive(false);
+    if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+  }, []);
+  useEffect(() => {
+    document.documentElement.classList.toggle("notes-immersive", immersive);
+    return () => document.documentElement.classList.remove("notes-immersive");
+  }, [immersive]);
+  useEffect(() => {
+    const onChange = () => {
+      if (!document.fullscreenElement) setImmersive(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape" && !document.fullscreenElement) setImmersive(false);
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      window.removeEventListener("keydown", onKey);
+      if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    };
+  }, []);
+
   if (!group || !modules) return <PageSkeleton />;
 
   // No module in the URL (or an old one): resume where you were, else the
@@ -146,14 +177,16 @@ export default function WebBasics({ techKey }) {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0e1427]">
       <div className="flex">
-        <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
-          <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
-            {nav}
-          </div>
-        </aside>
+        {!immersive && (
+          <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
+            <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
+              {nav}
+            </div>
+          </aside>
+        )}
 
         <main className="flex-1 min-w-0">
-          <div className="lg:hidden sticky top-0 z-30 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]">
+          <div className={`${immersive ? "hidden" : "lg:hidden"} sticky top-0 z-30 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]`}>
             <select
               value={`${current.tech.key}/${current.slug}`}
               onChange={(e) => {
@@ -186,6 +219,8 @@ export default function WebBasics({ techKey }) {
             prev={prev}
             next={next}
             onGo={go}
+            immersive={immersive}
+            onToggleImmersive={immersive ? exitImmersive : enterImmersive}
           />
         </main>
       </div>
@@ -217,7 +252,6 @@ function BankNav({ group, groupKey, current, done, onPick }) {
   const all = group.flatMap((g) => g.modules.flatMap((m) => m.questions));
   const total = all.length;
   const n = all.filter((q) => done[q.id]).length;
-  const left = all.filter((q) => !done[q.id]).reduce((s, q) => s + q.minutes, 0);
 
   // The open module stays in view inside the list (never the page).
   useEffect(() => {
@@ -242,7 +276,6 @@ function BankNav({ group, groupKey, current, done, onPick }) {
         <div className="mt-2.5 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden">
           <div className="h-full rounded-full bg-emerald-500 transition-[width] duration-300" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
         </div>
-        <p className="mt-2 text-[12px] text-gray-400 dark:text-gray-500">{fmt(left)} left</p>
       </div>
 
       <nav ref={listRef} className="note-toc flex-1 overflow-y-auto px-3 py-3">
@@ -309,7 +342,7 @@ function BankNav({ group, groupKey, current, done, onPick }) {
 
 // ── Middle: one module, every answer open ─────────────────────────────────────
 
-function ModuleReader({ module, askedSource, done, highlights, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo }) {
+function ModuleReader({ module, askedSource, done, highlights, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo, immersive, onToggleImmersive }) {
   const articleRef = useRef(null);
   const rangesRef = useRef(new Map()); // highlight id -> { range, qid }
   const [toolbar, setToolbar] = useState(null); // a fresh selection
@@ -317,7 +350,6 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
 
   const qs = module.questions;
   const nDone = qs.filter((q) => done[q.id]).length;
-  const minutes = qs.reduce((s, q) => s + q.minutes, 0);
 
   // Paint every highlight of this module over the rendered answers.
   const moduleHighlights = useMemo(() => qs.flatMap((q) => (highlights[q.id] || []).map((h) => ({ ...h, qid: q.id }))), [qs, highlights]);
@@ -409,7 +441,14 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
 
   return (
     <div>
-      <ReadingProgress articleRef={articleRef} nDone={nDone} total={qs.length} />
+      <ReadingProgress
+        articleRef={articleRef}
+        nDone={nDone}
+        total={qs.length}
+        title={`${module.tech.label} · ${module.title}`}
+        immersive={immersive}
+        onToggleImmersive={onToggleImmersive}
+      />
       <article
         ref={articleRef}
         onMouseUp={onMouseUp}
@@ -423,7 +462,7 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
             {module.title}
           </h1>
           <p className="mt-2.5 text-[14px] text-gray-500 dark:text-gray-400">
-            {qs.length} questions · about {fmt(minutes)} · {nDone}/{qs.length} done
+            {qs.length} questions · {nDone}/{qs.length} done
           </p>
           {askedSource && <p className="mt-1 text-[12.5px] text-gray-400 dark:text-gray-500">{askedSource}</p>}
         </header>
@@ -439,24 +478,36 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
           />
         ))}
 
-        <div className="mt-12 pt-6 border-t border-gray-200 dark:border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
-          {prev ? (
-            <button
-              onClick={() => onGo(prev)}
-              className="h-10 px-4 rounded-xl text-[13.5px] font-semibold border border-gray-300 dark:border-white/[0.14] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05]"
-            >
-              ← {prev.title}
-            </button>
-          ) : (
-            <span />
-          )}
-          {next && (
+        {/* The end of the module: a big card onto the next one (across techs
+            too), and a quieter link back. */}
+        <div className="mt-14 pt-8 border-t border-gray-200 dark:border-white/[0.08]">
+          {next ? (
             <button
               onClick={() => onGo(next)}
-              className="h-10 px-4 rounded-xl text-[13.5px] font-bold text-white bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25 hover:brightness-105"
+              className="group w-full flex items-center gap-5 rounded-2xl px-6 py-5 text-left border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-400/[0.07] hover:border-emerald-500/60 hover:bg-emerald-50 dark:hover:bg-emerald-400/[0.11] transition-colors"
             >
-              Next: {next.tech.key !== module.tech.key ? `${next.tech.label} · ` : ""}
-              {next.title} →
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                  Up next{next.tech.key !== module.tech.key ? ` · ${next.tech.label}` : ""}
+                </p>
+                <p className="mt-1 text-[20px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900 truncate">{next.title}</p>
+                <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">{next.questions.length} questions</p>
+              </div>
+              <span className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 group-hover:translate-x-0.5 transition-transform">
+                <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </button>
+          ) : (
+            <p className="text-center text-[15px] font-semibold text-emerald-700 dark:text-emerald-300">That's the last module of this bank.</p>
+          )}
+          {prev && (
+            <button
+              onClick={() => onGo(prev)}
+              className="mt-4 text-[13.5px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+            >
+              ← Previous: {prev.title}
             </button>
           )}
         </div>
@@ -494,14 +545,14 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
 const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, onToggleDone }) {
   return (
     <section className={`${last ? "" : "mb-10 pb-10 border-b border-gray-200/80 dark:border-white/[0.07]"}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
-      <div className="flex items-start gap-3 mb-4">
-        <span className="mt-1 shrink-0 w-7 h-7 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-300 text-[12.5px] font-bold flex items-center justify-center tabular-nums">
-          {q.number}
+      <div className="flex items-start gap-3.5 mb-4">
+        <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-xl bg-emerald-500/[0.12] text-emerald-700 dark:text-emerald-300 text-[16px] font-extrabold flex items-center justify-center tabular-nums">
+          Q{q.number}
         </span>
-        <h2 className="flex-1 min-w-0 text-[21px] sm:text-[22px] leading-snug font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
+        <h2 className="flex-1 min-w-0 pt-1 text-[21px] sm:text-[22px] leading-snug font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
           <InlineCode text={q.question} />
         </h2>
-        <div className="shrink-0 flex items-center gap-2 mt-0.5">
+        <div className="shrink-0 flex items-center gap-2 mt-1">
           {q.asked > 0 && (
             <span
               title={`Asked in ${q.asked} interview write-up${q.asked === 1 ? "" : "s"}`}
@@ -510,7 +561,6 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
               asked {q.asked}×
             </span>
           )}
-          <span className="hidden sm:inline text-[12px] text-gray-400 dark:text-gray-500 tabular-nums">{q.minutes}m</span>
           <button
             onClick={() => onToggleDone(q.id, !isDone)}
             title={isDone ? "Done — click to mark not done" : "Mark this question done"}
@@ -540,7 +590,7 @@ const Answer = memo(function Answer({ qid, source, colorMode }) {
 
 // ── Top strip: how far down this module you've read ───────────────────────────
 
-function ReadingProgress({ articleRef, nDone, total }) {
+function ReadingProgress({ articleRef, nDone, total, title, immersive, onToggleImmersive }) {
   const [pct, setPct] = useState(0);
   useEffect(() => {
     let frame = 0;
@@ -567,16 +617,33 @@ function ReadingProgress({ articleRef, nDone, total }) {
 
   // A strip of its own above the text, with a solid background, so it never
   // sits on top of a line you're reading. On small screens it stacks under
-  // the sticky module picker.
+  // the sticky module picker; in full screen it's the only bar, with the title.
   return (
-    <div className="sticky top-[57px] lg:top-0 z-20 bg-white dark:bg-[#0e1427] border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]">
-      <div className="px-5 sm:px-10 lg:px-16 py-2.5 flex items-center gap-4">
+    <div
+      className={`sticky ${immersive ? "top-0" : "top-[57px] lg:top-0"} z-20 bg-white dark:bg-[#0e1427] border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]`}
+    >
+      <div className="px-5 sm:px-10 lg:px-16 py-2 flex items-center gap-4">
+        {immersive && (
+          <span className="hidden md:block max-w-[40%] truncate text-[13.5px] font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{title}</span>
+        )}
         <div className="flex-1 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden" title={`${Math.round(pct)}% read`}>
           <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${pct}%` }} />
         </div>
         <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
           {nDone}/{total} done
         </span>
+        <button
+          onClick={onToggleImmersive}
+          title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
+          className="shrink-0 h-8 px-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700"
+        >
+          {immersive ? (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          ) : (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          )}
+          <span className="hidden sm:inline">{immersive ? "Exit full screen" : "Full screen"}</span>
+        </button>
       </div>
     </div>
   );
