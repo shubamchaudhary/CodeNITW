@@ -1,6 +1,6 @@
 ## Python basics and the data model
 
-### py01 | How is Python different from Java?
+### py01 | How is Python different from Java? | asked=2
 
 | | Python | Java |
 |---|---|---|
@@ -22,7 +22,7 @@ squares = [n * n for n in nums if n > 1]   # comprehension instead of a loop
 
 Interview angle: Python trades raw speed for developer speed, a huge ecosystem (data, ML, scripting, web), and readability. CPU-heavy hot paths are pushed into C extensions, multiprocessing, or other services.
 
-### py02 | What does "everything is an object" mean, and how do names and references work?
+### py02 | What does "everything is an object" mean, and how do names and references work? | asked=1
 
 In Python, **variables are names bound to objects**, not boxes that hold values. Every value (int, string, list, function, class) is an object with an **identity** (`id()`), a **type** and a **value**.
 
@@ -55,7 +55,7 @@ print(data)           # [1, 99]
 
 This is the same mental model as Java object references, except that in Python **everything** (including ints) works this way.
 
-### py03 | Which types are mutable and which are immutable, and why does it matter?
+### py03 | Which types are mutable and which are immutable, and why does it matter? | asked=5
 
 | Immutable | Mutable |
 |---|---|
@@ -80,7 +80,7 @@ print(l2)        # [1, 2, 3]
 
 Subtle point: a tuple is immutable, but if it **contains** a list, that list can still change: `t = ([1],); t[0].append(2)` works. Such a tuple isn't hashable.
 
-### py04 | What is the difference between `is` and `==`?
+### py04 | What is the difference between `is` and `==`? | asked=2
 
 - `==` compares **values** (calls `__eq__`).
 - `is` compares **identity**: are both names the same object (same `id()`)?
@@ -109,7 +109,7 @@ a is b      # may be False: implementation detail, never rely on it
 
 Rule: use `is` only for singletons (`None`, `True`, `False`, sentinel objects). Use `==` for everything else.
 
-### py05 | What is the difference between a shallow copy and a deep copy?
+### py05 | What is the difference between a shallow copy and a deep copy? | asked=3
 
 - **Assignment** (`b = a`) copies nothing: both names point to the same object.
 - **Shallow copy**: a new outer container, but the **elements are the same objects** (nested mutables are shared).
@@ -186,7 +186,7 @@ Each `a + b` dispatches dynamically on types at runtime, which is the main reaso
 
 ## Built-in data structures
 
-### py08 | What is the difference between a list and a tuple?
+### py08 | What is the difference between a list and a tuple? | asked=5
 
 | | `list` | `tuple` |
 |---|---|---|
@@ -232,7 +232,7 @@ q.popleft()                    # O(1), use deque for queues, not list.pop(0)
 
 Need fast membership checks? Use a `set` (O(1) average). Need a sorted structure with insertions? Use `bisect` on a list, or the `sortedcontainers` package.
 
-### py10 | How does a dict work internally?
+### py10 | How does a dict work internally? | asked=1
 
 A `dict` is a **hash table**:
 1. `hash(key)` gives an integer; it picks a slot in an internal array.
@@ -275,7 +275,7 @@ a ^ b    # symmetric difference {1, 4}
 
 Use it for: **fast membership tests**, deduplication, comparing groups (common followers, missing ids), and tracking visited nodes in BFS/DFS. Watch out: `{}` is an empty **dict**; an empty set is `set()`.
 
-### py12 | Why are strings immutable, and how should you build strings efficiently?
+### py12 | Why are strings immutable, and how should you build strings efficiently? | asked=2
 
 Strings (`str`) are immutable sequences of Unicode code points. Immutability makes them **hashable** (usable as dict keys), safe to share, and lets CPython intern and cache them.
 
@@ -323,7 +323,7 @@ Key facts:
 - Out-of-range slices don't raise: `s[10:20]` → `[]` (but `s[10]` raises `IndexError`).
 - Objects support slicing through `__getitem__` receiving a `slice` object; NumPy arrays return **views** instead of copies.
 
-### py14 | What are list, dict and set comprehensions, and generator expressions?
+### py14 | What are list, dict and set comprehensions, and generator expressions? | asked=11
 
 A **comprehension** builds a collection from an iterable in one expression: faster and clearer than an append loop.
 
@@ -401,7 +401,7 @@ Python's sort is **Timsort**: O(n log n), very fast on partly sorted data, and *
 
 ## Functions and scope
 
-### py17 | What are *args and **kwargs?
+### py17 | What are *args and **kwargs? | asked=3
 
 - `*args` collects extra **positional** arguments into a **tuple**.
 - `**kwargs` collects extra **keyword** arguments into a **dict**.
@@ -504,7 +504,7 @@ funcs = [lambda i=i: i for i in range(3)]
 
 This is the Python version of JavaScript's `var`-in-a-loop closure question.
 
-### py20 | What are decorators, and how do they work?
+### py20 | What are decorators, and how do they work? | asked=17
 
 A **decorator** is a function that **takes a function and returns a new function** (usually a wrapper that adds behaviour before or after the original). `@decorator` is just syntax for `func = decorator(func)`.
 
@@ -572,7 +572,68 @@ Other forms worth knowing:
 
 Writing a timing, retry or caching decorator is one of the most common live-coding questions in Python interviews.
 
-### py22 | What are lambda functions, and how do map, filter and reduce compare with comprehensions?
+### py61 | Write a decorator that logs every call (arguments, duration, result or exception). What happens on a recursive function? | asked=3
+
+```python
+import functools, logging, time
+
+log = logging.getLogger(__name__)
+
+def log_calls(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):                       # works for any signature
+        call = ", ".join([*map(repr, args), *(f"{k}={v!r}" for k, v in kwargs.items())])
+        start = time.perf_counter()
+        try:
+            result = func(*args, **kwargs)
+        except Exception:
+            log.exception("%s(%s) raised after %.2fms", func.__name__, call, (time.perf_counter() - start) * 1000)
+            raise                                       # never swallow the caller's error
+        log.info("%s(%s) -> %r in %.2fms", func.__name__, call, result, (time.perf_counter() - start) * 1000)
+        return result
+    return wrapper
+```
+
+**The recursion trap** (a real follow-up): decorating a recursive function wraps **every** recursive call, because the function's name now points at the wrapper:
+
+```python
+@timer
+def fib(n):
+    return n if n < 2 else fib(n - 1) + fib(n - 2)   # these calls go through the wrapper too
+
+fib(20)   # prints ~20,000 timing lines, not one
+```
+
+Fixes:
+1. Decorate a thin **outer** function and keep the recursion in an inner one:
+```python
+@timer
+def fib(n):
+    def _fib(k):
+        return k if k < 2 else _fib(k - 1) + _fib(k - 2)
+    return _fib(n)
+```
+2. Or track the **depth** inside the wrapper and only log the outermost call:
+```python
+def timer(func):
+    depth = 0
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        nonlocal depth
+        depth += 1
+        start = time.perf_counter()
+        try:
+            return func(*args, **kwargs)
+        finally:
+            depth -= 1
+            if depth == 0:
+                print(f"{func.__name__} took {time.perf_counter() - start:.3f}s")
+    return wrapper
+```
+
+The flip side: `@lru_cache` on a recursive function *wants* this behaviour. Every recursive call hitting the cache is what makes memoised fibonacci fast.
+
+### py22 | What are lambda functions, and how do map, filter and reduce compare with comprehensions? | asked=1
 
 A `lambda` is a small **anonymous function limited to a single expression**:
 
@@ -633,7 +694,7 @@ Watch out with `lru_cache` on **methods**: the cache holds a reference to `self`
 
 ## Iterators and generators
 
-### py24 | What is the difference between an iterable and an iterator?
+### py24 | What is the difference between an iterable and an iterator? | asked=4
 
 - **Iterable**: anything you can loop over. It has `__iter__()` that returns an iterator. Lists, tuples, strings, dicts, sets, files, ranges.
 - **Iterator**: an object that produces values one at a time with `__next__()`, and raises `StopIteration` when done. Iterators are also iterable (`__iter__` returns `self`), and they're **one-shot**: once exhausted, they stay empty.
@@ -671,7 +732,7 @@ list(Countdown(3))      # [3, 2, 1]
 
 The classic gotcha: iterating a generator or `map` object twice gives nothing the second time.
 
-### py25 | What are generators, and how does yield work?
+### py25 | What are generators, and how does yield work? | asked=16
 
 A **generator function** contains `yield`. Calling it doesn't run the body: it returns a **generator object** (an iterator). Each `next()` runs the body until the next `yield`, hands back that value, and **pauses with all local state saved**. The next call resumes right after the `yield`.
 
@@ -702,7 +763,7 @@ Why use them:
 
 `return` inside a generator ends it (raising `StopIteration`).
 
-### py26 | What is the difference between a generator and a list (and between yield and return)?
+### py26 | What is the difference between a generator and a list (and between yield and return)? | asked=4
 
 | | List | Generator |
 |---|---|---|
@@ -733,6 +794,45 @@ def flatten(nested):
             yield item
 list(flatten([1, [2, [3, 4]], 5]))   # [1, 2, 3, 4, 5]
 ```
+
+### py63 | What are async generators and async iterators? | asked=1
+
+An **async generator** is an `async def` function that uses `yield`. It produces values **lazily**, and it can `await` between them: ideal for streaming data that arrives over the network.
+
+```python
+import asyncio, httpx
+
+async def paginate(client: httpx.AsyncClient, url: str):
+    """Yield every item across all pages, fetching each page only when it's needed."""
+    while url:
+        r = await client.get(url)                  # await inside the generator
+        data = r.json()
+        for item in data["items"]:
+            yield item                             # hand back one item at a time
+        url = data.get("next")
+
+async def main():
+    async with httpx.AsyncClient() as client:
+        async for item in paginate(client, "https://api.example.com/orders"):   # async for
+            process(item)
+            if done(item):
+                break                              # stops fetching further pages
+
+# async comprehension
+names = [u["name"] async for u in paginate(client, url)]
+```
+
+The protocol underneath (the async version of the iterator protocol):
+- an **async iterable** has `__aiter__()`, which returns an async iterator;
+- an **async iterator** has `async __anext__()`, which raises `StopAsyncIteration` at the end.
+
+Where you meet them:
+- streaming LLM tokens (`async for chunk in client.messages.stream(...)`);
+- reading a DB cursor or Kafka consumer without loading everything;
+- FastAPI `StreamingResponse` and Server-Sent Events, which take an async generator;
+- `async with` + `async for` in aiohttp, httpx and websockets.
+
+Caveats: you can't use a plain `for` on them; closing early runs the generator's cleanup (`finally`) via `aclose()`; and `contextlib.aclosing()` guarantees that cleanup happens.
 
 ### py27 | What does itertools provide?
 
@@ -829,7 +929,7 @@ class Singleton:
 
 (Note: `__init__` still runs on every call. Often a plain **module-level instance** is the more Pythonic singleton, since modules are imported only once.)
 
-### py30 | What is the difference between instance methods, @classmethod and @staticmethod?
+### py30 | What is the difference between instance methods, @classmethod and @staticmethod? | asked=2
 
 | | Receives | Can access | Typical use |
 |---|---|---|---|
@@ -898,7 +998,7 @@ The Pythonic approach is to **start with plain public attributes** and switch to
 
 Properties are implemented with the **descriptor protocol** (`__get__`, `__set__`), the same mechanism behind methods, `classmethod`, and ORM fields.
 
-### py32 | How do inheritance, super() and the MRO work (including multiple inheritance)?
+### py32 | How do inheritance, super() and the MRO work (including multiple inheritance)? | asked=2
 
 ```python
 class Animal:
@@ -976,7 +1076,7 @@ Other common ones:
 
 `__str__` vs `__repr__`: if you define only one, define `__repr__` (`str()` falls back to it). Defining `__eq__` without `__hash__` makes instances **unhashable**. `functools.total_ordering` fills in the other comparison methods from `__eq__` + `__lt__`.
 
-### py34 | What are abstract base classes, duck typing and Protocols?
+### py34 | What are abstract base classes, duck typing and Protocols? | asked=3
 
 **Duck typing**: Python cares about **what an object can do**, not what class it is. "If it walks like a duck and quacks like a duck, it's a duck."
 
@@ -1096,7 +1196,7 @@ Trade-offs: you can't add new attributes dynamically; no `__dict__` (unless you 
 
 Modern shortcut: `@dataclass(slots=True)`.
 
-### py38 | What is a metaclass?
+### py38 | What is a metaclass? | asked=1
 
 In Python, **classes are objects too**, and their type is a **metaclass**. The default metaclass is `type`: `type(int)` is `type`, and `type(MyClass)` is `type`.
 
@@ -1164,7 +1264,7 @@ In practice (FastAPI and others), prefer **one instance created at startup** (li
 
 ## Errors and context managers
 
-### py40 | How does exception handling work (try, except, else, finally)?
+### py40 | How does exception handling work (try, except, else, finally)? | asked=4
 
 ```python
 def read_config(path):
@@ -1192,7 +1292,7 @@ Anti-patterns:
 
 The hierarchy: `BaseException` → `Exception` → `ValueError`, `KeyError`, `TypeError`, `OSError`... Python 3.11 added **exception groups** (`except*`), used with `asyncio.TaskGroup`.
 
-### py41 | How do you create custom exceptions, and what are EAFP and LBYL?
+### py41 | How do you create custom exceptions, and what are EAFP and LBYL? | asked=2
 
 ```python
 class AppError(Exception):
@@ -1232,7 +1332,7 @@ except (KeyError, ValueError):
 
 EAFP avoids race conditions (the file could be deleted between your check and your open) and double lookups. Exceptions in Python are relatively cheap, especially when they're rare.
 
-### py42 | What are context managers, and how do you write one?
+### py42 | What are context managers, and how do you write one? | asked=2
 
 A **context manager** sets something up and **guarantees cleanup** with a `with` block, even if an exception happens: files, locks, DB transactions, connections, timers.
 
@@ -1284,7 +1384,7 @@ Java equivalent: try-with-resources plus `AutoCloseable`.
 
 ## Concurrency: GIL, threads, processes and asyncio
 
-### py43 | What is the GIL?
+### py43 | What is the GIL? | asked=5
 
 The **Global Interpreter Lock** is a mutex in CPython that lets **only one thread execute Python bytecode at a time** in a process.
 
@@ -1305,7 +1405,7 @@ with ProcessPoolExecutor() as pool:
 
 What's changing: **PEP 703** added an optional **free-threaded build** (no GIL): experimental in 3.13 and officially supported (still optional, not the default) in 3.14. Single-threaded code is a bit slower, and C extensions need updates. The default CPython still has the GIL.
 
-### py44 | When do you use threading vs multiprocessing vs asyncio?
+### py44 | When do you use threading vs multiprocessing vs asyncio? | asked=13
 
 | | `threading` | `multiprocessing` | `asyncio` |
 |---|---|---|---|
@@ -1373,7 +1473,7 @@ def worker():
 
 Also: use `ThreadPoolExecutor` instead of managing threads by hand; avoid shared mutable state where possible (pass data through queues, return results from futures); `threading.local()` for per-thread data. Single built-in operations like `list.append` or `dict[k] = v` happen to be atomic in CPython, but don't build correctness on that.
 
-### py46 | How does asyncio work (event loop, coroutines, await)?
+### py46 | How does asyncio work (event loop, coroutines, await)? | asked=3
 
 `asyncio` runs **many tasks concurrently on one thread** using **cooperative multitasking**: a task runs until it hits `await` on something that isn't ready (a network response), then **yields control** to the event loop, which runs another task that is ready.
 
@@ -1481,7 +1581,7 @@ FastAPI does the thread offloading automatically for routes declared with plain 
 
 ## Memory, modules and tooling
 
-### py49 | How does memory management and garbage collection work in Python?
+### py49 | How does memory management and garbage collection work in Python? | asked=10
 
 CPython uses two mechanisms:
 
@@ -1509,7 +1609,7 @@ Other details:
 
 Compared with Java: no stop-the-world tracing GC for most objects; reference counting frees things as soon as they're unused.
 
-### py50 | What is the difference between a module and a package, and what does `if __name__ == "__main__"` do?
+### py50 | What is the difference between a module and a package, and what does `if __name__ == "__main__"` do? | asked=1
 
 - **Module**: a single `.py` file. Importing it runs it **once** and caches it in `sys.modules`.
 - **Package**: a **directory** of modules, usually with an `__init__.py` (which runs on import and can expose a public API). Without one, it's a namespace package.
@@ -1623,7 +1723,7 @@ The Zen of Python (`import this`) captures the philosophy: "Readability counts",
 
 ## Type hints and Pydantic
 
-### py54 | How do type hints work in Python, and are they enforced?
+### py54 | How do type hints work in Python, and are they enforced? | asked=1
 
 Type hints (PEP 484) annotate the expected types. **The interpreter ignores them at runtime**: they're for **static type checkers** (mypy, pyright), editors (autocomplete) and frameworks that **read them on purpose** (FastAPI, Pydantic, dataclasses).
 
@@ -1656,7 +1756,7 @@ Why use them in backend code: earlier bug detection, safer refactoring in big co
 
 Interview point: hints are **not runtime checks**. To validate untrusted data at runtime, use **Pydantic**.
 
-### py55 | What is Pydantic, and why is it used?
+### py55 | What is Pydantic, and why is it used? | asked=2
 
 **Pydantic** validates and parses data using type hints: you declare a model, and it **checks and converts** incoming data at runtime, raising clear errors. It's the backbone of FastAPI and widely used for configuration and parsing LLM output. Version 2's core is written in **Rust** (pydantic-core), so it's fast.
 
@@ -1698,7 +1798,7 @@ Pydantic vs dataclasses: **Pydantic for untrusted input** (API bodies, config, e
 
 ## Testing
 
-### py56 | How do you test Python code with pytest (fixtures, parametrize)?
+### py56 | How do you test Python code with pytest (fixtures, parametrize)? | asked=1
 
 **pytest** is the standard test runner: plain `assert` statements, automatic test discovery (`test_*.py`, `test_*` functions) and powerful **fixtures**.
 
@@ -1783,7 +1883,56 @@ Better design: **inject dependencies** (pass the client in, or use FastAPI's `de
 
 ## Classic Python coding questions
 
-### py58 | Implement an LRU cache.
+### py62 | Predict the output: the Python gotchas interviewers like
+
+```python
+# 1. Mutable default argument
+def f(x, acc=[]):
+    acc.append(x); return acc
+f(1); print(f(2))                 # [1, 2]      (the default list is shared across calls)
+
+# 2. Late-binding closures
+fs = [lambda: i for i in range(3)]
+print([g() for g in fs])          # [2, 2, 2]   (i is looked up when called)
+
+# 3. List multiplication shares the inner list
+grid = [[0] * 3] * 3
+grid[0][0] = 1
+print(grid)                       # [[1,0,0],[1,0,0],[1,0,0]]  use [[0]*3 for _ in range(3)]
+
+# 4. Tuples are immutable, but their contents may not be
+t = ([1], 2)
+t[0].append(3); print(t)          # ([1, 3], 2)
+t[0] += [4]                       # TypeError... AND t[0] is still extended to [1, 3, 4]!
+
+# 5. Integer caching and `is`
+a = 256; b = 256; print(a is b)   # True  (small ints are cached)
+a = 1000; b = 1000; print(a is b) # implementation detail: don't use `is` for values
+
+# 6. Chained comparisons
+print(1 < 2 < 3, 3 > 2 > 1 > 0, (1 < 3) < 2)   # True True True
+
+# 7. Modifying a list while iterating
+nums = [1, 2, 3, 4]
+for n in nums:
+    if n % 2 == 0: nums.remove(n)
+print(nums)                       # [1, 3]  works here by luck; with [2, 4] you'd get [4]
+
+# 8. Truthiness
+print(bool([]), bool([0]), bool(""), bool(" "), bool(0.0))   # False True False True False
+
+# 9. Variables in a loop survive it
+for i in range(3): pass
+print(i)                          # 2  (no block scope)
+
+# 10. Default dict iteration order and dict views
+d = {"b": 1, "a": 2}
+print(list(d), sorted(d))         # ['b', 'a'] ['a', 'b']
+```
+
+How to answer output questions: say what each line does **out loud**, call out which objects are **shared** (references and mutability) and **when** names are looked up (closures, defaults evaluated at definition time). Most Python gotchas come down to those two ideas.
+
+### py58 | Implement an LRU cache. | asked=6
 
 An **LRU (least recently used) cache** evicts the item that hasn't been used for the longest time once it's full. Both `get` and `put` must be **O(1)**.
 
@@ -1819,7 +1968,7 @@ How it works: `OrderedDict` is a hash map **plus a doubly linked list**, giving 
 
 For function results in real code: `@functools.lru_cache(maxsize=1000)`. For thread safety, guard with a lock. For multiple servers, use Redis with an `allkeys-lru` eviction policy.
 
-### py59 | Write a word-frequency counter for a large file.
+### py59 | Write a word-frequency counter for a large file. | asked=1
 
 ```python
 import re
@@ -1843,7 +1992,7 @@ Points to mention:
   - **Multiple cores** → split the file into byte ranges, count each with a `ProcessPoolExecutor`, then add the Counters together (`sum(counters, Counter())`).
   - Many files across machines → MapReduce / Spark.
 
-### py60 | Write an async function that fetches many URLs with a concurrency limit, retries and timeouts.
+### py60 | Write an async function that fetches many URLs with a concurrency limit, retries and timeouts. | asked=5
 
 ```python
 import asyncio

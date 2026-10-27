@@ -17,9 +17,11 @@ export const WEB_BASICS_PATHS = WEB_BASICS.filter((t) => t.group === "web").map(
 export const PYTHON_BASICS_PATHS = WEB_BASICS.filter((t) => t.group === "python").map((t) => t.path);
 
 // What the evidence behind the "asked" counts is, per group (null: none).
+// (scripts/data/pythonInterviewEvidence.md says how the Python counts were made.)
 export const ASKED_SOURCE = {
   web: null,
-  python: null,
+  python:
+    "“asked N×”: how many of 456 LeetCode Discuss interview write-ups (Oct 2024 – Oct 2026) that mention Python asked it. Question banks excluded; read it as an ordering, not a percentage.",
 };
 
 // First read plus trying the answer out loud: 2.5 minutes a question, and

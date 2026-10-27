@@ -1,6 +1,6 @@
 ## FastAPI foundations
 
-### fa01 | What is FastAPI, and why is it popular?
+### fa01 | What is FastAPI, and why is it popular? | asked=12
 
 **FastAPI** is a modern Python web framework for building APIs, built on two libraries:
 - **Starlette**: the ASGI web toolkit (routing, requests, responses, middleware, WebSockets).
@@ -70,7 +70,7 @@ How many workers? A common starting point is about **one per CPU core** (more if
 
 In **Kubernetes / containers**, the usual pattern is **one Uvicorn process per container**, scaling with **more replicas** behind the load balancer, which leaves restarts and scaling to the orchestrator. Put a reverse proxy or ingress in front (TLS, compression, request size limits), and run with `--proxy-headers` so client IPs and the scheme are correct.
 
-### fa04 | How does FastAPI compare with Flask and Django?
+### fa04 | How does FastAPI compare with Flask and Django? | asked=4
 
 | | FastAPI | Flask | Django (+ DRF) |
 |---|---|---|---|
@@ -230,7 +230,7 @@ async def upload_avatar(file: UploadFile):                      # multipart/form
 
 ## Pydantic models in FastAPI
 
-### fa09 | How does FastAPI use Pydantic for validation, and what happens when validation fails?
+### fa09 | How does FastAPI use Pydantic for validation, and what happens when validation fails? | asked=1
 
 Every parameter with a type, and every Pydantic model, is **validated and converted before your function runs**. If anything is wrong, your code **never runs**: FastAPI returns **422 Unprocessable Entity** with details.
 
@@ -350,7 +350,7 @@ Production: real secrets come from the platform (Kubernetes Secrets, Key Vault /
 
 ## Dependency injection
 
-### fa12 | How does dependency injection work in FastAPI (Depends)?
+### fa12 | How does dependency injection work in FastAPI (Depends)? | asked=4
 
 A **dependency** is a function (or class) that FastAPI **calls for you** before the route runs, injecting its return value. Dependencies can declare their own parameters (query, headers, other dependencies), so they form a **tree** that FastAPI resolves.
 
@@ -496,7 +496,7 @@ This is the main reason to get things through `Depends` (DB sessions, settings, 
 
 ## Async in FastAPI
 
-### fa16 | What is the difference between `async def` and `def` routes in FastAPI?
+### fa16 | What is the difference between `async def` and `def` routes in FastAPI? | asked=1
 
 FastAPI supports both and treats them differently:
 
@@ -610,7 +610,7 @@ Add retries with backoff for idempotent calls (tenacity), circuit breakers for f
 
 ## Application structure and lifecycle
 
-### fa19 | How do you structure a larger FastAPI application (APIRouter)?
+### fa19 | How do you structure a larger FastAPI application (APIRouter)? | asked=3
 
 `APIRouter` groups related routes into modules that you **include** in the main app with a prefix, tags and shared dependencies.
 
@@ -683,7 +683,7 @@ Don't put here: per-request resources (those go in yield dependencies), or long 
 
 On shutdown, Uvicorn stops accepting new connections, waits for in-flight requests (up to a timeout), then runs the code after `yield`: a **graceful shutdown**.
 
-### fa21 | How does middleware work in FastAPI?
+### fa21 | How does middleware work in FastAPI? | asked=4
 
 **Middleware** wraps **every request and response**: it runs code before the request reaches the routes and after the response is produced. Use it for cross-cutting concerns: logging, timing, request ids, CORS, compression, security headers.
 
@@ -762,7 +762,7 @@ Also: `RequestValidationError` (422) can be customised the same way; never retur
 
 ## Security
 
-### fa23 | How do you implement JWT authentication in FastAPI?
+### fa23 | How do you implement JWT authentication in FastAPI? | asked=4
 
 The standard pattern uses FastAPI's **`OAuth2PasswordBearer`** (it reads `Authorization: Bearer <token>`, and makes the "Authorize" button work in `/docs`) plus a JWT library:
 
@@ -858,7 +858,7 @@ FastAPI's security classes (`OAuth2PasswordBearer`, `APIKeyHeader`, `HTTPBearer`
 
 ## Databases
 
-### fa25 | How do you use SQLAlchemy (async) with FastAPI?
+### fa25 | How do you use SQLAlchemy (async) with FastAPI? | asked=1
 
 ```python
 # models.py: SQLAlchemy 2.0 typed declarative style
@@ -906,7 +906,7 @@ Essentials:
 
 **SQLModel** (by FastAPI's author) merges Pydantic and SQLAlchemy models into one class. Convenient for simple apps; many teams keep them separate in larger ones.
 
-### fa26 | How do you avoid N+1 queries and tune database access in FastAPI?
+### fa26 | How do you avoid N+1 queries and tune database access in FastAPI? | asked=2
 
 **N+1**: one query loads N parent rows, then accessing a relationship on each row fires **one more query per row**: 1 + N round trips.
 
@@ -934,7 +934,7 @@ Other tuning checklist:
 
 ## Beyond request/response
 
-### fa27 | What are BackgroundTasks, and when should you use Celery or a queue instead?
+### fa27 | What are BackgroundTasks, and when should you use Celery or a queue instead? | asked=1
 
 `BackgroundTasks` runs a function **after the response is sent**, **in the same process**:
 
@@ -974,7 +974,7 @@ async def create_order(...):
 
 Design jobs to be **idempotent** (they may run twice) and let clients poll a status endpoint or receive a webhook.
 
-### fa28 | How do you stream responses (StreamingResponse, Server-Sent Events, LLM tokens)?
+### fa28 | How do you stream responses (StreamingResponse, Server-Sent Events, LLM tokens)? | asked=2
 
 `StreamingResponse` sends the body **incrementally** from a (preferably async) generator, so the client gets data as it's produced, with constant memory.
 
@@ -1057,7 +1057,7 @@ Scaling considerations:
 
 If only the server pushes updates, **SSE** is simpler than WebSockets.
 
-### fa30 | How do you add rate limiting, caching and pagination to a FastAPI API?
+### fa30 | How do you add rate limiting, caching and pagination to a FastAPI API? | asked=3
 
 **Rate limiting**: protects against abuse and brute force. Use counters in **Redis** so the limit holds across every worker and pod:
 
