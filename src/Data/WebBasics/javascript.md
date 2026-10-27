@@ -2,32 +2,30 @@
 
 ### js01 | What are the data types in JavaScript?
 
-JavaScript has **8 types**: seven **primitives** and one **object** type.
+JavaScript has **8 types**: seven **primitives** and one **object** type. JavaScript is **dynamically typed**: the type belongs to the value, not the variable, so one variable can hold a number now and a string later.
 
-| Primitive | Example |
-|---|---|
-| `string` | `"hi"` |
-| `number` | `42`, `3.14`, `NaN`, `Infinity` (one 64-bit float type) |
-| `bigint` | `9007199254740993n` |
-| `boolean` | `true` |
-| `undefined` | a declared variable with no value |
-| `null` | an intentional "no value" |
-| `symbol` | `Symbol("id")`, a unique value |
+| Type | Example | `typeof` | What it is |
+|---|---|---|---|
+| `string` | `"hi"` | `"string"` | text, immutable |
+| `number` | `42`, `3.14`, `NaN`, `Infinity` | `"number"` | one 64-bit float type for all numbers |
+| `bigint` | `9007199254740993n` | `"bigint"` | integers beyond 2^53 − 1 |
+| `boolean` | `true`, `false` | `"boolean"` | |
+| `undefined` | `let x;` | `"undefined"` | declared but no value yet |
+| `null` | `null` | `"object"` (a historical bug) | an intentional "no value" |
+| `symbol` | `Symbol("id")` | `"symbol"` | a guaranteed-unique value |
+| **object** | `{}`, `[]`, `() => {}`, `new Date()`, `Map` | `"object"` / `"function"` | everything that isn't a primitive |
 
-Everything else is an **object**: plain objects, arrays, functions, dates, maps, sets, regexes.
-
-Key differences:
-- Primitives are **immutable**: `str.toUpperCase()` returns a new string, it never changes `str`.
-- Primitives are compared **by value**, objects **by reference**.
+**Primitives vs objects**, the part interviewers follow up on:
+- Primitives are **immutable**: `str.toUpperCase()` returns a new string and never changes `str`.
+- Primitives are compared **by value**; objects **by reference** (are they the same object in memory?).
 
 ```js
-"a" === "a";        // true
-({}) === ({});      // false: two different objects
+"a" === "a";               // true: same value
+({}) === ({});             // false: two different objects
 const a = [1]; const b = a;
-a === b;            // true: same reference
+a === b;                   // true: same reference
+b.push(2); a;              // [1, 2]: one array, two names
 ```
-
-JavaScript is **dynamically typed**: the type belongs to the value, not the variable, so one variable can hold a number and later a string.
 
 ### js02 | What is the difference between pass by value and pass by reference in JavaScript?
 

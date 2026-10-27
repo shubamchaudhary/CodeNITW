@@ -175,18 +175,16 @@ export default function WebBasics({ techKey }) {
   const nav = <BankNav group={group} groupKey={tech.group} current={current} done={done} onPick={go} />;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0e1427]">
+    <div className="wb-page min-h-screen bg-white dark:bg-[#0e1427]">
       <div className="flex">
         {!immersive && (
-          <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
-            <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
-              {nav}
-            </div>
-          </aside>
+          <ResizableSide footerHeight={footerHeight}>
+            {nav}
+          </ResizableSide>
         )}
 
         <main className="flex-1 min-w-0">
-          <div className={`${immersive ? "hidden" : "lg:hidden"} sticky top-0 z-30 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]`}>
+          <div className={`${immersive ? "hidden" : "lg:hidden"} sticky top-0 z-30 wb-surface wb-line px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]`}>
             <select
               value={`${current.tech.key}/${current.slug}`}
               onChange={(e) => {
@@ -225,6 +223,96 @@ export default function WebBasics({ techKey }) {
         </main>
       </div>
     </div>
+  );
+}
+
+// ── Left column: resizable, and drags shut ────────────────────────────────────
+
+// Drag its right edge to resize it; drag it narrower than COLLAPSE_AT and it
+// closes to a thin rail at the left edge, which drags (or clicks) open again.
+// The width and whether it's open are remembered on this device.
+const SIDE_PREF = "webBasicsSide";
+const SIDE_MIN = 220;
+const SIDE_MAX = 520;
+const COLLAPSE_AT = 150;
+function loadSide() {
+  try {
+    return { width: 300, open: true, ...JSON.parse(localStorage.getItem(SIDE_PREF) || "{}") };
+  } catch (_) {
+    return { width: 300, open: true };
+  }
+}
+
+function ResizableSide({ footerHeight, children }) {
+  const [side, setSide] = useState(loadSide);
+  const [dragW, setDragW] = useState(null); // live width while dragging
+  const save = (next) => {
+    setSide(next);
+    try {
+      localStorage.setItem(SIDE_PREF, JSON.stringify(next));
+    } catch (_) {}
+  };
+
+  // One drag handler for both the edge (open) and the rail (closed). A press
+  // that never moves is a click: on the rail it opens the column.
+  const startDrag = (e) => {
+    e.preventDefault();
+    const left = e.currentTarget.closest("[data-side]").getBoundingClientRect().left;
+    const startX = e.clientX;
+    let moved = false;
+    let last = side.open ? side.width : 0;
+    const onMove = (ev) => {
+      if (Math.abs(ev.clientX - startX) > 3) moved = true;
+      last = Math.min(SIDE_MAX, Math.max(0, ev.clientX - left));
+      setDragW(last);
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      setDragW(null);
+      if (!moved) {
+        if (!side.open) save({ ...side, open: true });
+        return;
+      }
+      if (last < COLLAPSE_AT) save({ ...side, open: false });
+      else save({ width: Math.max(SIDE_MIN, last), open: true });
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
+
+  const width = dragW != null ? dragW : side.open ? side.width : 0;
+  const closed = width < COLLAPSE_AT;
+
+  return (
+    <aside
+      data-side
+      className={`wb-side hidden lg:block relative shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07] ${
+        dragW == null ? "transition-[width] duration-200" : ""
+      }`}
+      style={{ width: closed ? 14 : width }}
+    >
+      <div className="sticky top-0 overflow-hidden" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
+        {!closed && <div style={{ width }}>{children}</div>}
+        <div
+          onPointerDown={startDrag}
+          title={closed ? "Drag or click to show the topics" : "Drag to resize — drag all the way left to hide"}
+          className={`group absolute top-0 right-0 h-full cursor-col-resize flex items-center justify-center ${closed ? "w-[14px]" : "w-2.5"}`}
+        >
+          <span
+            className={`rounded-full transition-colors ${
+              closed
+                ? "w-1 h-14 bg-gray-300 dark:bg-white/20 group-hover:bg-emerald-500"
+                : "w-[3px] h-full bg-transparent group-hover:bg-emerald-400/50"
+            }`}
+          />
+        </div>
+      </div>
+    </aside>
   );
 }
 
@@ -544,7 +632,7 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
 // answers (which would move the text the highlights are painted on).
 const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, onToggleDone }) {
   return (
-    <section className={`${last ? "" : "mb-10 pb-10 border-b border-gray-200/80 dark:border-white/[0.07]"}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
+    <section className={`${last ? "" : "wb-line mb-10 pb-10 border-b border-gray-200/80 dark:border-white/[0.07]"}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
       <div className="flex items-start gap-3.5 mb-4">
         <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-xl bg-emerald-500/[0.12] text-emerald-700 dark:text-emerald-300 text-[16px] font-extrabold flex items-center justify-center tabular-nums">
           Q{q.number}
@@ -620,7 +708,7 @@ function ReadingProgress({ articleRef, nDone, total, title, immersive, onToggleI
   // the sticky module picker; in full screen it's the only bar, with the title.
   return (
     <div
-      className={`sticky ${immersive ? "top-0" : "top-[57px] lg:top-0"} z-20 bg-white dark:bg-[#0e1427] border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]`}
+      className={`sticky ${immersive ? "top-0" : "top-[57px] lg:top-0"} z-20 wb-surface wb-line bg-white dark:bg-[#0e1427] border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]`}
     >
       <div className="px-5 sm:px-10 lg:px-16 py-2 flex items-center gap-4">
         {immersive && (
