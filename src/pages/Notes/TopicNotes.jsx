@@ -29,7 +29,7 @@ import TopicLead from "./TopicLead";
 import AskedQuestions from "./AskedQuestions";
 import HistoryPanel, { describeVersion } from "./HistoryPanel";
 import useStackProgress from "./useStackProgress";
-import { STACKS, rememberTopic } from "./stacks";
+import { STACKS, rememberTopic, stackForViewer } from "./stacks";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
 import { SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
 
@@ -96,6 +96,8 @@ export default function TopicNotes() {
   }, []);
 
   const topic = config ? config.getTopic(topicId) : null;
+  // The stack as this viewer may see it: Core Stack keeps some of it owner-only.
+  const shown = useMemo(() => config && stackForViewer(config, isOwner(user)), [config, user]);
 
   const [text, setText] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -629,11 +631,11 @@ export default function TopicNotes() {
   );
 
   // Real interview questions for this topic, fixed under the note in both views.
-  const asked = source === "corestack" && topic.asked ? <AskedQuestions topicId={topic.id} colorMode={colorMode} /> : null;
+  const asked = source === "corestack" && topic.asked && !shown.hideQuestions ? <AskedQuestions topicId={topic.id} colorMode={colorMode} /> : null;
 
   const lead = (
     <TopicLead
-      stack={config}
+      stack={shown}
       topic={topic}
       done={!!completed[topic.id]}
       doneDays={doneDays}
@@ -658,7 +660,7 @@ export default function TopicNotes() {
   const blocked = () => toast.info("This is an older version — restore it to change it.");
 
   const nav = (
-    <StackNav stack={config} activeId={topic.id} completed={completed} planned={planned} onPick={pick} />
+    <StackNav stack={shown} activeId={topic.id} completed={completed} planned={planned} onPick={pick} />
   );
 
   return (
@@ -716,7 +718,7 @@ export default function TopicNotes() {
                   {lead}
                 </>
               }
-              starterQuestions={asked ? null : topic.questions}
+              starterQuestions={asked || shown.hideQuestions ? null : topic.questions}
               footer={asked}
               text={preview ? preview.text || "" : text}
               onCommit={preview ? blocked : commit}

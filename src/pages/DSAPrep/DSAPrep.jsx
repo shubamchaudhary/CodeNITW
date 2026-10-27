@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
 import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF, LIGHT_LIFT, LIGHT_BUTTON } from "../../components/glass";
 import PageShell from "../../components/PageShell";
+import { isOwner } from "../../components/OwnerRoute";
 import { requireAuth, getAuthState } from "../../Data/authGate";
 import {
   KEYS,
@@ -46,9 +47,14 @@ const ACCENTS = [
 const DSAPrep = () => {
   // Already known when the page is opened after the app has loaded.
   const [authReady, setAuthReady] = useState(() => getAuthState() !== "unknown");
+  // Priorities (P0/P1/…) are the owner's own research, shown to no one else.
+  const [owner, setOwner] = useState(() => isOwner(getAuth().currentUser));
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(), () => setAuthReady(true));
+    const unsubscribe = onAuthStateChanged(getAuth(), (u) => {
+      setOwner(isOwner(u));
+      setAuthReady(true);
+    });
     return unsubscribe;
   }, []);
 
@@ -60,6 +66,10 @@ const DSAPrep = () => {
   const [starred, setStarred] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [filter, setFilter] = useState("ALL");
+  // Signing out while a priority chip is on would leave a filter no one can see.
+  useEffect(() => {
+    if (!owner) setFilter((f) => (DSA_PRIORITIES.includes(f) ? "ALL" : f));
+  }, [owner]);
   const [bannerHidden, setBannerHidden] = useState(false);
 
   // Which problems are already on today's plan — drives the ⊕ Today toggle.
@@ -242,7 +252,7 @@ const DSAPrep = () => {
           <div className={`mb-5 rounded-2xl ${GLASS_TRACK} p-1.5 inline-flex flex-wrap gap-1`}>
             {[
               { key: "ALL", label: "All", title: "Every problem" },
-              ...DSA_PRIORITIES.map((p) => ({
+              ...(owner ? DSA_PRIORITIES : []).map((p) => ({
                 key: p,
                 label: p,
                 title: DSA_PRIORITY_CONFIG[p].blurb,
@@ -277,7 +287,8 @@ const DSAPrep = () => {
             <div className="space-y-2.5">
               {visibleTopics.map((topic, i) => (
                 <TopicCard
-                  showP0Badge={filter !== "P0"}
+                  showP0Badge={owner && filter !== "P0"}
+                  showPriority={owner}
                   key={topic.topic}
                   topic={topic}
                   accent={ACCENTS[i % ACCENTS.length]}
@@ -313,7 +324,7 @@ function StatPill({ label, value, sub, accent = "text-gray-800 dark:text-gray-10
   );
 }
 
-function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, plannedToday, showP0Badge, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
+function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, plannedToday, showP0Badge, showPriority, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
   const done = topic.problems.filter((p) => solved[p.id]).length;
   const pct = topic.problems.length ? (100 * done) / topic.problems.length : 0;
   const queued = topic.problems.filter((p) => plannedToday.has(p.id)).length;
@@ -365,6 +376,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
                 <QuestionRow
                   key={p.id}
                   problem={p}
+                  showPriority={showPriority}
                   topicName={topic.topic}
                   isSolved={!!solved[p.id]}
                   isStarred={!!starred[p.id]}
@@ -384,7 +396,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
   );
 }
 
-function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
+function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, isPlanned, note, onToggleSolved, onToggleStar, onNoteChange, onTogglePlanned }) {
   const [showNotes, setShowNotes] = useState(false);
   const [localNote, setLocalNote] = useState(note);
   const debounceRef = useRef(null);
@@ -407,7 +419,7 @@ function QuestionRow({ problem, topicName, isSolved, isStarred, isPlanned, note,
   const solvedLabel =
     solvedDays == null ? null : solvedDays === 0 ? "today" : solvedDays === 1 ? "1d ago" : `${solvedDays}d ago`;
 
-  const prio = DSA_PRIORITY_CONFIG[problem.priority];
+  const prio = showPriority ? DSA_PRIORITY_CONFIG[problem.priority] : null;
 
   // Three-way: the set now includes Easy problems, so this can't be a
   // Hard/everything-else binary any more.

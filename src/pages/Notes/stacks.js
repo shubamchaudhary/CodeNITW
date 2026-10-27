@@ -26,6 +26,14 @@ const PRIORITY_TEXT = {
   P3: "text-slate-400 dark:text-slate-500",
 };
 
+// Core Stack's priorities, the "why" behind each one and its interview
+// questions are the owner's own research. Everyone else gets the topics, the
+// reading list and their notes, with no hint the rest exists.
+export function stackForViewer(stack, owner) {
+  if (owner || stack.key !== "corestack") return stack;
+  return { ...stack, filters: null, tag: () => null, summary: () => "", hideQuestions: true };
+}
+
 export const STACKS = {
   corestack: {
     key: "corestack",
