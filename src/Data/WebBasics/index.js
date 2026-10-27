@@ -1,16 +1,26 @@
-// JS · React · Node basics (owner-only): one question bank per tech, written
-// as markdown so answers can carry tables and code. Each file is a list of
-// modules ("## Title") in learning order, each a list of questions
-// ("### id | Question") whose body is the answer. The ids are what the ticks
-// are stored under, so never renumber them — add new ones at the end.
+// The owner-only question banks: JS · React · Node, and Python · FastAPI.
+// One markdown file per tech, so answers can carry tables and code. Each file
+// is a list of modules ("## Title") in learning order, each a list of
+// questions ("### id | Question", optionally "| asked=N" for how many real
+// interview write-ups asked it) whose body is the answer. The ids are what
+// the ticks are stored under, so never renumber them — add new ones at the end.
 
 export const WEB_BASICS = [
-  { key: "javascript", path: "/javascript", label: "JavaScript", short: "JS", load: () => import("./javascript.md?raw") },
-  { key: "react", path: "/react", label: "React", short: "React", load: () => import("./react.md?raw") },
-  { key: "nodejs", path: "/nodejs", label: "Node.js", short: "Node", load: () => import("./nodejs.md?raw") },
+  { key: "javascript", group: "web", path: "/javascript", label: "JavaScript", load: () => import("./javascript.md?raw") },
+  { key: "react", group: "web", path: "/react", label: "React", load: () => import("./react.md?raw") },
+  { key: "nodejs", group: "web", path: "/nodejs", label: "Node.js", load: () => import("./nodejs.md?raw") },
+  { key: "python", group: "python", path: "/python", label: "Python", load: () => import("./python.md?raw") },
+  { key: "fastapi", group: "python", path: "/fastapi", label: "FastAPI", load: () => import("./fastapi.md?raw") },
 ];
 
-export const WEB_BASICS_PATHS = WEB_BASICS.map((t) => t.path);
+export const WEB_BASICS_PATHS = WEB_BASICS.filter((t) => t.group === "web").map((t) => t.path);
+export const PYTHON_BASICS_PATHS = WEB_BASICS.filter((t) => t.group === "python").map((t) => t.path);
+
+// What the evidence behind the "asked" counts is, per group (null: none).
+export const ASKED_SOURCE = {
+  web: null,
+  python: null,
+};
 
 // First read plus trying the answer out loud: 2.5 minutes a question, and
 // another minute for every hundred words of answer and code.
@@ -54,10 +64,10 @@ export function parseQuestionBank(text) {
       modules.push(mod);
       continue;
     }
-    const h = line.match(/^### ([\w-]+) \| (.+)$/);
+    const h = line.match(/^### ([\w-]+) \| (.+?)(?: \| asked=(\d+))?$/);
     if (h && mod) {
       flush();
-      q = { id: h[1], question: h[2].trim(), lines: [] };
+      q = { id: h[1], question: h[2].trim(), asked: h[3] ? Number(h[3]) : null, lines: [] };
       mod.questions.push(q);
       continue;
     }

@@ -1,0 +1,27 @@
+/* Highlights on the question banks, painted with the CSS Custom Highlight API
+   (no elements are added to the rendered answers, so code can be highlighted
+   too). One highlight name per colour. */
+::highlight(wb-hl-yellow) {
+  background-color: rgba(250, 204, 21, 0.42);
+}
+::highlight(wb-hl-green) {
+  background-color: rgba(74, 222, 128, 0.36);
+}
+::highlight(wb-hl-blue) {
+  background-color: rgba(96, 165, 250, 0.34);
+}
+::highlight(wb-hl-pink) {
+  background-color: rgba(244, 114, 182, 0.32);
+}
+:root.dark ::highlight(wb-hl-yellow) {
+  background-color: rgba(250, 204, 21, 0.3);
+}
+:root.dark ::highlight(wb-hl-green) {
+  background-color: rgba(74, 222, 128, 0.26);
+}
+:root.dark ::highlight(wb-hl-blue) {
+  background-color: rgba(96, 165, 250, 0.3);
+}
+:root.dark ::highlight(wb-hl-pink) {
+  background-color: rgba(244, 114, 182, 0.28);
+}

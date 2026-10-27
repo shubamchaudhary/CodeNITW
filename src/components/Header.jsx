@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { isOwner } from "./OwnerRoute";
 import { requestSignIn } from "../Data/authGate";
 import Brand, { SITE_NAME } from "./Brand";
-import { WEB_BASICS_PATHS } from "../Data/WebBasics";
+import { WEB_BASICS_PATHS, PYTHON_BASICS_PATHS } from "../Data/WebBasics";
 
 const NAV_ITEMS = [
   { path: "/core-stack", label: "CORE STACK" },
@@ -25,8 +25,9 @@ const NAV_ITEMS = [
 // users never see any hint these pages exist.
 const OWNER_NAV_ITEMS = [
   { path: "/ai-stack", label: "AI STACK" },
-  // One entry for the three question banks; the page switches between them.
+  // One entry per group of question banks; the page switches between them.
   { path: "/javascript", label: "JS · REACT · NODE", also: WEB_BASICS_PATHS },
+  { path: "/python", label: "PYTHON · FASTAPI", also: PYTHON_BASICS_PATHS },
   { path: "/projects", label: "PROJECTS" },
 ];
 
@@ -80,7 +81,7 @@ export default function Header() {
   const NOTES_OF = { "/core-stack": "/notes/corestack/", "/ai-stack": "/notes/aistack/", "/projects": "/notes/projects/" };
   const isActive = (path, also) =>
     location.pathname === path ||
-    (also && also.includes(location.pathname)) ||
+    (also && also.some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`))) ||
     (NOTES_OF[path] && location.pathname.startsWith(NOTES_OF[path]));
 
   const handleLogout = () => {
