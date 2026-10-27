@@ -27,6 +27,7 @@ export const StackHome = lazyPage(() => import("./pages/Notes/StackHome"));
 export const TopicNotes = lazyPage(() => import("./pages/Notes/TopicNotes"));
 export const DSAPrep = lazyPage(() => import("./pages/DSAPrep/DSAPrep"));
 export const HLDPrep = lazyPage(() => import("./pages/HLDPrep/HLDPrep"));
+export const WebBasics = lazyPage(() => import("./pages/WebBasics/WebBasics"));
 export const Planning = lazyPage(() => import("./pages/Planning/Planning"));
 export const Contests = lazyPage(() => import("./pages/Contests/Contests"));
 export const AuthPage = lazyPage(() => import("./pages/SignInUp/AuthPage"));

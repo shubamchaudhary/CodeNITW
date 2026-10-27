@@ -14,7 +14,7 @@ import { setAuthState } from "./Data/authGate";
 import { trackSignIn, trackVisit } from "./Data/visitTracker";
 import SiteTour from "./components/SiteTour";
 import PageSkeleton from "./components/PageSkeleton";
-import { StackHome, TopicNotes, DSAPrep, HLDPrep, Planning, Contests, AuthPage, JobTracker } from "./pageLoaders";
+import { StackHome, TopicNotes, DSAPrep, HLDPrep, WebBasics, Planning, Contests, AuthPage, JobTracker } from "./pageLoaders";
 
 // Every page is its own chunk, so opening one downloads only that page — not
 // the notes page's markdown renderer, the planner and the rest with it.
@@ -98,6 +98,12 @@ function App() {
           {/* Owner-only, like AI Stack. */}
           <Route path="/hld-prep" element={<OwnerRoute />}>
             <Route path="/hld-prep" element={<HLDPrep />} />
+          </Route>
+          {/* Owner-only, like HLD: the JS, React and Node.js question banks. */}
+          <Route element={<OwnerRoute />}>
+            <Route path="/javascript" element={<WebBasics techKey="javascript" />} />
+            <Route path="/react" element={<WebBasics techKey="react" />} />
+            <Route path="/nodejs" element={<WebBasics techKey="nodejs" />} />
           </Route>
           <Route path="/planning" element={<Planning />} />
           <Route path="/contests" element={<Contests />} />
