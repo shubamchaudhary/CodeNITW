@@ -43,6 +43,8 @@ export const KEYS = {
   // JS · React · Node basics (owner-only): one map for all three question
   // banks, keyed by question id (js01, re01, nd01...).
   WB_COMPLETED: "WebBasicsCompleted",
+  // Highlights on those answers: { questionId: [{ id, color, quote, prefix, suffix, ... }] }.
+  WB_HIGHLIGHTS: "WebBasicsHighlights",
   // Interview Kit checklists (behavioral, STAR, HR, design, Java, LogLens).
   IK_COMPLETED: "InterviewKitCompleted",
   IK_NOTES: "InterviewKitNotes",

@@ -1,363 +1,639 @@
-import React, { useState, useEffect, useMemo, useCallback, memo } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import "@uiw/react-markdown-preview/markdown.css";
 import "../Notes/notes.css";
-import PageShell from "../../components/PageShell";
+import "./webBasics.css";
 import PageSkeleton from "../../components/PageSkeleton";
-import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
 import useIsDark from "../../hooks/useIsDark";
-import { KEYS, loadJSON, setSourceComplete, subscribe } from "../../Data/planStore";
-import { WEB_BASICS, parseQuestionBank } from "../../Data/WebBasics";
+import { KEYS, loadJSON, saveJSON, setSourceComplete, subscribe } from "../../Data/planStore";
+import { WEB_BASICS, ASKED_SOURCE, parseQuestionBank } from "../../Data/WebBasics";
+import { buildTextIndex, anchorFromRange, locate, rangeFor, caretFromPoint, paintRanges, canPaintHighlights } from "../Notes/noteAnchors";
 
-// JS · React · Node basics: one question bank per tech, in learning order.
-// The HLD page's look — a card per module, a row per question — but a row
-// opens onto its full answer, and the tick is per question. Ticks share one
-// store across the three techs (ids are prefixed js/re/nd), synced like every
-// other tick.
+// The question banks (JS · React · Node, Python · FastAPI), read like a Core
+// Stack topic: the left column lists every module of every bank in the group,
+// the rest is one module with every question and its answer open, under a
+// thin reading-progress strip. Each question has its own
+// tick, and any passage can be highlighted — highlights are stored as the
+// passage plus a little context (the same anchors personal notes use) and
+// painted over the rendered answer, so the read-only bank is never edited.
+
+const GROUP_LABEL = { web: "JS · React · Node", python: "Python · FastAPI" };
+
+const COLORS = [
+  { key: "yellow", swatch: "#facc15", label: "Yellow" },
+  { key: "green", swatch: "#4ade80", label: "Green" },
+  { key: "blue", swatch: "#60a5fa", label: "Blue" },
+  { key: "pink", swatch: "#f472b6", label: "Pink" },
+];
+
+const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const fmt = (min) => (min >= 60 ? `${(min / 60).toFixed(1)}h` : `${min}m`);
+
+// Parsed banks, kept for the life of the tab: switching banks never reloads.
 const banks = {};
+function loadBank(tech) {
+  if (!banks[tech.key]) {
+    banks[tech.key] = tech.load().then((m) =>
+      parseQuestionBank(m.default).map((mod) => ({ ...mod, slug: slug(mod.title), tech }))
+    );
+  }
+  return banks[tech.key];
+}
 
-function useBank(tech) {
-  const [modules, setModules] = useState(() => banks[tech.key] || null);
+// Every bank of the group, loaded together the first time the page opens, so
+// moving from JavaScript to React is instant.
+function useGroup(group) {
+  const techs = useMemo(() => WEB_BASICS.filter((t) => t.group === group), [group]);
+  const [data, setData] = useState(null);
   useEffect(() => {
     let live = true;
-    if (banks[tech.key]) {
-      setModules(banks[tech.key]);
-      return undefined;
-    }
-    setModules(null);
-    tech.load().then((m) => {
-      banks[tech.key] = parseQuestionBank(m.default);
-      if (live) setModules(banks[tech.key]);
+    Promise.all(techs.map(loadBank)).then((lists) => {
+      if (live) setData(techs.map((tech, i) => ({ tech, modules: lists[i] })));
     });
+    // The other group too, quietly: it's small and it makes the next visit instant.
+    WEB_BASICS.filter((t) => t.group !== group).forEach(loadBank);
     return () => {
       live = false;
     };
-  }, [tech]);
-  return modules;
+  }, [techs, group]);
+  return data;
 }
 
-const hours = (min) => (min >= 60 ? `${(min / 60).toFixed(1)}h` : `${min}m`);
+const LAST = (techKey) => `webBasicsLast:${techKey}`;
 
 export default function WebBasics({ techKey }) {
-  const tech = WEB_BASICS.find((t) => t.key === techKey) || WEB_BASICS[0];
-  const modules = useBank(tech);
+  const { mod: modSlug } = useParams();
   const navigate = useNavigate();
+  const tech = WEB_BASICS.find((t) => t.key === techKey) || WEB_BASICS[0];
+  const group = useGroup(tech.group);
   const colorMode = useIsDark() ? "dark" : "light";
 
   const [done, setDone] = useState(() => loadJSON(KEYS.WB_COMPLETED, {}));
-  const [filter, setFilter] = useState("ALL");
-  const [open, setOpen] = useState(() => new Set());
-
+  const [highlights, setHighlights] = useState(() => loadJSON(KEYS.WB_HIGHLIGHTS, {}));
   useEffect(
     () =>
       subscribe((key) => {
         if (key === KEYS.WB_COMPLETED) setDone(loadJSON(KEYS.WB_COMPLETED, {}));
+        if (key === KEYS.WB_HIGHLIGHTS) setHighlights(loadJSON(KEYS.WB_HIGHLIGHTS, {}));
       }),
     []
   );
 
-  // A new tech starts with every answer closed.
-  useEffect(() => setOpen(new Set()), [techKey]);
+  const modules = group?.find((g) => g.tech.key === tech.key)?.modules;
+  const current = modules?.find((m) => m.slug === modSlug);
 
-  const all = useMemo(() => (modules || []).flatMap((m) => m.questions), [modules]);
-  const nextId = useMemo(() => (all.find((q) => !done[q.id]) || {}).id, [all, done]);
+  // The footer sits below the columns; leaving its height out of the sticky
+  // sidebar stops the sidebar jumping at the very bottom of the page.
+  const [footerHeight, setFooterHeight] = useState(0);
+  useEffect(() => {
+    const footer = document.querySelector("#page-root + footer");
+    if (!footer) return undefined;
+    const update = () => setFooterHeight(Math.round(footer.getBoundingClientRect().height));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
 
-  const stats = useMemo(() => {
-    const total = all.reduce((s, q) => s + q.minutes, 0);
-    const left = all.filter((q) => !done[q.id]).reduce((s, q) => s + q.minutes, 0);
-    const n = all.filter((q) => done[q.id]).length;
-    return { n, count: all.length, total, left, pct: all.length ? Math.round((100 * n) / all.length) : 0 };
-  }, [all, done]);
+  useEffect(() => {
+    if (current) {
+      try {
+        localStorage.setItem(LAST(tech.key), current.slug);
+      } catch (_) {}
+      window.scrollTo({ top: 0 });
+    }
+  }, [current, tech.key]);
 
   const toggleDone = useCallback((id, value) => {
     setSourceComplete("webbasics", id, value);
     setDone((m) => ({ ...m, [id]: value }));
   }, []);
 
-  const toggleOpen = useCallback((id) => {
-    setOpen((s) => {
-      const next = new Set(s);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+  const saveHighlights = useCallback((qid, list) => {
+    const map = { ...loadJSON(KEYS.WB_HIGHLIGHTS, {}) };
+    if (list.length) map[qid] = list;
+    else delete map[qid];
+    saveJSON(KEYS.WB_HIGHLIGHTS, map);
+    setHighlights(loadJSON(KEYS.WB_HIGHLIGHTS, {}));
   }, []);
 
-  const jumpToNext = () => {
-    if (!nextId) return;
-    setFilter("ALL");
-    setOpen((s) => new Set(s).add(nextId));
-    setTimeout(() => document.getElementById(`q-${nextId}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+  if (!group || !modules) return <PageSkeleton />;
+
+  // No module in the URL (or an old one): resume where you were, else the
+  // first module with something left to do.
+  if (!current) {
+    let last = null;
+    try {
+      last = localStorage.getItem(LAST(tech.key));
+    } catch (_) {}
+    const target =
+      modules.find((m) => m.slug === last) || modules.find((m) => m.questions.some((q) => !done[q.id])) || modules[0];
+    return <Navigate to={`${tech.path}/${target.slug}`} replace />;
+  }
+
+  // The reading order runs across the whole group: the last JavaScript module
+  // leads on to the first React one.
+  const order = group.flatMap((g) => g.modules);
+  const at = order.indexOf(current);
+  const prev = order[at - 1];
+  const next = order[at + 1];
+  const go = (m) => navigate(`${m.tech.path}/${m.slug}`);
+
+  const nav = <BankNav group={group} groupKey={tech.group} current={current} done={done} onPick={go} />;
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-[#0e1427]">
+      <div className="flex">
+        <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
+          <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
+            {nav}
+          </div>
+        </aside>
+
+        <main className="flex-1 min-w-0">
+          <div className="lg:hidden sticky top-0 z-30 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]">
+            <select
+              value={`${current.tech.key}/${current.slug}`}
+              onChange={(e) => {
+                const m = order.find((x) => `${x.tech.key}/${x.slug}` === e.target.value);
+                if (m) go(m);
+              }}
+              className="w-full h-9 px-3 rounded-lg text-[13.5px] font-semibold bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.14] text-gray-800 dark:text-gray-100"
+            >
+              {group.map((g) => (
+                <optgroup key={g.tech.key} label={g.tech.label}>
+                  {g.modules.map((m) => (
+                    <option key={m.slug} value={`${g.tech.key}/${m.slug}`}>
+                      {m.title}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+
+          <ModuleReader
+            key={`${current.tech.key}/${current.slug}`}
+            module={current}
+            askedSource={ASKED_SOURCE[tech.group]}
+            done={done}
+            highlights={highlights}
+            colorMode={colorMode}
+            onToggleDone={toggleDone}
+            onSaveHighlights={saveHighlights}
+            prev={prev}
+            next={next}
+            onGo={go}
+          />
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// ── Left column: every module of every bank in the group ──────────────────────
+
+const NAV_PREF = (group) => `webBasicsNav:${group}`;
+
+function BankNav({ group, groupKey, current, done, onPick }) {
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(NAV_PREF(groupKey)) || "{}");
+    } catch (_) {
+      return {};
+    }
+  });
+  const toggle = (key, open) => {
+    const next = { ...collapsed, [key]: open };
+    setCollapsed(next);
+    try {
+      localStorage.setItem(NAV_PREF(groupKey), JSON.stringify(next));
+    } catch (_) {}
+  };
+  const listRef = useRef(null);
+
+  const all = group.flatMap((g) => g.modules.flatMap((m) => m.questions));
+  const total = all.length;
+  const n = all.filter((q) => done[q.id]).length;
+  const left = all.filter((q) => !done[q.id]).reduce((s, q) => s + q.minutes, 0);
+
+  // The open module stays in view inside the list (never the page).
+  useEffect(() => {
+    const list = listRef.current;
+    const el = list?.querySelector(`[data-mod="${current.tech.key}/${current.slug}"]`);
+    if (!list || !el) return;
+    const top = el.offsetTop - list.offsetTop;
+    if (top < list.scrollTop + 40 || top > list.scrollTop + list.clientHeight - 80) {
+      list.scrollTo({ top: Math.max(0, top - list.clientHeight / 3) });
+    }
+  }, [current]);
+
+  return (
+    <div className="h-full flex flex-col">
+      <div className="px-5 pt-6 pb-4 border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]">
+        <div className="flex items-baseline justify-between">
+          <p className="text-[17px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">{GROUP_LABEL[groupKey]}</p>
+          <span className="text-[12.5px] font-semibold tabular-nums text-gray-500 dark:text-gray-400">
+            {n}/{total} done
+          </span>
+        </div>
+        <div className="mt-2.5 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden">
+          <div className="h-full rounded-full bg-emerald-500 transition-[width] duration-300" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
+        </div>
+        <p className="mt-2 text-[12px] text-gray-400 dark:text-gray-500">{fmt(left)} left</p>
+      </div>
+
+      <nav ref={listRef} className="note-toc flex-1 overflow-y-auto px-3 py-3">
+        {group.map((g) => {
+          const isCurrent = g.tech.key === current.tech.key;
+          const open = isCurrent || !collapsed[g.tech.key];
+          const qs = g.modules.flatMap((m) => m.questions);
+          const gDone = qs.filter((q) => done[q.id]).length;
+          return (
+            <div key={g.tech.key} className="mb-1.5">
+              <button
+                onClick={() => toggle(g.tech.key, open)}
+                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-white/[0.03] light:hover:bg-slate-900/[0.035]"
+              >
+                <span className="flex-1 text-[14.5px] font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{g.tech.label}</span>
+                <span className="text-[11.5px] tabular-nums text-gray-400 dark:text-gray-500">
+                  {gDone}/{qs.length}
+                </span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${open ? "" : "-rotate-90"}`} viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {open && (
+                <ul className="mt-0.5 space-y-px">
+                  {g.modules.map((m) => {
+                    const active = isCurrent && m.slug === current.slug;
+                    const mDone = m.questions.filter((q) => done[q.id]).length;
+                    const complete = mDone === m.questions.length;
+                    return (
+                      <li key={m.slug}>
+                        <button
+                          data-mod={`${g.tech.key}/${m.slug}`}
+                          onClick={() => onPick(m)}
+                          className={`w-full flex items-start gap-2.5 pl-3 pr-2 py-[7px] rounded-lg text-left transition-colors ${
+                            active
+                              ? "bg-emerald-50 dark:bg-emerald-400/10 light:bg-white light:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.06)]"
+                              : "hover:bg-gray-50 dark:hover:bg-white/[0.04] light:hover:bg-slate-900/[0.035]"
+                          }`}
+                        >
+                          <DoneCircle done={complete} className="w-[17px] h-[17px] mt-[1px]" />
+                          <span
+                            className={`flex-1 text-[14px] leading-snug ${
+                              active ? "text-emerald-700 dark:text-emerald-300 font-medium light:text-slate-900" : "text-gray-700 dark:text-gray-300 light:text-slate-600"
+                            }`}
+                          >
+                            {m.title}
+                          </span>
+                          <span className="mt-[2px] text-[10.5px] font-bold tabular-nums shrink-0 text-gray-400 dark:text-gray-500">
+                            {mDone}/{m.questions.length}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}
+
+// ── Middle: one module, every answer open ─────────────────────────────────────
+
+function ModuleReader({ module, askedSource, done, highlights, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo }) {
+  const articleRef = useRef(null);
+  const rangesRef = useRef(new Map()); // highlight id -> { range, qid }
+  const [toolbar, setToolbar] = useState(null); // a fresh selection
+  const [markMenu, setMarkMenu] = useState(null); // a clicked highlight
+
+  const qs = module.questions;
+  const nDone = qs.filter((q) => done[q.id]).length;
+  const minutes = qs.reduce((s, q) => s + q.minutes, 0);
+
+  // Paint every highlight of this module over the rendered answers.
+  const moduleHighlights = useMemo(() => qs.flatMap((q) => (highlights[q.id] || []).map((h) => ({ ...h, qid: q.id }))), [qs, highlights]);
+  useEffect(() => {
+    const byColor = Object.fromEntries(COLORS.map((c) => [c.key, []]));
+    const map = new Map();
+    const indexes = {};
+    for (const h of moduleHighlights) {
+      const root = articleRef.current?.querySelector(`[data-answer="${h.qid}"]`);
+      if (!root) continue;
+      const index = (indexes[h.qid] ||= buildTextIndex(root));
+      const pos = locate(index, h);
+      if (!pos) continue;
+      const range = rangeFor(index, pos[0], pos[1]);
+      map.set(h.id, { range, qid: h.qid });
+      (byColor[h.color] || byColor.yellow).push(range);
+    }
+    rangesRef.current = map;
+    COLORS.forEach((c) => paintRanges(`wb-hl-${c.key}`, byColor[c.key]));
+  }, [moduleHighlights, colorMode]);
+  useEffect(() => () => COLORS.forEach((c) => paintRanges(`wb-hl-${c.key}`, [])), []);
+
+  // A selection inside one answer offers the highlight colours.
+  const onMouseUp = () => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) return setToolbar(null);
+    const range = sel.getRangeAt(0);
+    const answerOf = (node) => (node.nodeType === Node.TEXT_NODE ? node.parentElement : node)?.closest?.("[data-answer]");
+    const a = answerOf(range.startContainer);
+    const b = answerOf(range.endContainer);
+    if (!a || a !== b) return setToolbar(null);
+    const rect = range.getBoundingClientRect();
+    setMarkMenu(null);
+    setToolbar({ x: rect.left + rect.width / 2, y: rect.top, qid: a.dataset.answer, range: range.cloneRange() });
   };
 
-  if (!modules) return <PageSkeleton />;
+  const applyHighlight = (color) => {
+    if (!toolbar) return;
+    if (!canPaintHighlights) {
+      toast.info("This browser can't show highlights — try a recent Chrome, Edge or Safari.");
+      return;
+    }
+    const root = articleRef.current?.querySelector(`[data-answer="${toolbar.qid}"]`);
+    const anchor = root && anchorFromRange(buildTextIndex(root), toolbar.range);
+    if (anchor) {
+      const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+      onSaveHighlights(toolbar.qid, [...(highlights[toolbar.qid] || []), { id, color, ...anchor, createdAt: Date.now() }]);
+    }
+    window.getSelection()?.removeAllRanges();
+    setToolbar(null);
+  };
 
-  const visible = modules
-    .map((m, i) => ({ ...m, index: i + 1, shown: m.questions.filter((q) => filter === "ALL" || !done[q.id]) }))
-    .filter((m) => m.shown.length);
+  // A click on painted text opens that highlight's menu.
+  const onClick = (e) => {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed) return;
+    const p = caretFromPoint(e.clientX, e.clientY);
+    if (!p) return setMarkMenu(null);
+    for (const [id, { range, qid }] of rangesRef.current) {
+      try {
+        if (range.isPointInRange(p.node, p.offset)) {
+          setMarkMenu({ id, qid, x: e.clientX, y: e.clientY });
+          return;
+        }
+      } catch (_) {}
+    }
+    setMarkMenu(null);
+  };
 
-  return (
-    <PageShell>
-      <div className="min-h-screen flex justify-center px-3">
-        <div className="w-full sm:w-11/12 lg:w-5/6 xl:w-3/4 2xl:w-2/3">
-          {/* ── Header ── */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={`mt-6 mb-5 rounded-3xl ${GLASS} px-5 sm:px-7 py-5`}
-          >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  <h1 className="text-[26px] leading-none font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400 light:bg-none light:text-slate-900">
-                    {tech.label}
-                  </h1>
-                  <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-sky-500/10 dark:bg-sky-400/10 text-sky-600 dark:text-sky-300 border border-sky-500/25 dark:border-sky-400/25 light:bg-sky-50 light:text-sky-700 light:border-sky-600/15">
-                    {stats.count} questions · {hours(stats.total)}
-                  </span>
-                </div>
-                <p className="mt-2 text-[12.5px] text-gray-500 dark:text-gray-400 light:text-slate-500">
-                  Interview basics, in learning order. Say the answer out loud before you open it.
-                </p>
-              </div>
+  const recolor = (color) => {
+    const list = (highlights[markMenu.qid] || []).map((h) => (h.id === markMenu.id ? { ...h, color } : h));
+    onSaveHighlights(markMenu.qid, list);
+    setMarkMenu(null);
+  };
+  const remove = () => {
+    onSaveHighlights(markMenu.qid, (highlights[markMenu.qid] || []).filter((h) => h.id !== markMenu.id));
+    setMarkMenu(null);
+  };
 
-              <div className="flex items-center gap-3 shrink-0">
-                <StatPill label="Done" value={`${stats.n}`} sub={`/${stats.count}`} />
-                <StatPill label="Left" value={hours(stats.left)} />
-                <div className="relative w-16 h-16 shrink-0">
-                  <svg className="w-16 h-16 -rotate-90" viewBox="0 0 56 56">
-                    <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-gray-200/80 dark:text-white/10 light:text-slate-900/[0.06]" strokeWidth="5" />
-                    <circle
-                      cx="28" cy="28" r="22" fill="none" stroke="url(#wbProgressGrad)" strokeWidth="5" strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 22}`}
-                      strokeDashoffset={`${2 * Math.PI * 22 * (1 - stats.pct / 100)}`}
-                      style={{ transition: "stroke-dashoffset 0.5s ease" }}
-                    />
-                    <defs>
-                      <linearGradient id="wbProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#0ea5e9" />
-                        <stop offset="100%" stopColor="#6366f1" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-sky-600 dark:text-sky-400">{stats.pct}%</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* ── Tech tabs + filter ── */}
-          <div className="mb-5 flex flex-wrap items-center gap-2.5">
-            <div className={`rounded-2xl ${GLASS_TRACK} p-1.5 inline-flex flex-wrap gap-1`}>
-              {WEB_BASICS.map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => navigate(t.path)}
-                  className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                    t.key === tech.key
-                      ? `bg-gradient-to-br from-sky-500 to-indigo-500 text-white shadow-lg shadow-sky-500/30 ${SEGMENT_ON}`
-                      : `text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] hover:text-sky-600 dark:hover:text-sky-300 ${SEGMENT_OFF}`
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            <div className={`rounded-2xl ${GLASS_TRACK} p-1.5 inline-flex gap-1`}>
-              {[
-                { key: "ALL", label: "All" },
-                { key: "TODO", label: "To do" },
-              ].map((f) => (
-                <button
-                  key={f.key}
-                  onClick={() => setFilter(f.key)}
-                  className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
-                    filter === f.key
-                      ? `bg-gradient-to-br from-sky-500 to-indigo-500 text-white shadow-lg shadow-sky-500/30 ${SEGMENT_ON}`
-                      : `text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] ${SEGMENT_OFF}`
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-            {nextId && (
-              <button
-                onClick={jumpToNext}
-                className="px-3.5 py-2 text-xs font-bold rounded-xl border border-sky-500/30 text-sky-600 dark:text-sky-300 bg-sky-500/10 hover:bg-sky-500/15 light:bg-sky-50 light:text-sky-700"
-              >
-                Continue →
-              </button>
-            )}
-          </div>
-
-          {/* ── Modules ── */}
-          {visible.length === 0 ? (
-            <div className={`rounded-2xl ${GLASS} py-14 text-center`}>
-              <p className="text-sm text-gray-400 dark:text-gray-500">All done — every question here is ticked.</p>
-            </div>
-          ) : (
-            <div className="space-y-2.5 pb-10">
-              {visible.map((m) => (
-                <ModuleCard
-                  key={m.title}
-                  index={m.index}
-                  module={m}
-                  done={done}
-                  nextId={nextId}
-                  open={open}
-                  colorMode={colorMode}
-                  onToggleDone={toggleDone}
-                  onToggleOpen={toggleOpen}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </PageShell>
-  );
-}
-
-function StatPill({ label, value, sub }) {
-  return (
-    <div className="hidden sm:block text-right px-3 py-1.5 rounded-xl bg-white/50 dark:bg-white/[0.04] border border-white/60 dark:border-white/[0.06] light:bg-slate-50 light:border-slate-900/[0.06]">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 light:text-slate-500">{label}</p>
-      <p className="text-base font-extrabold leading-tight text-gray-800 dark:text-gray-100 light:text-slate-900">
-        {value}
-        {sub && <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">{sub}</span>}
-      </p>
-    </div>
-  );
-}
-
-function ModuleCard({ index, module, done, nextId, open, colorMode, onToggleDone, onToggleOpen }) {
-  const n = module.questions.filter((q) => done[q.id]).length;
-  const pct = (100 * n) / module.questions.length;
-  const minutes = module.questions.reduce((s, q) => s + q.minutes, 0);
+  useEffect(() => {
+    if (!toolbar && !markMenu) return undefined;
+    const close = () => {
+      setToolbar(null);
+      setMarkMenu(null);
+    };
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [toolbar, markMenu]);
 
   return (
-    <div className={`rounded-2xl ${GLASS} overflow-hidden`}>
-      <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5">
-        <span className="w-6 h-6 rounded-full shrink-0 bg-sky-500/15 text-sky-700 dark:text-sky-300 text-[11px] font-extrabold flex items-center justify-center">
-          {index}
-        </span>
-        <h2 className="flex-1 min-w-0 text-[13.5px] font-bold text-gray-700 dark:text-gray-200 light:text-slate-900 light:font-semibold truncate">
-          {module.title}
-        </h2>
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="hidden sm:inline text-[11px] font-medium text-gray-400 dark:text-gray-500">{hours(minutes)}</span>
-          <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 light:text-slate-500 tabular-nums">
-            {n}/{module.questions.length}
-          </span>
-          <div className="w-16 sm:w-24 h-1.5 rounded-full bg-gray-200/70 dark:bg-white/10 light:bg-slate-900/[0.06] overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-sky-500 to-indigo-400" style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
-          </div>
-        </div>
-      </div>
+    <div>
+      <ReadingProgress articleRef={articleRef} nDone={nDone} total={qs.length} />
+      <article
+        ref={articleRef}
+        onMouseUp={onMouseUp}
+        onMouseDown={() => setToolbar(null)}
+        onClick={onClick}
+        className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
+      >
+        <header className="mb-8">
+          <p className="text-[13px] font-semibold text-emerald-700 dark:text-emerald-300">{module.tech.label}</p>
+          <h1 className="mt-1.5 text-[30px] sm:text-[34px] leading-tight font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
+            {module.title}
+          </h1>
+          <p className="mt-2.5 text-[14px] text-gray-500 dark:text-gray-400">
+            {qs.length} questions · about {fmt(minutes)} · {nDone}/{qs.length} done
+          </p>
+          {askedSource && <p className="mt-1 text-[12.5px] text-gray-400 dark:text-gray-500">{askedSource}</p>}
+        </header>
 
-      <div className="border-t border-white/60 dark:border-white/[0.06] light:border-slate-900/[0.06] light:bg-slate-50/60 px-2 sm:px-3 py-3 space-y-2">
-        {module.shown.map((q) => (
-          <QuestionRow
+        {qs.map((q, i) => (
+          <QuestionBlock
             key={q.id}
             q={q}
+            last={i === qs.length - 1}
             isDone={!!done[q.id]}
-            isNext={q.id === nextId}
-            isOpen={open.has(q.id)}
             colorMode={colorMode}
             onToggleDone={onToggleDone}
-            onToggleOpen={onToggleOpen}
           />
         ))}
-      </div>
+
+        <div className="mt-12 pt-6 border-t border-gray-200 dark:border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+          {prev ? (
+            <button
+              onClick={() => onGo(prev)}
+              className="h-10 px-4 rounded-xl text-[13.5px] font-semibold border border-gray-300 dark:border-white/[0.14] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+            >
+              ← {prev.title}
+            </button>
+          ) : (
+            <span />
+          )}
+          {next && (
+            <button
+              onClick={() => onGo(next)}
+              className="h-10 px-4 rounded-xl text-[13.5px] font-bold text-white bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/25 hover:brightness-105"
+            >
+              Next: {next.tech.key !== module.tech.key ? `${next.tech.label} · ` : ""}
+              {next.title} →
+            </button>
+          )}
+        </div>
+      </article>
+
+      {toolbar && (
+        <Floating x={toolbar.x} y={toolbar.y}>
+          {COLORS.map((c) => (
+            <Swatch key={c.key} color={c} onPick={() => applyHighlight(c.key)} />
+          ))}
+        </Floating>
+      )}
+      {markMenu && (
+        <Floating x={markMenu.x} y={markMenu.y - 8}>
+          {COLORS.map((c) => (
+            <Swatch key={c.key} color={c} onPick={() => recolor(c.key)} />
+          ))}
+          <span className="w-px h-5 bg-gray-200 dark:bg-white/10 mx-1" />
+          <button
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={remove}
+            className="h-7 px-2 rounded-md text-[12.5px] font-semibold text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+          >
+            Remove
+          </button>
+        </Floating>
+      )}
     </div>
   );
 }
 
-const QuestionRow = memo(function QuestionRow({ q, isDone, isNext, isOpen, colorMode, onToggleDone, onToggleOpen }) {
+// One question: the question as a heading with its tick, then the answer.
+// Memoised on what it shows, so ticking a question never re-renders the other
+// answers (which would move the text the highlights are painted on).
+const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, onToggleDone }) {
   return (
-    <div id={`q-${q.id}`} className="scroll-mt-24">
-      <div
-        onClick={() => onToggleOpen(q.id)}
-        className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 cursor-pointer transition-all ${
-          isDone
-            ? "bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20 light:bg-emerald-50/60 light:border-emerald-600/[0.14]"
-            : `${GLASS_PANEL} hover:border-sky-400/60 dark:hover:border-sky-500/40 light:hover:border-slate-900/[0.14]`
-        } ${isNext ? "ring-1 ring-sky-400/60 dark:ring-sky-500/40 light:ring-sky-500/30" : ""}`}
-      >
-        <span className="w-7 text-right text-[11px] font-extrabold tabular-nums text-gray-400 dark:text-gray-500 light:text-slate-400 shrink-0">
+    <section className={`${last ? "" : "mb-10 pb-10 border-b border-gray-200/80 dark:border-white/[0.07]"}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
+      <div className="flex items-start gap-3 mb-4">
+        <span className="mt-1 shrink-0 w-7 h-7 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-300 text-[12.5px] font-bold flex items-center justify-center tabular-nums">
           {q.number}
         </span>
-        <span
-          className={`flex-1 min-w-0 text-[13px] font-semibold ${
-            isDone ? "text-gray-400 dark:text-gray-500 light:text-slate-400 line-through decoration-1" : "text-gray-800 dark:text-gray-100 light:text-slate-900 light:font-medium"
-          }`}
-        >
-          {q.question}
-        </span>
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {isNext && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 font-bold border border-sky-500/30 light:bg-sky-50 light:text-sky-700">
-              Next
+        <h2 className="flex-1 min-w-0 text-[21px] sm:text-[22px] leading-snug font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
+          <InlineCode text={q.question} />
+        </h2>
+        <div className="shrink-0 flex items-center gap-2 mt-0.5">
+          {q.asked > 0 && (
+            <span
+              title={`Asked in ${q.asked} interview write-up${q.asked === 1 ? "" : "s"}`}
+              className="hidden sm:inline text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/25 whitespace-nowrap"
+            >
+              asked {q.asked}×
             </span>
           )}
-          <span className="hidden sm:inline text-[10.5px] font-semibold text-gray-400 dark:text-gray-500 tabular-nums w-8 text-right">{q.minutes}m</span>
+          <span className="hidden sm:inline text-[12px] text-gray-400 dark:text-gray-500 tabular-nums">{q.minutes}m</span>
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleDone(q.id, !isDone);
-            }}
-            title={isDone ? "Mark not done" : "Mark done"}
-            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${
+            onClick={() => onToggleDone(q.id, !isDone)}
+            title={isDone ? "Done — click to mark not done" : "Mark this question done"}
+            className={`h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-bold border transition-colors ${
               isDone
-                ? "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/30"
-                : "border-gray-300 dark:border-slate-600 hover:border-emerald-400 light:border-slate-300 light:bg-white"
+                ? "bg-emerald-500 border-emerald-500 text-white"
+                : "border-gray-300 dark:border-white/[0.16] text-gray-600 dark:text-gray-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
             }`}
           >
-            {isDone && (
-              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
-                <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
+            <DoneCircle done={isDone} className="w-4 h-4" onColor="text-white" />
+            {isDone ? "Done" : "Mark done"}
           </button>
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 light:text-slate-400">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16">
-              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </motion.div>
         </div>
       </div>
+      <Answer qid={q.id} source={q.answer} colorMode={colorMode} />
+    </section>
+  );
+});
 
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="mx-1 mt-2 mb-1 rounded-xl border border-gray-200/90 dark:border-white/[0.07] bg-white/60 dark:bg-white/[0.03] light:bg-white light:border-slate-900/[0.07] px-4 sm:px-5 py-4">
-              <div className="note-md" data-color-mode={colorMode} style={{ "--note-fs": "15px" }}>
-                <MarkdownPreview source={q.answer} style={{ background: "transparent" }} wrapperElement={{ "data-color-mode": colorMode }} />
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button
-                  onClick={() => {
-                    if (!isDone) onToggleDone(q.id, true);
-                    onToggleOpen(q.id);
-                  }}
-                  className="h-8 px-3 rounded-lg text-[12.5px] font-semibold border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/15"
-                >
-                  {isDone ? "Close" : "Got it — mark done"}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+const Answer = memo(function Answer({ qid, source, colorMode }) {
+  return (
+    <div data-answer={qid} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": "17px" }}>
+      <MarkdownPreview source={source} style={{ background: "transparent" }} wrapperElement={{ "data-color-mode": colorMode }} />
     </div>
   );
 });
+
+// ── Top strip: how far down this module you've read ───────────────────────────
+
+function ReadingProgress({ articleRef, nDone, total }) {
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const el = articleRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      setPct(span <= 0 ? 100 : Math.min(100, Math.max(0, (-rect.top / span) * 100)));
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [articleRef]);
+
+  // A strip of its own above the text, with a solid background, so it never
+  // sits on top of a line you're reading. On small screens it stacks under
+  // the sticky module picker.
+  return (
+    <div className="sticky top-[57px] lg:top-0 z-20 bg-white dark:bg-[#0e1427] border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]">
+      <div className="px-5 sm:px-10 lg:px-16 py-2.5 flex items-center gap-4">
+        <div className="flex-1 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden" title={`${Math.round(pct)}% read`}>
+          <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${pct}%` }} />
+        </div>
+        <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
+          {nDone}/{total} done
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ── Small pieces ──────────────────────────────────────────────────────────────
+
+// A question title with its `code` spans shown as code.
+function InlineCode({ text }) {
+  return text.split(/(`[^`]+`)/g).map((part, i) =>
+    part.startsWith("`") && part.endsWith("`") && part.length > 2 ? (
+      <code
+        key={i}
+        className="px-1.5 py-0.5 rounded-md text-[0.85em] font-mono font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-200"
+      >
+        {part.slice(1, -1)}
+      </code>
+    ) : (
+      part
+    )
+  );
+}
+
+function Floating({ x, y, children }) {
+  return (
+    <div
+      className="fixed z-50 -translate-x-1/2 -translate-y-full flex items-center gap-1 p-1.5 rounded-xl bg-white dark:bg-[#151c33] border border-gray-200 dark:border-white/[0.1] shadow-xl"
+      style={{ left: Math.max(90, Math.min(x, window.innerWidth - 90)), top: Math.max(56, y - 8) }}
+      onMouseDown={(e) => e.preventDefault()}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Swatch({ color, onPick }) {
+  return (
+    <button
+      title={`Highlight ${color.label.toLowerCase()}`}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onPick}
+      className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+    >
+      <span className="w-4 h-4 rounded-full border border-black/10" style={{ background: color.swatch }} />
+    </button>
+  );
+}
+
+function DoneCircle({ done, className = "w-4 h-4", onColor = "text-emerald-500" }) {
+  return done ? (
+    <svg className={`${className} ${onColor} shrink-0`} viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="9" fill="currentColor" className={onColor === "text-white" ? "opacity-25" : ""} />
+      <path d="M6 10.2l2.6 2.6L14 7.4" stroke={onColor === "text-white" ? "currentColor" : "white"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : (
+    <svg className={`${className} text-gray-300 dark:text-gray-600 shrink-0`} viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="8.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}

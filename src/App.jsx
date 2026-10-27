@@ -99,11 +99,13 @@ function App() {
           <Route path="/hld-prep" element={<OwnerRoute />}>
             <Route path="/hld-prep" element={<HLDPrep />} />
           </Route>
-          {/* Owner-only, like HLD: the JS, React and Node.js question banks. */}
+          {/* Owner-only, like HLD: the JS · React · Node and Python · FastAPI question banks. */}
           <Route element={<OwnerRoute />}>
-            <Route path="/javascript" element={<WebBasics techKey="javascript" />} />
-            <Route path="/react" element={<WebBasics techKey="react" />} />
-            <Route path="/nodejs" element={<WebBasics techKey="nodejs" />} />
+            <Route path="/javascript/:mod?" element={<WebBasics techKey="javascript" />} />
+            <Route path="/react/:mod?" element={<WebBasics techKey="react" />} />
+            <Route path="/nodejs/:mod?" element={<WebBasics techKey="nodejs" />} />
+            <Route path="/python/:mod?" element={<WebBasics techKey="python" />} />
+            <Route path="/fastapi/:mod?" element={<WebBasics techKey="fastapi" />} />
           </Route>
           <Route path="/planning" element={<Planning />} />
           <Route path="/contests" element={<Contests />} />
