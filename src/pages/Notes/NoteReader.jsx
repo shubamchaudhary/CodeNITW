@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
+import ProgressStrip from "../../components/ProgressStrip";
 import { toast } from "react-toastify";
 import { requireAuth } from "../../Data/authGate";
 import { ASSET_PREFIX } from "../../Data/noteAssets";
@@ -198,7 +199,7 @@ export default function NoteReader({
   onAnnotationsChange,
   learnt = {},
   onToggleLearnt,
-  railTop = null, // pinned at the top of the side column (the full screen button)
+  railTop = null, // on the right of the progress strip (the full screen button)
   railTopShown = false, // folded away (and out of the tab order) while false
 }) {
   const navTop = topOffset;
@@ -215,8 +216,6 @@ export default function NoteReader({
   const [toolbar, setToolbar] = useState(null); // selection toolbar
   const [markMenu, setMarkMenu] = useState(null); // clicked highlight
   const [notePop, setNotePop] = useState(null); // { mode: new|view|edit, id?, anchor?, top, left }
-  const [panel, setPanel] = useState("contents"); // right column: contents | notes
-  const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
   const [placed, setPlaced] = useState({ order: [], badges: [] }); // located notes + margin markers
   const articleRef = useRef(null);
@@ -230,7 +229,7 @@ export default function NoteReader({
 
   const isEmpty = !text.trim();
 
-  // ── Scroll: reading progress and the contents column's active entry ──
+  // ── Scroll: reading progress (the strip above the note) ──
   useEffect(() => {
     let frame = 0;
     const measure = () => {
@@ -241,13 +240,6 @@ export default function NoteReader({
       const span = rect.height - (window.innerHeight - navTop);
       setProgress(span > 0 ? Math.min(1, Math.max(0, (navTop - rect.top) / span)) : 1);
 
-      const els = article.querySelectorAll("section[data-sec]");
-      let current = 0;
-      for (const el of els) {
-        if (el.getBoundingClientRect().top <= navTop + 120) current = Number(el.dataset.sec);
-        else break;
-      }
-      setActive(current);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(measure);
@@ -704,7 +696,7 @@ export default function NoteReader({
     [sections]
   );
   // The topics you can mark as learnt: the outline-level headings — the same
-  // entries the contents column lists at its top level. Keyed by heading text
+  // outline-level headings of the note. Keyed by heading text
   // (a repeated heading gets #2, #3…), so the mark follows the topic even when
   // sections are added or moved around it.
   const topicKeys = useMemo(() => {
@@ -722,22 +714,12 @@ export default function NoteReader({
   const learntCount = useMemo(() => [...topicKeys.values()].filter((k) => learnt[k]).length, [topicKeys, learnt]);
   const toggleLearntTopic = useCallback((key) => onToggleLearnt?.(key, [...topicKeys.values()]), [onToggleLearnt, topicKeys]);
 
-  const activeTocId = useMemo(() => {
-    let id = toc[0]?.id;
-    for (const entry of toc) if (entry.index <= active) id = entry.id;
-    return id;
-  }, [toc, active]);
-
-  const jumpTo = useCallback((id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-
   const byId = useMemo(() => new Map(annotations.map((a) => [a.id, a])), [annotations]);
   const popNote = notePop?.id ? byId.get(notePop.id) : null;
 
   return (
     <div>
-      {/* One surface for the note and its side column, split by a hairline.
+      {/* One surface for the note, under its progress strip.
           Solid, not frosted: backdrop blur would make the floating toolbars'
           fixed positioning relative to this box instead of the window. */}
       <div
@@ -752,7 +734,17 @@ export default function NoteReader({
         // window with no frame, so nothing of the backdrop shows around it.
         style={immersive ? { minHeight: `calc(100vh - ${navTop}px)` } : undefined}
       >
-        <div className="grid xl:grid-cols-[minmax(0,1fr)_19rem] 2xl:grid-cols-[minmax(0,1fr)_21rem]">
+        {/* The one piece of side information: how far down the note you are,
+            pinned above the text. */}
+        <ProgressStrip pct={progress * 100} style={{ top: navTop }}>
+          {topicKeys.size > 0 && (
+            <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
+              {learntCount}/{topicKeys.size} learnt
+            </span>
+          )}
+          {railTop && railTopShown && railTop}
+        </ProgressStrip>
+        <div>
           <article
             ref={articleRef}
             onMouseUp={onMouseUp}
@@ -763,9 +755,6 @@ export default function NoteReader({
             className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
           >
             {lead}
-            {toc.length > 2 && (
-              <MobileContents toc={toc} activeId={activeTocId} onJump={jumpTo} topicKeys={topicKeys} learnt={learnt} />
-            )}
 
             <div ref={mdRef} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": `${fontSize}px` }}>
               {isEmpty && readOnly && <p className="py-16 text-center text-[15px] text-gray-500 dark:text-gray-400">This version was empty.</p>}
@@ -904,39 +893,6 @@ export default function NoteReader({
             )}
           </article>
 
-          {/* The side column: part of the same page, pinned while the note scrolls. */}
-          <aside className="hidden xl:block border-l border-gray-200/90 dark:border-white/[0.07]">
-            <div className="sticky px-7 pt-10 pb-6" style={{ top: navTop }}>
-              {railTop && (
-                <div
-                  className={`grid transition-[grid-template-rows,opacity,margin,visibility] duration-200 ease-out ${
-                    railTopShown ? "grid-rows-[1fr] opacity-100 mb-6 visible" : "grid-rows-[0fr] opacity-0 mb-0 invisible"
-                  }`}
-                >
-                  <div className="min-h-0 overflow-hidden flex justify-end">{railTop}</div>
-                </div>
-              )}
-              <SidePanel
-                panel={panel}
-                setPanel={setPanel}
-                toc={toc}
-                activeId={activeTocId}
-                activeIndex={active}
-                progress={progress}
-                onJump={jumpTo}
-                accent={accent}
-                topOffset={navTop + (railTop && railTopShown ? 60 : 0)}
-                notes={placed.order.map((id) => byId.get(id)).filter(Boolean)}
-                orphans={placed.orphans}
-                openNoteId={notePop?.id}
-                onOpenNote={(id) => openNote(id, { scroll: true })}
-                onDeleteNote={deleteNote}
-                topicKeys={topicKeys}
-                learnt={learnt}
-                learntCount={learntCount}
-              />
-            </div>
-          </aside>
         </div>
       </div>
 
@@ -1378,237 +1334,6 @@ function outlineLevel(toc) {
 // Which entries to list: everything at the outline level, plus the
 // sub-headings of the part you are reading. A 13-topic note with ten
 // sub-headings each stays a short list instead of 130 lines.
-function visibleEntries(toc, activeIndex) {
-  const top = outlineLevel(toc);
-  let group = -1; // index into toc of the outline entry you are inside
-  toc.forEach((t, i) => {
-    if (t.level === top && t.index <= activeIndex) group = i;
-  });
-  const out = [];
-  let parent = -1;
-  toc.forEach((t, i) => {
-    if (t.level < top) {
-      // A heading above the outline is the note's title — the page header
-      // already shows the topic, and "Back to top" goes there.
-      parent = -1;
-    } else if (t.level === top) {
-      parent = i;
-      out.push(t);
-    } else if (parent === group && group !== -1) out.push(t);
-  });
-  return { entries: out.length ? out : toc, top };
-}
-
-// Keep one entry in view inside a list that scrolls without a scrollbar —
-// scroll the list itself, never the page.
-function useKeepInView(listRef, selector, deps) {
-  useEffect(() => {
-    const list = listRef.current;
-    const el = selector && list?.querySelector(selector);
-    if (!list || !el) return;
-    const above = el.offsetTop - list.scrollTop;
-    const below = above + el.offsetHeight - list.clientHeight;
-    if (above < 24) list.scrollTo({ top: el.offsetTop - 24, behavior: "smooth" });
-    else if (below > -24) list.scrollTo({ top: el.offsetTop - list.clientHeight + el.offsetHeight + 24, behavior: "smooth" });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-}
-
-function SidePanel({
-  panel,
-  setPanel,
-  toc,
-  activeId,
-  activeIndex,
-  progress,
-  onJump,
-  accent,
-  topOffset,
-  notes,
-  orphans,
-  openNoteId,
-  onOpenNote,
-  onDeleteNote,
-  topicKeys,
-  learnt,
-  learntCount,
-}) {
-  const listRef = useRef(null);
-  const { entries, top } = useMemo(() => visibleEntries(toc, activeIndex), [toc, activeIndex]);
-  const minLevel = Math.min(...entries.map((t) => t.level), top);
-  useKeepInView(listRef, panel === "contents" ? `[data-toc="${activeId}"]` : openNoteId && `[data-note="${openNoteId}"]`, [
-    panel,
-    activeId,
-    entries.length,
-    openNoteId,
-  ]);
-
-  const listStyle = { maxHeight: `calc(100vh - ${topOffset + 230}px)` };
-  const tab = (key, label) => (
-    <button
-      onClick={() => setPanel(key)}
-      className={`pb-2 -mb-px border-b-2 text-[15px] font-semibold transition-colors ${
-        panel === key
-          ? "border-current text-gray-900 dark:text-gray-50"
-          : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-      }`}
-    >
-      {label}
-    </button>
-  );
-
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] font-medium text-gray-500 dark:text-gray-400">Reading progress</p>
-        <span className={`text-[12px] font-bold tabular-nums ${accent.text}`}>{Math.round(progress * 100)}%</span>
-      </div>
-      <div className="mt-2 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] overflow-hidden">
-        <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar} transition-[width] duration-200`} style={{ width: `${progress * 100}%` }} />
-      </div>
-
-      {topicKeys.size > 0 && (
-        <>
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-[13px] font-medium text-gray-500 dark:text-gray-400">Topics learnt</p>
-            <span className="text-[12px] font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-              {learntCount}/{topicKeys.size}
-            </span>
-          </div>
-          <div className="mt-2 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] overflow-hidden">
-            <div
-              className="h-full rounded-full bg-emerald-500 transition-[width] duration-300"
-              style={{ width: `${(learntCount / topicKeys.size) * 100}%` }}
-            />
-          </div>
-        </>
-      )}
-
-      <div className="mt-7 mb-3 flex items-end gap-5 border-b border-gray-200/90 dark:border-white/[0.07]">
-        {tab("contents", "On this page")}
-        {tab("notes", `Notes${notes.length ? ` · ${notes.length}` : ""}`)}
-      </div>
-
-      {panel === "contents" ? (
-        entries.length ? (
-          <nav ref={listRef} className="note-toc relative overflow-y-auto -ml-2" style={listStyle}>
-            {entries.map((t) => {
-              const on = t.id === activeId;
-              const depth = t.level - minLevel;
-              const key = topicKeys.get(t.index);
-              const done = !!(key && learnt[key]);
-              return (
-                <button
-                  key={t.id}
-                  data-toc={t.id}
-                  onClick={() => onJump(t.id)}
-                  title={t.title}
-                  style={{ paddingLeft: `${8 + depth * 16}px` }}
-                  className={`flex w-full items-start gap-2 text-left pr-2 rounded-md leading-snug transition-colors ${
-                    depth === 0 ? "py-1.5 text-[14.5px]" : "py-1 text-[13.5px]"
-                  } ${
-                    on
-                      ? `${accent.text} font-semibold`
-                      : done
-                      ? "text-emerald-700 dark:text-emerald-300 font-medium hover:text-emerald-800 dark:hover:text-emerald-200"
-                      : depth === 0
-                      ? "text-gray-700 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white"
-                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                  }`}
-                >
-                  {key && (
-                    <span className={`mt-[2px] ${done ? "" : "text-gray-300 dark:text-gray-600"}`} title={done ? "Learnt" : "Not learnt yet"}>
-                      <CheckCircle done={done} />
-                    </span>
-                  )}
-                  <span className="line-clamp-2">{t.title}</span>
-                </button>
-              );
-            })}
-          </nav>
-        ) : (
-          <p className="text-[13px] text-gray-400 dark:text-gray-500">Add headings (## …) and they show up here.</p>
-        )
-      ) : notes.length ? (
-        <div ref={listRef} className="note-toc overflow-y-auto space-y-2 -mx-1 px-1" style={listStyle}>
-          {notes.map((n) => {
-            const lost = orphans?.has(n.id);
-            return (
-              <div
-                key={n.id}
-                data-note={n.id}
-                className={`rounded-xl border px-3 py-2.5 transition-colors ${
-                  openNoteId === n.id
-                    ? "border-amber-300 dark:border-amber-400/40 bg-amber-50/80 dark:bg-amber-400/[0.07]"
-                    : "border-gray-200/90 dark:border-white/[0.07] hover:border-amber-300/80 dark:hover:border-amber-400/30"
-                }`}
-              >
-                <button onClick={() => !lost && onOpenNote(n.id)} className="block w-full text-left" disabled={lost}>
-                  <p className="border-l-2 border-amber-300 dark:border-amber-400/50 pl-2 text-[12px] italic text-gray-500 dark:text-gray-400 line-clamp-2">
-                    {n.quote}
-                  </p>
-                  <p className="mt-1.5 text-[13.5px] leading-snug text-gray-800 dark:text-gray-100 line-clamp-3 whitespace-pre-line">{n.body}</p>
-                </button>
-                {lost && (
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold text-rose-500 dark:text-rose-400">That text changed — note unpinned</span>
-                    <button onClick={() => onDeleteNote(n.id)} className="text-[11px] font-bold text-gray-400 hover:text-rose-500">
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <p className="text-[13px] leading-relaxed text-gray-400 dark:text-gray-500">
-          Select any text — a line of code, a question, an answer — and choose <b className="font-semibold">Note</b> to pin your own note to it.
-        </p>
-      )}
-
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="mt-4 text-[12.5px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200"
-      >
-        ↑ Back to top
-      </button>
-    </div>
-  );
-}
-
-function MobileContents({ toc, activeId, onJump, topicKeys, learnt }) {
-  const minLevel = Math.min(...toc.map((t) => t.level), 3);
-  return (
-    <details className="xl:hidden mb-6 rounded-xl border border-gray-200/90 dark:border-white/[0.08] bg-gray-50/70 dark:bg-white/[0.02] px-4 py-2.5">
-      <summary className="cursor-pointer text-[13px] font-bold text-gray-600 dark:text-gray-300">On this page</summary>
-      <div className="mt-2 max-h-72 overflow-y-auto">
-        {toc.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => onJump(t.id)}
-            style={{ paddingLeft: `${(t.level - minLevel) * 12}px` }}
-            className={`flex w-full items-start gap-2 text-left py-1 text-[13px] ${
-              t.id === activeId
-                ? "font-semibold text-gray-900 dark:text-white"
-                : learnt[topicKeys.get(t.index)]
-                ? "text-emerald-700 dark:text-emerald-300"
-                : "text-gray-500 dark:text-gray-400"
-            }`}
-          >
-            {topicKeys.has(t.index) && (
-              <span className={`mt-[1px] ${learnt[topicKeys.get(t.index)] ? "" : "text-gray-300 dark:text-gray-600"}`}>
-                <CheckCircle done={!!learnt[topicKeys.get(t.index)]} className="w-3.5 h-3.5" />
-              </span>
-            )}
-            {t.title}
-          </button>
-        ))}
-      </div>
-    </details>
-  );
-}
-
 function NoteIcon({ className }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 16 16">
