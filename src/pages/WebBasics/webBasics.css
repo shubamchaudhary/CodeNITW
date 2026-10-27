@@ -31,27 +31,3 @@
   display: table;
   width: 100%;
 }
-
-/* Light mode on these pages reads like paper: a slightly warm, dimmer white,
-   so long study sessions are easier on the eyes. Dark mode is untouched. */
-html:not(.dark) .wb-page,
-html:not(.dark) .wb-page .wb-surface {
-  background-color: #fbf8f1;
-}
-html:not(.dark) .wb-page .wb-side {
-  background-color: #f6f1e6;
-  border-color: #e9e1d0;
-}
-html:not(.dark) .wb-page .wb-line {
-  border-color: #ebe4d4;
-}
-html:not(.dark) .wb-page .note-md[data-color-mode="light"] .wmde-markdown {
-  --color-fg-default: #2a2620;
-  --color-canvas-subtle: #f3eee3;
-  --color-border-default: #e6dece;
-  --color-border-muted: #ede6d7;
-  --nm-code-bg: #f5f0e5;
-  --nm-code-border: #e6dece;
-  --nm-table-head: #f0eadc;
-  --nm-quote-bg: rgba(180, 140, 60, 0.07);
-}

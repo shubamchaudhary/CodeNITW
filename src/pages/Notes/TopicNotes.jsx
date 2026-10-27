@@ -25,6 +25,7 @@ import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../
 import { recordNow, restoreVersion } from "../../Data/noteHistory";
 import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import StackNav from "./StackNav";
+import ResizableSide from "../../components/ResizableSide";
 import TopicLead from "./TopicLead";
 import AskedQuestions from "./AskedQuestions";
 import HistoryPanel, { describeVersion } from "./HistoryPanel";
@@ -481,9 +482,9 @@ export default function TopicNotes() {
   );
 
   // One Full screen button on screen at a time: the toolbar's while it's in
-  // view, and once it scrolls up under the site header, a copy at the top of
-  // the side column, which stays pinned. With no toolbar button (an older
-  // version open), the side column's shows from the start.
+  // view, and once it scrolls up under the site header, a copy on the right of
+  // the pinned progress strip. With no toolbar button (an older version open),
+  // the strip's shows from the start.
   const [toolbarFsEl, setToolbarFsEl] = useState(null);
   const [toolbarFsSeen, setToolbarFsSeen] = useState(true);
   useEffect(() => {
@@ -529,7 +530,7 @@ export default function TopicNotes() {
   );
 
   // `place`: "toolbar" (beside the text size), "bar" (full screen's slim bar)
-  // or "rail" (the side column, for when the toolbar has scrolled away).
+  // or "rail" (the progress strip, for when the toolbar has scrolled away).
   const fullScreenButton = (place) => (
     <button
       ref={place === "toolbar" ? setToolbarFsEl : undefined}
@@ -684,11 +685,9 @@ export default function TopicNotes() {
 
       <div className="flex">
         {!immersive && (
-          <aside className="hidden lg:block w-[300px] shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07]">
-            <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
-              {nav}
-            </div>
-          </aside>
+          <ResizableSide footerHeight={footerHeight} prefKey="notesSide">
+            {nav}
+          </ResizableSide>
         )}
 
         <main className="flex-1 min-w-0">

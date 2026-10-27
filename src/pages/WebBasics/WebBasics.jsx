@@ -6,6 +6,8 @@ import "@uiw/react-markdown-preview/markdown.css";
 import "../Notes/notes.css";
 import "./webBasics.css";
 import PageSkeleton from "../../components/PageSkeleton";
+import ResizableSide from "../../components/ResizableSide";
+import ProgressStrip, { FullScreenButton } from "../../components/ProgressStrip";
 import useIsDark from "../../hooks/useIsDark";
 import { KEYS, loadJSON, saveJSON, setSourceComplete, subscribe } from "../../Data/planStore";
 import { WEB_BASICS, ASKED_SOURCE, parseQuestionBank } from "../../Data/WebBasics";
@@ -178,7 +180,7 @@ export default function WebBasics({ techKey }) {
     <div className="wb-page min-h-screen bg-white dark:bg-[#0e1427]">
       <div className="flex">
         {!immersive && (
-          <ResizableSide footerHeight={footerHeight}>
+          <ResizableSide footerHeight={footerHeight} prefKey="webBasicsSide" className="wb-side">
             {nav}
           </ResizableSide>
         )}
@@ -223,96 +225,6 @@ export default function WebBasics({ techKey }) {
         </main>
       </div>
     </div>
-  );
-}
-
-// ── Left column: resizable, and drags shut ────────────────────────────────────
-
-// Drag its right edge to resize it; drag it narrower than COLLAPSE_AT and it
-// closes to a thin rail at the left edge, which drags (or clicks) open again.
-// The width and whether it's open are remembered on this device.
-const SIDE_PREF = "webBasicsSide";
-const SIDE_MIN = 220;
-const SIDE_MAX = 520;
-const COLLAPSE_AT = 150;
-function loadSide() {
-  try {
-    return { width: 300, open: true, ...JSON.parse(localStorage.getItem(SIDE_PREF) || "{}") };
-  } catch (_) {
-    return { width: 300, open: true };
-  }
-}
-
-function ResizableSide({ footerHeight, children }) {
-  const [side, setSide] = useState(loadSide);
-  const [dragW, setDragW] = useState(null); // live width while dragging
-  const save = (next) => {
-    setSide(next);
-    try {
-      localStorage.setItem(SIDE_PREF, JSON.stringify(next));
-    } catch (_) {}
-  };
-
-  // One drag handler for both the edge (open) and the rail (closed). A press
-  // that never moves is a click: on the rail it opens the column.
-  const startDrag = (e) => {
-    e.preventDefault();
-    const left = e.currentTarget.closest("[data-side]").getBoundingClientRect().left;
-    const startX = e.clientX;
-    let moved = false;
-    let last = side.open ? side.width : 0;
-    const onMove = (ev) => {
-      if (Math.abs(ev.clientX - startX) > 3) moved = true;
-      last = Math.min(SIDE_MAX, Math.max(0, ev.clientX - left));
-      setDragW(last);
-    };
-    const onUp = () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-      setDragW(null);
-      if (!moved) {
-        if (!side.open) save({ ...side, open: true });
-        return;
-      }
-      if (last < COLLAPSE_AT) save({ ...side, open: false });
-      else save({ width: Math.max(SIDE_MIN, last), open: true });
-    };
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-  };
-
-  const width = dragW != null ? dragW : side.open ? side.width : 0;
-  const closed = width < COLLAPSE_AT;
-
-  return (
-    <aside
-      data-side
-      className={`wb-side hidden lg:block relative shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07] ${
-        dragW == null ? "transition-[width] duration-200" : ""
-      }`}
-      style={{ width: closed ? 14 : width }}
-    >
-      <div className="sticky top-0 overflow-hidden" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
-        {!closed && <div style={{ width }}>{children}</div>}
-        <div
-          onPointerDown={startDrag}
-          title={closed ? "Drag or click to show the topics" : "Drag to resize — drag all the way left to hide"}
-          className={`group absolute top-0 right-0 h-full cursor-col-resize flex items-center justify-center ${closed ? "w-[14px]" : "w-2.5"}`}
-        >
-          <span
-            className={`rounded-full transition-colors ${
-              closed
-                ? "w-1 h-14 bg-gray-300 dark:bg-white/20 group-hover:bg-emerald-500"
-                : "w-[3px] h-full bg-transparent group-hover:bg-emerald-400/50"
-            }`}
-          />
-        </div>
-      </div>
-    </aside>
   );
 }
 
@@ -703,37 +615,15 @@ function ReadingProgress({ articleRef, nDone, total, title, immersive, onToggleI
     };
   }, [articleRef]);
 
-  // A strip of its own above the text, with a solid background, so it never
-  // sits on top of a line you're reading. On small screens it stacks under
-  // the sticky module picker; in full screen it's the only bar, with the title.
+  // On small screens it stacks under the sticky module picker; in full screen
+  // it's the only bar, so it carries the title.
   return (
-    <div
-      className={`sticky ${immersive ? "top-0" : "top-[57px] lg:top-0"} z-20 wb-surface wb-line bg-white dark:bg-[#0e1427] border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]`}
-    >
-      <div className="px-5 sm:px-10 lg:px-16 py-2 flex items-center gap-4">
-        {immersive && (
-          <span className="hidden md:block max-w-[40%] truncate text-[13.5px] font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{title}</span>
-        )}
-        <div className="flex-1 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden" title={`${Math.round(pct)}% read`}>
-          <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400" style={{ width: `${pct}%` }} />
-        </div>
-        <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
-          {nDone}/{total} done
-        </span>
-        <button
-          onClick={onToggleImmersive}
-          title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
-          className="shrink-0 h-8 px-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700"
-        >
-          {immersive ? (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          ) : (
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          )}
-          <span className="hidden sm:inline">{immersive ? "Exit full screen" : "Full screen"}</span>
-        </button>
-      </div>
-    </div>
+    <ProgressStrip pct={pct} label={immersive ? title : null} className={immersive ? "top-0" : "top-[57px] lg:top-0"}>
+      <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
+        {nDone}/{total} done
+      </span>
+      <FullScreenButton immersive={immersive} onClick={onToggleImmersive} />
+    </ProgressStrip>
   );
 }
 
