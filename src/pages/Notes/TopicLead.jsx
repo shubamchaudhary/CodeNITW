@@ -16,7 +16,7 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
     <header className="mb-10">
       <p className="text-[17px] sm:text-[19px] text-gray-500 dark:text-gray-400 light:text-slate-500">
         {stack.eyebrow(topic)}
-        <span className={`ml-2.5 align-middle text-[12px] font-bold ${tag.cls}`}>{tag.label}</span>
+        {tag && <span className={`ml-2.5 align-middle text-[12px] font-bold ${tag.cls}`}>{tag.label}</span>}
       </p>
       <h1 className="mt-1 text-[30px] sm:text-[38px] lg:text-[42px] font-bold tracking-tight leading-[1.12] text-gray-900 dark:text-gray-50 light:text-slate-900 light:tracking-[-0.025em]">
         {topic.title}

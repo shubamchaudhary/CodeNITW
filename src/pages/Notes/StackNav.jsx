@@ -140,7 +140,7 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
                           {planned.has(t.id) && (
                             <span title="On today's plan" className="mt-[7px] w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
                           )}
-                          <span className={`mt-[2px] text-[10.5px] font-bold tabular-nums shrink-0 ${tag.cls}`}>{tag.label}</span>
+                          {tag && <span className={`mt-[2px] text-[10.5px] font-bold tabular-nums shrink-0 ${tag.cls}`}>{tag.label}</span>}
                         </button>
                       </li>
                     );

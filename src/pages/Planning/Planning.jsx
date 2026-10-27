@@ -969,7 +969,7 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
 }
 
 // ─── Card Picker ─────────────────────────────────────────────────────────────
-function CardPicker({ dayItems, onClose, onAdd, showAI }) {
+function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
   const [tab, setTab] = useState("custom");
   const [query, setQuery] = useState("");
   const [customTitle, setCustomTitle] = useState("");
@@ -990,9 +990,9 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
   const coreStackResults = useMemo(() => {
     if (tab !== "corestack") return [];
     return CORE_STACK_TOPICS.filter(
-      (t) => !q || t.title.toLowerCase().includes(q) || t.priority.toLowerCase() === q
+      (t) => !q || t.title.toLowerCase().includes(q) || (showPriority && t.priority.toLowerCase() === q)
     );
-  }, [tab, q]);
+  }, [tab, q, showPriority]);
 
   const aiStackResults = useMemo(() => {
     if (tab !== "aistack" || !showAI) return [];
@@ -1097,7 +1097,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
                       onClick={() => onAdd(coreStackPlanItem(t))}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10"}`}
                     >
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>
+                      {showPriority && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>}
                       <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{t.title}</span>
                       <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
@@ -1249,7 +1249,8 @@ function CardPicker({ dayItems, onClose, onAdd, showAI }) {
 // ─── Planning Page ───────────────────────────────────────────────────────────
 const Planning = () => {
   const [authReady, setAuthReady] = useState(false);
-  // AI Stack is owner-only, so its topics stay out of the picker for anyone else.
+  // AI Stack is owner-only, so its topics stay out of the picker for anyone
+  // else, and so are Core Stack priorities.
   const [canSeeAI, setCanSeeAI] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   useEffect(() => {
@@ -1815,7 +1816,7 @@ const Planning = () => {
 
       <AnimatePresence>
         {pickerOpen && (
-          <CardPicker dayItems={items} onClose={() => setPickerOpen(false)} onAdd={addItem} showAI={canSeeAI} />
+          <CardPicker dayItems={items} onClose={() => setPickerOpen(false)} onAdd={addItem} showAI={canSeeAI} showPriority={canSeeAI} />
         )}
       </AnimatePresence>
     </PageShell>

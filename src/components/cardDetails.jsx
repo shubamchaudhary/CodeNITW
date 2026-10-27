@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { getAuth } from "firebase/auth";
+import { isOwner } from "./OwnerRoute";
 import { CATEGORY_CONFIG } from "../Data/JobHuntPlan";
 import { GLASS_PANEL } from "./glass";
 
@@ -179,10 +181,12 @@ export function CopyButton({ value, label = "Copy", title, className = "" }) {
 // the Planning page so a planned topic shows the same detail in both places.
 export function CoreStackTopicDetail({ topic, note, checkedDays }) {
   if (!topic) return null;
+  // The why and the questions are the owner's own research (see stackForViewer).
+  const owner = isOwner(getAuth().currentUser);
 
   return (
     <div>
-      {topic.why && (
+      {owner && topic.why && (
         <div className="mb-3 flex items-start gap-2 rounded-lg px-3 py-2 bg-slate-500/[0.07] border border-slate-500/20">
           <span className="text-[13px] shrink-0">🎯</span>
           <p className="text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed">{topic.why}</p>
@@ -196,12 +200,14 @@ export function CoreStackTopicDetail({ topic, note, checkedDays }) {
         linkHover="hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-300"
       />
 
-      <QuestionList
-        questions={topic.questions}
-        barClass="from-emerald-400 to-teal-400"
-        title={topic.asked ? "Asked in interviews" : "Interview questions"}
-        prompt={topic.asked ? "answers are in the notes" : "answer cold, before watching"}
-      />
+      {owner && (
+        <QuestionList
+          questions={topic.questions}
+          barClass="from-emerald-400 to-teal-400"
+          title={topic.asked ? "Asked in interviews" : "Interview questions"}
+          prompt={topic.asked ? "answers are in the notes" : "answer cold, before watching"}
+        />
+      )}
 
       <NotesLink
         source="corestack"
