@@ -499,7 +499,7 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
           {q.number}
         </span>
         <h2 className="flex-1 min-w-0 text-[21px] sm:text-[22px] leading-snug font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
-          {q.question}
+          <InlineCode text={q.question} />
         </h2>
         <div className="shrink-0 flex items-center gap-2 mt-0.5">
           {q.asked > 0 && (
@@ -583,6 +583,22 @@ function ReadingProgress({ articleRef, nDone, total }) {
 }
 
 // ── Small pieces ──────────────────────────────────────────────────────────────
+
+// A question title with its `code` spans shown as code.
+function InlineCode({ text }) {
+  return text.split(/(`[^`]+`)/g).map((part, i) =>
+    part.startsWith("`") && part.endsWith("`") && part.length > 2 ? (
+      <code
+        key={i}
+        className="px-1.5 py-0.5 rounded-md text-[0.85em] font-mono font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-200"
+      >
+        {part.slice(1, -1)}
+      </code>
+    ) : (
+      part
+    )
+  );
+}
 
 function Floating({ x, y, children }) {
   return (
