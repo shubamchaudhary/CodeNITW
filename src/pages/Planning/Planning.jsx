@@ -13,7 +13,7 @@ import {
   AIStackTopicDetail,
   ProjectTopicDetail,
 } from "../../components/cardDetails";
-import { GLASS, GLASS_ROW, LIGHT_BUTTON } from "../../components/glass";
+import { Button, buttonClass, Icon, Kbd, ProgressBar } from "../../components/ui";
 import PageShell from "../../components/PageShell";
 import {
   CORE_STACK_TOPICS,
@@ -272,6 +272,103 @@ const SOURCE_META = {
 
 const WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
+// A text field: 32px, outlined, the focus ring in the focus colour.
+const FIELD =
+  "h-8 px-2.5 text-[13px] rounded-md border border-line-strong bg-canvas text-fg placeholder:text-fg-subtle focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus";
+
+// Row actions that wait for the pointer: hidden until the row is hovered or
+// one of them has focus. A touch screen has no hover, so there they stay.
+const HOVER_REVEAL =
+  "transition-opacity [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-within:opacity-100";
+
+const Dot = () => <span aria-hidden="true" className="text-line-strong">·</span>;
+
+// A round tick box: empty ring, or filled green with a tick.
+function CheckCircle({ done, disabled, onClick, title, small, ...rest }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      aria-pressed={!!done}
+      aria-label={done ? "Mark not done" : "Mark done"}
+      className={`${small ? "w-4 h-4" : "w-[18px] h-[18px]"} shrink-0 rounded-full border-[1.5px] flex items-center justify-center transition-colors disabled:cursor-not-allowed ${
+        done ? "bg-success border-success text-white" : "border-line-strong enabled:hover:border-success"
+      } ${disabled && !done ? "opacity-50" : ""}`}
+      {...rest}
+    >
+      {done && <Icon.check className={small ? "w-2.5 h-2.5" : "w-3 h-3"} />}
+    </button>
+  );
+}
+
+// A ring that fills with the day's progress, the percentage in its centre.
+function ProgressRing({ pct, size = 56 }) {
+  const r = 22;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg className="w-full h-full -rotate-90" viewBox="0 0 52 52" aria-hidden="true">
+        <circle cx="26" cy="26" r={r} fill="none" stroke="var(--surface-hover)" strokeWidth="5" />
+        <circle
+          cx="26" cy="26" r={r} fill="none" strokeWidth="5" strokeLinecap="round"
+          stroke={pct >= 100 ? "var(--success)" : "var(--brand)"}
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - pct / 100)}
+          style={{ transition: "stroke-dashoffset 0.5s ease" }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center font-mono text-[12px] font-medium text-fg tabular-nums">{pct}%</span>
+    </div>
+  );
+}
+
+// ─── Week Strip ──────────────────────────────────────────────────────────────
+// The week (Monday first) around the day on screen: each day's date and how
+// much of its plan is done. A day with nothing planned shows no bar.
+function WeekStrip({ current, today, onSelect, statsFor }) {
+  const [y, m, d] = current.split("-").map(Number);
+  const start = addDays(current, -((new Date(y, m - 1, d).getDay() + 6) % 7));
+  const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
+  return (
+    <div className="grid grid-cols-7 gap-1 rounded-lg border border-line bg-canvas p-1">
+      {days.map((key) => {
+        const [ky, km, kd] = key.split("-").map(Number);
+        const date = new Date(ky, km - 1, kd);
+        const selected = key === current;
+        const isT = key === today;
+        const { total, done } = statsFor(key);
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => onSelect(key)}
+            aria-current={selected ? "date" : undefined}
+            title={total ? `${done} of ${total} done` : "Nothing planned"}
+            className={`flex flex-col items-center gap-1.5 py-2 rounded-md transition-colors ${selected ? "bg-surface-hover" : "hover:bg-surface-subtle"}`}
+          >
+            <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isT ? "text-brand-fg" : "text-fg-subtle"}`}>
+              {date.toLocaleDateString(undefined, { weekday: "short" })}
+            </span>
+            <span className={`text-[15px] leading-5 font-semibold tabular-nums ${isT ? "text-brand-fg" : key < today && !selected ? "text-fg-muted" : "text-fg"}`}>
+              {kd}
+            </span>
+            <span className={`h-1 w-6 sm:w-8 rounded-full overflow-hidden ${total ? "bg-line" : ""}`}>
+              {total > 0 && (
+                <span
+                  className={`block h-full rounded-full ${done === total ? "bg-success" : "bg-brand"}`}
+                  style={{ width: `${(done / total) * 100}%` }}
+                />
+              )}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // ─── Calendar Picker ─────────────────────────────────────────────────────────
 function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
   const ref = useRef(null);
@@ -282,8 +379,13 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
 
   useEffect(() => {
     const h = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    const esc = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", h);
+      document.removeEventListener("keydown", esc);
+    };
   }, [onClose]);
 
   const { year, month } = view;
@@ -298,20 +400,20 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: -8, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.95 }}
-      transition={{ duration: 0.2 }}
-      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-72 rounded-lg border border-line bg-canvas shadow-overlay p-4"
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.15 }}
+      className="absolute top-full mt-2 right-0 z-50 w-72 rounded-lg border border-line bg-canvas shadow-overlay p-3"
     >
-      <div className="flex items-center justify-between mb-3">
-        <button onClick={prev} className="w-8 h-8 rounded-lg hover:bg-surface-hover flex items-center justify-center text-fg-subtle font-semibold">‹</button>
-        <span className="text-sm font-semibold text-fg">{label}</span>
-        <button onClick={next} className="w-8 h-8 rounded-lg hover:bg-surface-hover flex items-center justify-center text-fg-subtle font-semibold">›</button>
+      <div className="flex items-center justify-between mb-2">
+        <button onClick={prev} aria-label="Previous month" className={buttonClass("ghost", "icon-sm")}><Icon.chevronLeft /></button>
+        <span className="text-[13px] font-medium text-fg">{label}</span>
+        <button onClick={next} aria-label="Next month" className={buttonClass("ghost", "icon-sm")}><Icon.chevronRight /></button>
       </div>
       <div className="grid grid-cols-7 gap-0.5 text-center">
         {WEEK.map((d) => (
-          <span key={d} className="text-[10px] font-semibold text-fg-subtle py-1">{d}</span>
+          <span key={d} className="font-mono text-[11px] text-fg-subtle py-1">{d}</span>
         ))}
         {cells.map((d, i) => {
           if (!d) return <span key={`e${i}`} />;
@@ -323,12 +425,12 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
             <button
               key={i}
               onClick={() => { onSelect(key); onClose(); }}
-              className={`relative w-9 h-9 mx-auto rounded-lg text-xs font-semibold transition-all ${
+              className={`relative w-9 h-9 mx-auto rounded-md text-[13px] tabular-nums transition-colors ${
                 isSel
-                  ? "bg-primary text-on-primary "
+                  ? "bg-primary text-on-primary font-medium"
                   : isT
-                  ? "ring-2 ring-focus text-brand-fg "
-                  : "text-fg-muted hover:bg-surface-hover "
+                  ? "text-brand-fg font-semibold hover:bg-surface-hover"
+                  : "text-fg hover:bg-surface-hover"
               }`}
             >
               {d}
@@ -342,12 +444,8 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
 }
 
 // ─── Pomodoro Timer ──────────────────────────────────────────────────────────
-const R = 80;
+const R = 52;
 const CIRC = 2 * Math.PI * R;
-const TICK_COUNT = 60;
-const TICK_R_OUTER = 92;
-const TICK_R_INNER_MAJOR = 85;
-const TICK_R_INNER_MINOR = 88;
 
 function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend }) {
   const [extendVal, setExtendVal] = useState("");
@@ -362,185 +460,108 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
   const workIdx = sessions.slice(0, currentIdx + 1).filter((s) => s.type === "work").length;
   const totalWork = sessions.filter((s) => s.type === "work").length;
 
-  const ringColor = isComplete
-    ? "#22c55e"
-    : isPaused
-    ? "#64748b"
-    : isWork
-    ? "url(#pomoFocus)"
-    : "url(#pomoBreak)";
+  // Focus is the brand colour, a break is green, a pause is grey.
+  const stroke = isComplete || !isWork ? "var(--success)" : isPaused ? "var(--fg-subtle)" : "var(--brand)";
+  const tone = isComplete || (!isWork && !isPaused) ? "text-success-fg" : isPaused ? "text-fg-subtle" : "text-brand-fg";
+  const state = isComplete ? "Complete" : isPaused ? "Paused" : isWork ? "Focus" : "Break";
 
-  const glowColor = isComplete ? "rgba(34,197,94,0.15)" : isWork ? "rgba(139,92,246,0.12)" : "rgba(52,211,153,0.12)";
-
-  const ticks = useMemo(() => {
-    const out = [];
-    for (let i = 0; i < TICK_COUNT; i++) {
-      const angle = (i / TICK_COUNT) * 360 - 90;
-      const rad = (angle * Math.PI) / 180;
-      const major = i % 5 === 0;
-      const rInner = major ? TICK_R_INNER_MAJOR : TICK_R_INNER_MINOR;
-      out.push({
-        x1: 100 + Math.cos(rad) * rInner,
-        y1: 100 + Math.sin(rad) * rInner,
-        x2: 100 + Math.cos(rad) * TICK_R_OUTER,
-        y2: 100 + Math.sin(rad) * TICK_R_OUTER,
-        major,
-      });
-    }
-    return out;
-  }, []);
+  const extend = () => {
+    const m = parseInt(extendVal);
+    if (m > 0) { onExtend(m); setExtendVal(""); }
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -16 }}
+    <motion.section
+      initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      className={`rounded-lg ${GLASS} p-6 mb-4 relative overflow-hidden`}
+      exit={{ opacity: 0, y: -6 }}
+      className="rounded-lg border border-line bg-canvas"
     >
-      <div className="absolute inset-0 rounded-lg pointer-events-none" style={{ boxShadow: `inset 0 0 80px ${glowColor}` }} />
-      <div className="flex flex-col items-center relative z-10">
-        <div className="relative">
-          <svg viewBox="0 0 200 200" className="w-48 h-48 sm:w-56 sm:h-56">
-            <defs>
-              <linearGradient id="pomoFocus" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#8b5cf6" />
-                <stop offset="50%" stopColor="#a78bfa" />
-                <stop offset="100%" stopColor="#6366f1" />
-              </linearGradient>
-              <linearGradient id="pomoBreak" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#34d399" />
-                <stop offset="50%" stopColor="#6ee7b7" />
-                <stop offset="100%" stopColor="#22d3ee" />
-              </linearGradient>
-              <filter id="pomoGlow">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            {ticks.map((t, i) => (
-              <line
-                key={i}
-                x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-                stroke="currentColor"
-                className={t.major ? "text-line-strong " : "text-line-strong "}
-                strokeWidth={t.major ? 1.5 : 0.7}
-                strokeLinecap="round"
-              />
-            ))}
-            <circle cx="100" cy="100" r={R} fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="6" />
-            <motion.circle
-              cx="100" cy="100" r={R} fill="none" stroke={ringColor} strokeWidth="7" strokeLinecap="round"
+      <div className="flex items-center justify-between px-4 h-11 border-b border-line">
+        <h2 className="text-[13px] font-medium text-fg">Focus session</h2>
+        <span className={`inline-flex items-center gap-1.5 font-mono text-[12px] ${tone}`}>
+          {!isPaused && !isComplete && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />}
+          {state}
+        </span>
+      </div>
+
+      <div className="p-4 flex flex-col items-center">
+        <p className="w-full text-center text-[13px] text-fg-muted truncate" title={pomo.itemTitle}>{pomo.itemTitle}</p>
+
+        <div className="relative mt-3">
+          <svg viewBox="0 0 120 120" className="w-40 h-40 -rotate-90" aria-hidden="true">
+            <circle cx="60" cy="60" r={R} fill="none" stroke="var(--surface-hover)" strokeWidth="6" />
+            <circle
+              cx="60" cy="60" r={R} fill="none" stroke={stroke} strokeWidth="6" strokeLinecap="round"
               strokeDasharray={CIRC}
-              initial={false}
-              animate={{ strokeDashoffset: CIRC * (1 - progress) }}
-              transition={{ duration: 0.4, ease: "linear" }}
-              style={{ transformOrigin: "100px 100px", transform: "rotate(-90deg)" }}
-              filter={isPaused ? undefined : "url(#pomoGlow)"}
+              strokeDashoffset={CIRC * (1 - progress)}
+              style={{ transition: "stroke-dashoffset 0.5s linear, stroke 0.2s" }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {isComplete ? (
-              <>
-                <svg className="w-10 h-10 text-success-fg mb-1" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                <span className="text-sm font-semibold text-success-fg">Complete!</span>
-              </>
+              <Icon.check className="w-8 h-8 text-success-fg" />
             ) : (
-              <>
-                <span className="text-3xl sm:text-4xl font-mono font-semibold text-fg tabular-nums">{fmtClock(remaining)}</span>
-                <span className={`text-xs font-semibold mt-1 ${isWork ? "text-brand-fg" : "text-success-fg"}`}>
-                  {isPaused ? "Paused" : isWork ? "Focus" : "Break"}
-                </span>
-                <span className="text-[10px] text-fg-subtle mt-0.5">
-                  Session {workIdx} of {totalWork}
-                </span>
-              </>
+              <span className="font-mono text-[30px] leading-none font-medium tabular-nums text-fg">{fmtClock(remaining)}</span>
             )}
+            <span className="mt-2 font-mono text-[12px] text-fg-subtle">
+              {isComplete ? "All sessions done" : `Session ${workIdx} of ${totalWork}`}
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 mt-3">
-          {sessions.filter((s) => s.type === "work").map((_, i) => {
-            const done = i < workIdx - (isWork || isComplete ? 0 : 1);
-            const active = !isComplete && i === workIdx - 1 && isWork;
-            return (
-              <span
-                key={i}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  done ? "bg-brand" : active ? "bg-brand animate-pulse" : "bg-line-strong"
-                }`}
-              />
-            );
-          })}
-        </div>
-
-        <div className="flex flex-col items-center gap-3 mt-4">
-          {isComplete ? (
-            <>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={extendVal}
-                  onChange={(e) => setExtendVal(e.target.value.replace(/\D/g, ""))}
-                  onKeyDown={(e) => { if (e.key === "Enter" && parseInt(extendVal) > 0) { onExtend(parseInt(extendVal)); setExtendVal(""); } }}
-                  placeholder="+min"
-                  className="w-16 px-2 py-1.5 text-sm text-center rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus"
+        {totalWork > 1 && (
+          <div className="flex items-center gap-1 mt-3">
+            {sessions.filter((s) => s.type === "work").map((_, i) => {
+              const done = i < workIdx - (isWork || isComplete ? 0 : 1);
+              const active = !isComplete && i === workIdx - 1 && isWork;
+              return (
+                <span
+                  key={i}
+                  className={`h-1 w-5 rounded-full transition-colors ${active ? "bg-brand animate-pulse" : done ? "bg-brand" : "bg-surface-hover"}`}
                 />
-                <button
-                  onClick={() => { if (parseInt(extendVal) > 0) { onExtend(parseInt(extendVal)); setExtendVal(""); } }}
-                  disabled={!parseInt(extendVal)}
-                  className="px-4 py-1.5 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover disabled:opacity-40 transition-colors"
-                >
-                  Continue
-                </button>
-              </div>
-              <button
-                onClick={onDismiss}
-                className="px-5 py-2 rounded-lg bg-success text-white text-sm font-semibold hover:opacity-90 transition-colors"
-              >
-                Done
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                data-tour="pomo-stop"
-                onClick={onStop}
-                className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-fg-subtle hover:text-fg hover:border-line-strong transition-colors"
-                title="Stop"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1.5" /></svg>
-              </button>
-              <button
-                onClick={isPaused ? onResume : onPause}
-                className={`w-14 h-14 rounded-full flex items-center justify-center text-on-primary transition-all ${
-                  isWork
-                    ? " "
-                    : " "
-                } bg-primary hover:bg-primary-hover`}
-              >
-                {isPaused ? (
-                  <svg className="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 16 16"><path d="M4 2h3v12H4zM9 2h3v12H9z" /></svg>
-                )}
-              </button>
-            </>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
-        <p className="mt-3 text-xs text-fg-subtle truncate max-w-full text-center">
-          Working on: <span className="font-semibold text-fg-muted">{pomo.itemTitle}</span>
-        </p>
+        {isComplete ? (
+          <div className="mt-4 w-full space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={extendVal}
+                onChange={(e) => setExtendVal(e.target.value.replace(/\D/g, ""))}
+                onKeyDown={(e) => { if (e.key === "Enter") extend(); }}
+                placeholder="Minutes"
+                aria-label="Minutes to add"
+                className={`${FIELD} min-w-0 flex-1`}
+              />
+              <Button onClick={extend} disabled={!parseInt(extendVal)}>Keep going</Button>
+            </div>
+            <Button variant="primary" className="w-full" onClick={onDismiss}>Done</Button>
+          </div>
+        ) : (
+          <div className="mt-4 grid grid-cols-2 gap-2 w-full">
+            <Button data-tour="pomo-stop" onClick={onStop}>
+              <Icon.stop className="w-3.5 h-3.5" />
+              Stop
+            </Button>
+            <Button variant="primary" onClick={isPaused ? onResume : onPause}>
+              {isPaused ? <Icon.start className="w-3.5 h-3.5" /> : <Icon.pause className="w-3.5 h-3.5" />}
+              {isPaused ? "Resume" : "Pause"}
+            </Button>
+          </div>
+        )}
       </div>
-    </motion.div>
+    </motion.section>
   );
 }
 
 // ─── Day Card ────────────────────────────────────────────────────────────────
+// One row of the task list. Click it to open its details; the tick box,
+// estimate and focus button work without opening it.
 function DayCard({
   item, index, complete, note, isOpen, canComplete, isToday: dayIsToday,
   onToggleOpen, onToggleComplete, onNoteChange, onRemove, onMove, moveLabel,
@@ -593,6 +614,12 @@ function DayCard({
     setEditingSubTime(null);
   };
 
+  const addSub = () => {
+    if (!subInput.trim()) return;
+    onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25);
+    setSubInput("");
+  };
+
   const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
   const coreStackTopic = item.source === "corestack" ? getCoreStackTopic(item.refId) : null;
   const aiStackTopic = item.source === "aistack" ? getAIStackTopic(item.refId) : null;
@@ -607,6 +634,7 @@ function DayCard({
   const overallSec = totalSec > daySec ? totalSec : 0;
 
   const isThisPomo = pomoItemUid === item.uid;
+  const canStart = dayIsToday && !hasSubs && item.estimatedMinutes > 0 && !complete;
 
   return (
     <div
@@ -615,299 +643,296 @@ function DayCard({
       onDragOver={(e) => onDragOver(e, index)}
       onDrop={(e) => onDrop(e, index)}
       onDragEnd={onDragEnd}
-      className={`transition-opacity ${isDragging ? "opacity-30" : ""}`}
+      className={`relative transition-opacity ${isDragging ? "opacity-30" : ""}`}
     >
-      {isOver && !isDragging && <div className="h-0.5 bg-brand rounded-full mb-1 -mt-0.5" />}
-      <div className={`rounded-lg ${GLASS_ROW} overflow-hidden ${complete ? "opacity-75" : ""}`}>
-        <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
-          <span className="hidden sm:flex text-line-strong cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" /><circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" /><circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" /></svg>
-          </span>
+      {isOver && !isDragging && <div className="absolute inset-x-0 -top-px h-0.5 bg-brand z-10" />}
 
-          <button
-            data-tour-check={item.refId || item.uid}
-            onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
-            disabled={!canComplete || parentAutoComplete}
-            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-              complete ? "bg-success border-success " : "border-line-strong hover:border-success "
-            } ${(!canComplete || parentAutoComplete) ? "opacity-50 cursor-not-allowed" : ""}`}
-            title={parentAutoComplete ? "Complete all sub-tasks to finish" : undefined}
-          >
-            {complete && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-          </button>
+      <div
+        className={`group flex items-center gap-3 pl-3 sm:pl-2 pr-2 sm:pr-3 min-h-[56px] py-2 cursor-pointer select-none transition-colors ${
+          isOpen ? "bg-surface-subtle" : "hover:bg-surface-subtle"
+        }`}
+        onClick={onToggleOpen}
+      >
+        <span
+          className="hidden sm:flex w-4 justify-center text-fg-subtle cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+          onMouseDown={(e) => e.stopPropagation()}
+          title="Drag to reorder"
+        >
+          <Icon.grip className="w-3.5 h-3.5" />
+        </span>
 
-          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${meta.badge}`}>{meta.label}</span>
+        <CheckCircle
+          data-tour-check={item.refId || item.uid}
+          done={complete}
+          onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
+          disabled={!canComplete || parentAutoComplete}
+          title={parentAutoComplete ? "Finish its sub-tasks to complete it" : !canComplete ? "Only today's tasks can be ticked" : undefined}
+        />
 
-          <div className="flex-1 min-w-0">
-            <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-fg-subtle " : "text-fg "}`}>{item.title}</h3>
-            {hasSubs && (
-              <p className="text-[10px] text-fg-subtle">
-                {subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}
-                {daySec > 0 && <span className="text-success-fg font-semibold"> · {fmtSpent(daySec)} spent</span>}
-                {overallSec > 0 && <span> · {fmtSpent(overallSec)} total</span>}
-              </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <h3 className={`text-[14px] leading-5 font-medium truncate ${complete ? "text-fg-subtle line-through decoration-line-strong" : "text-fg"}`}>
+              {item.title}
+            </h3>
+            {isThisPomo && (
+              <span className="shrink-0 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-brand-subtle font-mono text-[11px] text-brand-fg">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                Focusing
+              </span>
             )}
           </div>
-
-          <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-            {!hasSubs && daySec > 0 && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-success-subtle text-success-fg" title={`Time spent ${dayLabel}`}>
-                {fmtSpent(daySec)}
-              </span>
-            )}
-            {!hasSubs && overallSec > 0 && (
-              <span className="hidden sm:inline text-[10px] font-semibold text-fg-subtle" title="Time on this card across all days">
-                {fmtSpent(overallSec)} total
-              </span>
-            )}
-            {!hasSubs && (
+          <p className="mt-0.5 flex items-center gap-1.5 text-[12px] leading-4 text-fg-subtle whitespace-nowrap overflow-hidden">
+            <span>{meta.label}</span>
+            {hasSubs && (
               <>
-                {editingTime ? (
-                  <input
-                    autoFocus
-                    type="text"
-                    inputMode="numeric"
-                    value={timeVal}
-                    onChange={(e) => setTimeVal(e.target.value.replace(/\D/g, ""))}
-                    onBlur={saveTime}
-                    onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
-                    className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-line-strong bg-canvas text-fg-muted focus:outline-none text-center"
-                  />
-                ) : (
-                  <button
-                    onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
-                    className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-fg-subtle hover:text-fg transition-colors"
-                    title="Set time estimate"
-                  >
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                    {item.estimatedMinutes ? fmt(item.estimatedMinutes) : "set"}
-                  </button>
-                )}
-
-                {dayIsToday && item.estimatedMinutes > 0 && !complete && (
-                  <button
-                    data-tour-pomo={item.refId || item.uid}
-                    onClick={() => { if (!pomoActive || isThisPomo) onStartPomo(item); }}
-                    disabled={pomoActive && !isThisPomo}
-                    className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                      isThisPomo
-                        ? "bg-primary text-on-primary animate-pulse"
-                        : pomoActive
-                        ? "bg-surface-hover text-fg-subtle cursor-not-allowed"
-                        : "bg-brand-subtle text-brand-fg hover:bg-surface-hover "
-                    }`}
-                    title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
-                  >
-                    <svg className="w-3 h-3 ml-px" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
-                  </button>
-                )}
+                <Dot />
+                <span><span className="font-mono">{subDone}/{subs.length}</span> sub-tasks</span>
               </>
             )}
+            {daySec > 0 && (
+              <>
+                <Dot />
+                <span className="text-success-fg" title={`Time spent ${dayLabel}`}><span className="font-mono">{fmtSpent(daySec)}</span> spent</span>
+              </>
+            )}
+            {overallSec > 0 && (
+              <>
+                <Dot />
+                <span className="hidden sm:inline" title="Time on this card across all days"><span className="font-mono">{fmtSpent(overallSec)}</span> in total</span>
+              </>
+            )}
+          </p>
+        </div>
 
+        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+          {/* On a phone these live in the opened row instead, leaving the title room. */}
+          <div className={`hidden sm:flex items-center gap-0.5 ${HOVER_REVEAL}`}>
             {onMove && (
-              <button
-                onClick={onMove}
-                title={`Push to ${moveLabel}`}
-                className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-line text-fg-subtle hover:text-fg hover:border-line-strong ${LIGHT_BUTTON} transition-colors`}
-              >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                <span className="hidden sm:inline">{moveLabel}</span>
+              <button onClick={onMove} title={`Move to ${moveLabel.toLowerCase()}`} className={buttonClass("ghost", "sm")}>
+                <Icon.arrowRight className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">{moveLabel}</span>
               </button>
             )}
-
-            <button onClick={onRemove} className="text-line-strong hover:text-fg transition-colors" title="Remove">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            <button onClick={onRemove} title="Remove from plan" aria-label="Remove from plan" className={buttonClass("ghost", "icon-sm")}>
+              <Icon.x className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-fg-subtle shrink-0">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </motion.div>
+          {hasSubs ? (
+            <span className="w-[60px] text-right font-mono text-[12px] text-fg-subtle">{totalMin > 0 ? fmt(totalMin) : ""}</span>
+          ) : editingTime ? (
+            <input
+              autoFocus
+              type="text"
+              inputMode="numeric"
+              value={timeVal}
+              onChange={(e) => setTimeVal(e.target.value.replace(/\D/g, ""))}
+              onBlur={saveTime}
+              onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
+              aria-label="Minutes"
+              className={`${FIELD} !h-7 w-[60px] text-center font-mono !text-[12px]`}
+            />
+          ) : (
+            <button
+              onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
+              className="w-[60px] h-7 inline-flex items-center justify-end gap-1 rounded-md px-1.5 font-mono text-[12px] text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
+              title="Set time estimate"
+            >
+              <Icon.clock className="w-3 h-3 text-fg-subtle" />
+              {item.estimatedMinutes ? fmt(item.estimatedMinutes) : "set"}
+            </button>
+          )}
+
+          {/* A fixed slot, so the estimates line up whether or not a row can be timed. */}
+          <span className="w-7 h-7 flex items-center justify-center">
+            {canStart && (
+              <button
+                data-tour-pomo={item.refId || item.uid}
+                onClick={() => { if (!pomoActive || isThisPomo) onStartPomo(item); }}
+                disabled={pomoActive && !isThisPomo}
+                aria-label="Start focus"
+                title={pomoActive && !isThisPomo ? "Stop the running session first" : isThisPomo ? "Focusing on this" : "Start focus"}
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  isThisPomo
+                    ? "bg-brand text-white"
+                    : "border border-line-strong text-fg-muted enabled:hover:bg-primary enabled:hover:text-on-primary enabled:hover:border-transparent"
+                }`}
+              >
+                <Icon.start className="w-3 h-3 ml-px" />
+              </button>
+            )}
+          </span>
+
+          <Icon.chevronDown className={`w-4 h-4 text-fg-subtle transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
         </div>
+      </div>
 
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-              <div className="border-t border-line px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-xs">
-                  <span className="flex items-center gap-1.5 text-fg-subtle">
-                    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                    {daySec > 0 ? (
-                      <span><b className="font-semibold text-success-fg">{fmtSpent(daySec)}</b> spent {dayLabel}</span>
-                    ) : (
-                      <span>No time spent {dayLabel}</span>
-                    )}
-                    {overallSec > 0 && <span>· {fmtSpent(overallSec)} on this card in total</span>}
-                  </span>
-                  {canLog && (
-                    <form onSubmit={logTime} className="ml-auto flex items-center gap-1.5">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={logVal}
-                        onChange={(e) => setLogVal(e.target.value.replace(/\D/g, "").slice(0, 3))}
-                        placeholder="min"
-                        aria-label="Minutes spent"
-                        className="w-14 px-2 py-1 text-xs rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus text-center"
-                      />
-                      <button
-                        type="submit"
-                        disabled={!(parseInt(logVal) > 0)}
-                        className="px-2.5 py-1 rounded-lg bg-brand-subtle text-brand-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
-                        title={`Add time you spent on this card ${dayLabel} without the timer`}
-                      >
-                        Log time
-                      </button>
-                    </form>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+            <div className="bg-surface-subtle border-t border-line pl-[42px] sm:pl-[66px] pr-4 py-4 space-y-4" onClick={(e) => e.stopPropagation()}>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]">
+                <span className="inline-flex items-center gap-1.5 text-fg-muted">
+                  <Icon.clock className="w-3.5 h-3.5 text-fg-subtle" />
+                  {daySec > 0 ? (
+                    <span><span className="font-mono text-fg">{fmtSpent(daySec)}</span> spent {dayLabel}</span>
+                  ) : (
+                    <span>No time logged {dayLabel}</span>
                   )}
-                </div>
-
-                {item.source === "custom" && hasSubs && (
-                  <div className="mb-3">
-                    <h4 className="text-[10px] font-semibold text-fg-subtle mb-2">Sub-tasks</h4>
-                    <div className="space-y-1.5">
-                      {subs.map((s) => (
-                        <div key={s.uid} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${GLASS_ROW} ${s.completed ? "opacity-60" : ""}`}>
-                          <button
-                            onClick={() => onToggleSubItem(item.uid, s.uid)}
-                            disabled={!canComplete}
-                            className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-                              s.completed ? "bg-success border-success" : "border-line-strong "
-                            } ${!canComplete ? "opacity-50" : ""}`}
-                          >
-                            {s.completed && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                          </button>
-                          <span className={`flex-1 text-xs ${s.completed ? "line-through text-fg-subtle" : "text-fg-muted "}`}>{s.title}</span>
-
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {subSec(s.uid) > 0 && (
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-success-subtle text-success-fg" title={`Time spent ${dayLabel}`}>
-                                {fmtSpent(subSec(s.uid))}
-                              </span>
-                            )}
-                            {editingSubTime === s.uid ? (
-                              <input
-                                autoFocus
-                                type="text"
-                                inputMode="numeric"
-                                value={subTimeVal}
-                                onChange={(e) => setSubTimeVal(e.target.value.replace(/\D/g, ""))}
-                                onBlur={() => saveSubTime(s.uid)}
-                                onKeyDown={(e) => { if (e.key === "Enter") saveSubTime(s.uid); if (e.key === "Escape") setEditingSubTime(null); }}
-                                className="w-12 px-1 py-0.5 text-[10px] rounded-md border border-line-strong bg-canvas text-fg-muted focus:outline-none text-center"
-                              />
-                            ) : (
-                              <button
-                                onClick={() => { setSubTimeVal(String(s.estimatedMinutes || 25)); setEditingSubTime(s.uid); }}
-                                className="text-[10px] font-semibold px-1 py-0.5 rounded text-fg-subtle hover:text-fg transition-colors flex items-center gap-0.5"
-                              >
-                                <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                                {s.estimatedMinutes ? fmt(s.estimatedMinutes) : "set"}
-                              </button>
-                            )}
-
-                            {dayIsToday && (s.estimatedMinutes || 0) > 0 && !s.completed && (
-                              <button
-                                onClick={() => { if (!pomoActive) onStartPomo(item, s); }}
-                                disabled={pomoActive}
-                                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
-                                  pomoActive
-                                    ? "bg-surface-hover text-fg-subtle cursor-not-allowed"
-                                    : "bg-brand-subtle text-brand-fg hover:bg-surface-hover "
-                                }`}
-                                title={pomoActive ? "Stop current session first" : "Start focus"}
-                              >
-                                <svg className="w-2.5 h-2.5 ml-px" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
-                              </button>
-                            )}
-
-                            <button onClick={() => onRemoveSubItem(item.uid, s.uid)} className="text-line-strong hover:text-fg transition-colors">
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {item.source === "custom" && canComplete && (
-                  <div className="flex gap-2 mb-3">
-                    <input
-                      value={subInput}
-                      onChange={(e) => setSubInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && subInput.trim()) {
-                          onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25);
-                          setSubInput("");
-                        }
-                      }}
-                      placeholder="Add sub-task..."
-                      className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
-                    />
+                  {overallSec > 0 && <span className="text-fg-subtle">· <span className="font-mono">{fmtSpent(overallSec)}</span> in total</span>}
+                </span>
+                {canLog && (
+                  <form onSubmit={logTime} className="ml-auto flex items-center gap-1.5">
                     <input
                       type="text"
                       inputMode="numeric"
-                      value={subTimeInput}
-                      onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
-                      className="w-16 px-2 py-1.5 text-xs rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus text-center"
+                      value={logVal}
+                      onChange={(e) => setLogVal(e.target.value.replace(/\D/g, "").slice(0, 3))}
                       placeholder="min"
-                      title="Time estimate (minutes)"
+                      aria-label="Minutes spent"
+                      className={`${FIELD} !h-7 w-14 text-center font-mono !text-[12px]`}
                     />
                     <button
-                      onClick={() => { if (subInput.trim()) { onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25); setSubInput(""); } }}
-                      disabled={!subInput.trim()}
-                      className="px-3 py-1.5 rounded-lg bg-brand-subtle text-brand-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
+                      type="submit"
+                      disabled={!(parseInt(logVal) > 0)}
+                      className={buttonClass("secondary", "sm")}
+                      title={`Add time you spent on this card ${dayLabel} without the timer`}
                     >
-                      +
+                      Log time
                     </button>
-                  </div>
-                )}
-
-                {item.source === "corestack" && (
-                  <CoreStackTopicDetail
-                    topic={coreStackTopic}
-                    note={note}
-                    checkedDays={complete ? coreStackDaysSinceChecked(item.refId) : null}
-                  />
-                )}
-                {item.source === "projects" && (
-                  <ProjectTopicDetail
-                    topic={projectTopic}
-                    note={note}
-                    checkedDays={complete ? projectDaysSinceChecked(item.refId) : null}
-                  />
-                )}
-                {item.source === "aistack" && (
-                  <AIStackTopicDetail
-                    topic={aiStackTopic}
-                    note={note}
-                    checkedDays={complete ? aiStackDaysSinceChecked(item.refId) : null}
-                  />
-                )}
-                {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
-                {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} solvedDays={solvedDays} />}
-                {item.source === "custom" && (
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-xs font-semibold text-fg-muted flex items-center gap-1.5">
-                        Notes
-                      </h4>
-                    </div>
-                    <textarea
-                      value={localNote}
-                      onChange={handleNoteInput}
-                      placeholder="What did you work on, key takeaways, blockers..."
-                      rows={4}
-                      className="w-full p-3 text-sm rounded-lg border border-line-strong bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus resize-y min-h-[80px] transition-all leading-relaxed"
-                    />
-                  </div>
+                  </form>
                 )}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+
+              {item.source === "custom" && hasSubs && (
+                <div>
+                  <h4 className="text-[12px] font-medium text-fg-muted mb-2">Sub-tasks</h4>
+                  <ul className="rounded-md border border-line bg-canvas divide-y divide-line">
+                    {subs.map((s) => (
+                      <li key={s.uid} className="group flex items-center gap-3 px-3 min-h-[40px] py-1.5">
+                        <CheckCircle small done={s.completed} disabled={!canComplete} onClick={() => onToggleSubItem(item.uid, s.uid)} />
+                        <span className={`flex-1 min-w-0 truncate text-[13px] ${s.completed ? "line-through text-fg-subtle" : "text-fg"}`}>{s.title}</span>
+
+                        {subSec(s.uid) > 0 && (
+                          <span className="font-mono text-[12px] text-success-fg" title={`Time spent ${dayLabel}`}>{fmtSpent(subSec(s.uid))}</span>
+                        )}
+                        {editingSubTime === s.uid ? (
+                          <input
+                            autoFocus
+                            type="text"
+                            inputMode="numeric"
+                            value={subTimeVal}
+                            onChange={(e) => setSubTimeVal(e.target.value.replace(/\D/g, ""))}
+                            onBlur={() => saveSubTime(s.uid)}
+                            onKeyDown={(e) => { if (e.key === "Enter") saveSubTime(s.uid); if (e.key === "Escape") setEditingSubTime(null); }}
+                            aria-label="Minutes"
+                            className={`${FIELD} !h-7 w-14 text-center font-mono !text-[12px]`}
+                          />
+                        ) : (
+                          <button
+                            onClick={() => { setSubTimeVal(String(s.estimatedMinutes || 25)); setEditingSubTime(s.uid); }}
+                            className="h-7 px-1.5 rounded-md font-mono text-[12px] text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
+                            title="Set time estimate"
+                          >
+                            {s.estimatedMinutes ? fmt(s.estimatedMinutes) : "set"}
+                          </button>
+                        )}
+
+                        {dayIsToday && (s.estimatedMinutes || 0) > 0 && !s.completed && (
+                          <button
+                            onClick={() => { if (!pomoActive) onStartPomo(item, s); }}
+                            disabled={pomoActive}
+                            aria-label="Start focus"
+                            title={pomoActive ? "Stop the running session first" : "Start focus"}
+                            className="w-6 h-6 rounded-full flex items-center justify-center border border-line-strong text-fg-muted enabled:hover:bg-primary enabled:hover:text-on-primary enabled:hover:border-transparent disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          >
+                            <Icon.start className="w-2.5 h-2.5 ml-px" />
+                          </button>
+                        )}
+
+                        <button onClick={() => onRemoveSubItem(item.uid, s.uid)} aria-label="Remove sub-task" className={`${buttonClass("ghost", "icon-sm")} ${HOVER_REVEAL}`}>
+                          <Icon.x className="w-3.5 h-3.5" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {item.source === "custom" && canComplete && (
+                <div className="flex gap-2">
+                  <input
+                    value={subInput}
+                    onChange={(e) => setSubInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
+                    placeholder="Add a sub-task"
+                    className={`${FIELD} flex-1 min-w-0`}
+                  />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={subTimeInput}
+                    onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
+                    className={`${FIELD} w-16 text-center font-mono`}
+                    placeholder="min"
+                    title="Time estimate (minutes)"
+                  />
+                  <Button onClick={addSub} disabled={!subInput.trim()}>Add</Button>
+                </div>
+              )}
+
+              {item.source === "corestack" && (
+                <CoreStackTopicDetail
+                  topic={coreStackTopic}
+                  note={note}
+                  checkedDays={complete ? coreStackDaysSinceChecked(item.refId) : null}
+                />
+              )}
+              {item.source === "projects" && (
+                <ProjectTopicDetail
+                  topic={projectTopic}
+                  note={note}
+                  checkedDays={complete ? projectDaysSinceChecked(item.refId) : null}
+                />
+              )}
+              {item.source === "aistack" && (
+                <AIStackTopicDetail
+                  topic={aiStackTopic}
+                  note={note}
+                  checkedDays={complete ? aiStackDaysSinceChecked(item.refId) : null}
+                />
+              )}
+              {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
+              {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} solvedDays={solvedDays} />}
+              {item.source === "custom" && (
+                <div>
+                  <h4 className="text-[12px] font-medium text-fg-muted mb-2">Notes</h4>
+                  <textarea
+                    value={localNote}
+                    onChange={handleNoteInput}
+                    placeholder="What you worked on, key takeaways, blockers"
+                    rows={4}
+                    className="w-full p-3 text-[13px] leading-relaxed rounded-md border border-line-strong bg-canvas text-fg placeholder:text-fg-subtle focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus resize-y min-h-[80px]"
+                  />
+                </div>
+              )}
+
+              <div className="sm:hidden flex items-center gap-2 pt-1">
+                {onMove && (
+                  <Button size="sm" onClick={onMove}>
+                    <Icon.arrowRight className="w-3.5 h-3.5" />
+                    Move to {moveLabel.toLowerCase()}
+                  </Button>
+                )}
+                <Button size="sm" variant="ghost" onClick={onRemove}>
+                  <Icon.x className="w-3.5 h-3.5" />
+                  Remove
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -915,7 +940,7 @@ function DayCard({
 // ─── Time Spent ──────────────────────────────────────────────────────────────
 // Everything the day's time went to — including cards since moved to another
 // day or removed, whose time stays here. A row's time can be corrected.
-function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
+function TimeSpent({ rows, dayLabel, canEdit, onSetTime, className = "" }) {
   const [editing, setEditing] = useState(null);
   const [val, setVal] = useState("");
   const total = rows.reduce((a, r) => a + r.sec, 0);
@@ -927,19 +952,21 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
   };
 
   return (
-    <div className={`rounded-lg ${GLASS} p-3 sm:p-4`}>
-      <div className="flex items-center justify-between mb-1 px-1">
-        <h3 className="text-[14px] font-semibold text-fg">Time spent {dayLabel}</h3>
-        <span className="text-xs font-semibold text-fg-muted">{fmtSpent(total)}</span>
+    <section className={`rounded-lg border border-line bg-canvas ${className}`}>
+      <div className="flex items-center justify-between px-4 h-11 border-b border-line">
+        <h2 className="text-[13px] font-medium text-fg">Time spent {dayLabel}</h2>
+        <span className="font-mono text-[12px] text-fg-muted">{fmtSpent(total)}</span>
       </div>
-      <div className="divide-y divide-line  ">
+      <ul className="divide-y divide-line">
         {rows.map((r) => (
-          <div key={r.target} className="flex items-center gap-2 sm:gap-3 px-1 py-2">
-            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${(SOURCE_META[r.source] || SOURCE_META.custom).badge}`}>
-              {(SOURCE_META[r.source] || SOURCE_META.custom).label}
-            </span>
-            <span className="flex-1 min-w-0 truncate text-sm text-fg-muted">{r.title}</span>
-            {r.where && <span className="text-[10px] text-fg-subtle shrink-0">{r.where}</span>}
+          <li key={r.target} className="flex items-center gap-3 px-4 py-2.5">
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] text-fg truncate" title={r.title}>{r.title}</p>
+              <p className="text-[12px] text-fg-subtle truncate">
+                {(SOURCE_META[r.source] || SOURCE_META.custom).label}
+                {r.where && ` · ${r.where}`}
+              </p>
+            </div>
             {editing === r.target ? (
               <input
                 autoFocus
@@ -950,23 +977,23 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
                 onBlur={() => save(r)}
                 onKeyDown={(e) => { if (e.key === "Enter") save(r); if (e.key === "Escape") setEditing(null); }}
                 aria-label="Minutes spent"
-                className="w-14 px-1.5 py-0.5 text-xs rounded-md border border-line-strong bg-canvas text-fg-muted focus:outline-none text-center"
+                className={`${FIELD} !h-7 w-14 text-center font-mono !text-[12px]`}
               />
             ) : (
               <button
                 onClick={() => { setVal(String(Math.round(r.sec / 60))); setEditing(r.target); }}
                 disabled={!canEdit || r.live}
                 title={r.live ? "Timer running" : canEdit ? "Correct the time (minutes, 0 removes it)" : undefined}
-                className="flex items-center gap-1 text-xs font-semibold tabular-nums text-success-fg enabled:hover:text-fg transition-colors shrink-0"
+                className="shrink-0 inline-flex items-center gap-1.5 h-7 px-1.5 rounded-md font-mono text-[13px] tabular-nums text-fg enabled:hover:bg-surface-hover transition-colors"
               >
-                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />}
+                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />}
                 {fmtSpent(r.sec)}
               </button>
             )}
-          </div>
+          </li>
         ))}
-      </div>
-    </div>
+      </ul>
+    </section>
   );
 }
 
@@ -1046,17 +1073,18 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
       <motion.div
         initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
-        className="w-full sm:max-w-lg bg-canvas rounded-t-lg sm:rounded-2xl border border-line shadow-overlay max-h-[85vh] flex flex-col overflow-hidden"
+        className="w-full sm:max-w-lg bg-canvas rounded-t-xl sm:rounded-xl border border-line shadow-overlay max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-line">
-          <h3 className="text-base font-semibold text-fg">Add to plan</h3>
-          <button data-tour="picker-close" onClick={onClose} className="text-fg-subtle hover:text-fg-muted">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+          <h3 className="text-[15px] font-semibold text-fg">Add a task</h3>
+          <button data-tour="picker-close" onClick={onClose} aria-label="Close" className={buttonClass("ghost", "icon-sm")}>
+            <Icon.x />
           </button>
         </div>
 
-        <div className="flex gap-1 px-4 pt-3">
+        <div className="px-4 pt-3">
+          <div role="tablist" className="flex gap-0.5 p-0.5 rounded-md bg-surface-hover">
           {[
             { key: "custom", label: "Custom" },
             { key: "corestack", label: "Core" },
@@ -1066,13 +1094,16 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
-                tab === t.key ? "bg-primary text-on-primary border-line-strong " : "bg-canvas text-fg-muted border-line hover:border-line-strong "
+              role="tab"
+              aria-selected={tab === t.key}
+              className={`flex-1 h-7 text-[13px] font-medium rounded transition-colors ${
+                tab === t.key ? "bg-canvas text-fg shadow-xs" : "text-fg-muted hover:text-fg"
               }`}
             >
               {t.label}
             </button>
           ))}
+          </div>
         </div>
 
         {tab !== "custom" && (
@@ -1081,15 +1112,15 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={tab === "dsa" ? "Search problems or patterns..." : "Search topics..."}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
+              placeholder={tab === "dsa" ? "Search problems or patterns" : "Search topics"}
+              className={`${FIELD} w-full h-9`}
             />
           </div>
         )}
 
         <div className="flex-1 overflow-y-auto px-4 py-3">
           {tab === "corestack" && (
-            <ul className="space-y-1.5">
+            <ul className="space-y-0.5">
               {coreStackResults.map((t) => {
                 const added = addedKey.has(`corestack:${t.id}`);
                 return (
@@ -1097,21 +1128,21 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd(coreStackPlanItem(t))}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-success hover:opacity-90 "}`}
+                      className={`w-full flex items-center gap-2.5 px-3 h-10 rounded-md text-left transition-colors ${added ? "cursor-default" : "hover:bg-surface-hover"}`}
                     >
                       {showPriority && <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>}
-                      <span className="flex-1 text-sm text-fg-muted truncate">{t.title}</span>
-                      <span className="text-[10px] text-fg-subtle shrink-0">{added ? "Added" : "Add +"}</span>
+                      <span className="flex-1 min-w-0 text-[13px] text-fg truncate">{t.title}</span>
+                      {added ? <span className="inline-flex items-center gap-1 text-[12px] text-success-fg shrink-0"><Icon.check className="w-3.5 h-3.5" />Added</span> : <Icon.plus className="w-4 h-4 text-fg-subtle" />}
                     </button>
                   </li>
                 );
               })}
-              {coreStackResults.length === 0 && <p className="text-center text-xs text-fg-subtle py-6">No matches.</p>}
+              {coreStackResults.length === 0 && <p className="text-center text-[13px] text-fg-subtle py-8">No matches</p>}
             </ul>
           )}
 
           {tab === "aistack" && showAI && (
-            <ul className="space-y-1.5">
+            <ul className="space-y-0.5">
               {aiStackResults.map((t) => {
                 const added = addedKey.has(`aistack:${t.id}`);
                 return (
@@ -1119,21 +1150,21 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd(aiStackPlanItem(t))}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
+                      className={`w-full flex items-center gap-2.5 px-3 h-10 rounded-md text-left transition-colors ${added ? "cursor-default" : "hover:bg-surface-hover"}`}
                     >
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border bg-brand-subtle text-brand-fg border-line">{t.id}</span>
-                      <span className="flex-1 text-sm text-fg-muted truncate">{t.title}</span>
-                      <span className="text-[10px] text-fg-subtle shrink-0">{added ? "Added" : "Add +"}</span>
+                      <span className="font-mono text-[11px] px-1.5 h-[18px] inline-flex items-center rounded shrink-0 border border-line text-fg-muted">{t.id}</span>
+                      <span className="flex-1 min-w-0 text-[13px] text-fg truncate">{t.title}</span>
+                      {added ? <span className="inline-flex items-center gap-1 text-[12px] text-success-fg shrink-0"><Icon.check className="w-3.5 h-3.5" />Added</span> : <Icon.plus className="w-4 h-4 text-fg-subtle" />}
                     </button>
                   </li>
                 );
               })}
-              {aiStackResults.length === 0 && <p className="text-center text-xs text-fg-subtle py-6">No matches.</p>}
+              {aiStackResults.length === 0 && <p className="text-center text-[13px] text-fg-subtle py-8">No matches</p>}
             </ul>
           )}
 
           {tab === "dsa" && (
-            <ul className="space-y-1.5">
+            <ul className="space-y-0.5">
               {dsaResults.map((p) => {
                 const added = addedKey.has(`dsa:${p.id}`);
                 return (
@@ -1141,58 +1172,58 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd({ uid: uid(), source: "dsa", refId: p.id, title: p.title, meta: p.topic, link: p.link, estimatedMinutes: 25 })}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
+                      className={`w-full flex items-center gap-2.5 px-3 h-10 rounded-md text-left transition-colors ${added ? "cursor-default" : "hover:bg-surface-hover"}`}
                     >
                       <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[p.difficulty]}`}>{p.difficulty}</span>
-                      <span className="flex-1 text-sm text-fg-muted truncate">{p.title}</span>
-                      <span className="text-[10px] text-fg-subtle shrink-0">{added ? "Added" : "Add +"}</span>
+                      <span className="flex-1 min-w-0 text-[13px] text-fg truncate">{p.title}</span>
+                      {added ? <span className="inline-flex items-center gap-1 text-[12px] text-success-fg shrink-0"><Icon.check className="w-3.5 h-3.5" />Added</span> : <Icon.plus className="w-4 h-4 text-fg-subtle" />}
                     </button>
                   </li>
                 );
               })}
-              {dsaResults.length === 0 && <p className="text-center text-xs text-fg-subtle py-6">No matches.</p>}
+              {dsaResults.length === 0 && <p className="text-center text-[13px] text-fg-subtle py-8">No matches</p>}
             </ul>
           )}
 
           {tab === "custom" && (
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-fg-subtle">Title</label>
+                <label className="block mb-1.5 text-[12px] font-medium text-fg-muted">Title</label>
                 <input
                   data-tour="custom-title"
                   autoFocus
                   value={customTitle}
                   onChange={(e) => setCustomTitle(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && customTitle.trim()) addCustom(); }}
-                  placeholder="e.g. Pair session, Sharding deep-dive, System Design..."
-                  className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
+                  placeholder="e.g. Mock interview, Sharding deep-dive"
+                  className={`${FIELD} w-full h-9`}
                 />
               </div>
 
               {!hasSubs && (
                 <div>
-                  <label className="text-xs font-semibold text-fg-subtle">Time estimate (minutes)</label>
+                  <label className="block mb-1.5 text-[12px] font-medium text-fg-muted">Time estimate (minutes)</label>
                   <input
                     data-tour="custom-time"
                     type="text"
                     inputMode="numeric"
                     value={customTime}
                     onChange={(e) => setCustomTime(e.target.value.replace(/\D/g, ""))}
-                    className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus"
+                    className={`${FIELD} w-full h-9`}
                   />
-                  <p className="text-[10px] text-fg-subtle mt-1">{fmt(parseInt(customTime) || 0)} &rarr; {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
+                  <p className="text-[12px] text-fg-subtle mt-1.5"><span className="font-mono">{fmt(parseInt(customTime) || 0)}</span> · {((n) => `${n} focus session${n === 1 ? "" : "s"}`)(buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length)}</p>
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-fg-subtle">Sub-tasks (optional){hasSubs ? ` — ${fmt(subItems.reduce((s, i) => s + (i.estimatedMinutes || 0), 0))} total` : ""}</label>
+                <label className="block mb-1.5 text-[12px] font-medium text-fg-muted">Sub-tasks (optional){hasSubs ? ` — ${fmt(subItems.reduce((s, i) => s + (i.estimatedMinutes || 0), 0))} total` : ""}</label>
                 {hasSubs && (
                   <div className="space-y-1 mt-1.5">
                     {subItems.map((s) => (
-                      <div key={s.uid} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-subtle text-sm">
-                        <span className="flex-1 text-fg-muted">{s.title}</span>
-                        <span className="text-[10px] text-fg-subtle shrink-0">{fmt(s.estimatedMinutes || 0)}</span>
-                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} className="text-fg-subtle hover:text-fg">&times;</button>
+                      <div key={s.uid} className="flex items-center gap-2 pl-3 pr-1 h-9 rounded-md border border-line text-[13px]">
+                        <span className="flex-1 min-w-0 truncate text-fg">{s.title}</span>
+                        <span className="font-mono text-[12px] text-fg-subtle shrink-0">{fmt(s.estimatedMinutes || 0)}</span>
+                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} aria-label="Remove sub-task" className={buttonClass("ghost", "icon-sm")}><Icon.x className="w-3.5 h-3.5" /></button>
                       </div>
                     ))}
                   </div>
@@ -1202,8 +1233,8 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     value={subInput}
                     onChange={(e) => setSubInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
-                    placeholder="Add a sub-task..."
-                    className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
+                    placeholder="Add a sub-task"
+                    className={`${FIELD} flex-1 min-w-0`}
                   />
                   <input
                     type="text"
@@ -1211,32 +1242,32 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     value={subTimeInput}
                     onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
                     onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
-                    className="w-16 px-2 py-1.5 text-sm rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus text-center"
+                    className={`${FIELD} w-16 text-center font-mono`}
                     placeholder="min"
                     title="Minutes"
                   />
-                  <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-brand-subtle text-brand-fg text-sm font-semibold disabled:opacity-40">+</button>
+                  <Button onClick={addSub} disabled={!subInput.trim()}>Add</Button>
                 </div>
                 {hasSubs && (
-                  <p className="text-[10px] text-fg-subtle mt-1">Time is set per sub-task. Timer runs on each sub-task individually.</p>
+                  <p className="text-[12px] text-fg-subtle mt-1.5">Each sub-task has its own estimate and its own timer.</p>
                 )}
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-fg-subtle">Notes (optional)</label>
+                <label className="block mb-1.5 text-[12px] font-medium text-fg-muted">Notes (optional)</label>
                 <textarea
                   value={customNote}
                   onChange={(e) => setCustomNote(e.target.value)}
                   rows={2}
-                  placeholder="Any details..."
-                  className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus resize-y"
+                  placeholder="Any details"
+                  className={`${FIELD} w-full h-9 !h-auto py-2 resize-y`}
                 />
               </div>
               <button
                 data-tour="custom-add"
                 onClick={addCustom}
                 disabled={!customTitle.trim()}
-                className="w-full py-2.5 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className={`${buttonClass("primary")} w-full !h-9`}
               >
                 Add to plan
               </button>
@@ -1292,6 +1323,25 @@ const Planning = () => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [openItem, setOpenItem] = useState(null);
   const [calOpen, setCalOpen] = useState(false);
+  const [showDone, setShowDone] = useState(true);
+
+  // Keys: N adds a task, T goes to today, ← and → step a day. Not while
+  // typing, and not while the picker or calendar is open.
+  useEffect(() => {
+    if (pickerOpen || calOpen) return undefined;
+    const onKey = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+      const t = e.target;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      const key = e.key.toLowerCase();
+      if (key === "n") { e.preventDefault(); setPickerOpen(true); }
+      else if (key === "t") setCurrent(dateKey());
+      else if (key === "arrowleft") setCurrent((c) => addDays(c, -1));
+      else if (key === "arrowright") setCurrent((c) => addDays(c, 1));
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [pickerOpen, calOpen]);
 
   // The timer is saved to the account, so a refresh, another tab or another
   // device picks it up where it is.
@@ -1631,91 +1681,201 @@ const Planning = () => {
   const totalPlanned = items.reduce((s, i) => s + itemTotalMinutes(i), 0);
   const totalDone = Math.round(timeRows.reduce((s, r) => s + r.sec, 0) / 60);
 
+  // Open tasks first, finished ones in their own list below. Each keeps its
+  // place in the day's order, which dragging changes.
+  const rows = items.map((item, idx) => ({ item, idx, ...resolve(item) }));
+  const openRows = rows.filter((r) => !r.complete);
+  const doneRows = rows.filter((r) => r.complete);
+  const minutesLeft = openRows.reduce((s, { item }) => {
+    const subs = item.subItems || [];
+    if (subs.length) return s + subs.filter((x) => !x.completed).reduce((a, x) => a + (x.estimatedMinutes || 0), 0);
+    return s + (item.estimatedMinutes || 0);
+  }, 0);
+
+  // The first open task (or sub-task) with an estimate: what to focus on next.
+  let nextUp = null;
+  for (const { item } of openRows) {
+    const subs = item.subItems || [];
+    if (subs.length) {
+      const sub = subs.find((x) => !x.completed && x.estimatedMinutes > 0);
+      if (sub) { nextUp = { item, sub }; break; }
+    } else if (item.estimatedMinutes > 0) {
+      nextUp = { item };
+      break;
+    }
+  }
+
+  // Each day of the week strip: how many tasks, how many done.
+  const statsFor = (key) => {
+    const list = key === current ? items : getDay(key);
+    return { total: list.length, done: key === current ? doneCount : list.filter((i) => resolve(i).complete).length };
+  };
+
+  const openPicker = () => setPickerOpen(true);
+  const dayWord = relativeLabel(current).toLowerCase();
+
+  const renderRow = ({ item, idx, complete, note }) => (
+    <DayCard
+      key={item.uid}
+      item={item}
+      index={idx}
+      complete={complete}
+      note={note}
+      isOpen={openItem === item.uid}
+      canComplete={isToday}
+      isToday={isToday}
+      onToggleOpen={() => setOpenItem((p) => (p === item.uid ? null : item.uid))}
+      onToggleComplete={() => toggleComplete(item)}
+      onNoteChange={(val) => changeNote(item, val)}
+      onRemove={() => removeItem(item.uid)}
+      isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
+      onToggleStar={item.source === "dsa" ? toggleStar : undefined}
+      solvedDays={item.source === "dsa" && complete ? dsaDaysSinceSolved(item.refId) : null}
+      moveLabel={isToday ? "Tomorrow" : "Today"}
+      onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
+      onTimeChange={updateItemTime}
+      onSubItemTimeChange={updateSubItemTime}
+      onToggleSubItem={toggleSubItem}
+      onAddSubItem={addSubItem}
+      onRemoveSubItem={removeSubItem}
+      pomoActive={!!pomo && pomo.status !== "complete"}
+      pomoItemUid={pomo?.itemUid}
+      onStartPomo={startPomo}
+      {...timeOn(item)}
+      dayLabel={dayLabel}
+      canLog={canLog}
+      onLogTime={(minutes) => addTime(current, item, minutes * 60)}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      onDragEnd={handleDragEnd}
+      isDragging={dragIdx === idx}
+      isOver={overIdx === idx && dragIdx !== idx}
+    />
+  );
+
+  const timeSpent = (className) =>
+    timeRows.length > 0 && (
+      <TimeSpent
+        className={className}
+        rows={timeRows}
+        dayLabel={dayLabel}
+        canEdit={canLog}
+        onSetTime={(target, sec) => setDayTime(current, target, sec)}
+      />
+    );
+
   if (!authReady) return <PageSkeleton />;
 
   return (
-    <PageShell>
-      <div className="min-h-screen flex justify-center px-2">
-        <div className="w-full max-w-5xl">
-
-          {isGuest && !sandbox && (
-            <div className="mt-6 px-2">
-              <OfferHero onTour={() => startTour()} onSignIn={() => requestSignIn()} />
-            </div>
-          )}
-
-          <div className="mt-8 mb-4 px-2">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h1 className="text-[32px] leading-10 font-semibold tracking-[-0.02em] text-fg">Planning</h1>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-xs text-fg-subtle">{relativeLabel(current)}</p>
-                  <p className="text-sm font-semibold text-fg">{doneCount}/{items.length} done</p>
-                </div>
-                <div className="relative w-12 h-12">
-                  <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="4" />
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="var(--brand)" strokeWidth="4" strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 19}`}
-                      strokeDashoffset={`${2 * Math.PI * 19 * (1 - pct / 100)}`}
-                      style={{ transition: "stroke-dashoffset 0.5s ease" }} />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-medium text-fg">{pct}%</span>
-                </div>
-              </div>
-            </div>
+    <PageShell allowSticky>
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        {isGuest && !sandbox && (
+          <div className="mt-6">
+            <OfferHero onTour={() => startTour()} onSignIn={() => requestSignIn()} />
           </div>
+        )}
 
-          <div className="flex items-center justify-between gap-2 mb-3 px-2 relative">
-            <button onClick={() => setCurrent(addDays(current, -1))} className={`px-3 py-1.5 rounded-lg border border-line bg-canvas ${LIGHT_BUTTON} text-fg-muted hover:border-line-strong hover:text-fg text-sm font-semibold transition-all`}>&lsaquo;</button>
-
-            <div className="relative text-center">
-              <button onClick={() => setCalOpen(!calOpen)} className="group">
-                <p className="text-sm font-semibold text-fg group-hover:text-fg transition-colors">{relativeLabel(current)}</p>
-                <p className="text-[11px] text-fg-subtle flex items-center justify-center gap-1">
-                  {prettyDate(current)}
-                  <svg className="w-3 h-3 text-fg-subtle" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 7h12M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
-                </p>
+        {/* The day: its date, the way to other days, and the one main action. */}
+        <header className="pt-10 pb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-mono text-[12px] text-fg-subtle">{prettyDate(current)}</p>
+            <h1 className="mt-1 text-[32px] leading-10 font-semibold tracking-[-0.02em] text-fg">{relativeLabel(current)}</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex h-8 items-stretch rounded-md border border-line-strong bg-canvas overflow-hidden divide-x divide-line-strong">
+              <button
+                onClick={() => setCurrent(addDays(current, -1))}
+                aria-label="Previous day"
+                title="Previous day (←)"
+                className="w-8 flex items-center justify-center text-fg-muted hover:text-fg hover:bg-surface-subtle transition-colors"
+              >
+                <Icon.chevronLeft />
               </button>
+              <button
+                onClick={() => setCurrent(today)}
+                disabled={isToday}
+                title="Go to today (T)"
+                className="px-3 text-[13px] font-medium text-fg enabled:hover:bg-surface-subtle disabled:text-fg-subtle transition-colors"
+              >
+                Today
+              </button>
+              <button
+                onClick={() => setCurrent(addDays(current, 1))}
+                aria-label="Next day"
+                title="Next day (→)"
+                className="w-8 flex items-center justify-center text-fg-muted hover:text-fg hover:bg-surface-subtle transition-colors"
+              >
+                <Icon.chevronRight />
+              </button>
+            </div>
+            <div className="relative">
+              {/* Its own mousedown would count as a click outside the open calendar. */}
+              <Button
+                size="icon"
+                aria-label="Pick a date"
+                title="Pick a date"
+                aria-expanded={calOpen}
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() => setCalOpen((o) => !o)}
+              >
+                <Icon.calendar />
+              </Button>
               <AnimatePresence>
                 {calOpen && <CalendarPicker current={current} today={today} planDays={planDays} onSelect={setCurrent} onClose={() => setCalOpen(false)} />}
               </AnimatePresence>
             </div>
-
-            <div className="flex items-center gap-2">
-              {!isToday && (
-                <button onClick={() => setCurrent(today)} className={`px-3 py-1.5 rounded-lg border ${LIGHT_BUTTON} text-sm font-medium`}>Today</button>
-              )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className={`px-3 py-1.5 rounded-lg border border-line bg-canvas ${LIGHT_BUTTON} text-fg-muted hover:border-line-strong hover:text-fg text-sm font-semibold transition-all`}>&rsaquo;</button>
-            </div>
+            <Button variant="primary" className="ml-auto sm:ml-0" data-tour="open-picker" title="Add a task (N)" onClick={openPicker}>
+              <Icon.plus />
+              Add task
+            </Button>
           </div>
+        </header>
 
-          {(totalPlanned > 0 || totalDone > 0) && (
-            <div className="px-2 mb-3">
-              <div className={`rounded-lg ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
-                <svg className="w-4 h-4 text-brand-fg shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-fg-muted">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
-                    <span className="text-fg-subtle">{fmt(totalDone) || "0m"} done</span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-surface-hover overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full bg-brand"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${totalPlanned ? Math.min(100, (totalDone / totalPlanned) * 100) : 0}%` }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </div>
+        <WeekStrip current={current} today={today} onSelect={setCurrent} statsFor={statsFor} />
+
+        <div className="mt-6 grid items-start gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          {/* Side panel. First in the page so a phone shows the summary and a
+              running timer above the list; on wide screens it sits right. */}
+          <aside className="space-y-4 lg:col-start-2 lg:row-start-1 lg:sticky lg:top-20">
+            <section className="rounded-lg border border-line bg-canvas p-4">
+              <div className="flex items-center gap-4">
+                <ProgressRing pct={pct} />
+                <div className="min-w-0">
+                  <p className="text-[13px] text-fg-muted">{isToday ? "Today's progress" : "Progress"}</p>
+                  <p className="mt-0.5 font-mono text-[22px] leading-7 font-medium tabular-nums text-fg">
+                    {doneCount}<span className="text-fg-subtle">/{items.length}</span>
+                    <span className="ml-2 font-sans text-[13px] font-normal text-fg-subtle">tasks done</span>
+                  </p>
                 </div>
               </div>
-            </div>
-          )}
+              <dl className="mt-4 grid grid-cols-3 gap-px overflow-hidden rounded-md border border-line bg-line">
+                {[
+                  ["Planned", totalPlanned],
+                  ["Left", minutesLeft],
+                  ["Focused", totalDone],
+                ].map(([label, min]) => (
+                  <div key={label} className="bg-canvas px-3 py-2">
+                    <dt className="text-[12px] text-fg-subtle">{label}</dt>
+                    <dd className="mt-0.5 font-mono text-[14px] font-medium tabular-nums text-fg">{fmt(min) || "0m"}</dd>
+                  </div>
+                ))}
+              </dl>
+              {totalPlanned > 0 && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-1.5 text-[12px] text-fg-subtle">
+                    <span>Focus time vs plan</span>
+                    <span className="font-mono">{Math.min(100, Math.round((totalDone / totalPlanned) * 100))}%</span>
+                  </div>
+                  <ProgressBar value={Math.min(1, totalDone / totalPlanned)} />
+                </div>
+              )}
+            </section>
 
-          <div className="px-2">
-            <AnimatePresence>
-              {pomo && (
+            <AnimatePresence mode="wait">
+              {pomo ? (
                 <PomodoroTimer
+                  key="timer"
                   pomo={pomo}
                   onPause={() => { const np = flushPomo(pomoRef.current); commitPomo(np ? { ...np, status: "paused", anchor: undefined } : null); }}
                   onResume={() => { const p = pomoRef.current; if (p) commitPomo({ ...p, status: "running", anchor: Date.now() }); }}
@@ -1723,91 +1883,102 @@ const Planning = () => {
                   onDismiss={() => { flushPomo(pomoRef.current); commitPomo(null); }}
                   onExtend={extendPomo}
                 />
-              )}
+              ) : isToday && nextUp ? (
+                <motion.section key="next" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="rounded-lg border border-line bg-canvas">
+                  <div className="flex items-center justify-between px-4 h-11 border-b border-line">
+                    <h2 className="text-[13px] font-medium text-fg">Up next</h2>
+                    <span className="font-mono text-[12px] text-fg-subtle">{fmt((nextUp.sub || nextUp.item).estimatedMinutes)}</span>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-[14px] font-medium leading-5 text-fg">{nextUp.item.title}</p>
+                    {nextUp.sub && <p className="mt-0.5 text-[13px] text-fg-muted">{nextUp.sub.title}</p>}
+                    <p className="mt-1.5 text-[12px] text-fg-subtle">
+                      {(() => {
+                        const n = buildSessions((nextUp.sub || nextUp.item).estimatedMinutes).filter((s) => s.type === "work").length;
+                        return n > 1 ? `${n} focus sessions with 5-minute breaks` : "One focus session";
+                      })()}
+                    </p>
+                    <Button variant="primary" className="mt-4 w-full" onClick={() => startPomo(nextUp.item, nextUp.sub)}>
+                      <Icon.start className="w-3.5 h-3.5" />
+                      Start focus
+                    </Button>
+                  </div>
+                </motion.section>
+              ) : isToday && items.length > 0 && doneCount === items.length ? (
+                <motion.section key="done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="rounded-lg border border-line bg-canvas p-4 flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-success-subtle text-success-fg flex items-center justify-center shrink-0">
+                    <Icon.check />
+                  </span>
+                  <div>
+                    <p className="text-[14px] font-medium text-fg">All done for today</p>
+                    <p className="text-[12px] text-fg-subtle">Plan tomorrow while it's fresh.</p>
+                  </div>
+                </motion.section>
+              ) : null}
             </AnimatePresence>
-          </div>
 
-          <div className="px-2 mb-4">
-            <motion.div layout className="rounded-lg border border-line bg-surface-subtle p-3 sm:p-4">
-              <div className="flex items-center justify-between mb-3 px-1">
-                <h3 className="text-[14px] font-semibold text-fg">
-                  Tasks for {relativeLabel(current).toLowerCase()}
-                </h3>
-                <span className="font-mono text-[12px] text-fg-subtle">{doneCount}/{items.length} done</span>
-              </div>
+            {timeSpent("hidden lg:block")}
+          </aside>
 
-              {items.length === 0 ? (
-                <p className="text-center text-xs text-fg-subtle py-6">
-                  Nothing planned yet — add cards from Topics, DSA, or create a custom one.
+          <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+            {items.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-line-strong px-6 py-14 text-center">
+                <span className="mx-auto w-10 h-10 rounded-full bg-surface-hover text-fg-muted flex items-center justify-center">
+                  <Icon.calendar />
+                </span>
+                <h2 className="mt-4 text-[15px] font-semibold text-fg">Nothing planned for {dayWord}</h2>
+                <p className="mt-1 mx-auto max-w-sm text-[13px] leading-5 text-fg-muted">
+                  Add topics from Core Stack or problems from DSA, or write a task of your own. Every task gets a focus timer.
                 </p>
-              ) : (
-                <div className="space-y-2">
-                  {items.map((item, idx) => {
-                    const { complete, note } = resolve(item);
-                    return (
-                      <DayCard
-                        key={item.uid}
-                        item={item}
-                        index={idx}
-                        complete={complete}
-                        note={note}
-                        isOpen={openItem === item.uid}
-                        canComplete={isToday}
-                        isToday={isToday}
-                        onToggleOpen={() => setOpenItem((p) => (p === item.uid ? null : item.uid))}
-                        onToggleComplete={() => toggleComplete(item)}
-                        onNoteChange={(val) => changeNote(item, val)}
-                        onRemove={() => removeItem(item.uid)}
-                        isStarred={item.source === "dsa" ? !!dsaStarred[item.refId] : false}
-                        onToggleStar={item.source === "dsa" ? toggleStar : undefined}
-                        solvedDays={item.source === "dsa" && complete ? dsaDaysSinceSolved(item.refId) : null}
-                        moveLabel={isToday ? "Tomorrow" : "Today"}
-                        onMove={() => moveItem(item, isToday ? addDays(current, 1) : today)}
-                        onTimeChange={updateItemTime}
-                        onSubItemTimeChange={updateSubItemTime}
-                        onToggleSubItem={toggleSubItem}
-                        onAddSubItem={addSubItem}
-                        onRemoveSubItem={removeSubItem}
-                        pomoActive={!!pomo && pomo.status !== "complete"}
-                        pomoItemUid={pomo?.itemUid}
-                        onStartPomo={startPomo}
-                        {...timeOn(item)}
-                        dayLabel={dayLabel}
-                        canLog={canLog}
-                        onLogTime={(minutes) => addTime(current, item, minutes * 60)}
-                        onDragStart={handleDragStart}
-                        onDragOver={handleDragOver}
-                        onDrop={handleDrop}
-                        onDragEnd={handleDragEnd}
-                        isDragging={dragIdx === idx}
-                        isOver={overIdx === idx && dragIdx !== idx}
-                      />
-                    );
-                  })}
-                </div>
-              )}
+                <Button variant="primary" className="mt-5" onClick={openPicker}>
+                  <Icon.plus />
+                  Add task
+                </Button>
+              </div>
+            ) : (
+              <>
+                <section className="rounded-lg border border-line bg-canvas overflow-hidden">
+                  <div className="flex items-center justify-between px-4 h-11 border-b border-line">
+                    <h2 className="text-[13px] font-medium text-fg">
+                      To do <span className="ml-1 font-mono text-fg-subtle">{openRows.length}</span>
+                    </h2>
+                    {minutesLeft > 0 && <span className="font-mono text-[12px] text-fg-subtle">{fmt(minutesLeft)} left</span>}
+                  </div>
+                  {openRows.length > 0 ? (
+                    <div className="divide-y divide-line">{openRows.map(renderRow)}</div>
+                  ) : (
+                    <p className="px-4 py-6 text-center text-[13px] text-fg-subtle">Every task on {dayWord}'s plan is done.</p>
+                  )}
+                  <button
+                    onClick={openPicker}
+                    className="w-full flex items-center gap-3 pl-3 sm:pl-[37px] pr-4 h-11 border-t border-line text-[13px] text-fg-subtle hover:text-fg hover:bg-surface-subtle transition-colors"
+                  >
+                    <Icon.plus />
+                    Add task
+                    <Kbd className="ml-auto hidden sm:inline-flex">N</Kbd>
+                  </button>
+                </section>
 
-              <button
-                data-tour="open-picker"
-                onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-line-strong text-brand-fg font-semibold text-sm bg-canvas hover:bg-surface-hover transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-                Add to {isToday ? "today's" : "this day's"} plan
-              </button>
-            </motion.div>
+                {doneRows.length > 0 && (
+                  <section className="mt-4 rounded-lg border border-line bg-canvas overflow-hidden">
+                    <button
+                      onClick={() => setShowDone((v) => !v)}
+                      aria-expanded={showDone}
+                      className="w-full flex items-center justify-between px-4 h-11 hover:bg-surface-subtle transition-colors"
+                    >
+                      <h2 className="text-[13px] font-medium text-fg">
+                        Completed <span className="ml-1 font-mono text-fg-subtle">{doneRows.length}</span>
+                      </h2>
+                      <Icon.chevronDown className={`w-4 h-4 text-fg-subtle transition-transform duration-200 ${showDone ? "rotate-180" : ""}`} />
+                    </button>
+                    {showDone && <div className="divide-y divide-line border-t border-line">{doneRows.map(renderRow)}</div>}
+                  </section>
+                )}
+              </>
+            )}
+
+            {timeSpent("mt-6 lg:hidden")}
           </div>
-
-          {timeRows.length > 0 && (
-            <div className="px-2 mb-6">
-              <TimeSpent
-                rows={timeRows}
-                dayLabel={dayLabel}
-                canEdit={canLog}
-                onSetTime={(target, sec) => setDayTime(current, target, sec)}
-              />
-            </div>
-          )}
         </div>
       </div>
 
