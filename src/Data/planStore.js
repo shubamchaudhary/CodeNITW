@@ -47,6 +47,8 @@ export const KEYS = {
   WB_HIGHLIGHTS: "WebBasicsHighlights",
   // Your own notes under each answer: { questionId: { text, updatedAt } }.
   WB_NOTES: "WebBasicsNotes",
+  // Your code for each Python exercise: { exerciseId: { code, updatedAt } }.
+  WB_CODE: "WebBasicsCode",
   // Interview Kit checklists (behavioral, STAR, HR, design, Java, LogLens).
   IK_COMPLETED: "InterviewKitCompleted",
   IK_NOTES: "InterviewKitNotes",

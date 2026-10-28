@@ -4,6 +4,14 @@
 // questions ("### id | Question", optionally "| asked=N" for how many real
 // interview write-ups asked it) whose body is the answer. The ids are what
 // the ticks are stored under, so never renumber them — add new ones at the end.
+//
+// A coding exercise sits between the questions it practises:
+// "### pe01 | Title | write" (or "| fix", "| predict"). Its body is the task in
+// markdown, then fenced blocks tagged after the language — ```python starter
+// (what the editor opens with), ```python tests (the checks, see
+// pages/WebBasics/python/harness.py), ```python solution, or ```python predict
+// (code whose output you guess) — and optional "#### Hint" and "#### Why"
+// sections (shown on request, and with the solution).
 
 export const WEB_BASICS = [
   { key: "javascript", group: "web", path: "/javascript", label: "JavaScript", load: () => import("./javascript.md?raw") },
@@ -42,6 +50,7 @@ export function parseQuestionBank(text) {
     if (q) {
       q.answer = q.lines.join("\n").trim();
       q.minutes = minutesFor(q.answer);
+      if (q.kind) q.exercise = parseExercise(q.answer);
       delete q.lines;
       q = null;
     }
@@ -66,10 +75,10 @@ export function parseQuestionBank(text) {
       modules.push(mod);
       continue;
     }
-    const h = line.match(/^### ([\w-]+) \| (.+?)(?: \| asked=(\d+))?$/);
+    const h = line.match(/^### ([\w-]+) \| (.+?)(?: \| asked=(\d+))?(?: \| (write|fix|predict))?$/);
     if (h && mod) {
       flush();
-      q = { id: h[1], question: h[2].trim(), asked: h[3] ? Number(h[3]) : null, lines: [] };
+      q = { id: h[1], question: h[2].trim(), asked: h[3] ? Number(h[3]) : null, kind: h[4] || null, lines: [] };
       mod.questions.push(q);
       continue;
     }
@@ -77,7 +86,35 @@ export function parseQuestionBank(text) {
   }
   flush();
 
+  // Questions and exercises are counted apart: Q1, Q2… and E1, E2…
   let n = 0;
-  modules.forEach((md) => md.questions.forEach((x) => (x.number = ++n)));
+  let e = 0;
+  modules.forEach((md) => md.questions.forEach((x) => (x.number = x.kind ? ++e : ++n)));
   return modules;
+}
+
+const PART = /^(`{3,})(\w+) (starter|tests|solution|predict)\s*$/;
+
+// An exercise body → { prompt, starter, tests, solution, predict, hint, why }.
+export function parseExercise(body) {
+  const ex = { prompt: [], starter: "", tests: "", solution: "", predict: "", hint: "", why: "" };
+  let into = ex.prompt; // where plain lines go: the prompt, or a #### section
+  const lines = body.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const part = lines[i].match(PART);
+    if (part) {
+      const code = [];
+      while (++i < lines.length && lines[i].trim() !== part[1]) code.push(lines[i]);
+      ex[part[3]] = code.join("\n");
+      continue;
+    }
+    const section = lines[i].match(/^#### (Hint|Why)\s*$/);
+    if (section) {
+      ex[section[1].toLowerCase()] = into = [];
+      continue;
+    }
+    into.push(lines[i]);
+  }
+  for (const k of ["prompt", "hint", "why"]) ex[k] = Array.isArray(ex[k]) ? ex[k].join("\n").trim() : ex[k];
+  return ex;
 }

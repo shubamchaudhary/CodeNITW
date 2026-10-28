@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, lazy, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -13,6 +13,9 @@ import { KEYS, loadJSON, saveJSON, setSourceComplete, subscribe } from "../../Da
 import { WEB_BASICS, ASKED_SOURCE, parseQuestionBank } from "../../Data/WebBasics";
 import { buildTextIndex, anchorFromRange, locate, rangeFor, caretFromPoint, paintRanges, canPaintHighlights } from "../Notes/noteAnchors";
 
+// The Python exercises' editor and runner, fetched with the first exercise.
+const Exercise = lazy(() => import("./python/Exercise"));
+
 // The question banks (JS · React · Node, Python · FastAPI), read like a Core
 // Stack topic: the left column lists every module of every bank in the group,
 // the rest is one module with every question and its answer open, under a
@@ -20,8 +23,16 @@ import { buildTextIndex, anchorFromRange, locate, rangeFor, caretFromPoint, pain
 // tick, and any passage can be highlighted — highlights are stored as the
 // passage plus a little context (the same anchors personal notes use) and
 // painted over the rendered answer, so the read-only bank is never edited.
+// Between the Python questions sit small coding exercises, run in the browser
+// (./python): solving one ticks it like a question.
 
 const GROUP_LABEL = { web: "JS · React · Node", python: "Python · FastAPI" };
+
+const EXERCISE_KIND = {
+  write: { label: "Write it", cls: "bg-brand-subtle text-brand-fg" },
+  fix: { label: "Fix the bug", cls: "bg-danger-subtle text-danger-fg" },
+  predict: { label: "Predict the output", cls: "bg-warning-subtle text-warning-fg" },
+};
 
 const COLORS = [
   { key: "yellow", swatch: "#facc15", label: "Yellow" },
@@ -74,12 +85,14 @@ export default function WebBasics({ techKey }) {
   const [done, setDone] = useState(() => loadJSON(KEYS.WB_COMPLETED, {}));
   const [highlights, setHighlights] = useState(() => loadJSON(KEYS.WB_HIGHLIGHTS, {}));
   const [notes, setNotes] = useState(() => loadJSON(KEYS.WB_NOTES, {}));
+  const [code, setCode] = useState(() => loadJSON(KEYS.WB_CODE, {}));
   useEffect(
     () =>
       subscribe((key) => {
         if (key === KEYS.WB_COMPLETED) setDone(loadJSON(KEYS.WB_COMPLETED, {}));
         if (key === KEYS.WB_HIGHLIGHTS) setHighlights(loadJSON(KEYS.WB_HIGHLIGHTS, {}));
         if (key === KEYS.WB_NOTES) setNotes(loadJSON(KEYS.WB_NOTES, {}));
+        if (key === KEYS.WB_CODE) setCode(loadJSON(KEYS.WB_CODE, {}));
       }),
     []
   );
@@ -121,6 +134,15 @@ export default function WebBasics({ techKey }) {
     else delete map[qid];
     saveJSON(KEYS.WB_NOTES, map);
     setNotes(loadJSON(KEYS.WB_NOTES, {}));
+  }, []);
+
+  // An exercise's code; empty (back to the starter) removes the entry.
+  const saveCode = useCallback((qid, text) => {
+    const map = { ...loadJSON(KEYS.WB_CODE, {}) };
+    if (text) map[qid] = { code: text, updatedAt: Date.now() };
+    else delete map[qid];
+    saveJSON(KEYS.WB_CODE, map);
+    setCode(loadJSON(KEYS.WB_CODE, {}));
   }, []);
 
   const saveHighlights = useCallback((qid, list) => {
@@ -226,6 +248,8 @@ export default function WebBasics({ techKey }) {
             highlights={highlights}
             notes={notes}
             onSaveNote={saveNote}
+            code={code}
+            onSaveCode={saveCode}
             colorMode={colorMode}
             onToggleDone={toggleDone}
             onSaveHighlights={saveHighlights}
@@ -355,7 +379,7 @@ function BankNav({ group, groupKey, current, done, onPick }) {
 
 // ── Middle: one module, every answer open ─────────────────────────────────────
 
-function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo, immersive, onToggleImmersive }) {
+function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote, code, onSaveCode, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo, immersive, onToggleImmersive }) {
   const articleRef = useRef(null);
   const rangesRef = useRef(new Map()); // highlight id -> { range, qid }
   const [toolbar, setToolbar] = useState(null); // a fresh selection
@@ -363,6 +387,7 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
 
   const qs = module.questions;
   const nDone = qs.filter((q) => done[q.id]).length;
+  const nExercises = qs.filter((q) => q.kind).length;
 
   // Paint every highlight of this module over the rendered answers.
   const moduleHighlights = useMemo(() => qs.flatMap((q) => (highlights[q.id] || []).map((h) => ({ ...h, qid: q.id }))), [qs, highlights]);
@@ -475,12 +500,26 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
             {module.title}
           </h1>
           <p className="mt-2.5 text-[14px] text-fg-subtle">
-            {qs.length} questions · {nDone}/{qs.length} done
+            {qs.length - nExercises} questions{nExercises ? ` · ${nExercises} coding exercise${nExercises === 1 ? "" : "s"}` : ""} · {nDone}/{qs.length} done
           </p>
           {askedSource && <p className="mt-1 text-[12.5px] text-fg-subtle">{askedSource}</p>}
         </header>
 
-        {qs.map((q, i) => (
+        {qs.map((q, i) =>
+          q.kind ? (
+            <ExerciseBlock
+              key={q.id}
+              q={q}
+              last={i === qs.length - 1}
+              isDone={!!done[q.id]}
+              colorMode={colorMode}
+              onToggleDone={onToggleDone}
+              savedCode={code[q.id]?.code}
+              onSaveCode={onSaveCode}
+              note={notes[q.id]?.text || ""}
+              onSaveNote={onSaveNote}
+            />
+          ) : (
           <QuestionBlock
             key={q.id}
             q={q}
@@ -491,7 +530,8 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
             note={notes[q.id]?.text || ""}
             onSaveNote={onSaveNote}
           />
-        ))}
+          )
+        )}
 
         {/* The end of the module: a big card onto the next one (across techs
             too), and a quieter link back. */}
@@ -591,6 +631,51 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
         </div>
       </div>
       <Answer qid={q.id} source={q.answer} colorMode={colorMode} />
+      <QuestionNote qid={q.id} note={note} colorMode={colorMode} onSave={onSaveNote} />
+    </section>
+  );
+});
+
+// A coding exercise: a tinted card between the questions, E1, E2… Running
+// your code to all-green ticks it; the tick can still be undone by hand.
+const ExerciseBlock = memo(function ExerciseBlock({ q, last, isDone, colorMode, onToggleDone, savedCode, onSaveCode, note, onSaveNote }) {
+  const kind = EXERCISE_KIND[q.kind];
+  const onSolved = useCallback((id) => {
+    onToggleDone(id, true);
+    toast.success("Solved — nice.");
+  }, [onToggleDone]);
+  return (
+    <section className={`${last ? "" : "wb-line mb-10 pb-10 border-b border-line "}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
+      <div className="rounded-xl border border-line bg-surface-subtle px-4 sm:px-6 py-5">
+        <div className="flex items-start gap-3.5 mb-4">
+          <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-lg bg-brand-subtle text-brand-fg text-[16px] font-semibold flex items-center justify-center tabular-nums">
+            E{q.number}
+          </span>
+          <div className="flex-1 min-w-0 pt-1">
+            <p className={`inline-block mb-1 text-[11px] px-2 py-0.5 rounded-full font-semibold ${kind.cls}`}>
+              Code · {kind.label}
+            </p>
+            <h2 className="text-[21px] sm:text-[22px] leading-snug font-semibold tracking-tight text-fg">
+              <InlineCode text={q.question} />
+            </h2>
+          </div>
+          <button
+            onClick={() => onToggleDone(q.id, !isDone)}
+            title={isDone ? "Solved — click to mark not done" : "Mark this exercise done"}
+            className={`shrink-0 mt-1 h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-semibold border transition-colors ${
+              isDone
+                ? "bg-success border-success text-white"
+                : "border-line-strong text-fg-muted hover:border-success hover:text-success-fg "
+            }`}
+          >
+            <DoneCircle done={isDone} className="w-4 h-4" onColor="text-white" />
+            {isDone ? "Solved" : "Mark done"}
+          </button>
+        </div>
+        <Suspense fallback={<p className="text-[14px] text-fg-subtle">Loading the editor…</p>}>
+          <Exercise q={q} isDone={isDone} onSolved={onSolved} savedCode={savedCode} onSaveCode={onSaveCode} colorMode={colorMode} />
+        </Suspense>
+      </div>
       <QuestionNote qid={q.id} note={note} colorMode={colorMode} onSave={onSaveNote} />
     </section>
   );

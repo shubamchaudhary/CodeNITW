@@ -52,6 +52,10 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "build",
     },
+    // The Python exercises' worker is a module worker (it imports Pyodide's ESM build).
+    worker: {
+      format: "es",
+    },
     plugins: [react(), apiFunctions(mode)],
   };
 });
