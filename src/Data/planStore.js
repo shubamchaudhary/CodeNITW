@@ -45,6 +45,8 @@ export const KEYS = {
   WB_COMPLETED: "WebBasicsCompleted",
   // Highlights on those answers: { questionId: [{ id, color, quote, prefix, suffix, ... }] }.
   WB_HIGHLIGHTS: "WebBasicsHighlights",
+  // Your own notes under each answer: { questionId: { text, updatedAt } }.
+  WB_NOTES: "WebBasicsNotes",
   // Interview Kit checklists (behavioral, STAR, HR, design, Java, LogLens).
   IK_COMPLETED: "InterviewKitCompleted",
   IK_NOTES: "InterviewKitNotes",
