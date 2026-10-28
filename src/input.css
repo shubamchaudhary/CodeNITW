@@ -13,6 +13,14 @@
     background-color: var(--canvas);
     color: var(--fg);
   }
+  /* The page scrolls without a visible scrollbar (wheel, trackpad, keys and
+     touch all still work). Inner scroll areas keep theirs. */
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
