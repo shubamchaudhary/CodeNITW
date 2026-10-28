@@ -73,11 +73,13 @@ export default function WebBasics({ techKey }) {
 
   const [done, setDone] = useState(() => loadJSON(KEYS.WB_COMPLETED, {}));
   const [highlights, setHighlights] = useState(() => loadJSON(KEYS.WB_HIGHLIGHTS, {}));
+  const [notes, setNotes] = useState(() => loadJSON(KEYS.WB_NOTES, {}));
   useEffect(
     () =>
       subscribe((key) => {
         if (key === KEYS.WB_COMPLETED) setDone(loadJSON(KEYS.WB_COMPLETED, {}));
         if (key === KEYS.WB_HIGHLIGHTS) setHighlights(loadJSON(KEYS.WB_HIGHLIGHTS, {}));
+        if (key === KEYS.WB_NOTES) setNotes(loadJSON(KEYS.WB_NOTES, {}));
       }),
     []
   );
@@ -110,6 +112,15 @@ export default function WebBasics({ techKey }) {
   const toggleDone = useCallback((id, value) => {
     setSourceComplete("webbasics", id, value);
     setDone((m) => ({ ...m, [id]: value }));
+  }, []);
+
+  // An empty note removes the entry, so the store only holds notes you wrote.
+  const saveNote = useCallback((qid, text) => {
+    const map = { ...loadJSON(KEYS.WB_NOTES, {}) };
+    if (text.trim()) map[qid] = { text, updatedAt: Date.now() };
+    else delete map[qid];
+    saveJSON(KEYS.WB_NOTES, map);
+    setNotes(loadJSON(KEYS.WB_NOTES, {}));
   }, []);
 
   const saveHighlights = useCallback((qid, list) => {
@@ -213,6 +224,8 @@ export default function WebBasics({ techKey }) {
             askedSource={ASKED_SOURCE[tech.group]}
             done={done}
             highlights={highlights}
+            notes={notes}
+            onSaveNote={saveNote}
             colorMode={colorMode}
             onToggleDone={toggleDone}
             onSaveHighlights={saveHighlights}
@@ -342,7 +355,7 @@ function BankNav({ group, groupKey, current, done, onPick }) {
 
 // ── Middle: one module, every answer open ─────────────────────────────────────
 
-function ModuleReader({ module, askedSource, done, highlights, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo, immersive, onToggleImmersive }) {
+function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote, colorMode, onToggleDone, onSaveHighlights, prev, next, onGo, immersive, onToggleImmersive }) {
   const articleRef = useRef(null);
   const rangesRef = useRef(new Map()); // highlight id -> { range, qid }
   const [toolbar, setToolbar] = useState(null); // a fresh selection
@@ -475,6 +488,8 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
             isDone={!!done[q.id]}
             colorMode={colorMode}
             onToggleDone={onToggleDone}
+            note={notes[q.id]?.text || ""}
+            onSaveNote={onSaveNote}
           />
         ))}
 
@@ -542,7 +557,7 @@ function ModuleReader({ module, askedSource, done, highlights, colorMode, onTogg
 // One question: the question as a heading with its tick, then the answer.
 // Memoised on what it shows, so ticking a question never re-renders the other
 // answers (which would move the text the highlights are painted on).
-const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, onToggleDone }) {
+const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, onToggleDone, note, onSaveNote }) {
   return (
     <section className={`${last ? "" : "wb-line mb-10 pb-10 border-b border-gray-200/80 dark:border-white/[0.07]"}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
       <div className="flex items-start gap-3.5 mb-4">
@@ -576,9 +591,95 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
         </div>
       </div>
       <Answer qid={q.id} source={q.answer} colorMode={colorMode} />
+      <QuestionNote qid={q.id} note={note} colorMode={colorMode} onSave={onSaveNote} />
     </section>
   );
 });
+
+// Your own note under an answer: your wording of the answer, a follow-up you
+// were asked, a mistake you made. Markdown, saved to your account. Nothing
+// shows until you add one but a quiet "Add a note" link.
+function QuestionNote({ qid, note, colorMode, onSave }) {
+  const [draft, setDraft] = useState(null); // null: not editing
+  const areaRef = useRef(null);
+
+  useEffect(() => {
+    const el = areaRef.current;
+    if (draft == null || !el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.max(120, el.scrollHeight + 2)}px`;
+  }, [draft]);
+
+  const save = () => {
+    onSave(qid, draft);
+    setDraft(null);
+  };
+
+  if (draft != null) {
+    return (
+      <div className="mt-5 rounded-2xl border border-amber-500/30 bg-amber-50/60 dark:bg-amber-400/[0.05] p-3">
+        <p className="mb-2 text-[12px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Your note</p>
+        <textarea
+          ref={areaRef}
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) save();
+            if (e.key === "Escape") setDraft(null);
+          }}
+          placeholder="Write in your own words — markdown works (lists, **bold**, `code`, ```code blocks```)."
+          className="w-full resize-none rounded-xl border border-gray-300 dark:border-white/[0.14] bg-white dark:bg-[#0b1020] px-3.5 py-3 text-[15px] leading-relaxed font-mono text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+        />
+        <div className="mt-2 flex items-center justify-end gap-2">
+          <span className="mr-auto text-[12px] text-gray-400 dark:text-gray-500">Ctrl+Enter to save · Esc to cancel</span>
+          <button onClick={() => setDraft(null)} className="h-8 px-3 rounded-lg text-[13px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06]">
+            Cancel
+          </button>
+          <button onClick={save} className="h-8 px-3.5 rounded-lg text-[13px] font-bold text-white bg-amber-500 hover:bg-amber-600">
+            Save note
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!note) {
+    return (
+      <button
+        onClick={() => setDraft("")}
+        className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-400 dark:text-gray-500 hover:text-amber-600 dark:hover:text-amber-300"
+      >
+        <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+          <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+        Add a note
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-5 rounded-2xl border border-amber-500/25 bg-amber-50/50 dark:bg-amber-400/[0.04] px-4 pt-3 pb-2">
+      <div className="flex items-center justify-between">
+        <p className="text-[12px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Your note</p>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setDraft(note)} className="h-7 px-2.5 rounded-md text-[12.5px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/[0.06]">
+            Edit
+          </button>
+          <button
+            onClick={() => window.confirm("Delete this note?") && onSave(qid, "")}
+            className="h-7 px-2.5 rounded-md text-[12.5px] font-semibold text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+      <div className="note-md" data-color-mode={colorMode} style={{ "--note-fs": "15.5px" }}>
+        <MarkdownPreview source={note} style={{ background: "transparent" }} wrapperElement={{ "data-color-mode": colorMode }} />
+      </div>
+    </div>
+  );
+}
 
 const Answer = memo(function Answer({ qid, source, colorMode }) {
   return (

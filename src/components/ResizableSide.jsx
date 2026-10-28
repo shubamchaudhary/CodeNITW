@@ -70,7 +70,14 @@ export default function ResizableSide({ footerHeight, prefKey, className = "", c
       style={{ width: closed ? 14 : width }}
     >
       <div className="sticky top-0 overflow-hidden" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
-        {!closed && <div style={{ width }}>{children}</div>}
+        {/* Full height, so the topic list inside gets a bounded height and
+            scrolls on its own (without it the list grew past the window and
+            was clipped). */}
+        {!closed && (
+          <div className="h-full" style={{ width }}>
+            {children}
+          </div>
+        )}
         <div
           onPointerDown={startDrag}
           title={closed ? "Drag or click to show the topics" : "Drag to resize — drag all the way left to hide"}
