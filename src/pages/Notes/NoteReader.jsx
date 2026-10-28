@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import ProgressStrip from "../../components/ProgressStrip";
+import { buttonClass } from "../../components/ui";
 import { toast } from "react-toastify";
 import { requireAuth } from "../../Data/authGate";
 import { ASSET_PREFIX } from "../../Data/noteAssets";
@@ -723,12 +724,12 @@ export default function NoteReader({
           Solid, not frosted: backdrop blur would make the floating toolbars'
           fixed positioning relative to this box instead of the window. */}
       <div
-        className={`bg-white dark:bg-[#0e1427] border-gray-200/90 dark:border-white/[0.07] ${
+        className={`bg-canvas border-line ${
           flat
             ? ""
             : immersive
             ? "-mx-3 sm:-mx-5 lg:-mx-8"
-            : "rounded-3xl border shadow-[0_10px_40px_-18px_rgba(15,23,42,0.25)] dark:shadow-[0_10px_40px_-12px_rgba(0,0,0,0.6)]"
+            : "rounded-lg border"
         }`}
         // In full screen the page runs from the bar to the bottom of the
         // window with no frame, so nothing of the backdrop shows around it.
@@ -738,7 +739,7 @@ export default function NoteReader({
             pinned above the text. */}
         <ProgressStrip pct={progress * 100} style={{ top: navTop }}>
           {topicKeys.size > 0 && (
-            <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
+            <span className="shrink-0 font-mono text-[12px] tabular-nums text-fg-subtle">
               {learntCount}/{topicKeys.size} learnt
             </span>
           )}
@@ -752,12 +753,12 @@ export default function NoteReader({
             onMouseMove={onMouseMove}
             onMouseLeave={() => setGutter(null)}
             onClick={(e) => window.matchMedia?.("(hover: none)").matches && placeGutter(e.target)}
-            className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
+            className="relative min-w-0 mx-auto max-w-[72rem] px-4 sm:px-8 lg:px-16 py-8 lg:py-12"
           >
             {lead}
 
             <div ref={mdRef} className="note-md note-reader" data-color-mode={colorMode} style={{ "--note-fs": `${fontSize}px` }}>
-              {isEmpty && readOnly && <p className="py-16 text-center text-[15px] text-gray-500 dark:text-gray-400">This version was empty.</p>}
+              {isEmpty && readOnly && <p className="py-16 text-center text-[14px] text-fg-subtle">This version was empty.</p>}
               {isEmpty && !readOnly && editing?.mode !== "append" && (
                 <EmptyNote
                   questions={starterQuestions}
@@ -838,7 +839,7 @@ export default function NoteReader({
               <>
                 <div aria-hidden className="note-gutter-line absolute pointer-events-none hidden lg:block" style={{ top: gutter.top, height: gutter.height, left: gutter.left - 5 }} />
                 <div
-                  className="note-ui note-gutter absolute z-20 flex items-center gap-0.5 rounded-lg bg-white/95 dark:bg-slate-800/95 border border-gray-200 dark:border-white/10 shadow-sm p-0.5 lg:-translate-x-full"
+                  className="note-ui note-gutter absolute z-20 flex items-center gap-0.5 rounded-md bg-canvas shadow-overlay p-0.5 lg:-translate-x-full"
                   style={window.matchMedia?.("(min-width: 1024px)").matches ? { top: gutter.top, left: gutter.left - 10 } : { top: gutter.top - 6, left: gutter.right - 58 }}
                 >
                   <button
@@ -945,9 +946,10 @@ export default function NoteReader({
 function EmptyNote({ questions, accent, onStart, onSeed }) {
   if (!questions || !questions.length) {
     return (
-      <div className="text-center py-16">
-        <p className="text-[15px] text-gray-500 dark:text-gray-400">This note is empty.</p>
-        <button data-tour="start-blank" onClick={onStart} className={`mt-4 px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}>
+      <div className="py-16 flex flex-col items-center text-center">
+        <p className="text-[15px] font-medium text-fg">No notes yet</p>
+        <p className="mt-1 text-[14px] text-fg-subtle">Write down what you'd say if this came up in an interview.</p>
+        <button data-tour="start-blank" onClick={onStart} className={`mt-4 ${buttonClass("primary")}`}>
           Start writing
         </button>
       </div>
@@ -955,7 +957,7 @@ function EmptyNote({ questions, accent, onStart, onSeed }) {
   }
   return (
     <div className="note-ui wmde-markdown" style={{ background: "transparent" }}>
-      <p className="text-[15px] text-gray-500 dark:text-gray-400">
+      <p className="text-[15px] text-fg-muted">
         No notes yet. Try answering these out loud first — then write down what you'd say.
       </p>
       <h2 className="!mt-6">Interview questions</h2>
@@ -965,14 +967,10 @@ function EmptyNote({ questions, accent, onStart, onSeed }) {
         ))}
       </ol>
       <div className="mt-6 flex flex-wrap gap-2">
-        <button onClick={onSeed} className={`px-4 h-9 rounded-xl text-[13px] font-bold text-white shadow-lg ${accent.button}`}>
+        <button onClick={onSeed} className={buttonClass("primary")}>
           Start notes from these questions
         </button>
-        <button
-          data-tour="start-blank"
-          onClick={onStart}
-          className="px-4 h-9 rounded-xl text-[13px] font-bold text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05]"
-        >
+        <button data-tour="start-blank" onClick={onStart} className={buttonClass("secondary")}>
           Start from a blank page
         </button>
       </div>
@@ -1014,28 +1012,24 @@ function LearntButton({ learnt, onClick }) {
     <button
       onClick={onClick}
       title={learnt ? "Learnt — click to mark as not learnt" : "Mark this topic as learnt"}
-      className={`note-learnt absolute z-10 top-0.5 right-0 h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-bold border transition-colors ${
-        learnt
-          ? "bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30 hover:bg-emerald-600"
-          : "bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.14] text-gray-500 dark:text-gray-400 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
-      }`}
+      className={`note-learnt absolute z-10 top-0.5 right-0 pl-2 ${buttonClass(learnt ? "success" : "secondary", "sm")}`}
     >
-      <CheckCircle done={learnt} className="w-4 h-4" onColor="text-white" />
+      <CheckCircle done={learnt} className="w-4 h-4" />
       {learnt ? "Learnt" : "Mark as learnt"}
     </button>
   );
 }
 
-// A round tick: filled when done, an empty ring when not.
-function CheckCircle({ done, className = "w-4 h-4", onColor = "text-emerald-500" }) {
+// A round tick: filled green when done, an empty ring when not.
+function CheckCircle({ done, className = "w-4 h-4" }) {
   return done ? (
-    <svg className={`${className} ${onColor} shrink-0`} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="7" fill="currentColor" opacity={onColor === "text-white" ? 0.25 : 1} />
-      <path d="M4.8 8.2l2.1 2.1 4.3-4.5" stroke={onColor === "text-white" ? "currentColor" : "white"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <svg className={`${className} text-success shrink-0`} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="7.5" fill="currentColor" />
+      <path d="M4.8 8.2l2.1 2.1 4.3-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ) : (
-    <svg className={`${className} shrink-0`} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4" opacity="0.55" />
+    <svg className={`${className} text-line-strong shrink-0`} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="8" r="6.75" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
 }
@@ -1185,7 +1179,7 @@ function InlineEditor({ initial, onSave, onCancel, uploadInto, navTop }) {
         <button
           onMouseDown={(e) => e.preventDefault()}
           onClick={onCancel}
-          className="ml-1 h-7 px-2.5 rounded-md text-[12px] font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.08]"
+          className={`ml-1 ${buttonClass("ghost", "sm")}`}
         >
           Cancel
         </button>
@@ -1193,7 +1187,7 @@ function InlineEditor({ initial, onSave, onCancel, uploadInto, navTop }) {
           onMouseDown={(e) => e.preventDefault()}
           onClick={save}
           disabled={busy > 0}
-          className="h-7 px-3 rounded-md text-[12px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
+          className={buttonClass("primary", "sm")}
         >
           Save
         </button>

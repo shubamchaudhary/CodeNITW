@@ -1,33 +1,35 @@
+@import "./styles/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base canvas colour. The sticky header is translucent glass, so whatever sits
-   behind it has to be the right colour — without this the header composites
-   over the browser's default white and reads grey in dark mode. Page-level
-   backgrounds paint over this everywhere else. */
+/* Base canvas colour. Page-level backgrounds paint over this everywhere else;
+   html carries it too so nothing past the body shows the browser's white in
+   dark mode. Light mode is the default. */
 @layer base {
   html,
   body {
-    @apply bg-slate-50 dark:bg-[#0b1020];
-  }
-  /* dark: matches inside .dark, never the <html> that carries the class, so
-     <html> itself needs the dark canvas spelled out (else a light strip shows
-     wherever content runs past the body, e.g. a popover near the bottom). */
-  html.dark {
-    background-color: #0b1020;
-  }
-  /* Light mode only: the same off-white as PageShell's canvas, crisper text
-     (macOS draws light-on-white text heavier without this), and a violet
-     text selection to match the brand instead of the browser's blue. */
-  html:not(.dark),
-  html:not(.dark) body {
     background-color: #f7f7f9;
+    color: var(--fg);
+  }
+  html.dark,
+  html.dark body {
+    background-color: var(--canvas);
+  }
+  html {
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  html:not(.dark) ::selection {
+  ::selection {
     background-color: rgba(124, 58, 237, 0.16);
+  }
+  button:focus-visible,
+  a:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
 }
 

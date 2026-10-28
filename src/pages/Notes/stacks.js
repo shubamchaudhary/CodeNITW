@@ -19,11 +19,13 @@ import {
   projectDaysSinceChecked,
 } from "../../Data/planStore";
 
+// Priority tags (the design system's PriorityTag): only P0 and P1 carry a
+// status colour; the rest are grey. The label always shows.
 const PRIORITY_TEXT = {
-  P0: "text-rose-500 dark:text-rose-400",
-  P1: "text-amber-500 dark:text-amber-400",
-  P2: "text-sky-500 dark:text-sky-400",
-  P3: "text-slate-400 dark:text-slate-500",
+  P0: "text-danger-fg",
+  P1: "text-warning-fg",
+  P2: "text-fg-subtle",
+  P3: "text-fg-subtle",
 };
 
 // Core Stack's priorities, the "why" behind each one and its interview
@@ -52,17 +54,19 @@ export const STACKS = {
     })),
     filters: ["P0", "P1", "P2"],
     matchFilter: (topic, f) => topic.priority === f,
-    tag: (topic) => ({ label: topic.priority, cls: PRIORITY_TEXT[topic.priority] || "text-gray-400" }),
+    tag: (topic) => ({ label: topic.priority, cls: PRIORITY_TEXT[topic.priority] || "text-fg-subtle" }),
     eyebrow: (topic) => topic.sectionLabel,
     summary: (topic) => topic.why,
     planItem: coreStackPlanItem,
     daysSinceDone: coreStackDaysSinceChecked,
+    // The design system's neutral accent: ink buttons, the brand violet only
+    // for focus and progress.
     accent: {
-      text: "text-emerald-600 dark:text-emerald-400",
-      bar: "from-emerald-500 to-teal-400",
-      button: "bg-gradient-to-br from-emerald-500 to-teal-500 shadow-emerald-500/30",
-      ring: "focus:ring-emerald-400/40 focus:border-emerald-400",
-      chip: "hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300",
+      text: "text-success-fg",
+      bar: "from-brand to-brand",
+      button: "bg-primary text-on-primary hover:bg-primary-hover",
+      ring: "focus:ring-focus focus:border-transparent",
+      chip: "hover:border-line-strong hover:text-fg",
     },
   },
   aistack: {

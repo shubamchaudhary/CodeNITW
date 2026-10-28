@@ -1,0 +1,63 @@
+/* Design tokens — the InterviewPlanPrep design system (tokens.json in the
+   Design System artifact). Light is the default theme; `.dark` on <html>
+   switches every token at once. Tailwind reads these through the colour,
+   font and shadow names in tailwind.config.js (bg-canvas, text-fg-muted,
+   border-line…), so a component never spells a hex value or a `dark:` pair. */
+
+:root {
+  --canvas: #ffffff;
+  --surface-subtle: #fafafa;
+  --surface-hover: #f4f4f5;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --fg: #18181b;
+  --fg-muted: #52525b;
+  --fg-subtle: #6b6b73;
+  --primary: #18181b;
+  --primary-hover: #3f3f46;
+  --on-primary: #ffffff;
+  --brand: #7c3aed;
+  --brand-fg: #6d28d9;
+  --brand-subtle: #f5f3ff;
+  --focus: var(--brand);
+  --success: #16a34a;
+  --success-fg: #15803d;
+  --success-subtle: #f0fdf4;
+  --warning-fg: #b45309;
+  --warning-subtle: #fffbeb;
+  --danger-fg: #b91c1c;
+  --danger-subtle: #fef2f2;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-overlay: 0 8px 24px -6px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.06);
+
+  --font-sans: Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+:root.dark {
+  --canvas: #0a0a0b;
+  --surface-subtle: #111113;
+  --surface-hover: #1c1c1f;
+  --line: #27272a;
+  --line-strong: #3f3f46;
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #8b8b93;
+  --primary: #fafafa;
+  --primary-hover: #e4e4e7;
+  --on-primary: #18181b;
+  --brand: #8b5cf6;
+  --brand-fg: #a78bfa;
+  --brand-subtle: #1e1530;
+  --success: #22c55e;
+  --success-fg: #4ade80;
+  --success-subtle: #0f2417;
+  --warning-fg: #fbbf24;
+  --warning-subtle: #261d0a;
+  --danger-fg: #f87171;
+  --danger-subtle: #2a1111;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-overlay: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}

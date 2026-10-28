@@ -2,6 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 import { readingList } from "./stacks";
 import { DoneCircle } from "./StackNav";
+import { Button, PriorityTag, Icon, buttonClass } from "../../components/ui";
 
 // The top of a topic page, laid out like an article: where it sits, its title,
 // why it matters, the two things you do with a topic (finish it, plan it), and
@@ -14,55 +15,41 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
 
   return (
     <header className="mb-10">
-      <p className="text-[17px] sm:text-[19px] text-gray-500 dark:text-gray-400 light:text-slate-500">
+      <p className="flex items-center gap-2 text-[14px] font-medium text-fg-subtle">
         {stack.eyebrow(topic)}
-        {tag && <span className={`ml-2.5 align-middle text-[12px] font-bold ${tag.cls}`}>{tag.label}</span>}
+        {tag && <PriorityTag tag={tag} />}
       </p>
-      <h1 className="mt-1 text-[30px] sm:text-[38px] lg:text-[42px] font-bold tracking-tight leading-[1.12] text-gray-900 dark:text-gray-50 light:text-slate-900 light:tracking-[-0.025em]">
+      <h1 className="mt-1.5 text-[26px] leading-8 sm:text-[32px] sm:leading-10 font-semibold tracking-[-0.02em] text-fg">
         {topic.title}
       </h1>
-      {summary && (
-        <p className="mt-3 max-w-[62rem] text-[16px] sm:text-[16.5px] leading-relaxed text-gray-600 dark:text-gray-300 light:text-slate-600">{summary}</p>
-      )}
+      {summary && <p className="mt-3 max-w-[46rem] text-[16px] leading-[26px] text-fg-muted">{summary}</p>}
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        <button
+        <Button
+          variant={done ? "success" : "secondary"}
           data-tour="mark-done"
           onClick={onToggleDone}
           title={done ? "Done — click to mark as not done" : "Mark this topic as done"}
-          className={`h-9 pl-2.5 pr-3.5 rounded-full flex items-center gap-2 text-[13.5px] font-semibold border transition-colors ${
-            done
-              ? "bg-emerald-500 border-emerald-500 text-white hover:bg-emerald-600 light:shadow-[0_1px_2px_rgba(5,150,105,0.3),inset_0_1px_0_rgba(255,255,255,0.18)]"
-              : "bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.14] text-gray-700 dark:text-gray-200 hover:border-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:border-emerald-500/40 light:hover:bg-emerald-50/50"
-          }`}
+          className="pl-2.5"
         >
-          {done ? (
-            <svg className="w-[18px] h-[18px]" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="7.5" fill="white" opacity="0.25" />
-              <path d="M4.8 8.2l2.1 2.1 4.3-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          ) : (
-            <DoneCircle done={false} className="w-[18px] h-[18px]" />
-          )}
+          <DoneCircle done={done} />
           {done ? (doneDays != null ? `Done · ${doneDays === 0 ? "today" : `${doneDays}d ago`}` : "Done") : "Mark as done"}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant={planned ? "brand" : "secondary"}
           data-tour="add-today"
           onClick={onTogglePlanned}
           title={planned ? "On today's plan — click to remove" : "Add this topic to today's plan"}
-          className={`h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13.5px] font-semibold border transition-colors ${
-            planned
-              ? "bg-violet-50 dark:bg-violet-500/15 border-violet-300 dark:border-violet-400/40 text-violet-700 dark:text-violet-300 light:border-violet-600/20"
-              : "bg-white dark:bg-white/[0.03] border-gray-300 dark:border-white/[0.14] text-gray-700 dark:text-gray-200 hover:border-violet-400 hover:text-violet-700 dark:hover:text-violet-300 light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:border-violet-500/40 light:hover:bg-violet-50/50"
-          }`}
+          className="pl-2.5"
         >
-          {planned ? "✓ On today's plan" : "＋ Add to today"}
-        </button>
-        {meta && <span className="ml-1 text-[13px] text-gray-500 dark:text-gray-400 light:text-slate-500">{meta}</span>}
+          {planned ? <Icon.check /> : <Icon.plus />}
+          {planned ? "On today's plan" : "Add to today"}
+        </Button>
+        {meta && <span className="ml-1 text-[13px] text-fg-subtle">{meta}</span>}
         {tools && <div className="ml-auto flex flex-wrap items-center gap-2">{tools}</div>}
       </div>
 
-      <div className="mt-7 border-t border-gray-200 dark:border-white/[0.08] light:border-slate-900/[0.07]" />
+      <div className="mt-6 border-t border-line" />
 
       {items.length > 0 && <WatchFirst items={items} />}
       {stack.key === "aistack" && <AIDepth topic={topic} />}
@@ -77,35 +64,32 @@ function fmtMinutes(total) {
   return m ? `${h}h ${m}m` : `${h}h`;
 }
 
-// What to watch (or read) before the notes, in the spirit of a "watch the
-// walkthrough" banner: each item opens where it lives — the playlist for a
-// playlist video, the page for a doc — with its title one click from the
-// clipboard for searching.
+// What to watch (or read) before the notes: one panel, one row per resource.
+// Each opens where it lives — the playlist for a playlist video, the page for
+// a doc — with its title one click from the clipboard for searching.
 function WatchFirst({ items }) {
   const videos = items.filter((i) => i.kind === "video").length;
   const minutes = items.reduce((n, i) => n + (i.minutes || 0), 0);
   const approx = items.some((i) => i.estimate || (!i.minutes && i.kind !== "self"));
-  const heading = videos === items.length ? (videos === 1 ? "Watch the video" : `Watch the ${videos} videos`) : "Watch & read first";
+  const allVideos = videos === items.length;
+  const heading = allVideos ? (videos === 1 ? "Watch the video" : `Watch the ${videos} videos`) : "Watch & read first";
+  const HeadIcon = allVideos ? Icon.play : Icon.doc;
 
   return (
-    <section className="mt-8 rounded-2xl border border-rose-100 dark:border-rose-400/15 bg-rose-50/70 dark:bg-rose-500/[0.06] light:bg-white light:border-slate-900/[0.08] light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_-4px_rgba(15,23,42,0.06)] p-4 sm:p-6">
-      <div className="flex items-center gap-3.5">
-        <span className="w-11 h-11 rounded-full bg-white dark:bg-white/[0.08] shadow-sm light:bg-red-50 light:shadow-none light:ring-1 light:ring-inset light:ring-red-600/10 flex items-center justify-center shrink-0">
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <rect x="2" y="5" width="20" height="14" rx="4" fill="#ef4444" />
-            <path d="M10 9.2v5.6l4.8-2.8L10 9.2z" fill="white" />
-          </svg>
+    <section className="mt-6 rounded-lg border border-line bg-canvas overflow-hidden">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 bg-surface-subtle border-b border-line">
+        <span className="text-fg-subtle">
+          <HeadIcon />
         </span>
-        <div>
-          <p className="text-[19px] font-semibold text-rose-600 dark:text-rose-300 light:text-slate-900 light:tracking-tight">{heading}</p>
-          <p className="text-[13.5px] text-rose-500/90 dark:text-rose-300/70 light:text-slate-500">
-            {items.length} {items.length === 1 ? "resource" : "resources"}
-            {minutes > 0 && ` · ${approx ? "≈" : ""}${fmtMinutes(minutes)}`} — before you read the notes
-          </p>
-        </div>
+        <p className="text-[15px] leading-[22px] font-semibold text-fg">{heading}</p>
+        <p className="font-mono text-[12px] tabular-nums text-fg-subtle">
+          {items.length} {items.length === 1 ? "resource" : "resources"}
+          {minutes > 0 && ` · ${approx ? "≈" : ""}${fmtMinutes(minutes)}`}
+        </p>
+        <p className="ml-auto text-[12px] text-fg-subtle hidden sm:block">Before you read the notes</p>
       </div>
 
-      <ol className="mt-5 space-y-2.5">
+      <ol className="divide-y divide-line">
         {items.map((r, i) => (
           <WatchItem key={r.id || i} r={r} n={i + 1} />
         ))}
@@ -117,55 +101,58 @@ function WatchFirst({ items }) {
 function WatchItem({ r, n }) {
   const href = r.url || r.playlistUrl;
   const isPlaylist = r.kind === "video" && !r.url && r.playlistUrl;
-  const isRead = r.kind === "doc" || r.kind === "course";
   const label = r.kind === "doc" ? "Read" : r.kind === "course" ? "Open course" : isPlaylist ? "Open playlist" : "Watch";
+  const mono = (s) => <span className="font-mono tabular-nums">{s}</span>;
   const where = [
     r.source,
-    isPlaylist && r.position ? `#${r.position} in playlist` : null,
-    r.minutes ? `${r.estimate ? "≈" : ""}${fmtMinutes(r.minutes)}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+    isPlaylist && r.position ? <>{mono(`#${r.position}`)} in playlist</> : null,
+    r.minutes ? mono(`${r.estimate ? "≈" : ""}${fmtMinutes(r.minutes)}`) : null,
+  ].filter(Boolean);
 
   return (
-    <li className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl bg-white/90 dark:bg-white/[0.04] border border-rose-100/80 dark:border-white/[0.06] light:bg-slate-50/70 light:border-slate-900/[0.06] px-4 py-3">
-      <span className="hidden sm:flex w-7 h-7 rounded-full bg-rose-100 dark:bg-rose-400/15 text-rose-600 dark:text-rose-300 light:bg-white light:text-slate-600 light:ring-1 light:ring-inset light:ring-slate-900/[0.08] text-[12.5px] font-bold items-center justify-center shrink-0">
-        {n}
+    <li className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
+      <span className="hidden sm:block w-5 font-mono text-[12px] font-medium tabular-nums text-fg-subtle shrink-0">
+        {String(n).padStart(2, "0")}
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-semibold leading-snug text-gray-900 dark:text-gray-50 light:text-slate-900">{r.title}</p>
-        {where && <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400 light:text-slate-500">{r.kind === "self" ? r.source || "Your own codebase" : where}</p>}
-        {r.note && <p className="mt-1 text-[13px] leading-relaxed text-amber-700 dark:text-amber-300/90">↳ {r.note}</p>}
+        <p className="text-[14px] leading-5 font-medium text-fg">{r.title}</p>
+        {(where.length > 0 || r.kind === "self") && (
+          <p className="mt-0.5 text-[12px] leading-4 text-fg-subtle">
+            {r.kind === "self"
+              ? r.source || "Your own codebase"
+              : where.map((w, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 && " · "}
+                    {w}
+                  </React.Fragment>
+                ))}
+          </p>
+        )}
+        {r.note && <p className="mt-1 text-[12px] leading-relaxed text-warning-fg">{r.note}</p>}
       </div>
       {r.kind !== "self" && (
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => {
               navigator.clipboard?.writeText(r.title);
               toast.success("Title copied");
             }}
             title="Copy the title to search for it"
-            className="h-9 px-3 rounded-full text-[13px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-rose-100/70 dark:hover:bg-white/[0.06] light:text-slate-600 light:hover:bg-slate-900/[0.05] light:hover:text-slate-900"
+            aria-label="Copy title"
           >
-            Copy title
-          </button>
+            <Icon.copy />
+          </Button>
           {href && (
             <a
               href={href}
               target="_blank"
               rel="noopener noreferrer"
               title={isPlaylist ? `Video #${r.position} in this playlist` : href}
-              className="h-9 pl-3 pr-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-white bg-rose-500 hover:bg-rose-600 shadow-sm shadow-rose-500/25 light:bg-red-600 light:hover:bg-red-700 light:shadow-[0_1px_2px_rgba(185,28,28,0.25),inset_0_1px_0_rgba(255,255,255,0.16)]"
+              className={buttonClass("secondary", "sm")}
             >
-              {isRead ? (
-                <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
-                  <path d="M4 2h5l3 3v9H4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                </svg>
-              ) : (
-                <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M5 3.5v9l7-4.5z" />
-                </svg>
-              )}
+              <Icon.external className="w-3.5 h-3.5" />
               {label}
             </a>
           )}
@@ -183,21 +170,22 @@ function AIDepth({ topic }) {
   return (
     <section className="mt-5 space-y-2">
       {topic.resumeLinked && topic.flag && (
-        <p className="rounded-xl px-4 py-3 bg-amber-50 dark:bg-amber-400/10 border border-amber-200 dark:border-amber-400/25 light:bg-amber-50/70 light:border-amber-600/15 text-[14px] leading-relaxed text-amber-800 dark:text-amber-200">
-          ⚠️ {topic.flag}
+        <p className="rounded-lg px-4 py-3 bg-warning-subtle text-[14px] leading-relaxed text-warning-fg">
+          <span className="font-semibold">On your resume: </span>
+          {topic.flag}
         </p>
       )}
       {(c.enough || c.tooDeep) && (
         <div className="grid sm:grid-cols-2 gap-2">
           {c.enough && (
-            <p className="rounded-xl px-4 py-3 bg-emerald-50 dark:bg-emerald-400/[0.08] border border-emerald-200/80 dark:border-emerald-400/20 light:bg-emerald-50/60 light:border-emerald-600/15 light:text-slate-700 text-[14px] leading-relaxed text-gray-700 dark:text-gray-200">
-              <span className="font-semibold text-emerald-700 dark:text-emerald-300">Enough: </span>
+            <p className="rounded-lg px-4 py-3 border border-line text-[14px] leading-relaxed text-fg-muted">
+              <span className="font-semibold text-success-fg">Enough: </span>
               {c.enough}
             </p>
           )}
           {c.tooDeep && (
-            <p className="rounded-xl px-4 py-3 bg-rose-50 dark:bg-rose-400/[0.07] border border-rose-200/80 dark:border-rose-400/20 light:bg-rose-50/60 light:border-rose-600/15 light:text-slate-700 text-[14px] leading-relaxed text-gray-700 dark:text-gray-200">
-              <span className="font-semibold text-rose-700 dark:text-rose-300">Too deep: </span>
+            <p className="rounded-lg px-4 py-3 border border-line text-[14px] leading-relaxed text-fg-muted">
+              <span className="font-semibold text-danger-fg">Too deep: </span>
               {c.tooDeep}
             </p>
           )}
