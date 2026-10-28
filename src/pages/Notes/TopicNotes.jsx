@@ -32,7 +32,7 @@ import HistoryPanel, { describeVersion } from "./HistoryPanel";
 import useStackProgress from "./useStackProgress";
 import { STACKS, rememberTopic, stackForViewer } from "./stacks";
 import { TOOLBAR, formatSelection, noteStats } from "./noteMarkdown";
-import { SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
+import { Button, Segmented, Icon, buttonClass } from "../../components/ui";
 
 // A topic's page, laid out like a course on a learning site: the stack's topic
 // list on the left, the topic in the middle — its header, what to watch, then
@@ -510,7 +510,7 @@ export default function TopicNotes() {
   const pick = (id) => navigate(`/notes/${source}/${id}`);
 
   const textSize = (
-    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14] light:bg-white light:border-slate-900/[0.10] light:shadow-[0_1px_1px_rgba(15,23,42,0.04)]" title="Text size">
+    <div className="flex items-center h-8 rounded-md border border-line-strong bg-canvas" title="Text size">
       <SmallButton
         onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
         disabled={prefs.fontSize <= FONT_MIN}
@@ -518,7 +518,7 @@ export default function TopicNotes() {
       >
         A−
       </SmallButton>
-      <span className="w-7 text-center text-[12px] font-semibold tabular-nums text-gray-500 dark:text-gray-400 light:text-slate-500">{prefs.fontSize}</span>
+      <span className="w-6 text-center font-mono text-[12px] tabular-nums text-fg-subtle">{prefs.fontSize}</span>
       <SmallButton
         onClick={() => updatePrefs({ fontSize: Math.min(FONT_MAX, prefs.fontSize + 1) })}
         disabled={prefs.fontSize >= FONT_MAX}
@@ -532,85 +532,51 @@ export default function TopicNotes() {
   // `place`: "toolbar" (beside the text size), "bar" (full screen's slim bar)
   // or "rail" (the progress strip, for when the toolbar has scrolled away).
   const fullScreenButton = (place) => (
-    <button
+    <Button
       ref={place === "toolbar" ? setToolbarFsEl : undefined}
       data-tour={place === "rail" ? undefined : "fullscreen"}
       onClick={immersive ? exitImmersive : enterImmersive}
       title={immersive ? "Exit full screen (Esc)" : "Read in full screen"}
-      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] transition-colors"
     >
-      {immersive ? (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      ) : (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      )}
+      {immersive ? <Icon.collapse /> : <Icon.expand />}
       {immersive ? "Exit full screen" : "Full screen"}
-    </button>
+    </Button>
   );
 
   const viewSwitch = (
-    <div className="flex items-center rounded-full border border-gray-300 dark:border-white/[0.14] light:bg-slate-900/[0.045] light:border-slate-900/[0.04] light:shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] p-0.5">
-      {VIEWS.map((v) => (
-        <button
-          key={v.key}
-          data-tour={`view-${v.key}`}
-          onClick={() =>
-            (v.key === "read" || requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) &&
-            setView(v.key)
-          }
-          title={v.title}
-          className={`h-8 px-3.5 rounded-full text-[13px] font-semibold transition-colors ${
-            view === v.key
-              ? `bg-gray-900 text-white dark:bg-white dark:text-gray-900 ${SEGMENT_ON}`
-              : `text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 ${SEGMENT_OFF}`
-          }`}
-        >
-          {v.label}
-        </button>
-      ))}
-    </div>
+    <Segmented
+      options={VIEWS.map((v) => ({ key: v.key, label: v.label, title: v.title, "data-tour": `view-${v.key}` }))}
+      value={view}
+      onChange={(key) =>
+        (key === "read" || requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) &&
+        setView(key)
+      }
+    />
   );
 
   const historyButton = (user || sandbox) && (
-    <button
-      data-tour="history"
-      onClick={() => setHistoryOpen(true)}
-      title="Every saved version of this note"
-      className="h-9 px-3.5 rounded-full flex items-center gap-1.5 text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-gray-50 dark:hover:bg-white/[0.05] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] transition-colors"
-    >
-      <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M2.6 8a5.4 5.4 0 1 0 1.6-3.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M2.4 2.4v2.4h2.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M8 5.2V8l2 1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+    <Button data-tour="history" onClick={() => setHistoryOpen(true)} title="Every saved version of this note">
+      <Icon.history />
       History
-    </button>
+    </Button>
   );
 
   // Looking at a past version: say so, and offer the two ways out.
   const previewBanner = preview && (
-    <div className="mb-6 rounded-2xl border border-amber-300/80 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-4 py-3 flex flex-wrap items-center gap-3">
-      <div className="flex-1 min-w-[220px] text-[13.5px] leading-snug text-amber-900 dark:text-amber-200">
-        <span className="font-bold">Viewing an older version</span>
-        <span className="block text-[12.5px] opacity-80">
+    <div className="mb-6 rounded-lg bg-warning-subtle px-4 py-3 flex flex-wrap items-center gap-3">
+      <div className="flex-1 min-w-[220px] text-[14px] leading-snug text-fg">
+        <span className="font-semibold text-warning-fg">Viewing an older version</span>
+        <span className="block text-[13px] text-fg-muted">
           {describeVersion(preview)} · {(preview.words || 0).toLocaleString()} words
           {Array.isArray(preview.annotations) && preview.annotations.length > 0
             ? ` · ${preview.annotations.length} personal note${preview.annotations.length === 1 ? "" : "s"}`
             : ""}
         </span>
       </div>
-      <button
-        onClick={restorePreview}
-        className="h-9 px-4 rounded-full text-[13px] font-semibold bg-gray-900 text-white dark:bg-white dark:text-gray-900 hover:opacity-90"
-      >
+      <Button variant="primary" onClick={restorePreview}>
         Restore this version
-      </button>
-      <button
-        onClick={() => setPreview(null)}
-        className="h-9 px-3.5 rounded-full text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] hover:bg-white/60 dark:hover:bg-white/[0.05]"
-      >
-        Back to current
-      </button>
+      </Button>
+      <Button onClick={() => setPreview(null)}>Back to current</Button>
     </div>
   );
 
@@ -665,17 +631,17 @@ export default function TopicNotes() {
   );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0e1427]">
+    <div className="min-h-screen bg-canvas">
       {immersive && (
         /* Full screen: a slim sticky bar instead of the site header */
         <div
           ref={barRef}
-          className="sticky top-0 z-40 px-4 sm:px-6 py-2.5 backdrop-blur-xl bg-white/90 dark:bg-[#0e1427]/90 border-b border-gray-200/90 dark:border-white/[0.07] light:bg-white/80 light:backdrop-saturate-150 light:border-slate-900/[0.07]"
+          className="sticky top-0 z-40 px-4 sm:px-6 py-2.5 bg-canvas border-b border-line"
         >
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="min-w-0 flex-1 flex items-baseline gap-2.5">
-              <span className="shrink-0 text-[12px] text-gray-400 dark:text-gray-500">{config.eyebrow(topic)}</span>
-              <span className="truncate text-[15px] font-bold tracking-tight text-gray-900 dark:text-gray-50">{topic.title}</span>
+              <span className="shrink-0 text-[13px] text-fg-subtle">{config.eyebrow(topic)}</span>
+              <span className="truncate text-[15px] font-semibold text-fg">{topic.title}</span>
             </div>
             {textSize}
             {fullScreenButton("bar")}
@@ -692,18 +658,16 @@ export default function TopicNotes() {
 
         <main className="flex-1 min-w-0">
           {!immersive && (
-            <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]">
+            <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2 border-b border-line bg-canvas">
               <button
                 data-tour="topics-drawer"
                 onClick={() => setDrawerOpen(true)}
-                className="h-9 px-3 rounded-full flex items-center gap-2 shrink-0 whitespace-nowrap text-[13px] font-semibold text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-white/[0.14] light:bg-white light:border-slate-900/[0.10] light:text-slate-700 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)]"
+                className={buttonClass("secondary")}
               >
-                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                  <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
+                <Icon.menu />
                 {config.label}
               </button>
-              <span className="truncate text-[13px] text-gray-500 dark:text-gray-400">{topic.title}</span>
+              <span className="truncate text-[13px] text-fg-subtle">{topic.title}</span>
             </div>
           )}
 
@@ -747,7 +711,7 @@ export default function TopicNotes() {
                     key={action.key}
                     onClick={() => applyAction(action)}
                     title={action.title}
-                    className={`min-w-[34px] h-9 px-2 rounded-lg text-[13px] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06] ${
+                    className={`min-w-[32px] h-8 px-2 rounded-md text-[13px] text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors ${
                       action.bold ? "font-extrabold" : ""
                     } ${action.italic ? "italic font-serif" : ""}`}
                   >
@@ -755,7 +719,7 @@ export default function TopicNotes() {
                   </button>
                 ))}
                 <label
-                  className="h-9 px-3 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 cursor-pointer text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+                  className={`${buttonClass("ghost")} cursor-pointer`}
                   title="Add a screenshot (or just paste one)"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
@@ -782,7 +746,7 @@ export default function TopicNotes() {
                 }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={onDrop}
-                className={`relative rounded-2xl transition-all ${dragging ? "ring-2 ring-sky-400/60" : ""}`}
+                className={`relative rounded-lg ${dragging ? "ring-2 ring-focus" : ""}`}
               >
                 <textarea
                   data-tour="note-editor"
@@ -795,11 +759,11 @@ export default function TopicNotes() {
                   placeholder={
                     "# What I got wrong\n\nParagraph, **bold**, `code`.\n\n```java\n// paste the snippet that bit you\n```\n\n- [ ] revisit before the next mock\n\nPaste a screenshot straight in — Ctrl/Cmd+V."
                   }
-                  className={`w-full min-h-[75vh] resize-y px-5 py-4 text-[14.5px] leading-[1.7] font-mono rounded-2xl bg-gray-50/70 dark:bg-slate-950/40 text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 border border-gray-200 dark:border-white/[0.08] focus:outline-none focus:ring-2 ${accent.ring}`}
+                  className={`w-full min-h-[75vh] resize-y px-5 py-4 text-[14px] leading-[1.7] font-mono rounded-lg bg-surface-subtle text-fg placeholder:text-fg-subtle border border-line focus:outline-none focus:ring-2 ${accent.ring}`}
                 />
                 {dragging && (
-                  <div className="absolute inset-0 rounded-2xl bg-sky-500/10 border-2 border-dashed border-sky-400/70 flex items-center justify-center pointer-events-none">
-                    <p className="text-sm font-bold text-sky-600 dark:text-sky-300">Drop the image to upload</p>
+                  <div className="absolute inset-0 rounded-lg bg-brand-subtle border-2 border-dashed border-brand flex items-center justify-center pointer-events-none">
+                    <p className="text-[14px] font-medium text-brand-fg">Drop the image to upload</p>
                   </div>
                 )}
               </div>
@@ -828,8 +792,8 @@ export default function TopicNotes() {
 
       {drawerOpen && !immersive && (
         <div className="lg:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-[86%] max-w-[340px] bg-white dark:bg-[#0e1427] shadow-2xl light:bg-[#fafafb]">{nav}</div>
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-[86%] max-w-[340px] bg-surface-subtle shadow-overlay">{nav}</div>
         </div>
       )}
     </div>
@@ -842,7 +806,8 @@ function SmallButton({ onClick, disabled, title, children }) {
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.08] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
+      aria-label={title}
+      className="w-8 h-full rounded-md flex items-center justify-center text-[13px] font-medium text-fg-muted hover:text-fg hover:bg-surface-hover disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
     >
       {children}
     </button>
@@ -862,7 +827,7 @@ function SaveState({ dirty, savedAt, accent, guest }) {
   }, []);
 
   const pill = (dot, text, cls, title) => (
-    <span title={title} className={`text-[12px] font-medium flex items-center gap-1.5 ${cls}`}>
+    <span title={title} className={`text-[13px] flex items-center gap-1.5 ${cls}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
       {text}
     </span>
@@ -870,26 +835,26 @@ function SaveState({ dirty, savedAt, accent, guest }) {
 
   if (guest) {
     return (
-      <button onClick={() => requestSignIn()} className="text-[12px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+      <button onClick={() => requestSignIn()} className="text-[13px] font-medium text-brand-fg hover:underline underline-offset-2">
         Sign in to save changes
       </button>
     );
   }
-  if (dirty) return pill("bg-amber-400 animate-pulse", "Saving…", "text-gray-400 dark:text-gray-500");
+  if (dirty) return pill("bg-warning-fg animate-pulse", "Saving…", "text-fg-subtle");
   if (sync.state === "offline") {
-    return pill("bg-amber-400", "Offline · saved on this device", "text-amber-600 dark:text-amber-400", "Will sync to your account when you're back online.");
+    return pill("bg-warning-fg", "Offline · saved on this device", "text-warning-fg", "Will sync to your account when you're back online.");
   }
   if (sync.state === "error") {
-    return pill("bg-rose-500", "Not synced yet · retrying", "text-rose-600 dark:text-rose-400", `Saved on this device. Cloud sync failed (${sync.detail || "unknown error"}) and is retrying.`);
+    return pill("bg-danger-fg", "Not synced yet · retrying", "text-danger-fg", `Saved on this device. Cloud sync failed (${sync.detail || "unknown error"}) and is retrying.`);
   }
   if (sync.state === "pending" || sync.state === "syncing") {
-    return pill("bg-amber-400 animate-pulse", "Saved on this device · syncing…", "text-gray-500 dark:text-gray-400", "Waiting for the cloud to confirm.");
+    return pill("bg-warning-fg animate-pulse", "Saved on this device · syncing…", "text-fg-subtle", "Waiting for the cloud to confirm.");
   }
   if (!savedAt) return null;
   const secs = Math.round((Date.now() - savedAt) / 1000);
   const when = secs < 5 ? "just now" : secs < 60 ? `${secs}s ago` : `${Math.round(secs / 60)}m ago`;
   return (
-    <span className={`text-[12px] font-medium flex items-center gap-1.5 ${accent.text}`}>
+    <span className={`text-[13px] flex items-center gap-1.5 ${accent.text}`}>
       <svg className="w-3 h-3" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
       Saved {when}
     </span>

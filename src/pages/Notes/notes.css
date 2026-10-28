@@ -1,30 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
-
 /* Notes typography. Scoped to .note-md so the rest of the app keeps its look.
    The theme comes from data-color-mode, which the page sets from the app's own
    light/dark toggle — never from the OS preference. The renderer's own tokens
    (--color-*) are overridden here, plus a few of ours (--nm-*, --hl-*). */
 
 .note-md[data-color-mode="light"] .wmde-markdown {
-  --color-fg-default: #1e2433;
-  --color-fg-muted: #4b5468;
-  --color-fg-subtle: #6b7385;
+  --color-fg-default: #27272a;
+  --color-fg-muted: #52525b;
+  --color-fg-subtle: #6b6b73;
   --color-canvas-default: transparent;
-  --color-canvas-subtle: #f5f6fa;
-  --color-border-default: #e1e4ec;
-  --color-border-muted: #eceef4;
-  --color-neutral-muted: rgba(99, 102, 241, 0.08);
-  --color-accent-fg: #4f46e5;
-  --nm-heading: #0c1224;
-  --nm-strong: #0c1224;
-  --nm-code-bg: #f7f8fc;
-  --nm-code-border: #e3e6ef;
-  --nm-inline-bg: rgba(99, 102, 241, 0.09);
-  --nm-inline-fg: #4338ca;
-  --nm-table-head: #f3f4f9;
-  --nm-quote-bg: rgba(99, 102, 241, 0.06);
-  --nm-quote-bar: #818cf8;
-  --nm-hr: #e5e7ee;
+  --color-canvas-subtle: #fafafa;
+  --color-border-default: #e4e4e7;
+  --color-border-muted: #f0f0f2;
+  --color-neutral-muted: rgba(0, 0, 0, 0.06);
+  --color-accent-fg: #6d28d9;
+  --nm-heading: #18181b;
+  --nm-strong: #18181b;
+  --nm-code-bg: #fafafa;
+  --nm-code-border: #e4e4e7;
+  --nm-inline-bg: #f4f4f5;
+  --nm-inline-fg: #18181b;
+  --nm-table-head: #fafafa;
+  --nm-quote-bar: #d4d4d8;
+  --nm-hr: #e4e4e7;
   --hl-yellow: rgba(250, 204, 21, 0.45);
   --hl-green: rgba(74, 222, 128, 0.4);
   --hl-blue: rgba(96, 165, 250, 0.36);
@@ -32,25 +29,24 @@
 }
 
 .note-md[data-color-mode="dark"] .wmde-markdown {
-  --color-fg-default: #d5dae5;
-  --color-fg-muted: #a1aabb;
-  --color-fg-subtle: #7a8395;
+  --color-fg-default: #e4e4e7;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #8b8b93;
   --color-canvas-default: transparent;
-  --color-canvas-subtle: rgba(255, 255, 255, 0.035);
-  --color-border-default: rgba(255, 255, 255, 0.1);
-  --color-border-muted: rgba(255, 255, 255, 0.065);
-  --color-neutral-muted: rgba(148, 163, 184, 0.14);
-  --color-accent-fg: #a5b4fc;
-  --nm-heading: #f4f6fb;
-  --nm-strong: #eef1f8;
-  --nm-code-bg: #0a0f1e;
-  --nm-code-border: rgba(255, 255, 255, 0.08);
-  --nm-inline-bg: rgba(165, 180, 252, 0.12);
-  --nm-inline-fg: #c7d2fe;
-  --nm-table-head: rgba(255, 255, 255, 0.05);
-  --nm-quote-bg: rgba(129, 140, 248, 0.08);
-  --nm-quote-bar: #818cf8;
-  --nm-hr: rgba(255, 255, 255, 0.09);
+  --color-canvas-subtle: #111113;
+  --color-border-default: #27272a;
+  --color-border-muted: #1f1f22;
+  --color-neutral-muted: rgba(255, 255, 255, 0.08);
+  --color-accent-fg: #a78bfa;
+  --nm-heading: #fafafa;
+  --nm-strong: #fafafa;
+  --nm-code-bg: #111113;
+  --nm-code-border: #27272a;
+  --nm-inline-bg: #1c1c1f;
+  --nm-inline-fg: #fafafa;
+  --nm-table-head: #111113;
+  --nm-quote-bar: #3f3f46;
+  --nm-hr: #27272a;
   --hl-yellow: rgba(250, 204, 21, 0.3);
   --hl-green: rgba(74, 222, 128, 0.26);
   --hl-blue: rgba(96, 165, 250, 0.3);
@@ -59,10 +55,9 @@
 
 /* ── Body text ─────────────────────────────────────────────────────────── */
 .note-md .wmde-markdown {
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--note-fs, 17px);
   line-height: 1.75;
-  letter-spacing: -0.004em;
   color: var(--color-fg-default);
   background: transparent;
   word-wrap: break-word;
@@ -80,7 +75,7 @@
 }
 
 .note-md .wmde-markdown strong {
-  font-weight: 650;
+  font-weight: 600;
   color: var(--nm-strong);
 }
 
@@ -106,23 +101,22 @@
 .note-md .wmde-markdown h5,
 .note-md .wmde-markdown h6 {
   color: var(--nm-heading);
-  font-weight: 750;
+  font-weight: 600;
   line-height: 1.25;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.02em;
   margin: 1.7em 0 0.6em;
   padding-bottom: 0;
   border-bottom: none;
 }
 .note-md .wmde-markdown h1 {
-  font-size: 2.1em;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-size: 1.9em;
+  letter-spacing: -0.025em;
 }
 .note-md .wmde-markdown h2 {
-  font-size: 1.6em;
+  font-size: 1.5em;
 }
 .note-md .wmde-markdown h3 {
-  font-size: 1.27em;
+  font-size: 1.25em;
 }
 .note-md .wmde-markdown h4 {
   font-size: 1.08em;
@@ -195,12 +189,12 @@
 .note-md .wmde-markdown code,
 .note-md .wmde-markdown pre,
 .note-md .wmde-markdown kbd {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
 }
 .note-md .wmde-markdown :not(pre) > code {
-  font-size: 0.84em;
-  padding: 0.14em 0.42em;
-  border-radius: 6px;
+  font-size: 0.85em;
+  padding: 0.12em 0.38em;
+  border-radius: 4px;
   background: var(--nm-inline-bg);
   color: var(--nm-inline-fg);
   white-space: break-spaces;
@@ -208,7 +202,7 @@
 .note-md .wmde-markdown pre {
   background: var(--nm-code-bg) !important;
   border: 1px solid var(--nm-code-border);
-  border-radius: 14px;
+  border-radius: 8px;
   padding: 1.1em 1.3em;
   font-size: 0.8em;
   line-height: 1.7;
@@ -228,7 +222,7 @@
   border-collapse: separate;
   border-spacing: 0;
   border: 1px solid var(--color-border-default);
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 0.93em;
   line-height: 1.55;
 }
@@ -252,16 +246,15 @@
 .note-md .wmde-markdown table th {
   background: var(--nm-table-head);
   color: var(--nm-heading);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 /* ── Quotes, answers, rules ────────────────────────────────────────────── */
 .note-md .wmde-markdown blockquote {
-  border-left: 4px solid var(--nm-quote-bar);
-  background: var(--nm-quote-bg);
-  color: var(--color-fg-default);
-  padding: 0.8em 1.15em;
-  border-radius: 0 12px 12px 0;
+  border-left: 2px solid var(--nm-quote-bar);
+  background: transparent;
+  color: var(--color-fg-muted);
+  padding: 0 0 0 1.1em;
 }
 .note-md .wmde-markdown blockquote > :last-child {
   margin-bottom: 0;
@@ -269,14 +262,14 @@
 
 .note-md .wmde-markdown details {
   border: 1px solid var(--color-border-default);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 0.55em 1em;
   background: var(--color-canvas-subtle);
 }
 .note-md .wmde-markdown details > summary {
   cursor: pointer;
-  font-weight: 600;
-  color: var(--color-accent-fg);
+  font-weight: 500;
+  color: var(--nm-heading);
 }
 .note-md .wmde-markdown details[open] > summary {
   margin-bottom: 0.6em;
@@ -294,7 +287,7 @@
 
 .note-md .note-img {
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid var(--color-border-default);
   margin: 0.75em 0;
 }
@@ -322,7 +315,7 @@
 }
 
 .note-reader ::selection {
-  background: rgba(99, 102, 241, 0.28);
+  background: rgba(124, 58, 237, 0.2);
 }
 
 /* ── Writing in place (InlineEditor) & contents rail ───────────────────── */
@@ -330,17 +323,13 @@
    are, like writing in a notebook. */
 .note-inline {
   padding-left: 0.9rem;
-  border-left: 3px solid rgba(99, 102, 241, 0.55);
+  border-left: 2px solid var(--brand);
 }
 .note-inline-bar {
   padding: 2px 4px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 0 0 1px #e1e4ec;
-}
-.note-md[data-color-mode="dark"] .note-inline-bar {
-  background: rgba(20, 27, 48, 0.94);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  background: var(--canvas);
+  box-shadow: var(--shadow-overlay);
 }
 .note-inline-area {
   display: block;
@@ -352,27 +341,23 @@
   outline: none;
   background: transparent;
   padding: 0.2rem 0;
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
   font-size: var(--note-fs, 17px);
   line-height: 1.75;
-  letter-spacing: -0.004em;
-  color: #1e2433;
-  caret-color: #6366f1;
+  color: var(--fg);
+  caret-color: var(--brand);
 }
 .note-inline-area:focus {
   box-shadow: none;
 }
-.note-md[data-color-mode="dark"] .note-inline-area {
-  color: #d5dae5;
-}
 .note-inline-area::placeholder {
-  color: #9aa3b5;
+  color: var(--fg-subtle);
 }
 /* Beside the part under the pointer, next to its pen. */
 .note-gutter-line {
   width: 2px;
   border-radius: 2px;
-  background: rgba(99, 102, 241, 0.4);
+  background: var(--brand);
 }
 /* The contents list scrolls to follow you, but shows no scrollbar. */
 .note-toc {
@@ -425,14 +410,10 @@
   position: relative;
   margin: 1.4em 0;
   padding: 18px 14px;
-  border-radius: 14px;
-  border: 1px solid rgb(229 231 235);
-  background: #fff;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--canvas);
   overflow-x: auto;
-}
-:root.dark .note-diagram {
-  border-color: rgba(255, 255, 255, 0.09);
-  background: rgba(255, 255, 255, 0.02);
 }
 .note-diagram svg {
   display: block;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
+import { buttonClass } from "../../components/ui";
 
 // The fixed foot of a Core Stack note: questions real interviews asked on this
 // topic in the last two years, how often, where, and an answer for each. It is
@@ -25,28 +26,28 @@ export default function AskedQuestions({ topicId, colorMode }) {
   if (!entry || !meta) return null;
 
   return (
-    <section className="note-ui mt-16 pt-10 border-t border-gray-200 dark:border-white/[0.08] light:border-slate-900/[0.08]" aria-label="Asked in interviews">
-      <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">
+    <section className="note-ui mt-16 pt-10 border-t border-line" aria-label="Asked in interviews">
+      <p className="font-mono text-[12px] font-medium text-fg-subtle">
         Asked in interviews · {meta.window}
       </p>
-      <h2 className="mt-1.5 text-[24px] sm:text-[26px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
+      <h2 className="mt-1 text-[20px] leading-7 font-semibold tracking-[-0.01em] text-fg">
         What interviewers actually asked
       </h2>
       {entry.posts > 0 && (
-        <p className="mt-2 max-w-[46rem] text-[14.5px] leading-relaxed text-gray-600 dark:text-gray-300 light:text-slate-600">
+        <p className="mt-2 max-w-[46rem] text-[14px] leading-relaxed text-fg-muted">
           {entry.posts} of {meta.posts.toLocaleString()} candidate write-ups touched this topic. Counts are write-ups that asked the
           question. Say your answer out loud before you open ours.
         </p>
       )}
-      {entry.note && <p className="mt-2 max-w-[46rem] text-[14px] leading-relaxed text-amber-700 dark:text-amber-300/90">{entry.note}</p>}
+      {entry.note && <p className="mt-2 max-w-[46rem] text-[14px] leading-relaxed text-warning-fg">{entry.note}</p>}
 
-      <ol className="mt-6 space-y-3">
+      <ol className="mt-4 divide-y divide-line">
         {entry.items.map((item, i) => (
           <AskedItem key={i} index={i} item={item} colorMode={colorMode} />
         ))}
       </ol>
 
-      <p className="mt-6 text-[12.5px] leading-relaxed text-gray-500 dark:text-gray-400">
+      <p className="mt-6 text-[12px] leading-relaxed text-fg-subtle">
         From {meta.sources}. Each count is distinct write-ups, not people — one candidate posting two loops counts twice. A
         question with no company was asked in a write-up that did not name one.
       </p>
@@ -61,24 +62,23 @@ function AskedItem({ index, item, colorMode }) {
   const more = names.length - shown.length;
 
   return (
-    <li className="rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/60 dark:bg-white/[0.02] light:border-slate-900/[0.07] light:bg-slate-50/60 px-4 sm:px-5 py-4">
+    <li className="py-4">
       <div className="flex gap-3">
-        <span className="shrink-0 mt-0.5 w-6 h-6 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[12px] font-bold flex items-center justify-center">
-          {index + 1}
+        <span className="shrink-0 w-5 pt-[3px] font-mono text-[12px] font-medium tabular-nums text-fg-subtle">
+          {String(index + 1).padStart(2, "0")}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[15.5px] font-semibold leading-snug text-gray-900 dark:text-gray-100 light:text-slate-900">{item.q}</p>
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] text-gray-500 dark:text-gray-400">
+          <p className="text-[15px] leading-[22px] font-semibold text-fg">{item.q}</p>
+          <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[12px] text-fg-subtle">
             {item.n ? (
-              <span className="font-semibold text-gray-700 dark:text-gray-200">
+              <span className="mr-1 font-mono font-medium tabular-nums text-fg">
                 {item.n} write-up{item.n === 1 ? "" : "s"}
               </span>
             ) : (
-              <span className="font-semibold text-amber-700 dark:text-amber-300">Question banks only</span>
+              <span className="mr-1 text-warning-fg">Question banks only</span>
             )}
-            {shown.length > 0 && <span>·</span>}
-            {shown.map((c) => (
-              <span key={c} className="px-1.5 py-0.5 rounded-md bg-white dark:bg-white/[0.06] border border-gray-200 dark:border-white/[0.08] text-gray-600 dark:text-gray-300">
+                        {shown.map((c) => (
+              <span key={c} className="inline-flex items-center h-5 px-1.5 rounded bg-surface-subtle border border-line text-fg-muted">
                 {c}
               </span>
             ))}
@@ -87,7 +87,7 @@ function AskedItem({ index, item, colorMode }) {
           <button
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
-            className="mt-3 h-8 px-3 rounded-lg text-[12.5px] font-semibold border border-gray-300 dark:border-white/[0.14] text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-white/[0.05]"
+            className={`mt-3 ${buttonClass("secondary", "sm")}`}
           >
             {open ? "Hide answer" : "Show answer"}
           </button>

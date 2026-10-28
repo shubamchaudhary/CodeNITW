@@ -64,7 +64,7 @@ export default function ResizableSide({ footerHeight, prefKey, className = "", c
   return (
     <aside
       data-side
-      className={`${className} hidden lg:block relative shrink-0 border-r border-gray-200/90 dark:border-white/[0.07] light:bg-[#fafafb] light:border-slate-900/[0.07] ${
+      className={`${className} hidden lg:block relative shrink-0 bg-surface-subtle border-r border-line ${
         dragW == null ? "transition-[width] duration-200" : ""
       }`}
       style={{ width: closed ? 14 : width }}
@@ -86,8 +86,8 @@ export default function ResizableSide({ footerHeight, prefKey, className = "", c
           <span
             className={`rounded-full transition-colors ${
               closed
-                ? "w-1 h-14 bg-gray-300 dark:bg-white/20 group-hover:bg-emerald-500"
-                : "w-[3px] h-full bg-transparent group-hover:bg-emerald-400/50"
+                ? "w-1 h-14 bg-line-strong group-hover:bg-brand"
+                : "w-0.5 h-full bg-transparent group-hover:bg-brand"
             }`}
           />
         </div>

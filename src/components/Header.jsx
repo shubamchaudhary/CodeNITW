@@ -1,10 +1,6 @@
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { SiDarkreader } from "react-icons/si";
-import { BsBrightnessHigh } from "react-icons/bs";
-import { HiUser, HiLogout } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { isOwner } from "./OwnerRoute";
 import { requestSignIn } from "../Data/authGate";
@@ -12,24 +8,46 @@ import Brand, { SITE_NAME } from "./Brand";
 import { WEB_BASICS_PATHS, PYTHON_BASICS_PATHS } from "../Data/WebBasics";
 
 const NAV_ITEMS = [
-  { path: "/core-stack", label: "CORE STACK" },
+  { path: "/core-stack", label: "Core Stack" },
   { path: "/dsa-prep", label: "DSA" },
   // Owner-only (see OWNER_NAV_ITEMS), but it sits beside DSA, its sibling.
   { path: "/hld-prep", label: "HLD", ownerOnly: true },
-  { path: "/planning", label: "PLANNING" },
-  { path: "/job-tracker", label: "JOBS" },
-  { path: "/contests", label: "CONTESTS" },
+  { path: "/planning", label: "Planning" },
+  { path: "/job-tracker", label: "Jobs" },
+  { path: "/contests", label: "Contests" },
 ];
 
 // Owner-only pages: rendered in the nav ONLY for the owner account, so other
 // users never see any hint these pages exist.
 const OWNER_NAV_ITEMS = [
-  { path: "/ai-stack", label: "AI STACK" },
+  { path: "/ai-stack", label: "AI Stack" },
   // One entry per group of question banks; the page switches between them.
-  { path: "/javascript", label: "JS · REACT · NODE", also: WEB_BASICS_PATHS },
-  { path: "/python", label: "PYTHON · FASTAPI", also: PYTHON_BASICS_PATHS },
-  { path: "/projects", label: "PROJECTS" },
+  { path: "/javascript", label: "JS · React · Node", also: WEB_BASICS_PATHS },
+  { path: "/python", label: "Python · FastAPI", also: PYTHON_BASICS_PATHS },
+  { path: "/projects", label: "Projects" },
 ];
+
+const ICON = "w-4 h-4";
+const SunIcon = () => (
+  <svg className={ICON} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.06 1.06M11.54 11.54l1.06 1.06M3.4 12.6l1.06-1.06M11.54 4.46l1.06-1.06" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+const MoonIcon = () => (
+  <svg className={ICON} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+  </svg>
+);
+const LogoutIcon = () => (
+  <svg className={ICON} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M6 2.5H3.5v11H6M10.5 5l3 3-3 3M13.5 8H6.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+// A ghost square icon button: the theme toggle and the menu button.
+const ICON_BUTTON =
+  "w-8 h-8 rounded-md flex items-center justify-center text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors";
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -41,8 +59,8 @@ export default function Header() {
     try {
       const own = sessionStorage.getItem("darkMode");
       const saved = own ?? localStorage.getItem("darkMode");
-      // Dark until someone picks a theme.
-      return saved === null ? true : JSON.parse(saved) === true;
+      // Light until someone picks a theme.
+      return saved === null ? false : JSON.parse(saved) === true;
     } catch (_) {
       return false;
     }
@@ -103,57 +121,56 @@ export default function Header() {
     setMenuOpen(false);
   };
 
-  const navItemClass = (isActiveItem) => `
-    relative block py-2 px-3 lg:px-2 xl:px-3 font-semibold text-xs tracking-wide whitespace-nowrap
-    transition-all duration-200 ease-in-out rounded-lg
-    ${
-      isActiveItem
-        ? "text-violet-600 dark:text-violet-300 bg-violet-500/10 dark:bg-violet-500/[0.14] ring-1 ring-violet-500/20 dark:ring-violet-400/20 light:text-violet-700 light:bg-violet-600/[0.07] light:ring-violet-600/[0.10]"
-        : "text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-300 hover:bg-violet-500/[0.07] dark:hover:bg-white/[0.05] light:text-slate-600 light:hover:text-slate-900 light:hover:bg-slate-900/[0.04]"
-    }
-  `;
+  // Wide screens: full-height links, the current one underlined on the bar's
+  // bottom edge. The menu (narrow screens): rows, the current one filled.
+  const navItemClass = (active) =>
+    `relative flex items-center whitespace-nowrap text-[14px] font-medium transition-colors
+     w-full h-10 px-3 rounded-md lg:w-auto lg:h-14 lg:px-2.5 xl:px-3 lg:rounded-none
+     ${
+       active
+         ? "text-fg bg-surface-hover lg:bg-transparent lg:after:absolute lg:after:inset-x-2.5 xl:after:inset-x-3 lg:after:bottom-0 lg:after:h-0.5 lg:after:bg-fg"
+         : "text-fg-muted hover:text-fg hover:bg-surface-hover lg:hover:bg-transparent"
+     }`;
 
   // The auth screens are full-bleed and immersive — no app chrome there.
   if (["/sign-in", "/sign-up", "/forgot-password"].includes(location.pathname)) {
     return null;
   }
 
+  const items = [...NAV_ITEMS.filter((i) => !i.ownerOnly || isOwner(user)), ...(isOwner(user) ? OWNER_NAV_ITEMS : [])];
+
   return (
     <header>
-      {/* Frosted bar so the page's ambient wash shows through as it scrolls
-          under. Light mode: Apple-style frost (saturated blur) over a single
-          hairline, no drop shadow. */}
-      <nav className="backdrop-blur-xl bg-white/70 dark:bg-[#0b1020]/75 border-b border-gray-200/70 dark:border-white/[0.07] shadow-sm dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] light:bg-white/75 light:backdrop-saturate-150 light:border-slate-900/[0.07] light:shadow-none px-3 lg:px-5 py-3 sticky top-0 z-50">
+      {/* A flat bar on the page colour with one hairline under it. */}
+      <nav className="sticky top-0 z-50 bg-canvas border-b border-line px-4 lg:px-5">
         {/* Full width, like the pages under it: the logo sits flush left over
             the topic list, the page links sit in the centre, account controls
             go far right. The two outer columns are equal, so the middle one is
             centred on the page whatever the logo and controls measure. */}
-        <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-4 xl:gap-x-8 lg:grid lg:grid-cols-[1fr_auto_1fr]">
-          {/* Logo */}
+        <div className="h-14 flex items-center gap-x-4 xl:gap-x-8 lg:grid lg:grid-cols-[1fr_auto_1fr]">
           <button
             onClick={() => handlePageSelect("/core-stack")}
-            className="flex items-center shrink-0 lg:justify-self-start"
+            className="flex items-center shrink-0 rounded-md lg:justify-self-start"
             aria-label={`${SITE_NAME} home`}
           >
             <Brand />
           </button>
 
           {/* Right side controls */}
-          <div className="flex items-center gap-2 ml-auto lg:ml-0 lg:order-2 lg:justify-self-end">
+          <div className="flex items-center gap-1.5 ml-auto lg:ml-0 lg:order-2 lg:justify-self-end">
             {user ? (
               <>
-                <div className={`hidden ${isOwner(user) ? "2xl:flex" : "xl:flex"} items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] light:bg-slate-900/[0.03] light:border-slate-900/[0.06] light:text-slate-600 px-2.5 py-1 rounded-lg`}>
-                  <HiUser className="text-md text-indigo-600 dark:text-indigo-400" />
-                  <span className="max-w-[120px] truncate font-medium">{user.email}</span>
-                </div>
+                <span className={`hidden ${isOwner(user) ? "2xl:block" : "xl:block"} max-w-[180px] truncate px-1 text-[12px] text-fg-subtle`}>
+                  {user.email}
+                </span>
                 {/* On wide screens log out lives with the account, not among the pages */}
                 <button
                   onClick={handleLogout}
                   title="Log out"
                   aria-label="Log out"
-                  className="hidden lg:flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 light:text-slate-500 transition-colors"
+                  className="hidden lg:flex items-center gap-2 h-8 px-2.5 rounded-md text-[13px] font-medium whitespace-nowrap text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
                 >
-                  <HiLogout className="text-md" />
+                  <LogoutIcon />
                   {/* Icon only until there's room: the owner's menu is long. */}
                   <span className="hidden xl:inline">Log out</span>
                 </button>
@@ -162,91 +179,67 @@ export default function Header() {
               authChecked && (
                 <button
                   onClick={() => requestSignIn()}
-                  className="h-8 px-3.5 rounded-lg text-[13px] font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-sm light:bg-violet-600 light:hover:bg-violet-700 light:shadow-[0_1px_2px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.18)] transition-colors"
+                  className="h-8 px-3 rounded-md text-[13px] font-medium bg-primary text-on-primary hover:bg-primary-hover transition-colors"
                 >
                   Sign in
                 </button>
               )
             )}
 
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-gray-600 dark:text-gray-300 text-xl p-1.5 rounded-lg bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] light:bg-white light:border-slate-900/[0.10] light:text-slate-600 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-slate-50 light:hover:text-slate-900 transition-colors"
+            <button
+              className={ICON_BUTTON}
               data-tour="theme"
               title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               onClick={() => setDarkMode(!darkMode)}
             >
-              <AnimatePresence mode="wait">
-                {darkMode ? (
-                  <motion.div key="light" initial={{ rotate: -180, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 180, opacity: 0 }} transition={{ duration: 0.3 }}>
-                    <BsBrightnessHigh />
-                  </motion.div>
-                ) : (
-                  <motion.div key="dark" initial={{ rotate: 180, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -180, opacity: 0 }} transition={{ duration: 0.3 }}>
-                    <SiDarkreader />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
+              {darkMode ? <SunIcon /> : <MoonIcon />}
+            </button>
 
-            <button
-              type="button"
-              className="inline-flex items-center p-1.5 text-gray-600 dark:text-gray-300 rounded-lg lg:hidden bg-white/60 dark:bg-white/[0.05] border border-gray-200/70 dark:border-white/[0.07] hover:bg-white dark:hover:bg-white/[0.1] light:bg-white light:border-slate-900/[0.10] light:text-slate-600 light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] transition-colors"
-              onClick={toggleMenu}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <button type="button" className={`${ICON_BUTTON} lg:hidden`} onClick={toggleMenu} aria-label="Menu" aria-expanded={menuOpen}>
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 {menuOpen ? (
-                  <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" fill="none" />
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 ) : (
-                  <path fillRule="evenodd" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+                  <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 )}
               </svg>
             </button>
           </div>
 
-          {/* Navigation menu */}
-          <AnimatePresence>
-            {(menuOpen || window.innerWidth >= 1024) && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className={`
-                  ${menuOpen ? "block" : "hidden"}
-                  w-full lg:w-auto absolute lg:relative top-[58px] lg:top-auto left-0 lg:left-auto
-                  backdrop-blur-xl bg-white/90 dark:bg-[#0b1020]/95 lg:bg-transparent dark:lg:bg-transparent lg:backdrop-blur-none light:lg:backdrop-filter-none
-                  rounded-b-2xl lg:rounded-none border lg:border-0 border-gray-200/70 dark:border-white/[0.07] light:border-slate-900/[0.07]
-                  shadow-lg lg:shadow-none lg:flex lg:order-1 lg:justify-self-center
-                `}
-              >
-                <ul className="flex flex-col p-3 lg:p-0 font-medium lg:flex-row lg:space-x-1 xl:space-x-2 lg:mt-0 lg:items-center">
-                  {[...NAV_ITEMS.filter((i) => !i.ownerOnly || isOwner(user)), ...(isOwner(user) ? OWNER_NAV_ITEMS : [])].map((item) => (
-                    <li key={item.path}>
-                      <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path, item.also))}>
-                        {item.label}
-                      </button>
-                    </li>
-                  ))}
+          {/* Navigation: a dropdown on narrow screens, the centre column on wide */}
+          {(menuOpen || window.innerWidth >= 1024) && (
+            <div
+              className={`
+                ${menuOpen ? "block" : "hidden"}
+                absolute lg:relative top-14 lg:top-auto inset-x-0 lg:inset-x-auto
+                bg-canvas lg:bg-transparent border-b border-line lg:border-0 shadow-overlay lg:shadow-none
+                lg:flex lg:order-1 lg:justify-self-center
+              `}
+            >
+              <ul className="flex flex-col p-2 lg:p-0 lg:flex-row lg:items-center lg:gap-1">
+                {items.map((item) => (
+                  <li key={item.path}>
+                    <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path, item.also))}>
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
 
-                  {user && (
-                    <li className="lg:hidden">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 px-3 py-1 lg:px-2 lg:py-1 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors font-medium text-xs"
-                      >
-                        <HiLogout className="text-md" />
-                        <span>LOG OUT</span>
-                      </motion.button>
-                    </li>
-                  )}
-                </ul>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                {user && (
+                  <li className="lg:hidden mt-1 pt-1 border-t border-line">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full h-10 px-3 rounded-md flex items-center gap-2 text-[14px] font-medium text-danger-fg hover:bg-danger-subtle transition-colors"
+                    >
+                      <LogoutIcon />
+                      Log out
+                    </button>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       </nav>
     </header>

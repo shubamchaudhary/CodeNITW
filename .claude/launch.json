@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--", "--port", "5173", "--strictPort"],
+      "port": 5173,
+      "env": { "VITE_FIREBASE_API_KEY": "local-preview-placeholder", "VITE_FIREBASE_PROJECTID": "local-preview", "VITE_FIREBASE_APPID": "1:0:web:0" }
+    }
+  ]
+}
