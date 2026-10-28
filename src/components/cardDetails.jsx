@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { isOwner } from "./OwnerRoute";
 import { CATEGORY_CONFIG } from "../Data/JobHuntPlan";
 import { GLASS_PANEL } from "./glass";
+import { buttonClass } from "./ui";
 
 // Shared expandable body for an Interview Prep card. Rendered identically on the
 // Interview Prep page and inside the Planning page so a planned card shows the
@@ -345,15 +346,12 @@ function NotesLink({ source, topicId, note, checkedDays, accent }) {
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   return (
-    <div className={`rounded-lg border p-3.5  ${accent.panel}`}>
+    <div className="rounded-md border border-line bg-canvas p-3.5">
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-[12px] font-semibold text-fg-subtle flex items-center gap-1.5">
-          
-          My Notes
-        </h4>
+        <h4 className="text-[12px] font-medium text-fg-muted">My notes</h4>
         {checkedDays != null && (
-          <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-semibold whitespace-nowrap border ${accent.badge}`}>
-            ✓ {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
+          <span className="inline-flex items-center h-5 px-1.5 rounded bg-success-subtle font-mono text-[11px] text-success-fg whitespace-nowrap">
+            Done {checkedDays === 0 ? "today" : checkedDays === 1 ? "1d ago" : `${checkedDays}d ago`}
           </span>
         )}
       </div>
@@ -372,7 +370,7 @@ function NotesLink({ source, topicId, note, checkedDays, accent }) {
       <div className="flex items-center gap-3">
         <Link
           to={`/notes/${source}/${topicId}`}
-          className={`inline-flex items-center gap-1.5 text-[12.5px] font-semibold px-3 py-1.5 rounded-lg text-white  transition-all  ${accent.button}`}
+          className={buttonClass("secondary", "sm")}
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16">
             <path d="M11 2.5l2.5 2.5M3 13l8.5-8.5 2.5 2.5L5.5 15.5 2.5 16l.5-3z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -380,7 +378,7 @@ function NotesLink({ source, topicId, note, checkedDays, accent }) {
           {text ? "Open notes" : "Write notes"}
         </Link>
         {text && (
-          <span className="text-[11.5px] text-fg-subtle">
+          <span className="font-mono text-[12px] text-fg-subtle">
             {words} word{words === 1 ? "" : "s"}
             {images > 0 ? ` · ${images} screenshot${images === 1 ? "" : "s"}` : ""}
           </span>
