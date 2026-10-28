@@ -10,12 +10,8 @@
 @layer base {
   html,
   body {
-    background-color: #f7f7f9;
-    color: var(--fg);
-  }
-  html.dark,
-  html.dark body {
     background-color: var(--canvas);
+    color: var(--fg);
   }
   html {
     font-family: var(--font-sans);

@@ -26,22 +26,22 @@ export const REACH_CHANNELS = [
     key: "whatsappAt",
     label: "WhatsApp",
     Icon: HiChat,
-    on: "bg-emerald-600 text-white shadow-sm",
-    off: "border border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30",
+    on: "bg-success text-white ",
+    off: "border border-line text-success-fg hover:opacity-90 ",
   },
   {
     key: "callAt",
     label: "Call",
     Icon: HiPhone,
-    on: "bg-blue-600 text-white shadow-sm",
-    off: "border border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30",
+    on: "bg-fg-subtle text-white ",
+    off: "border border-line text-fg hover:bg-surface-hover ",
   },
   {
     key: "emailAt",
     label: "Email",
     Icon: HiMail,
-    on: "bg-violet-600 text-white shadow-sm",
-    off: "border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-900/30",
+    on: "bg-primary text-on-primary ",
+    off: "border border-line-strong text-brand-fg hover:bg-surface-hover ",
   },
 ];
 
@@ -89,15 +89,15 @@ function ContactForm({ allCompanies, initial, onSave, onClose }) {
   };
 
   const inputCls =
-    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
+    `text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas ${LIGHT_FIELD}`;
 
   return (
-    <div className={`${GLASS} rounded-xl p-4 mb-4`}>
+    <div className={`${GLASS} rounded-lg p-4 mb-4`}>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base">
+        <h3 className="font-semibold text-fg text-base">
           {initial ? "Edit contact" : "Add HR contact"}
         </h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-red-500">
+        <button onClick={onClose} className="text-fg-subtle hover:text-fg">
           <HiX />
         </button>
       </div>
@@ -120,7 +120,7 @@ function ContactForm({ allCompanies, initial, onSave, onClose }) {
         <input value={form.note} onChange={set("note")} placeholder="Note (role, where you met…)" className={`${inputCls} flex-1 min-w-[160px]`} />
         <button
           onClick={submit}
-          className="inline-flex items-center gap-1 text-sm font-semibold px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+          className="inline-flex items-center gap-1 text-sm font-semibold px-4 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary"
         >
           <HiPlus /> {initial ? "Save" : "Add contact"}
         </button>
@@ -136,28 +136,28 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
   const full = [c.name, c.company, c.phone, c.email, c.note].filter(Boolean).join(" · ");
 
   return (
-    <div className={`${GLASS_PANEL} rounded-xl px-3 py-2.5 hover:shadow-md transition-shadow`}>
+    <div className={`${GLASS_PANEL} rounded-lg px-3 py-2.5 transition-shadow`}>
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-semibold text-gray-800 dark:text-gray-100 text-[15px]">
+            <span className="font-semibold text-fg text-[15px]">
               {c.name || "—"}
             </span>
             {c.company && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300">
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-brand-subtle text-brand-fg">
                 {c.company}
               </span>
             )}
             {c.source === "company" && (
               <span
-                className="text-[9px] font-bold px-1 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                className="text-[9px] font-semibold px-1 py-0.5 rounded bg-success-subtle text-success-fg"
                 title="Saved on the company card in the Companies tab"
               >
                 COMPANY
               </span>
             )}
             {c.source === "custom" && (
-              <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-300">
+              <span className="text-[9px] font-semibold px-1 py-0.5 rounded bg-brand-subtle text-brand-fg">
                 MINE
               </span>
             )}
@@ -166,12 +166,12 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
           {/* Phone + email lines, each individually copyable */}
           <div className="mt-1 space-y-0.5">
             {c.phone && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
-                <HiPhone className="text-emerald-500 shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs text-fg-muted">
+                <HiPhone className="text-success-fg shrink-0" />
                 <a href={`tel:${tel}`} className="hover:underline">{c.phone}</a>
                 <button
                   onClick={() => copyText(c.phone, "Phone copied")}
-                  className="text-gray-400 hover:text-indigo-500"
+                  className="text-fg-subtle hover:text-fg"
                   title="Copy phone"
                 >
                   <HiOutlineClipboardCopy className="w-3.5 h-3.5" />
@@ -181,7 +181,7 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
                     href={`https://wa.me/${c.wa}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700"
+                    className="text-success-fg hover:text-success-fg"
                     title="Open WhatsApp chat"
                   >
                     <HiChat className="w-3.5 h-3.5" />
@@ -190,12 +190,12 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
               </div>
             )}
             {c.email && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
-                <HiMail className="text-blue-500 shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs text-fg-muted">
+                <HiMail className="text-fg shrink-0" />
                 <a href={`mailto:${c.email}`} className="hover:underline truncate">{c.email}</a>
                 <button
                   onClick={() => copyText(c.email, "Email copied")}
-                  className="text-gray-400 hover:text-indigo-500 shrink-0"
+                  className="text-fg-subtle hover:text-fg shrink-0"
                   title="Copy email"
                 >
                   <HiOutlineClipboardCopy className="w-3.5 h-3.5" />
@@ -203,7 +203,7 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
               </div>
             )}
             {c.note && (
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{c.note}</p>
+              <p className="text-[11px] text-fg-subtle truncate">{c.note}</p>
             )}
           </div>
 
@@ -218,7 +218,7 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
                 <button
                   key={key}
                   onClick={() => onToggleReach(c, key)}
-                  className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-1 rounded-lg transition-colors ${
+                  className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-1 rounded-lg transition-colors ${
                     active ? on : off
                   }`}
                   title={
@@ -231,7 +231,7 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
                 >
                   <Icon className="w-3 h-3" />
                   {label}
-                  {active && ago && <span className="font-extrabold opacity-90">· {ago}</span>}
+                  {active && ago && <span className="font-semibold opacity-90">· {ago}</span>}
                 </button>
               );
             })}
@@ -242,15 +242,15 @@ function ContactCard({ c, onEdit, onDelete, onToggleReach }) {
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => copyText(full, "Contact copied")}
-            className="text-gray-400 hover:text-indigo-500 p-1"
+            className="text-fg-subtle hover:text-fg p-1"
             title="Copy whole contact"
           >
             <HiOutlineClipboardCopy className="w-4 h-4" />
           </button>
-          <button onClick={onEdit} className="text-gray-400 hover:text-indigo-500 p-1" title="Edit">
+          <button onClick={onEdit} className="text-fg-subtle hover:text-fg p-1" title="Edit">
             <HiPencil className="w-4 h-4" />
           </button>
-          <button onClick={onDelete} className="text-gray-400 hover:text-red-500 p-1" title="Remove">
+          <button onClick={onDelete} className="text-fg-subtle hover:text-fg p-1" title="Remove">
             <HiTrash className="w-4 h-4" />
           </button>
         </div>
@@ -396,23 +396,23 @@ export default function ContactsTab({
   };
 
   const selectCls =
-    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer ${LIGHT_FIELD}`;
+    `text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas cursor-pointer ${LIGHT_FIELD}`;
 
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 light:text-slate-900 light:font-semibold">
+          <h2 className="text-lg font-semibold text-brand-fg">
             📇 HR &amp; Recruiter Contacts ({contacts.length})
           </h2>
-          <span className="text-xs text-gray-400 dark:text-gray-500">
+          <span className="text-xs text-fg-subtle">
             {companyOptions.length} companies · {emailCount} with email · {reachedCount} reached out
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={copyAll}
-            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600 ${LIGHT_BUTTON} light:border`}
+            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-lg bg-surface-hover text-fg-muted hover:bg-surface-hover ${LIGHT_BUTTON} `}
             title="Copy every contact currently listed"
           >
             <HiOutlineClipboardCopy /> Copy list
@@ -422,7 +422,7 @@ export default function ContactsTab({
               setEditing(null);
               setAdding((a) => !a);
             }}
-            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md ${LIGHT_PRIMARY}`}
+            className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-on-primary ${LIGHT_PRIMARY}`}
           >
             <HiPlus /> Add contact
           </button>
@@ -445,9 +445,9 @@ export default function ContactsTab({
       )}
 
       {/* Filters */}
-      <div className={`${GLASS} rounded-xl p-3 mb-4 flex flex-wrap items-center gap-2`}>
+      <div className={`${GLASS} rounded-lg p-3 mb-4 flex flex-wrap items-center gap-2`}>
         <div className="relative flex-1 min-w-[200px]">
-          <HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-subtle" />
           <input
             value={search}
             onChange={(e) => {
@@ -455,7 +455,7 @@ export default function ContactsTab({
               setLimit(PAGE_SIZE);
             }}
             placeholder="Search name, company, phone, email…"
-            className={`w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`}
+            className={`w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-line-strong bg-canvas ${LIGHT_FIELD}`}
           />
         </div>
         <select
@@ -491,16 +491,16 @@ export default function ContactsTab({
             </option>
           ))}
         </select>
-        <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 select-none cursor-pointer">
+        <label className="inline-flex items-center gap-1.5 text-xs font-semibold text-fg-muted select-none cursor-pointer">
           <input
             type="checkbox"
             checked={withEmail}
             onChange={(e) => setWithEmail(e.target.checked)}
-            className="w-4 h-4 accent-indigo-500 light:accent-violet-600 cursor-pointer"
+            className="w-4 h-4 accent-brand cursor-pointer"
           />
           Has email
         </label>
-        <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">{filtered.length} shown</span>
+        <span className="text-xs text-fg-subtle ml-auto">{filtered.length} shown</span>
       </div>
 
       {/* Contact grid */}
@@ -520,15 +520,15 @@ export default function ContactsTab({
       </div>
 
       {visible.length === 0 && (
-        <div className={`${GLASS} rounded-xl p-10 text-center`}>
-          <p className="text-sm text-gray-400 dark:text-gray-500">No contacts match these filters.</p>
+        <div className={`${GLASS} rounded-lg p-10 text-center`}>
+          <p className="text-sm text-fg-subtle">No contacts match these filters.</p>
         </div>
       )}
 
       {filtered.length > limit && (
         <button
           onClick={() => setLimit((l) => l + PAGE_SIZE)}
-          className={`w-full mt-3 py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-slate-700/60 ${GLASS} rounded-xl`}
+          className={`w-full mt-3 py-3 text-sm font-semibold text-brand-fg hover:bg-surface-hover ${GLASS} rounded-lg`}
         >
           Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
         </button>

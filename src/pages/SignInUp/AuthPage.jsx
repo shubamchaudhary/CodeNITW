@@ -20,11 +20,11 @@ export default function AuthPage({ initialMode = "signin" }) {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-gray-50 dark:bg-[#0b1020] light:bg-[#f7f7f9] light:bg-[radial-gradient(ellipse_60%_45%_at_50%_0%,rgba(124,58,237,0.08),transparent_70%)]">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-surface-subtle">
       <button onClick={() => navigate("/core-stack")} className="mb-6" aria-label={`${SITE_NAME} home`}>
         <Brand size="lg" />
       </button>
-      <div className="w-full max-w-[400px] rounded-2xl bg-white dark:bg-[#121a30] border border-gray-200 dark:border-white/[0.08] shadow-sm light:border-slate-900/[0.08] light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_16px_40px_-16px_rgba(15,23,42,0.16)] p-6 sm:p-7">
+      <div className="w-full max-w-[400px] rounded-lg bg-canvas border border-line p-6 sm:p-7">
         <AuthForm
           mode={mode}
           onModeChange={setMode}
@@ -32,7 +32,7 @@ export default function AuthPage({ initialMode = "signin" }) {
       </div>
       <button
         onClick={() => navigate("/core-stack")}
-        className="mt-6 text-[14px] font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+        className="mt-6 text-[14px] font-medium text-fg-subtle hover:text-fg"
       >
         ← Browse without signing in
       </button>

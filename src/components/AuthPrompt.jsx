@@ -33,24 +33,24 @@ export default function AuthPrompt() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm light:bg-slate-900/25"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary"
       onMouseDown={(e) => e.target === e.currentTarget && setOpen(false)}
     >
       <div
         role="dialog"
         aria-modal="true"
-        className="relative w-full max-w-[400px] rounded-2xl bg-white dark:bg-[#121a30] border border-gray-200 dark:border-white/[0.08] shadow-2xl light:border-slate-900/[0.08] light:shadow-[0_32px_64px_-16px_rgba(15,23,42,0.30),0_0_0_1px_rgba(15,23,42,0.03)] p-6 sm:p-7"
+        className="relative w-full max-w-[400px] rounded-lg bg-canvas border border-line shadow-overlay p-6 sm:p-7"
       >
         <button
           onClick={() => setOpen(false)}
           title="Close"
-          className="absolute top-3.5 right-3.5 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+          className="absolute top-3.5 right-3.5 w-8 h-8 rounded-lg flex items-center justify-center text-fg-subtle hover:text-fg hover:bg-surface-hover"
         >
           ✕
         </button>
 
         {reason && mode !== "reset" && (
-          <p className="mb-3 pr-8 text-[13.5px] leading-relaxed text-gray-500 dark:text-gray-400">{reason}</p>
+          <p className="mb-3 pr-8 text-[13.5px] leading-relaxed text-fg-subtle">{reason}</p>
         )}
 
         <AuthForm

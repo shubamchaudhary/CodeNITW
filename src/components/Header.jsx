@@ -124,11 +124,11 @@ export default function Header() {
   // Wide screens: full-height links, the current one underlined on the bar's
   // bottom edge. The menu (narrow screens): rows, the current one filled.
   const navItemClass = (active) =>
-    `relative flex items-center whitespace-nowrap text-[14px] font-medium transition-colors
-     w-full h-10 px-3 rounded-md lg:w-auto lg:h-14 lg:px-2.5 xl:px-3 lg:rounded-none
+    `relative flex items-center whitespace-nowrap text-[14px] lg:text-[13px] xl:text-[14px] font-medium transition-colors
+     w-full h-10 px-3 rounded-md lg:w-auto lg:h-14 lg:px-2 xl:px-3 lg:rounded-none
      ${
        active
-         ? "text-fg bg-surface-hover lg:bg-transparent lg:after:absolute lg:after:inset-x-2.5 xl:after:inset-x-3 lg:after:bottom-0 lg:after:h-0.5 lg:after:bg-fg"
+         ? "text-fg bg-surface-hover lg:bg-transparent lg:after:absolute lg:after:inset-x-2 xl:after:inset-x-3 lg:after:bottom-0 lg:after:h-0.5 lg:after:bg-fg"
          : "text-fg-muted hover:text-fg hover:bg-surface-hover lg:hover:bg-transparent"
      }`;
 
@@ -217,7 +217,7 @@ export default function Header() {
                 lg:flex lg:order-1 lg:justify-self-center
               `}
             >
-              <ul className="flex flex-col p-2 lg:p-0 lg:flex-row lg:items-center lg:gap-1">
+              <ul className="flex flex-col p-2 lg:p-0 lg:flex-row lg:items-center lg:gap-0 xl:gap-1">
                 {items.map((item) => (
                   <li key={item.path}>
                     <button onClick={() => handlePageSelect(item.path)} className={navItemClass(isActive(item.path, item.also))}>

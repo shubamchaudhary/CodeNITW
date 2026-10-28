@@ -1,94 +1,48 @@
-import { useEffect, useState } from "react";
+import { Button } from "../../components/ui";
 
-// What a signed-out visitor sees first on the landing page: one short line at
-// a time, typed out left to right from a fixed starting point, held, erased,
-// then the next. Below it, the tour button.
+// What a signed-out visitor sees first on the landing page: what the site is,
+// what's in it, and the two ways in (the tour, or signing in).
 
-const LINES = [
-  { text: "350+ most-asked DSA problems", grad: "from-orange-500 to-amber-400" },
-  { text: "Java & Spring Boot, made simple", grad: "from-emerald-500 to-teal-400" },
-  { text: "Your notes on every topic", grad: "from-sky-500 to-cyan-400" },
-  { text: "Track every job application", grad: "from-violet-500 to-fuchsia-400" },
-  { text: "Contest alerts in your inbox", grad: "from-yellow-500 to-orange-400" },
-  { text: "Plan your day. Focus with Pomodoro.", grad: "from-pink-500 to-rose-400" },
+const OFFERS = [
+  "350+ most-asked DSA problems",
+  "Java & Spring Boot, made simple",
+  "Your notes on every topic",
+  "Track every job application",
+  "Contest alerts in your inbox",
+  "Plan your day, focus with Pomodoro",
 ];
 
-const TYPE_MS = 45;
-const ERASE_MS = 20;
-const HOLD_MS = 1600;
-
-function useTypewriter() {
-  const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  const [i, setI] = useState(0);
-  const [len, setLen] = useState(reduced ? LINES[0].text.length : 0);
-  const [erasing, setErasing] = useState(false);
-
-  useEffect(() => {
-    const full = LINES[i].text.length;
-    let t;
-    if (reduced) {
-      t = setTimeout(() => {
-        const n = (i + 1) % LINES.length;
-        setI(n);
-        setLen(LINES[n].text.length);
-      }, HOLD_MS + 1000);
-    } else if (!erasing && len < full) t = setTimeout(() => setLen(len + 1), TYPE_MS);
-    else if (!erasing) t = setTimeout(() => setErasing(true), HOLD_MS);
-    else if (len > 0) t = setTimeout(() => setLen(len - 1), ERASE_MS);
-    else t = setTimeout(() => { setErasing(false); setI((i + 1) % LINES.length); }, 250);
-    return () => clearTimeout(t);
-  }, [i, len, erasing, reduced]);
-
-  return { i, line: LINES[i], shown: LINES[i].text.slice(0, len) };
-}
-
 export default function OfferHero({ onTour, onSignIn }) {
-  const { i, line, shown } = useTypewriter();
   return (
-    <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-violet-500/60 via-fuchsia-500/40 to-indigo-500/60 light:from-violet-500/40 light:via-fuchsia-400/25 light:to-indigo-500/40 light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(124,58,237,0.20)] overflow-hidden">
-      <div className="relative rounded-[15px] bg-white/90 dark:bg-[#100e26]/95 light:bg-white px-5 sm:px-8 py-7 sm:py-8 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute -top-24 -left-10 w-[32rem] h-48 rounded-full bg-violet-500/20 light:bg-violet-500/[0.12] blur-3xl" />
-
-        {/* The pitch on the left, the actions on the right (stacked below on a
-            phone). */}
-        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="min-w-0 flex-1">
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">
-              Interview prep, planned
-            </span>
-
-            {/* Fixed height, left-aligned: the text grows to the right from one
-                starting point and nothing around it moves. */}
-            <h2
-              className="mt-3 min-h-[4.5rem] sm:min-h-[2.75rem] text-2xl sm:text-4xl font-extrabold tracking-tight text-left"
-              aria-live="polite"
-              aria-label={line.text}
-            >
-              <span className={`bg-gradient-to-r ${line.grad} bg-clip-text text-transparent`}>{shown}</span>
-              <span className="inline-block w-[3px] h-[0.9em] ml-1 align-[-0.1em] bg-violet-500 animate-[caret_1s_steps(1)_infinite]" />
-            </h2>
-
-            <div className="mt-3 flex gap-1.5" aria-hidden>
-              {LINES.map((_, k) => (
-                <span key={k} className={`h-1.5 rounded-full ${k === i ? "w-5 bg-violet-500" : "w-1.5 bg-gray-300 dark:bg-white/20 light:bg-slate-900/15"}`} />
-              ))}
-            </div>
-          </div>
-
-          <div className="shrink-0 flex flex-col items-start md:items-center gap-3">
-            <button
-              onClick={onTour}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold shadow-[0_10px_30px_-8px_rgba(139,92,246,0.7)] light:shadow-[0_8px_20px_-8px_rgba(124,58,237,0.55),inset_0_1px_0_rgba(255,255,255,0.2)] hover:brightness-110 transition"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3l9 5-9 5z" /></svg>
-              Take a quick tour
-            </button>
-            <button onClick={onSignIn} className="text-sm font-semibold text-violet-600 dark:text-violet-300 light:text-violet-700 light:underline-offset-4 hover:underline">
-              Sign in to plan your own
-            </button>
-          </div>
+    <section className="rounded-lg border border-line bg-canvas px-5 sm:px-8 py-7 sm:py-8">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="min-w-0">
+          <p className="font-mono text-[12px] font-medium text-fg-subtle">Interview prep, planned</p>
+          <h2 className="mt-2 text-[26px] leading-8 sm:text-[32px] sm:leading-10 font-semibold tracking-[-0.02em] text-fg">
+            Plan it. Learn it. Get the offer.
+          </h2>
+        </div>
+        <div className="shrink-0 flex items-center gap-2">
+          <Button variant="primary" onClick={onTour}>
+            <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M5 3l9 5-9 5z" />
+            </svg>
+            Take a quick tour
+          </Button>
+          <Button onClick={onSignIn}>Sign in to plan your own</Button>
         </div>
       </div>
-    </div>
+
+      <ul className="mt-6 pt-5 border-t border-line grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">
+        {OFFERS.map((o) => (
+          <li key={o} className="flex items-center gap-2.5 text-[14px] text-fg-muted">
+            <svg className="w-4 h-4 shrink-0 text-success" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 8.5l3 3 6-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {o}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

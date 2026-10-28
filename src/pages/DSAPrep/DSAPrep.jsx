@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
 import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF, LIGHT_LIFT, LIGHT_BUTTON } from "../../components/glass";
 import PageShell from "../../components/PageShell";
+import { Icon } from "../../components/ui";
 import { isOwner } from "../../components/OwnerRoute";
 import { requireAuth, getAuthState } from "../../Data/authGate";
 import {
@@ -35,14 +36,7 @@ const ROW = GLASS_PANEL;
 
 // One accent per topic card, cycled — the coloured dot + progress bar that give
 // the board its rhythm (borrowed from the kanban-style reference).
-const ACCENTS = [
-  { dot: "bg-orange-500", ring: "shadow-orange-500/40", halo: "light:shadow-[0_0_0_3px_rgba(249,115,22,0.16)]", bar: "from-orange-500 to-amber-400" },
-  { dot: "bg-violet-500", ring: "shadow-violet-500/40", halo: "light:shadow-[0_0_0_3px_rgba(139,92,246,0.16)]", bar: "from-violet-500 to-fuchsia-400" },
-  { dot: "bg-sky-500", ring: "shadow-sky-500/40", halo: "light:shadow-[0_0_0_3px_rgba(14,165,233,0.16)]", bar: "from-sky-500 to-cyan-400" },
-  { dot: "bg-emerald-500", ring: "shadow-emerald-500/40", halo: "light:shadow-[0_0_0_3px_rgba(16,185,129,0.16)]", bar: "from-emerald-500 to-teal-400" },
-  { dot: "bg-rose-500", ring: "shadow-rose-500/40", halo: "light:shadow-[0_0_0_3px_rgba(244,63,94,0.16)]", bar: "from-rose-500 to-pink-400" },
-  { dot: "bg-indigo-500", ring: "shadow-indigo-500/40", halo: "light:shadow-[0_0_0_3px_rgba(99,102,241,0.16)]", bar: "from-indigo-500 to-blue-400" },
-];
+const ACCENTS = [{ dot: "", ring: "", halo: "", bar: "" }];
 
 const DSAPrep = () => {
   // Already known when the page is opened after the app has loaded.
@@ -179,19 +173,15 @@ const DSAPrep = () => {
         <div className="w-full sm:w-11/12 lg:w-5/6 xl:w-3/4 2xl:w-2/3">
 
           {/* ── Header ── */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={`mt-6 mb-5 rounded-3xl ${CARD} px-5 sm:px-7 py-5`}
-          >
+          <div
+            className="mt-10 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5">
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  <h1 className="text-[26px] leading-none font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400 light:bg-none light:text-slate-900">
+                  <h1 className="text-[32px] leading-10 font-semibold tracking-[-0.02em] text-fg">
                     DSA
                   </h1>
-                  <span className="px-2.5 py-1 text-[11px] font-bold rounded-full bg-orange-500/10 dark:bg-orange-400/10 text-orange-600 dark:text-orange-300 border border-orange-500/25 dark:border-orange-400/25 backdrop-blur-sm light:bg-orange-50 light:text-orange-700 light:border-orange-600/15 light:backdrop-filter-none">
+                  <span className="inline-flex items-center h-6 px-2 rounded border border-line font-mono text-[12px] text-fg-subtle">
                     {DSA_TOTAL} most-asked
                   </span>
                 </div>
@@ -201,46 +191,40 @@ const DSAPrep = () => {
                 <StatPill label="Solved" value={`${scoped.done}`} sub={`/${scoped.total}`} />
                 <div className="relative w-16 h-16 shrink-0">
                   <svg className="w-16 h-16 -rotate-90" viewBox="0 0 56 56">
-                    <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-gray-200/80 dark:text-white/10 light:text-slate-900/[0.06]" strokeWidth="5" />
-                    <circle cx="28" cy="28" r="22" fill="none" stroke="url(#dsaProgressGrad)" strokeWidth="5" strokeLinecap="round"
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="5" />
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="var(--brand)" strokeWidth="5" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 22}`}
                       strokeDashoffset={`${2 * Math.PI * 22 * (1 - scoped.pct / 100)}`}
                       style={{ transition: "stroke-dashoffset 0.5s ease" }} />
-                    <defs>
-                      <linearGradient id="dsaProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#f97316" />
-                        <stop offset="100%" stopColor="#f59e0b" />
-                      </linearGradient>
-                    </defs>
                   </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-orange-600 dark:text-orange-400">{scoped.pct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center font-mono text-[11px] font-medium text-fg">{scoped.pct}%</span>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* ── Import old Personal Plan progress ── */}
           {showImport && (
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-4 rounded-2xl border border-indigo-300/50 dark:border-indigo-500/25 bg-indigo-500/10 dark:bg-indigo-500/10 backdrop-blur-xl px-4 py-3 flex items-center gap-3"
+              className="mb-4 rounded-lg border border-line bg-brand-subtle px-4 py-3 flex items-center gap-3"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Continue from your Personal Plan</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-sm font-semibold text-fg">Continue from your Personal Plan</p>
+                <p className="text-xs text-fg-subtle">
                   Found earlier progress on this device — import your solved &amp; starred problems into this account.
                 </p>
               </div>
               <button
                 onClick={handleImportPlan}
-                className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all shrink-0"
+                className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-primary text-on-primary hover:bg-primary-hover transition-all shrink-0"
               >
                 Import
               </button>
               <button
                 onClick={handleDismissPlan}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 shrink-0"
+                className="text-fg-subtle hover:text-fg-muted shrink-0"
                 title="Dismiss"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -249,7 +233,7 @@ const DSAPrep = () => {
           )}
 
           {/* ── Filter ── */}
-          <div className={`mb-5 rounded-2xl ${GLASS_TRACK} p-1.5 inline-flex flex-wrap gap-1`}>
+          <div className={`mb-5 rounded-lg ${GLASS_TRACK} p-1.5 inline-flex flex-wrap gap-1`}>
             {[
               { key: "ALL", label: "All", title: "Every problem" },
               ...(owner ? DSA_PRIORITIES : []).map((p) => ({
@@ -263,10 +247,10 @@ const DSAPrep = () => {
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
                 title={tab.title}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all ${
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                   filter === tab.key
-                    ? `bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/30 ${SEGMENT_ON}`
-                    : `text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-white/[0.06] hover:text-orange-600 dark:hover:text-orange-300 ${SEGMENT_OFF}`
+                    ? SEGMENT_ON
+                    : `text-fg-muted  hover:bg-surface-subtle  hover:text-fg  ${SEGMENT_OFF}`
                 }`}
               >
                 {tab.label}
@@ -276,8 +260,8 @@ const DSAPrep = () => {
 
           {/* ── Topic cards ── */}
           {visibleTopics.length === 0 ? (
-            <div className={`rounded-2xl ${CARD} py-14 text-center`}>
-              <p className="text-sm text-gray-400 dark:text-gray-500">
+            <div className={`rounded-lg ${CARD} py-14 text-center`}>
+              <p className="text-sm text-fg-subtle">
                 {filter === "Today"
                   ? "Nothing queued for today yet — hit ⊕ Today on any problem."
                   : "No problems match this filter."}
@@ -312,13 +296,13 @@ const DSAPrep = () => {
   );
 };
 
-function StatPill({ label, value, sub, accent = "text-gray-800 dark:text-gray-100 light:text-slate-900" }) {
+function StatPill({ label, value, sub, accent = "text-fg  " }) {
   return (
-    <div className="hidden sm:block text-right px-3 py-1.5 rounded-xl bg-white/50 dark:bg-white/[0.04] border border-white/60 dark:border-white/[0.06] light:bg-slate-50 light:border-slate-900/[0.06]">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 light:text-slate-500">{label}</p>
-      <p className={`text-base font-extrabold leading-tight ${accent}`}>
+    <div className="hidden sm:block text-right px-3 py-1.5 rounded-lg bg-canvas border border-line">
+      <p className="text-[10px] font-semibold text-fg-subtle">{label}</p>
+      <p className={`text-base font-semibold leading-tight ${accent}`}>
         {value}
-        {sub && <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">{sub}</span>}
+        {sub && <span className="text-[11px] font-medium text-fg-subtle">{sub}</span>}
       </p>
     </div>
   );
@@ -335,16 +319,15 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
     : 0;
 
   return (
-    <div className={`rounded-2xl ${CARD} overflow-hidden transition-all hover:border-white/90 dark:hover:border-white/[0.14] ${LIGHT_LIFT}`}>
+    <div className={`rounded-lg ${CARD} overflow-hidden transition-all ${LIGHT_LIFT}`}>
       <div data-tour-dsa-topic={topic.topic} className="flex items-center gap-3 px-4 sm:px-5 py-3.5 cursor-pointer select-none" onClick={onToggle}>
-        <span className={`w-2 h-2 rounded-full shrink-0 ${accent.dot} shadow-[0_0_10px_2px] ${accent.ring} ${accent.halo}`} />
         <div className="flex-1 min-w-0">
-          <h2 className="text-[13.5px] font-bold text-gray-700 dark:text-gray-200 light:text-slate-900 light:font-semibold truncate">{topic.topic}</h2>
+          <h2 className="text-[13.5px] font-semibold text-fg-muted truncate">{topic.topic}</h2>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           {p0Left > 0 && (
             <span
-              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30 light:bg-rose-50 light:text-rose-700 light:border-rose-600/15"
+              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-danger-fg whitespace-nowrap"
               title={`${p0Left} P0 problem${p0Left > 1 ? "s" : ""} still unsolved here`}
             >
               {p0Left} P0
@@ -352,17 +335,17 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
           )}
           {queued > 0 && (
             <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/25 light:bg-sky-50 light:text-sky-700 light:border-sky-600/15"
+              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-brand-fg whitespace-nowrap"
               title={`${queued} queued on today's plan`}
             >
-              ◉ {queued}
+              {queued} today
             </span>
           )}
-          <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 light:text-slate-500 tabular-nums">{done}/{topic.problems.length}</span>
-          <div className="w-16 sm:w-24 h-1.5 rounded-full bg-gray-200/70 dark:bg-white/10 light:bg-slate-900/[0.06] overflow-hidden">
-            <div className={`h-full rounded-full bg-gradient-to-r ${accent.bar}`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
+          <span className="text-[11px] font-semibold text-fg-subtle tabular-nums">{done}/{topic.problems.length}</span>
+          <div className="w-16 sm:w-24 h-1 rounded-full bg-surface-hover overflow-hidden">
+            <div className={`h-full rounded-full ${accent.bar} bg-brand`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
           </div>
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 light:text-slate-400">
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-fg-subtle">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </motion.div>
         </div>
@@ -371,7 +354,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
       <AnimatePresence>
         {isOpen && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-            <div className="border-t border-white/60 dark:border-white/[0.06] light:border-slate-900/[0.06] light:bg-slate-50/60 px-2 sm:px-3 py-3 space-y-2" onClick={(e) => e.stopPropagation()}>
+            <div className="border-t border-line px-2 sm:px-3 py-3 space-y-2" onClick={(e) => e.stopPropagation()}>
               {topic.problems.map((p) => (
                 <QuestionRow
                   key={p.id}
@@ -425,25 +408,25 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
   // Hard/everything-else binary any more.
   const diff =
     problem.difficulty === "Hard"
-      ? { label: "Hard", badge: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/25 light:bg-rose-50 light:text-rose-700 light:border-rose-600/15" }
+      ? { label: "Hard", badge: "bg-danger-subtle text-danger-fg border-line   " }
       : problem.difficulty === "Easy"
-      ? { label: "Easy", badge: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25 light:bg-emerald-50 light:text-emerald-700 light:border-emerald-600/15" }
-      : { label: "Med", badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25 light:bg-amber-50 light:text-amber-700 light:border-amber-600/20" };
+      ? { label: "Easy", badge: "bg-success-subtle text-success-fg border-line   " }
+      : { label: "Med", badge: "bg-warning-subtle text-warning-fg border-line   " };
 
   return (
     <div>
       <div
         onClick={() => setShowNotes((s) => !s)}
-        className={`group flex items-center gap-2.5 rounded-xl px-3 py-2.5 cursor-pointer transition-all ${
+        className={`group flex items-center gap-2.5 rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
           isSolved
-            ? "bg-emerald-500/10 dark:bg-emerald-500/[0.07] border border-emerald-500/30 dark:border-emerald-500/20 light:bg-emerald-50/60 light:border-emerald-600/[0.14]"
-            : `${ROW} hover:border-orange-400/60 dark:hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5 light:shadow-[0_1px_1px_rgba(15,23,42,0.03)] light:hover:border-slate-900/[0.14] light:hover:shadow-[0_4px_12px_-4px_rgba(15,23,42,0.10)]`
-        } ${isPlanned && !isSolved ? "ring-1 ring-sky-400/50 dark:ring-sky-500/40 light:ring-sky-500/30 light:border-sky-500/40" : ""}`}
+            ? "bg-success-subtle border border-line "
+            : `${ROW} hover:border-line-strong      `
+        } ${isPlanned && !isSolved ? "ring-1 ring-focus " : ""}`}
       >
         {/* Core = Blind 75, i.e. this problem *is* a pattern worth knowing */}
         {problem.core && (
           <span
-            className="text-[11px] leading-none text-violet-500 dark:text-violet-400 light:text-violet-500/80 shrink-0"
+            className="text-[11px] leading-none text-brand-fg shrink-0"
             title="Core pattern (Blind 75) — this problem is a topic in itself"
           >
             ◆
@@ -453,7 +436,7 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
         {/* Priority — how often this is actually asked across 200 companies */}
         {prio && (
           <span
-            className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 border ${prio.cls}`}
+            className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border ${prio.cls}`}
             title={`${prio.label} — ${prio.blurb}`}
           >
             {prio.label}
@@ -461,18 +444,18 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
         )}
 
         {/* Difficulty */}
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 border ${diff.badge}`}>
+        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md shrink-0 border ${diff.badge}`}>
           {diff.label}
         </span>
 
         {/* Title, plus the technique it teaches when it's a recognised anchor */}
         <span className="flex items-baseline gap-2 flex-1 min-w-0">
-          <span className={`text-[13px] font-semibold truncate ${isSolved ? "text-gray-400 dark:text-gray-500 light:text-slate-400 line-through decoration-1" : "text-gray-800 dark:text-gray-100 light:text-slate-900 light:font-medium"}`}>
+          <span className={`text-[13px] font-semibold truncate ${isSolved ? "text-fg-subtle line-through decoration-1" : "text-fg "}`}>
             {problem.title}
           </span>
           {problem.pattern && (
             <span
-              className="hidden lg:inline text-[10px] font-semibold text-gray-400 dark:text-gray-500 light:text-slate-400 light:font-medium whitespace-nowrap shrink-0"
+              className="hidden lg:inline text-[10px] font-semibold text-fg-subtle whitespace-nowrap shrink-0"
               title={`Teaches: ${problem.pattern}`}
             >
               {problem.pattern}
@@ -482,12 +465,12 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
 
         {/* Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {localNote && <span title="Has notes" className="text-blue-400 dark:text-blue-500 text-xs hidden sm:inline">✎</span>}
+          {localNote && <span title="Has notes" className="text-fg text-xs hidden sm:inline">✎</span>}
 
           {solvedLabel && (
             <span
               title={`You solved this ${solvedLabel === "today" ? "today" : solvedLabel}`}
-              className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold whitespace-nowrap border border-emerald-500/25 light:bg-emerald-50 light:border-emerald-600/15"
+              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-success-fg whitespace-nowrap"
             >
               ✓ {solvedLabel}
             </span>
@@ -498,13 +481,13 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
             data-tour-plan={problem.id}
             onClick={(e) => { e.stopPropagation(); onTogglePlanned(problem, topicName); }}
             title={isPlanned ? "Remove from today's plan" : "Add to today's plan"}
-            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md border transition-all ${
+            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md border transition-all ${
               isPlanned
-                ? "bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-500/30 light:shadow-[0_1px_2px_rgba(2,132,199,0.25)] light:bg-sky-600 light:border-sky-600"
-                : `bg-white/60 dark:bg-white/[0.05] border-gray-200/80 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300 ${LIGHT_BUTTON} light:hover:text-sky-700`
+                ? "bg-brand border-line text-white "
+                : `bg-canvas  border-line  text-fg-subtle  hover:border-line-strong hover:text-fg  ${LIGHT_BUTTON} `
             }`}
           >
-            {isPlanned ? "◉" : "⊕"}
+            {isPlanned ? <Icon.check className="w-3.5 h-3.5" /> : <Icon.plus className="w-3.5 h-3.5" />}
             <span className="hidden sm:inline">Today</span>
           </button>
 
@@ -513,7 +496,7 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-md bg-white/60 dark:bg-white/[0.05] border border-gray-200/80 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300 ${LIGHT_BUTTON} transition-all`}
+            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md bg-canvas border border-line text-fg-muted hover:border-line-strong hover:text-fg ${LIGHT_BUTTON} transition-all`}
             title="Open on LeetCode"
           >
             <span className="hidden sm:inline">LeetCode</span>
@@ -524,7 +507,7 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
           <button
             onClick={(e) => { e.stopPropagation(); onToggleStar(problem.id); }}
             title={isStarred ? "Unstar" : "Star"}
-            className={`text-lg leading-none transition-transform hover:scale-110 ${isStarred ? "text-yellow-400 light:text-amber-400" : "text-gray-300 dark:text-slate-600 hover:text-yellow-400 light:text-slate-300 light:hover:text-amber-400"}`}
+            className={`text-lg leading-none transition-transform ${isStarred ? "text-warning-fg " : "text-line-strong hover:text-fg "}`}
           >
             {isStarred ? "★" : "☆"}
           </button>
@@ -532,14 +515,14 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
           <button
             onClick={(e) => { e.stopPropagation(); onToggleSolved(problem.id, !isSolved); }}
             title={isSolved ? "Mark unsolved" : "Mark solved"}
-            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-emerald-500 border-emerald-500 shadow-md shadow-emerald-500/30 light:shadow-[0_1px_2px_rgba(5,150,105,0.3)]" : "border-gray-300 dark:border-slate-600 hover:border-emerald-400 light:border-slate-300 light:bg-white"}`}
+            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isSolved ? "bg-success border-success " : "border-line-strong hover:border-success "}`}
           >
             {isSolved && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
             )}
           </button>
 
-          <motion.div animate={{ rotate: showNotes ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 light:text-slate-400">
+          <motion.div animate={{ rotate: showNotes ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-fg-subtle">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </motion.div>
         </div>
@@ -548,20 +531,19 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
       <AnimatePresence>
         {showNotes && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <div className="mx-1 mt-2 mb-1 rounded-xl border border-gray-200/90 dark:border-white/[0.07] bg-white/60 dark:bg-white/[0.03] light:bg-white light:border-slate-900/[0.07] light:shadow-[0_1px_2px_rgba(15,23,42,0.04)] p-3.5">
+            <div className="mx-1 mt-2 mb-1 rounded-lg border border-line bg-canvas p-3.5">
               <div className="flex items-center justify-between mb-2">
-                <h5 className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-1 h-3.5 rounded-full bg-gradient-to-b from-orange-400 to-amber-400" />
+                <h5 className="text-[11px] font-semibold text-fg-subtle flex items-center gap-1.5">
                   Solution Notes
                 </h5>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500">auto-saved</span>
+                <span className="text-[10px] text-fg-subtle">auto-saved</span>
               </div>
               <textarea
                 value={localNote}
                 onChange={handleNoteInput}
                 placeholder="Approach, pattern, time/space complexity, key insight, edge cases..."
                 rows={4}
-                className="w-full p-3 text-xs rounded-lg border border-gray-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-400 resize-y min-h-[90px] leading-relaxed backdrop-blur-sm light:bg-white light:border-slate-900/[0.12] light:text-slate-800 light:placeholder-slate-400 light:focus:ring-4 light:focus:ring-violet-500/10 light:focus:border-violet-500 light:backdrop-filter-none"
+                className="w-full p-3 text-xs rounded-lg border border-line bg-canvas text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-orange-400/40 hover:border-line-strong resize-y min-h-[90px] leading-relaxed"
               />
             </div>
           </motion.div>

@@ -1,33 +1,30 @@
 import PageShell from "./PageShell";
 
 // What a page shows while its code or data is still on the way: the page's
-// own background with a few pulsing placeholder cards, instead of a blank
+// own background with a few pulsing placeholder rows, instead of a blank
 // screen.
-const bar = "rounded-md bg-gray-200/80 dark:bg-white/[0.06] light:bg-slate-900/[0.06]";
-const card = "rounded-2xl border border-gray-200/70 dark:border-white/[0.06] bg-white/60 dark:bg-white/[0.03] light:bg-white light:border-slate-900/[0.07] light:shadow-[0_1px_2px_rgba(15,23,42,0.04)]";
+const bar = "rounded bg-surface-hover";
+const card = "rounded-lg border border-line bg-canvas";
 
 export default function PageSkeleton() {
   return (
     <PageShell>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 animate-pulse" aria-busy="true" aria-label="Loading">
-        <div className={`${card} p-6 flex items-center justify-between`}>
-          <div className="space-y-3">
-            <div className={`${bar} h-7 w-48`} />
-            <div className={`${bar} h-3 w-72 max-w-[60vw]`} />
-          </div>
-          <div className="h-14 w-14 rounded-full border-4 border-gray-200/80 dark:border-white/[0.06] light:border-slate-900/[0.06]" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 animate-pulse" aria-busy="true" aria-label="Loading">
+        <div className="space-y-3">
+          <div className={`${bar} h-8 w-56`} />
+          <div className={`${bar} h-3 w-80 max-w-[60vw]`} />
         </div>
-        <div className="mt-5 flex gap-2">
+        <div className="mt-6 flex gap-1">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className={`${bar} h-8 w-16`} />
+            <div key={i} className={`${bar} h-7 w-16`} />
           ))}
         </div>
-        <div className="mt-5 space-y-3">
+        <div className={`${card} mt-6 divide-y divide-line`}>
           {[72, 56, 64, 48, 60, 52].map((w, i) => (
-            <div key={i} className={`${card} px-5 py-4 flex items-center gap-4`}>
-              <div className="h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-white/10 light:bg-slate-900/10" />
-              <div className={`${bar} h-4`} style={{ width: `${w * 0.6}%` }} />
-              <div className={`${bar} h-2 w-24 ml-auto hidden sm:block`} />
+            <div key={i} className="px-4 py-3.5 flex items-center gap-4">
+              <div className="h-4 w-4 rounded-full border-[1.5px] border-line-strong" />
+              <div className={`${bar} h-3.5`} style={{ width: `${w * 0.6}%` }} />
+              <div className={`${bar} h-3 w-20 ml-auto hidden sm:block`} />
             </div>
           ))}
         </div>

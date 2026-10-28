@@ -151,43 +151,43 @@ function makeRemove(entryOf, patchCompany) {
 // ── Look ────────────────────────────────────────────────────────────────────
 // Cards are opaque so the ones stacked behind don't show through.
 const CARD =
-  "bg-white dark:bg-[#121a30] border border-gray-200/90 dark:border-white/[0.09] shadow-[0_6px_18px_-10px_rgba(15,23,42,0.35)] dark:shadow-[0_8px_22px_-8px_rgba(0,0,0,0.7)] light:border-slate-900/[0.08] light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_-4px_rgba(15,23,42,0.07)]";
+  "bg-canvas border border-line     ";
 // The two cards peeking out behind the top one: each a step dimmer.
-const BEHIND_1 = "bg-gray-50 dark:bg-[#141c33] border border-gray-200 dark:border-white/[0.09] light:bg-[#fbfbfc] light:border-slate-900/[0.07]";
-const BEHIND_2 = "bg-gray-100/80 dark:bg-[#111830] border border-gray-200 dark:border-white/[0.07] light:bg-[#f3f3f5] light:border-slate-900/[0.06]";
+const BEHIND_1 = "bg-surface-subtle border border-line   ";
+const BEHIND_2 = "bg-surface-hover border border-line   ";
 
 const TONES = {
   toApply: {
-    title: "text-amber-600 dark:text-amber-300",
-    dot: "bg-amber-500",
-    pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200 light:bg-amber-50 light:ring-1 light:ring-inset light:ring-amber-600/20",
-    add: "bg-amber-500 hover:bg-amber-600",
+    title: "text-fg",
+    dot: "bg-warning-fg",
+    pill: "bg-warning-subtle text-warning-fg      ",
+    add: "bg-warning-fg hover:bg-surface-hover",
   },
   referral: {
-    title: "text-violet-600 dark:text-violet-300",
-    dot: "bg-violet-500",
-    pill: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200 light:bg-violet-50 light:ring-1 light:ring-inset light:ring-violet-600/15",
-    add: "bg-violet-600 hover:bg-violet-700",
+    title: "text-fg",
+    dot: "bg-brand",
+    pill: "bg-brand-subtle text-brand-fg      ",
+    add: "bg-brand hover:bg-primary-hover",
   },
   applied: {
-    title: "text-emerald-600 dark:text-emerald-300",
-    dot: "bg-emerald-500",
-    pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200 light:bg-emerald-50 light:ring-1 light:ring-inset light:ring-emerald-600/15",
-    add: "bg-emerald-600 hover:bg-emerald-700",
+    title: "text-fg",
+    dot: "bg-success",
+    pill: "bg-success-subtle text-success-fg      ",
+    add: "bg-success hover:opacity-90",
   },
   closed: {
-    title: "text-gray-500 dark:text-gray-400",
-    dot: "bg-slate-400",
-    pill: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300 light:bg-slate-100 light:text-slate-600 light:ring-1 light:ring-inset light:ring-slate-900/[0.08]",
+    title: "text-fg-subtle ",
+    dot: "bg-fg-subtle",
+    pill: "bg-surface-hover text-fg-muted       ",
   },
 };
 
 const BTN = {
-  emerald: "bg-emerald-600 hover:bg-emerald-700 text-white",
-  violet: "bg-violet-600 hover:bg-violet-700 text-white",
-  violetLine: "border border-violet-300 dark:border-violet-500/40 text-violet-700 dark:text-violet-300 hover:bg-violet-50 dark:hover:bg-violet-500/10 light:border-violet-600/25",
-  grayLine: "border border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05] light:border-slate-900/[0.12]",
-  roseLine: "border border-rose-300 dark:border-rose-500/40 text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 light:border-rose-600/25",
+  emerald: "bg-success hover:opacity-90 text-white",
+  violet: "bg-primary hover:bg-primary-hover text-on-primary",
+  violetLine: "border border-line-strong text-brand-fg hover:bg-surface-hover  ",
+  grayLine: "border border-line-strong text-fg-muted hover:bg-surface-hover  ",
+  roseLine: "border border-line text-danger-fg hover:bg-surface-hover  ",
 };
 
 function Btn({ kind, onClick, title, children }) {
@@ -195,7 +195,7 @@ function Btn({ kind, onClick, title, children }) {
     <button
       onClick={onClick}
       title={title}
-      className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg transition-colors ${BTN[kind]}`}
+      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-lg transition-colors ${BTN[kind]}`}
     >
       {children}
     </button>
@@ -210,7 +210,7 @@ function Stack({ items, empty }) {
   const [open, setOpen] = useState(false);
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-gray-300 dark:border-white/10 light:border-slate-900/[0.12] light:text-slate-400 px-4 py-6 text-center text-xs text-gray-400 dark:text-gray-500">
+      <div className="rounded-lg border border-dashed border-line-strong px-4 py-6 text-center text-xs text-fg-subtle">
         {empty}
       </div>
     );
@@ -221,9 +221,9 @@ function Stack({ items, empty }) {
   return (
     <div>
       <div className={`relative ${open || !behind ? "" : behind > 1 ? "pb-5" : "pb-2.5"}`}>
-        {!open && behind > 1 && <div aria-hidden className={`absolute inset-x-6 bottom-0 h-12 rounded-xl ${BEHIND_2}`} />}
+        {!open && behind > 1 && <div aria-hidden className={`absolute inset-x-6 bottom-0 h-12 rounded-lg ${BEHIND_2}`} />}
         {!open && behind > 0 && (
-          <div aria-hidden className={`absolute inset-x-3 ${behind > 1 ? "bottom-2.5" : "bottom-0"} h-12 rounded-xl ${BEHIND_1}`} />
+          <div aria-hidden className={`absolute inset-x-3 ${behind > 1 ? "bottom-2.5" : "bottom-0"} h-12 rounded-lg ${BEHIND_1}`} />
         )}
         <div className="relative space-y-3">
           <AnimatePresence initial={false} mode="popLayout">
@@ -244,7 +244,7 @@ function Stack({ items, empty }) {
       {behind > 0 && (
         <button
           onClick={() => setOpen((o) => !o)}
-          className="mt-2 w-full flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100/70 dark:hover:bg-white/[0.04] transition-colors"
+          className="mt-2 w-full flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-semibold text-fg-subtle hover:text-fg hover:bg-surface-hover transition-colors"
         >
           {open ? "Show less" : `Show all ${items.length}`}
           <HiChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
@@ -259,19 +259,19 @@ function Stack({ items, empty }) {
 // the one being dragged.
 function JobCard({ company, aside, children, drag, dimmed }) {
   return (
-    <div {...drag} className={`${CARD} rounded-xl p-3.5 ${drag ? "cursor-grab active:cursor-grabbing" : ""} ${dimmed ? "opacity-40" : ""}`}>
+    <div {...drag} className={`${CARD} rounded-lg p-3.5 ${drag ? "cursor-grab active:cursor-grabbing" : ""} ${dimmed ? "opacity-40" : ""}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{company.name}</span>
-            {company.pay && <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">₹{company.pay} LPA</span>}
+            <span className="font-semibold text-fg">{company.name}</span>
+            {company.pay && <span className="text-[11px] font-semibold text-fg-subtle">₹{company.pay} LPA</span>}
             {company.careers && (
-              <a href={company.careers} target="_blank" rel="noreferrer" draggable={false} className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400" title="Careers page">
+              <a href={company.careers} target="_blank" rel="noreferrer" draggable={false} className="text-brand-fg hover:text-fg" title="Careers page">
                 <HiOutlineExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
           </div>
-          {company.location && <p className="text-[11px] text-gray-400 dark:text-gray-500 light:text-slate-500">{company.location}</p>}
+          {company.location && <p className="text-[11px] text-fg-subtle">{company.location}</p>}
         </div>
         {aside}
       </div>
@@ -280,7 +280,7 @@ function JobCard({ company, aside, children, drag, dimmed }) {
   );
 }
 
-function Row({ link, icon, iconCls, linkCls = "text-gray-800 dark:text-gray-100", meta, metaCls, onBack, backTitle, onRemove, drag, children }) {
+function Row({ link, icon, iconCls, linkCls = "text-fg ", meta, metaCls, onBack, backTitle, onRemove, drag, children }) {
   return (
     <li {...drag}>
       <div className="flex items-center gap-1.5 text-sm min-w-0">
@@ -288,23 +288,23 @@ function Row({ link, icon, iconCls, linkCls = "text-gray-800 dark:text-gray-100"
         <a href={link.url} target="_blank" rel="noreferrer" title={link.url} draggable={false} className={`truncate font-medium hover:underline ${linkCls}`}>
           {link.label}
         </a>
-        <HiOutlineExternalLink className="w-3 h-3 text-gray-400 shrink-0" />
+        <HiOutlineExternalLink className="w-3 h-3 text-fg-subtle shrink-0" />
         {onBack && (
-          <button onClick={onBack} title={backTitle} className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+          <button onClick={onBack} title={backTitle} className="shrink-0 text-fg-subtle hover:text-fg-muted">
             <HiReply className="w-3.5 h-3.5" />
           </button>
         )}
-        <button onClick={onRemove} title="Remove from pipeline" className="shrink-0 text-gray-400 hover:text-red-500">
+        <button onClick={onRemove} title="Remove from pipeline" className="shrink-0 text-fg-subtle hover:text-fg">
           <HiX className="w-3.5 h-3.5" />
         </button>
-        {meta && <span className={`ml-auto pl-2 shrink-0 text-[11px] font-medium ${metaCls || "text-gray-400 dark:text-gray-500"}`}>{meta}</span>}
+        {meta && <span className={`ml-auto pl-2 shrink-0 text-[11px] font-medium ${metaCls || "text-fg-subtle "}`}>{meta}</span>}
       </div>
       {children && <div className="mt-1.5 pl-5 flex flex-wrap items-center gap-1.5">{children}</div>}
     </li>
   );
 }
 
-const Tag = ({ cls, children }) => <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${cls}`}>{children}</span>;
+const Tag = ({ cls, children }) => <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${cls}`}>{children}</span>;
 
 // ── Add form ────────────────────────────────────────────────────────────────
 // A job link straight into a section. The company is matched by name; a name
@@ -326,13 +326,13 @@ function AddJobForm({ stage, allCompanies, onAdd, onClose }) {
     if (e.key === "Escape") onClose();
   };
   const input =
-    `w-full text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400/40 ${LIGHT_FIELD}`;
+    `w-full text-sm px-2.5 py-1.5 rounded-lg border border-line-strong bg-canvas placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus ${LIGHT_FIELD}`;
   const listId = `pipeline-companies-${stage}`;
   return (
-    <div className={`${CARD} rounded-xl p-3 mb-3 space-y-2`}>
+    <div className={`${CARD} rounded-lg p-3 mb-3 space-y-2`}>
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{ADD_TITLE[stage]}</span>
-        <button onClick={onClose} className="text-gray-400 hover:text-red-500" title="Close">
+        <span className="text-xs font-semibold text-fg-muted">{ADD_TITLE[stage]}</span>
+        <button onClick={onClose} className="text-fg-subtle hover:text-fg" title="Close">
           <HiX />
         </button>
       </div>
@@ -342,14 +342,14 @@ function AddJobForm({ stage, allCompanies, onAdd, onClose }) {
           <option key={c.id} value={c.name} />
         ))}
       </datalist>
-      {isNew && <p className="text-[11px] text-gray-400 dark:text-gray-500 -mt-1">New company: it'll be added to your list too.</p>}
+      {isNew && <p className="text-[11px] text-fg-subtle -mt-1">New company: it'll be added to your list too.</p>}
       <input value={url} onChange={(e) => setUrl(e.target.value)} onKeyDown={keys} placeholder="Job link (https://…)" className={input} />
       <input value={role} onChange={(e) => setRole(e.target.value)} onKeyDown={keys} placeholder="Role (optional, e.g. SDE-2 Backend)" className={input} />
       <div className="flex justify-end">
         <button
           onClick={submit}
           disabled={!ready}
-          className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <HiPlus className="w-3.5 h-3.5" /> Add
         </button>
@@ -364,25 +364,25 @@ function Section({ stage, title, count, hint, onAdd, drop, dropState, children }
   const t = TONES[stage];
   const outline =
     dropState === "over"
-      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-indigo-400 bg-indigo-500/5"
+      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-focus bg-brand-subtle"
       : dropState === "ready"
-      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-indigo-400/40"
+      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-line-strong"
       : "";
   return (
-    <section {...drop} className={`min-w-0 rounded-2xl transition-colors ${outline}`}>
+    <section {...drop} className={`min-w-0 rounded-lg transition-colors ${outline}`}>
       <div className="flex items-center gap-2 mb-1">
         {/* Light mode titles the section in ink with a coloured status dot,
             the way Linear heads a board column; dark keeps coloured titles. */}
-        <span aria-hidden className={`hidden light:inline-block w-2 h-2 rounded-full ${t.dot}`} />
-        <h2 className={`text-lg font-bold ${t.title} light:text-slate-900 light:font-semibold light:text-base`}>{title}</h2>
-        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${t.pill}`}>{count}</span>
+        <span aria-hidden className={`hidden w-2 h-2 rounded-full ${t.dot}`} />
+        <h2 className={`text-lg font-semibold ${t.title}   `}>{title}</h2>
+        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${t.pill}`}>{count}</span>
         {onAdd && (
-          <button onClick={onAdd} className={`ml-auto inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg text-white shadow-sm ${t.add} ${LIGHT_BUTTON} light:border`}>
+          <button onClick={onAdd} className={`ml-auto inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg text-white ${t.add} ${LIGHT_BUTTON} `}>
             <HiPlus className="w-3 h-3" /> Add
           </button>
         )}
       </div>
-      <p className="text-xs text-gray-400 dark:text-gray-500 light:text-slate-500 mb-3">{hint}</p>
+      <p className="text-xs text-fg-subtle mb-3">{hint}</p>
       {children}
     </section>
   );
@@ -468,7 +468,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
       onRemove: () => removeLink(g.company.id, l.id),
       // Past due only while this session's sync hasn't caught up yet.
       meta: soon ? `${label} · ${left > 0 ? `erased in ${left}d` : "erased soon"}` : label,
-      metaCls: soon ? "text-amber-600 dark:text-amber-300" : cls,
+      metaCls: soon ? "text-warning-fg " : cls,
     };
   };
   const mv = (g, l, to) => () => move(g.company.id, l.id, to);
@@ -526,7 +526,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
         {g.links.map((l) => {
           const added = agoLabel(l.addedAt);
           return (
-            <Row key={l.id} {...rowProps("toApply", g, l, added && `added ${added}`)} icon="○" iconCls="text-amber-500">
+            <Row key={l.id} {...rowProps("toApply", g, l, added && `added ${added}`)} icon="○" iconCls="text-warning-fg">
               <Btn kind="emerald" onClick={mv(g, l, "applied")} title="You applied directly">
                 <HiCheck className="w-3.5 h-3.5" /> Applied
               </Btn>
@@ -554,7 +554,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
               key={l.id}
               {...rowProps("referral", g, l, asked && `asked ${asked}`)}
               icon="↗"
-              iconCls="text-violet-500"
+              iconCls="text-brand-fg"
               onBack={mv(g, l, "back")}
               backTitle="Move back to To Apply"
             >
@@ -587,12 +587,12 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
               key={l.id}
               {...rowProps("applied", g, l, when && `applied ${when}`)}
               icon="✓"
-              iconCls="text-emerald-500"
+              iconCls="text-success-fg"
               onBack={mv(g, l, "back")}
               backTitle={viaReferral ? "Move back to Asked for Referral" : "Move back to To Apply"}
             >
-              {viaReferral && <Tag cls="bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">via referral</Tag>}
-              {l.referralOutcome === "accepted" && <Tag cls="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">Accepted</Tag>}
+              {viaReferral && <Tag cls="bg-brand-subtle text-brand-fg  ">via referral</Tag>}
+              {l.referralOutcome === "accepted" && <Tag cls="bg-success-subtle text-success-fg  ">Accepted</Tag>}
               <Btn kind="roseLine" onClick={mv(g, l, "rejected")} title="Rejected: move it to Closed">
                 Rejected
               </Btn>
@@ -613,10 +613,10 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
           return (
             <Row
               key={l.id}
-              {...rowProps("closed", g, l, when ? `${reason} · ${when}` : reason, reason === "Rejected" ? "text-rose-500 dark:text-rose-300" : undefined)}
+              {...rowProps("closed", g, l, when ? `${reason} · ${when}` : reason, reason === "Rejected" ? "text-danger-fg " : undefined)}
               icon="•"
-              iconCls="text-gray-400"
-              linkCls="text-gray-500 dark:text-gray-400"
+              iconCls="text-fg-subtle"
+              linkCls="text-fg-subtle "
             >
               <Btn kind="grayLine" onClick={mv(g, l, "reopen")} title="Put it back where it was">
                 Reopen
@@ -630,7 +630,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
 
   return (
     <div>
-      <p className="mb-4 text-xs text-gray-400 dark:text-gray-500">
+      <p className="mb-4 text-xs text-fg-subtle">
         Drag a card (or one job in it) to another section to move it. A job left untouched for {ERASE_AFTER_DAYS} days is erased
         automatically; live applications (OA, Interview, Offer) stay.
       </p>
@@ -657,7 +657,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
             <Section stage="closed" title="Closed" count={count("closed")} hint="Rejected or no reply. Out of the way until it's erased." drop={dropOn("closed")} dropState={dropState("closed")}>
               <Stack items={closedCards} empty="Drop here to mark it rejected (or no reply)." />
               {closedCards.length > 0 && (
-                <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400">
+                <button onClick={clearClosed} className="mt-1 text-xs font-semibold text-fg-subtle hover:text-fg">
                   Clear all closed
                 </button>
               )}

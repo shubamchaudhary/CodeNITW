@@ -188,7 +188,7 @@ export default function WebBasics({ techKey }) {
   const nav = <BankNav group={group} groupKey={tech.group} current={current} done={done} onPick={go} />;
 
   return (
-    <div className="wb-page min-h-screen bg-white dark:bg-[#0e1427]">
+    <div className="wb-page min-h-screen bg-canvas">
       <div className="flex">
         {!immersive && (
           <ResizableSide footerHeight={footerHeight} prefKey="webBasicsSide" className="wb-side">
@@ -197,14 +197,14 @@ export default function WebBasics({ techKey }) {
         )}
 
         <main className="flex-1 min-w-0">
-          <div className={`${immersive ? "hidden" : "lg:hidden"} sticky top-0 z-30 wb-surface wb-line px-4 py-2.5 border-b border-gray-200/90 dark:border-white/[0.07] bg-white/95 dark:bg-[#0e1427]/95 backdrop-blur light:border-slate-900/[0.07]`}>
+          <div className={`${immersive ? "hidden" : "lg:hidden"} sticky top-0 z-30 wb-surface wb-line px-4 py-2.5 border-b border-line bg-canvas   `}>
             <select
               value={`${current.tech.key}/${current.slug}`}
               onChange={(e) => {
                 const m = order.find((x) => `${x.tech.key}/${x.slug}` === e.target.value);
                 if (m) go(m);
               }}
-              className="w-full h-9 px-3 rounded-lg text-[13.5px] font-semibold bg-white dark:bg-white/[0.05] border border-gray-300 dark:border-white/[0.14] text-gray-800 dark:text-gray-100"
+              className="w-full h-9 px-3 rounded-lg text-[13.5px] font-semibold bg-canvas border border-line-strong text-fg"
             >
               {group.map((g) => (
                 <optgroup key={g.tech.key} label={g.tech.label}>
@@ -279,15 +279,15 @@ function BankNav({ group, groupKey, current, done, onPick }) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-5 pt-6 pb-4 border-b border-gray-200/80 dark:border-white/[0.07] light:border-slate-900/[0.06]">
+      <div className="px-5 pt-6 pb-4 border-b border-line">
         <div className="flex items-baseline justify-between">
-          <p className="text-[17px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">{GROUP_LABEL[groupKey]}</p>
-          <span className="text-[12.5px] font-semibold tabular-nums text-gray-500 dark:text-gray-400">
+          <p className="text-[17px] font-semibold tracking-tight text-fg">{GROUP_LABEL[groupKey]}</p>
+          <span className="text-[12.5px] font-semibold tabular-nums text-fg-subtle">
             {n}/{total} done
           </span>
         </div>
-        <div className="mt-2.5 h-1.5 rounded-full bg-gray-200/90 dark:bg-white/[0.08] light:bg-slate-900/[0.06] overflow-hidden">
-          <div className="h-full rounded-full bg-emerald-500 transition-[width] duration-300" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
+        <div className="mt-2.5 h-1.5 rounded-full bg-surface-hover overflow-hidden">
+          <div className="h-full rounded-full bg-success transition-[width] duration-300" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
         </div>
       </div>
 
@@ -301,13 +301,13 @@ function BankNav({ group, groupKey, current, done, onPick }) {
             <div key={g.tech.key} className="mb-1.5">
               <button
                 onClick={() => toggle(g.tech.key, open)}
-                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left hover:bg-gray-50 dark:hover:bg-white/[0.03] light:hover:bg-slate-900/[0.035]"
+                className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left hover:bg-surface-hover"
               >
-                <span className="flex-1 text-[14.5px] font-semibold text-gray-800 dark:text-gray-100 light:text-slate-900">{g.tech.label}</span>
-                <span className="text-[11.5px] tabular-nums text-gray-400 dark:text-gray-500">
+                <span className="flex-1 text-[14.5px] font-semibold text-fg">{g.tech.label}</span>
+                <span className="text-[11.5px] tabular-nums text-fg-subtle">
                   {gDone}/{qs.length}
                 </span>
-                <svg className={`w-4 h-4 text-gray-400 transition-transform ${open ? "" : "-rotate-90"}`} viewBox="0 0 16 16" fill="none">
+                <svg className={`w-4 h-4 text-fg-subtle transition-transform ${open ? "" : "-rotate-90"}`} viewBox="0 0 16 16" fill="none">
                   <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
@@ -324,19 +324,19 @@ function BankNav({ group, groupKey, current, done, onPick }) {
                           onClick={() => onPick(m)}
                           className={`w-full flex items-start gap-2.5 pl-3 pr-2 py-[7px] rounded-lg text-left transition-colors ${
                             active
-                              ? "bg-emerald-50 dark:bg-emerald-400/10 light:bg-white light:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_0_0_1px_rgba(15,23,42,0.06)]"
-                              : "hover:bg-gray-50 dark:hover:bg-white/[0.04] light:hover:bg-slate-900/[0.035]"
+                              ? "bg-success-subtle "
+                              : "hover:bg-surface-hover "
                           }`}
                         >
                           <DoneCircle done={complete} className="w-[17px] h-[17px] mt-[1px]" />
                           <span
                             className={`flex-1 text-[14px] leading-snug ${
-                              active ? "text-emerald-700 dark:text-emerald-300 font-medium light:text-slate-900" : "text-gray-700 dark:text-gray-300 light:text-slate-600"
+                              active ? "text-success-fg font-medium " : "text-fg-muted "
                             }`}
                           >
                             {m.title}
                           </span>
-                          <span className="mt-[2px] text-[10.5px] font-bold tabular-nums shrink-0 text-gray-400 dark:text-gray-500">
+                          <span className="mt-[2px] text-[10.5px] font-semibold tabular-nums shrink-0 text-fg-subtle">
                             {mDone}/{m.questions.length}
                           </span>
                         </button>
@@ -470,14 +470,14 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
         className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
       >
         <header className="mb-8">
-          <p className="text-[13px] font-semibold text-emerald-700 dark:text-emerald-300">{module.tech.label}</p>
-          <h1 className="mt-1.5 text-[30px] sm:text-[34px] leading-tight font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
+          <p className="text-[13px] font-semibold text-success-fg">{module.tech.label}</p>
+          <h1 className="mt-1.5 text-[30px] sm:text-[34px] leading-tight font-semibold tracking-tight text-fg">
             {module.title}
           </h1>
-          <p className="mt-2.5 text-[14px] text-gray-500 dark:text-gray-400">
+          <p className="mt-2.5 text-[14px] text-fg-subtle">
             {qs.length} questions · {nDone}/{qs.length} done
           </p>
-          {askedSource && <p className="mt-1 text-[12.5px] text-gray-400 dark:text-gray-500">{askedSource}</p>}
+          {askedSource && <p className="mt-1 text-[12.5px] text-fg-subtle">{askedSource}</p>}
         </header>
 
         {qs.map((q, i) => (
@@ -495,32 +495,32 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
 
         {/* The end of the module: a big card onto the next one (across techs
             too), and a quieter link back. */}
-        <div className="mt-14 pt-8 border-t border-gray-200 dark:border-white/[0.08]">
+        <div className="mt-14 pt-8 border-t border-line">
           {next ? (
             <button
               onClick={() => onGo(next)}
-              className="group w-full flex items-center gap-5 rounded-2xl px-6 py-5 text-left border border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-400/[0.07] hover:border-emerald-500/60 hover:bg-emerald-50 dark:hover:bg-emerald-400/[0.11] transition-colors"
+              className="group w-full flex items-center gap-5 rounded-lg px-6 py-5 text-left border border-line bg-success-subtle hover:border-line hover:opacity-90 transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                <p className="text-[12px] font-semibold text-success-fg">
                   Up next{next.tech.key !== module.tech.key ? ` · ${next.tech.label}` : ""}
                 </p>
-                <p className="mt-1 text-[20px] font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900 truncate">{next.title}</p>
-                <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">{next.questions.length} questions</p>
+                <p className="mt-1 text-[20px] font-semibold tracking-tight text-fg truncate">{next.title}</p>
+                <p className="mt-0.5 text-[13px] text-fg-subtle">{next.questions.length} questions</p>
               </div>
-              <span className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 group-hover:translate-x-0.5 transition-transform">
+              <span className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-success text-white group-hover:translate-x-0.5 transition-transform">
                 <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
                   <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
             </button>
           ) : (
-            <p className="text-center text-[15px] font-semibold text-emerald-700 dark:text-emerald-300">That's the last module of this bank.</p>
+            <p className="text-center text-[15px] font-semibold text-success-fg">That's the last module of this bank.</p>
           )}
           {prev && (
             <button
               onClick={() => onGo(prev)}
-              className="mt-4 text-[13.5px] font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+              className="mt-4 text-[13.5px] font-semibold text-fg-subtle hover:text-fg"
             >
               ← Previous: {prev.title}
             </button>
@@ -540,11 +540,11 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
           {COLORS.map((c) => (
             <Swatch key={c.key} color={c} onPick={() => recolor(c.key)} />
           ))}
-          <span className="w-px h-5 bg-gray-200 dark:bg-white/10 mx-1" />
+          <span className="w-px h-5 bg-surface-hover mx-1" />
           <button
             onMouseDown={(e) => e.preventDefault()}
             onClick={remove}
-            className="h-7 px-2 rounded-md text-[12.5px] font-semibold text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+            className="h-7 px-2 rounded-md text-[12.5px] font-semibold text-danger-fg hover:bg-surface-hover"
           >
             Remove
           </button>
@@ -559,19 +559,19 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
 // answers (which would move the text the highlights are painted on).
 const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, onToggleDone, note, onSaveNote }) {
   return (
-    <section className={`${last ? "" : "wb-line mb-10 pb-10 border-b border-gray-200/80 dark:border-white/[0.07]"}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
+    <section className={`${last ? "" : "wb-line mb-10 pb-10 border-b border-line "}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
       <div className="flex items-start gap-3.5 mb-4">
-        <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-xl bg-emerald-500/[0.12] text-emerald-700 dark:text-emerald-300 text-[16px] font-extrabold flex items-center justify-center tabular-nums">
+        <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-lg bg-success-subtle text-success-fg text-[16px] font-semibold flex items-center justify-center tabular-nums">
           Q{q.number}
         </span>
-        <h2 className="flex-1 min-w-0 pt-1 text-[21px] sm:text-[22px] leading-snug font-bold tracking-tight text-gray-900 dark:text-gray-50 light:text-slate-900">
+        <h2 className="flex-1 min-w-0 pt-1 text-[21px] sm:text-[22px] leading-snug font-semibold tracking-tight text-fg">
           <InlineCode text={q.question} />
         </h2>
         <div className="shrink-0 flex items-center gap-2 mt-1">
           {q.asked > 0 && (
             <span
               title={`Asked in ${q.asked} interview write-up${q.asked === 1 ? "" : "s"}`}
-              className="hidden sm:inline text-[11px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/25 whitespace-nowrap"
+              className="hidden sm:inline text-[11px] px-2 py-0.5 rounded-full bg-warning-subtle text-warning-fg font-semibold border border-line whitespace-nowrap"
             >
               asked {q.asked}×
             </span>
@@ -579,10 +579,10 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
           <button
             onClick={() => onToggleDone(q.id, !isDone)}
             title={isDone ? "Done — click to mark not done" : "Mark this question done"}
-            className={`h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-bold border transition-colors ${
+            className={`h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-semibold border transition-colors ${
               isDone
-                ? "bg-emerald-500 border-emerald-500 text-white"
-                : "border-gray-300 dark:border-white/[0.16] text-gray-600 dark:text-gray-300 hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
+                ? "bg-success border-success text-white"
+                : "border-line-strong text-fg-muted hover:border-success hover:text-success-fg "
             }`}
           >
             <DoneCircle done={isDone} className="w-4 h-4" onColor="text-white" />
@@ -617,8 +617,8 @@ function QuestionNote({ qid, note, colorMode, onSave }) {
 
   if (draft != null) {
     return (
-      <div className="mt-5 rounded-2xl border border-amber-500/30 bg-amber-50/60 dark:bg-amber-400/[0.05] p-3">
-        <p className="mb-2 text-[12px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Your note</p>
+      <div className="mt-5 rounded-lg border border-line bg-warning-subtle p-3">
+        <p className="mb-2 text-[12px] font-semibold text-warning-fg">Your note</p>
         <textarea
           ref={areaRef}
           autoFocus
@@ -629,14 +629,14 @@ function QuestionNote({ qid, note, colorMode, onSave }) {
             if (e.key === "Escape") setDraft(null);
           }}
           placeholder="Write in your own words — markdown works (lists, **bold**, `code`, ```code blocks```)."
-          className="w-full resize-none rounded-xl border border-gray-300 dark:border-white/[0.14] bg-white dark:bg-[#0b1020] px-3.5 py-3 text-[15px] leading-relaxed font-mono text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+          className="w-full resize-none rounded-lg border border-line-strong bg-canvas px-3.5 py-3 text-[15px] leading-relaxed font-mono text-fg focus:outline-none focus:ring-2 focus:ring-amber-400/40"
         />
         <div className="mt-2 flex items-center justify-end gap-2">
-          <span className="mr-auto text-[12px] text-gray-400 dark:text-gray-500">Ctrl+Enter to save · Esc to cancel</span>
-          <button onClick={() => setDraft(null)} className="h-8 px-3 rounded-lg text-[13px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/[0.06]">
+          <span className="mr-auto text-[12px] text-fg-subtle">Ctrl+Enter to save · Esc to cancel</span>
+          <button onClick={() => setDraft(null)} className="h-8 px-3 rounded-lg text-[13px] font-semibold text-fg-muted hover:bg-surface-hover">
             Cancel
           </button>
-          <button onClick={save} className="h-8 px-3.5 rounded-lg text-[13px] font-bold text-white bg-amber-500 hover:bg-amber-600">
+          <button onClick={save} className="h-8 px-3.5 rounded-lg text-[13px] font-semibold text-white bg-warning-fg hover:bg-surface-hover">
             Save note
           </button>
         </div>
@@ -648,7 +648,7 @@ function QuestionNote({ qid, note, colorMode, onSave }) {
     return (
       <button
         onClick={() => setDraft("")}
-        className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-400 dark:text-gray-500 hover:text-amber-600 dark:hover:text-amber-300"
+        className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-fg-subtle hover:text-fg"
       >
         <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
           <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -659,16 +659,16 @@ function QuestionNote({ qid, note, colorMode, onSave }) {
   }
 
   return (
-    <div className="mt-5 rounded-2xl border border-amber-500/25 bg-amber-50/50 dark:bg-amber-400/[0.04] px-4 pt-3 pb-2">
+    <div className="mt-5 rounded-lg border border-line bg-warning-subtle px-4 pt-3 pb-2">
       <div className="flex items-center justify-between">
-        <p className="text-[12px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">Your note</p>
+        <p className="text-[12px] font-semibold text-warning-fg">Your note</p>
         <div className="flex items-center gap-1">
-          <button onClick={() => setDraft(note)} className="h-7 px-2.5 rounded-md text-[12.5px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/[0.06]">
+          <button onClick={() => setDraft(note)} className="h-7 px-2.5 rounded-md text-[12.5px] font-semibold text-fg-muted hover:bg-surface-subtle">
             Edit
           </button>
           <button
             onClick={() => window.confirm("Delete this note?") && onSave(qid, "")}
-            className="h-7 px-2.5 rounded-md text-[12.5px] font-semibold text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+            className="h-7 px-2.5 rounded-md text-[12.5px] font-semibold text-danger-fg hover:bg-surface-hover"
           >
             Delete
           </button>
@@ -720,7 +720,7 @@ function ReadingProgress({ articleRef, nDone, total, title, immersive, onToggleI
   // it's the only bar, so it carries the title.
   return (
     <ProgressStrip pct={pct} label={immersive ? title : null} className={immersive ? "top-0" : "top-[57px] lg:top-0"}>
-      <span className="shrink-0 text-[12px] font-semibold tabular-nums text-gray-400 dark:text-gray-500">
+      <span className="shrink-0 text-[12px] font-semibold tabular-nums text-fg-subtle">
         {nDone}/{total} done
       </span>
       <FullScreenButton immersive={immersive} onClick={onToggleImmersive} />
@@ -736,7 +736,7 @@ function InlineCode({ text }) {
     part.startsWith("`") && part.endsWith("`") && part.length > 2 ? (
       <code
         key={i}
-        className="px-1.5 py-0.5 rounded-md text-[0.85em] font-mono font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-200"
+        className="px-1.5 py-0.5 rounded-md text-[0.85em] font-mono font-semibold bg-brand-subtle text-brand-fg"
       >
         {part.slice(1, -1)}
       </code>
@@ -749,7 +749,7 @@ function InlineCode({ text }) {
 function Floating({ x, y, children }) {
   return (
     <div
-      className="fixed z-50 -translate-x-1/2 -translate-y-full flex items-center gap-1 p-1.5 rounded-xl bg-white dark:bg-[#151c33] border border-gray-200 dark:border-white/[0.1] shadow-xl"
+      className="fixed z-50 -translate-x-1/2 -translate-y-full flex items-center gap-1 p-1.5 rounded-lg bg-canvas border border-line"
       style={{ left: Math.max(90, Math.min(x, window.innerWidth - 90)), top: Math.max(56, y - 8) }}
       onMouseDown={(e) => e.preventDefault()}
     >
@@ -764,21 +764,21 @@ function Swatch({ color, onPick }) {
       title={`Highlight ${color.label.toLowerCase()}`}
       onMouseDown={(e) => e.preventDefault()}
       onClick={onPick}
-      className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/[0.06]"
+      className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-surface-hover"
     >
       <span className="w-4 h-4 rounded-full border border-black/10" style={{ background: color.swatch }} />
     </button>
   );
 }
 
-function DoneCircle({ done, className = "w-4 h-4", onColor = "text-emerald-500" }) {
+function DoneCircle({ done, className = "w-4 h-4", onColor = "text-success-fg" }) {
   return done ? (
     <svg className={`${className} ${onColor} shrink-0`} viewBox="0 0 20 20" fill="none">
       <circle cx="10" cy="10" r="9" fill="currentColor" className={onColor === "text-white" ? "opacity-25" : ""} />
       <path d="M6 10.2l2.6 2.6L14 7.4" stroke={onColor === "text-white" ? "currentColor" : "white"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ) : (
-    <svg className={`${className} text-gray-300 dark:text-gray-600 shrink-0`} viewBox="0 0 20 20" fill="none">
+    <svg className={`${className} text-line-strong  shrink-0`} viewBox="0 0 20 20" fill="none">
       <circle cx="10" cy="10" r="8.5" stroke="currentColor" strokeWidth="1.5" />
     </svg>
   );
