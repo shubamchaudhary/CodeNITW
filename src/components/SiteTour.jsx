@@ -495,7 +495,7 @@ export default function SiteTour() {
           }}
         >
           <span
-            className={`absolute -left-4 -top-4 h-8 w-8 rounded-full bg-violet-500/30 transition-transform duration-150 ${cursor.down ? "scale-100" : "scale-0"}`}
+            className={`absolute -left-4 -top-4 h-8 w-8 rounded-full bg-brand-subtle transition-transform duration-150 ${cursor.down ? "scale-100" : "scale-0"}`}
           />
           <svg width="22" height="26" viewBox="0 0 22 26" className="relative drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]">
             <path d="M2 2l17 11.5-7.6 1.4 4.4 8.3-3 1.6-4.4-8.4L2 21.6z" fill="white" stroke="#111827" strokeWidth="1.6" strokeLinejoin="round" />
@@ -515,7 +515,7 @@ export default function SiteTour() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 24 }}
             transition={{ duration: 0.3 }}
-            className={`fixed bottom-5 inset-x-0 mx-auto sm:right-5 sm:left-auto sm:mx-0 z-[80] ${phase === "end" ? "w-[min(92vw,500px)]" : "w-[min(92vw,420px)]"} rounded-2xl border border-violet-400/40 bg-white/95 dark:bg-[#141231]/95 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(124,58,237,0.5)] px-4 pt-3 pb-3.5`}
+            className={`fixed bottom-5 inset-x-0 mx-auto sm:right-5 sm:left-auto sm:mx-0 z-[80] ${phase === "end" ? "w-[min(92vw,500px)]" : "w-[min(92vw,420px)]"} rounded-lg border border-line bg-canvas px-4 pt-3 pb-3.5`}
             role="status"
             aria-live="polite"
           >
@@ -524,11 +524,11 @@ export default function SiteTour() {
                 page's topic list the left. */}
             <div className="flex gap-1.5 mb-2.5">
               {CHAPTERS.map((c, i) => (
-                <div key={c} className="h-1 flex-1 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
+                <div key={c} className="h-1 flex-1 rounded-full bg-surface-hover overflow-hidden">
                   <div
-                    className={`h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all duration-500 ${
+                    className={`h-full transition-all duration-500 ${
                       phase === "end" || (phase === "play" && i < chapter) ? "w-full" : phase === "play" && i === chapter ? "w-1/2 animate-pulse" : "w-0"
-                    }`}
+                    } bg-brand`}
                   />
                 </div>
               ))}
@@ -536,19 +536,19 @@ export default function SiteTour() {
             {/* The closing message is large, so its buttons go underneath. */}
             <div className={`flex gap-3 ${phase === "end" ? "flex-col" : "items-start"}`}>
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-300">
+                <div className="text-[11px] font-semibold text-brand-fg">
                   {phase === "prep" ? "Getting your tour ready" : phase === "end" ? "Tour complete" : `Tour · ${CHAPTERS[chapter]}`}
                 </div>
-                <div className={`mt-0.5 font-medium text-gray-900 dark:text-white ${phase === "end" ? "text-[22px] sm:text-[28px] leading-tight font-semibold" : "text-sm"}`}>
+                <div className={`mt-0.5 font-medium text-fg ${phase === "end" ? "text-[22px] sm:text-[28px] leading-tight font-semibold" : "text-sm"}`}>
                   {phase === "play" ? null : phase === "prep" ? (
-                    <span className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                      <span className="h-4 w-4 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+                    <span className="inline-flex items-center gap-2 text-fg-subtle">
+                      <span className="h-4 w-4 rounded-full border-2 border-line border-t-brand animate-spin" />
                       Loading every page first, so nothing waits.
                     </span>
                   ) : (
                     <>
                       {caption}
-                      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-violet-500 animate-[caret_1s_steps(1)_infinite]" />
+                      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-brand animate-[caret_1s_steps(1)_infinite]" />
                     </>
                   )}
                 </div>
@@ -557,13 +557,13 @@ export default function SiteTour() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => { setPhase("idle"); requestSignIn(); }}
-                    className="text-sm font-bold px-4 py-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700"
+                    className="text-sm font-semibold px-4 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-hover"
                   >
                     Sign in
                   </button>
                   <button
                     onClick={() => setPhase("idle")}
-                    className="text-sm font-semibold px-3 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="text-sm font-semibold px-3 py-2 rounded-lg text-fg-muted hover:bg-surface-hover"
                   >
                     Close
                   </button>
@@ -571,7 +571,7 @@ export default function SiteTour() {
               ) : (
                 <button
                   onClick={skip}
-                  className="shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10"
+                  className="shrink-0 text-xs font-semibold px-2.5 py-1 rounded-lg text-fg-muted hover:bg-surface-hover"
                 >
                   Skip
                 </button>
@@ -619,7 +619,7 @@ function CaptionBubble({ spot, text, full }) {
   return (
     <div
       aria-hidden
-      className="fixed z-[85] pointer-events-none rounded-2xl bg-gray-900/95 dark:bg-violet-950/95 text-white font-semibold px-5 py-3.5 shadow-[0_16px_40px_-10px_rgba(0,0,0,0.6)] ring-1 ring-violet-400/40"
+      className="fixed z-[85] pointer-events-none rounded-lg bg-primary text-on-primary font-semibold px-5 py-3.5 ring-1 ring-focus"
       style={{
         fontSize: fs,
         lineHeight: 1.3,
@@ -632,7 +632,7 @@ function CaptionBubble({ spot, text, full }) {
       }}
     >
       {text}
-      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-violet-300 animate-[caret_1s_steps(1)_infinite]" />
+      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-brand animate-[caret_1s_steps(1)_infinite]" />
     </div>
   );
 }

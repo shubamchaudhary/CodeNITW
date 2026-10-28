@@ -11,7 +11,7 @@ const MAILTO = `mailto:${EMAIL}?subject=${SUBJECT}`;
 const GMAIL = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL}&su=${SUBJECT}`;
 
 const linkClass =
-  "text-[13px] font-medium text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-300 light:text-slate-500 light:hover:text-slate-900 underline-offset-4 hover:underline";
+  "text-[13px] text-fg-subtle hover:text-fg underline-offset-4 hover:underline";
 
 export default function Footer() {
   const location = useLocation();
@@ -42,18 +42,18 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-gray-200/80 dark:border-white/[0.07] bg-white dark:bg-[#0b1020] light:bg-[#f7f7f9] light:border-slate-900/[0.06] py-4 text-center">
+    <footer className="border-t border-line bg-canvas py-4 text-center">
       <a href={MAILTO} onClick={tryMailApp} className={linkClass}>
         Contact developer
       </a>
       {noMailApp && (
-        <p className="mt-1.5 text-[12.5px] text-gray-500 dark:text-gray-400">
+        <p className="mt-1.5 text-[12px] text-fg-subtle">
           No mail app opened.{" "}
-          <a href={GMAIL} target="_blank" rel="noopener noreferrer" className={`${linkClass} !text-violet-600 dark:!text-violet-300`}>
+          <a href={GMAIL} target="_blank" rel="noopener noreferrer" className={`${linkClass} !text-brand-fg`}>
             Write in Gmail
           </a>
           {" · "}
-          <button onClick={copy} className={`${linkClass} !text-violet-600 dark:!text-violet-300`}>
+          <button onClick={copy} className={`${linkClass} !text-brand-fg`}>
             Copy address
           </button>
         </p>

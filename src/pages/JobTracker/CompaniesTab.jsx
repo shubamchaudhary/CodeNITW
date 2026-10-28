@@ -60,20 +60,20 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
 
   let cardExtra = "";
   if (status === "skip") cardExtra = "opacity-45";
-  else if (activeApplied) cardExtra = "ring-2 ring-emerald-400/50";
+  else if (activeApplied) cardExtra = "ring-2 ring-success";
 
   return (
-    <div className={`${GLASS} rounded-xl overflow-hidden ${cardExtra}`}>
+    <div className={`${GLASS} rounded-lg overflow-hidden ${cardExtra}`}>
       {/* Header — clickable to expand */}
       <div
         onClick={onToggle}
-        className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-indigo-50/60 dark:hover:bg-slate-700/40 transition-colors"
+        className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-surface-hover transition-colors"
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-semibold text-gray-800 dark:text-gray-100 text-[15px]">{company.name}</span>
+            <span className="font-semibold text-fg text-[15px]">{company.name}</span>
             {company.customEntry && (
-              <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300">
+              <span className="text-[9px] font-semibold px-1 py-0.5 rounded bg-brand-subtle text-brand-fg">
                 MINE
               </span>
             )}
@@ -83,7 +83,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                className="text-brand-fg hover:text-fg"
                 title="Careers page"
               >
                 <HiOutlineExternalLink />
@@ -92,10 +92,10 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
             {/* Watched-careers-page marker: auto-clears after CAREER_WATCH_DAYS */}
             <button
               onClick={toggleWatched}
-              className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded transition-colors ${
+              className={`inline-flex items-center gap-0.5 text-[9px] font-semibold px-1 py-0.5 rounded transition-colors ${
                 activeWatched
-                  ? "bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300"
-                  : "text-gray-400 hover:text-sky-600 dark:hover:text-sky-300"
+                  ? "bg-brand-subtle text-brand-fg "
+                  : "text-fg-subtle hover:text-fg "
               }`}
               title={
                 activeWatched
@@ -108,10 +108,10 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
             </button>
             {links.length > 0 && (
               <span
-                className={`font-bold px-1.5 py-0.5 rounded-full text-[10px] ${
+                className={`font-semibold px-1.5 py-0.5 rounded-full text-[10px] ${
                   pending
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200"
-                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200"
+                    ? "bg-warning-subtle text-warning-fg "
+                    : "bg-success-subtle text-success-fg "
                 }`}
                 title={`${links.length} openings, ${pending} pending`}
               >
@@ -120,15 +120,15 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
             )}
           </div>
           {/* One compact meta line */}
-          <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
+          <div className="text-xs text-fg-subtle mt-0.5 truncate">
             {company.tier && <span>{company.tier} · </span>}
             {company.pay ? `₹${company.pay} LPA` : "—"}
             {company.location ? ` · ${company.location}` : ""}
-            <span className="mx-1 text-gray-300 dark:text-gray-600">|</span>
-            <span className="text-amber-500 dark:text-amber-400">★{company.culture || "—"}</span>
-            <span className="mx-1 text-gray-300 dark:text-gray-600">·</span>
+            <span className="mx-1 text-line-strong">|</span>
+            <span className="text-warning-fg">★{company.culture || "—"}</span>
+            <span className="mx-1 text-line-strong">·</span>
             <span className={FIT_CLS[company.javaFit] || ""}>Java {company.javaFit || "—"}</span>
-            <span className="mx-1 text-gray-300 dark:text-gray-600">·</span>
+            <span className="mx-1 text-line-strong">·</span>
             <span className={FIT_CLS[company.match] || ""}>Match {company.match || "—"}</span>
           </div>
         </div>
@@ -138,10 +138,10 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
           <div className="flex flex-col items-end gap-0.5">
             <button
               onClick={toggleApplied}
-              className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
+              className={`inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${
                 activeApplied
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                  : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600 light:bg-white light:text-slate-500 light:border-slate-900/[0.10] light:shadow-[0_1px_1px_rgba(15,23,42,0.04)] light:hover:bg-emerald-50 light:hover:text-emerald-700 light:hover:border-emerald-600/25"
+                  ? "bg-success hover:opacity-90 text-white "
+                  : "bg-surface-hover text-fg-subtle hover:opacity-90 border border-line "
               }`}
               title={activeApplied ? "Click to un-mark applied" : "Mark this company as applied"}
             >
@@ -156,7 +156,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
             {agoLabel && (
               <span
                 className={`text-[10px] ${
-                  activeApplied ? "text-emerald-600 dark:text-emerald-300" : "text-gray-400 dark:text-gray-500"
+                  activeApplied ? "text-success-fg " : "text-fg-subtle "
                 }`}
               >
                 {agoLabel}
@@ -164,12 +164,12 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
             )}
           </div>
           <StatusSelect value={status} onChange={(v) => onPatch({ status: v })} />
-          <HiChevronDown className={`text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`} />
+          <HiChevronDown className={`text-fg-subtle transition-transform ${expanded ? "rotate-180" : ""}`} />
         </div>
       </div>
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 pt-2 border-t border-gray-200/60 dark:border-slate-700/60 bg-gray-50/60 dark:bg-slate-800/40">
+        <div className="px-4 pb-4 pt-2 border-t border-line bg-surface-subtle">
           <CompanyDetail company={company} entry={entry} onPatch={onPatch} templates={templates} />
         </div>
       )}
@@ -239,7 +239,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
   const visible = filtered.slice(0, limit);
 
   const selectCls =
-    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 cursor-pointer ${LIGHT_FIELD}`;
+    `text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas cursor-pointer ${LIGHT_FIELD}`;
 
   return (
     <div>
@@ -247,7 +247,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
       <div className="flex justify-end mb-3">
         <button
           onClick={() => setAdding((a) => !a)}
-          className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md ${LIGHT_PRIMARY}`}
+          className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-on-primary ${LIGHT_PRIMARY}`}
         >
           <HiPlus /> Add company
         </button>
@@ -262,9 +262,9 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
       </AnimatePresence>
 
       {/* Filters */}
-      <div className={`${GLASS} rounded-xl p-3 mb-4 flex flex-wrap items-center gap-2`}>
+      <div className={`${GLASS} rounded-lg p-3 mb-4 flex flex-wrap items-center gap-2`}>
         <div className="relative flex-1 min-w-[200px]">
-          <HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <HiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-subtle" />
           <input
             value={search}
             onChange={(e) => {
@@ -272,7 +272,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
               setLimit(PAGE_SIZE);
             }}
             placeholder="Search company, category, location…"
-            className={`w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`}
+            className={`w-full text-sm pl-8 pr-3 py-1.5 rounded-lg border border-line-strong bg-canvas ${LIGHT_FIELD}`}
           />
         </div>
         <select value={tierFilter} onChange={(e) => { setTierFilter(e.target.value); setLimit(PAGE_SIZE); }} className={selectCls}>
@@ -304,7 +304,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
           <option value="culture">Sort: Culture</option>
           <option value="name">Sort: Name</option>
         </select>
-        <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">
+        <span className="text-xs text-fg-subtle ml-auto">
           {filtered.length} shown
         </span>
       </div>
@@ -325,15 +325,15 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
       </div>
 
       {visible.length === 0 && (
-        <div className={`${GLASS} rounded-xl p-10 text-center`}>
-          <p className="text-sm text-gray-400 dark:text-gray-500">No companies match these filters.</p>
+        <div className={`${GLASS} rounded-lg p-10 text-center`}>
+          <p className="text-sm text-fg-subtle">No companies match these filters.</p>
         </div>
       )}
 
       {filtered.length > limit && (
         <button
           onClick={() => setLimit((l) => l + PAGE_SIZE)}
-          className={`w-full mt-3 py-3 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-slate-700/60 ${GLASS} rounded-xl`}
+          className={`w-full mt-3 py-3 text-sm font-semibold text-brand-fg hover:bg-surface-hover ${GLASS} rounded-lg`}
         >
           Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
         </button>

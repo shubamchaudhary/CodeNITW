@@ -19,11 +19,11 @@ export function describeVersion(rev) {
 }
 
 const REASONS = {
-  "not-kept": { label: "Older edit, not used", cls: "bg-amber-100 text-amber-800 dark:bg-amber-400/15 dark:text-amber-300" },
-  conflict: { label: "Conflicting edit, not used", cls: "bg-rose-100 text-rose-800 dark:bg-rose-400/15 dark:text-rose-300" },
-  merge: { label: "Merged", cls: "bg-violet-100 text-violet-800 dark:bg-violet-400/15 dark:text-violet-300" },
-  restore: { label: "Restored", cls: "bg-sky-100 text-sky-800 dark:bg-sky-400/15 dark:text-sky-300" },
-  before: { label: "Before an edit", cls: "bg-gray-100 text-gray-600 dark:bg-white/[0.07] dark:text-gray-400" },
+  "not-kept": { label: "Older edit, not used", cls: "bg-warning-subtle text-warning-fg  " },
+  conflict: { label: "Conflicting edit, not used", cls: "bg-danger-subtle text-danger-fg  " },
+  merge: { label: "Merged", cls: "bg-brand-subtle text-brand-fg  " },
+  restore: { label: "Restored", cls: "bg-brand-subtle text-brand-fg  " },
+  before: { label: "Before an edit", cls: "bg-surface-hover text-fg-muted  " },
 };
 
 export default function HistoryPanel({ notesKey, noteId, current, previewId, onPreview, onClose }) {
@@ -69,20 +69,20 @@ export default function HistoryPanel({ notesKey, noteId, current, previewId, onP
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-slate-900/30 dark:bg-black/40" onClick={onClose} />
-      <aside className="relative w-full sm:w-[400px] h-full bg-white dark:bg-[#0e1427] border-l border-gray-200/90 dark:border-white/[0.08] shadow-2xl flex flex-col">
-        <div className="px-5 pt-5 pb-4 border-b border-gray-200/90 dark:border-white/[0.07]">
+      <div className="absolute inset-0 bg-primary" onClick={onClose} />
+      <aside className="relative w-full sm:w-[400px] h-full bg-canvas border-l border-line shadow-overlay flex flex-col">
+        <div className="px-5 pt-5 pb-4 border-b border-line">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-[17px] font-bold tracking-tight text-gray-900 dark:text-gray-50">Version history</h2>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-gray-500 dark:text-gray-400">
+              <h2 className="text-[17px] font-semibold tracking-tight text-fg">Version history</h2>
+              <p className="mt-1 text-[12.5px] leading-relaxed text-fg-subtle">
                 Every change is kept. Restoring a version adds it back on top — nothing after it is lost.
               </p>
             </div>
             <button
               onClick={onClose}
               aria-label="Close history"
-              className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-white/[0.07]"
+              className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-fg-subtle hover:bg-surface-hover"
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                 <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -92,28 +92,28 @@ export default function HistoryPanel({ notesKey, noteId, current, previewId, onP
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 py-3">
-          {state.status === "loading" && <p className="px-2 py-6 text-[13px] text-gray-500 dark:text-gray-400">Loading versions…</p>}
+          {state.status === "loading" && <p className="px-2 py-6 text-[13px] text-fg-subtle">Loading versions…</p>}
 
           {state.status === "error" && (
-            <div className="px-2 py-6 text-[13px] text-gray-600 dark:text-gray-300">
+            <div className="px-2 py-6 text-[13px] text-fg-muted">
               {state.code === "permission-denied"
                 ? "Version history isn't switched on for this account yet."
                 : "Couldn't load the history."}{" "}
-              <button onClick={load} className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+              <button onClick={load} className="font-semibold text-brand-fg hover:underline">
                 Try again
               </button>
             </div>
           )}
 
           {state.status === "ready" && !rows.length && (
-            <p className="px-2 py-6 text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+            <p className="px-2 py-6 text-[13px] leading-relaxed text-fg-subtle">
               No versions yet. From your next change on, every version of this note is kept here.
             </p>
           )}
 
           {groups.map((g) => (
             <section key={g.key} className="mb-3">
-              <h3 className="px-2 pt-2 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{g.title}</h3>
+              <h3 className="px-2 pt-2 pb-1.5 text-[11px] font-semibold text-fg-subtle">{g.title}</h3>
               {g.rows.map((r) => {
                 const isCurrent = r.id === currentId;
                 const selected = r.id === previewId;
@@ -122,27 +122,27 @@ export default function HistoryPanel({ notesKey, noteId, current, previewId, onP
                   <button
                     key={r.id}
                     onClick={() => onPreview(isCurrent ? null : r)}
-                    className={`w-full text-left rounded-xl px-3 py-2.5 mb-1 transition-colors ${
-                      selected ? "bg-indigo-50 dark:bg-indigo-400/10 ring-1 ring-indigo-300/60 dark:ring-indigo-400/30" : "hover:bg-gray-50 dark:hover:bg-white/[0.04]"
+                    className={`w-full text-left rounded-lg px-3 py-2.5 mb-1 transition-colors ${
+                      selected ? "bg-brand-subtle ring-1 ring-focus " : "hover:bg-surface-hover "
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-[13.5px] font-semibold text-gray-900 dark:text-gray-100">{timeOf(r.at)}</span>
+                      <span className="text-[13.5px] font-semibold text-fg">{timeOf(r.at)}</span>
                       {isCurrent && (
-                        <span className="px-1.5 py-0.5 rounded-md text-[10.5px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-400/15 dark:text-emerald-300">
+                        <span className="px-1.5 py-0.5 rounded-md text-[10.5px] font-semibold bg-success-subtle text-success-fg">
                           Current
                         </span>
                       )}
-                      {reason && <span className={`px-1.5 py-0.5 rounded-md text-[10.5px] font-bold ${reason.cls}`}>{reason.label}</span>}
+                      {reason && <span className={`px-1.5 py-0.5 rounded-md text-[10.5px] font-semibold ${reason.cls}`}>{reason.label}</span>}
                     </div>
-                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12px] text-gray-500 dark:text-gray-400">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[12px] text-fg-subtle">
                       <span className="inline-flex items-center gap-1">
                         {r.device?.mobile ? <PhoneIcon /> : <LaptopIcon />}
                         {r.device?.label || "Unknown device"}
                       </span>
                       <span>· {(r.words || 0).toLocaleString()} words</span>
                       {r.delta != null && r.delta !== 0 && (
-                        <span className={r.delta > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
+                        <span className={r.delta > 0 ? "text-success-fg " : "text-danger-fg "}>
                           {r.delta > 0 ? "+" : "−"}
                           {Math.abs(r.delta).toLocaleString()}
                         </span>

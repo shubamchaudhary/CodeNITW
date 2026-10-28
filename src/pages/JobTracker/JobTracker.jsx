@@ -298,7 +298,7 @@ export default function JobTracker() {
                 undo();
                 closeToast();
               }}
-              className="underline font-semibold text-indigo-600 dark:text-indigo-300"
+              className="underline font-semibold text-brand-fg"
             >
               Undo
             </button>
@@ -384,12 +384,12 @@ export default function JobTracker() {
   }, [allCompanies, state.companies]);
 
   const statTiles = [
-    { label: "Companies", value: stats.total, cls: "text-gray-800 dark:text-gray-100" },
-    { label: "To Apply", value: stats.toApply, cls: "text-amber-600 dark:text-amber-300" },
-    { label: "Referral", value: stats.referral, cls: "text-violet-600 dark:text-violet-300" },
-    { label: "Applied", value: stats.applied, cls: "text-blue-600 dark:text-blue-300" },
-    { label: "In Process", value: stats.inProcess, cls: "text-indigo-600 dark:text-indigo-300" },
-    { label: "Offers", value: stats.offers, cls: "text-emerald-600 dark:text-emerald-300" },
+    { label: "Companies", value: stats.total, cls: "text-fg" },
+    { label: "To Apply", value: stats.toApply, cls: "text-fg" },
+    { label: "Referral", value: stats.referral, cls: "text-fg" },
+    { label: "Applied", value: stats.applied, cls: "text-fg" },
+    { label: "In Process", value: stats.inProcess, cls: "text-fg" },
+    { label: "Offers", value: stats.offers, cls: "text-fg" },
   ];
 
   if (user === undefined) return <PageSkeleton />;
@@ -403,16 +403,16 @@ export default function JobTracker() {
     <PageShell>
       <div className="w-full max-w-[1920px] mx-auto px-4 lg:px-8 py-6">
         {/* Header */}
-        <h1 className="text-2xl lg:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 dark:from-indigo-400 dark:via-violet-400 dark:to-indigo-300 light:bg-none light:text-slate-900 light:font-bold light:tracking-tight mb-5">
+        <h1 className="text-[32px] leading-10 font-semibold tracking-[-0.02em] mb-6 text-fg">
           Job Application Tracker
         </h1>
 
         {/* Stats */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
           {statTiles.map((s) => (
-            <div key={s.label} className={`${GLASS} rounded-xl px-3 py-2.5 text-center`}>
-              <div className={`text-2xl font-extrabold ${s.cls}`}>{s.value}</div>
-              <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 light:text-slate-500">
+            <div key={s.label} className={`${GLASS} rounded-lg px-3 py-2.5 text-center`}>
+              <div className={`font-mono text-[22px] leading-8 font-medium tabular-nums ${s.cls}`}>{s.value}</div>
+              <div className="text-[12px] text-fg-subtle">
                 {s.label}
               </div>
             </div>
@@ -420,7 +420,7 @@ export default function JobTracker() {
         </div>
 
         {/* Tab navigation */}
-        <div className={`${GLASS_TRACK} rounded-xl p-1 mb-5 inline-flex gap-1`}>
+        <div className={`${GLASS_TRACK} rounded-lg p-1 mb-5 inline-flex gap-1`}>
           {tabs.map((tab) => {
             const isActive = currentTab === tab.id;
             let count = null;
@@ -433,18 +433,15 @@ export default function JobTracker() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                   isActive
-                    ? `bg-indigo-600 text-white shadow-md ${SEGMENT_ON}`
-                    : `text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 ${SEGMENT_OFF}`
+                    ? SEGMENT_ON
+                    : `text-fg-muted  hover:bg-surface-hover  ${SEGMENT_OFF}`
                 }`}
               >
-                <span className="mr-1.5">{tab.emoji}</span>
                 {tab.label}
                 {count != null && (
                   <span
-                    className={`ml-1.5 text-xs font-bold px-1.5 py-0.5 rounded-full ${
-                      isActive
-                        ? "bg-white/20 text-white light:bg-violet-600/10 light:text-violet-700"
-                        : "bg-gray-200 dark:bg-slate-600 text-gray-600 dark:text-gray-300 light:bg-slate-900/[0.06] light:text-slate-500"
+                    className={`ml-1.5 font-mono text-[12px] font-normal ${
+                      isActive ? "text-fg-subtle" : "text-fg-subtle"
                     }`}
                   >
                     {count}

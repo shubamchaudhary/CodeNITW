@@ -753,7 +753,7 @@ export default function NoteReader({
             onMouseMove={onMouseMove}
             onMouseLeave={() => setGutter(null)}
             onClick={(e) => window.matchMedia?.("(hover: none)").matches && placeGutter(e.target)}
-            className="relative min-w-0 mx-auto max-w-[72rem] px-4 sm:px-8 lg:px-16 py-8 lg:py-12"
+            className="relative min-w-0 mx-auto max-w-[88rem] px-4 sm:px-8 lg:px-16 py-8 lg:py-12"
           >
             {lead}
 

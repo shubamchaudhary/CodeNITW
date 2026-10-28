@@ -14,23 +14,23 @@ import { GLASS, GLASS_PANEL, LIGHT_FIELD } from "../../components/glass";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 export const STATUSES = {
-  none: { label: "Not Started", cls: "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300 light:bg-slate-100 light:text-slate-600" },
-  toApply: { label: "To Apply", cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200" },
-  applied: { label: "Applied", cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200" },
-  oa: { label: "OA / Test", cls: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-200" },
-  interview: { label: "Interview", cls: "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-200" },
-  offer: { label: "Offer", cls: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200" },
-  rejected: { label: "Rejected", cls: "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200" },
-  skip: { label: "Skipped", cls: "bg-gray-100 text-gray-400 dark:bg-slate-700 dark:text-gray-500 light:bg-slate-100 light:text-slate-400" },
+  none: { label: "Not Started", cls: "bg-surface-hover text-fg-muted    " },
+  toApply: { label: "To Apply", cls: "bg-warning-subtle text-warning-fg  " },
+  applied: { label: "Applied", cls: "bg-surface-hover text-fg  " },
+  oa: { label: "OA / Test", cls: "bg-surface-hover text-fg  " },
+  interview: { label: "Interview", cls: "bg-brand-subtle text-brand-fg  " },
+  offer: { label: "Offer", cls: "bg-success-subtle text-success-fg  " },
+  rejected: { label: "Rejected", cls: "bg-danger-subtle text-danger-fg  " },
+  skip: { label: "Skipped", cls: "bg-surface-hover text-fg-subtle    " },
 };
 
 export const APPLIED_SET = new Set(["applied", "oa", "interview", "offer", "rejected"]);
 
 export const FIT_CLS = {
-  "Very High": "text-emerald-600 dark:text-emerald-300 font-bold",
-  High: "text-green-600 dark:text-green-300 font-semibold",
-  Medium: "text-amber-600 dark:text-amber-300",
-  Low: "text-gray-400 dark:text-gray-500",
+  "Very High": "text-success-fg font-semibold",
+  High: "text-success-fg font-semibold",
+  Medium: "text-warning-fg ",
+  Low: "text-fg-subtle ",
 };
 
 export const FIT_RANK = { "Very High": 4, High: 3, Medium: 2, Low: 1 };
@@ -184,9 +184,9 @@ export function isRecentlyApplied(entry) {
 
 // ── Small building blocks ────────────────────────────────────────────────────
 export function CultureStars({ n }) {
-  if (!n) return <span className="text-gray-400 dark:text-gray-500">—</span>;
+  if (!n) return <span className="text-fg-subtle">—</span>;
   return (
-    <span className="inline-flex items-center gap-0.5 text-amber-500 dark:text-amber-400" title={`Culture ${n}/5`}>
+    <span className="inline-flex items-center gap-0.5 text-warning-fg" title={`Culture ${n}/5`}>
       {n}
       <HiStar className="inline" />
     </span>
@@ -200,7 +200,7 @@ export function StatusSelect({ value, onChange }) {
       value={v}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => onChange(e.target.value)}
-      className={`text-xs font-semibold rounded-lg px-2 py-1.5 border-0 cursor-pointer focus:ring-2 focus:ring-indigo-400 ${STATUSES[v].cls}`}
+      className={`text-xs font-semibold rounded-lg px-2 py-1.5 border-0 cursor-pointer focus:ring-2 focus:ring-focus ${STATUSES[v].cls}`}
     >
       {Object.entries(STATUSES).map(([k, s]) => (
         <option key={k} value={k}>
@@ -232,37 +232,37 @@ export function HRContactsEditor({ contacts, onChange }) {
   };
 
   const inputCls =
-    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
+    `text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas ${LIGHT_FIELD}`;
 
   return (
     <div>
-      <div className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+      <div className="text-xs font-semibold text-fg-subtle mb-2">
         HR / Recruiter Contacts
       </div>
       {contacts.length === 0 && (
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+        <p className="text-xs text-fg-subtle mb-2">
           No contacts added yet — add recruiters, HRs, or referrers below.
         </p>
       )}
       <ul className="space-y-1.5 mb-3">
         {contacts.map((c) => (
-          <li key={c.id} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
+          <li key={c.id} className="flex items-center gap-3 text-sm text-fg-muted">
             <span className="font-medium">{c.name || "—"}</span>
             {c.phone && (
-              <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                <HiPhone className="text-emerald-500" />
+              <span className="inline-flex items-center gap-1 text-xs text-fg-subtle">
+                <HiPhone className="text-success-fg" />
                 <a href={`tel:${c.phone}`} className="hover:underline">{c.phone}</a>
               </span>
             )}
             {c.email && (
-              <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                <HiMail className="text-blue-500" />
+              <span className="inline-flex items-center gap-1 text-xs text-fg-subtle">
+                <HiMail className="text-fg" />
                 <a href={`mailto:${c.email}`} className="hover:underline">{c.email}</a>
               </span>
             )}
             <button
               onClick={() => onChange(contacts.filter((x) => x.id !== c.id))}
-              className="text-gray-400 hover:text-red-500 shrink-0 ml-auto"
+              className="text-fg-subtle hover:text-fg shrink-0 ml-auto"
               title="Remove contact"
             >
               <HiTrash />
@@ -282,7 +282,7 @@ export function HRContactsEditor({ contacts, onChange }) {
         />
         <button
           onClick={add}
-          className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+          className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary"
         >
           <HiPlus /> Add
         </button>
@@ -308,15 +308,15 @@ export function LinksEditor({ links, onChange }) {
   };
 
   const inputCls =
-    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
+    `text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas ${LIGHT_FIELD}`;
 
   return (
     <div>
-      <div className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+      <div className="text-xs font-semibold text-fg-subtle mb-2">
         Openings / Apply Links
       </div>
       {links.length === 0 && (
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+        <p className="text-xs text-fg-subtle mb-2">
           No openings added yet — paste job links below as you find them.
         </p>
       )}
@@ -338,25 +338,25 @@ export function LinksEditor({ links, onChange }) {
               rel="noreferrer"
               className={`truncate max-w-[380px] hover:underline ${
                 l.applied
-                  ? "text-emerald-600 dark:text-emerald-300"
-                  : "text-indigo-600 dark:text-indigo-400"
+                  ? "text-success-fg "
+                  : "text-brand-fg "
               }`}
               title={l.url}
             >
               {l.label} <HiOutlineExternalLink className="inline mb-0.5" />
             </a>
             <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+              className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                 l.applied
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200"
-                  : "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200"
+                  ? "bg-success-subtle text-success-fg "
+                  : "bg-warning-subtle text-warning-fg "
               }`}
             >
               {l.applied ? "APPLIED" : "PENDING"}
             </span>
             <button
               onClick={() => onChange(links.filter((x) => x.id !== l.id))}
-              className="text-gray-400 hover:text-red-500 shrink-0"
+              className="text-fg-subtle hover:text-fg shrink-0"
               title="Remove link"
             >
               <HiTrash />
@@ -375,7 +375,7 @@ export function LinksEditor({ links, onChange }) {
         />
         <button
           onClick={add}
-          className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+          className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary"
         >
           <HiPlus /> Add
         </button>
@@ -390,7 +390,7 @@ export function NoteEditor({ note, onSave }) {
   useEffect(() => setDraft(note || ""), [note]);
   return (
     <div>
-      <div className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">
+      <div className="text-xs font-semibold text-fg-subtle mb-2">
         Notes (JR IDs, referrer, next step…)
       </div>
       <textarea
@@ -399,7 +399,7 @@ export function NoteEditor({ note, onSave }) {
         onBlur={() => draft !== (note || "") && onSave(draft)}
         rows={3}
         placeholder="e.g. JR-12345 · referred by X · OA on 15th"
-        className="w-full text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 resize-y"
+        className="w-full text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas resize-y"
       />
     </div>
   );
@@ -413,7 +413,7 @@ export function CompanyDetail({ company, entry, onPatch, templates }) {
   const [showTemplate, setShowTemplate] = useState(false);
 
   return (
-    <div className={`${GLASS_PANEL} rounded-xl p-5 space-y-5`}>
+    <div className={`${GLASS_PANEL} rounded-lg p-5 space-y-5`}>
       <LinksEditor links={entry.links || []} onChange={(links) => onPatch({ links })} />
       <HRContactsEditor contacts={entry.hrContacts || []} onChange={(hrContacts) => onPatch({ hrContacts })} />
       <NoteEditor note={entry.note} onSave={(note) => onPatch({ note })} />
@@ -423,19 +423,19 @@ export function CompanyDetail({ company, entry, onPatch, templates }) {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setShowTemplate((s) => !s)}
-              className="text-xs font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="text-xs font-semibold text-brand-fg hover:underline"
             >
               {showTemplate ? "Hide" : "Show"} referral template ({company.template})
             </button>
             <button
               onClick={() => copyText(template.message, "Referral message copied")}
-              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
+              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-surface-hover text-fg-muted hover:bg-surface-hover"
             >
               <HiOutlineClipboardCopy /> Copy message
             </button>
           </div>
           {showTemplate && (
-            <pre className="mt-2 text-xs whitespace-pre-wrap text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-slate-800 rounded-lg p-3 border border-gray-200 dark:border-slate-600">
+            <pre className="mt-2 text-xs whitespace-pre-wrap text-fg-muted bg-surface-subtle rounded-lg p-3 border border-line">
               {template.message}
             </pre>
           )}
@@ -443,7 +443,7 @@ export function CompanyDetail({ company, entry, onPatch, templates }) {
       )}
 
       {company.notes && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-fg-subtle">
           <span className="font-semibold">Intel:</span> {company.notes}
         </p>
       )}
@@ -466,12 +466,12 @@ export function AddCompanyForm({ onAdd, onClose }) {
   };
 
   const inputCls =
-    `text-sm px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 ${LIGHT_FIELD}`;
+    `text-sm px-2 py-1.5 rounded-lg border border-line-strong bg-canvas ${LIGHT_FIELD}`;
   return (
-    <div className={`${GLASS} rounded-xl p-4 mb-4`}>
+    <div className={`${GLASS} rounded-lg p-4 mb-4`}>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-gray-800 dark:text-gray-100 text-base">Add a company</h3>
-        <button onClick={onClose} className="text-gray-400 hover:text-red-500">
+        <h3 className="font-semibold text-fg text-base">Add a company</h3>
+        <button onClick={onClose} className="text-fg-subtle hover:text-fg">
           <HiX />
         </button>
       </div>
@@ -483,12 +483,12 @@ export function AddCompanyForm({ onAdd, onClose }) {
         <input value={form.careers} onChange={set("careers")} placeholder="Careers page URL" className={`${inputCls} flex-1 min-w-[180px]`} />
         <button
           onClick={submit}
-          className="inline-flex items-center gap-1 text-sm font-semibold px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white"
+          className="inline-flex items-center gap-1 text-sm font-semibold px-4 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary"
         >
           <HiPlus /> Add company
         </button>
       </div>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+      <p className="text-xs text-fg-subtle mt-2">
         Use this for any company not in the list — it gets the same status + apply-links tracking.
       </p>
     </div>

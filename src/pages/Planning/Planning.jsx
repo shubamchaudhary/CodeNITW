@@ -257,14 +257,17 @@ function playSound(type) {
   } catch (_) {}
 }
 
+// Where a card came from. The chip is neutral: colour on this page means
+// state (done, running), never category.
+const CHIP = "border border-line bg-surface-subtle text-fg-muted";
 const SOURCE_META = {
-  corestack: { label: "Core", badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 light:bg-emerald-50 light:text-emerald-700 light:border light:border-emerald-600/15", border: "border-l-emerald-400" },
-  aistack: { label: "AI", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-violet-50 light:text-violet-700 light:border light:border-violet-600/15", border: "border-l-violet-400" },
-  projects: { label: "Project", badge: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300 light:bg-sky-50 light:text-sky-700 light:border light:border-sky-600/15", border: "border-l-sky-400" },
+  corestack: { label: "Core", badge: CHIP },
+  aistack: { label: "AI", badge: CHIP },
+  projects: { label: "Project", badge: CHIP },
   // Retired Topics page. Kept so days planned before Core Stack still render.
-  interview: { label: "Topic", badge: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 light:bg-indigo-50 light:text-indigo-700 light:border light:border-indigo-600/15", border: "border-l-indigo-400" },
-  dsa: { label: "DSA", badge: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 light:bg-orange-50 light:text-orange-700 light:border light:border-orange-600/15", border: "border-l-orange-400" },
-  custom: { label: "Custom", badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 light:bg-slate-100 light:text-slate-600 light:border light:border-slate-900/[0.08]", border: "border-l-violet-400" },
+  interview: { label: "Topic", badge: CHIP },
+  dsa: { label: "DSA", badge: CHIP },
+  custom: { label: "Custom", badge: CHIP },
 };
 
 const WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -299,16 +302,16 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -8, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-72 rounded-2xl border border-gray-200/70 dark:border-slate-700/60 bg-white dark:bg-slate-800 shadow-2xl light:border-slate-900/[0.08] light:shadow-[0_24px_48px_-16px_rgba(15,23,42,0.22),0_4px_12px_-4px_rgba(15,23,42,0.06)] p-4"
+      className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-72 rounded-lg border border-line bg-canvas shadow-overlay p-4"
     >
       <div className="flex items-center justify-between mb-3">
-        <button onClick={prev} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">‹</button>
-        <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{label}</span>
-        <button onClick={next} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">›</button>
+        <button onClick={prev} className="w-8 h-8 rounded-lg hover:bg-surface-hover flex items-center justify-center text-fg-subtle font-semibold">‹</button>
+        <span className="text-sm font-semibold text-fg">{label}</span>
+        <button onClick={next} className="w-8 h-8 rounded-lg hover:bg-surface-hover flex items-center justify-center text-fg-subtle font-semibold">›</button>
       </div>
       <div className="grid grid-cols-7 gap-0.5 text-center">
         {WEEK.map((d) => (
-          <span key={d} className="text-[10px] font-bold text-gray-400 dark:text-gray-500 py-1">{d}</span>
+          <span key={d} className="text-[10px] font-semibold text-fg-subtle py-1">{d}</span>
         ))}
         {cells.map((d, i) => {
           if (!d) return <span key={`e${i}`} />;
@@ -320,16 +323,16 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
             <button
               key={i}
               onClick={() => { onSelect(key); onClose(); }}
-              className={`relative w-9 h-9 mx-auto rounded-xl text-xs font-semibold transition-all ${
+              className={`relative w-9 h-9 mx-auto rounded-lg text-xs font-semibold transition-all ${
                 isSel
-                  ? "bg-violet-600 text-white shadow-md"
+                  ? "bg-primary text-on-primary "
                   : isT
-                  ? "ring-2 ring-violet-400 text-violet-600 dark:text-violet-400"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
+                  ? "ring-2 ring-focus text-brand-fg "
+                  : "text-fg-muted hover:bg-surface-hover "
               }`}
             >
               {d}
-              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-violet-400" />}
+              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand" />}
             </button>
           );
         })}
@@ -392,9 +395,9 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
-      className={`rounded-2xl ${GLASS} p-6 mb-4 relative overflow-hidden`}
+      className={`rounded-lg ${GLASS} p-6 mb-4 relative overflow-hidden`}
     >
-      <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{ boxShadow: `inset 0 0 80px ${glowColor}` }} />
+      <div className="absolute inset-0 rounded-lg pointer-events-none" style={{ boxShadow: `inset 0 0 80px ${glowColor}` }} />
       <div className="flex flex-col items-center relative z-10">
         <div className="relative">
           <svg viewBox="0 0 200 200" className="w-48 h-48 sm:w-56 sm:h-56">
@@ -422,12 +425,12 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
                 key={i}
                 x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
                 stroke="currentColor"
-                className={t.major ? "text-gray-300 dark:text-slate-600" : "text-gray-200 dark:text-slate-700"}
+                className={t.major ? "text-line-strong " : "text-line-strong "}
                 strokeWidth={t.major ? 1.5 : 0.7}
                 strokeLinecap="round"
               />
             ))}
-            <circle cx="100" cy="100" r={R} fill="none" stroke="currentColor" className="text-gray-200/50 dark:text-slate-700/50" strokeWidth="6" />
+            <circle cx="100" cy="100" r={R} fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="6" />
             <motion.circle
               cx="100" cy="100" r={R} fill="none" stroke={ringColor} strokeWidth="7" strokeLinecap="round"
               strokeDasharray={CIRC}
@@ -441,16 +444,16 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {isComplete ? (
               <>
-                <svg className="w-10 h-10 text-green-500 mb-1" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                <span className="text-sm font-bold text-green-500">Complete!</span>
+                <svg className="w-10 h-10 text-success-fg mb-1" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span className="text-sm font-semibold text-success-fg">Complete!</span>
               </>
             ) : (
               <>
-                <span className="text-3xl sm:text-4xl font-mono font-bold text-gray-800 dark:text-gray-100 tabular-nums tracking-wider">{fmtClock(remaining)}</span>
-                <span className={`text-xs font-bold mt-1 tracking-wide ${isWork ? "text-violet-500" : "text-emerald-500"}`}>
+                <span className="text-3xl sm:text-4xl font-mono font-semibold text-fg tabular-nums">{fmtClock(remaining)}</span>
+                <span className={`text-xs font-semibold mt-1 ${isWork ? "text-brand-fg" : "text-success-fg"}`}>
                   {isPaused ? "Paused" : isWork ? "Focus" : "Break"}
                 </span>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                <span className="text-[10px] text-fg-subtle mt-0.5">
                   Session {workIdx} of {totalWork}
                 </span>
               </>
@@ -466,7 +469,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
               <span
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  done ? "bg-violet-500" : active ? "bg-violet-400 animate-pulse" : "bg-gray-300 dark:bg-slate-600"
+                  done ? "bg-brand" : active ? "bg-brand animate-pulse" : "bg-line-strong"
                 }`}
               />
             );
@@ -484,19 +487,19 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
                   onChange={(e) => setExtendVal(e.target.value.replace(/\D/g, ""))}
                   onKeyDown={(e) => { if (e.key === "Enter" && parseInt(extendVal) > 0) { onExtend(parseInt(extendVal)); setExtendVal(""); } }}
                   placeholder="+min"
-                  className="w-16 px-2 py-1.5 text-sm text-center rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                  className="w-16 px-2 py-1.5 text-sm text-center rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus"
                 />
                 <button
                   onClick={() => { if (parseInt(extendVal) > 0) { onExtend(parseInt(extendVal)); setExtendVal(""); } }}
                   disabled={!parseInt(extendVal)}
-                  className="px-4 py-1.5 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-40 transition-colors"
+                  className="px-4 py-1.5 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover disabled:opacity-40 transition-colors"
                 >
                   Continue
                 </button>
               </div>
               <button
                 onClick={onDismiss}
-                className="px-5 py-2 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
+                className="px-5 py-2 rounded-lg bg-success text-white text-sm font-semibold hover:opacity-90 transition-colors"
               >
                 Done
               </button>
@@ -506,18 +509,18 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
               <button
                 data-tour="pomo-stop"
                 onClick={onStop}
-                className="w-10 h-10 rounded-full border border-gray-200/70 dark:border-slate-600 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors"
+                className="w-10 h-10 rounded-full border border-line flex items-center justify-center text-fg-subtle hover:text-fg hover:border-line-strong transition-colors"
                 title="Stop"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1.5" /></svg>
               </button>
               <button
                 onClick={isPaused ? onResume : onPause}
-                className={`w-14 h-14 rounded-full flex items-center justify-center text-white transition-all ${
+                className={`w-14 h-14 rounded-full flex items-center justify-center text-on-primary transition-all ${
                   isWork
-                    ? "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50"
-                    : "bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50"
-                }`}
+                    ? " "
+                    : " "
+                } bg-primary hover:bg-primary-hover`}
               >
                 {isPaused ? (
                   <svg className="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 16 16"><path d="M5 3l9 5-9 5z" /></svg>
@@ -529,8 +532,8 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
           )}
         </div>
 
-        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 truncate max-w-full text-center">
-          Working on: <span className="font-semibold text-gray-700 dark:text-gray-300">{pomo.itemTitle}</span>
+        <p className="mt-3 text-xs text-fg-subtle truncate max-w-full text-center">
+          Working on: <span className="font-semibold text-fg-muted">{pomo.itemTitle}</span>
         </p>
       </div>
     </motion.div>
@@ -614,10 +617,10 @@ function DayCard({
       onDragEnd={onDragEnd}
       className={`transition-opacity ${isDragging ? "opacity-30" : ""}`}
     >
-      {isOver && !isDragging && <div className="h-0.5 bg-violet-500 rounded-full mb-1 -mt-0.5" />}
-      <div className={`rounded-xl ${GLASS_ROW} border-l-4 ${complete ? "border-l-green-400" : meta.border} shadow-sm hover:shadow-md light:border-l transition-all overflow-hidden ${complete ? "opacity-75" : ""}`}>
+      {isOver && !isDragging && <div className="h-0.5 bg-brand rounded-full mb-1 -mt-0.5" />}
+      <div className={`rounded-lg ${GLASS_ROW} overflow-hidden ${complete ? "opacity-75" : ""}`}>
         <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
-          <span className="hidden sm:flex text-gray-300 dark:text-gray-600 light:text-slate-300 cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
+          <span className="hidden sm:flex text-line-strong cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><circle cx="5" cy="3" r="1.2" /><circle cx="11" cy="3" r="1.2" /><circle cx="5" cy="8" r="1.2" /><circle cx="11" cy="8" r="1.2" /><circle cx="5" cy="13" r="1.2" /><circle cx="11" cy="13" r="1.2" /></svg>
           </span>
 
@@ -626,21 +629,21 @@ function DayCard({
             onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
             disabled={!canComplete || parentAutoComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-              complete ? "bg-green-500 border-green-500 light:bg-emerald-500 light:border-emerald-500" : "border-gray-300 dark:border-slate-500 hover:border-green-400 light:border-slate-300 light:bg-white light:rounded-md light:hover:border-emerald-500"
+              complete ? "bg-success border-success " : "border-line-strong hover:border-success "
             } ${(!canComplete || parentAutoComplete) ? "opacity-50 cursor-not-allowed" : ""}`}
             title={parentAutoComplete ? "Complete all sub-tasks to finish" : undefined}
           >
             {complete && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
           </button>
 
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${meta.badge}`}>{meta.label}</span>
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${meta.badge}`}>{meta.label}</span>
 
           <div className="flex-1 min-w-0">
-            <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-gray-400 dark:text-gray-500 light:text-slate-400" : "text-gray-800 dark:text-gray-200 light:text-slate-900 light:font-medium"}`}>{item.title}</h3>
+            <h3 className={`text-sm font-semibold truncate ${complete ? "line-through text-fg-subtle " : "text-fg "}`}>{item.title}</h3>
             {hasSubs && (
-              <p className="text-[10px] text-gray-400 dark:text-gray-500">
+              <p className="text-[10px] text-fg-subtle">
                 {subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}
-                {daySec > 0 && <span className="text-emerald-500 dark:text-emerald-400 font-semibold"> · {fmtSpent(daySec)} spent</span>}
+                {daySec > 0 && <span className="text-success-fg font-semibold"> · {fmtSpent(daySec)} spent</span>}
                 {overallSec > 0 && <span> · {fmtSpent(overallSec)} total</span>}
               </p>
             )}
@@ -648,12 +651,12 @@ function DayCard({
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
             {!hasSubs && daySec > 0 && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 light:bg-emerald-50 light:text-emerald-700 light:border light:border-emerald-600/15" title={`Time spent ${dayLabel}`}>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-success-subtle text-success-fg" title={`Time spent ${dayLabel}`}>
                 {fmtSpent(daySec)}
               </span>
             )}
             {!hasSubs && overallSec > 0 && (
-              <span className="hidden sm:inline text-[10px] font-semibold text-gray-400 dark:text-gray-500" title="Time on this card across all days">
+              <span className="hidden sm:inline text-[10px] font-semibold text-fg-subtle" title="Time on this card across all days">
                 {fmtSpent(overallSec)} total
               </span>
             )}
@@ -668,12 +671,12 @@ function DayCard({
                     onChange={(e) => setTimeVal(e.target.value.replace(/\D/g, ""))}
                     onBlur={saveTime}
                     onKeyDown={(e) => { if (e.key === "Enter") saveTime(); if (e.key === "Escape") setEditingTime(false); }}
-                    className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+                    className="w-14 px-1.5 py-0.5 text-[10px] rounded-md border border-line-strong bg-canvas text-fg-muted focus:outline-none text-center"
                   />
                 ) : (
                   <button
                     onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
-                    className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-gray-400 dark:text-gray-500 hover:text-violet-500 transition-colors"
+                    className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-fg-subtle hover:text-fg transition-colors"
                     title="Set time estimate"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -688,10 +691,10 @@ function DayCard({
                     disabled={pomoActive && !isThisPomo}
                     className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
                       isThisPomo
-                        ? "bg-violet-500 text-white animate-pulse"
+                        ? "bg-primary text-on-primary animate-pulse"
                         : pomoActive
-                        ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
-                        : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50 light:bg-violet-50 light:border light:border-violet-600/15 light:text-violet-600 light:hover:bg-violet-600 light:hover:border-violet-600 light:hover:text-white"
+                        ? "bg-surface-hover text-fg-subtle cursor-not-allowed"
+                        : "bg-brand-subtle text-brand-fg hover:bg-surface-hover "
                     }`}
                     title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
                   >
@@ -705,19 +708,19 @@ function DayCard({
               <button
                 onClick={onMove}
                 title={`Push to ${moveLabel}`}
-                className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-gray-200/70 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-violet-600 hover:border-violet-300 dark:hover:text-violet-400 ${LIGHT_BUTTON} transition-colors`}
+                className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border border-line text-fg-subtle hover:text-fg hover:border-line-strong ${LIGHT_BUTTON} transition-colors`}
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 <span className="hidden sm:inline">{moveLabel}</span>
               </button>
             )}
 
-            <button onClick={onRemove} className="text-gray-300 dark:text-gray-600 light:text-slate-400 light:hover:text-rose-600 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Remove">
+            <button onClick={onRemove} className="text-line-strong hover:text-fg transition-colors" title="Remove">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
             </button>
           </div>
 
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-gray-400 dark:text-gray-500 shrink-0">
+          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-fg-subtle shrink-0">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </motion.div>
         </div>
@@ -725,12 +728,12 @@ function DayCard({
         <AnimatePresence>
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-              <div className="border-t border-gray-100 dark:border-slate-700 light:border-slate-900/[0.06] light:bg-slate-50/50 px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
+              <div className="border-t border-line px-4 pb-4 pt-3" onClick={(e) => e.stopPropagation()}>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-xs">
-                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                  <span className="flex items-center gap-1.5 text-fg-subtle">
                     <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                     {daySec > 0 ? (
-                      <span><b className="font-semibold text-emerald-600 dark:text-emerald-400">{fmtSpent(daySec)}</b> spent {dayLabel}</span>
+                      <span><b className="font-semibold text-success-fg">{fmtSpent(daySec)}</b> spent {dayLabel}</span>
                     ) : (
                       <span>No time spent {dayLabel}</span>
                     )}
@@ -745,12 +748,12 @@ function DayCard({
                         onChange={(e) => setLogVal(e.target.value.replace(/\D/g, "").slice(0, 3))}
                         placeholder="min"
                         aria-label="Minutes spent"
-                        className="w-14 px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
+                        className="w-14 px-2 py-1 text-xs rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus text-center"
                       />
                       <button
                         type="submit"
                         disabled={!(parseInt(logVal) > 0)}
-                        className="px-2.5 py-1 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs font-semibold disabled:opacity-40 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-brand-subtle text-brand-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
                         title={`Add time you spent on this card ${dayLabel} without the timer`}
                       >
                         Log time
@@ -761,7 +764,7 @@ function DayCard({
 
                 {item.source === "custom" && hasSubs && (
                   <div className="mb-3">
-                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Sub-tasks</h4>
+                    <h4 className="text-[10px] font-semibold text-fg-subtle mb-2">Sub-tasks</h4>
                     <div className="space-y-1.5">
                       {subs.map((s) => (
                         <div key={s.uid} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${GLASS_ROW} ${s.completed ? "opacity-60" : ""}`}>
@@ -769,16 +772,16 @@ function DayCard({
                             onClick={() => onToggleSubItem(item.uid, s.uid)}
                             disabled={!canComplete}
                             className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-                              s.completed ? "bg-green-500 border-green-500" : "border-gray-300 dark:border-slate-500"
+                              s.completed ? "bg-success border-success" : "border-line-strong "
                             } ${!canComplete ? "opacity-50" : ""}`}
                           >
                             {s.completed && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                           </button>
-                          <span className={`flex-1 text-xs ${s.completed ? "line-through text-gray-400" : "text-gray-700 dark:text-gray-300"}`}>{s.title}</span>
+                          <span className={`flex-1 text-xs ${s.completed ? "line-through text-fg-subtle" : "text-fg-muted "}`}>{s.title}</span>
 
                           <div className="flex items-center gap-1.5 shrink-0">
                             {subSec(s.uid) > 0 && (
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" title={`Time spent ${dayLabel}`}>
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-success-subtle text-success-fg" title={`Time spent ${dayLabel}`}>
                                 {fmtSpent(subSec(s.uid))}
                               </span>
                             )}
@@ -791,12 +794,12 @@ function DayCard({
                                 onChange={(e) => setSubTimeVal(e.target.value.replace(/\D/g, ""))}
                                 onBlur={() => saveSubTime(s.uid)}
                                 onKeyDown={(e) => { if (e.key === "Enter") saveSubTime(s.uid); if (e.key === "Escape") setEditingSubTime(null); }}
-                                className="w-12 px-1 py-0.5 text-[10px] rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+                                className="w-12 px-1 py-0.5 text-[10px] rounded-md border border-line-strong bg-canvas text-fg-muted focus:outline-none text-center"
                               />
                             ) : (
                               <button
                                 onClick={() => { setSubTimeVal(String(s.estimatedMinutes || 25)); setEditingSubTime(s.uid); }}
-                                className="text-[10px] font-semibold px-1 py-0.5 rounded text-gray-400 dark:text-gray-500 hover:text-violet-500 transition-colors flex items-center gap-0.5"
+                                className="text-[10px] font-semibold px-1 py-0.5 rounded text-fg-subtle hover:text-fg transition-colors flex items-center gap-0.5"
                               >
                                 <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                                 {s.estimatedMinutes ? fmt(s.estimatedMinutes) : "set"}
@@ -809,8 +812,8 @@ function DayCard({
                                 disabled={pomoActive}
                                 className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
                                   pomoActive
-                                    ? "bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed"
-                                    : "bg-violet-100 dark:bg-violet-900/30 text-violet-500 hover:bg-violet-200 dark:hover:bg-violet-900/50 light:bg-white light:border light:border-gray-300 light:text-gray-600 light:hover:border-violet-400 light:hover:text-violet-600 light:hover:bg-violet-50"
+                                    ? "bg-surface-hover text-fg-subtle cursor-not-allowed"
+                                    : "bg-brand-subtle text-brand-fg hover:bg-surface-hover "
                                 }`}
                                 title={pomoActive ? "Stop current session first" : "Start focus"}
                               >
@@ -818,7 +821,7 @@ function DayCard({
                               </button>
                             )}
 
-                            <button onClick={() => onRemoveSubItem(item.uid, s.uid)} className="text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors">
+                            <button onClick={() => onRemoveSubItem(item.uid, s.uid)} className="text-line-strong hover:text-fg transition-colors">
                               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                             </button>
                           </div>
@@ -840,21 +843,21 @@ function DayCard({
                         }
                       }}
                       placeholder="Add sub-task..."
-                      className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                      className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
                     />
                     <input
                       type="text"
                       inputMode="numeric"
                       value={subTimeInput}
                       onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
-                      className="w-16 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
+                      className="w-16 px-2 py-1.5 text-xs rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus text-center"
                       placeholder="min"
                       title="Time estimate (minutes)"
                     />
                     <button
                       onClick={() => { if (subInput.trim()) { onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25); setSubInput(""); } }}
                       disabled={!subInput.trim()}
-                      className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs font-semibold disabled:opacity-40 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-brand-subtle text-brand-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
                     >
                       +
                     </button>
@@ -887,8 +890,7 @@ function DayCard({
                 {item.source === "custom" && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                        <span className="w-1 h-4 rounded-full bg-gradient-to-b from-violet-400 to-indigo-400" />
+                      <h4 className="text-xs font-semibold text-fg-muted flex items-center gap-1.5">
                         Notes
                       </h4>
                     </div>
@@ -897,7 +899,7 @@ function DayCard({
                       onChange={handleNoteInput}
                       placeholder="What did you work on, key takeaways, blockers..."
                       rows={4}
-                      className="w-full p-3 text-sm rounded-lg border border-violet-200 dark:border-slate-600 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-400/40 resize-y min-h-[80px] transition-all leading-relaxed shadow-sm"
+                      className="w-full p-3 text-sm rounded-lg border border-line-strong bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus resize-y min-h-[80px] transition-all leading-relaxed"
                     />
                   </div>
                 )}
@@ -925,19 +927,19 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
   };
 
   return (
-    <div className={`rounded-2xl ${GLASS} p-3 sm:p-4`}>
+    <div className={`rounded-lg ${GLASS} p-3 sm:p-4`}>
       <div className="flex items-center justify-between mb-1 px-1">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 light:text-slate-500 light:font-semibold light:tracking-[0.08em]">Time spent {dayLabel}</h3>
-        <span className="text-xs font-bold text-gray-700 dark:text-gray-200">{fmtSpent(total)}</span>
+        <h3 className="text-[14px] font-semibold text-fg">Time spent {dayLabel}</h3>
+        <span className="text-xs font-semibold text-fg-muted">{fmtSpent(total)}</span>
       </div>
-      <div className="divide-y divide-gray-100 dark:divide-white/5 light:divide-slate-900/[0.06]">
+      <div className="divide-y divide-line  ">
         {rows.map((r) => (
           <div key={r.target} className="flex items-center gap-2 sm:gap-3 px-1 py-2">
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${(SOURCE_META[r.source] || SOURCE_META.custom).badge}`}>
+            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${(SOURCE_META[r.source] || SOURCE_META.custom).badge}`}>
               {(SOURCE_META[r.source] || SOURCE_META.custom).label}
             </span>
-            <span className="flex-1 min-w-0 truncate text-sm text-gray-700 dark:text-gray-300">{r.title}</span>
-            {r.where && <span className="text-[10px] text-gray-400 dark:text-gray-500 shrink-0">{r.where}</span>}
+            <span className="flex-1 min-w-0 truncate text-sm text-fg-muted">{r.title}</span>
+            {r.where && <span className="text-[10px] text-fg-subtle shrink-0">{r.where}</span>}
             {editing === r.target ? (
               <input
                 autoFocus
@@ -948,16 +950,16 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
                 onBlur={() => save(r)}
                 onKeyDown={(e) => { if (e.key === "Enter") save(r); if (e.key === "Escape") setEditing(null); }}
                 aria-label="Minutes spent"
-                className="w-14 px-1.5 py-0.5 text-xs rounded-md border border-violet-300 dark:border-violet-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none text-center"
+                className="w-14 px-1.5 py-0.5 text-xs rounded-md border border-line-strong bg-canvas text-fg-muted focus:outline-none text-center"
               />
             ) : (
               <button
                 onClick={() => { setVal(String(Math.round(r.sec / 60))); setEditing(r.target); }}
                 disabled={!canEdit || r.live}
                 title={r.live ? "Timer running" : canEdit ? "Correct the time (minutes, 0 removes it)" : undefined}
-                className="flex items-center gap-1 text-xs font-semibold tabular-nums text-emerald-600 dark:text-emerald-400 enabled:hover:text-violet-600 dark:enabled:hover:text-violet-400 transition-colors shrink-0"
+                className="flex items-center gap-1 text-xs font-semibold tabular-nums text-success-fg enabled:hover:text-fg transition-colors shrink-0"
               >
-                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />}
                 {fmtSpent(r.sec)}
               </button>
             )}
@@ -1038,18 +1040,18 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm light:bg-slate-900/25 p-0 sm:p-4"
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4"
       onClick={onClose}
     >
       <motion.div
         initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 300 }}
-        className="w-full sm:max-w-lg bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl border border-gray-200 dark:border-slate-700 shadow-2xl light:border-slate-900/[0.08] light:shadow-[0_32px_64px_-16px_rgba(15,23,42,0.28),0_0_0_1px_rgba(15,23,42,0.03)] max-h-[85vh] flex flex-col overflow-hidden"
+        className="w-full sm:max-w-lg bg-canvas rounded-t-lg sm:rounded-2xl border border-line shadow-overlay max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-slate-700 light:border-slate-900/[0.06]">
-          <h3 className="text-base font-bold text-gray-800 dark:text-gray-100 light:text-slate-900">Add to plan</h3>
-          <button data-tour="picker-close" onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-line">
+          <h3 className="text-base font-semibold text-fg">Add to plan</h3>
+          <button data-tour="picker-close" onClick={onClose} className="text-fg-subtle hover:text-fg-muted">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20"><path d="M6 6l8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>
         </div>
@@ -1065,7 +1067,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
-                tab === t.key ? "bg-violet-600 text-white border-violet-600 light:shadow-[0_1px_2px_rgba(91,33,182,0.25)]" : "bg-white dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-600 hover:border-violet-400 light:border-slate-900/[0.10] light:text-slate-600 light:hover:bg-slate-50 light:hover:border-slate-900/[0.16] light:hover:text-slate-900"
+                tab === t.key ? "bg-primary text-on-primary border-line-strong " : "bg-canvas text-fg-muted border-line hover:border-line-strong "
               }`}
             >
               {t.label}
@@ -1080,7 +1082,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={tab === "dsa" ? "Search problems or patterns..." : "Search topics..."}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
             />
           </div>
         )}
@@ -1095,16 +1097,16 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd(coreStackPlanItem(t))}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10"}`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-success hover:opacity-90 "}`}
                     >
-                      {showPriority && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>}
-                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{t.title}</span>
-                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
+                      {showPriority && <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>}
+                      <span className="flex-1 text-sm text-fg-muted truncate">{t.title}</span>
+                      <span className="text-[10px] text-fg-subtle shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
                   </li>
                 );
               })}
-              {coreStackResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
+              {coreStackResults.length === 0 && <p className="text-center text-xs text-fg-subtle py-6">No matches.</p>}
             </ul>
           )}
 
@@ -1117,16 +1119,16 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd(aiStackPlanItem(t))}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/10"}`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
                     >
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 border bg-violet-500/15 text-violet-600 dark:text-violet-300 border-violet-500/30">{t.id}</span>
-                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{t.title}</span>
-                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border bg-brand-subtle text-brand-fg border-line">{t.id}</span>
+                      <span className="flex-1 text-sm text-fg-muted truncate">{t.title}</span>
+                      <span className="text-[10px] text-fg-subtle shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
                   </li>
                 );
               })}
-              {aiStackResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
+              {aiStackResults.length === 0 && <p className="text-center text-xs text-fg-subtle py-6">No matches.</p>}
             </ul>
           )}
 
@@ -1139,23 +1141,23 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd({ uid: uid(), source: "dsa", refId: p.id, title: p.title, meta: p.topic, link: p.link, estimatedMinutes: 25 })}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-900/10 cursor-default" : "border-gray-200 dark:border-slate-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/10"}`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
                     >
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[p.difficulty]}`}>{p.difficulty}</span>
-                      <span className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{p.title}</span>
-                      <span className="text-[10px] text-gray-400 shrink-0">{added ? "Added" : "Add +"}</span>
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[p.difficulty]}`}>{p.difficulty}</span>
+                      <span className="flex-1 text-sm text-fg-muted truncate">{p.title}</span>
+                      <span className="text-[10px] text-fg-subtle shrink-0">{added ? "Added" : "Add +"}</span>
                     </button>
                   </li>
                 );
               })}
-              {dsaResults.length === 0 && <p className="text-center text-xs text-gray-400 py-6">No matches.</p>}
+              {dsaResults.length === 0 && <p className="text-center text-xs text-fg-subtle py-6">No matches.</p>}
             </ul>
           )}
 
           {tab === "custom" && (
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Title</label>
+                <label className="text-xs font-semibold text-fg-subtle">Title</label>
                 <input
                   data-tour="custom-title"
                   autoFocus
@@ -1163,34 +1165,34 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                   onChange={(e) => setCustomTitle(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && customTitle.trim()) addCustom(); }}
                   placeholder="e.g. Pair session, Sharding deep-dive, System Design..."
-                  className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                  className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
                 />
               </div>
 
               {!hasSubs && (
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Time estimate (minutes)</label>
+                  <label className="text-xs font-semibold text-fg-subtle">Time estimate (minutes)</label>
                   <input
                     data-tour="custom-time"
                     type="text"
                     inputMode="numeric"
                     value={customTime}
                     onChange={(e) => setCustomTime(e.target.value.replace(/\D/g, ""))}
-                    className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus"
                   />
-                  <p className="text-[10px] text-gray-400 mt-1">{fmt(parseInt(customTime) || 0)} &rarr; {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
+                  <p className="text-[10px] text-fg-subtle mt-1">{fmt(parseInt(customTime) || 0)} &rarr; {buildSessions(parseInt(customTime) || 0).filter((s) => s.type === "work").length} focus sessions</p>
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Sub-tasks (optional){hasSubs ? ` — ${fmt(subItems.reduce((s, i) => s + (i.estimatedMinutes || 0), 0))} total` : ""}</label>
+                <label className="text-xs font-semibold text-fg-subtle">Sub-tasks (optional){hasSubs ? ` — ${fmt(subItems.reduce((s, i) => s + (i.estimatedMinutes || 0), 0))} total` : ""}</label>
                 {hasSubs && (
                   <div className="space-y-1 mt-1.5">
                     {subItems.map((s) => (
-                      <div key={s.uid} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-slate-800 text-sm">
-                        <span className="flex-1 text-gray-700 dark:text-gray-300">{s.title}</span>
-                        <span className="text-[10px] text-gray-400 shrink-0">{fmt(s.estimatedMinutes || 0)}</span>
-                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} className="text-gray-400 hover:text-red-500">&times;</button>
+                      <div key={s.uid} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-subtle text-sm">
+                        <span className="flex-1 text-fg-muted">{s.title}</span>
+                        <span className="text-[10px] text-fg-subtle shrink-0">{fmt(s.estimatedMinutes || 0)}</span>
+                        <button onClick={() => setSubItems(subItems.filter((x) => x.uid !== s.uid))} className="text-fg-subtle hover:text-fg">&times;</button>
                       </div>
                     ))}
                   </div>
@@ -1201,7 +1203,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     onChange={(e) => setSubInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
                     placeholder="Add a sub-task..."
-                    className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus"
                   />
                   <input
                     type="text"
@@ -1209,32 +1211,32 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     value={subTimeInput}
                     onChange={(e) => setSubTimeInput(e.target.value.replace(/\D/g, ""))}
                     onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
-                    className="w-16 px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-400/40 text-center"
+                    className="w-16 px-2 py-1.5 text-sm rounded-lg border border-line bg-canvas text-fg-muted focus:outline-none focus:ring-2 focus:ring-focus text-center"
                     placeholder="min"
                     title="Minutes"
                   />
-                  <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-sm font-semibold disabled:opacity-40">+</button>
+                  <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-brand-subtle text-brand-fg text-sm font-semibold disabled:opacity-40">+</button>
                 </div>
                 {hasSubs && (
-                  <p className="text-[10px] text-gray-400 mt-1">Time is set per sub-task. Timer runs on each sub-task individually.</p>
+                  <p className="text-[10px] text-fg-subtle mt-1">Time is set per sub-task. Timer runs on each sub-task individually.</p>
                 )}
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Notes (optional)</label>
+                <label className="text-xs font-semibold text-fg-subtle">Notes (optional)</label>
                 <textarea
                   value={customNote}
                   onChange={(e) => setCustomNote(e.target.value)}
                   rows={2}
                   placeholder="Any details..."
-                  className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400/40 resize-y"
+                  className="mt-1 w-full px-3 py-2 text-sm rounded-lg border border-line bg-canvas text-fg-muted placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-focus resize-y"
                 />
               </div>
               <button
                 data-tour="custom-add"
                 onClick={addCustom}
                 disabled={!customTitle.trim()}
-                className="w-full py-2.5 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="w-full py-2.5 rounded-lg bg-primary text-on-primary text-sm font-semibold hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
                 Add to plan
               </button>
@@ -1634,7 +1636,7 @@ const Planning = () => {
   return (
     <PageShell>
       <div className="min-h-screen flex justify-center px-2">
-        <div className="w-full sm:w-11/12 lg:w-3/4 xl:w-2/3">
+        <div className="w-full max-w-5xl">
 
           {isGuest && !sandbox && (
             <div className="mt-6 px-2">
@@ -1642,42 +1644,37 @@ const Planning = () => {
             </div>
           )}
 
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mt-6 mb-4 px-2">
+          <div className="mt-8 mb-4 px-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 light:text-slate-900 light:tracking-tight">Planning</h1>
+              <h1 className="text-[32px] leading-10 font-semibold tracking-[-0.02em] text-fg">Planning</h1>
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 light:text-slate-500">{relativeLabel(current)}</p>
-                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200 light:text-slate-900">{doneCount}/{items.length} done</p>
+                  <p className="text-xs text-fg-subtle">{relativeLabel(current)}</p>
+                  <p className="text-sm font-semibold text-fg">{doneCount}/{items.length} done</p>
                 </div>
                 <div className="relative w-12 h-12">
                   <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-gray-200 dark:text-slate-700 light:text-slate-900/[0.07]" strokeWidth="4" />
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="url(#planGrad)" strokeWidth="4" strokeLinecap="round"
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="4" />
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="var(--brand)" strokeWidth="4" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 19}`}
                       strokeDashoffset={`${2 * Math.PI * 19 * (1 - pct / 100)}`}
                       style={{ transition: "stroke-dashoffset 0.5s ease" }} />
-                    <defs>
-                      <linearGradient id="planGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#8b5cf6" /><stop offset="100%" stopColor="#6366f1" />
-                      </linearGradient>
-                    </defs>
                   </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-violet-600 dark:text-violet-400">{pct}%</span>
+                  <span className="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-medium text-fg">{pct}%</span>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <div className="flex items-center justify-between gap-2 mb-3 px-2 relative">
-            <button onClick={() => setCurrent(addDays(current, -1))} className={`px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none ${LIGHT_BUTTON} text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all`}>&lsaquo;</button>
+            <button onClick={() => setCurrent(addDays(current, -1))} className={`px-3 py-1.5 rounded-lg border border-line bg-canvas ${LIGHT_BUTTON} text-fg-muted hover:border-line-strong hover:text-fg text-sm font-semibold transition-all`}>&lsaquo;</button>
 
             <div className="relative text-center">
               <button onClick={() => setCalOpen(!calOpen)} className="group">
-                <p className="text-sm font-bold text-gray-800 dark:text-gray-200 light:text-slate-900 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{relativeLabel(current)}</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 light:text-slate-500 flex items-center justify-center gap-1">
+                <p className="text-sm font-semibold text-fg group-hover:text-fg transition-colors">{relativeLabel(current)}</p>
+                <p className="text-[11px] text-fg-subtle flex items-center justify-center gap-1">
                   {prettyDate(current)}
-                  <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 7h12M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
+                  <svg className="w-3 h-3 text-fg-subtle" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" /><path d="M2 7h12M5 1v4M11 1v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
                 </p>
               </button>
               <AnimatePresence>
@@ -1687,24 +1684,24 @@ const Planning = () => {
 
             <div className="flex items-center gap-2">
               {!isToday && (
-                <button onClick={() => setCurrent(today)} className="px-3 py-1.5 rounded-lg border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 light:border-violet-600/20 light:text-violet-700 text-sm font-semibold transition-all">Today</button>
+                <button onClick={() => setCurrent(today)} className={`px-3 py-1.5 rounded-lg border ${LIGHT_BUTTON} text-sm font-medium`}>Today</button>
               )}
-              <button onClick={() => setCurrent(addDays(current, 1))} className={`px-3 py-1.5 rounded-lg border border-gray-200/70 dark:border-white/10 bg-white/50 dark:bg-slate-800/40 backdrop-blur-md light:backdrop-filter-none ${LIGHT_BUTTON} text-gray-600 dark:text-gray-300 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 text-sm font-semibold transition-all`}>&rsaquo;</button>
+              <button onClick={() => setCurrent(addDays(current, 1))} className={`px-3 py-1.5 rounded-lg border border-line bg-canvas ${LIGHT_BUTTON} text-fg-muted hover:border-line-strong hover:text-fg text-sm font-semibold transition-all`}>&rsaquo;</button>
             </div>
           </div>
 
           {(totalPlanned > 0 || totalDone > 0) && (
             <div className="px-2 mb-3">
-              <div className={`rounded-xl ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
-                <svg className="w-4 h-4 text-violet-500 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+              <div className={`rounded-lg ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
+                <svg className="w-4 h-4 text-brand-fg shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="font-semibold text-gray-700 dark:text-gray-300 light:text-slate-800">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
-                    <span className="text-gray-400 dark:text-gray-500 light:text-slate-500">{fmt(totalDone) || "0m"} done</span>
+                    <span className="font-semibold text-fg-muted">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
+                    <span className="text-fg-subtle">{fmt(totalDone) || "0m"} done</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-gray-200 dark:bg-slate-700 light:bg-slate-900/[0.06] overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-surface-hover overflow-hidden">
                     <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"
+                      className="h-full rounded-full bg-brand"
                       initial={{ width: 0 }}
                       animate={{ width: `${totalPlanned ? Math.min(100, (totalDone / totalPlanned) * 100) : 0}%` }}
                       transition={{ duration: 0.5 }}
@@ -1731,16 +1728,16 @@ const Planning = () => {
           </div>
 
           <div className="px-2 mb-4">
-            <motion.div layout className="rounded-2xl border-2 border-dashed border-violet-300/80 dark:border-violet-700/60 bg-violet-50/30 dark:bg-violet-900/10 backdrop-blur-md light:border light:border-solid light:border-slate-900/[0.08] light:bg-white light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_-4px_rgba(15,23,42,0.06)] light:backdrop-filter-none p-3 sm:p-4 transition-colors">
+            <motion.div layout className="rounded-lg border border-line bg-surface-subtle p-3 sm:p-4">
               <div className="flex items-center justify-between mb-3 px-1">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 light:text-slate-500 light:font-semibold light:tracking-[0.08em]">
-                  Tasks for {relativeLabel(current)}
+                <h3 className="text-[14px] font-semibold text-fg">
+                  Tasks for {relativeLabel(current).toLowerCase()}
                 </h3>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 light:text-slate-400">{doneCount}/{items.length} done</span>
+                <span className="font-mono text-[12px] text-fg-subtle">{doneCount}/{items.length} done</span>
               </div>
 
               {items.length === 0 ? (
-                <p className="text-center text-xs text-gray-400 dark:text-gray-500 py-6">
+                <p className="text-center text-xs text-fg-subtle py-6">
                   Nothing planned yet — add cards from Topics, DSA, or create a custom one.
                 </p>
               ) : (
@@ -1793,7 +1790,7 @@ const Planning = () => {
               <button
                 data-tour="open-picker"
                 onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-violet-400 dark:border-violet-700 text-violet-600 dark:text-violet-400 light:border-slate-900/[0.14] light:bg-transparent light:text-slate-600 light:hover:bg-violet-50/60 light:hover:border-violet-500/40 light:hover:text-violet-700 font-semibold text-sm bg-white/60 dark:bg-slate-800/40 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-all"
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-line-strong text-brand-fg font-semibold text-sm bg-canvas hover:bg-surface-hover transition-all"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 Add to {isToday ? "today's" : "this day's"} plan

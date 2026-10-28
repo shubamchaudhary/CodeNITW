@@ -33,8 +33,8 @@ const MAX_API_PAGES = 10;
 // any 0 skills match, is hidden here until the next run deletes it.
 const EXP_LABEL = { fits: "2 yrs in range", unknown: "yrs ?" };
 const EXP_CLS = {
-  fits: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  unknown: "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400",
+  fits: "bg-success-subtle text-success-fg  ",
+  unknown: "bg-surface-hover text-fg-subtle  ",
 };
 const relevant = (o) => (o.exp === "fits" || o.exp === "unknown" || !o.exp) && o.matchScore > 0;
 
@@ -64,13 +64,13 @@ const PAY_HINT = {
   unknown: "No pay data",
 };
 const PAY_CLS = {
-  meets: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  meets: "bg-success-subtle text-success-fg  ",
   close: "bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300",
-  likely: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-  maybe: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  low: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
-  unlikely: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  unknown: "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400",
+  likely: "bg-success-subtle text-success-fg  ",
+  maybe: "bg-warning-subtle text-warning-fg  ",
+  low: "bg-surface-hover text-fg  ",
+  unlikely: "bg-danger-subtle text-danger-fg  ",
+  unknown: "bg-surface-hover text-fg-subtle  ",
 };
 const SOURCE_LABEL = {
   board: "Company board",
@@ -84,14 +84,14 @@ const SOURCE_LABEL = {
 
 // Same opaque card as the Pipeline tab's.
 const CARD =
-  "bg-white dark:bg-[#121a30] border border-gray-200/90 dark:border-white/[0.09] shadow-[0_6px_18px_-10px_rgba(15,23,42,0.35)] dark:shadow-[0_8px_22px_-8px_rgba(0,0,0,0.7)] light:border-slate-900/[0.08] light:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_12px_-4px_rgba(15,23,42,0.07)]";
-const ACTION = "inline-flex items-center justify-center gap-1 text-xs font-bold py-2 rounded-lg transition-colors";
+  "bg-canvas border border-line     ";
+const ACTION = "inline-flex items-center justify-center gap-1 text-xs font-semibold py-2 rounded-lg transition-colors";
 
 function scoreCls(s) {
-  if (s >= 70) return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200";
-  if (s >= 45) return "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-200";
-  if (s >= 25) return "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-200";
-  return "bg-gray-100 text-gray-500 dark:bg-slate-700 dark:text-gray-400";
+  if (s >= 70) return "bg-success-subtle text-success-fg  ";
+  if (s >= 45) return "bg-surface-hover text-fg  ";
+  if (s >= 25) return "bg-warning-subtle text-warning-fg  ";
+  return "bg-surface-hover text-fg-subtle  ";
 }
 
 // Snippets stored before the radar cleaned escaped HTML can still hold "<p>"
@@ -170,7 +170,7 @@ function Chip({ on, onClick, children, title }) {
       onClick={onClick}
       title={title}
       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-        on ? `bg-indigo-600 text-white ${SEGMENT_ON}` : `text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 ${SEGMENT_OFF}`
+        on ? SEGMENT_ON : `text-fg-muted  hover:bg-surface-hover  ${SEGMENT_OFF}`
       }`}
     >
       {children}
@@ -188,29 +188,29 @@ const Tag = ({ cls, title, children }) => (
 function OpeningCard({ o, isNew, onSkip, onApply }) {
   const years = yearsText(o);
   return (
-    <div className={`${CARD} rounded-xl p-3.5 h-full flex flex-col gap-2`}>
+    <div className={`${CARD} rounded-lg p-3.5 h-full flex flex-col gap-2`}>
       <div className="flex items-center gap-1.5 min-w-0">
         <span
-          className={`shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded ${scoreCls(o.matchScore)}`}
+          className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${scoreCls(o.matchScore)}`}
           title="How much of the tech this job asks for is on your resume"
         >
           {o.matchScore}% match
         </span>
-        {isNew && <Tag cls="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-200">NEW</Tag>}
-        <span className="text-xs font-semibold text-gray-700 dark:text-gray-200 light:text-slate-800 truncate">{o.company}</span>
-        <span className="ml-auto shrink-0 text-[10px] text-gray-400 dark:text-gray-500">{ago(o.openedAt)}</span>
+        {isNew && <Tag cls="bg-success-subtle text-success-fg ">NEW</Tag>}
+        <span className="text-xs font-semibold text-fg-muted truncate">{o.company}</span>
+        <span className="ml-auto shrink-0 text-[10px] text-fg-subtle">{ago(o.openedAt)}</span>
       </div>
 
       <a
         href={o.url}
         target="_blank"
         rel="noreferrer"
-        className="text-sm font-semibold leading-snug text-indigo-600 dark:text-indigo-300 light:text-slate-900 hover:underline line-clamp-2"
+        className="text-sm font-semibold leading-snug text-brand-fg hover:underline line-clamp-2"
         title={o.title}
       >
         {o.title}
       </a>
-      <div className="text-[11px] text-gray-400 dark:text-gray-500 truncate" title={o.location}>
+      <div className="text-[11px] text-fg-subtle truncate" title={o.location}>
         {o.location || "India"} · {(o.sources || [o.source]).map((k) => SOURCE_LABEL[k] || k).join(" + ")}
       </div>
 
@@ -233,8 +233,8 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
               key={m.skill}
               cls={
                 m.type === "want"
-                  ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                  : "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                  ? "bg-surface-hover text-fg  "
+                  : "bg-success-subtle text-success-fg  "
               }
               title={m.type === "want" ? "A skill you want to grow into" : "On your resume"}
             >
@@ -242,20 +242,20 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
             </Tag>
           ))}
           {(o.missing || []).slice(0, 3).map((s) => (
-            <Tag key={s} cls="bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300" title="Asked for, not on your resume">
+            <Tag key={s} cls="bg-danger-subtle text-danger-fg  " title="Asked for, not on your resume">
               ✗ {s}
             </Tag>
           ))}
         </div>
       )}
 
-      {o.snippet && <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-2">{plainText(o.snippet)}</p>}
+      {o.snippet && <p className="text-[11px] leading-relaxed text-fg-subtle line-clamp-2">{plainText(o.snippet)}</p>}
 
       <div className="mt-auto pt-1 grid grid-cols-3 gap-1.5">
         <button
           onClick={onSkip}
           title="Not for me"
-          className={`${ACTION} border border-rose-300 dark:border-rose-500/40 text-rose-600 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10`}
+          className={`${ACTION} border border-line text-danger-fg hover:bg-surface-hover `}
         >
           <HiX className="w-3.5 h-3.5" /> Skip
         </button>
@@ -264,11 +264,11 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
           target="_blank"
           rel="noreferrer"
           title="Open the posting in a new tab"
-          className={`${ACTION} border border-gray-300 dark:border-white/20 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05]`}
+          className={`${ACTION} border border-line-strong text-fg-muted hover:bg-surface-hover `}
         >
           <HiOutlineExternalLink className="w-3.5 h-3.5" /> Open
         </a>
-        <button onClick={onApply} title="Save in To Apply" className={`${ACTION} bg-emerald-600 hover:bg-emerald-700 text-white`}>
+        <button onClick={onApply} title="Save in To Apply" className={`${ACTION} bg-success hover:opacity-90 text-white`}>
           <HiCheck className="w-3.5 h-3.5" /> To Apply
         </button>
       </div>
@@ -278,10 +278,10 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
 
 function Pager({ page, pages, from, to, total, onPage }) {
   const btn =
-    "inline-flex items-center gap-0.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/[0.05] disabled:opacity-40 disabled:pointer-events-none";
+    "inline-flex items-center gap-0.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-line-strong text-fg-muted hover:bg-surface-hover disabled:opacity-40 disabled:pointer-events-none";
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-gray-500 dark:text-gray-400">
+      <span className="text-xs text-fg-subtle">
         {from}–{to} of {total}
       </span>
       <button className={btn} disabled={page === 0} onClick={() => onPage(page - 1)}>
@@ -369,15 +369,15 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
   // header says the refresh failed and the copy stays up.
   if (error && !radar) {
     return (
-      <div className={`${GLASS} rounded-xl p-8 text-center text-sm text-gray-500 dark:text-gray-400`}>
+      <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
         {error === "not-found"
           ? "Openings are only available on the owner account."
           : "No radar data yet. It appears after the radar on your PC uploads its first run (scripts/radar/README.md)."}
-        <div className="mt-1 text-xs text-gray-400">({error})</div>
+        <div className="mt-1 text-xs text-fg-subtle">({error})</div>
       </div>
     );
   }
-  if (!radar) return <div className={`${GLASS} rounded-xl p-8 text-center text-sm text-gray-400`}>Loading openings…</div>;
+  if (!radar) return <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle`}>Loading openings…</div>;
 
   const s = radar.summary || {};
   const toggle = (setter) => (k) => setter((prev) => ({ ...prev, [k]: !prev[k] }));
@@ -443,19 +443,19 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
     <div>
       <div className="flex items-end justify-between flex-wrap gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold text-indigo-600 dark:text-indigo-300 light:text-slate-900">
+          <h2 className="text-lg font-semibold text-brand-fg">
             📡 Openings to decide ({shown.length})
           </h2>
-          <div className="text-xs text-gray-400 dark:text-gray-500">
+          <div className="text-xs text-fg-subtle">
             <span className="mr-2">
               {loading ? "Refreshing…" : error ? `Refresh failed (${error})` : loadedAt ? `Loaded ${minutesAgo(loadedAt)}` : ""}
               {!loading && (
-                <button onClick={refresh} className="ml-1.5 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                <button onClick={refresh} className="ml-1.5 font-semibold text-brand-fg hover:underline">
                   Refresh
                 </button>
               )}
             </span>
-            {s.created > 0 && <span className="font-bold text-emerald-600 dark:text-emerald-300 mr-2">{s.created} new in last run</span>}
+            {s.created > 0 && <span className="font-semibold text-success-fg mr-2">{s.created} new in last run</span>}
             {s.receivedAt ? `scanned ${new Date(s.receivedAt).toLocaleString()}` : "never scanned"}
             {s.sources &&
               " · " +
@@ -464,7 +464,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
                   .join(", ")}
           </div>
           {s.resume && (
-            <div className="text-xs text-gray-400 dark:text-gray-500" title={`Searched for: ${s.resume.searchTerms.join(" · ")}`}>
+            <div className="text-xs text-fg-subtle" title={`Searched for: ${s.resume.searchTerms.join(" · ")}`}>
               Matched against your resume ({s.resume.skills} skills) · searched for “{s.resume.searchTerms.join("”, “")}”
             </div>
           )}
@@ -473,12 +473,12 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search company, role, city"
-          className="text-sm px-2.5 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100 w-56"
+          className="text-sm px-2.5 py-1.5 rounded-lg border border-line-strong bg-canvas w-56"
         />
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
+        <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
           {Object.keys(EXP_LABEL).map((k) => (
             <Chip
               key={k}
@@ -490,14 +490,14 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
             </Chip>
           ))}
         </div>
-        <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
+        <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
           {Object.keys(PAY_LABEL).map((k) => (
             <Chip key={k} on={pay[k]} onClick={() => toggle(setPay)(k)} title={PAY_HINT[k]}>
               {PAY_LABEL[k]}
             </Chip>
           ))}
         </div>
-        <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
+        <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
           <Chip on={sort === "recent"} onClick={() => setSort("recent")} title="Newest opening first">
             Most recent
           </Chip>
@@ -505,7 +505,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
             Highest score
           </Chip>
         </div>
-        <div className={`${GLASS_TRACK} rounded-xl p-1 inline-flex gap-1`}>
+        <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
           <Chip on={newOnly} onClick={() => setNewOnly((v) => !v)}>
             New only
           </Chip>
@@ -520,7 +520,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
         <select
           value={source}
           onChange={(e) => setSource(e.target.value)}
-          className="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-gray-100"
+          className="text-xs font-semibold px-2 py-1.5 rounded-lg border border-line-strong bg-canvas"
         >
           <option value="all">All sources</option>
           {sources.map((k) => (
@@ -530,7 +530,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
           ))}
         </select>
         {hiddenCount > 0 && (
-          <button onClick={onUnhideAll} className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+          <button onClick={onUnhideAll} className="text-xs font-semibold text-brand-fg hover:underline">
             Bring back {hiddenCount} skipped
           </button>
         )}
@@ -538,7 +538,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
       </div>
 
       {shown.length === 0 ? (
-        <div className={`${GLASS} rounded-xl p-8 text-center text-sm text-gray-400 dark:text-gray-500`}>
+        <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
           {openings.length ? "All decided. New openings arrive with the next radar run." : "Nothing matches these filters."}
         </div>
       ) : (
