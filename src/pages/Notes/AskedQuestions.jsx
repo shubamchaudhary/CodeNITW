@@ -2,26 +2,35 @@ import React, { useEffect, useState } from "react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { buttonClass } from "../../components/ui";
 
-// The fixed foot of a Core Stack note: questions real interviews asked on this
-// topic in the last two years, how often, where, and an answer for each. It is
-// data, not part of the note — it can't be edited, and it always sits below
-// whatever the reader has written. Answers stay folded so the question gets
-// tried first. Loaded on demand: most pages that import Core Stack never need it.
-export default function AskedQuestions({ topicId, colorMode }) {
+// Each stack's asked-questions data, loaded on demand: most pages that import a
+// stack never need it.
+const LOADERS = {
+  corestack: () => import("../../Data/CoreStackAsked").then((m) => [m.CORE_STACK_ASKED, m.CORE_STACK_ASKED_META]),
+  projects: () => import("../../Data/KafkaAsked").then((m) => [m.KAFKA_ASKED, m.KAFKA_ASKED_META]),
+};
+
+export const hasAskedQuestions = (source) => !!LOADERS[source];
+
+// The fixed foot of a Core Stack note (and the Kafka question bank): questions
+// real interviews asked on this topic in the last two years, how often, where,
+// and an answer for each. It is data, not part of the note — it can't be
+// edited, and it always sits below whatever the reader has written. Answers
+// stay folded so the question gets tried first.
+export default function AskedQuestions({ source = "corestack", topicId, colorMode }) {
   const [entry, setEntry] = useState(null);
   const [meta, setMeta] = useState(null);
 
   useEffect(() => {
     let live = true;
-    import("../../Data/CoreStackAsked").then((m) => {
+    LOADERS[source]().then(([entries, m]) => {
       if (!live) return;
-      setEntry(m.CORE_STACK_ASKED[topicId] || null);
-      setMeta(m.CORE_STACK_ASKED_META);
+      setEntry(entries[topicId] || null);
+      setMeta(m);
     });
     return () => {
       live = false;
     };
-  }, [topicId]);
+  }, [source, topicId]);
 
   if (!entry || !meta) return null;
 
@@ -77,7 +86,12 @@ function AskedItem({ index, item, colorMode }) {
             ) : (
               <span className="mr-1 text-warning-fg">Question banks only</span>
             )}
-                        {shown.map((c) => (
+            {item.video && (
+              <span className="mr-1 inline-flex items-center h-5 px-1.5 rounded font-mono font-medium text-sky-600 dark:text-sky-400 bg-surface-subtle border border-line">
+                {item.video}
+              </span>
+            )}
+            {shown.map((c) => (
               <span key={c} className="inline-flex items-center h-5 px-1.5 rounded bg-surface-subtle border border-line text-fg-muted">
                 {c}
               </span>
