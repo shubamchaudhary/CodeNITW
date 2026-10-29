@@ -459,7 +459,7 @@ export const AI_STACK_TOPICS = [
     "title": "Vector search internals — HNSW, IVF, filtering, pgvector",
     "why": "HNSW and pgvector are on your resume, so expect “how does HNSW work?” and “what happens when you filter?”. You need HNSW at the level of the graph and its three parameters, IVF as the alternative, and the filtered-search problem: a filter applied after the ANN search throws away results, which is exactly what per-session tables and pgvector's iterative scans exist to fix.",
     "resumeLinked": true,
-    "flag": "Resume: pgvector with per-session HNSW/GIN-indexed chunk tables. The design and its numbers are on the Projects page (LL-05).",
+    "flag": "pgvector with per-session HNSW/GIN-indexed chunk tables. The design and its numbers are on the Projects page (LL-05).",
     "ceiling": {
       "enough": "explain HNSW layers and greedy search, what m / ef_construction / ef_search trade, pre- vs post-filtering, and IVF lists and probes.",
       "tooDeep": "ANN proofs, product-quantisation maths, writing an index from scratch."
@@ -542,7 +542,7 @@ export const AI_STACK_TOPICS = [
     "title": "Hybrid search and reranking — BM25, RRF, cross-encoders",
     "why": "Hybrid search is on your resume, so expect: when keyword beats vector, how BM25 scores, how you merge two ranked lists (RRF), and why a cross-encoder can rerank but can't retrieve. Then the cost push: a reranker adds latency to every query, so know when it pays and how you'd prove it.",
     "resumeLinked": true,
-    "flag": "Resume: hybrid vector + full-text search with RRF. Your measured numbers are on the Projects page (LL-04).",
+    "flag": "Hybrid vector + full-text search with RRF. Your measured numbers are on the Projects page (LL-04).",
     "ceiling": {
       "enough": "write BM25's ingredients and the RRF formula, explain bi- vs cross-encoders, and give a latency budget for a reranker.",
       "tooDeep": "learning-to-rank theory; training your own reranker."
@@ -635,7 +635,7 @@ export const AI_STACK_TOPICS = [
     "title": "Query transformation, routing and corrective RAG",
     "why": "The user's question is often a bad search query: vague, multi-part, or phrased unlike the documents. Query transformation fixes the input; corrective RAG checks the retrieval and loops when it's weak. Corrective RAG is on your resume, so draw the graph from memory with its loop bound and fallback, and be ready for the cost question: every grade and every rewrite is another LLM call.",
     "resumeLinked": true,
-    "flag": "Resume: query-time corrective RAG — retrieve → grade → rewrite → re-retrieve. The project version is on the Projects page (LL-04).",
+    "flag": "Query-time corrective RAG — retrieve → grade → rewrite → re-retrieve. The project version is on the Projects page (LL-04).",
     "ceiling": {
       "enough": "name four query transformations with one use each, draw corrective RAG with its bound and fallback, and say what it costs per query.",
       "tooDeep": "every RAG paper variant; how Self-RAG's reflection tokens are trained."
@@ -869,7 +869,7 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "LangChain",
     "priority": "P0",
     "title": "LangChain v1 — what it is now, and LangChain vs LangGraph",
-    "why": "LangChain is on your skills line, so “LangChain vs LangGraph — when each, and would you use LangChain in production?” is a near-certain opener. The answer changed with v1 (October 2025): LangChain is now a thin agent layer — `create_agent`, standard model and message interfaces, middleware — running on LangGraph's runtime, and the old chains moved to `langchain-classic`. Answering with 2023-era LangChain is a tell.",
+    "why": "LangChain is on your skills line, so “LangChain vs LangGraph — when each, and would you use LangChain in production?” is a near-certain opener. The answer changed with v1 (October 2025): LangChain is now a thin agent layer — create_agent, standard model and message interfaces, middleware — running on LangGraph's runtime, and the old chains moved to langchain-classic. Answering with 2023-era LangChain is a tell.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
@@ -1111,7 +1111,7 @@ export const AI_STACK_TOPICS = [
     "title": "The graph model — state, reducers, nodes, edges, super-steps",
     "why": "Two LangGraph systems sit on your resume, so expect to sketch one and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
     "resumeLinked": true,
-    "flag": "Resume: two LangGraph graphs in DeepLogLens and the LangGraph agent at Blue Yonder.",
+    "flag": "Two LangGraph graphs in DeepLogLens and the LangGraph agent at Blue Yonder.",
     "ceiling": {
       "enough": "sketch a graph with a typed state, a reducer, a conditional edge and a capped loop, and explain what happens in one super-step.",
       "tooDeep": "Pregel channel internals; the functional API in depth."
@@ -1251,7 +1251,7 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "LangGraph",
     "priority": "P1",
     "title": "Control flow — routing, parallel fan-out, subgraphs, streaming",
-    "why": "Design rounds ask you to turn a workflow into a graph: which steps are fixed, which branch, which run in parallel, and how the user sees progress. Know the building blocks — conditional routing, fan-out with `Send` (map-reduce), subgraphs, stream modes — and the workflow patterns they implement.",
+    "why": "Design rounds ask you to turn a workflow into a graph: which steps are fixed, which branch, which run in parallel, and how the user sees progress. Know the building blocks — conditional routing, fan-out with Send (map-reduce), subgraphs, stream modes — and the workflow patterns they implement.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
@@ -1480,9 +1480,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "Human-in-the-loop",
     "priority": "P0",
     "title": "interrupt() and resume — the mechanics interviewers probe",
-    "why": "“Human-in-the-loop via LangGraph interrupts” is a resume claim, so expect the mechanics: a checkpointer is required, the run pauses and hands back a payload, resume is by `thread_id` with `Command(resume=...)`, and the interrupted node re-runs from its first line — so anything before the `interrupt()` must be idempotent. Get these exactly right; a vague answer here undermines the whole resume line.",
+    "why": "“Human-in-the-loop via LangGraph interrupts” is a resume claim, so expect the mechanics: a checkpointer is required, the run pauses and hands back a payload, resume is by thread_id with Command(resume=...), and the interrupted node re-runs from its first line — so anything before the interrupt() must be idempotent. Get these exactly right; a vague answer here undermines the whole resume line.",
     "resumeLinked": true,
-    "flag": "Resume: human-in-the-loop approval via LangGraph interrupts (the Blue Yonder agent).",
+    "flag": "Human-in-the-loop approval via LangGraph interrupts (the Blue Yonder agent).",
     "ceiling": {
       "enough": "explain the pause, the payload, the resume value and node re-execution, the rules for several interrupts, and dynamic vs static interrupts.",
       "tooDeep": "checkpoint serialisation; LangGraph Platform internals."
@@ -1557,7 +1557,7 @@ export const AI_STACK_TOPICS = [
     "title": "Designing approval flows — what needs a human, and how they decide",
     "why": "Design rounds probe controls more than cleverness: what the agent may do alone, what needs approval, what the reviewer sees, and what happens to the change while it waits. Your Blue Yonder agent is the reference answer — staged writes, an approval interrupt, then commit — so rehearse it as a general pattern: risk-tiered actions, a reviewable proposal, approve / edit / reject, and an audit trail.",
     "resumeLinked": true,
-    "flag": "Resume: the Blue Yonder agent — Redis-staged writes, Base+Overlay persistence, approval before commit.",
+    "flag": "The Blue Yonder agent — Redis-staged writes, Base+Overlay persistence, approval before commit.",
     "ceiling": {
       "enough": "tier actions by risk, design the reviewer's payload and decisions, and describe the staged-write pattern end to end.",
       "tooDeep": "approval UI design; workflow-engine products."
@@ -1631,7 +1631,7 @@ export const AI_STACK_TOPICS = [
     "title": "HITL in production — timeouts, stale data, concurrency, audit",
     "why": "After the happy path come the operational questions: the approver never answers, the data changed while they were deciding, two people approve conflicting changes, the service was redeployed while runs were paused. Each has a standard answer, and having them ready is what makes your HITL claim credible.",
     "resumeLinked": true,
-    "flag": "Resume: these are the follow-ups to the Blue Yonder approval flow.",
+    "flag": "The Blue Yonder approval flow — these are its follow-up questions.",
     "ceiling": {
       "enough": "answer each failure case below and say how it's enforced in code.",
       "tooDeep": "distributed-locking theory; BPM engines."
@@ -1778,7 +1778,7 @@ export const AI_STACK_TOPICS = [
     "title": "LLM-as-judge you can trust — rubrics, biases, calibration",
     "why": "“Who judges the judge?” is the follow-up to every LLM-as-judge claim, and that claim is on your resume. Strong answers treat the judge as a measuring instrument: one narrow criterion, a binary verdict with a critique, known biases controlled, agreement with human labels measured on a held-out set, and recalibration whenever the judge's model or prompt changes.",
     "resumeLinked": true,
-    "flag": "Resume: an LLM-as-judge groundedness loop (DeepLogLens). How yours was measured is on the Projects page (LL-06).",
+    "flag": "An LLM-as-judge groundedness loop (DeepLogLens). How yours was measured is on the Projects page (LL-06).",
     "ceiling": {
       "enough": "write a judge prompt, name four biases with their mitigations, and compute agreement (TPR/TNR, Cohen's kappa) by hand.",
       "tooDeep": "training reward models; agreement statistics beyond kappa."
@@ -2345,7 +2345,7 @@ export const AI_STACK_TOPICS = [
     "title": "Guardrails and security — prompt injection, least privilege, safe SQL",
     "why": "Every agent and RAG design question gets a security follow-up. Indirect prompt injection — instructions hidden in retrieved text or tool output — can't be reliably prevented by prompting, so the answer is architecture: treat model output as untrusted, enforce permissions outside the model, and never combine private data, untrusted content and an outbound channel without a human between them. Guarded SQL is on your resume, so expect “how do you stop it writing DROP TABLE?”.",
     "resumeLinked": true,
-    "flag": "Resume: guarded, hierarchy-aware PostgreSQL querying in the Blue Yonder agent.",
+    "flag": "Guarded, hierarchy-aware PostgreSQL querying in the Blue Yonder agent.",
     "ceiling": {
       "enough": "explain direct vs indirect injection, the lethal trifecta, layered text-to-SQL safety and the four kinds of guardrail.",
       "tooDeep": "jailbreak research; red-teaming tooling."
@@ -2695,7 +2695,7 @@ export const AI_STACK_TOPICS = [
     "title": "Design: LLM gateway and batch pipeline",
     "why": "This is your strongest ground — queues, rate limits, key pools, idempotency — applied to LLMs. Be able to design a gateway that routes between providers with fallbacks, budgets and caching, and an offline pipeline (queue, workers, retries, dead-letter queue, a rate budget per key) that processes millions of items safely.",
     "resumeLinked": true,
-    "flag": "Resume: Kafka ingest, rate-limited key pools and idempotent consumers in DeepLogLens.",
+    "flag": "Kafka ingest, rate-limited key pools and idempotent consumers in DeepLogLens.",
     "ceiling": {
       "enough": "describe the gateway and the pipeline with their failure handling, and name what goes wrong with naive fallback.",
       "tooDeep": "building a gateway product."
@@ -2859,7 +2859,7 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "LLM foundations",
     "priority": "P2",
     "title": "MCP and calling provider APIs directly",
-    "why": "Interviewers increasingly ask without framework hand-waving: call the provider's tool-use API yourself, and know the MCP vocabulary — tools, resources, prompts, transports — plus its security problem. MCP is moving fast (LangChain 1.4 moved its MCP support into `langchain.mcp`), so check the current spec before quoting details.",
+    "why": "Interviewers increasingly ask without framework hand-waving: call the provider's tool-use API yourself, and know the MCP vocabulary — tools, resources, prompts, transports — plus its security problem. MCP is moving fast (LangChain 1.4 moved its MCP support into langchain.mcp), so check the current spec before quoting details.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
