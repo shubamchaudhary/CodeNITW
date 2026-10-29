@@ -16,7 +16,7 @@ export const hasAskedQuestions = (source) => !!LOADERS[source];
 // and an answer for each. It is data, not part of the note — it can't be
 // edited, and it always sits below whatever the reader has written. Answers
 // stay folded so the question gets tried first.
-export default function AskedQuestions({ source = "corestack", topicId, colorMode }) {
+export default function AskedQuestions({ source = "corestack", topicId, colorMode, standalone = false }) {
   const [entry, setEntry] = useState(null);
   const [meta, setMeta] = useState(null);
 
@@ -35,7 +35,7 @@ export default function AskedQuestions({ source = "corestack", topicId, colorMod
   if (!entry || !meta) return null;
 
   return (
-    <section className="note-ui mt-16 pt-10 border-t border-line" aria-label="Asked in interviews">
+    <section className={`note-ui ${standalone ? "" : "mt-16 pt-10 border-t border-line"}`} aria-label="Asked in interviews">
       <p className="font-mono text-[12px] font-medium text-fg-subtle">
         Asked in interviews · {meta.window}
       </p>
@@ -79,11 +79,12 @@ function AskedItem({ index, item, colorMode }) {
         <div className="min-w-0 flex-1">
           <p className="text-[15px] leading-[22px] font-semibold text-fg">{item.q}</p>
           <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[12px] text-fg-subtle">
+            {item.resume && <span className="mr-1 font-medium text-brand-fg">From your resume</span>}
             {item.n ? (
               <span className="mr-1 font-mono font-medium tabular-nums text-fg">
                 {item.n} write-up{item.n === 1 ? "" : "s"}
               </span>
-            ) : (
+            ) : item.resume ? null : (
               <span className="mr-1 text-warning-fg">Question banks only</span>
             )}
             {item.video && (
