@@ -27,7 +27,7 @@ import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import StackNav from "./StackNav";
 import ResizableSide from "../../components/ResizableSide";
 import TopicLead from "./TopicLead";
-import AskedQuestions from "./AskedQuestions";
+import AskedQuestions, { hasAskedQuestions } from "./AskedQuestions";
 import HistoryPanel, { describeVersion } from "./HistoryPanel";
 import useStackProgress from "./useStackProgress";
 import { STACKS, rememberTopic, stackForViewer } from "./stacks";
@@ -598,7 +598,10 @@ export default function TopicNotes() {
   );
 
   // Real interview questions for this topic, fixed under the note in both views.
-  const asked = source === "corestack" && topic.asked && !shown.hideQuestions ? <AskedQuestions topicId={topic.id} colorMode={colorMode} /> : null;
+  const asked =
+    hasAskedQuestions(source) && topic.asked && !shown.hideQuestions ? (
+      <AskedQuestions source={source} topicId={topic.id} colorMode={colorMode} />
+    ) : null;
 
   const lead = (
     <TopicLead
