@@ -162,11 +162,26 @@ function WatchItem({ r, n }) {
   );
 }
 
-// AI Stack topics carry a "how deep is enough" line and, for resume topics, a
-// warning — study guidance rather than questions, so it stays.
+// `code` spans inside a plain-text line, for API names in the "know cold" list.
+function withCode(text) {
+  return text.split(/`([^`]+)`/).map((part, i) =>
+    i % 2 ? (
+      <code key={i} className="font-mono text-[0.92em] px-1 py-px rounded bg-surface-subtle border border-line text-fg">
+        {part}
+      </code>
+    ) : (
+      part
+    )
+  );
+}
+
+// AI Stack topics carry a "how deep is enough" line, what to know cold and, for
+// resume topics, a warning — study guidance rather than questions, so it stays.
+// The questions themselves, with answers, sit under the note (AskedQuestions).
 function AIDepth({ topic }) {
   const c = topic.ceiling || {};
-  if (!c.enough && !c.tooDeep && !(topic.resumeLinked && topic.flag)) return null;
+  const know = topic.know || [];
+  if (!c.enough && !c.tooDeep && !know.length && !(topic.resumeLinked && topic.flag)) return null;
   return (
     <section className="mt-5 space-y-2">
       {topic.resumeLinked && topic.flag && (
@@ -189,6 +204,16 @@ function AIDepth({ topic }) {
               {c.tooDeep}
             </p>
           )}
+        </div>
+      )}
+      {know.length > 0 && (
+        <div className="rounded-lg px-4 py-3 border border-line">
+          <p className="text-[14px] font-semibold text-fg">Know cold</p>
+          <ul className="mt-1.5 list-disc pl-5 space-y-1 text-[14px] leading-relaxed text-fg-muted marker:text-fg-subtle">
+            {know.map((k, i) => (
+              <li key={i}>{withCode(k)}</li>
+            ))}
+          </ul>
         </div>
       )}
     </section>

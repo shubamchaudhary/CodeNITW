@@ -6,6 +6,7 @@ import { buttonClass } from "../../components/ui";
 // stack never need it.
 const LOADERS = {
   corestack: () => import("../../Data/CoreStackAsked").then((m) => [m.CORE_STACK_ASKED, m.CORE_STACK_ASKED_META]),
+  aistack: () => import("../../Data/AIStackAsked").then((m) => [m.AI_STACK_ASKED, m.AI_STACK_ASKED_META]),
   projects: () => import("../../Data/KafkaAsked").then((m) => [m.KAFKA_ASKED, m.KAFKA_ASKED_META]),
 };
 
@@ -15,7 +16,9 @@ export const hasAskedQuestions = (source) => !!LOADERS[source];
 // real interviews asked on this topic in the last two years, how often, where,
 // and an answer for each. It is data, not part of the note — it can't be
 // edited, and it always sits below whatever the reader has written. Answers
-// stay folded so the question gets tried first.
+// stay folded so the question gets tried first. A stack whose questions are a
+// drill rather than counted reports (AI Stack) words the heading, blurb and
+// footer itself through its meta, with `counts: false`.
 export default function AskedQuestions({ source = "corestack", topicId, colorMode, standalone = false }) {
   const [entry, setEntry] = useState(null);
   const [meta, setMeta] = useState(null);
@@ -35,36 +38,41 @@ export default function AskedQuestions({ source = "corestack", topicId, colorMod
   if (!entry || !meta) return null;
 
   return (
-    <section className={`note-ui ${standalone ? "" : "mt-16 pt-10 border-t border-line"}`} aria-label="Asked in interviews">
+    <section
+      className={`note-ui ${standalone ? "" : "mt-16 pt-10 border-t border-line"}`}
+      aria-label={meta.eyebrow || "Asked in interviews"}
+    >
       <p className="font-mono text-[12px] font-medium text-fg-subtle">
-        Asked in interviews · {meta.window}
+        {meta.eyebrow || `Asked in interviews · ${meta.window}`}
       </p>
       <h2 className="mt-1 text-[20px] leading-7 font-semibold tracking-[-0.01em] text-fg">
-        What interviewers actually asked
+        {meta.heading || "What interviewers actually asked"}
       </h2>
-      {entry.posts > 0 && (
+      {entry.posts > 0 ? (
         <p className="mt-2 max-w-[46rem] text-[14px] leading-relaxed text-fg-muted">
           {entry.posts} of {meta.posts.toLocaleString()} candidate write-ups touched this topic. Counts are write-ups that asked the
           question. Say your answer out loud before you open ours.
         </p>
+      ) : (
+        meta.blurb && <p className="mt-2 max-w-[46rem] text-[14px] leading-relaxed text-fg-muted">{meta.blurb}</p>
       )}
       {entry.note && <p className="mt-2 max-w-[46rem] text-[14px] leading-relaxed text-warning-fg">{entry.note}</p>}
 
       <ol className="mt-4 divide-y divide-line">
         {entry.items.map((item, i) => (
-          <AskedItem key={i} index={i} item={item} colorMode={colorMode} />
+          <AskedItem key={i} index={i} item={item} counted={meta.counts !== false} colorMode={colorMode} />
         ))}
       </ol>
 
       <p className="mt-6 text-[12px] leading-relaxed text-fg-subtle">
-        From {meta.sources}. Each count is distinct write-ups, not people — one candidate posting two loops counts twice. A
-        question with no company was asked in a write-up that did not name one.
+        {meta.footer ||
+          `From ${meta.sources}. Each count is distinct write-ups, not people — one candidate posting two loops counts twice. A question with no company was asked in a write-up that did not name one.`}
       </p>
     </section>
   );
 }
 
-function AskedItem({ index, item, colorMode }) {
+function AskedItem({ index, item, counted, colorMode }) {
   const [open, setOpen] = useState(false);
   const names = item.companies || [];
   const shown = names.slice(0, 6);
@@ -84,7 +92,7 @@ function AskedItem({ index, item, colorMode }) {
               <span className="mr-1 font-mono font-medium tabular-nums text-fg">
                 {item.n} write-up{item.n === 1 ? "" : "s"}
               </span>
-            ) : item.resume ? null : (
+            ) : item.resume || !counted ? null : (
               <span className="mr-1 text-warning-fg">Question banks only</span>
             )}
             {item.video && (
