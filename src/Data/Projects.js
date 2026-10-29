@@ -151,11 +151,11 @@ export const PROJECT_TOPICS = [
     title: "Stories & interview kit",
     summary: "Design decisions, trade-offs, the pitch and demo, likely questions and answers for LogLens.",
   },
-  // Trimmed against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
+  // Checked against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as
-  // KFK-15; Kafka transactions in none, so the two transaction videos (#15, #16 —
-  // 107 min) were dropped as KFK-11 and KFK-12. Ids are storage keys: never reuse them.
-  kafkaVideo(15, 1, "QNfIUIZQ9Vo", "Event Driven Architecture (EDA) Introduction", 30, "Events vs synchronous calls, pub/sub vs queues, and what you trade for loose coupling."),
+  // KFK-00. Kafka transactions were asked in none, but KFK-11/12 stay: the resume's
+  // "exactly-once effects" line invites "why not Kafka transactions?".
+  kafkaVideo(0, 1, "QNfIUIZQ9Vo", "Event Driven Architecture (EDA) Introduction", 30, "Events vs synchronous calls, pub/sub vs queues, and what you trade for loose coupling."),
   kafkaVideo(1, 2, "fsmhYmzU-2M", "Kafka Architecture - Part 1", 32, "Topic, partition, offset, broker."),
   kafkaVideo(2, 3, "75iKJ0sISKU", "Kafka Architecture - Part 2", 31, "Consumer groups and partition assignment."),
   kafkaVideo(3, 4, "TQLGDfJdXrQ", "Kafka Architecture - Part 3", 33, "Replication, leader and ISR."),
@@ -166,15 +166,18 @@ export const PROJECT_TOPICS = [
   kafkaVideo(8, 11, "f8lYPOvNGrU", "Kafka Consumer Setup - Part 1", 48, "The poll loop, offset commits, auto vs manual commit."),
   kafkaVideo(9, 13, "b61vljmLVLY", "Kafka Consumer Exception Handling & Dead Letter Topic", 59, "Retries, poison messages and the DLT."),
   kafkaVideo(10, 14, "Jwgh9h44h7s", "Kafka Consumer Advanced Configurations - Part 3", 36, "max.poll.interval.ms, session timeout, rebalancing edge cases."),
+  kafkaVideo(11, 15, "3IR7JSag5JY", "Kafka Producer Transaction Handling", 62, "Transaction coordinator, epoch, PID, zombie fencing — the mechanism behind \"why not Kafka transactions?\"."),
+  kafkaVideo(12, 16, "QqKzDe5NB5E", "Kafka Consumer Transaction Handling", 45, "EOS, LSO, read_committed and aborts — why exactly-once stops at Kafka, which is why DeepLogLens uses idempotent upserts."),
   kafkaVideo(13, 18, "sgWmFGzHpdU", "Kafka: Outbox Pattern (Part 1) - Polling Strategy", 19, "The dual-write problem and the polling outbox."),
   {
     id: "KFK-14",
     section: "kafka",
     sectionLabel: "Kafka",
     title: "Question bank",
-    summary: "Kafka questions real interviews asked (232 write-ups, 2024–26), with answers — after all 12 videos.",
-    // Real asked questions (src/Data/KafkaAsked.js) sit fixed under the note.
+    summary: "Kafka questions real interviews asked (232 write-ups, 2024–26), plus the ones your resume invites, with answers — after all 14 videos.",
+    // Only the asked questions (src/Data/KafkaAsked.js): no note to write here.
     asked: true,
+    noteless: true,
   },
 ];
 

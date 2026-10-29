@@ -600,7 +600,7 @@ export default function TopicNotes() {
   // Real interview questions for this topic, fixed under the note in both views.
   const asked =
     hasAskedQuestions(source) && topic.asked && !shown.hideQuestions ? (
-      <AskedQuestions source={source} topicId={topic.id} colorMode={colorMode} />
+      <AskedQuestions source={source} topicId={topic.id} colorMode={colorMode} standalone={!!topic.noteless} />
     ) : null;
 
   const lead = (
@@ -614,7 +614,7 @@ export default function TopicNotes() {
       onTogglePlanned={() => togglePlanned(topic)}
       meta={meta}
       tools={
-        immersive ? null : preview ? (
+        immersive || topic.noteless ? null : preview ? (
           historyButton
         ) : (
           <>
@@ -674,7 +674,15 @@ export default function TopicNotes() {
             </div>
           )}
 
-          {loaded && isRead && (
+          {/* A question bank: the asked questions are the page, with no note to write. */}
+          {loaded && topic.noteless && (
+            <div className="px-5 sm:px-10 lg:px-16 py-8 lg:py-12">
+              {lead}
+              {asked}
+            </div>
+          )}
+
+          {loaded && isRead && !topic.noteless && (
             <NoteReader
               key={`${source}:${topic.id}${preview ? `:${preview.id}` : ""}`}
               flat
@@ -705,7 +713,7 @@ export default function TopicNotes() {
             />
           )}
 
-          {loaded && !isRead && (
+          {loaded && !isRead && !topic.noteless && (
             <div className="px-5 sm:px-10 lg:px-16 py-8 lg:py-12">
               {lead}
               <div className="mb-3 flex flex-wrap items-center gap-1">

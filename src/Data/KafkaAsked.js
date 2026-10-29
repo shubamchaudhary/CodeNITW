@@ -1,7 +1,8 @@
 // Kafka — questions real interviews asked, with answers, shown fixed under the
 // Kafka question bank (KFK-14). Research and method: scripts/data/kafkaInterviewEvidence.md.
 // Each item: q, a (markdown), n (distinct write-ups that asked it), companies,
-// video (the Kafka page that teaches it).
+// video (the Kafka page that teaches it), resume (a follow-up the resume line
+// invites rather than one the write-ups asked; listed first).
 
 export const KAFKA_ASKED_META = {
   "window": "Oct 2024 – Oct 2026",
@@ -13,6 +14,30 @@ export const KAFKA_ASKED = {
   "KFK-14": {
     "posts": 232,
     "items": [
+      {
+        "q": "Your resume says idempotent upserts turn at-least-once into exactly-once effects. Why not just use Kafka transactions / exactly-once semantics?",
+        "a": "Because Kafka's exactly-once **stops at Kafka**, and DeepLogLens's output is a **Postgres** write.\n\n- Kafka transactions make *Kafka writes + consumer offset commits* atomic (consume → transform → **produce**). A Postgres insert can't join that transaction — there's no 2PC between Kafka and Postgres.\n- So with transactions on, a crash after the DB commit but before the Kafka transaction commits still **re-delivers** the record, and the DB write happens again. You would still need the idempotent sink. Transactions would add latency and a coordinator round-trip and fix nothing.\n\nWhat DeepLogLens does instead:\n1. Consume, write to Postgres in one DB transaction with an **upsert on a natural key** (`INSERT … ON CONFLICT (key) DO NOTHING / DO UPDATE`).\n2. **Then** commit the offset (manual ack). Crash in between → redelivery → the upsert is a no-op.\n\nResult: delivery is at-least-once, **effects** are exactly-once.\n\n**What you traded**: duplicates are still *processed* (wasted work on replay), and you need a stable key per record. **Alternative** worth naming: store the consumed offset in Postgres in the same transaction as the result and seek to it on start-up — exactly-once without an upsert key, at the cost of managing offsets yourself.\n\nExpect the follow-ups: \"walk me through a crash between the write and the commit\" and \"what exactly is the upsert key?\".",
+        "n": 0,
+        "companies": [],
+        "video": "KFK-12",
+        "resume": true
+      },
+      {
+        "q": "How do Kafka transactions work — transactional.id, coordinator, zombie fencing, read_committed?",
+        "a": "Let a producer write to **several partitions + commit consumer offsets atomically**.\n\n1. Producer sets a stable **`transactional.id`**, calls `initTransactions()` → the **transaction coordinator** (a broker) maps it to a PID and bumps the **epoch**.\n2. `beginTransaction()` → `send()` to any partitions → `sendOffsetsToTransaction()` for the input → `commitTransaction()` (or `abortTransaction()`).\n3. Commit is **two-phase**: the coordinator writes PREPARE_COMMIT to the `__transaction_state` log, then writes **commit markers** into every partition touched.\n4. **Zombie fencing**: a restarted instance with the same `transactional.id` gets a higher epoch; the old \"zombie\" (a GC-paused copy) is rejected with `ProducerFencedException`.\n5. Consumers with **`isolation.level=read_committed`** only read up to the **LSO** (last stable offset) and skip aborted records. `read_uncommitted` (default) sees everything.\n\nCost: extra latency per commit and coordination. Use it for consume-transform-produce; for Kafka → DB, use an idempotent consumer instead.",
+        "n": 0,
+        "companies": [],
+        "video": "KFK-11",
+        "resume": true
+      },
+      {
+        "q": "Idempotent producer vs idempotent consumer — what does enable.idempotence (PID + sequence numbers) prevent, and what does it not?",
+        "a": "Problem: the broker writes a batch, the ack is lost, the producer retries → the batch is written **twice**.\n\nWith `enable.idempotence=true` (default since 3.0):\n- The broker gives the producer a **Producer ID (PID)** and an **epoch**.\n- Each batch carries a **sequence number** per partition.\n- The broker remembers the last sequences per PID/partition: a **duplicate** sequence is acked but not written again; a **gap** (out of order) is rejected.\n\nResult: no duplicates and **order preserved** with up to 5 in-flight requests. Requires `acks=all`, retries > 0, `max.in.flight ≤ 5`.\n\nLimits: only for one producer **session** and within one partition — a restarted producer gets a new PID (unless it uses a `transactional.id`), and it does nothing about consumer-side duplicates.\n\n**Idempotent consumer** is the other half: the consumer can still see a record twice (crash before the offset commit, rebalance), so the *processing* must be safe to repeat — DeepLogLens's upserts on a natural key. Producer idempotence keeps the **log** clean; consumer idempotence keeps the **effects** clean. You need the second either way.",
+        "n": 0,
+        "companies": [],
+        "video": "KFK-07",
+        "resume": true
+      },
       {
         "q": "What is a partition, how does the producer pick one, and why does the message key matter?",
         "a": "A **partition** is one ordered, append-only slice of a topic, stored on one broker (plus replicas). Partitions are how a topic scales: they spread across brokers, and each one is read by one consumer per group — so they cap parallelism and are the unit of ordering.\n\nHow the producer picks one:\n- **Key present** → `murmur2(key) % numPartitions`. Same key → same partition → **ordered** for that key (all events of order-42 in sequence).\n- **No key** → the *sticky partitioner* fills a batch for one partition, then moves on (better batching than pure round-robin).\n- **Explicit partition** or a **custom `Partitioner`** when you need control.\n\nConsequences interviewers probe:\n- **Hot partition**: one huge key (a celebrity user, one big tenant) lands on one partition and one consumer → lag on that partition only. Fix: better key, add a salt/suffix to split that key (gives up strict per-key order), or route big tenants separately.\n- **Adding partitions** changes `hash % n` → existing keys move → ordering for a key breaks across the change. Plan partition count up front.",
@@ -111,7 +136,7 @@ export const KAFKA_ASKED = {
           "NetApp",
           "Morgan Stanley"
         ],
-        "video": "KFK-15"
+        "video": "KFK-00"
       },
       {
         "q": "How does Kafka guarantee message ordering?",
@@ -209,7 +234,7 @@ export const KAFKA_ASKED = {
       },
       {
         "q": "Where did you use Kafka in your project — and why Kafka there?",
-        "a": "Have a 60-second answer ready. Structure:\n\n1. **What flows through it**: the topics, what one message is, rough volume.\n2. **Why async / why Kafka**: decouple a slow step from the request path, absorb bursts, fan-out to several consumers, replay.\n3. **Key decisions**: the key and why (ordering for X), partition count, consumer groups, commit after the DB write (at-least-once), how you made consumers **idempotent**, retries and DLT.\n4. **A failure you handled**: a duplicate, a lag spike, a poison message, a rebalance storm.\n5. **What you'd change**: an honest gap (dual write → outbox, RF=1 in dev, no lag alerting).\n\nFor LogLens: pointers not bytes through Kafka, keyed by `documentId:partIdx`, manual acks after the Postgres commit, idempotent upserts, a 60-second retry topic for 429s, DLQs. Interviewers then drill into exactly these choices — the answers above are the drill.",
+        "a": "Have a 60-second answer ready. Structure:\n\n1. **What flows through it**: the topics, what one message is, rough volume.\n2. **Why async / why Kafka**: decouple a slow step from the request path, absorb bursts, fan-out to several consumers, replay.\n3. **Key decisions**: the key and why (ordering for X), partition count, consumer groups, commit after the DB write (at-least-once), how you made consumers **idempotent**, retries and DLT.\n4. **A failure you handled**: a duplicate, a lag spike, a poison message, a rebalance storm.\n5. **What you'd change**: an honest gap (dual write → outbox, RF=1 in dev, no lag alerting).\n\nFor DeepLogLens: pointers not bytes through Kafka, keyed by `documentId:partIdx`, manual acks after the Postgres commit, idempotent upserts, a 60-second retry topic for 429s, DLQs. Interviewers then drill into exactly these choices — the answers above are the drill.",
         "n": 10,
         "companies": [
           "PayPay",
@@ -397,7 +422,7 @@ export const KAFKA_ASKED = {
           "EPAM",
           "Goldman Sachs"
         ],
-        "video": "KFK-15"
+        "video": "KFK-00"
       },
       {
         "q": "ZooKeeper vs KRaft — what does the controller do?",

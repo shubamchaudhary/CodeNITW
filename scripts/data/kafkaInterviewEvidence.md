@@ -1,7 +1,7 @@
 # Interview evidence: what 2024–26 interviews asked about Kafka
 
 The ground under the Kafka section of the Projects stack (`src/Data/Projects.js`,
-KFK-01 … KFK-15) and the "Asked in interviews" list fixed under its question
+KFK-00 … KFK-14) and the "Asked in interviews" list fixed under its question
 bank, KFK-14 (`src/Data/KafkaAsked.js`). Same method as the Java/Spring
 (`interviewEvidence.md`) and Python (`pythonInterviewEvidence.md`) passes.
 
@@ -45,7 +45,7 @@ bank, KFK-14 (`src/Data/KafkaAsked.js`). Same method as the Java/Spring
 | What is Kafka, how it works — brokers, topics, partitions, offsets | 29 | KFK-01 |
 | Duplicate messages / idempotent consumer (payment must not charge twice) | 24 | KFK-08 |
 | Kafka vs RabbitMQ / SQS — why Kafka | 22 | KFK-01 |
-| Event-driven architecture vs synchronous calls | 20 | KFK-15 |
+| Event-driven architecture vs synchronous calls | 20 | KFK-00 |
 | Ordering guarantee | 19 | KFK-02 |
 | Consumer groups (and more consumers than partitions) | 17 | KFK-02 |
 | Replication, leader, ISR, broker failure | 14 | KFK-03 |
@@ -65,29 +65,34 @@ bank, KFK-14 (`src/Data/KafkaAsked.js`). Same method as the Java/Spring
 | How many partitions / changing them | 4 | KFK-01 |
 | Producer sent it, consumer never got it — debug | 3 | KFK-08 |
 | Schema Registry / Avro | 3 | — |
-| Sync vs async between microservices | 3 | KFK-15 |
+| Sync vs async between microservices | 3 | KFK-00 |
 | ZooKeeper vs KRaft, the controller | 2 | KFK-04 |
 | session timeout vs heartbeat vs max.poll.interval | 2 | KFK-10 |
-| **Kafka transactions** (transactional.id, coordinator, read_committed) | **0** | was KFK-11/12 |
+| **Kafka transactions** (transactional.id, coordinator, read_committed) | **0** (resume: kept) | KFK-11/12 |
 | **Idempotent producer internals** (PID, sequence numbers) | **0** by name | KFK-07 |
 
 Most-named companies: Walmart, Goldman Sachs, Uber, EPAM, MobiKwik, Zomato,
 Dell, Groww, Astrotalk, Tekion, Microsoft.
 
-## What it changed in the playlist (27 videos → 12 + question bank)
+## What it changed in the playlist (27 videos → 14 + question bank)
 
 The 13-video list already skipped setup demos, multi-topic consumers, Schema
 Registry, CDC outbox and the eight Kafka Streams videos. The counts confirm
 those skips (Schema Registry 3, Streams 7 — mostly a line in a project
-description) and change three things:
+description) and change one thing:
 
-- **Dropped KFK-11 Producer Transaction Handling (62 min) and KFK-12 Consumer
-  Transaction Handling (45 min).** No write-up asked about Kafka transactions;
-  delivery semantics (5) is answered on the question bank, including why EOS
-  stops at Kafka and what to do instead (idempotent consumer).
-- **Added KFK-15 Event Driven Architecture Introduction (#1, 30 min)**: event-driven
-  vs synchronous was asked in 20 write-ups and sync vs async in 3 more.
-- KFK-07 (idempotent producer) was kept — already watched — but it is asked only
-  as part of "how do you avoid duplicates?".
+- **Added KFK-00 Event Driven Architecture Introduction (#1, 30 min)**, first in
+  the list: event-driven vs synchronous was asked in 20 write-ups and sync vs
+  async in 3 more.
 
-Net: 107 minutes of video out, 30 in.
+Kept although rarely asked, because the resume asks for them (the same rule as
+the owner-set priorities in `interviewEvidence.md`):
+
+- **KFK-11 Producer / KFK-12 Consumer Transaction Handling (107 min).** No
+  write-up asked about Kafka transactions by name, but the DeepLogLens line
+  "idempotent upserts turn at-least-once delivery into exactly-once effects"
+  invites "why not Kafka transactions?". Answering it needs what transactions
+  cover and where they stop. The question bank lists that question and two
+  more like it first, marked "From your resume".
+- **KFK-07 idempotent producer** — asked only inside "how do you avoid
+  duplicates?", and as "idempotent producer vs your idempotent consumer".
