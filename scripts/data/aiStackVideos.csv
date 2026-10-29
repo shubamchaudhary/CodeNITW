@@ -1,86 +1,94 @@
 video_id,channel,title,duration_min,verified_on
-GL0XhAj5LPE,Hamel Husain,LLM Evals: Common Mistakes,28,2026-10-23
-kT7nXO32L-Q,freeCodeCamp.org,PostgreSQL Hybrid Search Course – Keyword (BM25) + Vector Retrieval,60,2026-10-23
-iRhDCIzhm4A,Arpit Bhayani,How Kafka Actually Achieves Exactly-Once Semantics,18,2026-10-23
-GsZ_ZtlRCBg,Milan Jovanović,Fix Duplicate Messages with the Idempotent Consumer Pattern,14,2026-10-23
-phxEKe3ngK0,Aniket Wattamwar,Design a Text-to-SQL Agent | Applied AI System Design,27,2026-10-23
-xxqZzVZ4gE0,CampusX,Human in the loop (HITL) using LangGraph | CampusX,40,2026-10-23
-PG4t_6qjxz0,Striver,Best way to Answer DSA Questions and Explain Projects | Product Based Companies,15,2026-10-23
-77QH0Y2PYKg,DataMListic,Vector Database Search - Hierarchical Navigable Small Worlds (HNSW) Explained,8,2026-10-23
-QvKMwLjdK-s,James Briggs,HNSW for Vector Search Explained and Implemented with Faiss (Python),35,2026-10-23
-H_kJDHvu-v8,James Briggs,Metadata Filtering for Vector Search + Latest Filter Tech,34,2026-10-23
-6dDvfGrxFns,TechViz - The Data Science Guy,Understanding Reciprocal Rank Fusion in Hybrid Search [Advanced RAG],8,2026-10-23
-K1F8BIgcoNk,vectorize,Rerank for better RAG (Explained),14,2026-10-23
-7ZU85v4Kt-Y,Adam Lucek,Do Reranking Models Actually Improve RAG?,32,2026-10-23
-pbAd8O1Lvm4,LangChain,Self-reflective RAG with LangGraph: Self-RAG and CRAG,18,2026-10-23
-E2shqsYwxck,LangChain,"Building Corrective RAG from scratch with open-source, local LLMs",26,2026-10-23
-wd7TZ4w1mSw,LangChain,RAG From Scratch: Part 1 (Overview),5,2026-10-23
-bjb_EMsTDKI,LangChain,RAG From Scratch: Part 2 (Indexing),5,2026-10-23
-LxNVgdIz9sU,LangChain,RAG From Scratch: Part 3 (Retrieval),5,2026-10-23
-Vw52xyyFsB8,LangChain,RAG From Scratch: Part 4 (Generation),6,2026-10-23
-Pk2BeaGbcTE,Adam Lucek,The BEST Way to Chunk Text for RAG,33,2026-10-23
-sNa_uiqSlJo,Shaw Talebi,"Text Embeddings, Classification, and Semantic Search (w/ Python Code)",24,2026-10-23
-tmiBae2goJM,Prompt Engineering,The Best RAG Technique Yet? Anthropic’s Contextual Retrieval Explained!,16,2026-10-23
-TRjq7t2Ms5I,AI Engineer,Building Production-Ready RAG Applications: Jerry Liu,19,2026-10-23
-N9SZ9o2gReE,Hamel Husain,How to debug Retrieval for RAG,41,2026-10-23
-Kf3LeaUGwlg,Weaviate vector database,Lost in the Middle: How Language Models use Long Context - Explained!,24,2026-10-23
-trfUBIDeI1Y,IBM Technology,LLM as a Judge: Scaling AI Evaluation Strategies,6,2026-10-23
-mF4CaijvJos,Hamel Husain,How To Build AI Evals,34,2026-10-23
-OJItZndMUII,Hamel Husain,AI Evals For Engineers: Course Preview (Chapters 1-3 of 8),64,2026-10-23
-7_LTU0LA374,Logical Lenses,"RAG Evaluation: Precision, Recall, Faithfulness, RAGAS Explained Clearly",12,2026-10-23
-2XegvMul_mE,ritvikmath,"Every Ranking Metric : MRR, MAP, NDCG",21,2026-10-23
-5fp6e5nhJRk,Mervin Praison,RAGAS: How to Evaluate a RAG Application Like a Pro for Beginners,9,2026-10-23
-iEgjJyk3aTw,LangChain,Getting Started with LangSmith (5/8): Datasets & Evaluations,12,2026-10-23
-2E8iTvGo9Hs,Langfuse,"10 min Walkthrough of Langfuse – Open Source LLM Observability, Evaluation, and Prompt Management",10,2026-10-23
-vuBvf7ZRKTA,Google Cloud Tech,How to evaluate agents in practice,11,2026-10-23
-nbZzSC5A6hs,AI Engineer,Lessons from the Trenches: Building LLM Evals That Work IRL: Aparna Dhinkaran,19,2026-10-23
-6t7YJcEFUIY,LangChain,LangGraph interrupt: Making it easier to build human-in-the-loop agents,8,2026-10-23
-_IPP7_Bi8uA,CampusX,Persistence in LangGraph | Time Travel in LangGraph | CampusX,58,2026-10-23
-D7_ipDqhtwk,AI Engineer,"How We Build Effective Agents: Barry Zhang, Anthropic",15,2026-10-23
-gMeTK6zzaO4,Adam Lucek,LLM Function Calling - AI Tools Deep Dive,31,2026-10-23
-qAF1NjEVHhY,IBM Technology,LangChain vs LangGraph: A Tale of Two Frameworks,10,2026-10-23
-O0dUOtOIrfs,James Briggs,LangChain Expression Language (LCEL) Explained!,26,2026-10-23
-JTL0yp85FsE,LangChain,Memory for agents (conceptual video),7,2026-10-23
-hE8C2M8GRLo,Code AI with Rok,How to add long-term memory using PostgreSQL to LangGraph ReAct agent🤖: Python — LangGraph #3,11,2026-10-23
-S5ezVVJhQmE,IBM Technology,AI & Text to SQL: How LLMs & Schema Power Data Analytics,9,2026-10-23
-xpvFinvqRCA,Efficient NLP,"Structured Output from LLMs: Grammars, Regex, and State Machines",17,2026-10-23
-FgxwCaL6UTA,Simon Willison,"Prompt Injection, explained",12,2026-10-23
-gUNXZMcd2jU,IBM Technology,OWASP's Top 10 Ways to Attack LLMs: AI Vulnerabilities Exposed,25,2026-10-23
-SkM4k4SKvCM,Hugging Face,Prompt Caching Explained: Stop Overpaying for AI Agents,17,2026-10-23
-u57EnkQaUTY,IBM Technology,What is Prompt Caching? Optimize LLM Latency with AI Transformers,9,2026-10-23
-Qb9s3UiMSTA,Tech With Tim,Asyncio in Python - Full Tutorial,25,2026-10-23
-luWsr9exlE4,mildlyoverfitted,Asynchronous requests and rate limiting (HTTPX and asyncio.Semaphore),12,2026-10-23
-8TMQcRcBnW8,Traversy Media,FastAPI Crash Course - Modern Python API Development,60,2026-10-23
-7aBRk_JP-qY,Coding Crash Courses,Pydantic V2 - Full Course - Learn the BEST Library for Data Validation and Parsing,30,2026-10-23
-xTTtqwGWemw,Irtiza Hafiz,Streaming LLM Responses with FastAPI,11,2026-10-23
-sVcwVQRHIc8,freeCodeCamp.org,Learn RAG From Scratch – Python AI Tutorial from a LangChain Engineer,153,2026-10-23
-5hnt-bWeeOM,Siddhardhan,"Build a ReAct AI Agent from Scratch in Python | No LangChain, No Frameworks",66,2026-10-23
-TW9vHU1GpU4,Abhishek Thakur,A no nonsense intro to BM25,16,2026-10-23
-LPZh9BOjkQs,3Blue1Brown,Large Language Models explained briefly,8,2026-10-23
-zjkBMFhNj_g,Andrej Karpathy,[1hr Talk] Intro to Large Language Models,60,2026-10-23
--BBulGM6xF0,DataMListic,"LLM Prompt Engineering with Random Sampling: Temperature, Top-k, Top-p",8,2026-10-23
-cfqtFvWOfg0,IBM Technology,Why Large Language Models Hallucinate,10,2026-10-23
-o0gkdZBtwEg,IBM Technology,How KV Cache Speeds Up LLMs for Faster AI Models on GPUs,11,2026-10-23
-4GiqzUHD5AA,LangChain,Context Engineering for Agents,22,2026-10-23
-zYGDpG-pTho,IBM Technology,RAG vs Fine-Tuning vs Prompt Engineering: Optimizing AI Models,13,2026-10-23
-S6jy0T85DFs,codebasics,AI System Design Tutorial,43,2026-10-23
-NQZqET-jjws,Code with Lucian,RAG at 10 Million Documents — System Design,15,2026-10-23
-4VBHpziqw3o,Cerbos,Access control for RAG and LLMs,7,2026-10-23
-un1IJdX-ImQ,Aniket Wattamwar,Design a Customer Support Agent | Applied AI System Design,29,2026-10-23
-CyLYY_xb5bQ,Sean‘s AI Stories,"You Can Learn AI Agent System Design In 19 Min | RAG, Vector Database, Evals, Function Calling",19,2026-10-23
-_Er8Hao_gmQ,Aishwarya Srinivasan,AI Evals Explained | How to evaluate AI Agents?,23,2026-10-23
-mwN75EiGfCE,Aishwarya Srinivasan,Agent AI System Design Explained in 27 Minutes,27,2026-10-23
-I4sGn8Z1vpI,Keerti Purswani,20 Agentic AI System Design Interview Questions & Solutions,30,2026-10-23
-mwP4sdp7gW0,Elestio,LiteLLM: Free Open Source Gateway to Manage All Your LLM Providers,8,2026-10-23
-YXkOdWBwqaA,ByteByteGo,"Rate Limiter System Design: Token Bucket, Leaky Bucket, Scaling",8,2026-10-23
-tzrwxLNHtRY,codebasics,Model Context Protocol Clearly Explained | MCP Beyond the Hype,15,2026-10-23
-CQywdSdi5iA,Anthropic,The Model Context Protocol (MCP),20,2026-10-23
-DhRoTONcyZE,Edward Hu,What is Low-Rank Adaptation (LoRA) | explained by the inventor,7,2026-10-23
-t1caDsMzWBk,Mark Hennings,LoRA & QLoRA Fine-tuning Explained In-Depth,15,2026-10-23
-qPN_XZcJf_s,StatQuest with Josh Starmer,"Reinforcement Learning with Human Feedback (RLHF), Clearly Explained!!!",18,2026-10-23
-k2pD3k1485A,Luis Serrano Academy,Direct Preference Optimization (DPO) - How to fine-tune LLMs directly without reinforcement learning,21,2026-10-23
-615-yWyS1n0,IBM Technology,What Is LLM Inference? How AI Models Generate Responses,8,2026-10-23
-6uPnLkCiy5g,Tales Of Tensors,PagedAttention: Behind vLLM's Insane Speed,7,2026-10-23
-McLdlg5Gc9s,IBM Technology,What is vLLM? Efficient AI Inference for Large Language Models,5,2026-10-23
-4jRBRDbJemM,StatQuest with Josh Starmer,"ROC and AUC, Clearly Explained!",16,2026-10-23
-2osIZ-dSPGE,codebasics,"Precision, Recall, F1 score, True Positive|Deep Learning Tutorial 19 (Tensorflow2.0, Keras & Python)",12,2026-10-23
+XN3xNJvWXsc,IBM Technology,"Essential Skills for Becoming an AI Engineer: RAG, AI Agents, & More",11,2026-10-29
+9WIsvEswZTk,Aishwarya Srinivasan,"5 AI Engineer Projects to Build in 2026 | Ex-Google, Microsoft",20,2026-10-29
+e2i6JbU2R-s,Hamel Husain,Error Analysis: The Highest ROI Technique In AI Engineering,12,2026-10-29
+e668bTot45w,Jason Liu,Systematically Improving RAG applications,11,2026-10-29
+wd7TZ4w1mSw,LangChain,RAG From Scratch: Part 1 (Overview),5,2026-10-29
+bjb_EMsTDKI,LangChain,RAG From Scratch: Part 2 (Indexing),5,2026-10-29
+LxNVgdIz9sU,LangChain,RAG From Scratch: Part 3 (Retrieval),5,2026-10-29
+Vw52xyyFsB8,LangChain,RAG From Scratch: Part 4 (Generation),6,2026-10-29
+TRjq7t2Ms5I,AI Engineer,Building Production-Ready RAG Applications: Jerry Liu,19,2026-10-29
+Pk2BeaGbcTE,Adam Lucek,The BEST Way to Chunk Text for RAG,33,2026-10-29
+0KUHkwkThyc,Hamel Husain,Stop Picking Embedding Models Off The MTEB Leaderboard,22,2026-10-29
+tmiBae2goJM,Prompt Engineering,The Best RAG Technique Yet? Anthropic’s Contextual Retrieval Explained!,16,2026-10-29
+77QH0Y2PYKg,DataMListic,Vector Database Search - Hierarchical Navigable Small Worlds (HNSW) Explained,8,2026-10-29
+QvKMwLjdK-s,James Briggs,HNSW for Vector Search Explained and Implemented with Faiss (Python),35,2026-10-29
+H_kJDHvu-v8,James Briggs,Metadata Filtering for Vector Search + Latest Filter Tech,34,2026-10-29
+kT7nXO32L-Q,freeCodeCamp.org,PostgreSQL Hybrid Search Course – Keyword (BM25) + Vector Retrieval,60,2026-10-29
+6dDvfGrxFns,TechViz - The Data Science Guy,Understanding Reciprocal Rank Fusion in Hybrid Search [Advanced RAG],8,2026-10-29
+K1F8BIgcoNk,vectorize,Rerank for better RAG (Explained),14,2026-10-29
+7ZU85v4Kt-Y,Adam Lucek,Do Reranking Models Actually Improve RAG?,32,2026-10-29
+pbAd8O1Lvm4,LangChain,Self-reflective RAG with LangGraph: Self-RAG and CRAG,18,2026-10-29
+JChPi0CRnDY,LangChain,RAG from scratch: Part 5 (Query Translation -- Multi Query),6,2026-10-29
+h0OPWlEOank,LangChain,RAG from scratch: Part 7 (Query Translation -- Decomposition),7,2026-10-29
+SaDzIVkYqyY,LangChain,RAG from scratch: Part 9 (Query Translation -- HyDE),5,2026-10-29
+pfpIndq7Fi8,LangChain,RAG from scratch: Part 10 (Routing),7,2026-10-29
+N9SZ9o2gReE,Hamel Husain,How to debug Retrieval for RAG,41,2026-10-29
+Kf3LeaUGwlg,Weaviate vector database,Lost in the Middle: How Language Models use Long Context - Explained!,24,2026-10-29
+UabBYexBD4k,IBM Technology,Is RAG Still Needed? Choosing the Best Approach for LLMs,11,2026-10-29
+Aw7iQjKAX2k,IBM Technology,GraphRAG vs. Traditional RAG: Higher Accuracy & Insight with LLM,4,2026-10-29
+2o0Q85JUZNk,codebasics,Graph RAG Simply Explained,14,2026-10-29
+qAF1NjEVHhY,IBM Technology,LangChain vs LangGraph: A Tale of Two Frameworks,10,2026-10-29
+6VquSiCBVJs,Edward Donner,Deep Agents or LangGraph? The LangChain agentic ecosystem explained,15,2026-10-29
+QiRdYCNXAxk,Tommy Eberle,How LLM Tool Calling Works,16,2026-10-29
+gMeTK6zzaO4,Adam Lucek,LLM Function Calling - AI Tools Deep Dive,31,2026-10-29
+xpvFinvqRCA,Efficient NLP,"Structured Output from LLMs: Grammars, Regex, and State Machines",17,2026-10-29
+SpfT6-YAVPk,LangChain,Human in the Loop Middleware (Python),6,2026-10-29
+cUfLrn3TM3M,KodeKloud,LangGraph Explained for Beginners,13,2026-10-29
+_IPP7_Bi8uA,CampusX,Persistence in LangGraph | Time Travel in LangGraph | CampusX,58,2026-10-29
+N4VUnYRA3BY,Amitav Roy,Langgraph checkpointers with Postgres - Let's give memory to our AI Agent,10,2026-10-29
+JQznvlSatPQ,LangChain,LangGraph - Controllability with Map Reduce,9,2026-10-29
+D1PcZaeQ2eg,CampusX,Streaming in LangGraph | CampusX,25,2026-10-29
+IVts6ztrkFg,LangChain,What are Deep Agents?,8,2026-10-29
+B_0TNuYi56w,LangChain,Hierarchical multi-agent systems with LangGraph,12,2026-10-29
+JTL0yp85FsE,LangChain,Memory for agents (conceptual video),7,2026-10-29
+hE8C2M8GRLo,Code AI with Rok,How to add long-term memory using PostgreSQL to LangGraph ReAct agent🤖: Python — LangGraph #3,11,2026-10-29
+6t7YJcEFUIY,LangChain,LangGraph interrupt: Making it easier to build human-in-the-loop agents,8,2026-10-29
+xxqZzVZ4gE0,CampusX,Human in the loop (HITL) using LangGraph | CampusX,40,2026-10-29
+egSh4TxS5go,Sequoia Capital,Ambient Agents and the New Agent Inbox ft. Harrison Chase,8,2026-10-29
+gF341XMN8cY,LangChain,Open Source Agent Inbox for LangGraph,11,2026-10-29
+eMotoFvgdUo,Arpit Bhayani,"Optimistic Locking - What, When, Why, and How?",17,2026-10-29
+GsZ_ZtlRCBg,Milan Jovanović,Fix Duplicate Messages with the Idempotent Consumer Pattern,14,2026-10-29
+GL0XhAj5LPE,Hamel Husain,LLM Evals: Common Mistakes,28,2026-10-29
+OJItZndMUII,Hamel Husain,AI Evals For Engineers: Course Preview (Chapters 1-3 of 8),64,2026-10-29
+mF4CaijvJos,Hamel Husain,How To Build AI Evals,34,2026-10-29
+tqUDjc1HzO4,Hamel Husain,How to Automate AI Evals (Correctly),27,2026-10-29
+trfUBIDeI1Y,IBM Technology,LLM as a Judge: Scaling AI Evaluation Strategies,6,2026-10-29
+2XegvMul_mE,ritvikmath,"Every Ranking Metric : MRR, MAP, NDCG",21,2026-10-29
+7_LTU0LA374,Logical Lenses,"RAG Evaluation: Precision, Recall, Faithfulness, RAGAS Explained Clearly",12,2026-10-29
+FCKjETgr54U,LangChain,How to evaluate agent trajectories with AgentEvals,12,2026-10-29
+vuBvf7ZRKTA,Google Cloud Tech,How to evaluate agents in practice,11,2026-10-29
+_Er8Hao_gmQ,Aishwarya Srinivasan,AI Evals Explained | How to evaluate AI Agents?,23,2026-10-29
+FDVdLrloFOw,LangChain,Observability and Evals for AI Agents: A Simple Breakdown,15,2026-10-29
+2E8iTvGo9Hs,Langfuse,"10 min Walkthrough of Langfuse – Open Source LLM Observability, Evaluation, and Prompt Management",10,2026-10-29
+nbZzSC5A6hs,AI Engineer,Lessons from the Trenches: Building LLM Evals That Work IRL: Aparna Dhinkaran,19,2026-10-29
+S6jy0T85DFs,codebasics,AI System Design Tutorial,43,2026-10-29
+CyLYY_xb5bQ,Sean‘s AI Stories,"You Can Learn AI Agent System Design In 19 Min | RAG, Vector Database, Evals, Function Calling",19,2026-10-29
+D7_ipDqhtwk,AI Engineer,"How We Build Effective Agents: Barry Zhang, Anthropic",15,2026-10-29
+8kMaTybvDUw,AI Engineer,"12-Factor Agents: Patterns of reliable LLM applications — Dex Horthy, HumanLayer",17,2026-10-29
+4GiqzUHD5AA,LangChain,Context Engineering for Agents,22,2026-10-29
+zYGDpG-pTho,IBM Technology,RAG vs Fine-Tuning vs Prompt Engineering: Optimizing AI Models,13,2026-10-29
+FgxwCaL6UTA,Simon Willison,"Prompt Injection, explained",12,2026-10-29
+2Er7bmyhPfM,Donato Capitella,LLM Chronicles #6.9: Design Patterns for Securing LLM Agents Against Prompt Injection (Paper Review),34,2026-10-29
+phxEKe3ngK0,Aniket Wattamwar,Design a Text-to-SQL Agent | Applied AI System Design,27,2026-10-29
+SkM4k4SKvCM,Hugging Face,Prompt Caching Explained: Stop Overpaying for AI Agents,17,2026-10-29
+u57EnkQaUTY,IBM Technology,What is Prompt Caching? Optimize LLM Latency with AI Transformers,9,2026-10-29
+7vdFUJgGOSs,Percona,Semantic Caching with Valkey and Redis: Reducing LLM Cost and Latency - Martin Visser,26,2026-10-29
+NQZqET-jjws,Code with Lucian,RAG at 10 Million Documents — System Design,15,2026-10-29
+4VBHpziqw3o,Cerbos,Access control for RAG and LLMs,7,2026-10-29
+un1IJdX-ImQ,Aniket Wattamwar,Design a Customer Support Agent | Applied AI System Design,29,2026-10-29
+mwN75EiGfCE,Aishwarya Srinivasan,Agentic AI System Design Explained in 27 Minutes,27,2026-10-29
+I4sGn8Z1vpI,Keerti Purswani,20 Agentic AI System Design Interview Questions & Solutions,30,2026-10-29
+mwP4sdp7gW0,Elestio,LiteLLM: Free Open Source Gateway to Manage All Your LLM Providers,8,2026-10-29
+YXkOdWBwqaA,ByteByteGo,"Rate Limiter System Design: Token Bucket, Leaky Bucket, Scaling",8,2026-10-29
+zjkBMFhNj_g,Andrej Karpathy,[1hr Talk] Intro to Large Language Models,60,2026-10-29
+LPZh9BOjkQs,3Blue1Brown,Large Language Models explained briefly,8,2026-10-29
+-BBulGM6xF0,DataMListic,"LLM Prompt Engineering with Random Sampling: Temperature, Top-k, Top-p",8,2026-10-29
+cfqtFvWOfg0,IBM Technology,Why Large Language Models Hallucinate,10,2026-10-29
+o0gkdZBtwEg,IBM Technology,How KV Cache Speeds Up LLMs for Faster AI Models on GPUs,11,2026-10-29
+tzrwxLNHtRY,codebasics,Model Context Protocol Clearly Explained | MCP Beyond the Hype,15,2026-10-29
+CQywdSdi5iA,Anthropic,The Model Context Protocol (MCP),20,2026-10-29
+DhRoTONcyZE,Edward Hu,What is Low-Rank Adaptation (LoRA) | explained by the inventor,7,2026-10-29
+t1caDsMzWBk,Mark Hennings,LoRA & QLoRA Fine-tuning Explained In-Depth,15,2026-10-29
+qPN_XZcJf_s,StatQuest with Josh Starmer,"Reinforcement Learning with Human Feedback (RLHF), Clearly Explained!!!",18,2026-10-29
+k2pD3k1485A,Luis Serrano Academy,Direct Preference Optimization (DPO) - How to fine-tune LLMs directly without reinforcement learning,21,2026-10-29

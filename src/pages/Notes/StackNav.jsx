@@ -135,18 +135,6 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
             </div>
           );
         })}
-
-        {stack.skip && (
-          <div className="mt-3 mx-1 rounded-lg border border-line bg-canvas px-3 py-3">
-            <p className="font-mono text-[12px] font-medium text-fg-subtle">Not studying</p>
-            <p className="mt-1.5 text-[13px] leading-relaxed text-fg-muted">
-              {stack.skip.topics.map((t) => t.replace(/\.$/, "")).join(" · ")}
-            </p>
-            <p className="mt-2 text-[13px] leading-relaxed text-fg">
-              <span className="font-semibold">If asked: </span>“{stack.skip.line}”
-            </p>
-          </div>
-        )}
       </nav>
     </div>
   );

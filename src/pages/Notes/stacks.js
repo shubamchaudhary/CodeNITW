@@ -5,7 +5,7 @@
 // header read all of it from here, so every stack shares one layout.
 
 import { CORE_STACK_SECTIONS, CORE_STACK_TOPICS } from "../../Data/CoreStack";
-import { AI_STACK_SECTIONS, AI_STACK_TOPICS, AI_STACK_SKIP } from "../../Data/AIStack";
+import { AI_STACK_SECTIONS, AI_STACK_TOPICS } from "../../Data/AIStack";
 import { PROJECT_SECTIONS, PROJECT_TOPICS, getProjectTopic } from "../../Data/Projects";
 import {
   KEYS,
@@ -91,7 +91,6 @@ export const STACKS = {
     summary: (topic) => topic.why,
     planItem: aiStackPlanItem,
     daysSinceDone: aiStackDaysSinceChecked,
-    skip: AI_STACK_SKIP,
     accent: {
       text: "text-violet-600 dark:text-violet-400",
       bar: "from-violet-500 to-fuchsia-400",
