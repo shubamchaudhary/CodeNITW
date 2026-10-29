@@ -1,5 +1,5 @@
 // Kafka — questions real interviews asked, with answers, shown fixed under the
-// Kafka question bank (KFK-14). Research and method: scripts/data/kafkaInterviewEvidence.md.
+// Kafka question bank (KFK-11). Research and method: scripts/data/kafkaInterviewEvidence.md.
 // Each item: q, a (markdown), n (distinct write-ups that asked it), companies,
 // video (the Kafka page that teaches it), resume (a follow-up the resume line
 // invites rather than one the write-ups asked; listed first).
@@ -11,7 +11,7 @@ export const KAFKA_ASKED_META = {
 };
 
 export const KAFKA_ASKED = {
-  "KFK-14": {
+  "KFK-11": {
     "posts": 232,
     "items": [
       {
@@ -19,7 +19,7 @@ export const KAFKA_ASKED = {
         "a": "Because Kafka's exactly-once **stops at Kafka**, and DeepLogLens's output is a **Postgres** write.\n\n- Kafka transactions make *Kafka writes + consumer offset commits* atomic (consume → transform → **produce**). A Postgres insert can't join that transaction — there's no 2PC between Kafka and Postgres.\n- So with transactions on, a crash after the DB commit but before the Kafka transaction commits still **re-delivers** the record, and the DB write happens again. You would still need the idempotent sink. Transactions would add latency and a coordinator round-trip and fix nothing.\n\nWhat DeepLogLens does instead:\n1. Consume, write to Postgres in one DB transaction with an **upsert on a natural key** (`INSERT … ON CONFLICT (key) DO NOTHING / DO UPDATE`).\n2. **Then** commit the offset (manual ack). Crash in between → redelivery → the upsert is a no-op.\n\nResult: delivery is at-least-once, **effects** are exactly-once.\n\n**What you traded**: duplicates are still *processed* (wasted work on replay), and you need a stable key per record. **Alternative** worth naming: store the consumed offset in Postgres in the same transaction as the result and seek to it on start-up — exactly-once without an upsert key, at the cost of managing offsets yourself.\n\nExpect the follow-ups: \"walk me through a crash between the write and the commit\" and \"what exactly is the upsert key?\".",
         "n": 0,
         "companies": [],
-        "video": "KFK-12",
+        "video": "KFK-10",
         "resume": true
       },
       {
@@ -27,7 +27,7 @@ export const KAFKA_ASKED = {
         "a": "Let a producer write to **several partitions + commit consumer offsets atomically**.\n\n1. Producer sets a stable **`transactional.id`**, calls `initTransactions()` → the **transaction coordinator** (a broker) maps it to a PID and bumps the **epoch**.\n2. `beginTransaction()` → `send()` to any partitions → `sendOffsetsToTransaction()` for the input → `commitTransaction()` (or `abortTransaction()`).\n3. Commit is **two-phase**: the coordinator writes PREPARE_COMMIT to the `__transaction_state` log, then writes **commit markers** into every partition touched.\n4. **Zombie fencing**: a restarted instance with the same `transactional.id` gets a higher epoch; the old \"zombie\" (a GC-paused copy) is rejected with `ProducerFencedException`.\n5. Consumers with **`isolation.level=read_committed`** only read up to the **LSO** (last stable offset) and skip aborted records. `read_uncommitted` (default) sees everything.\n\nCost: extra latency per commit and coordination. Use it for consume-transform-produce; for Kafka → DB, use an idempotent consumer instead.",
         "n": 0,
         "companies": [],
-        "video": "KFK-11",
+        "video": "KFK-10",
         "resume": true
       },
       {
@@ -289,7 +289,7 @@ export const KAFKA_ASKED = {
           "Dream11",
           "Walmart"
         ],
-        "video": "KFK-10"
+        "video": "KFK-09"
       },
       {
         "q": "How do you update the database and publish an event reliably — what is the outbox pattern?",
@@ -303,7 +303,7 @@ export const KAFKA_ASKED = {
           "Joveo",
           "Urban Company"
         ],
-        "video": "KFK-13"
+        "video": "KFK-10"
       },
       {
         "q": "What is Kafka Streams — KStream vs KTable?",
@@ -355,7 +355,7 @@ export const KAFKA_ASKED = {
           "MoEngage",
           "Uber"
         ],
-        "video": "KFK-10"
+        "video": "KFK-09"
       },
       {
         "q": "Kafka writes to disk — so why is it so fast?",
@@ -441,7 +441,7 @@ export const KAFKA_ASKED = {
         "companies": [
           "MobiKwik"
         ],
-        "video": "KFK-10"
+        "video": "KFK-09"
       }
     ]
   }
