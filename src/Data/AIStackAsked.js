@@ -6,7 +6,7 @@
 export const AI_STACK_ASKED_META = {
   "eyebrow": "Interview drill",
   "heading": "Say it out loud, then open the answer",
-  "blurb": "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first; the ones marked “From your resume” are follow-ups your own resume invites.",
+  "blurb": "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first, then open the answer.",
   "footer": "Written from the sources in this topic's reading list and the current LangChain and LangGraph docs (checked 2026-10-30). Numbers quoted from a source are that source's; check the provider's current docs before quoting API details.",
   "counts": false
 };
@@ -16,34 +16,24 @@ export const AI_STACK_ASKED = {
     "posts": 0,
     "items": [
       {
-        "q": "Walk me through an LLM feature you shipped, in two minutes.",
-        "a": "One fixed shape, with a number in it:\n\n1. **Problem and user** — who suffered and how it was done before (the baseline).\n2. **The design decision** — one architecture choice and the alternative you rejected.\n3. **How you measured it** — eval set, metric, before and after.\n4. **What broke** — one production failure and the fix.\n5. **What you'd do next.**\n\nInterviewers interrupt at 3 and 4, so those must be concrete. The facts for each project live on the Projects page."
+        "q": "Walk me through an LLM feature you built, in two minutes.",
+        "a": "One fixed shape, with a number in it:\n\n1. **Problem and baseline** — who suffered and how it was done before.\n2. **The design decision** — one architecture choice and the alternative you rejected.\n3. **How you measured it** — test set, metric, before and after.\n4. **What broke** — one failure and the fix.\n5. **What you'd do next.**\n\nInterviewers interrupt at 3 and 4, so those must be concrete."
       },
       {
-        "q": "Your background is backend. Why hire you for an AI role?",
-        "a": "Make it the strength it is: **most AI engineering is backend engineering around a probabilistic component**.\n\n- Production LLM systems fail on backend things: idempotency, retries and rate limits, queues, caching, observability, data freshness, access control.\n- You've shipped those (Kafka pipelines, idempotent consumers, rate-limited key pools) *and* the AI parts (hybrid-search RAG, LangGraph agents with human approval, an LLM-as-judge loop).\n- Close with one measured outcome."
+        "q": "Your background is backend. Why an AI role?",
+        "a": "Make it the strength it is: **most AI engineering is backend engineering around a component that is sometimes wrong**.\n\n- Production LLM systems fail on backend things: retries and rate limits, queues, caching, idempotency, data freshness, access control.\n- Someone who has shipped those *and* the AI parts (retrieval, agents, evals) is exactly who these teams need.\n- Close with one measured outcome from your own work."
       },
       {
-        "q": "Your resume says “hybrid search”. Did it beat vector-only, and by how much?",
-        "a": "This is the shape of every resume follow-up: **a number, the baseline, the data it was measured on**.\n\nAnswer from the eval, not from the design: vector-only vs full-text vs hybrid at recall@k and MRR on your golden set; *why* (logs are identifier-heavy, so lexical search wins); and what you'd add next (a reranker, measured the same way).\n\nIf you can't give the number, the bullet is a liability — re-run the eval before the interview. Your own numbers are on the Projects page (LL-04, LL-06).",
-        "resume": true
+        "q": "You say hybrid search helped. Did it beat vector-only, and by how much?",
+        "a": "This is the shape of every follow-up: **a number, the baseline, and the data it was measured on**. Answer from your eval, not the design: vector-only vs keyword vs hybrid at recall@k and MRR on your test set, *why* the winner won (identifier-heavy text favours keyword search), and what you'd add next (a reranker, measured the same way). If you can't give the number, re-run the eval before the interview."
       },
       {
-        "q": "“Cut LLM calls by 80%” — 80% of what, measured how?",
-        "a": "Interviewers check that a percentage has a denominator.\n\n- **Of what**: LLM calls per archive with the deterministic pre-filter, against calling the model on every window.\n- **Measured how**: counted on a fixed set of archives, same model, same thresholds.\n- **What it cost**: what the filter misses — anomalies the LLM would have caught — and how you checked.\n\nKeep the resume figure consistent with your eval report. If the report says 77.8%, say “nearly 80%” and know why any other figure you've quoted differs.",
-        "resume": true
+        "q": "You cut LLM calls by 80%. 80% of what, measured how?",
+        "a": "A percentage needs a denominator: calls per request with and without your change, counted on a fixed set of inputs with the same model and thresholds. Then say what it cost — what the cheaper path misses, and how you checked. Keep every figure you quote consistent with your own measurements."
       },
       {
-        "q": "Which line on your resume would you cut if you had to?",
-        "a": "The one with **no measurement behind it** — a framework list, or a feature with no outcome — keeping the lines that carry an eval, a cost figure or a production guardrail. The answer shows judgement: you know evidence beats vocabulary."
-      },
-      {
-        "q": "You list LangChain and LangGraph. When did you choose each, and what did each cost you?",
-        "a": "Only list a tool you chose deliberately.\n\n- **LangGraph**: explicit state, loops with caps, checkpointing and `interrupt()` for approvals — things a linear chain can't do. Cost: more code and graph design up front.\n- **LangChain**: provider-agnostic model and tool interfaces, structured output, middleware. Cost: abstraction layers to debug through, version churn.\n- A tool you only used in a tutorial: take it off rather than defend it."
-      },
-      {
-        "q": "What would you add to your project to make it production-grade?",
-        "a": "The gaps in order of risk, each with how you'd verify it:\n\n1. **An eval gate in CI** — golden set plus a calibrated judge; block merges on regression.\n2. **Tracing and cost per request** — every LLM call with inputs, outputs, tokens and latency.\n3. **Guardrails** — input validation, injection handling for retrieved text, output schema checks.\n4. **Fallbacks** — timeouts, a fallback model, a safe default answer.\n5. **A feedback loop** — user corrections flow into the eval set.\n\nThe question is really “do you know what production means for LLMs?”."
+        "q": "What would make your project production-grade?",
+        "a": "The gaps in order of risk, each with how you'd verify it:\n\n1. **An eval gate in CI** — a golden set plus a calibrated judge; block merges on regression.\n2. **Tracing and cost per request.**\n3. **Guardrails** — input checks, injection handling for retrieved text, output schema checks.\n4. **Fallbacks** — timeouts, a fallback model, a safe default answer.\n5. **A feedback loop** — user corrections flow into the eval set."
       }
     ]
   },
@@ -118,8 +108,7 @@ export const AI_STACK_ASKED = {
       },
       {
         "q": "Why one HNSW index per session instead of one shared table with a filter?",
-        "a": "Every query is scoped to one session, so a shared index turns each search into a **selective filter on ANN** — the post-filter problem: top candidates from other sessions are discarded and recall drops.\n\nPer-session tables make the filter free (the index only holds that session) and keep each graph small. **Costs**: many tables and indexes, catalogue bloat, per-session build time, cleanup of expired sessions, no cross-session search. The alternative now is a shared table with pgvector's iterative scans or partitioning by session — say you'd benchmark both.",
-        "resume": true
+        "a": "Every query is scoped to one session, so a shared index turns each search into a **selective filter on ANN** — the post-filter problem: top candidates from other sessions are discarded and recall drops.\n\nPer-session tables make the filter free (the index only holds that session) and keep each graph small. **Costs**: many tables and indexes, catalogue bloat, per-session build time, cleanup of expired sessions, no cross-session search. The alternative now is a shared table with pgvector's iterative scans or partitioning by session — say you'd benchmark both."
       }
     ]
   },
@@ -140,8 +129,7 @@ export const AI_STACK_ASKED = {
       },
       {
         "q": "On your data, hybrid search had a lower MRR than keyword search alone. What do you do?",
-        "a": "Lower MRR means the right chunk is retrieved but **ranked lower**: fusion pulls in vector results that push the lexical hit down.\n\nOptions, each measured on the same set: a **cross-encoder reranker** after fusion (fixes the ordering directly); **weight** RRF toward BM25 for identifier-heavy queries; **route** by query type (IDs and codes → keyword, conceptual → hybrid); improve the vector side (better embedder, smaller chunks). Hybrid often wins recall at deeper k while losing MRR — exactly the gap a reranker exploits.",
-        "resume": true
+        "a": "Lower MRR means the right chunk is retrieved but **ranked lower**: fusion pulls in vector results that push the lexical hit down.\n\nOptions, each measured on the same set: a **cross-encoder reranker** after fusion (fixes the ordering directly); **weight** RRF toward BM25 for identifier-heavy queries; **route** by query type (IDs and codes → keyword, conceptual → hybrid); improve the vector side (better embedder, smaller chunks). Hybrid often wins recall at deeper k while losing MRR — exactly the gap a reranker exploits."
       },
       {
         "q": "When is reranking not worth it?",
@@ -338,8 +326,7 @@ export const AI_STACK_ASKED = {
       },
       {
         "q": "The node writes to Redis and then calls interrupt(). What happens on resume?",
-        "a": "The Redis write runs **again**, because the node restarts from its first line. Options: make the write idempotent (a deterministic key such as `stage:{thread_id}:{proposal_hash}`, `SET` rather than `INCR` or append); move the write **after** the interrupt (stage only once approved); or split it into two nodes — `stage` → `approve` (which interrupts) — so the staging node isn't re-run on resume. Splitting is usually cleanest and makes the trace easy to read.",
-        "resume": true
+        "a": "The Redis write runs **again**, because the node restarts from its first line. Options: make the write idempotent (a deterministic key such as `stage:{thread_id}:{proposal_hash}`, `SET` rather than `INCR` or append); move the write **after** the interrupt (stage only once approved); or split it into two nodes — `stage` → `approve` (which interrupts) — so the staging node isn't re-run on resume. Splitting is usually cleanest and makes the trace easy to read."
       },
       {
         "q": "Why can't you call interrupt() in a loop over a list that may change?",
@@ -360,8 +347,7 @@ export const AI_STACK_ASKED = {
     "items": [
       {
         "q": "Design approvals for an agent that can change inventory parameters. What needs a human?",
-        "a": "Tier by **risk and reversibility**:\n\n- **Automatic**: reads, explanations, what-if simulations on a copy.\n- **Automatic + audit**: small, reversible changes inside limits (say ±5% on one item) — logged and easy to undo.\n- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.\n\nMechanics: the agent writes its proposal to a **staging overlay**, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the planner approves, edits or rejects, approved changes commit to the base in one transaction, and every decision is logged — who, when, why.",
-        "resume": true
+        "a": "Tier by **risk and reversibility**:\n\n- **Automatic**: reads, explanations, what-if simulations on a copy.\n- **Automatic + audit**: small, reversible changes inside limits (say ±5% on one item) — logged and easy to undo.\n- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.\n\nMechanics: the agent writes its proposal to a **staging overlay**, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the planner approves, edits or rejects, approved changes commit to the base in one transaction, and every decision is logged — who, when, why."
       },
       {
         "q": "What should the approver see, and why does it matter?",
@@ -382,13 +368,11 @@ export const AI_STACK_ASKED = {
     "items": [
       {
         "q": "The approver never responds. What happens to the staged write?",
-        "a": "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.\n\n- Every proposal carries an **expiry** (24–72 h by risk), with reminders and escalation to a backup approver before it.\n- A sweeper marks it expired, **discards the staged overlay** (or the Redis keys lapse by TTL) and notifies the requester.\n- Resuming an expired thread returns “expired — re-run the request” instead of committing.\n- Metrics on pending count and age, so a backlog is visible.",
-        "resume": true
+        "a": "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.\n\n- Every proposal carries an **expiry** (24–72 h by risk), with reminders and escalation to a backup approver before it.\n- A sweeper marks it expired, **discards the staged overlay** (or the Redis keys lapse by TTL) and notifies the requester.\n- Resuming an expired thread returns “expired — re-run the request” instead of committing.\n- Metrics on pending count and age, so a backlog is visible."
       },
       {
         "q": "The underlying data changed while the human was deciding. Now what?",
-        "a": "Never commit a diff computed against old data. At proposal time record the **version** (or `updated_at` / a hash) of every row the change touches; at commit apply a **compare-and-set** — `UPDATE … WHERE id = $1 AND version = $2`. If any row changed, abort, recompute the proposal on fresh data and ask again, showing what changed. For approvals that can sit for hours, show data freshness in the review payload too.",
-        "resume": true
+        "a": "Never commit a diff computed against old data. At proposal time record the **version** (or `updated_at` / a hash) of every row the change touches; at commit apply a **compare-and-set** — `UPDATE … WHERE id = $1 AND version = $2`. If any row changed, abort, recompute the proposal on fresh data and ask again, showing what changed. For approvals that can sit for hours, show data freshness in the review payload too."
       },
       {
         "q": "Two planners approve conflicting changes to the same parameter. What happens?",
@@ -434,8 +418,7 @@ export const AI_STACK_ASKED = {
     "items": [
       {
         "q": "Is your LLM judge any good? How do you know?",
-        "a": "Measure it like a classifier against human labels:\n\n1. Label ~100–200 outputs myself (pass/fail with a reason), covering every failure type.\n2. Split into dev (to iterate the judge prompt) and a held-out test set.\n3. Report on test: **TPR** (judge passes what I pass) and **TNR** (judge fails what I fail) — or Cohen's kappa. TNR matters most: a judge that misses failures gives false comfort.\n4. Investigate disagreements by slice; fix the rubric or its examples.\n5. Re-check after any judge model or prompt change.\n\nIf you haven't done this yet, say so plainly and say it's the next thing you'd do.",
-        "resume": true
+        "a": "Measure it like a classifier against human labels:\n\n1. Label ~100–200 outputs myself (pass/fail with a reason), covering every failure type.\n2. Split into dev (to iterate the judge prompt) and a held-out test set.\n3. Report on test: **TPR** (judge passes what I pass) and **TNR** (judge fails what I fail) — or Cohen's kappa. TNR matters most: a judge that misses failures gives false comfort.\n4. Investigate disagreements by slice; fix the rubric or its examples.\n5. Re-check after any judge model or prompt change.\n\nIf you haven't done this yet, say so plainly and say it's the next thing you'd do."
       },
       {
         "q": "40 items: you and the judge agree on 34, and each of you labels half as pass. Compute Cohen's kappa.",
@@ -447,8 +430,7 @@ export const AI_STACK_ASKED = {
       },
       {
         "q": "Your production grounding check uses the same model family as the generator. What's the risk?",
-        "a": "**Correlated errors and self-preference**: the judge shares the generator's blind spots and accepts its own style of unsupported claim, so the check passes exactly the cases it exists to catch. Mitigations: a different model family (or an NLI model) as the judge, claim-level checking (split the answer into claims and verify each against its cited chunk), calibration against human labels with TNR reported, and tracking how often the loop force-accepts after its retry cap.",
-        "resume": true
+        "a": "**Correlated errors and self-preference**: the judge shares the generator's blind spots and accepts its own style of unsupported claim, so the check passes exactly the cases it exists to catch. Mitigations: a different model family (or an NLI model) as the judge, claim-level checking (split the answer into claims and verify each against its cited chunk), calibration against human labels with TNR reported, and tracking how often the loop force-accepts after its retry cap."
       },
       {
         "q": "Write a judge prompt for “is the answer grounded in the context?”.",
@@ -566,8 +548,7 @@ export const AI_STACK_ASKED = {
     "items": [
       {
         "q": "How do you stop a text-to-SQL agent from running DROP TABLE?",
-        "a": "Layers — none of them in the prompt:\n\n1. A **read-only database role** for the agent's connection: the database refuses writes whatever the SQL says.\n2. An **allow-listed schema**: the role can see only specific views and tables; sensitive columns excluded.\n3. **Tenant scope in the database**: row-level security or per-tenant views, not a WHERE clause the model writes.\n4. **Parse the SQL** before running it: a single `SELECT`, no DDL or DML, known tables only.\n5. **Statement timeout and row limit**; an `EXPLAIN` cost check for expensive queries.\n6. Every query logged with its trace id.\n\nWrites, if any, go through a separate typed tool with approval — never free-form SQL.",
-        "resume": true
+        "a": "Layers — none of them in the prompt:\n\n1. A **read-only database role** for the agent's connection: the database refuses writes whatever the SQL says.\n2. An **allow-listed schema**: the role can see only specific views and tables; sensitive columns excluded.\n3. **Tenant scope in the database**: row-level security or per-tenant views, not a WHERE clause the model writes.\n4. **Parse the SQL** before running it: a single `SELECT`, no DDL or DML, known tables only.\n5. **Statement timeout and row limit**; an `EXPLAIN` cost check for expensive queries.\n6. Every query logged with its trace id.\n\nWrites, if any, go through a separate typed tool with approval — never free-form SQL."
       },
       {
         "q": "What is indirect prompt injection, and how do you defend a RAG agent against it?",

@@ -14,7 +14,7 @@
 export const AI_STACK_SECTIONS = [
   {
     "key": "S",
-    "label": "Start here — your resume",
+    "label": "Start here",
     "chip": "Start"
   },
   {
@@ -53,44 +53,36 @@ export const AI_STACK_TOPICS = [
   {
     "id": "AIE-02",
     "section": "S",
-    "sectionLabel": "Start here — your resume",
+    "sectionLabel": "Start here",
     "priority": "P0",
-    "title": "Your resume — the openers and follow-ups you will get",
-    "why": "Reviewers now see “RAG chatbot with LangChain and a vector DB” on most resumes, so that line on its own has become neutral at best. What moves a resume into the AI-engineer pile is evidence: something used by real people, a number that came from an eval, a cost or latency figure, and a guardrail or approval step that shows you know how these systems fail. Every claim you make becomes an interview question, so each one must survive ten minutes of follow-ups.",
+    "title": "Talking about your AI project — the openers and follow-ups",
+    "why": "Almost every AI engineer loop opens with “walk me through an AI system you built”, and every claim in that walkthrough becomes the next question. Reviewers see “RAG chatbot with LangChain and a vector DB” everywhere; what stands out is evidence: a number that came from an eval, a cost or latency figure, a guardrail or approval step that shows you know how these systems fail.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
-      "enough": "rewrite each AI bullet as problem → design → measured result, and cut every tool you can't defend for ten minutes.",
-      "tooDeep": "keyword-stuffing for ATS; listing every framework you have touched."
+      "enough": "a two-minute walkthrough of one project with a measured result, and an answer for each follow-up below.",
+      "tooDeep": "polishing slides; listing every framework you have touched."
     },
     "know": [
-      "Signals that count: shipped to users · an eval with a number (recall@k, faithfulness, pass rate, judge agreement) · cost or latency figures · guardrails or human approval · tracing · a trade-off you can defend.",
-      "Signals that read as tutorial work: “built a chatbot”, framework lists with no outcome, “fine-tuned an LLM” with no reason or result, “improved accuracy” with no baseline.",
-      "Each AI bullet: what it does → the design choice → the measured result. One number per bullet, and you must know how it was measured and on what data.",
-      "A resume claim is an interview question. If you can't explain it for ten minutes, reword it or cut it.",
-      "Skills line: group by capability (Retrieval, Agents, Evals, Observability), not by vendor names."
+      "The walkthrough shape: problem and baseline → the key design decision → how you measured it → what broke → what's next.",
+      "Signals that count: real users · an eval with a number (recall@k, faithfulness, pass rate) · cost or latency figures · guardrails or human approval · tracing.",
+      "Signals that read as tutorial work: “built a chatbot”, framework lists with no outcome, “improved accuracy” with no baseline.",
+      "Every claim is a question: a percentage needs a denominator, an improvement needs a baseline and the data it was measured on.",
+      "If you can't explain a claim for ten minutes, reword it or drop it."
     ],
     "resources": [
       {
         "id": "AIE-02-r1",
-        "kind": "self",
-        "title": "Your resume — the AI bullets",
-        "source": "Your resume",
-        "minutes": 30,
-        "note": "For each AI bullet write down: the number, where it came from, the baseline, and the follow-up you fear most. Anything you can't fill in gets reworded."
-      },
-      {
-        "id": "AIE-02-r2",
         "kind": "doc",
         "title": "Your AI Product Needs Evals",
         "source": "hamel.dev",
         "url": "https://hamel.dev/blog/posts/evals/",
         "minutes": 25,
         "estimate": true,
-        "note": "Why an eval number is the strongest signal a resume can carry, and what a real eval loop looks like."
+        "note": "Why a measured result is the strongest thing a project can show, and what a real eval loop looks like."
       },
       {
-        "id": "AIE-02-r3",
+        "id": "AIE-02-r2",
         "kind": "video",
         "title": "5 AI Engineer Projects to Build in 2026 | Ex-Google, Microsoft",
         "source": "Aishwarya Srinivasan",
@@ -99,20 +91,18 @@ export const AI_STACK_TOPICS = [
         "note": "Use it as a checklist of what reviewers expect a project to show — evals, deployment, monitoring — not as ideas to copy."
       }
     ],
-    "minutes": 75,
-    "duration": "≈1h 15m",
+    "minutes": 45,
+    "duration": "≈45m",
     "questions": [
-      "Walk me through an LLM feature you shipped, in two minutes.",
-      "Your background is backend. Why hire you for an AI role?",
-      "Your resume says “hybrid search”. Did it beat vector-only, and by how much?",
-      "“Cut LLM calls by 80%” — 80% of what, measured how?",
-      "Which line on your resume would you cut if you had to?",
-      "You list LangChain and LangGraph. When did you choose each, and what did each cost you?",
-      "What would you add to your project to make it production-grade?"
+      "Walk me through an LLM feature you built, in two minutes.",
+      "Your background is backend. Why an AI role?",
+      "You say hybrid search helped. Did it beat vector-only, and by how much?",
+      "You cut LLM calls by 80%. 80% of what, measured how?",
+      "What would make your project production-grade?"
     ],
     "asked": {
       "posts": 0,
-      "items": 7
+      "items": 5
     }
   },
   {
@@ -296,9 +286,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "RAG",
     "priority": "P0",
     "title": "Vector search internals — HNSW, IVF, filtering, pgvector",
-    "why": "HNSW and pgvector are on your resume, so expect “how does HNSW work?” and “what happens when you filter?”. You need HNSW at the level of the graph and its three parameters, IVF as the alternative, and the filtered-search problem: a filter applied after the ANN search throws away results, which is exactly what per-session tables and pgvector's iterative scans exist to fix.",
-    "resumeLinked": true,
-    "flag": "pgvector with per-session HNSW/GIN-indexed chunk tables. The design and its numbers are on the Projects page (LL-05).",
+    "why": "HNSW and pgvector sit under almost every RAG system, so expect “how does HNSW work?” and “what happens when you filter?”. You need HNSW at the level of the graph and its three parameters, IVF as the alternative, and the filtered-search problem: a filter applied after the ANN search throws away results, which is exactly what partitioned indexes and pgvector's iterative scans exist to fix.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "explain HNSW layers and greedy search, what m / ef_construction / ef_search trade, pre- vs post-filtering, and IVF lists and probes.",
       "tooDeep": "ANN proofs, product-quantisation maths, writing an index from scratch."
@@ -379,9 +369,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "RAG",
     "priority": "P0",
     "title": "Hybrid search and reranking — BM25, RRF, cross-encoders",
-    "why": "Hybrid search is on your resume, so expect: when keyword beats vector, how BM25 scores, how you merge two ranked lists (RRF), and why a cross-encoder can rerank but can't retrieve. Then the cost push: a reranker adds latency to every query, so know when it pays and how you'd prove it.",
-    "resumeLinked": true,
-    "flag": "Hybrid vector + full-text search with RRF. Your measured numbers are on the Projects page (LL-04).",
+    "why": "Hybrid search is the standard production retrieval setup, so expect: when keyword beats vector, how BM25 scores, how you merge two ranked lists (RRF), and why a cross-encoder can rerank but can't retrieve. Then the cost push: a reranker adds latency to every query, so know when it pays and how you'd prove it.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "write BM25's ingredients and the RRF formula, explain bi- vs cross-encoders, and give a latency budget for a reranker.",
       "tooDeep": "learning-to-rank theory; training your own reranker."
@@ -472,9 +462,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "RAG",
     "priority": "P0",
     "title": "Query transformation, routing and corrective RAG",
-    "why": "The user's question is often a bad search query: vague, multi-part, or phrased unlike the documents. Query transformation fixes the input; corrective RAG checks the retrieval and loops when it's weak. Corrective RAG is on your resume, so draw the graph from memory with its loop bound and fallback, and be ready for the cost question: every grade and every rewrite is another LLM call.",
-    "resumeLinked": true,
-    "flag": "Query-time corrective RAG — retrieve → grade → rewrite → re-retrieve. The project version is on the Projects page (LL-04).",
+    "why": "The user's question is often a bad search query: vague, multi-part, or phrased unlike the documents. Query transformation fixes the input; corrective RAG checks the retrieval and loops when it's weak. Draw corrective RAG from memory with its loop bound and fallback, and be ready for the cost question: every grade and every rewrite is another LLM call.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "name four query transformations with one use each, draw corrective RAG with its bound and fallback, and say what it costs per query.",
       "tooDeep": "every RAG paper variant; how Self-RAG's reflection tokens are trained."
@@ -874,9 +864,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "LangChain + LangGraph",
     "priority": "P0",
     "title": "The graph model — state, reducers, nodes, edges, super-steps",
-    "why": "Two LangGraph systems sit on your resume, so expect to sketch one and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
-    "resumeLinked": true,
-    "flag": "Two LangGraph graphs in DeepLogLens and the LangGraph agent at Blue Yonder.",
+    "why": "Expect to sketch a LangGraph workflow and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "sketch a graph with a typed state, a reducer, a conditional edge and a capped loop, and explain what happens in one super-step.",
       "tooDeep": "Pregel channel internals; the functional API in depth."
@@ -940,7 +930,7 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "LangChain + LangGraph",
     "priority": "P0",
     "title": "Persistence and durable execution — checkpointers, threads, replay",
-    "why": "Checkpointing is what makes LangGraph more than a while-loop: it gives you conversation memory, human-in-the-loop pauses, fault tolerance and time travel. HITL is on your resume and only works because of this layer, so expect “where is the state stored, what happens if the process dies mid-run, and what exactly happens on resume?”.",
+    "why": "Checkpointing is what makes LangGraph more than a while-loop: it gives you conversation memory, human-in-the-loop pauses, fault tolerance and time travel. Human-in-the-loop only works because of this layer, so expect “where is the state stored, what happens if the process dies mid-run, and what exactly happens on resume?”.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
@@ -1109,9 +1099,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "Human-in-the-loop",
     "priority": "P0",
     "title": "interrupt() and resume — the mechanics interviewers probe",
-    "why": "“Human-in-the-loop via LangGraph interrupts” is a resume claim, so expect the mechanics: a checkpointer is required, the run pauses and hands back a payload, resume is by thread_id with Command(resume=...), and the interrupted node re-runs from its first line — so anything before the interrupt() must be idempotent. Get these exactly right; a vague answer here undermines the whole resume line.",
-    "resumeLinked": true,
-    "flag": "Human-in-the-loop approval via LangGraph interrupts (the Blue Yonder agent).",
+    "why": "Human-in-the-loop with LangGraph interrupts is probed on its exact mechanics: a checkpointer is required, the run pauses and hands back a payload, resume is by thread_id with Command(resume=...), and the interrupted node re-runs from its first line — so anything before the interrupt() must be idempotent. Get these exactly right; vague answers here are easy to spot.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "explain the pause, the payload, the resume value and node re-execution, the rules for several interrupts, and dynamic vs static interrupts.",
       "tooDeep": "checkpoint serialisation; LangGraph Platform internals."
@@ -1184,9 +1174,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "Human-in-the-loop",
     "priority": "P0",
     "title": "Designing approval flows — what needs a human, and how they decide",
-    "why": "Design rounds probe controls more than cleverness: what the agent may do alone, what needs approval, what the reviewer sees, and what happens to the change while it waits. Your Blue Yonder agent is the reference answer — staged writes, an approval interrupt, then commit — so rehearse it as a general pattern: risk-tiered actions, a reviewable proposal, approve / edit / reject, and an audit trail.",
-    "resumeLinked": true,
-    "flag": "The Blue Yonder agent — Redis-staged writes, Base+Overlay persistence, approval before commit.",
+    "why": "Design rounds probe controls more than cleverness: what the agent may do alone, what needs approval, what the reviewer sees, and what happens to the change while it waits. The reference pattern is staged writes, an approval interrupt, then commit, generalised as: risk-tiered actions, a reviewable proposal, approve / edit / reject, and an audit trail.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "tier actions by risk, design the reviewer's payload and decisions, and describe the staged-write pattern end to end.",
       "tooDeep": "approval UI design; workflow-engine products."
@@ -1259,8 +1249,8 @@ export const AI_STACK_TOPICS = [
     "priority": "P1",
     "title": "HITL in production — timeouts, stale data, concurrency, audit",
     "why": "After the happy path come the operational questions: the approver never answers, the data changed while they were deciding, two people approve conflicting changes, the service was redeployed while runs were paused. Each has a standard answer, and having them ready is what makes your HITL claim credible.",
-    "resumeLinked": true,
-    "flag": "The Blue Yonder approval flow — these are its follow-up questions.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "answer each failure case below and say how it's enforced in code.",
       "tooDeep": "distributed-locking theory; BPM engines."
@@ -1276,14 +1266,6 @@ export const AI_STACK_TOPICS = [
     "resources": [
       {
         "id": "HITL-03-r1",
-        "kind": "self",
-        "title": "Your Blue Yonder approval flow — from memory",
-        "source": "Your own memory of the system",
-        "minutes": 30,
-        "note": "For each question below, write what your system did — or what it should have done. Architecture level only, nothing confidential."
-      },
-      {
-        "id": "HITL-03-r2",
         "kind": "video",
         "title": "Optimistic Locking - What, When, Why, and How?",
         "source": "Arpit Bhayani",
@@ -1292,7 +1274,7 @@ export const AI_STACK_TOPICS = [
         "note": "Compare-and-set with a version column: the fix for “the data changed while the approver was deciding”."
       },
       {
-        "id": "HITL-03-r3",
+        "id": "HITL-03-r2",
         "kind": "video",
         "title": "Fix Duplicate Messages with the Idempotent Consumer Pattern",
         "source": "Milan Jovanović",
@@ -1301,8 +1283,8 @@ export const AI_STACK_TOPICS = [
         "note": "Idempotency keys: why a retried or double-clicked approval must apply once."
       }
     ],
-    "minutes": 61,
-    "duration": "1h 1m",
+    "minutes": 31,
+    "duration": "31m",
     "questions": [
       "The approver never responds. What happens to the staged write?",
       "The underlying data changed while the human was deciding. Now what?",
@@ -1321,7 +1303,7 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "Evals",
     "priority": "P0",
     "title": "Eval-driven development — error analysis first, then metrics",
-    "why": "Evals are the round people fail most often and the strongest signal on a resume. Practitioners (Hamel Husain, Shreya Shankar, Anthropic) agree on the method: read real traces and categorise failures first, write cheap targeted checks for the failures that matter, and only then automate with judges — not generic “helpfulness” scores from a library.",
+    "why": "Evals are the round people fail most often and the strongest signal that someone has shipped AI for real. Practitioners (Hamel Husain, Shreya Shankar, Anthropic) agree on the method: read real traces and categorise failures first, write cheap targeted checks for the failures that matter, and only then automate with judges — not generic “helpfulness” scores from a library.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
@@ -1395,9 +1377,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "Evals",
     "priority": "P0",
     "title": "LLM-as-judge you can trust — rubrics, biases, calibration",
-    "why": "“Who judges the judge?” is the follow-up to every LLM-as-judge claim, and that claim is on your resume. Strong answers treat the judge as a measuring instrument: one narrow criterion, a binary verdict with a critique, known biases controlled, agreement with human labels measured on a held-out set, and recalibration whenever the judge's model or prompt changes.",
-    "resumeLinked": true,
-    "flag": "An LLM-as-judge groundedness loop (DeepLogLens). How yours was measured is on the Projects page (LL-06).",
+    "why": "“Who judges the judge?” is the follow-up to every LLM-as-judge claim. Strong answers treat the judge as a measuring instrument: one narrow criterion, a binary verdict with a critique, known biases controlled, agreement with human labels measured on a held-out set, and recalibration whenever the judge's model or prompt changes.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "write a judge prompt, name four biases with their mitigations, and compute agreement (TPR/TNR, Cohen's kappa) by hand.",
       "tooDeep": "training reward models; agreement statistics beyond kappa."
@@ -1848,9 +1830,9 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "AI system design",
     "priority": "P1",
     "title": "Guardrails and security — prompt injection, least privilege, safe SQL",
-    "why": "Every agent and RAG design question gets a security follow-up. Indirect prompt injection — instructions hidden in retrieved text or tool output — can't be reliably prevented by prompting, so the answer is architecture: treat model output as untrusted, enforce permissions outside the model, and never combine private data, untrusted content and an outbound channel without a human between them. Guarded SQL is on your resume, so expect “how do you stop it writing DROP TABLE?”.",
-    "resumeLinked": true,
-    "flag": "Guarded, hierarchy-aware PostgreSQL querying in the Blue Yonder agent.",
+    "why": "Every agent and RAG design question gets a security follow-up. Indirect prompt injection — instructions hidden in retrieved text or tool output — can't be reliably prevented by prompting, so the answer is architecture: treat model output as untrusted, enforce permissions outside the model, and never combine private data, untrusted content and an outbound channel without a human between them. Expect “how do you stop a text-to-SQL agent writing DROP TABLE?”.",
+    "resumeLinked": false,
+    "flag": "",
     "ceiling": {
       "enough": "explain direct vs indirect injection, the lethal trifecta, layered text-to-SQL safety and the four kinds of guardrail.",
       "tooDeep": "jailbreak research; red-teaming tooling."
@@ -2080,7 +2062,7 @@ export const AI_STACK_TOPICS = [
     "sectionLabel": "AI system design",
     "priority": "P2",
     "title": "Design: tool-using agent with approvals",
-    "why": "Agent design questions test controls more than cleverness: tool schemas, least-privilege access, step and spend limits, idempotent tools, approval points, and verifying the outcome in the system of record. It's the design version of your Blue Yonder agent — practise it as a fresh problem.",
+    "why": "Agent design questions test controls more than cleverness: tool schemas, least-privilege access, step and spend limits, idempotent tools, approval points, and verifying the outcome in the system of record.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
@@ -2307,7 +2289,7 @@ export const AI_STACK_TOPICS = [
 export const AI_STACK_PRIORITIES = ["P0","P1","P2","P3"];
 
 export const AI_STACK_PRIORITY_CONFIG = {
-  P0: { label: "P0", blurb: "Asked in nearly every AI loop, or stands behind a resume claim", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
+  P0: { label: "P0", blurb: "Asked in nearly every AI loop", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
   P1: { label: "P1", blurb: "Asked often — do before any real interview", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" },
   P2: { label: "P2", blurb: "Design rounds and depth — after P0 and P1", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
   P3: { label: "P3", blurb: "Differentiators. Skip under time pressure", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300 border-slate-500/30" },
@@ -2319,4 +2301,4 @@ export const AI_STACK_PRIORITY_COUNTS = {"P0":16,"P1":9,"P2":4,"P3":0};
 
 export const AI_STACK_SECTION_COUNTS = {"S":1,"R":7,"L":5,"H":3,"E":5,"D":6,"F":2};
 
-export const AI_STACK_MINUTES = 2636;
+export const AI_STACK_MINUTES = 2576;

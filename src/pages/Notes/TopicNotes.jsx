@@ -23,6 +23,7 @@ import {
 } from "../../Data/planStore";
 import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
 import { recordNow, restoreVersion } from "../../Data/noteHistory";
+import { hasBuiltInDoc, loadBuiltInDoc } from "../../Data/aiStackDocs";
 import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import StackNav from "./StackNav";
 import ResizableSide from "../../components/ResizableSide";
@@ -48,6 +49,12 @@ const VIEWS = [
 // Reading preferences are a per-device convenience, so localStorage is fine;
 // they never touch the synced note store.
 const PREFS_KEY = "notesReaderPrefs";
+// A built-in document has no images, annotations or learnt marks of its own;
+// stable empties keep the reader from re-deriving on every render.
+const NO_ASSETS = {};
+const NO_ANNOTATIONS = [];
+const NO_LEARNT = {};
+const noop = () => {};
 const FONT_MIN = 14;
 const FONT_MAX = 22;
 function loadPrefs() {
@@ -102,6 +109,18 @@ export default function TopicNotes() {
 
   const [text, setText] = useState("");
   const [loaded, setLoaded] = useState(false);
+  // A topic that ships with a document (AI Stack) reads that document, the same
+  // for every viewer, instead of the viewer's own note.
+  const builtIn = hasBuiltInDoc(source, topicId);
+  const [doc, setDoc] = useState(null);
+  useEffect(() => {
+    let live = true;
+    setDoc(null);
+    loadBuiltInDoc(source, topicId).then((d) => live && setDoc(d));
+    return () => {
+      live = false;
+    };
+  }, [source, topicId]);
   const [savedAt, setSavedAt] = useState(null);
   const [dirty, setDirty] = useState(false);
   const [uploading, setUploading] = useState(0);
@@ -474,7 +493,7 @@ export default function TopicNotes() {
     [applyAction, persist]
   );
 
-  const stats = useMemo(() => noteStats(text), [text]);
+  const stats = useMemo(() => noteStats(builtIn ? doc || "" : text), [builtIn, doc, text]);
   const doneDays = useMemo(
     () => (topic && completed[topic.id] ? stack.daysSinceDone(topic.id) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -593,7 +612,7 @@ export default function TopicNotes() {
         </span>
       )}
       {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
-      <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user && !sandbox} />
+      {!builtIn && <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user && !sandbox} />}
     </span>
   );
 
@@ -614,7 +633,12 @@ export default function TopicNotes() {
       onTogglePlanned={() => togglePlanned(topic)}
       meta={meta}
       tools={
-        immersive || topic.noteless ? null : preview ? (
+        immersive || topic.noteless ? null : builtIn ? (
+          <>
+            {textSize}
+            {fullScreenButton("toolbar")}
+          </>
+        ) : preview ? (
           historyButton
         ) : (
           <>
@@ -682,7 +706,33 @@ export default function TopicNotes() {
             </div>
           )}
 
-          {loaded && isRead && !topic.noteless && (
+          {/* The topic's built-in document: read-only, the same for every viewer. */}
+          {loaded && builtIn && doc !== null && !topic.noteless && (
+            <NoteReader
+              key={`${source}:${topic.id}:doc`}
+              flat
+              lead={lead}
+              starterQuestions={null}
+              footer={asked}
+              text={doc}
+              onCommit={noop}
+              assets={NO_ASSETS}
+              colorMode={colorMode}
+              fontSize={prefs.fontSize}
+              accent={accent}
+              topOffset={topOffset}
+              immersive={immersive}
+              railTop={immersive ? null : fullScreenButton("rail")}
+              railTopShown={!immersive && !toolbarFsInView}
+              annotations={NO_ANNOTATIONS}
+              onAnnotationsChange={noop}
+              learnt={NO_LEARNT}
+              onToggleLearnt={noop}
+              readOnly
+            />
+          )}
+
+          {loaded && isRead && !builtIn && !topic.noteless && (
             <NoteReader
               key={`${source}:${topic.id}${preview ? `:${preview.id}` : ""}`}
               flat
@@ -713,7 +763,7 @@ export default function TopicNotes() {
             />
           )}
 
-          {loaded && !isRead && !topic.noteless && (
+          {loaded && !isRead && !builtIn && !topic.noteless && (
             <div className="px-5 sm:px-10 lg:px-16 py-8 lg:py-12">
               {lead}
               <div className="mb-3 flex flex-wrap items-center gap-1">
