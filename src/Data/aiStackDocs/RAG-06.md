@@ -48,4 +48,40 @@ Low context recall means fix retrieval. High context recall with low faithfulnes
 
 Correction: fixing a RAG bug by editing the prompt until one failing example passes usually breaks other questions. Add the case to the test set and fix the category of failure.
 
-Also asked: "The model answers confidently when the context lacks the answer. Fix it." The layered list above is the answer.
+## 5. When the documents disagree
+
+FreshCart has 12,000 documents written by different teams over years. They disagree: the 2023 policy says 48 hours, the 2026 policy says 12, a training slide still says 24. Retrieval faithfully finds all three. This is a data problem, and it needs data fixes:
+
+- **Version and status metadata**: every chunk carries `version`, `effective_from`, and a status such as current or superseded. Filter superseded documents out of search by default.
+- **One owner per policy**: a document registry says which document is authoritative for each topic. Duplicates (slides, FAQs) point to it rather than restate it.
+- **Show conflicts honestly**: when two current documents disagree, the answer says so and cites both, and the conflict is logged for the document owners to resolve.
+
+## 6. Tools that make debugging fast
+
+Teams that improve RAG quickly have three things:
+
+- **A trace viewer** that shows, for one question, the rewritten query, every retrieved chunk with its score and source, what the reranker kept, the final prompt and the answer, on one screen. Hamel Husain argues that a custom viewer built for your data is the highest-value tool an AI team can build.
+- **A retrieval playground**: type a question, see the top 20 from keyword search, vector search and the fused list side by side. Most retrieval bugs are obvious there in seconds.
+- **Failure tags**: every reviewed failure gets a category (stale document, chunk split, wording mismatch, ignored context), so weekly counts show which fix pays most.
+
+```mermaid
+flowchart LR
+    T["Bad answers from<br/>traces and feedback"] --> V["Review in the<br/>trace viewer"]
+    V --> G["Tag the failure<br/>category"]
+    G --> C["Count tags<br/>each week"]
+    C --> F["Fix the top<br/>category"]
+    F --> E["Re-run the<br/>test set"]
+    E --> T
+```
+
+## 7. Signals to watch in production
+
+You cannot read every answer, so watch signals that move when quality drops:
+
+- the share of questions where the best retrieval score is below the threshold (rising means content gaps or a broken index);
+- the share of answers that cite nothing or decline to answer;
+- thumbs-down rate and "asked again in different words" rate;
+- groundedness-check failures;
+- the age of the newest indexed document (a stalled ingestion pipeline shows up here first).
+
+Also asked: "The model answers confidently when the context lacks the answer. Fix it." The layered list in section 4 is the answer.

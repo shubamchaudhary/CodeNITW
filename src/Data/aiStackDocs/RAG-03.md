@@ -81,4 +81,43 @@ The fixes:
 
 Correction: "just add a WHERE clause" is not a complete answer to multi-tenant vector search. With a selective filter it silently returns too few results.
 
-Also asked: "When would you not use an ANN index at all?" When a partition holds only tens of thousands of vectors, an exact scan is fast enough and always correct. At the other extreme, **quantisation** (storing each number with fewer bits, such as pgvector's `halfvec`) shrinks memory when the index no longer fits.
+Also asked: "When would you not use an ANN index at all?" When a partition holds only tens of thousands of vectors, an exact scan is fast enough and always correct.
+
+## 5. When the index outgrows memory
+
+HNSW is fast because the graph lives in memory: every hop reads a node's links, and reading those from disk would be far slower. So memory is the first wall you hit.
+
+FreshCart's 2 million chunks at 768 dimensions are about 6 GB of raw vectors plus the graph. At 50 million chunks that becomes 150 GB or more. Three tools push the wall back:
+
+**Quantisation** stores each number with fewer bits.
+
+- **Half precision** (`halfvec` in pgvector): 16 bits instead of 32. Half the memory, almost no loss in recall.
+- **Int8 (scalar) quantisation**: each number squeezed into 8 bits. A quarter of the memory, small loss.
+- **Binary quantisation**: each number becomes one bit, its sign. 32 times smaller, and comparing two vectors becomes counting differing bits, which is extremely fast. The loss is large on its own, so it is used with rescoring.
+
+```mermaid
+flowchart LR
+    Q["Question vector"] --> B["Search binary index:<br/>1 bit per number,<br/>fast, rough"]
+    B --> C["Top 200 rough<br/>candidates"]
+    C --> R["Rescore those 200<br/>with full-precision<br/>vectors"]
+    R --> T["True top 10"]
+```
+
+- The binary index is small enough to stay in memory and finds roughly the right neighbourhood very quickly.
+- Only 200 candidates are rescored with the full vectors, which can sit on disk or in cheaper storage.
+- The result is close to full-precision quality at a fraction of the memory. Hugging Face reported binary quantisation with rescoring keeping around 96% of retrieval performance in their tests.
+
+**Fewer dimensions.** Some embedding models are trained so that the first 256 of their 768 numbers still work as a smaller embedding (Matryoshka embeddings, covered on the embeddings page). Cutting dimensions cuts memory and speeds up every comparison.
+
+**Disk-based indexes.** Algorithms such as DiskANN keep a compressed copy in memory and the full graph on fast SSDs, trading some latency for much larger capacity.
+
+## 6. The costs people forget: writes, deletes and scale-out
+
+- **Inserts are not free.** Adding a vector to HNSW means searching for its neighbours and updating their links. Bulk loads are much faster if the index is built after the data is loaded.
+- **Deletes leave holes.** Deleted nodes are usually marked rather than removed, and the graph routes around them. Many deletes degrade recall and waste memory until the index is rebuilt or vacuumed. In Postgres, `VACUUM` and occasional `REINDEX` matter for vector tables that change often.
+- **Updates are delete plus insert.** A re-embedded document churns the graph, which is one more reason to re-index in a fresh copy (blue-green, from the chunking page) rather than in place.
+- **Scaling out.** When one machine is not enough, the index is split into **shards** (each holding part of the vectors). A query goes to every shard, each returns its own top results, and the results are merged. **Replicas** (copies of each shard) add read capacity and survive machine failures. Dedicated vector databases do this for you; with pgvector you partition and replicate Postgres yourself.
+
+**Decision point: FreshCart plans to grow to 40 million chunks. pgvector or a dedicated vector database?** It depends on more than size: filtering needs, hybrid search, write rate and who runs it. The vector databases page walks through that decision.
+
+Also asked: "What is the trade-off in HNSW's m and ef_search?" Recall against memory, build time and query latency, and you pick the point by measuring recall against an exact scan.

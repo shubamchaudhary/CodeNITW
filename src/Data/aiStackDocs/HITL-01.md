@@ -94,7 +94,47 @@ def review(state):
 - **Two parallel branches waiting at once**: each pending interrupt has an id, and you resume both together with `Command(resume={id_a: {"type": "approve"}, id_b: {"type": "reject", "message": "wrong warehouse"}})`.
 - **Breakpoints are different**: `interrupt_before=["tools"]` set when building the graph pauses before a node every time, with no payload, like a debugger breakpoint. Real approvals use `interrupt()` inside the node, because it pauses only when your code decides (for example only for changes over 10%) and carries the diff to the reviewer.
 
-## 5. The same pattern inside create_agent
+## 5. What happens underneath
+
+Knowing the mechanism makes every rule above obvious.
+
+```mermaid
+flowchart TB
+    N["Node runs, reaches<br/>interrupt(payload)"] --> L{"Is there a saved<br/>answer for this<br/>interrupt?"}
+    L -->|"no: first run"| X["Raise a special<br/>interrupt exception"]
+    X --> SV["Runtime catches it:<br/>saves state + the<br/>pending interrupt"]
+    SV --> RT["Return payload to<br/>the caller; run<br/>is paused"]
+    L -->|"yes: after resume"| RV["interrupt() returns<br/>the saved answer"]
+    RV --> CT["Node continues<br/>past the call"]
+```
+
+- On the first run there is no saved answer, so `interrupt()` raises a special exception. The runtime catches it, saves the state together with the pending interrupt, and hands the payload back.
+- `Command(resume=value)` stores the answer against that pending interrupt and starts the node again from the top.
+- This time `interrupt()` finds the saved answer and simply returns it.
+
+That is why the node restarts from its first line (the runtime cannot resume halfway through a Python function), why a bare `except` breaks it (it catches the special exception), and why several interrupts are matched by order (answers are stored in the order the calls happen).
+
+## 6. Interrupts inside tools, and checking the human's answer
+
+**Approval inside the tool.** Instead of a separate approval node, the tool itself can pause:
+
+```python
+@tool
+def update_safety_stock(sku: str, warehouse: str, new_qty: int):
+    """Change safety stock for one SKU in one warehouse."""
+    decision = interrupt({"sku": sku, "warehouse": warehouse, "new_qty": new_qty})
+    if decision["type"] == "reject":
+        return f"Rejected by planner: {decision.get('reason', 'no reason given')}"
+    qty = decision.get("new_qty", new_qty)          # the planner may edit the number
+    apply_change(sku, warehouse, qty)
+    return f"Safety stock for {sku} in {warehouse} set to {qty}"
+```
+
+The approval travels with the tool: any agent that uses this tool gets the pause for free. The tool's own code before `interrupt()` must still be safe to repeat.
+
+**Checking the human's answer.** People make typos too: Arjun types "4800" instead of "480". Validate the resume value, and if it is invalid, ask again. The pattern is one `interrupt()` per node run, with an edge that loops back to the node while the answer is invalid, rather than a `while` loop of interrupts inside one node (which breaks the matching-by-order rule). Recent LangGraph versions can also attach a schema to an interrupt so the resume value is validated automatically and a UI can render a form from it.
+
+## 7. The same pattern inside create_agent
 
 When the agent is a plain `create_agent` loop, LangChain's `HumanInTheLoopMiddleware` pauses before chosen tools:
 

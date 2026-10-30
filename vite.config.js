@@ -51,6 +51,11 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       outDir: "build",
+      // Gzipping every chunk just to print its size adds seconds to each build.
+      reportCompressedSize: false,
+    },
+    resolve: {
+      alias: [{ find: /^rehype-prism-plus$/, replacement: path.resolve("src/rehypePrism.js") }],
     },
     // The Python exercises' worker is a module worker (it imports Pyodide's ESM build).
     worker: {

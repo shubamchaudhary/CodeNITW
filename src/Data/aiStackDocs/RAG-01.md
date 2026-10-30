@@ -93,3 +93,56 @@ Also worth caching: the embeddings of repeated questions, search results for ver
 Correction: teams often add the new chunks and forget the delete. Then versions 3 and 4 are both searchable and answers mix them. Worse, a document that was deleted, or whose access was revoked, stays searchable. That is a data leak, not just a stale answer.
 
 Also asked: "Where does the latency go, and what would you cache?" The answer is in this section: generation dominates, so stream it, keep prompts short, and cache the fixed prompt start, repeated embeddings and hot search results.
+
+## 6. RAG among the alternatives
+
+Interviewers rarely ask "what is RAG?". They ask "why RAG and not X?". There are four ways to get FreshCart's knowledge into an answer, and they solve different problems:
+
+```mermaid
+flowchart TB
+    Q{"What is missing<br/>from the answer?"} -->|"facts the model<br/>never saw"| K{"How much text,<br/>how often does<br/>it change?"}
+    Q -->|"a behaviour:<br/>format, tone,<br/>a narrow skill"| B{"Can instructions<br/>and examples<br/>fix it?"}
+    Q -->|"live data:<br/>stock, order status"| T["Tool call to the<br/>live system"]
+    K -->|"small and fixed"| S["Put it all in the<br/>prompt, use<br/>prompt caching"]
+    K -->|"large or changing,<br/>needs citations or<br/>per-user access"| R["RAG"]
+    B -->|"yes"| P["Prompting:<br/>instructions,<br/>few-shot examples"]
+    B -->|"no, or too slow<br/>and expensive"| F["Fine-tuning"]
+```
+
+- **Prompting** changes behaviour you can describe. It is the cheapest change and the first thing to try.
+- **Stuffing the prompt** works when all the knowledge fits comfortably and rarely changes. Prompt caching makes the repeated part cheap.
+- **RAG** brings in knowledge that is large, changing, private per user, or must be cited.
+- **Tools** fetch facts that live in a system and change by the minute.
+- **Fine-tuning** (continuing to train a model on your own examples) changes behaviour reliably and knowledge unreliably: a fine-tuned model cannot cite what it learned and must be retrained whenever a policy changes. It has its own page in the foundations section.
+
+Real systems combine them. Ask FreshCart is RAG for policies, tools for orders, and prompting for tone.
+
+## 7. Assembling the prompt
+
+Retrieval returns 5 chunks. How they are placed in the prompt changes answer quality as much as which chunks were found.
+
+A typical layout, top to bottom:
+
+- **System instructions**: who the assistant is, the rules ("answer only from the documents below; if they do not answer the question, say so; cite the id of every passage you use"), and the output format.
+- **The documents**, each wrapped with its id and a little metadata: `[refund-v4:p4 | Refund policy v4 | updated 2026-09-01]` followed by the chunk text. The date lets the model prefer the newer of two conflicting passages.
+- **Conversation history**, if any, trimmed to what the current question needs.
+- **The question**, last.
+
+The fixed parts go first so prompt caching can reuse them across questions; the changing parts go last.
+
+**A token budget.** Suppose the model's window is generous but you want answers fast and cheap. A budget for one Ask FreshCart call might be: instructions 800 tokens, 5 chunks of 400 tokens = 2,000, history 500, question 100, room for the answer 500. About 3,900 tokens. If a question needs more evidence, the fix is better chunks or a reranker, not more chunks: as the debugging page shows, more text often makes answers worse.
+
+**Duplicates and conflicts.** Two chunks often say the same thing (the policy and an FAQ quoting it). Remove near-duplicates before building the prompt so they do not crowd out other evidence. When two chunks disagree, the metadata decides: prefer the current version, and if both are current, show both and ask the model to say they disagree rather than pick silently.
+
+## 8. The numbers behind the index
+
+A design answer gets much stronger with a quick size estimate. For FreshCart:
+
+- 12,000 documents, averaging 20 pages, roughly 160 chunks each: about 2 million chunks.
+- Each chunk's embedding: 768 numbers x 4 bytes = about 3 KB. 2 million chunks = about 6 GB of raw vectors, before the index's own overhead (an HNSW graph adds links per vector, often another 20-50%).
+- Embedding everything once: 2 million chunks x 400 tokens = 800 million tokens. At an assumed $0.02 per million tokens for an embedding API, about $16. Embedding is cheap; generation is where the money goes.
+- Re-embedding is still a project at this size: rate limits mean hours, and both indexes must be swapped atomically.
+
+These numbers also tell you when the vector index stops fitting in one machine's memory, which is the trigger for quantisation or a dedicated vector database (both covered on later pages).
+
+Also asked: "Can't we just fine-tune the model on our documents?" Section 6 is the answer: fine-tuning teaches behaviour, not reliable, citable, updatable facts.

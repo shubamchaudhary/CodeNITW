@@ -31,6 +31,22 @@ flowchart LR
 
 The price: indexing makes many model calls per chunk, so it is slow and expensive; updating the graph incrementally is hard; and extraction mistakes become wrong edges. Use it when these question types matter and you can measure the gain; otherwise hybrid search is cheaper.
 
-## 3. Counts and totals belong in SQL
+## 3. Cache-augmented generation and agentic search
+
+Two more patterns appear in recent interviews:
+
+- **Cache-augmented generation (CAG)**: for a corpus that fits in the context window and rarely changes, such as FreshCart's 40-page franchise handbook, load all of it into the prompt once, let the provider cache that prefix, and answer every question against the cached copy. No retrieval step, no retrieval misses, and repeat questions are cheap. It stops working as soon as the corpus grows past the window, changes often, or needs per-user access control.
+- **Agentic search**: instead of one retrieval, an agent searches, reads, decides what is still missing and searches again, often across several sources (documents, tickets, a database). It handles open questions ("why did complaints in Kothrud rise this month?") that no single search can, at the cost of more calls, more latency and harder testing. It is the same loop as corrective RAG with more freedom.
+
+## 4. Multimodal RAG
+
+Some FreshCart knowledge is not text: photos of damaged deliveries, warehouse floor plans, scanned supplier invoices, charts in incident reports. Two approaches:
+
+- **Convert to text first**: a vision-capable model describes each image or chart, and the description is indexed like any chunk. Simple, and works with the existing pipeline.
+- **Multimodal embeddings**: a model that embeds images and text into the same space, so a text question can retrieve an image directly. Newer document-retrieval models embed whole page images, which avoids parsing problems for complex layouts.
+
+The document ingestion page covers how PDFs, tables and scans become searchable in the first place.
+
+## 5. Counts and totals belong in SQL
 
 "How many orders were delivered late in Kothrud last week?" Search returns some late-delivery documents; it cannot count every order. That is a database query. Give the assistant a tool that runs safe, read-only SQL (the security page covers the guard rails) or a typed function such as `count_late_deliveries(area, week)`, and keep RAG for the "why" questions that follow, such as "what were the common causes?".

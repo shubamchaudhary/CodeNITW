@@ -68,4 +68,29 @@ That is why they work as a pair: the cheap bi-encoder and BM25 shortlist 50-100 
 
 Skip reranking when the right chunk is already almost always in the top 3, when the latency budget is tight (voice, autocomplete), or when you only send 3-5 chunks and the model reads all of them anyway.
 
+## 5. Beyond BM25 plus vectors
+
+Two newer ideas blur the line between keyword and meaning search:
+
+- **Learned sparse retrieval** (for example SPLADE): a model reads each chunk and outputs a weighted list of words, including related words that never appear in the text ("refund" might also get weight on "return" and "money back"). It is searched like a keyword index, so it keeps exact-match strengths, but understands some synonyms.
+- **Late interaction** (ColBERT): instead of one vector per chunk, store one small vector per token. At query time, each query token finds its best-matching chunk token, and the scores are added up. Much more precise than one vector per chunk, at the cost of a far bigger index. Often used as a reranker over a shortlist.
+
+You do not need to have used them. You do need to know they exist and where they sit: between cheap single-vector search and expensive cross-encoders.
+
+## 6. Diversity, thresholds and reranker choices
+
+**Diversity.** If the top 5 chunks all come from the same paragraph, repeated in the policy, its FAQ and a training deck, the prompt contains one fact five times. **Maximal Marginal Relevance (MMR)** fixes this: it picks chunks one at a time, each time choosing the one that is most relevant to the question while least similar to the chunks already picked. A setting (often called lambda) balances relevance against diversity.
+
+```mermaid
+flowchart LR
+    C["20 candidates<br/>after fusion"] --> P1["Pick the most<br/>relevant: A"]
+    P1 --> P2["Next: relevant<br/>but unlike A: D"]
+    P2 --> P3["Next: relevant<br/>but unlike A and D: G"]
+    P3 --> OUT["5 chunks that<br/>cover different<br/>facts"]
+```
+
+**Thresholds.** Always taking the top 5 means always sending 5 chunks, even when nothing relevant exists. A reranker score threshold ("drop anything below 0.3") lets the system notice there is no good evidence and say so, which is how unanswerable questions get honest answers. Tune the threshold on the test set's unanswerable questions.
+
+**Which reranker.** Options range from hosted APIs (Cohere Rerank, Voyage and others) to open models you run yourself (the BGE reranker family, cross-encoders from sentence-transformers). Hosted is easiest; self-hosted keeps data in your network and cost predictable at high volume. Some teams use an LLM as the reranker for the hardest cases; it is the most accurate and the slowest.
+
 Also asked: "Hybrid had a lower MRR than keyword search alone. Why, and what next?" The right chunk is being retrieved but ranked lower: fusion pulls meaning-based results above the exact match. Options, each measured on the same test set: add a cross-encoder after fusion; weight RRF toward keyword search for code-heavy questions; send error-code questions to keyword search only; or improve the vector side with a better embedding model or smaller chunks.
