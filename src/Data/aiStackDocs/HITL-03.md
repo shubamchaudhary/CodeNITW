@@ -31,7 +31,40 @@ If the row is now at version 8, zero rows are updated, the commit is aborted, an
 
 **"Who changed this, and why?"** Keep an append-only audit record for every action: the request, the proposal (tool, arguments, diff, reasoning), the trace id, the approver, the decision and any edits, timestamps, the commit result, and the row versions before and after. Store it outside the agent's own state, so it survives even if workflow data is cleaned up.
 
-## 2. Complete example: Planner Copilot's approval workflow
+## 2. Measuring the human loop
+
+A human-in-the-loop system has its own health metrics. Track them per action type and per approver:
+
+- **Approval rate**: near 100% with instant decisions suggests rubber-stamping; very low suggests the agent proposes badly.
+- **Edit rate and edit size**: how often, and how much, people change proposals. Large, frequent edits point at what the agent gets wrong.
+- **Time to decision**: from proposal to answer, with the share that expire unanswered.
+- **Post-approval incidents**: approved changes that were later reverted. The most important number: it shows whether the review catches what it should.
+
+```mermaid
+flowchart LR
+    P["Proposals"] --> D["Decisions"]
+    D --> AR["Approval rate"]
+    D --> ED["Edit rate,<br/>edit size"]
+    D --> TD["Time to<br/>decision"]
+    D --> RV["Reverted<br/>later"]
+    AR --> TUNE["Tune tiers,<br/>fix the agent,<br/>improve the card"]
+    ED --> TUNE
+    TD --> TUNE
+    RV --> TUNE
+```
+
+## 3. Testing a system that pauses
+
+Paused runs are easy to forget in tests. Cover at least:
+
+- pause, then resume with each decision type (approve, edit, reject), and check the database each time;
+- resume after a simulated restart (new process, same checkpointer);
+- resume twice with the same decision (must apply once);
+- resume after the data changed (must abort and re-propose);
+- resume an expired proposal (must refuse);
+- resume a checkpoint saved by the previous version of the workflow (must still work).
+
+## 4. Complete example: Planner Copilot's approval workflow
 
 ```python
 class State(TypedDict):

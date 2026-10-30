@@ -62,3 +62,48 @@ In Postgres with the pgvector extension, the index must be built for the same co
 **Choosing an embedding model.** Run three or four candidate models on the same 80 labelled questions and keep the one that finds the right passage most often. Public leaderboards such as MTEB rank models on general benchmarks; use them for a shortlist, not a decision, because their tasks are not your documents. Also weigh: the model's maximum input length against your chunk size; the number of dimensions (more numbers per vector means more storage and slower search); support for the languages your documents use; price; and whether your data may leave your network.
 
 Correction: switching embedding models later is not a configuration change. Vectors from different models live in different spaces and cannot be compared, so the entire corpus must be re-embedded.
+
+## 4. Choosing a strategy for each kind of document
+
+FreshCart's documents are not all alike, and one chunking rule for all of them is a common mistake.
+
+```mermaid
+flowchart TB
+    D{"What kind of<br/>document?"} -->|"policies, manuals<br/>with headings"| H["Structure-aware:<br/>split on headings,<br/>keep heading path"]
+    D -->|"runbooks,<br/>step lists"| L["Keep each procedure<br/>whole if under the<br/>limit, else by step"]
+    D -->|"tables: refund<br/>windows, prices"| T["One chunk per row<br/>or row group, with<br/>column headers repeated"]
+    D -->|"incident write-ups,<br/>long prose"| R["Recursive at<br/>300-500 tokens,<br/>small overlap"]
+    D -->|"FAQ pages"| F["One chunk per<br/>question + answer"]
+    H --> M["Add metadata:<br/>doc, version, section,<br/>access list, date"]
+    L --> M
+    T --> M
+    R --> M
+    F --> M
+```
+
+- **Headings are context.** Store the heading path with each chunk ("Refund policy > Damaged items > Dairy") and include it in the text you embed. A chunk that starts "Within 24 hours of delivery..." is far easier to find when it carries "Damaged items > Dairy".
+- **Tables need their headers.** A table row "Bakery | 12 hours | Photo required" means nothing without the column names. Repeat them in every row chunk: "Category: Bakery. Refund window: 12 hours. Proof: photo required."
+- **Keep procedures whole.** Splitting step 4 of a 6-step runbook from steps 1-3 produces answers that start halfway through.
+- **FAQs are already chunked.** One question and its answer is the natural unit.
+
+## 5. More ways to make a chunk findable
+
+The text you embed does not have to be the text you show the model. Several techniques separate the two:
+
+- **Multi-vector (summary) indexing**: generate a short summary, or a few questions the chunk answers, embed those, and point them at the full chunk. Users ask questions, so embedding "questions this chunk answers" often matches better than embedding the chunk.
+- **Proposition chunking**: a model rewrites a passage into small self-contained facts ("Dairy items must be reported within 24 hours of delivery.") and each fact is indexed. Very precise, expensive to build.
+- **Late chunking**: embed the whole document with a long-context embedding model first, then cut the resulting token vectors into chunks, so each chunk's vector already "knows" its surrounding document. A cheaper cousin of contextual retrieval.
+- **Metadata filters**: some precision comes from not searching at all. If the agent works for the Pune franchise, filter to Pune and shared documents before ranking.
+
+Every one of these is an indexing-time cost that must pay for itself on your retrieval test set.
+
+## 6. Re-indexing without downtime
+
+Changing chunk size, adding contextual sentences or switching embedding model all mean rebuilding the index. Doing it in place would leave half old, half new chunks in the index for hours. The safe pattern is **blue-green re-indexing**:
+
+- Build the new index alongside the old one, from the same documents.
+- Keep sending document updates to both while the new one fills.
+- Run the retrieval test set against the new index; switch only if it is better.
+- Point queries at the new index in one switch (an alias or a configuration flag), keep the old one briefly for rollback, then delete it.
+
+Also asked: "What chunk size do you use?" There is no universal number; describe the per-document-type strategy above and the measurement that picked the size.

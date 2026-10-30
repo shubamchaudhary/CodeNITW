@@ -51,4 +51,32 @@ A third-party MCP server's tool descriptions and outputs go straight into the mo
 
 In LangChain, MCP servers load as ordinary tools (from version 1.4, through `langchain.mcp`), so an MCP tool passes through the same validation, permission checks and approval middleware as any other tool.
 
+## 4. What happens when a client connects
+
+```mermaid
+flowchart TB
+    H["Host app starts<br/>its MCP client"] --> I["Initialise: exchange<br/>protocol version and<br/>capabilities"]
+    I --> L["List: client asks<br/>which tools, resources,<br/>prompts exist"]
+    L --> M["Host gives the tool<br/>descriptions to the<br/>model"]
+    M --> C["Model asks for a tool;<br/>host sends the call<br/>to the server"]
+    C --> R["Server runs it and<br/>returns the result"]
+    R --> M
+    S["Server: list changed"] -.->|"notification"| L
+```
+
+- **Initialise**: client and server agree on a protocol version and say what each supports.
+- **Discover**: the client lists the server's tools, resources and prompts.
+- **Use**: the host passes tool descriptions to the model as usual; when the model asks for one, the host sends the call to the server and returns the result.
+- **Change**: a server can notify clients when its list of tools changes.
+
+The protocol also lets a server ask things of the client: request a model completion through the host's model (**sampling**), or ask the user for missing input (**elicitation**). Remote servers use OAuth-based authorisation so the user grants access explicitly, and the server acts with that user's permissions, not with a shared admin key.
+
+## 5. Building an MCP server for FreshCart's inventory
+
+- Expose a few well-designed tools (`get_stock`, `get_forecast`), not one tool per database table. The tool-design rules from the tool-calling page apply unchanged.
+- Read-only by default; put any write tool behind approval in the host.
+- Check the caller's identity and permissions inside the server, on every call.
+- Return short, structured results; paginate big ones.
+- Version the server and keep tool descriptions stable, since hosts and users approve them.
+
 Also asked: "What problem does MCP solve that function calling does not?" Function calling is how a model asks for a tool; MCP is how tools and data are packaged and discovered, so one server works with every MCP-capable application.

@@ -62,7 +62,31 @@ flowchart LR
 - **Reject or expiry**: the overlay is deleted, and the reason goes back to the agent as the tool's result, so it can revise its proposal in the same conversation.
 - After committing, the agent reads the base table back and reports success only if the new values are really there.
 
-## 4. Two framings worth knowing
+## 4. Notify, ask, or review
+
+Not every human touchpoint is an approval. LangChain's work on background ("ambient") agents names three patterns, and a good design uses all three in the right places:
+
+```mermaid
+flowchart LR
+    AG["Planner Copilot<br/>working in the<br/>background"] --> NT["Notify: tell Arjun<br/>something happened;<br/>no reply needed"]
+    AG --> QS["Question: ask Arjun<br/>for missing info;<br/>agent waits"]
+    AG --> RV["Review: show the exact<br/>change; approve, edit<br/>or reject"]
+    NT --> E1["Milk forecast<br/>jumped 40%"]
+    QS --> E2["Which warehouses<br/>count as Pune<br/>East?"]
+    RV --> E3["Safety stock<br/>400 -> 480 in<br/>6 warehouses"]
+```
+
+- **Notify** when Arjun should know but nothing needs his decision.
+- **Question** when the agent lacks information only a person has. Asking is better than guessing.
+- **Review** when the agent is about to change something.
+
+## 5. Who may approve, and how fast
+
+- **The approver must be authorised.** Approval is an action like any other: check that the person clicking approve has the right to approve this change (their region, their limit). A planner should not approve their own large change when policy requires a manager: **separation of duties**.
+- **Approvals need a time limit.** Every review has a deadline matched to its risk and urgency, with a reminder and an escalation path (the production page covers expiry).
+- **Thresholds come from data.** Start strict, then look at outcomes. If Arjun approves 99% of "+5% to +10%" changes without edits over a month, that tier can move to automatic-with-audit. If 30% of a tier gets edited, tighten it or improve the agent there.
+
+## 6. Two framings worth knowing
 
 - **"Contact humans with tool calls"** (from the 12-Factor Agents guide): asking for approval is just another tool the agent can call, such as `request_approval(diff)`. Pausing and resuming then becomes ordinary control flow rather than a special case.
 - **Ambient agents**: agents started by events rather than by a chat message, such as a nightly forecast job. They post their proposals to an inbox and wait, saved in the database, until someone answers. LangChain's Agent Inbox is one such interface.

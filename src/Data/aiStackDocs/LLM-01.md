@@ -54,7 +54,27 @@ Measure it as faithfulness on a test set (the RAG metrics page), not from anecdo
 
 **Decision point: someone proposes fine-tuning a model on FreshCart's policies so it "just knows" them.** **Fine-tuning** means continuing to train a model on your own examples so its behaviour changes. It teaches behaviour (format, tone, a narrow task) reliably, and facts unreliably: the model cannot cite what it learned, may blend it with older knowledge, and would need retraining every time a policy changes. Policies stay in retrieval. Fine-tuning fits a different FreshCart problem: the ticket classifier runs on a large, slow model at 95% accuracy. Label a few thousand tickets with that large model, fine-tune a small model on them (LoRA, which trains a small add-on instead of all the model's weights, is enough), and switch if the small model matches the quality at a fraction of the cost.
 
-## 5. Complete example: sampling by hand
+## 5. Where a model's behaviour comes from
+
+Understanding how a model was made explains most of its behaviour:
+
+```mermaid
+flowchart LR
+    PT["Pretraining:<br/>predict the next token<br/>over trillions of tokens<br/>of web, books, code"] --> BASE["Base model:<br/>continues text,<br/>does not follow<br/>instructions"]
+    BASE --> SFT["Instruction tuning:<br/>examples of good<br/>answers to requests"]
+    SFT --> PREF["Preference training:<br/>learn which answers<br/>people prefer"]
+    PREF --> CHAT["Chat model:<br/>follows instructions,<br/>refuses some requests"]
+    CHAT --> RL["Reasoning training:<br/>rewarded for correct<br/>final answers"]
+    RL --> RSN["Reasoning model:<br/>thinks at length<br/>before answering"]
+```
+
+- **Pretraining** teaches language and a huge amount of general knowledge, frozen at a **knowledge cutoff** date. Anything after that date, or private to FreshCart, is unknown.
+- **Instruction tuning** and **preference training** (the fine-tuning page explains SFT, RLHF and DPO) turn a text-continuer into an assistant that follows instructions and has a house style.
+- **Reasoning models** are further trained, with reinforcement learning on problems with checkable answers, to produce a long internal chain of thought before answering. They are much better at multi-step problems (maths, code, planning) and slower and costlier per answer, because those thinking tokens are generated and usually billed.
+
+**Decision point: should Ask FreshCart use a reasoning model?** Not for "what is the bakery refund window?", where retrieval does the work and speed matters. Possibly for Planner Copilot's harder planning steps, where a wrong plan is expensive and a few extra seconds are fine. Many systems route: a fast model by default, a reasoning model for the hard cases.
+
+## 6. Complete example: sampling by hand
 
 ```python
 import math, random

@@ -56,4 +56,31 @@ Whatever you write on a resume or say in the walkthrough becomes the next questi
 
 If you cannot explain a claim for ten minutes, reword it or drop it. Evidence beats vocabulary.
 
+## 4. The numbers to know about your own project
+
+Before any interview, write down these facts about the system you will present. Interviewers ask for them, and hesitating on them undoes a good walkthrough:
+
+```mermaid
+flowchart TB
+    P["Your project"] --> D["Data: how many docs,<br/>chunks, users,<br/>requests a day"]
+    P --> Q["Quality: test set size,<br/>key metric before<br/>and after"]
+    P --> L["Latency: p50 and p95,<br/>where the time goes"]
+    P --> C["Cost: per request<br/>and per month,<br/>biggest driver"]
+    P --> F["Failures: top 3<br/>failure types and<br/>what you did"]
+    P --> T["Trade-offs: 2 options<br/>you rejected and why"]
+```
+
+If you do not have a number, say how you would measure it rather than invent one.
+
+## 5. The behavioural side of AI work
+
+Behavioural rounds for AI roles ask the usual questions with an AI twist. Prepare one short story for each:
+
+- **A model or prompt change that made things worse**: how you noticed, how you rolled back, what test you added.
+- **Pushing back on a launch**: the evidence was thin; what bounded experiment you proposed instead.
+- **Explaining uncertainty to non-engineers**: how you told a business owner that the system is right 92% of the time, and what happens the other 8%.
+- **A data problem disguised as a model problem**: the "hallucination" that turned out to be an outdated document.
+
+Each story: the situation, what you did, the result with a number, what you learned.
+
 The rest of this stack builds the knowledge behind each of those answers, starting with how Ask FreshCart finds the right document.

@@ -46,7 +46,41 @@ Related ideas you will hear:
 - **Self-RAG / adaptive RAG**: the system first decides whether it needs to search at all, and checks afterwards that its answer is supported by the chunks. In practice that check is a groundedness test after generation.
 - **Agentic RAG**: retrieval becomes a tool that an agent calls whenever it decides it needs more information, possibly several times across several sources. More flexible, but harder to bound, harder to test (you must judge the sequence of steps, not just the answer), and exposed to instructions hidden inside retrieved text (covered on the security page).
 
-## 3. Complete example: the retrieval core of Ask FreshCart
+## 3. Follow-up questions: rewriting with the conversation
+
+Agents talk to Ask FreshCart in conversations:
+
+- "What is the refund window for dairy?" -> answered.
+- "And for bakery?"
+
+Searching for "And for bakery?" finds nothing useful. The question only makes sense together with the conversation. The standard fix is **condensing**: before searching, a model rewrites the latest message into a **standalone question** using the history.
+
+```mermaid
+flowchart LR
+    H["History:<br/>refund window<br/>for dairy?"] --> C["Condense step:<br/>model rewrites<br/>the follow-up"]
+    F["Follow-up:<br/>And for bakery?"] --> C
+    C --> S["Standalone:<br/>What is the refund<br/>window for bakery?"]
+    S --> R["Search"]
+    R --> A["Answer with<br/>full history<br/>in the prompt"]
+```
+
+- The condense step sees the history and the new message, and outputs one self-contained question.
+- Search uses only the standalone question, so it finds the bakery rule.
+- The final answer still gets the conversation, so it can say "Unlike dairy, bakery items..."
+- Skip the condense call when the message is already standalone (a cheap classifier, or a check for pronouns and very short messages), since it adds latency to every turn.
+
+## 4. Letting the model write the filters: self-query
+
+"Show me Pune incident reports from last week about cold-chain failures" contains two kinds of information: a meaning to search for ("cold-chain failures") and exact filters (city = Pune, type = incident, date in last week). Embedding the whole sentence blurs them together.
+
+**Self-query retrieval** has a model split the question into a search text plus structured filters, using a schema of the allowed metadata fields:
+
+- search text: "cold-chain failure"
+- filters: `city = "pune"`, `doc_type = "incident"`, `date >= 2026-10-24`
+
+The filters run exactly in the index; the search text ranks what is left. Validate the generated filters against the schema (a model can invent a field or a city), and never let them widen access beyond what the user may see.
+
+## 5. Complete example: the retrieval core of Ask FreshCart
 
 ```python
 import numpy as np
