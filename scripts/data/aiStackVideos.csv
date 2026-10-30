@@ -22,9 +22,12 @@ SaDzIVkYqyY,LangChain,RAG from scratch: Part 9 (Query Translation -- HyDE),5,202
 pfpIndq7Fi8,LangChain,RAG from scratch: Part 10 (Routing),7,2026-10-29
 N9SZ9o2gReE,Hamel Husain,How to debug Retrieval for RAG,41,2026-10-29
 Kf3LeaUGwlg,Weaviate vector database,Lost in the Middle: How Language Models use Long Context - Explained!,24,2026-10-29
+RHXZKUr8qOY,Nils Reimers,Training State-of-the-Art Sentence Embedding Models,44,2026-10-30
+zSA7ylHP6AY,IBM Technology,What Is Docling? Transforming Unstructured Data for RAG and AI,8,2026-10-30
 UabBYexBD4k,IBM Technology,Is RAG Still Needed? Choosing the Best Approach for LLMs,11,2026-10-29
 Aw7iQjKAX2k,IBM Technology,GraphRAG vs. Traditional RAG: Higher Accuracy & Insight with LLM,4,2026-10-29
 2o0Q85JUZNk,codebasics,Graph RAG Simply Explained,14,2026-10-29
+gl1r1XV0SLw,IBM Technology,What is a Vector Database? Powering Semantic Search & AI Applications,10,2026-10-30
 qAF1NjEVHhY,IBM Technology,LangChain vs LangGraph: A Tale of Two Frameworks,10,2026-10-29
 6VquSiCBVJs,Edward Donner,Deep Agents or LangGraph? The LangChain agentic ecosystem explained,15,2026-10-29
 QiRdYCNXAxk,Tommy Eberle,How LLM Tool Calling Works,16,2026-10-29
@@ -35,6 +38,12 @@ _IPP7_Bi8uA,CampusX,Persistence in LangGraph | Time Travel in LangGraph | Campus
 N4VUnYRA3BY,Amitav Roy,Langgraph checkpointers with Postgres - Let's give memory to our AI Agent,10,2026-10-29
 IVts6ztrkFg,LangChain,What are Deep Agents?,8,2026-10-29
 B_0TNuYi56w,LangChain,Hierarchical multi-agent systems with LangGraph,12,2026-10-29
+SpfT6-YAVPk,LangChain,Human in the Loop Middleware (Python),6,2026-10-30
+ecqPrHBCY2s,Vaibhav Arora,"LangChain v1 Middleware: Building Safe, Reliable & Controllable AI Agents",39,2026-10-30
+JQznvlSatPQ,LangChain,LangGraph - Controllability with Map Reduce,9,2026-10-30
+D1PcZaeQ2eg,CampusX,Streaming in LangGraph | CampusX,25,2026-10-30
+4GiqzUHD5AA,LangChain,Context Engineering for Agents,22,2026-10-30
+JTL0yp85FsE,LangChain,Memory for agents (conceptual video),7,2026-10-30
 6t7YJcEFUIY,LangChain,LangGraph interrupt: Making it easier to build human-in-the-loop agents,8,2026-10-29
 xxqZzVZ4gE0,CampusX,Human in the loop (HITL) using LangGraph | CampusX,40,2026-10-29
 egSh4TxS5go,Sequoia Capital,Ambient Agents and the New Agent Inbox ft. Harrison Chase,8,2026-10-29
@@ -74,5 +83,17 @@ LPZh9BOjkQs,3Blue1Brown,Large Language Models explained briefly,8,2026-10-29
 -BBulGM6xF0,DataMListic,"LLM Prompt Engineering with Random Sampling: Temperature, Top-k, Top-p",8,2026-10-29
 cfqtFvWOfg0,IBM Technology,Why Large Language Models Hallucinate,10,2026-10-29
 o0gkdZBtwEg,IBM Technology,How KV Cache Speeds Up LLMs for Faster AI Models on GPUs,11,2026-10-29
+wjZofJX0v4M,3Blue1Brown,"Transformers, the tech behind LLMs | Deep Learning Chapter 5",27,2026-10-30
+eMlx5fFNoYc,3Blue1Brown,"Attention in transformers, step-by-step | Deep Learning Chapter 6",26,2026-10-30
+ysPbXH0LpIE,Anthropic,Prompting 101 | Code w/ Claude,25,2026-10-30
+T9aRN5JkmL8,Anthropic,AI prompt engineering: A deep dive,77,2026-10-30
 tzrwxLNHtRY,codebasics,Model Context Protocol Clearly Explained | MCP Beyond the Hype,15,2026-10-29
 CQywdSdi5iA,Anthropic,The Model Context Protocol (MCP),20,2026-10-29
+DhRoTONcyZE,Edward Hu,What is Low-Rank Adaptation (LoRA) | explained by the inventor,7,2026-10-30
+t1caDsMzWBk,Mark Hennings,LoRA & QLoRA Fine-tuning Explained In-Depth,15,2026-10-30
+qPN_XZcJf_s,StatQuest with Josh Starmer,"Reinforcement Learning with Human Feedback (RLHF), Clearly Explained!!!",18,2026-10-30
+k2pD3k1485A,Luis Serrano Academy,Direct Preference Optimization (DPO) - How to fine-tune LLMs directly without reinforcement learning,21,2026-10-30
+615-yWyS1n0,IBM Technology,What Is LLM Inference? How AI Models Generate Responses,8,2026-10-30
+6uPnLkCiy5g,Tales Of Tensors,PagedAttention: Behind vLLM's Insane Speed,7,2026-10-30
+qoQJq5UwV1c,Julia Turc,How LLMs survive in low precision | Quantization Fundamentals,21,2026-10-30
+McLdlg5Gc9s,IBM Technology,What is vLLM? Efficient AI Inference for Large Language Models,5,2026-10-30
