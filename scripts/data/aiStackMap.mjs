@@ -4,9 +4,10 @@
    LangChain, LangGraph, human-in-the-loop, evals and LLM system design — at
    three depths per topic: understand it (`know`), design with it (the drill's
    design questions) and clear the interview (the drill's model answers).
-   Project defence lives on the Projects page, Python and FastAPI on their own
-   pages; a topic that stands behind a resume line says so in `flag` and points
-   there instead of repeating it.
+   Written for every reader of the site: no personal projects or resume lines.
+   Each topic also has a built-in document in src/Data/aiStackDocs/<id>.md (a
+   story about one company, FreshCart, told across all topics); it is the
+   topic's notes page for every viewer.
 
    Researched 2026-10-30 against the current docs (langchain 1.4, langgraph 1.2,
    deepagents 0.7) and the practitioner sources the field trusts: Anthropic's
@@ -14,7 +15,7 @@
    Chip Huyen, Jason Liu, LangChain's own docs and Academy.
 
    ── Priorities ─────────────────────────────────────────────────────────────
-   P0  Asked in nearly every AI loop, or stands behind a resume claim.
+   P0  Asked in nearly every AI loop.
    P1  Asked often. Do before any real interview.
    P2  Design rounds and depth. Do after P0 and P1.
    P3  Differentiators. Skip under time pressure.
@@ -23,13 +24,11 @@
    id        storage key (ticks, notes, plan items hang off it): never renumber
              or reuse one.
    why       why it is asked and what the interviewer is checking.
-   flag      optional — the resume line this topic stands behind.
    ceiling   { enough, tooDeep }: where studying stops paying.
    know      the mental model to know cold, one line per point.
    resources what to watch and read, best first (kinds below).
-   drill     [{ q, a, resume? }]: interview questions with model answers. `a` is
+   drill     [{ q, a }]: interview questions with model answers. `a` is
              markdown — a string, or an array of lines joined with newlines.
-             `resume: true` marks a question your resume invites.
 
    ── Resource kinds ─────────────────────────────────────────────────────────
    video:  "ID"      → a YouTube video id, resolved against
@@ -47,7 +46,7 @@
 */
 
 export const SECTIONS = [
-  { key: "S", label: "Start here — your resume", chip: "Start" },
+  { key: "S", label: "Start here", chip: "Start" },
   { key: "R", label: "RAG", chip: "RAG" },
   { key: "L", label: "LangChain + LangGraph", chip: "LangGraph" },
   { key: "H", label: "Human-in-the-loop", chip: "HITL" },
@@ -57,33 +56,25 @@ export const SECTIONS = [
 ];
 
 export const TOPICS = [
-  // ─── S · Start here — your resume ─────────────────────────────────────────
+  // ─── S · Start here ───────────────────────────────────────────────────────
   {
     id: "AIE-02",
     section: "S",
     priority: "P0",
-    title: "Your resume — the openers and follow-ups you will get",
-    why: "Reviewers now see “RAG chatbot with LangChain and a vector DB” on most resumes, so that line on its own has become neutral at best. What moves a resume into the AI-engineer pile is evidence: something used by real people, a number that came from an eval, a cost or latency figure, and a guardrail or approval step that shows you know how these systems fail. Every claim you make becomes an interview question, so each one must survive ten minutes of follow-ups.",
+    title: "Talking about your AI project — the openers and follow-ups",
+    why: "Almost every AI engineer loop opens with “walk me through an AI system you built”, and every claim in that walkthrough becomes the next question. Reviewers see “RAG chatbot with LangChain and a vector DB” everywhere; what stands out is evidence: a number that came from an eval, a cost or latency figure, a guardrail or approval step that shows you know how these systems fail.",
     ceiling: {
-      enough: "rewrite each AI bullet as problem → design → measured result, and cut every tool you can't defend for ten minutes.",
-      tooDeep: "keyword-stuffing for ATS; listing every framework you have touched.",
+      enough: "a two-minute walkthrough of one project with a measured result, and an answer for each follow-up below.",
+      tooDeep: "polishing slides; listing every framework you have touched.",
     },
     know: [
-      "Signals that count: shipped to users · an eval with a number (recall@k, faithfulness, pass rate, judge agreement) · cost or latency figures · guardrails or human approval · tracing · a trade-off you can defend.",
-      "Signals that read as tutorial work: “built a chatbot”, framework lists with no outcome, “fine-tuned an LLM” with no reason or result, “improved accuracy” with no baseline.",
-      "Each AI bullet: what it does → the design choice → the measured result. One number per bullet, and you must know how it was measured and on what data.",
-      "A resume claim is an interview question. If you can't explain it for ten minutes, reword it or cut it.",
-      "Skills line: group by capability (Retrieval, Agents, Evals, Observability), not by vendor names.",
+      "The walkthrough shape: problem and baseline → the key design decision → how you measured it → what broke → what's next.",
+      "Signals that count: real users · an eval with a number (recall@k, faithfulness, pass rate) · cost or latency figures · guardrails or human approval · tracing.",
+      "Signals that read as tutorial work: “built a chatbot”, framework lists with no outcome, “improved accuracy” with no baseline.",
+      "Every claim is a question: a percentage needs a denominator, an improvement needs a baseline and the data it was measured on.",
+      "If you can't explain a claim for ten minutes, reword it or drop it.",
     ],
     resources: [
-      {
-        self: {
-          title: "Your resume — the AI bullets",
-          source: "Your resume",
-          minutes: 30,
-          note: "For each AI bullet write down: the number, where it came from, the baseline, and the follow-up you fear most. Anything you can't fill in gets reworded.",
-        },
-      },
       {
         doc: {
           title: "Your AI Product Needs Evals",
@@ -91,7 +82,7 @@ export const TOPICS = [
           url: "https://hamel.dev/blog/posts/evals/",
           minutes: 25,
           estimate: true,
-          note: "Why an eval number is the strongest signal a resume can carry, and what a real eval loop looks like.",
+          note: "Why a measured result is the strongest thing a project can show, and what a real eval loop looks like.",
         },
       },
       {
@@ -101,79 +92,47 @@ export const TOPICS = [
     ],
     drill: [
       {
-        q: "Walk me through an LLM feature you shipped, in two minutes.",
+        q: "Walk me through an LLM feature you built, in two minutes.",
         a: [
           "One fixed shape, with a number in it:",
           "",
-          "1. **Problem and user** — who suffered and how it was done before (the baseline).",
+          "1. **Problem and baseline** — who suffered and how it was done before.",
           "2. **The design decision** — one architecture choice and the alternative you rejected.",
-          "3. **How you measured it** — eval set, metric, before and after.",
-          "4. **What broke** — one production failure and the fix.",
+          "3. **How you measured it** — test set, metric, before and after.",
+          "4. **What broke** — one failure and the fix.",
           "5. **What you'd do next.**",
           "",
-          "Interviewers interrupt at 3 and 4, so those must be concrete. The facts for each project live on the Projects page.",
+          "Interviewers interrupt at 3 and 4, so those must be concrete.",
         ],
       },
       {
-        q: "Your background is backend. Why hire you for an AI role?",
+        q: "Your background is backend. Why an AI role?",
         a: [
-          "Make it the strength it is: **most AI engineering is backend engineering around a probabilistic component**.",
+          "Make it the strength it is: **most AI engineering is backend engineering around a component that is sometimes wrong**.",
           "",
-          "- Production LLM systems fail on backend things: idempotency, retries and rate limits, queues, caching, observability, data freshness, access control.",
-          "- You've shipped those (Kafka pipelines, idempotent consumers, rate-limited key pools) *and* the AI parts (hybrid-search RAG, LangGraph agents with human approval, an LLM-as-judge loop).",
-          "- Close with one measured outcome.",
+          "- Production LLM systems fail on backend things: retries and rate limits, queues, caching, idempotency, data freshness, access control.",
+          "- Someone who has shipped those *and* the AI parts (retrieval, agents, evals) is exactly who these teams need.",
+          "- Close with one measured outcome from your own work.",
         ],
       },
       {
-        q: "Your resume says “hybrid search”. Did it beat vector-only, and by how much?",
-        resume: true,
-        a: [
-          "This is the shape of every resume follow-up: **a number, the baseline, the data it was measured on**.",
-          "",
-          "Answer from the eval, not from the design: vector-only vs full-text vs hybrid at recall@k and MRR on your golden set; *why* (logs are identifier-heavy, so lexical search wins); and what you'd add next (a reranker, measured the same way).",
-          "",
-          "If you can't give the number, the bullet is a liability — re-run the eval before the interview. Your own numbers are on the Projects page (LL-04, LL-06).",
-        ],
+        q: "You say hybrid search helped. Did it beat vector-only, and by how much?",
+        a: "This is the shape of every follow-up: **a number, the baseline, and the data it was measured on**. Answer from your eval, not the design: vector-only vs keyword vs hybrid at recall@k and MRR on your test set, *why* the winner won (identifier-heavy text favours keyword search), and what you'd add next (a reranker, measured the same way). If you can't give the number, re-run the eval before the interview.",
       },
       {
-        q: "“Cut LLM calls by 80%” — 80% of what, measured how?",
-        resume: true,
-        a: [
-          "Interviewers check that a percentage has a denominator.",
-          "",
-          "- **Of what**: LLM calls per archive with the deterministic pre-filter, against calling the model on every window.",
-          "- **Measured how**: counted on a fixed set of archives, same model, same thresholds.",
-          "- **What it cost**: what the filter misses — anomalies the LLM would have caught — and how you checked.",
-          "",
-          "Keep the resume figure consistent with your eval report. If the report says 77.8%, say “nearly 80%” and know why any other figure you've quoted differs.",
-        ],
+        q: "You cut LLM calls by 80%. 80% of what, measured how?",
+        a: "A percentage needs a denominator: calls per request with and without your change, counted on a fixed set of inputs with the same model and thresholds. Then say what it cost — what the cheaper path misses, and how you checked. Keep every figure you quote consistent with your own measurements.",
       },
       {
-        q: "Which line on your resume would you cut if you had to?",
-        a: "The one with **no measurement behind it** — a framework list, or a feature with no outcome — keeping the lines that carry an eval, a cost figure or a production guardrail. The answer shows judgement: you know evidence beats vocabulary.",
-      },
-      {
-        q: "You list LangChain and LangGraph. When did you choose each, and what did each cost you?",
-        a: [
-          "Only list a tool you chose deliberately.",
-          "",
-          "- **LangGraph**: explicit state, loops with caps, checkpointing and `interrupt()` for approvals — things a linear chain can't do. Cost: more code and graph design up front.",
-          "- **LangChain**: provider-agnostic model and tool interfaces, structured output, middleware. Cost: abstraction layers to debug through, version churn.",
-          "- A tool you only used in a tutorial: take it off rather than defend it.",
-        ],
-      },
-      {
-        q: "What would you add to your project to make it production-grade?",
+        q: "What would make your project production-grade?",
         a: [
           "The gaps in order of risk, each with how you'd verify it:",
           "",
-          "1. **An eval gate in CI** — golden set plus a calibrated judge; block merges on regression.",
-          "2. **Tracing and cost per request** — every LLM call with inputs, outputs, tokens and latency.",
-          "3. **Guardrails** — input validation, injection handling for retrieved text, output schema checks.",
+          "1. **An eval gate in CI** — a golden set plus a calibrated judge; block merges on regression.",
+          "2. **Tracing and cost per request.**",
+          "3. **Guardrails** — input checks, injection handling for retrieved text, output schema checks.",
           "4. **Fallbacks** — timeouts, a fallback model, a safe default answer.",
           "5. **A feedback loop** — user corrections flow into the eval set.",
-          "",
-          "The question is really “do you know what production means for LLMs?”.",
         ],
       },
     ],
@@ -346,8 +305,7 @@ export const TOPICS = [
     section: "R",
     priority: "P0",
     title: "Vector search internals — HNSW, IVF, filtering, pgvector",
-    why: "HNSW and pgvector are on your resume, so expect “how does HNSW work?” and “what happens when you filter?”. You need HNSW at the level of the graph and its three parameters, IVF as the alternative, and the filtered-search problem: a filter applied after the ANN search throws away results, which is exactly what per-session tables and pgvector's iterative scans exist to fix.",
-    flag: "pgvector with per-session HNSW/GIN-indexed chunk tables. The design and its numbers are on the Projects page (LL-05).",
+    why: "HNSW and pgvector sit under almost every RAG system, so expect “how does HNSW work?” and “what happens when you filter?”. You need HNSW at the level of the graph and its three parameters, IVF as the alternative, and the filtered-search problem: a filter applied after the ANN search throws away results, which is exactly what partitioned indexes and pgvector's iterative scans exist to fix.",
     ceiling: {
       enough: "explain HNSW layers and greedy search, what m / ef_construction / ef_search trade, pre- vs post-filtering, and IVF lists and probes.",
       tooDeep: "ANN proofs, product-quantisation maths, writing an index from scratch.",
@@ -429,7 +387,6 @@ export const TOPICS = [
       },
       {
         q: "Why one HNSW index per session instead of one shared table with a filter?",
-        resume: true,
         a: [
           "Every query is scoped to one session, so a shared index turns each search into a **selective filter on ANN** — the post-filter problem: top candidates from other sessions are discarded and recall drops.",
           "",
@@ -443,8 +400,7 @@ export const TOPICS = [
     section: "R",
     priority: "P0",
     title: "Hybrid search and reranking — BM25, RRF, cross-encoders",
-    why: "Hybrid search is on your resume, so expect: when keyword beats vector, how BM25 scores, how you merge two ranked lists (RRF), and why a cross-encoder can rerank but can't retrieve. Then the cost push: a reranker adds latency to every query, so know when it pays and how you'd prove it.",
-    flag: "Hybrid vector + full-text search with RRF. Your measured numbers are on the Projects page (LL-04).",
+    why: "Hybrid search is the standard production retrieval setup, so expect: when keyword beats vector, how BM25 scores, how you merge two ranked lists (RRF), and why a cross-encoder can rerank but can't retrieve. Then the cost push: a reranker adds latency to every query, so know when it pays and how you'd prove it.",
     ceiling: {
       enough: "write BM25's ingredients and the RRF formula, explain bi- vs cross-encoders, and give a latency budget for a reranker.",
       tooDeep: "learning-to-rank theory; training your own reranker.",
@@ -519,7 +475,6 @@ export const TOPICS = [
       },
       {
         q: "On your data, hybrid search had a lower MRR than keyword search alone. What do you do?",
-        resume: true,
         a: [
           "Lower MRR means the right chunk is retrieved but **ranked lower**: fusion pulls in vector results that push the lexical hit down.",
           "",
@@ -544,8 +499,7 @@ export const TOPICS = [
     section: "R",
     priority: "P0",
     title: "Query transformation, routing and corrective RAG",
-    why: "The user's question is often a bad search query: vague, multi-part, or phrased unlike the documents. Query transformation fixes the input; corrective RAG checks the retrieval and loops when it's weak. Corrective RAG is on your resume, so draw the graph from memory with its loop bound and fallback, and be ready for the cost question: every grade and every rewrite is another LLM call.",
-    flag: "Query-time corrective RAG — retrieve → grade → rewrite → re-retrieve. The project version is on the Projects page (LL-04).",
+    why: "The user's question is often a bad search query: vague, multi-part, or phrased unlike the documents. Query transformation fixes the input; corrective RAG checks the retrieval and loops when it's weak. Draw corrective RAG from memory with its loop bound and fallback, and be ready for the cost question: every grade and every rewrite is another LLM call.",
     ceiling: {
       enough: "name four query transformations with one use each, draw corrective RAG with its bound and fallback, and say what it costs per query.",
       tooDeep: "every RAG paper variant; how Self-RAG's reflection tokens are trained.",
@@ -958,8 +912,7 @@ export const TOPICS = [
     section: "L",
     priority: "P0",
     title: "The graph model — state, reducers, nodes, edges, super-steps",
-    why: "Two LangGraph systems sit on your resume, so expect to sketch one and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
-    flag: "Two LangGraph graphs in DeepLogLens and the LangGraph agent at Blue Yonder.",
+    why: "Expect to sketch a LangGraph workflow and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
     ceiling: {
       enough: "sketch a graph with a typed state, a reducer, a conditional edge and a capped loop, and explain what happens in one super-step.",
       tooDeep: "Pregel channel internals; the functional API in depth.",
@@ -1057,7 +1010,7 @@ export const TOPICS = [
     section: "L",
     priority: "P0",
     title: "Persistence and durable execution — checkpointers, threads, replay",
-    why: "Checkpointing is what makes LangGraph more than a while-loop: it gives you conversation memory, human-in-the-loop pauses, fault tolerance and time travel. HITL is on your resume and only works because of this layer, so expect “where is the state stored, what happens if the process dies mid-run, and what exactly happens on resume?”.",
+    why: "Checkpointing is what makes LangGraph more than a while-loop: it gives you conversation memory, human-in-the-loop pauses, fault tolerance and time travel. Human-in-the-loop only works because of this layer, so expect “where is the state stored, what happens if the process dies mid-run, and what exactly happens on resume?”.",
     ceiling: {
       enough: "explain threads, checkpoints per super-step, the durability modes, resume after a crash, and why side effects must be idempotent.",
       tooDeep: "writing your own checkpointer; checkpoint serialisation formats.",
@@ -1238,8 +1191,7 @@ export const TOPICS = [
     section: "H",
     priority: "P0",
     title: "interrupt() and resume — the mechanics interviewers probe",
-    why: "“Human-in-the-loop via LangGraph interrupts” is a resume claim, so expect the mechanics: a checkpointer is required, the run pauses and hands back a payload, resume is by thread_id with Command(resume=...), and the interrupted node re-runs from its first line — so anything before the interrupt() must be idempotent. Get these exactly right; a vague answer here undermines the whole resume line.",
-    flag: "Human-in-the-loop approval via LangGraph interrupts (the Blue Yonder agent).",
+    why: "Human-in-the-loop with LangGraph interrupts is probed on its exact mechanics: a checkpointer is required, the run pauses and hands back a payload, resume is by thread_id with Command(resume=...), and the interrupted node re-runs from its first line — so anything before the interrupt() must be idempotent. Get these exactly right; vague answers here are easy to spot.",
     ceiling: {
       enough: "explain the pause, the payload, the resume value and node re-execution, the rules for several interrupts, and dynamic vs static interrupts.",
       tooDeep: "checkpoint serialisation; LangGraph Platform internals.",
@@ -1289,7 +1241,6 @@ export const TOPICS = [
       },
       {
         q: "The node writes to Redis and then calls interrupt(). What happens on resume?",
-        resume: true,
         a: "The Redis write runs **again**, because the node restarts from its first line. Options: make the write idempotent (a deterministic key such as `stage:{thread_id}:{proposal_hash}`, `SET` rather than `INCR` or append); move the write **after** the interrupt (stage only once approved); or split it into two nodes — `stage` → `approve` (which interrupts) — so the staging node isn't re-run on resume. Splitting is usually cleanest and makes the trace easy to read.",
       },
       {
@@ -1311,8 +1262,7 @@ export const TOPICS = [
     section: "H",
     priority: "P0",
     title: "Designing approval flows — what needs a human, and how they decide",
-    why: "Design rounds probe controls more than cleverness: what the agent may do alone, what needs approval, what the reviewer sees, and what happens to the change while it waits. Your Blue Yonder agent is the reference answer — staged writes, an approval interrupt, then commit — so rehearse it as a general pattern: risk-tiered actions, a reviewable proposal, approve / edit / reject, and an audit trail.",
-    flag: "The Blue Yonder agent — Redis-staged writes, Base+Overlay persistence, approval before commit.",
+    why: "Design rounds probe controls more than cleverness: what the agent may do alone, what needs approval, what the reviewer sees, and what happens to the change while it waits. The reference pattern is staged writes, an approval interrupt, then commit, generalised as: risk-tiered actions, a reviewable proposal, approve / edit / reject, and an audit trail.",
     ceiling: {
       enough: "tier actions by risk, design the reviewer's payload and decisions, and describe the staged-write pattern end to end.",
       tooDeep: "approval UI design; workflow-engine products.",
@@ -1352,7 +1302,6 @@ export const TOPICS = [
     drill: [
       {
         q: "Design approvals for an agent that can change inventory parameters. What needs a human?",
-        resume: true,
         a: [
           "Tier by **risk and reversibility**:",
           "",
@@ -1397,7 +1346,6 @@ export const TOPICS = [
     priority: "P1",
     title: "HITL in production — timeouts, stale data, concurrency, audit",
     why: "After the happy path come the operational questions: the approver never answers, the data changed while they were deciding, two people approve conflicting changes, the service was redeployed while runs were paused. Each has a standard answer, and having them ready is what makes your HITL claim credible.",
-    flag: "The Blue Yonder approval flow — these are its follow-up questions.",
     ceiling: {
       enough: "answer each failure case below and say how it's enforced in code.",
       tooDeep: "distributed-locking theory; BPM engines.",
@@ -1411,21 +1359,12 @@ export const TOPICS = [
       "Audit: who approved what, when, with which payload and outcome — an append-only log.",
     ],
     resources: [
-      {
-        self: {
-          title: "Your Blue Yonder approval flow — from memory",
-          source: "Your own memory of the system",
-          minutes: 30,
-          note: "For each question below, write what your system did — or what it should have done. Architecture level only, nothing confidential.",
-        },
-      },
       { video: "eMotoFvgdUo", note: "Compare-and-set with a version column: the fix for “the data changed while the approver was deciding”." },
       { video: "GsZ_ZtlRCBg", note: "Idempotency keys: why a retried or double-clicked approval must apply once." },
     ],
     drill: [
       {
         q: "The approver never responds. What happens to the staged write?",
-        resume: true,
         a: [
           "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.",
           "",
@@ -1437,7 +1376,6 @@ export const TOPICS = [
       },
       {
         q: "The underlying data changed while the human was deciding. Now what?",
-        resume: true,
         a: "Never commit a diff computed against old data. At proposal time record the **version** (or `updated_at` / a hash) of every row the change touches; at commit apply a **compare-and-set** — `UPDATE … WHERE id = $1 AND version = $2`. If any row changed, abort, recompute the proposal on fresh data and ask again, showing what changed. For approvals that can sit for hours, show data freshness in the review payload too.",
       },
       {
@@ -1475,7 +1413,7 @@ export const TOPICS = [
     section: "E",
     priority: "P0",
     title: "Eval-driven development — error analysis first, then metrics",
-    why: "Evals are the round people fail most often and the strongest signal on a resume. Practitioners (Hamel Husain, Shreya Shankar, Anthropic) agree on the method: read real traces and categorise failures first, write cheap targeted checks for the failures that matter, and only then automate with judges — not generic “helpfulness” scores from a library.",
+    why: "Evals are the round people fail most often and the strongest signal that someone has shipped AI for real. Practitioners (Hamel Husain, Shreya Shankar, Anthropic) agree on the method: read real traces and categorise failures first, write cheap targeted checks for the failures that matter, and only then automate with judges — not generic “helpfulness” scores from a library.",
     ceiling: {
       enough: "describe the loop — sample traces, open and axial coding, a failure taxonomy, targeted evaluators, a golden set, a CI gate — and capability vs regression evals.",
       tooDeep: "statistical testing theory; building an eval platform.",
@@ -1559,8 +1497,7 @@ export const TOPICS = [
     section: "E",
     priority: "P0",
     title: "LLM-as-judge you can trust — rubrics, biases, calibration",
-    why: "“Who judges the judge?” is the follow-up to every LLM-as-judge claim, and that claim is on your resume. Strong answers treat the judge as a measuring instrument: one narrow criterion, a binary verdict with a critique, known biases controlled, agreement with human labels measured on a held-out set, and recalibration whenever the judge's model or prompt changes.",
-    flag: "An LLM-as-judge groundedness loop (DeepLogLens). How yours was measured is on the Projects page (LL-06).",
+    why: "“Who judges the judge?” is the follow-up to every LLM-as-judge claim. Strong answers treat the judge as a measuring instrument: one narrow criterion, a binary verdict with a critique, known biases controlled, agreement with human labels measured on a held-out set, and recalibration whenever the judge's model or prompt changes.",
     ceiling: {
       enough: "write a judge prompt, name four biases with their mitigations, and compute agreement (TPR/TNR, Cohen's kappa) by hand.",
       tooDeep: "training reward models; agreement statistics beyond kappa.",
@@ -1604,7 +1541,6 @@ export const TOPICS = [
     drill: [
       {
         q: "Is your LLM judge any good? How do you know?",
-        resume: true,
         a: [
           "Measure it like a classifier against human labels:",
           "",
@@ -1639,7 +1575,6 @@ export const TOPICS = [
       },
       {
         q: "Your production grounding check uses the same model family as the generator. What's the risk?",
-        resume: true,
         a: "**Correlated errors and self-preference**: the judge shares the generator's blind spots and accepts its own style of unsupported claim, so the check passes exactly the cases it exists to catch. Mitigations: a different model family (or an NLI model) as the judge, claim-level checking (split the answer into claims and verify each against its cited chunk), calibration against human labels with TNR reported, and tracking how often the loop force-accepts after its retry cap.",
       },
       {
@@ -2049,8 +1984,7 @@ export const TOPICS = [
     section: "D",
     priority: "P1",
     title: "Guardrails and security — prompt injection, least privilege, safe SQL",
-    why: "Every agent and RAG design question gets a security follow-up. Indirect prompt injection — instructions hidden in retrieved text or tool output — can't be reliably prevented by prompting, so the answer is architecture: treat model output as untrusted, enforce permissions outside the model, and never combine private data, untrusted content and an outbound channel without a human between them. Guarded SQL is on your resume, so expect “how do you stop it writing DROP TABLE?”.",
-    flag: "Guarded, hierarchy-aware PostgreSQL querying in the Blue Yonder agent.",
+    why: "Every agent and RAG design question gets a security follow-up. Indirect prompt injection — instructions hidden in retrieved text or tool output — can't be reliably prevented by prompting, so the answer is architecture: treat model output as untrusted, enforce permissions outside the model, and never combine private data, untrusted content and an outbound channel without a human between them. Expect “how do you stop a text-to-SQL agent writing DROP TABLE?”.",
     ceiling: {
       enough: "explain direct vs indirect injection, the lethal trifecta, layered text-to-SQL safety and the four kinds of guardrail.",
       tooDeep: "jailbreak research; red-teaming tooling.",
@@ -2101,7 +2035,6 @@ export const TOPICS = [
     drill: [
       {
         q: "How do you stop a text-to-SQL agent from running DROP TABLE?",
-        resume: true,
         a: [
           "Layers — none of them in the prompt:",
           "",
@@ -2257,7 +2190,7 @@ export const TOPICS = [
     section: "D",
     priority: "P2",
     title: "Design: tool-using agent with approvals",
-    why: "Agent design questions test controls more than cleverness: tool schemas, least-privilege access, step and spend limits, idempotent tools, approval points, and verifying the outcome in the system of record. It's the design version of your Blue Yonder agent — practise it as a fresh problem.",
+    why: "Agent design questions test controls more than cleverness: tool schemas, least-privilege access, step and spend limits, idempotent tools, approval points, and verifying the outcome in the system of record.",
     ceiling: {
       enough: "list the controls, say which are enforced in code, and say how you'd test the agent before launch.",
       tooDeep: "multi-agent research architectures.",

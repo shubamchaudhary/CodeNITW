@@ -230,7 +230,7 @@ writeFileSync(
     `export const AI_STACK_TOPICS = ${JSON.stringify(topics, null, 2)};\n\n` +
     `export const AI_STACK_PRIORITIES = ${JSON.stringify(PRIORITIES)};\n\n` +
     `export const AI_STACK_PRIORITY_CONFIG = {
-  P0: { label: "P0", blurb: "Asked in nearly every AI loop, or stands behind a resume claim", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
+  P0: { label: "P0", blurb: "Asked in nearly every AI loop", cls: "bg-rose-500/15 text-rose-600 dark:text-rose-300 border-rose-500/30" },
   P1: { label: "P1", blurb: "Asked often — do before any real interview", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30" },
   P2: { label: "P2", blurb: "Design rounds and depth — after P0 and P1", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
   P3: { label: "P3", blurb: "Differentiators. Skip under time pressure", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300 border-slate-500/30" },
@@ -246,7 +246,7 @@ writeFileSync(
 const askedMeta = {
   eyebrow: "Interview drill",
   heading: "Say it out loud, then open the answer",
-  blurb: "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first; the ones marked “From your resume” are follow-ups your own resume invites.",
+  blurb: "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first, then open the answer.",
   footer: "Written from the sources in this topic's reading list and the current LangChain and LangGraph docs (checked 2026-10-30). Numbers quoted from a source are that source's; check the provider's current docs before quoting API details.",
   counts: false,
 };
