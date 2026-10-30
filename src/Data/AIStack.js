@@ -14,7 +14,7 @@
 export const AI_STACK_SECTIONS = [
   {
     "key": "S",
-    "label": "Start here — the AI engineer bar",
+    "label": "Start here — your resume",
     "chip": "Start"
   },
   {
@@ -24,12 +24,7 @@ export const AI_STACK_SECTIONS = [
   },
   {
     "key": "L",
-    "label": "LangChain",
-    "chip": "LangChain"
-  },
-  {
-    "key": "G",
-    "label": "LangGraph",
+    "label": "LangChain + LangGraph",
     "chip": "LangGraph"
   },
   {
@@ -56,86 +51,11 @@ export const AI_STACK_SECTIONS = [
 
 export const AI_STACK_TOPICS = [
   {
-    "id": "AIE-01",
-    "section": "S",
-    "sectionLabel": "Start here — the AI engineer bar",
-    "priority": "P0",
-    "title": "What an AI engineer loop tests — and the bar at 2 years",
-    "why": "Know the rounds before studying for them. AI engineer loops in 2026 are mostly backend loops with an AI centre: a project deep-dive, RAG and agent concepts, an LLM system design round, an evals or ship-decision discussion, a practical coding round (often a small RAG or agent with no framework) and behavioural. At ~2 years nobody expects research depth; they expect one system you shipped, measured and can break down.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "name the rounds, what each one grades, and which section of this page prepares you for it.",
-      "tooDeep": "collecting question lists; reading interview blogs instead of answering out loud."
-    },
-    "know": [
-      "The bar at 2 years: one real LLM feature shipped end to end, how you measured it, and where it breaks. Depth in one system beats breadth across ten frameworks.",
-      "Rounds: project deep-dive · concepts (RAG, agents, LangGraph) · LLM system design · evals and ship decisions · practical coding (Python, a small RAG or tool loop) · behavioural.",
-      "The most common gap is evals: “how do you know it works?” needs a golden set, a metric and a baseline, not “it looked good in testing”.",
-      "Every design answer carries five things: a quality bar, a latency and cost budget, an eval plan, guardrails and a fallback.",
-      "“I don't know — here is how I'd find out” beats bluffing. Interviewers keep probing until you stop knowing."
-    ],
-    "resources": [
-      {
-        "id": "AIE-01-r1",
-        "kind": "doc",
-        "title": "What We've Learned From A Year of Building with LLMs",
-        "source": "applied-llms.org",
-        "url": "https://applied-llms.org/",
-        "minutes": 60,
-        "estimate": true,
-        "note": "The best single overview of what practitioners learned shipping LLM products. Read the tactical part first; it is most of what interviews ask."
-      },
-      {
-        "id": "AIE-01-r2",
-        "kind": "doc",
-        "title": "The Rise of the AI Engineer",
-        "source": "latent.space",
-        "url": "https://www.latent.space/p/ai-engineer",
-        "minutes": 15,
-        "estimate": true,
-        "note": "Defines the role: the engineer who ships with models rather than trains them. Use it to frame your own pitch."
-      },
-      {
-        "id": "AIE-01-r3",
-        "kind": "video",
-        "title": "Essential Skills for Becoming an AI Engineer: RAG, AI Agents, & More",
-        "source": "IBM Technology",
-        "url": "https://www.youtube.com/watch?v=XN3xNJvWXsc",
-        "minutes": 11,
-        "note": ""
-      },
-      {
-        "id": "AIE-01-r4",
-        "kind": "doc",
-        "title": "AI Engineering (Chip Huyen) — resources and chapter summaries",
-        "source": "github.com/chiphuyen",
-        "url": "https://github.com/chiphuyen/aie-book",
-        "minutes": 20,
-        "estimate": true,
-        "note": "The book (O'Reilly, paid) is the standard text for the role. The repo is free: the reading list and chapter summaries are worth a skim."
-      }
-    ],
-    "minutes": 106,
-    "duration": "≈1h 46m",
-    "questions": [
-      "What does an AI engineer do, and how is that different from an ML engineer?",
-      "Walk me through an LLM feature you shipped, in two minutes.",
-      "How would you know a model upgrade made the product better or worse?",
-      "What is the hardest part of building with LLMs in production?",
-      "Your background is backend. Why hire you for an AI role?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 5
-    }
-  },
-  {
     "id": "AIE-02",
     "section": "S",
-    "sectionLabel": "Start here — the AI engineer bar",
+    "sectionLabel": "Start here — your resume",
     "priority": "P0",
-    "title": "Resume signals — what makes it read “AI engineer”",
+    "title": "Your resume — the openers and follow-ups you will get",
     "why": "Reviewers now see “RAG chatbot with LangChain and a vector DB” on most resumes, so that line on its own has become neutral at best. What moves a resume into the AI-engineer pile is evidence: something used by real people, a number that came from an eval, a cost or latency figure, and a guardrail or approval step that shows you know how these systems fail. Every claim you make becomes an interview question, so each one must survive ten minutes of follow-ups.",
     "resumeLinked": false,
     "flag": "",
@@ -182,6 +102,8 @@ export const AI_STACK_TOPICS = [
     "minutes": 75,
     "duration": "≈1h 15m",
     "questions": [
+      "Walk me through an LLM feature you shipped, in two minutes.",
+      "Your background is backend. Why hire you for an AI role?",
       "Your resume says “hybrid search”. Did it beat vector-only, and by how much?",
       "“Cut LLM calls by 80%” — 80% of what, measured how?",
       "Which line on your resume would you cut if you had to?",
@@ -190,90 +112,7 @@ export const AI_STACK_TOPICS = [
     ],
     "asked": {
       "posts": 0,
-      "items": 5
-    }
-  },
-  {
-    "id": "AIE-03",
-    "section": "S",
-    "sectionLabel": "Start here — the AI engineer bar",
-    "priority": "P1",
-    "title": "Turn your projects into evidence — the build list",
-    "why": "The fastest resume upgrade is not a new project; it's adding measurement and production controls to the ones you have. Each item below is a weekend or less, produces a number or a demo, and maps to a question interviewers ask. Do them in order: the eval harness makes every later item measurable.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "three items done, each with a before/after number written down as a one-line result.",
-      "tooDeep": "a brand-new project; polishing a UI nobody will look at."
-    },
-    "know": [
-      "1 · A golden set and an eval script: 50–100 real questions with their expected sources; recall@k, MRR and faithfulness. Everything else is measured with it.",
-      "2 · Calibrate the judge: label 50–100 outputs yourself and report TPR/TNR or Cohen's kappa against your labels.",
-      "3 · Add a reranker after hybrid retrieval and report MRR and recall@5 before and after, with the p95 latency it adds.",
-      "4 · Tracing and cost: every call traced (LangSmith or Langfuse); cost and p95 latency per request.",
-      "5 · Guardrails: a prompt-injection test set (instructions hidden in retrieved documents) and what your system does with it.",
-      "6 · HITL on a durable checkpointer: an approval that survives a process restart, and an expiry for unanswered ones.",
-      "7 · Write each result up in the README. A written result is a talking point; an unwritten one gets forgotten."
-    ],
-    "resources": [
-      {
-        "id": "AIE-03-r1",
-        "kind": "self",
-        "title": "Your projects — pick three items from the list",
-        "source": "Your own projects",
-        "minutes": 600,
-        "note": "Write each result as one line: “Added X; Y went from a to b on N questions; p95 +c ms.” Those lines become resume bullets."
-      },
-      {
-        "id": "AIE-03-r2",
-        "kind": "video",
-        "title": "Error Analysis: The Highest ROI Technique In AI Engineering",
-        "source": "Hamel Husain",
-        "url": "https://www.youtube.com/watch?v=e2i6JbU2R-s",
-        "minutes": 12,
-        "note": "Item 1 starts here: read traces and categorise failures before choosing metrics."
-      },
-      {
-        "id": "AIE-03-r3",
-        "kind": "video",
-        "title": "Systematically Improving RAG applications",
-        "source": "Jason Liu",
-        "url": "https://www.youtube.com/watch?v=e668bTot45w",
-        "minutes": 11,
-        "note": ""
-      },
-      {
-        "id": "AIE-03-r4",
-        "kind": "doc",
-        "title": "A Field Guide to Rapidly Improving AI Products",
-        "source": "hamel.dev",
-        "url": "https://hamel.dev/blog/posts/field-guide/",
-        "minutes": 30,
-        "estimate": true,
-        "note": "Error analysis, a custom data viewer for your traces, and why both pay off faster than any new feature."
-      },
-      {
-        "id": "AIE-03-r5",
-        "kind": "doc",
-        "title": "Low-Hanging Fruit for RAG Search",
-        "source": "jxnl.co",
-        "url": "https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/",
-        "minutes": 15,
-        "estimate": true,
-        "note": "A ranked list of cheap RAG improvements — use it to choose what to measure after the reranker."
-      }
-    ],
-    "minutes": 668,
-    "duration": "≈11h 8m",
-    "questions": [
-      "You added a reranker. How do you show it was worth it?",
-      "How did you build your golden set, and what can it not tell you?",
-      "What does tracing show you that logs don't?",
-      "How did you test prompt-injection resistance?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
+      "items": 7
     }
   },
   {
@@ -866,7 +705,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "LC-01",
     "section": "L",
-    "sectionLabel": "LangChain",
+    "sectionLabel": "LangChain + LangGraph",
     "priority": "P0",
     "title": "LangChain v1 — what it is now, and LangChain vs LangGraph",
     "why": "LangChain is on your skills line, so “LangChain vs LangGraph — when each, and would you use LangChain in production?” is a near-certain opener. The answer changed with v1 (October 2025): LangChain is now a thin agent layer — create_agent, standard model and message interfaces, middleware — running on LangGraph's runtime, and the old chains moved to langchain-classic. Answering with 2023-era LangChain is a tell.",
@@ -939,7 +778,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "LC-02",
     "section": "L",
-    "sectionLabel": "LangChain",
+    "sectionLabel": "LangChain + LangGraph",
     "priority": "P0",
     "title": "Tool calling and structured output — what the framework hides",
     "why": "Every agent rests on two primitives: the model emitting a structured tool call, and your code validating and running it. Interviewers check you understand the loop without a framework and how you get reliable JSON. Practical rounds often ask for exactly this — a tool-calling loop with a step cap against a raw provider SDK.",
@@ -1030,83 +869,9 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "LC-03",
-    "section": "L",
-    "sectionLabel": "LangChain",
-    "priority": "P1",
-    "title": "Middleware — guardrails, limits, fallbacks and approvals in create_agent",
-    "why": "Middleware is how LangChain v1 adds production controls to the agent loop without rewriting it: approval before risky tool calls, call limits, retries and model fallbacks, PII handling, summarisation as context grows. It's recent enough that knowing it signals current hands-on work, and its hooks map one-to-one onto the controls design rounds ask about.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "name the hooks and their order, five built-in middlewares and the control each provides, and when you'd write your own.",
-      "tooDeep": "every built-in middleware's options."
-    },
-    "know": [
-      "Node-style hooks: `before_agent`, `before_model`, `after_model`, `after_agent` — can update state; the model hooks can `jump_to` end, tools or model. Wrap-style: `wrap_model_call`, `wrap_tool_call` — modify the request, short-circuit or retry.",
-      "Order for [m1, m2, m3]: before_* run m1 → m3, after_* run m3 → m1, wrap_* nest with m1 outermost.",
-      "Built-ins worth naming: HumanInTheLoopMiddleware · ModelCallLimitMiddleware · ToolCallLimitMiddleware · ModelRetryMiddleware / ToolRetryMiddleware · ModelFallbackMiddleware · SummarizationMiddleware · PIIMiddleware · LLMToolSelectorMiddleware · ContextEditingMiddleware.",
-      "HITL middleware: `interrupt_on` maps each tool to its allowed decisions (approve, edit, reject, respond); it needs a checkpointer; resume with `Command(resume=...)`.",
-      "Write your own for: choosing a cheaper model per request, per-user tool filtering, cost accounting, output guardrails."
-    ],
-    "resources": [
-      {
-        "id": "LC-03-r1",
-        "kind": "doc",
-        "title": "Middleware overview",
-        "source": "docs.langchain.com",
-        "url": "https://docs.langchain.com/oss/python/langchain/middleware/overview",
-        "minutes": 15,
-        "estimate": true,
-        "note": ""
-      },
-      {
-        "id": "LC-03-r2",
-        "kind": "doc",
-        "title": "Prebuilt middleware",
-        "source": "docs.langchain.com",
-        "url": "https://docs.langchain.com/oss/python/langchain/middleware/built-in",
-        "minutes": 20,
-        "estimate": true,
-        "note": "Skim the list; read HumanInTheLoop, the call limits, ModelFallback and Summarization properly."
-      },
-      {
-        "id": "LC-03-r3",
-        "kind": "video",
-        "title": "Human in the Loop Middleware (Python)",
-        "source": "LangChain",
-        "url": "https://www.youtube.com/watch?v=SpfT6-YAVPk",
-        "minutes": 6,
-        "note": ""
-      },
-      {
-        "id": "LC-03-r4",
-        "kind": "doc",
-        "title": "Custom middleware",
-        "source": "docs.langchain.com",
-        "url": "https://docs.langchain.com/oss/python/langchain/middleware/custom",
-        "minutes": 15,
-        "estimate": true,
-        "note": "The hook table and the execution-order rules."
-      }
-    ],
-    "minutes": 56,
-    "duration": "≈56m",
-    "questions": [
-      "How would you stop an agent calling a dangerous tool without approval?",
-      "Your agent loops and burns tokens. What middleware do you add?",
-      "In what order do middleware hooks run?",
-      "How would you add a model fallback, and why is naive fallback risky?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
-    }
-  },
-  {
     "id": "LG-01",
-    "section": "G",
-    "sectionLabel": "LangGraph",
+    "section": "L",
+    "sectionLabel": "LangChain + LangGraph",
     "priority": "P0",
     "title": "The graph model — state, reducers, nodes, edges, super-steps",
     "why": "Two LangGraph systems sit on your resume, so expect to sketch one and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
@@ -1171,8 +936,8 @@ export const AI_STACK_TOPICS = [
   },
   {
     "id": "LG-02",
-    "section": "G",
-    "sectionLabel": "LangGraph",
+    "section": "L",
+    "sectionLabel": "LangChain + LangGraph",
     "priority": "P0",
     "title": "Persistence and durable execution — checkpointers, threads, replay",
     "why": "Checkpointing is what makes LangGraph more than a while-loop: it gives you conversation memory, human-in-the-loop pauses, fault tolerance and time travel. HITL is on your resume and only works because of this layer, so expect “where is the state stored, what happens if the process dies mid-run, and what exactly happens on resume?”.",
@@ -1246,83 +1011,9 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "LG-03",
-    "section": "G",
-    "sectionLabel": "LangGraph",
-    "priority": "P1",
-    "title": "Control flow — routing, parallel fan-out, subgraphs, streaming",
-    "why": "Design rounds ask you to turn a workflow into a graph: which steps are fixed, which branch, which run in parallel, and how the user sees progress. Know the building blocks — conditional routing, fan-out with Send (map-reduce), subgraphs, stream modes — and the workflow patterns they implement.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "map routing, parallelisation, orchestrator-workers and evaluator-optimizer onto LangGraph primitives, and pick stream modes for a UI.",
-      "tooDeep": "custom channels; distributed execution."
-    },
-    "know": [
-      "Workflow patterns (Anthropic): prompt chaining · routing · parallelisation (sectioning, voting) · orchestrator-workers · evaluator-optimizer. Each is edges, conditional edges or `Send`.",
-      "Static parallelism: several edges out of one node → the branches run in the same super-step; join them with a reducer.",
-      "Dynamic fan-out: a conditional edge returns `[Send('worker', {...}) for item in items]` — one worker per item, results merged by a reducer (map-reduce).",
-      "Subgraphs: a compiled graph used as a node, with its own state schema (mapped in and out) and its own checkpoint namespace. Good for reuse and team ownership.",
-      "Stream modes: `values` (full state per step), `updates` (per-node deltas), `messages` (LLM tokens), `custom` (your own progress events), `debug`. UIs usually combine `messages` and `updates`.",
-      "Node policies: retry policies for flaky calls, cache policies for expensive deterministic nodes, per-node timeouts (LangGraph 1.2)."
-    ],
-    "resources": [
-      {
-        "id": "LG-03-r1",
-        "kind": "doc",
-        "title": "Workflows and agents",
-        "source": "docs.langchain.com",
-        "url": "https://docs.langchain.com/oss/python/langgraph/workflows-agents",
-        "minutes": 25,
-        "estimate": true,
-        "note": "Each workflow pattern from Anthropic's “Building effective agents”, implemented in LangGraph — the best single page for design questions."
-      },
-      {
-        "id": "LG-03-r2",
-        "kind": "video",
-        "title": "LangGraph - Controllability with Map Reduce",
-        "source": "LangChain",
-        "url": "https://www.youtube.com/watch?v=JQznvlSatPQ",
-        "minutes": 9,
-        "note": ""
-      },
-      {
-        "id": "LG-03-r3",
-        "kind": "video",
-        "title": "Streaming in LangGraph | CampusX",
-        "source": "CampusX",
-        "url": "https://www.youtube.com/watch?v=D1PcZaeQ2eg",
-        "minutes": 25,
-        "note": ""
-      },
-      {
-        "id": "LG-03-r4",
-        "kind": "doc",
-        "title": "Streaming",
-        "source": "docs.langchain.com",
-        "url": "https://docs.langchain.com/oss/python/langgraph/streaming",
-        "minutes": 15,
-        "estimate": true,
-        "note": ""
-      }
-    ],
-    "minutes": 74,
-    "duration": "≈1h 14m",
-    "questions": [
-      "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
-      "How would you stream a multi-step agent's progress to a UI?",
-      "When would you use a subgraph?",
-      "Build a generate → critique → revise loop (evaluator-optimizer)."
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
-    }
-  },
-  {
     "id": "LG-04",
-    "section": "G",
-    "sectionLabel": "LangGraph",
+    "section": "L",
+    "sectionLabel": "LangChain + LangGraph",
     "priority": "P1",
     "title": "Multi-agent and Deep Agents — supervisor, handoffs, subagents",
     "why": "“Would you use several agents?” is a judgement question. The evidence cuts both ways: Anthropic's research system gained a lot from parallel subagents but spent about 15× the tokens of a chat, while Cognition argues most tasks should stay single-agent because decisions get lost between agents. Know the patterns, then default to one agent until a measured need appears.",
@@ -1410,68 +1101,6 @@ export const AI_STACK_TOPICS = [
     "asked": {
       "posts": 0,
       "items": 4
-    }
-  },
-  {
-    "id": "LG-05",
-    "section": "G",
-    "sectionLabel": "LangGraph",
-    "priority": "P2",
-    "title": "Memory — short-term, long-term, and the context window",
-    "why": "Memory is asked as “thread-scoped vs cross-thread” and as “the conversation outgrows the context window — three strategies and their trade-offs”. It weighs less than persistence, but the vocabulary (semantic, episodic and procedural memory; trim vs summarise vs retrieve) comes up in agent design rounds.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "separate short-term from long-term memory, give three ways to handle a long conversation, and say when memories get written.",
-      "tooDeep": "comparing memory frameworks; cognitive-science taxonomies."
-    },
-    "know": [
-      "Short-term = the thread's state (messages), persisted by the checkpointer. Long-term = a Store, namespaced per user or org, read across threads.",
-      "Long-term kinds: semantic (facts about the user), episodic (past experiences, good examples), procedural (rules — often the system prompt itself).",
-      "Long conversations: trim (keep the last N tokens; cheap, forgets), summarise older turns (keeps the gist; costs a call, loses detail), retrieve relevant past turns (precise; adds a retrieval).",
-      "Write memories in the hot path (the agent calls a save tool; immediate, slower) or in the background after the conversation (cheaper, delayed).",
-      "Memory is a privacy and correctness surface: users must be able to see and delete it, and stale facts poison answers."
-    ],
-    "resources": [
-      {
-        "id": "LG-05-r1",
-        "kind": "doc",
-        "title": "Memory overview",
-        "source": "docs.langchain.com",
-        "url": "https://docs.langchain.com/oss/python/concepts/memory",
-        "minutes": 20,
-        "estimate": true,
-        "note": ""
-      },
-      {
-        "id": "LG-05-r2",
-        "kind": "video",
-        "title": "Memory for agents (conceptual video)",
-        "source": "LangChain",
-        "url": "https://www.youtube.com/watch?v=JTL0yp85FsE",
-        "minutes": 7,
-        "note": ""
-      },
-      {
-        "id": "LG-05-r3",
-        "kind": "video",
-        "title": "How to add long-term memory using PostgreSQL to LangGraph ReAct agent🤖: Python — LangGraph #3",
-        "source": "Code AI with Rok",
-        "url": "https://www.youtube.com/watch?v=hE8C2M8GRLo",
-        "minutes": 11,
-        "note": ""
-      }
-    ],
-    "minutes": 38,
-    "duration": "≈38m",
-    "questions": [
-      "The conversation exceeds the context window. Three strategies and their trade-offs.",
-      "Short-term vs long-term memory in LangGraph?",
-      "What can go wrong with long-term memory in production?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 3
     }
   },
   {
@@ -1744,16 +1373,6 @@ export const AI_STACK_TOPICS = [
         "minutes": 40,
         "estimate": true,
         "note": "Short answers to every practical question: judges, error analysis, golden-set size, agreement, tooling."
-      },
-      {
-        "id": "EV-01-r5",
-        "kind": "course",
-        "title": "AI Evals For Engineers & PMs",
-        "source": "Maven · Hamel Husain & Shreya Shankar · paid",
-        "url": "https://maven.com/parlance-labs/evals",
-        "minutes": 0,
-        "estimate": false,
-        "note": "Paid cohort course; check the page for price and dates. Optional — the free preview and the FAQ cover what interviews ask."
       }
     ],
     "minutes": 144,
@@ -1838,20 +1457,10 @@ export const AI_STACK_TOPICS = [
         "minutes": 40,
         "estimate": true,
         "note": "The survey: which judge setups agree with humans, and where they fail."
-      },
-      {
-        "id": "EV-02-r6",
-        "kind": "doc",
-        "title": "Who Validates the Validators?",
-        "source": "arxiv.org",
-        "url": "https://arxiv.org/abs/2404.12272",
-        "minutes": 15,
-        "estimate": true,
-        "note": "Read the abstract and the criteria-drift finding."
       }
     ],
-    "minutes": 152,
-    "duration": "≈2h 32m",
+    "minutes": 137,
+    "duration": "≈2h 17m",
     "questions": [
       "Is your LLM judge any good? How do you know?",
       "40 items: you and the judge agree on 34, and each of you labels half as pass. Compute Cohen's kappa.",
@@ -1913,20 +1522,10 @@ export const AI_STACK_TOPICS = [
         "minutes": 25,
         "estimate": true,
         "note": "Read faithfulness, response relevancy, context precision and context recall."
-      },
-      {
-        "id": "EV-03-r4",
-        "kind": "course",
-        "title": "Building and Evaluating Advanced RAG Applications",
-        "source": "DeepLearning.AI · LlamaIndex & TruEra",
-        "url": "https://www.deeplearning.ai/courses/building-evaluating-advanced-rag",
-        "minutes": 125,
-        "estimate": true,
-        "note": "About two hours; teaches the RAG triad (context relevance, groundedness, answer relevance). Some items may be marked PRO."
       }
     ],
-    "minutes": 183,
-    "duration": "≈3h 3m",
+    "minutes": 58,
+    "duration": "≈58m",
     "questions": [
       "Three relevant chunks sit at ranks 2, 7 and 11. Compute recall@5, recall@10, MRR and nDCG@10 (binary relevance).",
       "Define faithfulness, answer relevance, context precision and context recall. Which need a reference answer?",
@@ -1996,20 +1595,10 @@ export const AI_STACK_TOPICS = [
         "url": "https://www.youtube.com/watch?v=_Er8Hao_gmQ",
         "minutes": 23,
         "note": ""
-      },
-      {
-        "id": "EV-04-r5",
-        "kind": "doc",
-        "title": "τ-bench (tau-bench)",
-        "source": "github.com/sierra-research",
-        "url": "https://github.com/sierra-research/tau-bench",
-        "minutes": 10,
-        "estimate": true,
-        "note": "Where pass^k comes from: a tool-agent-user benchmark with simulated customers. Read the README for the idea, not the code."
       }
     ],
-    "minutes": 76,
-    "duration": "≈1h 16m",
+    "minutes": 66,
+    "duration": "≈1h 6m",
     "questions": [
       "How would you evaluate a tool-using LangGraph agent before launch?",
       "pass@k or pass^k for a support agent? Compute pass^3 at 80% per-trial success.",
@@ -2164,16 +1753,6 @@ export const AI_STACK_TOPICS = [
         "minutes": 40,
         "estimate": true,
         "note": "Seven patterns: evals, RAG, fine-tuning, caching, guardrails, defensive UX and user feedback."
-      },
-      {
-        "id": "SD-01-r5",
-        "kind": "course",
-        "title": "Generative AI System Design Interview",
-        "source": "ByteByteGo · paid",
-        "url": "https://bytebytego.com/courses/genai-system-design-interview/introduction-and-overview",
-        "minutes": 0,
-        "estimate": false,
-        "note": "Paid, and aimed at ML-engineer loops. For an application-layer role only the introduction (its seven-step framework), the chatbot and the RAG chapters matter."
       }
     ],
     "minutes": 142,
@@ -2248,89 +1827,15 @@ export const AI_STACK_TOPICS = [
         "minutes": 30,
         "estimate": true,
         "note": "When to build an agent, single- vs multi-agent orchestration, and layered guardrails."
-      },
-      {
-        "id": "SD-02-r5",
-        "kind": "doc",
-        "title": "Agents",
-        "source": "huyenchip.com",
-        "url": "https://huyenchip.com/2025/01/07/agents.html",
-        "minutes": 40,
-        "estimate": true,
-        "note": "Optional depth: tools, planning and failure modes of agents, from her AI Engineering book."
       }
     ],
-    "minutes": 127,
-    "duration": "≈2h 7m",
+    "minutes": 87,
+    "duration": "≈1h 27m",
     "questions": [
       "Workflow or agent — which is your default, and why?",
       "Name the workflow patterns and a use for each.",
       "What controls does every production agent need?",
       "What is the agent-computer interface, and why does it matter?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
-    }
-  },
-  {
-    "id": "SD-03",
-    "section": "D",
-    "sectionLabel": "AI system design",
-    "priority": "P1",
-    "title": "Context engineering — what goes in the window",
-    "why": "Context engineering — deciding what goes into the window, in what order, and what gets dropped — has replaced “prompt tricks” as the senior framing. Agents fail more often from bad context (too much, stale, contradictory, missing) than from bad wording. Expect questions on prompt structure for caching, long-running agents and tool-output bloat.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "order a prompt for cost and quality, give four strategies for long-running context (write, select, compress, isolate), and explain context rot.",
-      "tooDeep": "automatic prompt-optimisation research."
-    },
-    "know": [
-      "Context = system prompt + tools + retrieved documents + memory + conversation + tool results. Every token competes for attention; more isn't better (context rot).",
-      "Order for caching: static first (system prompt, tool definitions, examples, fixed documents), dynamic last (retrieved chunks, the question). Prompt caches match exact prefixes.",
-      "Long-running agents: write (notes and files outside the window) · select (retrieve what the next step needs) · compress (summarise, clear old tool results) · isolate (subagents with their own windows).",
-      "Tool outputs are the biggest source of bloat: return summaries and ids, paginate, clear old results.",
-      "System prompts at the right altitude: clear principles and examples — neither brittle if-else rules nor vague platitudes.",
-      "Prompt for behaviour you can describe, RAG for knowledge, fine-tuning for consistent style or format or a narrow skill at lower cost."
-    ],
-    "resources": [
-      {
-        "id": "SD-03-r1",
-        "kind": "doc",
-        "title": "Effective context engineering for AI agents",
-        "source": "anthropic.com",
-        "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
-        "minutes": 25,
-        "estimate": true,
-        "note": ""
-      },
-      {
-        "id": "SD-03-r2",
-        "kind": "video",
-        "title": "Context Engineering for Agents",
-        "source": "LangChain",
-        "url": "https://www.youtube.com/watch?v=4GiqzUHD5AA",
-        "minutes": 22,
-        "note": "Write, select, compress, isolate — the four strategies, with examples from real agents."
-      },
-      {
-        "id": "SD-03-r3",
-        "kind": "video",
-        "title": "RAG vs Fine-Tuning vs Prompt Engineering: Optimizing AI Models",
-        "source": "IBM Technology",
-        "url": "https://www.youtube.com/watch?v=zYGDpG-pTho",
-        "minutes": 13,
-        "note": ""
-      }
-    ],
-    "minutes": 60,
-    "duration": "≈1h",
-    "questions": [
-      "Prompt engineering vs context engineering?",
-      "Order the parts of a RAG prompt for cost and quality.",
-      "A long-running agent's context keeps growing. What do you do?",
-      "When would you fine-tune instead of prompting or using RAG?"
     ],
     "asked": {
       "posts": 0,
@@ -2570,60 +2075,6 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "SD-07",
-    "section": "D",
-    "sectionLabel": "AI system design",
-    "priority": "P2",
-    "title": "Design: support assistant with evals and human handoff",
-    "why": "“Design a support assistant — how do you know it's helping and not making things worse?” is the eval-centred design round. Define success first (resolution rate, escalation rate, satisfaction), baseline against the human team, and ship behind shadow traffic or a small cohort with rollback thresholds.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "name the success metric and baseline, the handoff rules, the launch plan and the rollback trigger.",
-      "tooDeep": "building the ticketing integration."
-    },
-    "know": [
-      "Success first: resolution without a human, escalation rate, CSAT, time to resolution, cost per resolved ticket — baselined against today's team.",
-      "Architecture: intent routing → RAG over the help centre plus read-only account tools → actions (refund, cancel) behind policy checks or approval → handoff.",
-      "Handoff on: low confidence, policy-sensitive intents, an explicit request for a human, repeated failure, negative sentiment. Pass a summary and the transcript so the customer never repeats themselves.",
-      "Launch: an offline golden set from past tickets → shadow (the bot drafts, humans send) → a small cohort → expand, with rollback triggers.",
-      "Human edits of drafts and every escalation become eval cases."
-    ],
-    "resources": [
-      {
-        "id": "SD-07-r1",
-        "kind": "video",
-        "title": "Design a Customer Support Agent | Applied AI System Design",
-        "source": "Aniket Wattamwar",
-        "url": "https://www.youtube.com/watch?v=un1IJdX-ImQ",
-        "minutes": 29,
-        "note": ""
-      },
-      {
-        "id": "SD-07-r2",
-        "kind": "video",
-        "title": "Agentic AI System Design Explained in 27 Minutes",
-        "source": "Aishwarya Srinivasan",
-        "url": "https://www.youtube.com/watch?v=mwN75EiGfCE",
-        "minutes": 27,
-        "note": ""
-      }
-    ],
-    "minutes": 56,
-    "duration": "56m",
-    "questions": [
-      "Design a support assistant. How do you know it's helping and not making things worse?",
-      "When does the bot hand off to a human, and how is the context passed on?",
-      "A model update makes answers worse in one product area. How do you detect it and roll back?",
-      "How would you build the eval set from past tickets?",
-      "The bot promised a refund policy that doesn't exist. What failed, and how do you prevent it?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 5
-    }
-  },
-  {
     "id": "SD-08",
     "section": "D",
     "sectionLabel": "AI system design",
@@ -2681,80 +2132,6 @@ export const AI_STACK_TOPICS = [
       "How do you verify the agent's claim that it succeeded?",
       "Which tools get which permissions, and where is that enforced?",
       "What do you trace so a bad run can be debugged after the fact?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 5
-    }
-  },
-  {
-    "id": "SD-09",
-    "section": "D",
-    "sectionLabel": "AI system design",
-    "priority": "P2",
-    "title": "Design: LLM gateway and batch pipeline",
-    "why": "This is your strongest ground — queues, rate limits, key pools, idempotency — applied to LLMs. Be able to design a gateway that routes between providers with fallbacks, budgets and caching, and an offline pipeline (queue, workers, retries, dead-letter queue, a rate budget per key) that processes millions of items safely.",
-    "resumeLinked": true,
-    "flag": "Kafka ingest, rate-limited key pools and idempotent consumers in DeepLogLens.",
-    "ceiling": {
-      "enough": "describe the gateway and the pipeline with their failure handling, and name what goes wrong with naive fallback.",
-      "tooDeep": "building a gateway product."
-    },
-    "know": [
-      "Gateway: one API in front of the providers — auth, per-tenant quotas, routing by task and cost, retries with backoff and jitter, fallbacks, caching, logging, cost accounting.",
-      "Rate limits: token buckets per provider key and per tenant (requests and tokens per minute); key pools spread load; honour `Retry-After` on 429.",
-      "Naive fallback risks: quality drift, different schemas, tokenisers and context limits, doubled latency and cost — evaluate prompts on the fallback models too.",
-      "Batch pipeline: a queue (Kafka) → workers with concurrency limits → idempotent writes keyed by item → retries → a dead-letter queue with replay; progress checkpoints so reruns skip finished items; provider batch APIs for roughly half the price.",
-      "Version prompts and models together and roll out behind the gateway with a flag."
-    ],
-    "resources": [
-      {
-        "id": "SD-09-r1",
-        "kind": "video",
-        "title": "LiteLLM: Free Open Source Gateway to Manage All Your LLM Providers",
-        "source": "Elestio",
-        "url": "https://www.youtube.com/watch?v=mwP4sdp7gW0",
-        "minutes": 8,
-        "note": ""
-      },
-      {
-        "id": "SD-09-r2",
-        "kind": "video",
-        "title": "Rate Limiter System Design: Token Bucket, Leaky Bucket, Scaling",
-        "source": "ByteByteGo",
-        "url": "https://www.youtube.com/watch?v=YXkOdWBwqaA",
-        "minutes": 8,
-        "note": ""
-      },
-      {
-        "id": "SD-09-r3",
-        "kind": "doc",
-        "title": "Exponential Backoff And Jitter",
-        "source": "aws.amazon.com",
-        "url": "https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/",
-        "minutes": 10,
-        "estimate": true,
-        "note": "Why full jitter beats plain backoff when many clients retry together."
-      },
-      {
-        "id": "SD-09-r4",
-        "kind": "doc",
-        "title": "Batch API",
-        "source": "developers.openai.com",
-        "url": "https://developers.openai.com/api/docs/guides/batch",
-        "minutes": 10,
-        "estimate": true,
-        "note": "The offline path: submit a file of requests, collect results within a window, at a discount."
-      }
-    ],
-    "minutes": 36,
-    "duration": "≈36m",
-    "questions": [
-      "Design an LLM gateway: routing, fallbacks, budgets, caching, logging.",
-      "Embed and summarise 50M documents overnight. Design the pipeline.",
-      "Providers rate-limit per key. How do you stay under it, and what happens on a 429?",
-      "How do you cap spend per tenant?",
-      "Where do poison messages go, and how do you replay them?"
     ],
     "asked": {
       "posts": 0,
@@ -2924,77 +2301,6 @@ export const AI_STACK_TOPICS = [
       "posts": 0,
       "items": 4
     }
-  },
-  {
-    "id": "LLM-03",
-    "section": "F",
-    "sectionLabel": "LLM foundations",
-    "priority": "P3",
-    "title": "Fine-tuning — concepts, and when it beats RAG",
-    "why": "Asked as “when would you fine-tune instead of using RAG?”, not as a training exercise. A paragraph each on SFT, LoRA and QLoRA, preference tuning (RLHF, DPO) and distillation is the whole ceiling for an application-layer role at this level — then say plainly that you haven't trained models yourself.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "know what each technique changes, and when it beats RAG or prompting.",
-      "tooDeep": "training-loop internals, hyperparameter tuning, GPU memory arithmetic."
-    },
-    "know": [
-      "SFT: train on input → ideal output pairs. LoRA: freeze the weights and learn a low-rank update (W + BA) — a tiny fraction of the parameters. QLoRA: LoRA on a 4-bit quantised base, so it fits on one GPU.",
-      "Preference tuning: RLHF (a reward model plus reinforcement learning) and DPO (optimise directly on chosen / rejected pairs, no reward model).",
-      "Distillation: train a small model on a large model's outputs for cost and latency.",
-      "Fine-tune for behaviour (format, style, a narrow task), not for facts that change — that's RAG.",
-      "Compare against the base model with a good prompt; a fine-tune that doesn't beat it isn't worth the operations."
-    ],
-    "resources": [
-      {
-        "id": "LLM-03-r1",
-        "kind": "video",
-        "title": "What is Low-Rank Adaptation (LoRA) | explained by the inventor",
-        "source": "Edward Hu",
-        "url": "https://www.youtube.com/watch?v=DhRoTONcyZE",
-        "minutes": 7,
-        "note": ""
-      },
-      {
-        "id": "LLM-03-r2",
-        "kind": "video",
-        "title": "LoRA & QLoRA Fine-tuning Explained In-Depth",
-        "source": "Mark Hennings",
-        "url": "https://www.youtube.com/watch?v=t1caDsMzWBk",
-        "minutes": 15,
-        "note": ""
-      },
-      {
-        "id": "LLM-03-r3",
-        "kind": "video",
-        "title": "Reinforcement Learning with Human Feedback (RLHF), Clearly Explained!!!",
-        "source": "StatQuest with Josh Starmer",
-        "url": "https://www.youtube.com/watch?v=qPN_XZcJf_s",
-        "minutes": 18,
-        "note": ""
-      },
-      {
-        "id": "LLM-03-r4",
-        "kind": "video",
-        "title": "Direct Preference Optimization (DPO) - How to fine-tune LLMs directly without reinforcement learning",
-        "source": "Luis Serrano Academy",
-        "url": "https://www.youtube.com/watch?v=k2pD3k1485A",
-        "minutes": 21,
-        "note": ""
-      }
-    ],
-    "minutes": 61,
-    "duration": "1h 1m",
-    "questions": [
-      "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?",
-      "What does LoRA change, and why is it cheaper than full fine-tuning?",
-      "SFT, RLHF and DPO — what does each optimise?",
-      "Fine-tuning to add new facts vs to change style — which works?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
-    }
   }
 ];
 
@@ -3007,10 +2313,10 @@ export const AI_STACK_PRIORITY_CONFIG = {
   P3: { label: "P3", blurb: "Differentiators. Skip under time pressure", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300 border-slate-500/30" },
 };
 
-export const AI_STACK_TOTAL = 38;
+export const AI_STACK_TOTAL = 29;
 
-export const AI_STACK_PRIORITY_COUNTS = {"P0":17,"P1":13,"P2":7,"P3":1};
+export const AI_STACK_PRIORITY_COUNTS = {"P0":16,"P1":9,"P2":4,"P3":0};
 
-export const AI_STACK_SECTION_COUNTS = {"S":3,"R":7,"L":3,"G":5,"H":3,"E":5,"D":9,"F":3};
+export const AI_STACK_SECTION_COUNTS = {"S":1,"R":7,"L":5,"H":3,"E":5,"D":6,"F":2};
 
-export const AI_STACK_MINUTES = 3981;
+export const AI_STACK_MINUTES = 2636;

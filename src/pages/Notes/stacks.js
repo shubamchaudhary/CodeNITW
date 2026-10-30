@@ -84,7 +84,7 @@ export const STACKS = {
       label: s.label,
       topics: AI_STACK_TOPICS.filter((t) => t.section === s.key),
     })),
-    filters: ["P0", "P1", "P2", "P3"],
+    filters: ["P0", "P1", "P2"],
     matchFilter: (topic, f) => topic.priority === f,
     tag: (topic) => ({ label: topic.priority, cls: PRIORITY_TEXT[topic.priority] || "text-gray-400" }),
     eyebrow: (topic) => topic.sectionLabel,

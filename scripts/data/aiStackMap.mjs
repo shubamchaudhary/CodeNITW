@@ -47,10 +47,9 @@
 */
 
 export const SECTIONS = [
-  { key: "S", label: "Start here — the AI engineer bar", chip: "Start" },
+  { key: "S", label: "Start here — your resume", chip: "Start" },
   { key: "R", label: "RAG", chip: "RAG" },
-  { key: "L", label: "LangChain", chip: "LangChain" },
-  { key: "G", label: "LangGraph", chip: "LangGraph" },
+  { key: "L", label: "LangChain + LangGraph", chip: "LangGraph" },
   { key: "H", label: "Human-in-the-loop", chip: "HITL" },
   { key: "E", label: "Evals", chip: "Evals" },
   { key: "D", label: "AI system design", chip: "Design" },
@@ -58,122 +57,12 @@ export const SECTIONS = [
 ];
 
 export const TOPICS = [
-  // ─── S · Start here — the AI engineer bar ─────────────────────────────────
-  {
-    id: "AIE-01",
-    section: "S",
-    priority: "P0",
-    title: "What an AI engineer loop tests — and the bar at 2 years",
-    why: "Know the rounds before studying for them. AI engineer loops in 2026 are mostly backend loops with an AI centre: a project deep-dive, RAG and agent concepts, an LLM system design round, an evals or ship-decision discussion, a practical coding round (often a small RAG or agent with no framework) and behavioural. At ~2 years nobody expects research depth; they expect one system you shipped, measured and can break down.",
-    ceiling: {
-      enough: "name the rounds, what each one grades, and which section of this page prepares you for it.",
-      tooDeep: "collecting question lists; reading interview blogs instead of answering out loud.",
-    },
-    know: [
-      "The bar at 2 years: one real LLM feature shipped end to end, how you measured it, and where it breaks. Depth in one system beats breadth across ten frameworks.",
-      "Rounds: project deep-dive · concepts (RAG, agents, LangGraph) · LLM system design · evals and ship decisions · practical coding (Python, a small RAG or tool loop) · behavioural.",
-      "The most common gap is evals: “how do you know it works?” needs a golden set, a metric and a baseline, not “it looked good in testing”.",
-      "Every design answer carries five things: a quality bar, a latency and cost budget, an eval plan, guardrails and a fallback.",
-      "“I don't know — here is how I'd find out” beats bluffing. Interviewers keep probing until you stop knowing.",
-    ],
-    resources: [
-      {
-        doc: {
-          title: "What We've Learned From A Year of Building with LLMs",
-          site: "applied-llms.org",
-          url: "https://applied-llms.org/",
-          minutes: 60,
-          estimate: true,
-          note: "The best single overview of what practitioners learned shipping LLM products. Read the tactical part first; it is most of what interviews ask.",
-        },
-      },
-      {
-        doc: {
-          title: "The Rise of the AI Engineer",
-          site: "latent.space",
-          url: "https://www.latent.space/p/ai-engineer",
-          minutes: 15,
-          estimate: true,
-          note: "Defines the role: the engineer who ships with models rather than trains them. Use it to frame your own pitch.",
-        },
-      },
-      { video: "XN3xNJvWXsc" },
-      {
-        doc: {
-          title: "AI Engineering (Chip Huyen) — resources and chapter summaries",
-          site: "github.com/chiphuyen",
-          url: "https://github.com/chiphuyen/aie-book",
-          minutes: 20,
-          estimate: true,
-          note: "The book (O'Reilly, paid) is the standard text for the role. The repo is free: the reading list and chapter summaries are worth a skim.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "What does an AI engineer do, and how is that different from an ML engineer?",
-        a: [
-          "An **AI engineer builds products on top of foundation models**; an ML engineer trains and serves models.",
-          "",
-          "- AI engineer: context and prompts, retrieval, tools and agents, evals, guardrails, cost and latency, shipping and monitoring.",
-          "- ML engineer: training data pipelines, model architecture, training and fine-tuning, feature stores, serving infrastructure.",
-          "",
-          "The overlap is **evaluation and data**: both have to prove the system works on real inputs. Then place yourself: “I'm a backend engineer who ships LLM features — RAG, LangGraph agents with human approval, evals — on top of model APIs. I understand fine-tuning at the concept level.”",
-        ],
-      },
-      {
-        q: "Walk me through an LLM feature you shipped, in two minutes.",
-        a: [
-          "One fixed shape, with a number in it:",
-          "",
-          "1. **Problem and user** — who suffered and how it was done before (the baseline).",
-          "2. **The design decision** — one architecture choice and the alternative you rejected.",
-          "3. **How you measured it** — eval set, metric, before and after.",
-          "4. **What broke** — one production failure and the fix.",
-          "5. **What you'd do next.**",
-          "",
-          "Interviewers interrupt at 3 and 4, so those must be concrete. The facts for each project live on the Projects page; rehearse the shape aloud until it fits two minutes.",
-        ],
-      },
-      {
-        q: "How would you know a model upgrade made the product better or worse?",
-        a: [
-          "Run the **same eval set** on both, compare **per slice**, then a bounded online test.",
-          "",
-          "- Offline: the golden set with the criteria that matter (task success, faithfulness, format validity), plus cost and p95 latency. Compare by slice — an average hides a regression in one category.",
-          "- Read 20–30 cases where the two versions disagree.",
-          "- Online: shadow traffic or a small cohort, with a rollback threshold on a guardrail metric (escalations, thumbs-down, errors).",
-          "",
-          "The answer that fails: “it felt better when I tried it.”",
-        ],
-      },
-      {
-        q: "What is the hardest part of building with LLMs in production?",
-        a: [
-          "Pick one and be specific. The honest answers are **evaluation**, **non-determinism** and **cost and latency** — not prompting.",
-          "",
-          "A strong version: “Knowing whether a change helped. Outputs are open-ended, so there's no unit test by default. I built a golden set from real failures, a judge I checked against my own labels and a CI gate; after that, prompt changes stopped being guesswork.”",
-          "",
-          "Then expect the follow-up on the judge (Evals section).",
-        ],
-      },
-      {
-        q: "Your background is backend. Why hire you for an AI role?",
-        a: [
-          "Make it the strength it is: **most AI engineering is backend engineering around a probabilistic component**.",
-          "",
-          "- Production LLM systems fail on backend things: idempotency, retries and rate limits, queues, caching, observability, data freshness, access control.",
-          "- You've shipped those (Kafka pipelines, idempotent consumers, rate-limited key pools) *and* the AI parts (hybrid-search RAG, LangGraph agents with human approval, an LLM-as-judge loop).",
-          "- Close with one measured outcome.",
-        ],
-      },
-    ],
-  },
+  // ─── S · Start here — your resume ─────────────────────────────────────────
   {
     id: "AIE-02",
     section: "S",
     priority: "P0",
-    title: "Resume signals — what makes it read “AI engineer”",
+    title: "Your resume — the openers and follow-ups you will get",
     why: "Reviewers now see “RAG chatbot with LangChain and a vector DB” on most resumes, so that line on its own has become neutral at best. What moves a resume into the AI-engineer pile is evidence: something used by real people, a number that came from an eval, a cost or latency figure, and a guardrail or approval step that shows you know how these systems fail. Every claim you make becomes an interview question, so each one must survive ten minutes of follow-ups.",
     ceiling: {
       enough: "rewrite each AI bullet as problem → design → measured result, and cut every tool you can't defend for ten minutes.",
@@ -211,6 +100,30 @@ export const TOPICS = [
       },
     ],
     drill: [
+      {
+        q: "Walk me through an LLM feature you shipped, in two minutes.",
+        a: [
+          "One fixed shape, with a number in it:",
+          "",
+          "1. **Problem and user** — who suffered and how it was done before (the baseline).",
+          "2. **The design decision** — one architecture choice and the alternative you rejected.",
+          "3. **How you measured it** — eval set, metric, before and after.",
+          "4. **What broke** — one production failure and the fix.",
+          "5. **What you'd do next.**",
+          "",
+          "Interviewers interrupt at 3 and 4, so those must be concrete. The facts for each project live on the Projects page.",
+        ],
+      },
+      {
+        q: "Your background is backend. Why hire you for an AI role?",
+        a: [
+          "Make it the strength it is: **most AI engineering is backend engineering around a probabilistic component**.",
+          "",
+          "- Production LLM systems fail on backend things: idempotency, retries and rate limits, queues, caching, observability, data freshness, access control.",
+          "- You've shipped those (Kafka pipelines, idempotent consumers, rate-limited key pools) *and* the AI parts (hybrid-search RAG, LangGraph agents with human approval, an LLM-as-judge loop).",
+          "- Close with one measured outcome.",
+        ],
+      },
       {
         q: "Your resume says “hybrid search”. Did it beat vector-only, and by how much?",
         resume: true,
@@ -262,95 +175,6 @@ export const TOPICS = [
           "",
           "The question is really “do you know what production means for LLMs?”.",
         ],
-      },
-    ],
-  },
-  {
-    id: "AIE-03",
-    section: "S",
-    priority: "P1",
-    title: "Turn your projects into evidence — the build list",
-    why: "The fastest resume upgrade is not a new project; it's adding measurement and production controls to the ones you have. Each item below is a weekend or less, produces a number or a demo, and maps to a question interviewers ask. Do them in order: the eval harness makes every later item measurable.",
-    ceiling: {
-      enough: "three items done, each with a before/after number written down as a one-line result.",
-      tooDeep: "a brand-new project; polishing a UI nobody will look at.",
-    },
-    know: [
-      "1 · A golden set and an eval script: 50–100 real questions with their expected sources; recall@k, MRR and faithfulness. Everything else is measured with it.",
-      "2 · Calibrate the judge: label 50–100 outputs yourself and report TPR/TNR or Cohen's kappa against your labels.",
-      "3 · Add a reranker after hybrid retrieval and report MRR and recall@5 before and after, with the p95 latency it adds.",
-      "4 · Tracing and cost: every call traced (LangSmith or Langfuse); cost and p95 latency per request.",
-      "5 · Guardrails: a prompt-injection test set (instructions hidden in retrieved documents) and what your system does with it.",
-      "6 · HITL on a durable checkpointer: an approval that survives a process restart, and an expiry for unanswered ones.",
-      "7 · Write each result up in the README. A written result is a talking point; an unwritten one gets forgotten.",
-    ],
-    resources: [
-      {
-        self: {
-          title: "Your projects — pick three items from the list",
-          source: "Your own projects",
-          minutes: 600,
-          note: "Write each result as one line: “Added X; Y went from a to b on N questions; p95 +c ms.” Those lines become resume bullets.",
-        },
-      },
-      { video: "e2i6JbU2R-s", note: "Item 1 starts here: read traces and categorise failures before choosing metrics." },
-      { video: "e668bTot45w" },
-      {
-        doc: {
-          title: "A Field Guide to Rapidly Improving AI Products",
-          site: "hamel.dev",
-          url: "https://hamel.dev/blog/posts/field-guide/",
-          minutes: 30,
-          estimate: true,
-          note: "Error analysis, a custom data viewer for your traces, and why both pay off faster than any new feature.",
-        },
-      },
-      {
-        doc: {
-          title: "Low-Hanging Fruit for RAG Search",
-          site: "jxnl.co",
-          url: "https://jxnl.co/writing/2024/05/11/low-hanging-fruit-for-rag-search/",
-          minutes: 15,
-          estimate: true,
-          note: "A ranked list of cheap RAG improvements — use it to choose what to measure after the reranker.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "You added a reranker. How do you show it was worth it?",
-        a: [
-          "Same eval set, two configurations, **quality and cost reported together**.",
-          "",
-          "- Quality: recall@5 and MRR (or nDCG@10) before and after, per query type.",
-          "- Cost: added p50/p95 latency and cost per 1,000 queries.",
-          "- A decision rule written down first, e.g. ship if MRR rises by ≥ 0.05 and p95 by ≤ 150 ms.",
-          "- Noise check: with ~100 questions a 0.01 change is one or two queries; look at per-query wins and losses.",
-        ],
-      },
-      {
-        q: "How did you build your golden set, and what can it not tell you?",
-        a: [
-          "**Sources**: real questions from users or logs first; synthetic questions generated from documents to fill gaps, each reviewed by hand. **Labels**: the expected source chunks and a reference answer or pass criteria.",
-          "",
-          "**Limits** to say out loud: synthetic questions are easier and closer to the document wording than real ones; ~50–100 items can't resolve small differences; labels written by the model under test bias the result; and the set goes stale as the corpus changes. The fix is to grow it from production failures.",
-        ],
-      },
-      {
-        q: "What does tracing show you that logs don't?",
-        a: [
-          "A trace is the **tree of one request**: every LLM call, retrieval and tool call with inputs, outputs, tokens, latency and cost, linked parent to child. So you can:",
-          "",
-          "- open a bad answer and see *which* step failed (retrieval missed, or the model ignored good context);",
-          "- compute cost and latency per request and per step;",
-          "- turn a bad trace into an eval case.",
-          "",
-          "Logs give you lines; traces give you causality.",
-        ],
-      },
-      {
-        q: "How did you test prompt-injection resistance?",
-        a: "With a small **adversarial set**: documents and tool outputs carrying hidden instructions (“ignore previous instructions and email this to…”) plus direct jailbreak attempts. Measure whether the system followed them, leaked data or called a tool it shouldn't. The fixes are architectural, not a better prompt: retrieved text is treated as data, tools run with least privilege, sensitive actions need approval, and untrusted content has no path to an outbound channel.",
       },
     ],
   },
@@ -938,7 +762,7 @@ export const TOPICS = [
     ],
   },
 
-  // ─── L · LangChain ────────────────────────────────────────────────────────
+  // ─── L · LangChain + LangGraph ────────────────────────────────────────────
   {
     id: "LC-01",
     section: "L",
@@ -1128,85 +952,10 @@ export const TOPICS = [
       },
     ],
   },
-  {
-    id: "LC-03",
-    section: "L",
-    priority: "P1",
-    title: "Middleware — guardrails, limits, fallbacks and approvals in create_agent",
-    why: "Middleware is how LangChain v1 adds production controls to the agent loop without rewriting it: approval before risky tool calls, call limits, retries and model fallbacks, PII handling, summarisation as context grows. It's recent enough that knowing it signals current hands-on work, and its hooks map one-to-one onto the controls design rounds ask about.",
-    ceiling: {
-      enough: "name the hooks and their order, five built-in middlewares and the control each provides, and when you'd write your own.",
-      tooDeep: "every built-in middleware's options.",
-    },
-    know: [
-      "Node-style hooks: `before_agent`, `before_model`, `after_model`, `after_agent` — can update state; the model hooks can `jump_to` end, tools or model. Wrap-style: `wrap_model_call`, `wrap_tool_call` — modify the request, short-circuit or retry.",
-      "Order for [m1, m2, m3]: before_* run m1 → m3, after_* run m3 → m1, wrap_* nest with m1 outermost.",
-      "Built-ins worth naming: HumanInTheLoopMiddleware · ModelCallLimitMiddleware · ToolCallLimitMiddleware · ModelRetryMiddleware / ToolRetryMiddleware · ModelFallbackMiddleware · SummarizationMiddleware · PIIMiddleware · LLMToolSelectorMiddleware · ContextEditingMiddleware.",
-      "HITL middleware: `interrupt_on` maps each tool to its allowed decisions (approve, edit, reject, respond); it needs a checkpointer; resume with `Command(resume=...)`.",
-      "Write your own for: choosing a cheaper model per request, per-user tool filtering, cost accounting, output guardrails.",
-    ],
-    resources: [
-      {
-        doc: {
-          title: "Middleware overview",
-          site: "docs.langchain.com",
-          url: "https://docs.langchain.com/oss/python/langchain/middleware/overview",
-          minutes: 15,
-          estimate: true,
-        },
-      },
-      {
-        doc: {
-          title: "Prebuilt middleware",
-          site: "docs.langchain.com",
-          url: "https://docs.langchain.com/oss/python/langchain/middleware/built-in",
-          minutes: 20,
-          estimate: true,
-          note: "Skim the list; read HumanInTheLoop, the call limits, ModelFallback and Summarization properly.",
-        },
-      },
-      { video: "SpfT6-YAVPk" },
-      {
-        doc: {
-          title: "Custom middleware",
-          site: "docs.langchain.com",
-          url: "https://docs.langchain.com/oss/python/langchain/middleware/custom",
-          minutes: 15,
-          estimate: true,
-          note: "The hook table and the execution-order rules.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "How would you stop an agent calling a dangerous tool without approval?",
-        a: "In code, not in the prompt. With `create_agent`: `HumanInTheLoopMiddleware(interrupt_on={'delete_records': {'allowed_decisions': ['approve', 'edit', 'reject']}, 'search': False})` and a checkpointer. When the model proposes `delete_records`, the run pauses with the tool name and arguments; a reviewer approves, edits the arguments, or rejects with a message the model sees; you resume with `Command(resume=...)` on the same `thread_id`. Belt and braces: the tool itself checks the caller's permission, and `ToolCallLimitMiddleware` caps how often it can run.",
-      },
-      {
-        q: "Your agent loops and burns tokens. What middleware do you add?",
-        a: [
-          "- `ModelCallLimitMiddleware` (per run and per thread) and `ToolCallLimitMiddleware` (overall or per tool): hard caps with a defined ending.",
-          "- `SummarizationMiddleware` or `ContextEditingMiddleware`, so old tool outputs stop inflating every later call.",
-          "- A custom `after_model` hook that spots repeated identical tool calls and jumps to the end.",
-          "",
-          "Then find the cause in the traces — usually a tool returning an unhelpful error, or an exit condition the model can't recognise.",
-        ],
-      },
-      {
-        q: "In what order do middleware hooks run?",
-        a: "For `middleware=[m1, m2, m3]`: `before_agent` and `before_model` run m1 → m2 → m3; `wrap_model_call` nests with **m1 outermost** (m1 wraps m2 wraps m3 wraps the model); `after_model` and `after_agent` run in reverse, m3 → m2 → m1. So cross-cutting wrappers that must see everything (logging, retries) go first, and guards that must run right before the model (PII redaction) go last.",
-      },
-      {
-        q: "How would you add a model fallback, and why is naive fallback risky?",
-        a: "`ModelFallbackMiddleware` — or a custom `wrap_model_call` — retries on another model when the primary errors or times out. The risk: the fallback model may follow the prompt differently (format drift, weaker tool use), have a smaller context limit or a different tokeniser, and quietly lower quality. So run your eval set against the fallback model too, keep schemas strict and validated, log every fallback with its reason, and alert when the fallback rate rises.",
-      },
-    ],
-  },
 
-  // ─── G · LangGraph ────────────────────────────────────────────────────────
   {
     id: "LG-01",
-    section: "G",
+    section: "L",
     priority: "P0",
     title: "The graph model — state, reducers, nodes, edges, super-steps",
     why: "Two LangGraph systems sit on your resume, so expect to sketch one and explain how state flows through it. Interviewers check the mental model: state is a typed schema, nodes return partial updates, reducers merge them, edges (fixed or conditional) decide what runs next, and execution moves in super-steps where nodes triggered together run in parallel.",
@@ -1305,7 +1054,7 @@ export const TOPICS = [
   },
   {
     id: "LG-02",
-    section: "G",
+    section: "L",
     priority: "P0",
     title: "Persistence and durable execution — checkpointers, threads, replay",
     why: "Checkpointing is what makes LangGraph more than a while-loop: it gives you conversation memory, human-in-the-loop pauses, fault tolerance and time travel. HITL is on your resume and only works because of this layer, so expect “where is the state stored, what happens if the process dies mid-run, and what exactly happens on resume?”.",
@@ -1389,83 +1138,8 @@ export const TOPICS = [
     ],
   },
   {
-    id: "LG-03",
-    section: "G",
-    priority: "P1",
-    title: "Control flow — routing, parallel fan-out, subgraphs, streaming",
-    why: "Design rounds ask you to turn a workflow into a graph: which steps are fixed, which branch, which run in parallel, and how the user sees progress. Know the building blocks — conditional routing, fan-out with Send (map-reduce), subgraphs, stream modes — and the workflow patterns they implement.",
-    ceiling: {
-      enough: "map routing, parallelisation, orchestrator-workers and evaluator-optimizer onto LangGraph primitives, and pick stream modes for a UI.",
-      tooDeep: "custom channels; distributed execution.",
-    },
-    know: [
-      "Workflow patterns (Anthropic): prompt chaining · routing · parallelisation (sectioning, voting) · orchestrator-workers · evaluator-optimizer. Each is edges, conditional edges or `Send`.",
-      "Static parallelism: several edges out of one node → the branches run in the same super-step; join them with a reducer.",
-      "Dynamic fan-out: a conditional edge returns `[Send('worker', {...}) for item in items]` — one worker per item, results merged by a reducer (map-reduce).",
-      "Subgraphs: a compiled graph used as a node, with its own state schema (mapped in and out) and its own checkpoint namespace. Good for reuse and team ownership.",
-      "Stream modes: `values` (full state per step), `updates` (per-node deltas), `messages` (LLM tokens), `custom` (your own progress events), `debug`. UIs usually combine `messages` and `updates`.",
-      "Node policies: retry policies for flaky calls, cache policies for expensive deterministic nodes, per-node timeouts (LangGraph 1.2).",
-    ],
-    resources: [
-      {
-        doc: {
-          title: "Workflows and agents",
-          site: "docs.langchain.com",
-          url: "https://docs.langchain.com/oss/python/langgraph/workflows-agents",
-          minutes: 25,
-          estimate: true,
-          note: "Each workflow pattern from Anthropic's “Building effective agents”, implemented in LangGraph — the best single page for design questions.",
-        },
-      },
-      { video: "JQznvlSatPQ" },
-      { video: "D1PcZaeQ2eg" },
-      {
-        doc: {
-          title: "Streaming",
-          site: "docs.langchain.com",
-          url: "https://docs.langchain.com/oss/python/langgraph/streaming",
-          minutes: 15,
-          estimate: true,
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
-        a: [
-          "Map-reduce with `Send`:",
-          "",
-          "- State: `docs: list`, `summaries: Annotated[list, operator.add]`, `final: str`.",
-          "- A conditional edge from START returns `[Send('summarise', {'doc': d}) for d in state['docs']]` — 500 parallel `summarise` runs in one super-step, each returning `{'summaries': [s]}`; the reducer concatenates.",
-          "- A `combine` node reduces — hierarchically if the summaries don't fit one context.",
-          "",
-          "Add `max_concurrency` in the run config for rate limits, a retry policy on `summarise`, and a checkpointer so a failure doesn't redo finished summaries.",
-        ],
-      },
-      {
-        q: "How would you stream a multi-step agent's progress to a UI?",
-        a: "Combine stream modes: `messages` for token-by-token output from the LLM nodes, `updates` to show which node just finished (“retrieved 8 documents”, “calling inventory tool”), and `custom` events emitted from inside long nodes. Send them to the client over SSE. Interrupts stream too: when the graph pauses for approval, the UI receives the interrupt payload, renders an approve / edit / reject form, and resumes the run with the decision.",
-      },
-      {
-        q: "When would you use a subgraph?",
-        a: [
-          "- A **reusable component** — a retrieve-and-grade loop used by several graphs.",
-          "- **Private state**: scratch keys the parent shouldn't see; inputs and outputs mapped at the boundary.",
-          "- **Team boundaries**: one team owns the research subgraph, another the writing graph.",
-          "- **Multi-agent**: each agent as its own graph.",
-          "",
-          "Costs: state mapping, nested checkpoint namespaces to debug through, and on resume after an interrupt both the parent node and the subgraph node re-run from their start.",
-        ],
-      },
-      {
-        q: "Build a generate → critique → revise loop (evaluator-optimizer).",
-        a: "Nodes: `generate` → `evaluate` (a judge with a rubric and structured output `{pass, feedback}`) → a conditional edge: pass, or `attempts >= 3` → END; otherwise → `revise` (which receives the feedback) → `evaluate`. Keep the best-scoring draft in state so hitting the cap returns the best, not the last. Use a cheaper model or a code check as the evaluator where you can, and measure on an eval set whether the loop helps — one revision often captures most of the gain.",
-      },
-    ],
-  },
-  {
     id: "LG-04",
-    section: "G",
+    section: "L",
     priority: "P1",
     title: "Multi-agent and Deep Agents — supervisor, handoffs, subagents",
     why: "“Would you use several agents?” is a judgement question. The evidence cuts both ways: Anthropic's research system gained a lot from parallel subagents but spent about 15× the tokens of a chat, while Cognition argues most tasks should stay single-agent because decisions get lost between agents. Know the patterns, then default to one agent until a measured need appears.",
@@ -1554,63 +1228,6 @@ export const TOPICS = [
       {
         q: "What is a “deep agent”?",
         a: "LangChain's name (and package) for agents that handle long, multi-step tasks, built from four ingredients: a **planning tool** (a todo list the agent writes and updates), a **filesystem** for notes and large tool outputs instead of keeping them in context, **subagents** spawned through a `task` tool for isolated subtasks, and a **detailed system prompt**. It runs on LangGraph, so it inherits checkpointing, streaming and interrupts — the same harness shape as coding agents like Claude Code.",
-      },
-    ],
-  },
-  {
-    id: "LG-05",
-    section: "G",
-    priority: "P2",
-    title: "Memory — short-term, long-term, and the context window",
-    why: "Memory is asked as “thread-scoped vs cross-thread” and as “the conversation outgrows the context window — three strategies and their trade-offs”. It weighs less than persistence, but the vocabulary (semantic, episodic and procedural memory; trim vs summarise vs retrieve) comes up in agent design rounds.",
-    ceiling: {
-      enough: "separate short-term from long-term memory, give three ways to handle a long conversation, and say when memories get written.",
-      tooDeep: "comparing memory frameworks; cognitive-science taxonomies.",
-    },
-    know: [
-      "Short-term = the thread's state (messages), persisted by the checkpointer. Long-term = a Store, namespaced per user or org, read across threads.",
-      "Long-term kinds: semantic (facts about the user), episodic (past experiences, good examples), procedural (rules — often the system prompt itself).",
-      "Long conversations: trim (keep the last N tokens; cheap, forgets), summarise older turns (keeps the gist; costs a call, loses detail), retrieve relevant past turns (precise; adds a retrieval).",
-      "Write memories in the hot path (the agent calls a save tool; immediate, slower) or in the background after the conversation (cheaper, delayed).",
-      "Memory is a privacy and correctness surface: users must be able to see and delete it, and stale facts poison answers.",
-    ],
-    resources: [
-      {
-        doc: {
-          title: "Memory overview",
-          site: "docs.langchain.com",
-          url: "https://docs.langchain.com/oss/python/concepts/memory",
-          minutes: 20,
-          estimate: true,
-        },
-      },
-      { video: "JTL0yp85FsE" },
-      { video: "hE8C2M8GRLo" },
-    ],
-    drill: [
-      {
-        q: "The conversation exceeds the context window. Three strategies and their trade-offs.",
-        a: [
-          "1. **Trim**: keep the system prompt and the last N tokens or messages. Cheap and predictable; forgets early facts.",
-          "2. **Summarise**: replace older turns with a running summary (`SummarizationMiddleware`). Keeps the gist; costs an LLM call, loses detail, and summaries drift.",
-          "3. **Retrieve**: store every turn, embed it, pull back only the relevant ones per query. Precise recall of old details; adds retrieval latency and can miss context.",
-          "",
-          "The common combination: recent turns verbatim + a summary of older ones + retrieval for specific facts. Also clear bulky tool outputs early.",
-        ],
-      },
-      {
-        q: "Short-term vs long-term memory in LangGraph?",
-        a: "**Short-term**: the thread's state — messages and working variables — saved by the checkpointer under `thread_id`, gone in a new thread. **Long-term**: a `Store` (e.g. `PostgresStore`) holding JSON documents under namespaces like `('users', user_id, 'preferences')`, optionally with semantic search, read and written by nodes through the runtime; it survives across threads. The design work is deciding what to save (facts, preferences, good examples) and when (an agent tool call or a background job).",
-      },
-      {
-        q: "What can go wrong with long-term memory in production?",
-        a: [
-          "- **Wrong or stale facts** saved and reused confidently → timestamps, overwrite rules, confidence.",
-          "- **Privacy**: personal data stored without consent → users can view and delete memories; tenant isolation by namespace.",
-          "- **Persistent prompt injection**: malicious text saved as a “memory” affects every later session.",
-          "- **Context bloat**: too many memories retrieved per turn.",
-          "- **Testing**: build cases that check a fact is recalled across sessions, and that a deleted fact stays gone.",
-        ],
       },
     ],
   },
@@ -1885,15 +1502,6 @@ export const TOPICS = [
           note: "Short answers to every practical question: judges, error analysis, golden-set size, agreement, tooling.",
         },
       },
-      {
-        course: {
-          title: "AI Evals For Engineers & PMs",
-          site: "Maven · Hamel Husain & Shreya Shankar",
-          url: "https://maven.com/parlance-labs/evals",
-          paid: true,
-          note: "Paid cohort course; check the page for price and dates. Optional — the free preview and the FAQ cover what interviews ask.",
-        },
-      },
     ],
     drill: [
       {
@@ -1992,16 +1600,6 @@ export const TOPICS = [
           note: "The survey: which judge setups agree with humans, and where they fail.",
         },
       },
-      {
-        doc: {
-          title: "Who Validates the Validators?",
-          site: "arxiv.org",
-          url: "https://arxiv.org/abs/2404.12272",
-          minutes: 15,
-          estimate: true,
-          note: "Read the abstract and the criteria-drift finding.",
-        },
-      },
     ],
     drill: [
       {
@@ -2095,16 +1693,6 @@ export const TOPICS = [
           note: "Read faithfulness, response relevancy, context precision and context recall.",
         },
       },
-      {
-        course: {
-          title: "Building and Evaluating Advanced RAG Applications",
-          site: "DeepLearning.AI · LlamaIndex & TruEra",
-          url: "https://www.deeplearning.ai/courses/building-evaluating-advanced-rag",
-          minutes: 125,
-          estimate: true,
-          note: "About two hours; teaches the RAG triad (context relevance, groundedness, answer relevance). Some items may be marked PRO.",
-        },
-      },
     ],
     drill: [
       {
@@ -2172,16 +1760,6 @@ export const TOPICS = [
       { video: "FCKjETgr54U" },
       { video: "vuBvf7ZRKTA" },
       { video: "_Er8Hao_gmQ" },
-      {
-        doc: {
-          title: "τ-bench (tau-bench)",
-          site: "github.com/sierra-research",
-          url: "https://github.com/sierra-research/tau-bench",
-          minutes: 10,
-          estimate: true,
-          note: "Where pass^k comes from: a tool-agent-user benchmark with simulated customers. Read the README for the idea, not the code.",
-        },
-      },
     ],
     drill: [
       {
@@ -2338,15 +1916,6 @@ export const TOPICS = [
           note: "Seven patterns: evals, RAG, fine-tuning, caching, guardrails, defensive UX and user feedback.",
         },
       },
-      {
-        course: {
-          title: "Generative AI System Design Interview",
-          site: "ByteByteGo",
-          url: "https://bytebytego.com/courses/genai-system-design-interview/introduction-and-overview",
-          paid: true,
-          note: "Paid, and aimed at ML-engineer loops. For an application-layer role only the introduction (its seven-step framework), the chatbot and the RAG chapters matter.",
-        },
-      },
     ],
     drill: [
       {
@@ -2441,16 +2010,6 @@ export const TOPICS = [
           note: "When to build an agent, single- vs multi-agent orchestration, and layered guardrails.",
         },
       },
-      {
-        doc: {
-          title: "Agents",
-          site: "huyenchip.com",
-          url: "https://huyenchip.com/2025/01/07/agents.html",
-          minutes: 40,
-          estimate: true,
-          note: "Optional depth: tools, planning and failure modes of agents, from her AI Engineering book.",
-        },
-      },
     ],
     drill: [
       {
@@ -2482,80 +2041,6 @@ export const TOPICS = [
       {
         q: "What is the agent-computer interface, and why does it matter?",
         a: "The tools — their names, descriptions, parameters, outputs and errors — are the interface the model works through, the way a UI is for people. Anthropic reported spending more time optimising tools than prompts for their agents. A good interface makes correct use obvious, uses formats the model handles well, prefers absolute identifiers to relative ones, makes mistakes hard (constrained parameters), returns concise outputs and helpful errors — and gets tested by watching the model use it.",
-      },
-    ],
-  },
-  {
-    id: "SD-03",
-    section: "D",
-    priority: "P1",
-    title: "Context engineering — what goes in the window",
-    why: "Context engineering — deciding what goes into the window, in what order, and what gets dropped — has replaced “prompt tricks” as the senior framing. Agents fail more often from bad context (too much, stale, contradictory, missing) than from bad wording. Expect questions on prompt structure for caching, long-running agents and tool-output bloat.",
-    ceiling: {
-      enough: "order a prompt for cost and quality, give four strategies for long-running context (write, select, compress, isolate), and explain context rot.",
-      tooDeep: "automatic prompt-optimisation research.",
-    },
-    know: [
-      "Context = system prompt + tools + retrieved documents + memory + conversation + tool results. Every token competes for attention; more isn't better (context rot).",
-      "Order for caching: static first (system prompt, tool definitions, examples, fixed documents), dynamic last (retrieved chunks, the question). Prompt caches match exact prefixes.",
-      "Long-running agents: write (notes and files outside the window) · select (retrieve what the next step needs) · compress (summarise, clear old tool results) · isolate (subagents with their own windows).",
-      "Tool outputs are the biggest source of bloat: return summaries and ids, paginate, clear old results.",
-      "System prompts at the right altitude: clear principles and examples — neither brittle if-else rules nor vague platitudes.",
-      "Prompt for behaviour you can describe, RAG for knowledge, fine-tuning for consistent style or format or a narrow skill at lower cost.",
-    ],
-    resources: [
-      {
-        doc: {
-          title: "Effective context engineering for AI agents",
-          site: "anthropic.com",
-          url: "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
-          minutes: 25,
-          estimate: true,
-        },
-      },
-      { video: "4GiqzUHD5AA", note: "Write, select, compress, isolate — the four strategies, with examples from real agents." },
-      { video: "zYGDpG-pTho" },
-    ],
-    drill: [
-      {
-        q: "Prompt engineering vs context engineering?",
-        a: "**Prompt engineering** is the wording and structure of instructions for a single call. **Context engineering** is everything the model sees at each step of a system — instructions, tools, retrieved data, memory, history, tool results — and the logic that selects, orders, compresses and refreshes it as an agent runs for many steps. It's a systems problem (retrieval, memory and state design), not a phrasing problem.",
-      },
-      {
-        q: "Order the parts of a RAG prompt for cost and quality.",
-        a: [
-          "1. **System instructions** (role, rules, output format) — static.",
-          "2. **Tool definitions and schema** — static.",
-          "3. **Few-shot examples** — static.",
-          "4. **Retrieved chunks**, labelled with ids, most relevant first.",
-          "5. **Conversation summary and recent turns.**",
-          "6. **The user's question**, last.",
-          "",
-          "Static first lets provider prompt caching reuse the prefix (cheaper, faster first token). The question goes last, nearest generation, and the best evidence sits at an edge rather than buried in the middle.",
-        ],
-      },
-      {
-        q: "A long-running agent's context keeps growing. What do you do?",
-        a: [
-          "Four families:",
-          "",
-          "- **Write**: keep notes, plans and large artifacts outside the window (a scratchpad file, state, a store) and reference them.",
-          "- **Select**: retrieve only what the next step needs; filter tools per step.",
-          "- **Compress**: summarise history at thresholds, clear old tool outputs, keep ids instead of payloads.",
-          "- **Isolate**: hand subtasks to subagents with fresh windows that return condensed results.",
-          "",
-          "Measure tokens per step and task success as runs get longer.",
-        ],
-      },
-      {
-        q: "When would you fine-tune instead of prompting or using RAG?",
-        a: [
-          "- **Prompting** first, always: the cheapest thing to change; good when the behaviour can be described and shown.",
-          "- **RAG** when the gap is **knowledge**: private, large or changing facts, with citations.",
-          "- **Fine-tuning** when the gap is **behaviour** prompting can't make reliable: a strict output style or format, or a narrow classification or extraction task done faster and cheaper by a small model. Not for facts that change.",
-          "",
-          "They combine (a fine-tuned small model plus RAG). Decide with an eval: fine-tune only if it beats a well-prompted strong model on your task at acceptable cost.",
-        ],
       },
     ],
   },
@@ -2768,54 +2253,6 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SD-07",
-    section: "D",
-    priority: "P2",
-    title: "Design: support assistant with evals and human handoff",
-    why: "“Design a support assistant — how do you know it's helping and not making things worse?” is the eval-centred design round. Define success first (resolution rate, escalation rate, satisfaction), baseline against the human team, and ship behind shadow traffic or a small cohort with rollback thresholds.",
-    ceiling: {
-      enough: "name the success metric and baseline, the handoff rules, the launch plan and the rollback trigger.",
-      tooDeep: "building the ticketing integration.",
-    },
-    know: [
-      "Success first: resolution without a human, escalation rate, CSAT, time to resolution, cost per resolved ticket — baselined against today's team.",
-      "Architecture: intent routing → RAG over the help centre plus read-only account tools → actions (refund, cancel) behind policy checks or approval → handoff.",
-      "Handoff on: low confidence, policy-sensitive intents, an explicit request for a human, repeated failure, negative sentiment. Pass a summary and the transcript so the customer never repeats themselves.",
-      "Launch: an offline golden set from past tickets → shadow (the bot drafts, humans send) → a small cohort → expand, with rollback triggers.",
-      "Human edits of drafts and every escalation become eval cases.",
-    ],
-    resources: [
-      { video: "un1IJdX-ImQ" },
-      { video: "mwN75EiGfCE" },
-    ],
-    drill: [
-      {
-        q: "Design a support assistant. How do you know it's helping and not making things worse?",
-        a: [
-          "Define success before building: **resolution rate without a human**, **escalation rate**, CSAT, time to resolution and **cost per resolved ticket**, baselined against the current team — plus guardrail metrics that must not get worse (complaints, refunds issued in error, repeat contacts within 7 days).",
-          "",
-          "Measure offline on a golden set built from past tickets (correct answer, correct action, correct handoff), then online: shadow mode where agents see the bot's drafts, then a 5% cohort compared against control. Expand only if resolution rises without the guardrail metrics moving.",
-        ],
-      },
-      {
-        q: "When does the bot hand off to a human, and how is the context passed on?",
-        a: "Hand off when: the user asks for a person; the intent is policy-sensitive (legal, fraud, large refunds); confidence or retrieval scores are low; the same issue failed twice; sentiment turns negative; or a required action needs approval. Pass a structured handoff: a summary, the detected intent, what was tried, relevant account facts and the full transcript, placed in the queue at the right priority. Measure handoff precision too — unnecessary handoffs waste the savings, missed ones cost customers.",
-      },
-      {
-        q: "A model update makes answers worse in one product area. How do you detect it and roll back?",
-        a: "Detect: pinned model versions with the regression suite run before switching; online evals and escalation and thumbs-down rates **sliced by product area**, with alerts on per-slice drops (an average would hide it); the canary cohort compared with control. Roll back: the model version is gateway configuration, so routing back is a config change, not a deploy — and it's done for that slice or globally while the failure is analysed and added to the eval set.",
-      },
-      {
-        q: "How would you build the eval set from past tickets?",
-        a: "Sample resolved tickets stratified by intent and difficulty, including escalated ones. For each record the customer's messages, the correct resolution (answer, action, or handoff) and the policy that applied. Strip PII. Add adversarial cases (angry customers, injection attempts, out-of-policy requests). Grade outcome correctness, policy compliance and handoff decisions; use a judge only for tone and helpfulness, calibrated against support leads' labels.",
-      },
-      {
-        q: "The bot promised a refund policy that doesn't exist. What failed, and how do you prevent it?",
-        a: "Usually generation without grounding: the policy wasn't retrieved (or was outdated) and the model filled the gap. Prevent it: answer policy questions only from retrieved policy documents, with citations; a groundedness check that blocks unsupported commitments; structured actions (a refund is a tool call checked against policy in code, never a promise in text); an explicit “I'll check with a colleague” handoff path; and the incident becomes a regression test.",
-      },
-    ],
-  },
-  {
     id: "SD-08",
     section: "D",
     priority: "P2",
@@ -2870,84 +2307,6 @@ export const TOPICS = [
       {
         q: "What do you trace so a bad run can be debugged after the fact?",
         a: "The full trajectory: the user request, every model call (prompt version, inputs, outputs, tokens), every tool call (arguments, results, errors, latency), state at each checkpoint, interrupts with the reviewer's decision, and the final outcome — all under one trace id linked to the audit record. With LangGraph checkpoints you can also replay from any step to reproduce the failure.",
-      },
-    ],
-  },
-  {
-    id: "SD-09",
-    section: "D",
-    priority: "P2",
-    title: "Design: LLM gateway and batch pipeline",
-    why: "This is your strongest ground — queues, rate limits, key pools, idempotency — applied to LLMs. Be able to design a gateway that routes between providers with fallbacks, budgets and caching, and an offline pipeline (queue, workers, retries, dead-letter queue, a rate budget per key) that processes millions of items safely.",
-    flag: "Kafka ingest, rate-limited key pools and idempotent consumers in DeepLogLens.",
-    ceiling: {
-      enough: "describe the gateway and the pipeline with their failure handling, and name what goes wrong with naive fallback.",
-      tooDeep: "building a gateway product.",
-    },
-    know: [
-      "Gateway: one API in front of the providers — auth, per-tenant quotas, routing by task and cost, retries with backoff and jitter, fallbacks, caching, logging, cost accounting.",
-      "Rate limits: token buckets per provider key and per tenant (requests and tokens per minute); key pools spread load; honour `Retry-After` on 429.",
-      "Naive fallback risks: quality drift, different schemas, tokenisers and context limits, doubled latency and cost — evaluate prompts on the fallback models too.",
-      "Batch pipeline: a queue (Kafka) → workers with concurrency limits → idempotent writes keyed by item → retries → a dead-letter queue with replay; progress checkpoints so reruns skip finished items; provider batch APIs for roughly half the price.",
-      "Version prompts and models together and roll out behind the gateway with a flag.",
-    ],
-    resources: [
-      { video: "mwP4sdp7gW0" },
-      { video: "YXkOdWBwqaA" },
-      {
-        doc: {
-          title: "Exponential Backoff And Jitter",
-          site: "aws.amazon.com",
-          url: "https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/",
-          minutes: 10,
-          estimate: true,
-          note: "Why full jitter beats plain backoff when many clients retry together.",
-        },
-      },
-      {
-        doc: {
-          title: "Batch API",
-          site: "developers.openai.com",
-          url: "https://developers.openai.com/api/docs/guides/batch",
-          minutes: 10,
-          estimate: true,
-          note: "The offline path: submit a file of requests, collect results within a window, at a discount.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "Design an LLM gateway: routing, fallbacks, budgets, caching, logging.",
-        a: [
-          "- **API**: one OpenAI-style endpoint for every team; requests carry tenant, use case and priority.",
-          "- **Routing**: by use case to a configured model (cheap vs strong), with versions pinned in config.",
-          "- **Limits**: token buckets per tenant and per provider key (RPM and TPM); key pools; queue or shed low-priority traffic first.",
-          "- **Resilience**: timeouts, retries with backoff and jitter on 429 and 5xx (honouring `Retry-After`), circuit breakers, a fallback chain evaluated in advance.",
-          "- **Caching**: exact-match response cache for deterministic calls; pass-through of provider prompt caching.",
-          "- **Observability**: per-request logs (tokens, cost, latency, model, tenant), budgets and alerts per tenant, redaction.",
-        ],
-      },
-      {
-        q: "Embed and summarise 50M documents overnight. Design the pipeline.",
-        a: [
-          "- Work items on a **partitioned queue** (Kafka), keyed by document id.",
-          "- **Workers** with bounded concurrency, sized to the provider's TPM across a key pool: 50M items in ~8 hours is ~1,700 a second, so batch embeddings (hundreds of texts per call) and use batch APIs for the summaries.",
-          "- **Idempotent writes**: upsert by `(doc_id, model_version)`, so a redelivered message is a no-op; commit offsets after the write.",
-          "- **Retries** with backoff for transient errors; poison messages to a **dead-letter queue** after N attempts.",
-          "- **Progress tracking** so a rerun skips finished items; a dashboard of throughput, errors and cost; a sample of outputs checked by an eval.",
-        ],
-      },
-      {
-        q: "Providers rate-limit per key. How do you stay under it, and what happens on a 429?",
-        a: "Client-side **token buckets** per key for both requests and tokens per minute, refilled at the provider's limit with a safety margin; estimate tokens before sending. A **key pool** spreads load, with each key's bucket tracked centrally (Redis) when several workers share it. On a 429: honour `Retry-After`, otherwise back off exponentially with full jitter; mark the key as cooling down so others take the traffic; never let every worker retry in lockstep (the thundering herd).",
-      },
-      {
-        q: "How do you cap spend per tenant?",
-        a: "Meter every request's cost at the gateway (tokens × price for that model) into a per-tenant counter with daily and monthly windows. Soft limit → alert the tenant and route to cheaper models; hard limit → reject with a clear error or queue for later. Pre-check expensive requests (very long prompts) against the remaining budget, and cap output tokens per request so a single call can't blow the budget.",
-      },
-      {
-        q: "Where do poison messages go, and how do you replay them?",
-        a: "After N failed attempts (with backoff), a message moves to a **dead-letter topic** with its error, attempt count and payload. An alert fires on DLQ growth. Someone triages by error type: fix the bug or the bad data, then **replay** — re-publish the DLQ messages to the main topic (or a retry topic) through a tool that preserves keys. Idempotent processing makes replay safe even if some messages had partially succeeded.",
       },
     ],
   },
@@ -3080,48 +2439,6 @@ export const TOPICS = [
       {
         q: "stdio or HTTP transport — when each?",
         a: "**stdio**: the server runs as a local subprocess of the host — simple, no network exposure, ideal for local tools (files, a local database, CLIs). **Streamable HTTP**: the server runs remotely as a service — shared by many clients, centrally managed and updated, but it needs authentication and authorisation, TLS, and the usual web-service hardening.",
-      },
-    ],
-  },
-  {
-    id: "LLM-03",
-    section: "F",
-    priority: "P3",
-    title: "Fine-tuning — concepts, and when it beats RAG",
-    why: "Asked as “when would you fine-tune instead of using RAG?”, not as a training exercise. A paragraph each on SFT, LoRA and QLoRA, preference tuning (RLHF, DPO) and distillation is the whole ceiling for an application-layer role at this level — then say plainly that you haven't trained models yourself.",
-    ceiling: {
-      enough: "know what each technique changes, and when it beats RAG or prompting.",
-      tooDeep: "training-loop internals, hyperparameter tuning, GPU memory arithmetic.",
-    },
-    know: [
-      "SFT: train on input → ideal output pairs. LoRA: freeze the weights and learn a low-rank update (W + BA) — a tiny fraction of the parameters. QLoRA: LoRA on a 4-bit quantised base, so it fits on one GPU.",
-      "Preference tuning: RLHF (a reward model plus reinforcement learning) and DPO (optimise directly on chosen / rejected pairs, no reward model).",
-      "Distillation: train a small model on a large model's outputs for cost and latency.",
-      "Fine-tune for behaviour (format, style, a narrow task), not for facts that change — that's RAG.",
-      "Compare against the base model with a good prompt; a fine-tune that doesn't beat it isn't worth the operations.",
-    ],
-    resources: [
-      { video: "DhRoTONcyZE" },
-      { video: "t1caDsMzWBk" },
-      { video: "qPN_XZcJf_s" },
-      { video: "k2pD3k1485A" },
-    ],
-    drill: [
-      {
-        q: "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?",
-        a: "**Distil**: run the large model (or the large model plus human review of disagreements) over a few thousand real inputs to create labelled pairs, fine-tune a small model on them (LoRA is enough), and evaluate both on a held-out set — accuracy per field, latency, cost. Ship the small model if it's within your quality bar, with a cascade: low-confidence or invalid outputs fall back to the large model. Retrain when the input distribution drifts.",
-      },
-      {
-        q: "What does LoRA change, and why is it cheaper than full fine-tuning?",
-        a: "LoRA freezes the original weights and learns, for chosen weight matrices, a low-rank update: two small matrices A and B whose product BA is added to W. Only A and B are trained — often well under 1% of the parameters — so it needs far less GPU memory, trains faster, and the adapter is a small file you can swap per task on one base model. QLoRA does the same over a 4-bit quantised base to cut memory further.",
-      },
-      {
-        q: "SFT, RLHF and DPO — what does each optimise?",
-        a: "**SFT** maximises the likelihood of demonstration outputs: imitate good examples. **RLHF** trains a reward model on human preference pairs, then optimises the model with RL to maximise that reward (with a penalty for drifting from the original). **DPO** skips the reward model and RL: it adjusts the model directly so preferred responses become more likely than rejected ones — simpler and more stable.",
-      },
-      {
-        q: "Fine-tuning to add new facts vs to change style — which works?",
-        a: "Style and format, reliably: fine-tuning is good at teaching *how* to respond. New facts, poorly: the model learns them unreliably, can't cite them, may hallucinate around them, and needs retraining whenever they change. For knowledge use RAG; fine-tune for behaviour — and combine the two when you need both.",
       },
     ],
   },
