@@ -623,6 +623,132 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
+    "id": "RAG-08",
+    "section": "R",
+    "sectionLabel": "RAG",
+    "priority": "P1",
+    "title": "Embeddings in depth — how they are trained, dimensions, fine-tuning",
+    "why": "After “how does RAG work?” comes “why do embeddings put similar meanings close together, and what do you do when they don't for your domain?”. Knowing contrastive training, query/document prefixes, Matryoshka dimensions and when to fine-tune an embedder separates people who used an embedding API from people who can fix retrieval.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "explain contrastive training with in-batch and hard negatives, bi-encoder asymmetry, dimension and precision trade-offs, and the steps to fine-tune an embedder on your own pairs.",
+      "tooDeep": "transformer pooling variants; training loss derivations."
+    },
+    "know": [
+      "Embedding models learn “similar” from pairs that belong together (question-answer, query-click), pulled together while non-matching texts are pushed apart (contrastive learning).",
+      "In-batch negatives come free from other pairs in a batch; hard negatives (similar but wrong) teach fine distinctions.",
+      "Many models expect prefixes such as `query:` and `passage:`; using the wrong one silently lowers quality.",
+      "Matryoshka embeddings stay useful when truncated to fewer dimensions; dimensions × precision decide memory.",
+      "Fine-tune an embedder on real query-chunk pairs plus mined hard negatives when domain vocabulary defeats general models; measure recall@k before switching."
+    ],
+    "resources": [
+      {
+        "id": "RAG-08-r1",
+        "kind": "video",
+        "title": "Training State-of-the-Art Sentence Embedding Models",
+        "source": "Nils Reimers",
+        "url": "https://www.youtube.com/watch?v=RHXZKUr8qOY",
+        "minutes": 44,
+        "note": "From the author of sentence-transformers: how state-of-the-art embedding models are trained."
+      },
+      {
+        "id": "RAG-08-r2",
+        "kind": "video",
+        "title": "Stop Picking Embedding Models Off The MTEB Leaderboard",
+        "source": "Hamel Husain",
+        "url": "https://www.youtube.com/watch?v=0KUHkwkThyc",
+        "minutes": 22,
+        "note": ""
+      },
+      {
+        "id": "RAG-08-r3",
+        "kind": "doc",
+        "title": "SentenceTransformers documentation",
+        "source": "sbert.net",
+        "url": "https://sbert.net/",
+        "minutes": 20,
+        "estimate": true,
+        "note": "Read the training overview and the losses page (MultipleNegativesRankingLoss is the in-batch negatives loss)."
+      },
+      {
+        "id": "RAG-08-r4",
+        "kind": "doc",
+        "title": "Binary and Scalar Embedding Quantization",
+        "source": "huggingface.co",
+        "url": "https://huggingface.co/blog/embedding-quantization",
+        "minutes": 20,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 106,
+    "duration": "≈1h 46m",
+    "questions": [
+      "Why do embeddings put similar meanings close together?",
+      "What are hard negatives, and why do they matter?",
+      "Your domain vocabulary keeps defeating the embedding model. What do you do, in order?",
+      "What are Matryoshka embeddings, and why would you use them?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
+    "id": "RAG-10",
+    "section": "R",
+    "sectionLabel": "RAG",
+    "priority": "P1",
+    "title": "Document ingestion — PDFs, tables, OCR and keeping the index in sync",
+    "why": "Most real RAG failures start before retrieval: two-column PDFs read in the wrong order, tables flattened into one line, scanned pages with no text, headers repeated on every chunk. Interviewers who have shipped RAG ask how you handle tables and scans, and how the index stays in sync as documents change.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "walk the ingestion pipeline, explain how you'd handle tables, scans and boilerplate, and describe incremental re-indexing with content hashes.",
+      "tooDeep": "OCR model internals; writing your own layout parser."
+    },
+    "know": [
+      "Detect the document type first: a digital PDF has a text layer; a scan needs OCR.",
+      "Layout-aware parsers (Docling, Unstructured, or a vision model per page) recover reading order, headings and tables.",
+      "Tables: one chunk per row with column names repeated, a summary chunk for the table, and SQL for very large tables.",
+      "Clean before chunking: drop headers, footers and boilerplate; mask personal data.",
+      "Incremental ingestion: hash each document, re-process only changes, delete old chunks in the same step, track parser version."
+    ],
+    "resources": [
+      {
+        "id": "RAG-10-r1",
+        "kind": "video",
+        "title": "What Is Docling? Transforming Unstructured Data for RAG and AI",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=zSA7ylHP6AY",
+        "minutes": 8,
+        "note": ""
+      },
+      {
+        "id": "RAG-10-r2",
+        "kind": "doc",
+        "title": "Docling documentation",
+        "source": "docling-project.github.io",
+        "url": "https://docling-project.github.io/docling/",
+        "minutes": 15,
+        "estimate": true,
+        "note": "An open-source parser that recovers layout, reading order and tables from PDFs and office documents."
+      }
+    ],
+    "minutes": 23,
+    "duration": "≈23m",
+    "questions": [
+      "How would you handle tables in a RAG system?",
+      "Some of your PDFs are scans. What changes?",
+      "How do you keep the index in sync as 12,000 documents change?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 3
+    }
+  },
+  {
     "id": "RAG-07",
     "section": "R",
     "sectionLabel": "RAG",
@@ -686,6 +812,59 @@ export const AI_STACK_TOPICS = [
       "Models have million-token context windows now. Is RAG dead?",
       "What problem does GraphRAG solve that vector RAG doesn't?",
       "“How many tickets were escalated last month, by region?” — RAG or SQL?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 3
+    }
+  },
+  {
+    "id": "RAG-09",
+    "section": "R",
+    "sectionLabel": "RAG",
+    "priority": "P2",
+    "title": "Choosing a vector store — pgvector, dedicated databases, search engines",
+    "why": "“pgvector or Pinecone?” is a common design follow-up, and “we need a vector database because we're doing RAG” is the weak answer. Know the four families (extension, dedicated database, search engine, library) and the questions that actually decide it: scale, filtering, hybrid search, transactions, write rate and operations.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "name the four families, the deciding questions, and how you'd benchmark two options on your own data.",
+      "tooDeep": "feature-by-feature vendor comparisons; internal storage engines."
+    },
+    "know": [
+      "pgvector: vectors next to your data with transactions, joins, access control; great until scale or filtered-search needs outgrow it.",
+      "Dedicated vector databases (Qdrant, Weaviate, Milvus, managed Pinecone): filtering, sharding and replication built in.",
+      "Search engines (Elasticsearch, OpenSearch): strong BM25 and aggregations with vector fields added.",
+      "FAISS is a library: fast in-process search, no durability, filtering or updates.",
+      "Decide by benchmarking filtered recall, p95 latency, re-index time and cost on your own data; keep retrieval behind a small interface so you can switch."
+    ],
+    "resources": [
+      {
+        "id": "RAG-09-r1",
+        "kind": "video",
+        "title": "What is a Vector Database? Powering Semantic Search & AI Applications",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=gl1r1XV0SLw",
+        "minutes": 10,
+        "note": ""
+      },
+      {
+        "id": "RAG-09-r2",
+        "kind": "doc",
+        "title": "What is a Vector Database?",
+        "source": "qdrant.tech",
+        "url": "https://qdrant.tech/articles/what-is-a-vector-database/",
+        "minutes": 15,
+        "estimate": true,
+        "note": "Written by a vendor; useful for what a dedicated database adds (filtering, sharding, quantisation). Weigh the claims accordingly."
+      }
+    ],
+    "minutes": 25,
+    "duration": "≈25m",
+    "questions": [
+      "pgvector or a dedicated vector database?",
+      "When would you pick Elasticsearch or OpenSearch for RAG?",
+      "Why isn't FAISS a database?"
     ],
     "asked": {
       "posts": 0,
@@ -1087,6 +1266,225 @@ export const AI_STACK_TOPICS = [
       "Supervisor vs swarm (handoffs) — what's the difference?",
       "What did Anthropic learn from building their multi-agent research system?",
       "What is a “deep agent”?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
+    "id": "LC-03",
+    "section": "L",
+    "sectionLabel": "LangChain + LangGraph",
+    "priority": "P1",
+    "title": "Middleware — limits, retries, fallbacks, PII and approvals in create_agent",
+    "why": "Middleware is how LangChain v1 adds production controls to the agent loop without rewriting it, and its hooks map one-to-one onto the controls design rounds ask about: call limits, retries, model fallbacks, PII masking, summarising long history and approvals. Knowing it signals current hands-on experience.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "name the hooks and their order, map five built-ins to the problems they solve, and write a small custom wrap_model_call hook.",
+      "tooDeep": "every option of every built-in middleware."
+    },
+    "know": [
+      "Node-style hooks: `before_agent`, `before_model`, `after_model`, `after_agent` (can update state; model hooks can jump). Wrap-style: `wrap_model_call`, `wrap_tool_call` (modify, skip or retry).",
+      "Order for [m1, m2, m3]: before hooks m1→m3, wrap hooks nested with m1 outermost, after hooks m3→m1.",
+      "Built-ins: ModelCallLimit, ToolCallLimit, ModelRetry, ToolRetry, ModelFallback, Summarization, ContextEditing, PII, LLMToolSelector, HumanInTheLoop, TodoList.",
+      "Custom middleware for per-request model routing, per-user tool filtering, cost accounting and output checks.",
+      "Middleware changes requests invisibly: test with the full stack and log when fallbacks or summaries fire."
+    ],
+    "resources": [
+      {
+        "id": "LC-03-r1",
+        "kind": "doc",
+        "title": "Middleware overview",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langchain/middleware/overview",
+        "minutes": 15,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "LC-03-r2",
+        "kind": "doc",
+        "title": "Prebuilt middleware",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langchain/middleware/built-in",
+        "minutes": 20,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "LC-03-r3",
+        "kind": "video",
+        "title": "Human in the Loop Middleware (Python)",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=SpfT6-YAVPk",
+        "minutes": 6,
+        "note": ""
+      },
+      {
+        "id": "LC-03-r4",
+        "kind": "video",
+        "title": "LangChain v1 Middleware: Building Safe, Reliable & Controllable AI Agents",
+        "source": "Vaibhav Arora",
+        "url": "https://www.youtube.com/watch?v=ecqPrHBCY2s",
+        "minutes": 39,
+        "note": "A longer walkthrough of v1 middleware in code; skim to the parts on limits, fallbacks and custom hooks."
+      }
+    ],
+    "minutes": 80,
+    "duration": "≈1h 20m",
+    "questions": [
+      "Your agent loops and burns tokens. What middleware do you add?",
+      "In what order do middleware hooks run?",
+      "How would you send easy questions to a cheap model and hard ones to a strong model?",
+      "Why is a model fallback risky, and how do you make it safe?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
+    "id": "LG-03",
+    "section": "L",
+    "sectionLabel": "LangChain + LangGraph",
+    "priority": "P1",
+    "title": "LangGraph control flow — Send fan-out, subgraphs, streaming, retries",
+    "why": "Design rounds turn workflows into graphs: “summarise 500 documents”, “reuse this retrieval loop in three workflows”, “show progress while the agent works”, “the payments API fails one call in fifty”. Send-based map-reduce, subgraphs, stream modes and node retry/cache policies are the tools for exactly these.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "model a map-reduce with Send and a reducer, explain subgraph state boundaries, pick stream modes for a UI, and say where retry and cache policies belong.",
+      "tooDeep": "custom channels; distributed execution internals."
+    },
+    "know": [
+      "Map-reduce: a conditional edge returns `[Send('node', payload) ...]`; branches run in one super-step; a list reducer collects results; cap with `max_concurrency`.",
+      "Subgraphs are compiled graphs used as nodes, with their own state and checkpoint namespace; shared fields flow by name.",
+      "`Command(graph=Command.PARENT, goto=...)` jumps from a subgraph to the parent graph.",
+      "Stream modes: messages (tokens), updates (per-node changes), values (full state), custom (your events), debug.",
+      "Retry policies for flaky nodes, cache policies for expensive deterministic ones, per-node timeouts in recent versions."
+    ],
+    "resources": [
+      {
+        "id": "LG-03-r1",
+        "kind": "doc",
+        "title": "Workflows and agents",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langgraph/workflows-agents",
+        "minutes": 25,
+        "estimate": true,
+        "note": "Each workflow pattern, including orchestrator-workers with Send, implemented in LangGraph."
+      },
+      {
+        "id": "LG-03-r2",
+        "kind": "video",
+        "title": "LangGraph - Controllability with Map Reduce",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=JQznvlSatPQ",
+        "minutes": 9,
+        "note": ""
+      },
+      {
+        "id": "LG-03-r3",
+        "kind": "video",
+        "title": "Streaming in LangGraph | CampusX",
+        "source": "CampusX",
+        "url": "https://www.youtube.com/watch?v=D1PcZaeQ2eg",
+        "minutes": 25,
+        "note": ""
+      },
+      {
+        "id": "LG-03-r4",
+        "kind": "doc",
+        "title": "Streaming",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langgraph/streaming",
+        "minutes": 15,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 74,
+    "duration": "≈1h 14m",
+    "questions": [
+      "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
+      "When would you use a subgraph?",
+      "How would you stream a multi-step agent's progress to a UI?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 3
+    }
+  },
+  {
+    "id": "LG-05",
+    "section": "L",
+    "sectionLabel": "LangChain + LangGraph",
+    "priority": "P1",
+    "title": "Context engineering and memory — short-term, long-term, what goes in the window",
+    "why": "Agents fail more from bad context than bad wording: forgotten facts in long conversations, bloated tool outputs, irrelevant history. Expect “the conversation exceeds the window — your options?”, “short-term vs long-term memory?” and “in what order do you build the prompt?”.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "compare trim, summarise and retrieve; explain semantic, episodic and procedural memory and when memories are written; order a prompt for caching and quality.",
+      "tooDeep": "memory framework comparisons; cognitive-science taxonomies."
+    },
+    "know": [
+      "Context engineering: deciding what goes into the window on every call, in what order, and what is left out.",
+      "Short-term memory is the thread's state; manage it by trimming, summarising, retrieving old turns, and pinning key facts in state fields.",
+      "Long-term memory lives in the store: semantic (facts), episodic (past experiences), procedural (instructions).",
+      "Write memories in the hot path (a tool call) or in the background (after the conversation); guard against stale, private and poisoned memories.",
+      "Order: instructions, tools, examples, memories, retrieved documents, history, question — fixed parts first for prompt caching.",
+      "Long-running agents: write, select, compress, isolate."
+    ],
+    "resources": [
+      {
+        "id": "LG-05-r1",
+        "kind": "doc",
+        "title": "Effective context engineering for AI agents",
+        "source": "anthropic.com",
+        "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+        "minutes": 25,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "LG-05-r2",
+        "kind": "video",
+        "title": "Context Engineering for Agents",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=4GiqzUHD5AA",
+        "minutes": 22,
+        "note": "Write, select, compress, isolate — the four strategies with examples from real agents."
+      },
+      {
+        "id": "LG-05-r3",
+        "kind": "video",
+        "title": "Memory for agents (conceptual video)",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=JTL0yp85FsE",
+        "minutes": 7,
+        "note": ""
+      },
+      {
+        "id": "LG-05-r4",
+        "kind": "doc",
+        "title": "Memory overview",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/concepts/memory",
+        "minutes": 20,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 74,
+    "duration": "≈1h 14m",
+    "questions": [
+      "The conversation exceeds the context window. What are your options?",
+      "Short-term vs long-term memory in LangGraph?",
+      "What can go wrong with long-term memory?",
+      "Prompt engineering vs context engineering?"
     ],
     "asked": {
       "posts": 0,
@@ -2213,6 +2611,144 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
+    "id": "LLM-07",
+    "section": "F",
+    "sectionLabel": "LLM foundations",
+    "priority": "P1",
+    "title": "How transformers work — tokens, attention, layers (conceptual)",
+    "why": "AI engineer loops don't ask you to derive attention, but they do ask “explain attention in a minute”, “why does a longer prompt cost more?”, “why is long context hard?” and “what is a mixture-of-experts model?”. The conceptual picture of the transformer answers all of them and grounds everything about context, cost and KV caches.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "walk text → tokens → vectors → attention and feed-forward layers → next-token probabilities, and use it to explain cost, long-context limits and the KV cache.",
+      "tooDeep": "attention maths, positional-encoding formulas, training objectives."
+    },
+    "know": [
+      "Tokens are embedded as vectors plus position information; every later step works on that list of vectors.",
+      "Attention: each token's query is compared with earlier tokens' keys, giving weights for a mix of their values; multi-head runs several in parallel.",
+      "Chat models are decoder-only with causal attention (only look backwards); embedding models and rerankers are usually encoders.",
+      "A layer is attention plus a feed-forward network; much factual knowledge sits in feed-forward weights.",
+      "Attention work grows roughly with the square of the length; the KV cache grows with context and limits batch size.",
+      "Mixture of experts: a router sends each token to a few expert networks, so only part of a huge model runs per token."
+    ],
+    "resources": [
+      {
+        "id": "LLM-07-r1",
+        "kind": "video",
+        "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+        "source": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+        "minutes": 27,
+        "note": ""
+      },
+      {
+        "id": "LLM-07-r2",
+        "kind": "video",
+        "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+        "source": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+        "minutes": 26,
+        "note": ""
+      },
+      {
+        "id": "LLM-07-r3",
+        "kind": "doc",
+        "title": "The Illustrated Transformer",
+        "source": "jalammar.github.io",
+        "url": "https://jalammar.github.io/illustrated-transformer/",
+        "minutes": 30,
+        "estimate": true,
+        "note": "The classic visual walkthrough of queries, keys, values and multi-head attention."
+      }
+    ],
+    "minutes": 83,
+    "duration": "≈1h 23m",
+    "questions": [
+      "Explain attention in one minute.",
+      "Why does a longer prompt cost more time and money?",
+      "Encoder vs decoder models — which do you use where?",
+      "What is a mixture-of-experts model?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
+    "id": "LLM-04",
+    "section": "F",
+    "sectionLabel": "LLM foundations",
+    "priority": "P1",
+    "title": "Prompting techniques — structure, few-shot, chain-of-thought, prompts as code",
+    "why": "Every AI engineer writes prompts daily, and interviewers check you treat it as engineering: a clear structure, examples chosen on purpose, chain-of-thought and self-consistency where they help, prompt chaining instead of one giant prompt, and every change tested on a labelled set.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "structure a production prompt, choose few-shot examples well, say when chain-of-thought helps, and describe a versioned, tested prompt workflow.",
+      "tooDeep": "prompt-optimisation research; collecting “magic phrases”."
+    },
+    "know": [
+      "Structure: role and goal, rules with edge cases, examples, output schema, and clearly delimited input.",
+      "Few-shot examples should cover hard boundaries, balance labels and vary wording; dynamic few-shot retrieves similar examples per input.",
+      "Chain-of-thought helps multi-step reasoning on standard models; self-consistency samples several paths and votes; reasoning models think internally.",
+      "ReAct alternates thought, tool call and observation; describe tools and stop rules well.",
+      "Split big prompts into chains with code checks between steps.",
+      "Prompts are code: version control, test set per category, version recorded on every trace, re-test on model upgrades."
+    ],
+    "resources": [
+      {
+        "id": "LLM-04-r1",
+        "kind": "video",
+        "title": "Prompting 101 | Code w/ Claude",
+        "source": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=ysPbXH0LpIE",
+        "minutes": 25,
+        "note": ""
+      },
+      {
+        "id": "LLM-04-r2",
+        "kind": "video",
+        "title": "AI prompt engineering: A deep dive",
+        "source": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=T9aRN5JkmL8",
+        "minutes": 77,
+        "note": "Long: Anthropic's prompt engineers discussing how they actually work. Listen to the first half."
+      },
+      {
+        "id": "LLM-04-r3",
+        "kind": "doc",
+        "title": "Prompt engineering overview",
+        "source": "platform.claude.com",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+        "minutes": 25,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "LLM-04-r4",
+        "kind": "doc",
+        "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+        "source": "arxiv.org",
+        "url": "https://arxiv.org/abs/2201.11903",
+        "minutes": 10,
+        "estimate": true,
+        "note": "Read the abstract and the first figure."
+      }
+    ],
+    "minutes": 137,
+    "duration": "≈2h 17m",
+    "questions": [
+      "How do you structure a production prompt?",
+      "When does chain-of-thought help, and when doesn't it?",
+      "How do you choose few-shot examples?",
+      "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
     "id": "LLM-02",
     "section": "F",
     "sectionLabel": "LLM foundations",
@@ -2283,6 +2819,169 @@ export const AI_STACK_TOPICS = [
       "posts": 0,
       "items": 4
     }
+  },
+  {
+    "id": "LLM-03",
+    "section": "F",
+    "sectionLabel": "LLM foundations",
+    "priority": "P2",
+    "title": "Fine-tuning — SFT, LoRA/QLoRA, RLHF vs DPO, distillation",
+    "why": "Asked as “when would you fine-tune instead of using RAG?”, “what does LoRA change?” and “RLHF vs DPO?”. The strong answer separates behaviour (fine-tune) from knowledge (RAG), knows the parameter-efficient methods, and reaches for distillation when a big model is too slow or costly for a narrow task.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "explain what SFT, LoRA, QLoRA, RLHF, DPO and distillation each change, and when fine-tuning beats prompting or RAG.",
+      "tooDeep": "training-loop internals, hyperparameter tuning, GPU memory arithmetic."
+    },
+    "know": [
+      "Fine-tuning teaches behaviour (format, style, a narrow task) reliably and facts unreliably; facts stay in RAG.",
+      "SFT trains on input-output pairs; quality beats quantity; always compare with the best prompt on the base model.",
+      "LoRA freezes the model and trains a small low-rank correction (an adapter); QLoRA does it on a 4-bit base.",
+      "RLHF: a reward model learned from human comparisons, then reinforcement learning; DPO trains directly on preferred/rejected pairs.",
+      "Distillation: a small model trained on a large model's outputs for one task, often with a cascade for uncertain cases."
+    ],
+    "resources": [
+      {
+        "id": "LLM-03-r1",
+        "kind": "video",
+        "title": "What is Low-Rank Adaptation (LoRA) | explained by the inventor",
+        "source": "Edward Hu",
+        "url": "https://www.youtube.com/watch?v=DhRoTONcyZE",
+        "minutes": 7,
+        "note": ""
+      },
+      {
+        "id": "LLM-03-r2",
+        "kind": "video",
+        "title": "LoRA & QLoRA Fine-tuning Explained In-Depth",
+        "source": "Mark Hennings",
+        "url": "https://www.youtube.com/watch?v=t1caDsMzWBk",
+        "minutes": 15,
+        "note": ""
+      },
+      {
+        "id": "LLM-03-r3",
+        "kind": "video",
+        "title": "Reinforcement Learning with Human Feedback (RLHF), Clearly Explained!!!",
+        "source": "StatQuest with Josh Starmer",
+        "url": "https://www.youtube.com/watch?v=qPN_XZcJf_s",
+        "minutes": 18,
+        "note": ""
+      },
+      {
+        "id": "LLM-03-r4",
+        "kind": "video",
+        "title": "Direct Preference Optimization (DPO) - How to fine-tune LLMs directly without reinforcement learning",
+        "source": "Luis Serrano Academy",
+        "url": "https://www.youtube.com/watch?v=k2pD3k1485A",
+        "minutes": 21,
+        "note": ""
+      },
+      {
+        "id": "LLM-03-r5",
+        "kind": "doc",
+        "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+        "source": "arxiv.org",
+        "url": "https://arxiv.org/abs/2106.09685",
+        "minutes": 10,
+        "estimate": true,
+        "note": "Read the abstract and the method figure."
+      }
+    ],
+    "minutes": 71,
+    "duration": "≈1h 11m",
+    "questions": [
+      "When would you fine-tune instead of using RAG?",
+      "What does LoRA change, and why is it cheaper?",
+      "RLHF vs DPO?",
+      "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
+    "id": "LLM-06",
+    "section": "F",
+    "sectionLabel": "LLM foundations",
+    "priority": "P2",
+    "title": "Serving and inference — batching, KV cache, quantisation, vLLM",
+    "why": "Once a company runs its own models, the AI engineer owns why throughput collapses at peak, why GPUs run out of memory and why the first token is slow. Interviews ask these at the concept level: prefill vs decode, continuous batching, PagedAttention, quantisation and speculative decoding.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "explain prefill vs decode, continuous batching, the KV cache and PagedAttention, quantisation trade-offs, speculative decoding, and how you'd debug slow time-to-first-token.",
+      "tooDeep": "CUDA kernels, tensor-parallel communication internals."
+    },
+    "know": [
+      "Prefill processes the prompt (decides time to first token); decode generates token by token (limited by memory speed).",
+      "Continuous batching adds and removes requests every step, keeping GPUs busy; bigger batches trade latency for throughput.",
+      "The KV cache grows with every active token; PagedAttention allocates it in pages, wasting little and enabling prefix sharing.",
+      "Quantisation (8-bit, 4-bit: GPTQ, AWQ, GGUF) cuts memory and speeds decoding; measure quality on your own test set.",
+      "Speculative decoding: a draft model proposes tokens, the big model verifies them in one pass, same output quality.",
+      "Self-hosting pays only at high, steady utilisation; autoscale on queue length and keep warm capacity."
+    ],
+    "resources": [
+      {
+        "id": "LLM-06-r1",
+        "kind": "video",
+        "title": "What Is LLM Inference? How AI Models Generate Responses",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=615-yWyS1n0",
+        "minutes": 8,
+        "note": ""
+      },
+      {
+        "id": "LLM-06-r2",
+        "kind": "video",
+        "title": "PagedAttention: Behind vLLM's Insane Speed",
+        "source": "Tales Of Tensors",
+        "url": "https://www.youtube.com/watch?v=6uPnLkCiy5g",
+        "minutes": 7,
+        "note": ""
+      },
+      {
+        "id": "LLM-06-r3",
+        "kind": "video",
+        "title": "How LLMs survive in low precision | Quantization Fundamentals",
+        "source": "Julia Turc",
+        "url": "https://www.youtube.com/watch?v=qoQJq5UwV1c",
+        "minutes": 21,
+        "note": ""
+      },
+      {
+        "id": "LLM-06-r4",
+        "kind": "video",
+        "title": "What is vLLM? Efficient AI Inference for Large Language Models",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=McLdlg5Gc9s",
+        "minutes": 5,
+        "note": ""
+      },
+      {
+        "id": "LLM-06-r5",
+        "kind": "doc",
+        "title": "vLLM: Easy, Fast, and Cheap LLM Serving with PagedAttention",
+        "source": "vllm.ai",
+        "url": "https://vllm.ai/blog/2023-06-20-vllm",
+        "minutes": 15,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 56,
+    "duration": "≈56m",
+    "questions": [
+      "Why is continuous batching faster than static batching?",
+      "What problem does PagedAttention solve?",
+      "Time to first token jumped from 400 ms to 4 seconds at peak. What do you check?",
+      "What does quantisation trade off?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
   }
 ];
 
@@ -2295,10 +2994,10 @@ export const AI_STACK_PRIORITY_CONFIG = {
   P3: { label: "P3", blurb: "Differentiators. Skip under time pressure", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300 border-slate-500/30" },
 };
 
-export const AI_STACK_TOTAL = 29;
+export const AI_STACK_TOTAL = 39;
 
-export const AI_STACK_PRIORITY_COUNTS = {"P0":16,"P1":9,"P2":4,"P3":0};
+export const AI_STACK_PRIORITY_COUNTS = {"P0":16,"P1":16,"P2":7,"P3":0};
 
-export const AI_STACK_SECTION_COUNTS = {"S":1,"R":7,"L":5,"H":3,"E":5,"D":6,"F":2};
+export const AI_STACK_SECTION_COUNTS = {"S":1,"R":10,"L":8,"H":3,"E":5,"D":6,"F":6};
 
-export const AI_STACK_MINUTES = 2576;
+export const AI_STACK_MINUTES = 3305;

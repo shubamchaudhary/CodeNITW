@@ -183,6 +183,44 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
+  "RAG-08": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Why do embeddings put similar meanings close together?",
+        "a": "Because of how they are trained. The model sees millions of pairs that belong together (a question and its answer, a query and the page people clicked) and is trained with a contrastive loss: each pair's vectors are pulled together while vectors of non-matching texts in the same batch are pushed apart. After enough examples, texts that answer or paraphrase each other end up near each other, even when they share no words."
+      },
+      {
+        "q": "What are hard negatives, and why do they matter?",
+        "a": "Negatives that look very similar to the right answer but are wrong — the bakery refund rule for a dairy question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
+      },
+      {
+        "q": "Your domain vocabulary keeps defeating the embedding model. What do you do, in order?",
+        "a": "1. Hybrid search, so exact terms and codes are matched by keyword search.\n2. Contextual retrieval or metadata, so chunks carry the context they lack.\n3. Try a few other embedding models on your own test set.\n4. Fine-tune an open embedder: collect real query-chunk pairs (plus reviewed generated ones), mine hard negatives, train, compare recall@10 on a held-out set, then re-embed the corpus and switch indexes blue-green.\n\nFine-tuning last, because it means owning a model and re-embedding everything when it changes."
+      },
+      {
+        "q": "What are Matryoshka embeddings, and why would you use them?",
+        "a": "Embeddings trained so that the first part of the vector is a good embedding on its own — the first 256 of 1,024 dimensions still work. You can store or search short vectors to save memory and time, and rerank with the full vectors, choosing the quality-cost trade-off after training."
+      }
+    ]
+  },
+  "RAG-10": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How would you handle tables in a RAG system?",
+        "a": "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Category: Bakery. Refund window: 12 hours.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
+      },
+      {
+        "q": "Some of your PDFs are scans. What changes?",
+        "a": "There is no text layer, so pages need OCR (or a vision model) to become text. OCR adds errors — digits and similar letters confused — so scanned sources get extra checks: a sample reviewed by eye, a metric for pages with no extracted text, and their own slice in the retrieval test set."
+      },
+      {
+        "q": "How do you keep the index in sync as 12,000 documents change?",
+        "a": "Incrementally. Store a content hash per document; on each sync skip unchanged ones, re-parse and re-chunk changed ones, and delete their old chunks in the same operation. Deletes and permission changes are handled as events quickly. Each chunk records its parser version so a parser upgrade re-processes only affected documents — via a blue-green re-index if it changes chunking."
+      }
+    ]
+  },
   "RAG-07": {
     "posts": 0,
     "items": [
@@ -197,6 +235,23 @@ export const AI_STACK_ASKED = {
       {
         "q": "“How many tickets were escalated last month, by region?” — RAG or SQL?",
         "a": "SQL. Similarity search returns *some* relevant tickets; it can't count all of them correctly. Give the agent a **text-to-SQL tool** — or a typed API like `count_escalations(month, group_by)` — with guardrails: a read-only role, allow-listed tables, row limits and timeouts, validated SQL. Use RAG for the *why* questions that follow (“what were the common causes?”) over the ticket text."
+      }
+    ]
+  },
+  "RAG-09": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "pgvector or a dedicated vector database?",
+        "a": "It depends on measured needs, not on doing RAG. pgvector wins when you already run Postgres, need transactions and joins with business data, and the index fits comfortably. A dedicated database wins when scale, heavily filtered search, high write rates or managed scaling outgrow Postgres. I'd benchmark both on our data: filtered recall@10, p95 under peak load, re-index time and monthly cost."
+      },
+      {
+        "q": "When would you pick Elasticsearch or OpenSearch for RAG?",
+        "a": "When keyword search, filtering and aggregations are central — logs, product catalogues, existing search infrastructure — and vectors are an addition. You get mature BM25 and operations the team may already know, with vector fields for hybrid search."
+      },
+      {
+        "q": "Why isn't FAISS a database?",
+        "a": "FAISS is an in-process library for fast similarity search over vectors in memory. It doesn't store data durably, handle concurrent updates, filter by metadata, replicate or serve over a network — you'd have to build all of that. Great for experiments and batch jobs, not as a production store on its own."
       }
     ]
   },
@@ -314,6 +369,65 @@ export const AI_STACK_ASKED = {
       {
         "q": "What is a “deep agent”?",
         "a": "LangChain's name (and package) for agents that handle long, multi-step tasks, built from four ingredients: a **planning tool** (a todo list the agent writes and updates), a **filesystem** for notes and large tool outputs instead of keeping them in context, **subagents** spawned through a `task` tool for isolated subtasks, and a **detailed system prompt**. It runs on LangGraph, so it inherits checkpointing, streaming and interrupts — the same harness shape as coding agents like Claude Code."
+      }
+    ]
+  },
+  "LC-03": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Your agent loops and burns tokens. What middleware do you add?",
+        "a": "ModelCallLimitMiddleware and ToolCallLimitMiddleware for hard caps with a defined ending; SummarizationMiddleware or ContextEditingMiddleware so old tool output stops inflating every call; and a custom after_model hook that spots repeated identical tool calls and jumps to the end. Then find the cause in the traces — usually an unhelpful tool error or an exit condition the model can't recognise."
+      },
+      {
+        "q": "In what order do middleware hooks run?",
+        "a": "For [m1, m2, m3]: before_agent and before_model run m1 → m2 → m3; wrap_model_call nests with m1 outermost (m1 wraps m2 wraps m3 wraps the model); after_model and after_agent run m3 → m2 → m1. Cross-cutting wrappers (logging, retries) go first; guards that must run right before the model (PII masking) go last."
+      },
+      {
+        "q": "How would you send easy questions to a cheap model and hard ones to a strong model?",
+        "a": "A custom wrap_model_call hook: inspect the request (length, a difficulty flag set earlier, the tools needed), call `request.override(model=cheap_model)` for easy cases, then call the handler. Measure quality per route on the test set, and log the route on every trace."
+      },
+      {
+        "q": "Why is a model fallback risky, and how do you make it safe?",
+        "a": "The fallback model may follow the prompt differently, handle tools worse, or have a smaller context window, so an outage silently becomes a quality drop. Run the test set against the fallback too, keep outputs schema-validated, log every fallback with its reason, and alert when the fallback rate rises."
+      }
+    ]
+  },
+  "LG-03": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
+        "a": "State: `docs`, `summaries: Annotated[list, operator.add]`, `report`. A conditional edge from START returns one `Send('summarise', {'doc': d})` per document, so all summaries run in one super-step and the reducer concatenates them. A `combine` node then reduces, in stages if the summaries don't fit one prompt. Cap `max_concurrency` below the provider's rate limit, add a retry policy on `summarise`, and use a checkpointer so a crash only redoes unfinished branches."
+      },
+      {
+        "q": "When would you use a subgraph?",
+        "a": "For a reusable piece (a retrieve-grade-rewrite loop used by several workflows), to keep scratch state private, to split ownership between teams, or for multi-agent setups where each agent is its own graph. Costs: mapping state at the boundary, nested checkpoints to debug, and on resume after an interrupt both the parent node and the subgraph node re-run from their start."
+      },
+      {
+        "q": "How would you stream a multi-step agent's progress to a UI?",
+        "a": "Combine stream modes: `messages` for tokens, `updates` for per-node status lines (“searching policies…”), and `custom` events emitted from long nodes. Forward them to the browser over Server-Sent Events. Interrupts arrive as events too, so the UI can show an approval card and resume the run with the decision."
+      }
+    ]
+  },
+  "LG-05": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "The conversation exceeds the context window. What are your options?",
+        "a": "1. **Trim** to the most recent messages — cheap, forgets early facts.\n2. **Summarise** older messages into a running summary — keeps the gist, costs a call, may drop details.\n3. **Retrieve** relevant old turns by meaning — precise, adds a search per turn.\n\nCombine them, and pin key facts (order id, customer id) in dedicated state fields so they can never be trimmed. Also clear bulky old tool outputs."
+      },
+      {
+        "q": "Short-term vs long-term memory in LangGraph?",
+        "a": "Short-term memory is the thread's state — messages and working fields — saved by the checkpointer under the thread id and gone in a new thread. Long-term memory lives in the store under namespaces like `('agents', 'agent7')`, survives across threads, and can be searched by meaning. The design work is deciding what to save and when."
+      },
+      {
+        "q": "What can go wrong with long-term memory?",
+        "a": "Stale or wrong memories used confidently (store timestamps and sources, let newer facts win); privacy (memories are personal data — viewable, deletable, tenant-isolated); poisoned memories from prompt injection affecting every future session (treat memory writes as untrusted); and bloat (retrieve a few relevant memories, don't load all)."
+      },
+      {
+        "q": "Prompt engineering vs context engineering?",
+        "a": "Prompt engineering is the wording of instructions for one call. Context engineering is the whole set of tokens the model sees at each step of a system — instructions, tools, retrieved data, memory, history, tool results — and the logic that selects, orders, compresses and refreshes them as an agent runs. It's a systems problem, not a phrasing problem."
       }
     ]
   },
@@ -660,6 +774,48 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
+  "LLM-07": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Explain attention in one minute.",
+        "a": "Each token produces a query, a key and a value vector. A token's query is compared with the keys of the tokens before it; the similarity scores become weights that add up to one; the token's new vector is the weighted mix of those tokens' values. So “it” in “the milk was spoiled, so the customer returned it” absorbs information from “milk”. Multi-head attention runs several of these in parallel, each tracking different relationships."
+      },
+      {
+        "q": "Why does a longer prompt cost more time and money?",
+        "a": "Every prompt token is processed through every layer before the first output token (prefill), and attention compares each token with every earlier one, so the work grows faster than the length. Providers bill per token, and time to first token grows with the prompt. During generation, the KV cache also grows with context, using GPU memory and limiting how many requests a server can batch."
+      },
+      {
+        "q": "Encoder vs decoder models — which do you use where?",
+        "a": "Decoder-only models with causal attention generate text: chat and agents. Encoder models attend in both directions over a fixed input, which suits understanding tasks: embedding models for search and cross-encoder rerankers."
+      },
+      {
+        "q": "What is a mixture-of-experts model?",
+        "a": "Each layer has many smaller feed-forward “expert” networks and a router that sends each token to a few of them. The model has a huge total parameter count but uses only a fraction per token, so it's cheaper to run than a dense model of the same size — though all the weights still have to fit in memory."
+      }
+    ]
+  },
+  "LLM-04": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you structure a production prompt?",
+        "a": "Role and goal in a sentence; the context and rules, including how to resolve the confusing cases; a handful of examples covering the hard boundaries; an exact output schema, ideally enforced with structured output; and the input clearly delimited (for example in tags) so its text is never mistaken for instructions. Clear rules beat emphasis in capital letters."
+      },
+      {
+        "q": "When does chain-of-thought help, and when doesn't it?",
+        "a": "It helps on multi-step reasoning with standard models, because the model can use its own intermediate steps — keep the reasoning in a separate field so code reads only the answer. It adds little on simple lookups, and little extra on reasoning models, which already think internally. Self-consistency (several sampled paths, majority vote) adds reliability at several times the cost."
+      },
+      {
+        "q": "How do you choose few-shot examples?",
+        "a": "Cover the hard boundaries rather than easy cases, balance the labels so the model isn't biased toward one class, and vary the wording so it doesn't copy surface features. Better still, retrieve the most similar labelled examples per input from a pool (dynamic few-shot)."
+      },
+      {
+        "q": "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?",
+        "a": "Treat prompts as code: in version control, every change as a pull request, run against a labelled test set with results per category, shipped only if better without any category getting worse, and the prompt version recorded on every trace. Re-run the set whenever the model changes."
+      }
+    ]
+  },
   "LLM-02": {
     "posts": 0,
     "items": [
@@ -678,6 +834,48 @@ export const AI_STACK_ASKED = {
       {
         "q": "stdio or HTTP transport — when each?",
         "a": "**stdio**: the server runs as a local subprocess of the host — simple, no network exposure, ideal for local tools (files, a local database, CLIs). **Streamable HTTP**: the server runs remotely as a service — shared by many clients, centrally managed and updated, but it needs authentication and authorisation, TLS, and the usual web-service hardening."
+      }
+    ]
+  },
+  "LLM-03": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "When would you fine-tune instead of using RAG?",
+        "a": "When the gap is behaviour, not knowledge: a strict output format, a house style, or a narrow task (classification, extraction) that must run faster and cheaper on a small model. Not for facts that change — a fine-tuned model can't cite them and must be retrained on every change. Decide with an eval: fine-tune only if it beats a well-prompted strong model on your test set at acceptable cost."
+      },
+      {
+        "q": "What does LoRA change, and why is it cheaper?",
+        "a": "It freezes the original weights and trains, next to selected weight matrices, two small matrices whose product acts as a correction — often under 1% of the parameters. Training needs far less memory, and the result is a small adapter file; one base model can serve many adapters. QLoRA does the same on a 4-bit quantised base."
+      },
+      {
+        "q": "RLHF vs DPO?",
+        "a": "RLHF trains a reward model on human preference comparisons, then optimises the model with reinforcement learning to score highly, with a penalty for drifting from the original. DPO skips the reward model and RL and trains directly on (preferred, rejected) pairs — simpler and more stable, and widely used."
+      },
+      {
+        "q": "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?",
+        "a": "Distil: have the large model (plus human review of disagreements) label a few thousand real inputs, LoRA-fine-tune a small model on them, and compare on a held-out set. Ship it if it's within the quality bar, with a cascade sending low-confidence or invalid outputs to the large model. Retrain as inputs drift."
+      }
+    ]
+  },
+  "LLM-06": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Why is continuous batching faster than static batching?",
+        "a": "Static batching waits for every request in a batch to finish, so slots of short answers sit idle until the longest one completes. Continuous batching removes finished requests and admits waiting ones at every generation step, so the GPU stays busy and throughput rises sharply."
+      },
+      {
+        "q": "What problem does PagedAttention solve?",
+        "a": "KV-cache memory waste. Older engines reserved one contiguous block per request sized for the longest possible output, wasting most of it and limiting batch size. PagedAttention allocates the cache in small pages as needed, like OS virtual memory, so far more requests fit, and pages for a shared prompt prefix can be shared between requests."
+      },
+      {
+        "q": "Time to first token jumped from 400 ms to 4 seconds at peak. What do you check?",
+        "a": "Queueing (requests waiting for batch slots — check queue length and GPU utilisation, add replicas or tune batch limits); long prompts slowing everyone's prefill (cap length, prefix caching, separate prefill from decode); and KV-cache pressure (quantise, lower max output length, add GPUs). Track TTFT, time per output token and throughput together."
+      },
+      {
+        "q": "What does quantisation trade off?",
+        "a": "Fewer bits per weight (8-bit halves memory, 4-bit quarters it) mean fewer GPUs, more room for the KV cache and faster decoding, at a small quality cost that grows as bits shrink and varies by task — so measure on your own test set before switching."
       }
     ]
   }
