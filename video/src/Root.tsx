@@ -5,8 +5,9 @@ import { H, W } from "./lib/theme.ts";
 import { Lecture } from "./Lecture.tsx";
 import ch01Timings from "../data/ch01/timings.json";
 import ch02Timings from "../data/ch02/timings.json";
+import ch03Timings from "../data/ch03/timings.json";
 
-const TIMINGS: Record<string, Record<string, Timing>> = { ch01: ch01Timings as Record<string, Timing>, ch02: ch02Timings as Record<string, Timing> };
+const TIMINGS: Record<string, Record<string, Timing>> = { ch01: ch01Timings as Record<string, Timing>, ch02: ch02Timings as Record<string, Timing>, ch03: ch03Timings as Record<string, Timing> };
 
 export const Root = () => (
   <>
