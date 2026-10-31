@@ -1,0 +1,327 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "e5b55eff",
+   "say": "The COO's question is sitting in your inbox. Is this thing actually working? And how would we even know? Attached: the forty eight hour screenshot.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65a718c8",
+   "say": "The tempting first move: install an evaluation library, run it, and report: helpfulness, four point one out of five.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1bc8bc2",
+   "say": "That number tells her nothing. Not what's wrong. Not how often. Not what to fix.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9b027651",
+   "say": "So we'll do it the way the best practitioners do. Look first. Name the failures. Count them. And only then, measure.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "c3bbb6ae",
+   "say": "Chapter eight. Is it actually working?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d3e795d4",
+   "say": "Step one is the one everybody skips.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fe22ce2",
+   "say": "A doctor reads the charts before prescribing. So in week one, sample a hundred real traces from production. Every type of question, every day of the week.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de4bd1b9",
+   "say": "Read each one, and write down in plain words what went wrong. Cited the twenty twenty three bakery policy. Never searched. Right chunk, wrong number. Or: fine. This is error analysis.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6291f0f8",
+   "say": "Then group the notes into piles, and count them. Eleven outdated documents. Six answers that contradict their own chunk. Five order questions with no order lookup. Four answers too long to read on a call.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68cd3865",
+   "say": "And look at the biggest pile. It isn't a prompt problem at all. It's old policies that were never deleted. The bakery bug.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0a112501",
+   "say": "Now turn every pile into a check. Code first, wherever you can. Code checks are cheap, fast, and never disagree with themselves.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a462d3e1",
+   "say": "Use a model as the judge only where code can't decide. Like: is every claim actually supported by the chunks it cites?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6de62fa9",
+   "say": "And grade pass or fail, not one to five. You say three, I say four, and three point four average fixes nothing. Yes or no, we agree. And a no tells you exactly what to fix.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "34bab902",
+   "say": "Collect the cases into a golden set: fixed, versioned test cases, with the right sources and the facts each answer must contain.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ddf8db9f",
+   "say": "Include the awkward ones. Unanswerable questions, ambiguous ones, hidden instructions, and policies that just changed.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "49913782",
+   "say": "Then run it on every change. A pull request edits a prompt. The golden set runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0eee1b44",
+   "say": "Compare the results with the main branch, check by check, group by group. Model outputs wobble from run to run, so block only a drop bigger than the normal noise. That's an eval gate.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f942d06",
+   "say": "And don't just say blocked. Show exactly which cases got worse, and why.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3925339d",
+   "say": "Now, the question every interviewer asks next.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "fe8888b5",
+   "say": "Some checks need a model as judge. And the COO asks: who checks the judge?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5d3312d0",
+   "say": "A judge is a measuring instrument. A kitchen scale that reads two hundred grams low is worse than no scale at all. Because you trust it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "11949f92",
+   "say": "So calibrate it against a person. Meera labels a hundred and fifty answers, pass or fail. Use half to tune the judge, reading every disagreement. Keep the other half back, and use it once, at the end.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3eade349",
+   "say": "Then report two numbers. Of the answers Meera passed, how many did the judge pass? And of the answers she failed, how many did the judge fail? That second one matters most. A judge that never fails anything scores zero on it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b437c32c",
+   "say": "Judges have habits. Show two answers, and they often prefer whichever came first. So run both orders, and count only the verdicts that agree.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "29ecaad8",
+   "say": "They prefer longer answers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a214ff46",
+   "say": "They prefer answers from their own model family.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7de27a79",
+   "say": "And they're lenient. So give each judge one narrow question, ask for its reasoning before its verdict, and show it failing examples, not just good ones.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e473eb32",
+   "say": "Last: which half is broken?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0900fff7",
+   "say": "The bakery failure was a search problem. Right chunk, wrong answer, is an answer problem. To fix the right half, you need numbers that separate them.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9fc30b30",
+   "say": "For search: for each test question, you know which chunks answer it. Here, three. Search returns them at positions two, seven, and eleven. In the top five, it found one of three. In the top ten, two of three. That's recall at k.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b969f52",
+   "say": "And where does the first right one sit? Second. That's worth one half. Averaged over every question, it's called mean reciprocal rank.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f054d057",
+   "say": "For the answer: list its claims, and check each one against the chunks. Two of three are supported. That's faithfulness.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f4361a5",
+   "say": "Low recall? Fix search. Good recall, but low faithfulness? Fix the answer step.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "caaa5b05",
+   "say": "And remember: faithful isn't correct. An answer perfectly faithful to an outdated policy is still wrong.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4d8f90c",
+   "say": "Error analysis: look, name, count. Before any metric.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e257aace",
+   "say": "A golden set runs on every change.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43ca76a9",
+   "say": "And an eval gate blocks the change that makes it worse.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82a59c15",
+   "say": "A judge is an instrument. Calibrate it against a person.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ed94dacf",
+   "say": "Recall at k asks: did search find it?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b113bc24",
+   "say": "And faithfulness asks: did the answer stick to it?",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b9c3c473",
+   "say": "The bakery bug can't come back silently now. But two new problems appear.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40112f9f",
+   "say": "Planner Copilot takes a dozen steps, and changes data. It can write: done! While having updated the wrong warehouse.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3b62c37",
+   "say": "It doesn't behave the same way twice. If it succeeds eight times in ten, is that working?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "99db8acf",
+   "say": "And one Tuesday, answers suddenly get longer, and a few start refusing. Nothing in your code changed. The provider quietly updated the model. So if the final message can lie, what do you check instead?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "31006afc",
+   "say": "That's chapter nine. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

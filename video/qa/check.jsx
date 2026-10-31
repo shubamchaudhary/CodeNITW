@@ -55,6 +55,22 @@ function check(root, frame, label) {
       if (r.right > b.right + tol || r.bottom > b.bottom + tol || r.left < b.left - tol) out.push({ frame, label, text: own.slice(0, 60), issue: "outside its card" });
     }
   }
+  // the term card and captions float over the scene: nothing may hide under them
+  const overlays = [...root.querySelectorAll("[data-qa]")].filter((o) => opacityOf(o, root) > 0.2);
+  for (const o of overlays) {
+    const b = o.getBoundingClientRect();
+    for (const el of root.querySelectorAll("*")) {
+      if (o.contains(el) || el.closest("[data-qa]")) continue;
+      const own = [...el.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim()).map((n) => n.textContent.trim()).join(" ");
+      // a lone emoji is decoration (scattered dots, icons), not something to read
+      if (!own || [...own].length <= 2 || opacityOf(el, root) < 0.2) continue;
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const r = range.getBoundingClientRect();
+      if (r.width && r.right > b.left + 2 && r.left < b.right - 2 && r.bottom > b.top + 2 && r.top < b.bottom - 2)
+        out.push({ frame, label, text: own.slice(0, 60), issue: `under the ${o.dataset.qa}` });
+    }
+  }
   return out;
 }
 

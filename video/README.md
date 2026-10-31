@@ -7,7 +7,8 @@ Narrated, animated lectures for the AI Stack chapters (`src/Data/aiStackDocs/CH-
 1. **Script**: `src/chapters/chXX.ts`, a list of scenes. Each scene has beats; beat *n* is spoken and drives visual step *n*. Scene kinds live in `src/lib/types.ts`. Most scenes use the generic kinds (`flow`, `image`, `bullets`, `chat`, `code`, …); one-off animations are `custom` scenes in `src/scenes/custom*.tsx`.
 2. **Voice**: `npm run tts` exports every beat to `data/chXX/beats.json`, records each line with an edge-tts neural voice into `.cache/chXX/` (only changed lines), writes word timings to `data/chXX/timings.json`, and mixes the lines onto one track, `../public/lectures/chXX/lecture.mp3`.
 3. **Preview**: `npm run studio`, or `node scripts/stills.ts ch01 [scene:step ...]` followed by `.venv/Scripts/python scripts/sheets.py` for contact sheets.
-4. **Render** (optional, for a file): `npx remotion render src/index.ts ch01 out/ch01.mp4`.
+4. **Overflow check**: with the site's dev server running, open `/video/qa/check.html?ch=chXX`. It seeks the real player to every step and lists, in `window.__qa`, any text outside its card, off the frame, wider than its shape, or hidden under the term card or captions. A chapter is done when it reports `[]`.
+5. **Render** (optional, for a file): `npx remotion render src/index.ts ch01 out/ch01.mp4`.
 
 Images and narration live in the site's `public/lectures/chXX/`, which is Remotion's public dir too (`remotion.config.ts`), so the page and the render read the same files.
 
@@ -17,6 +18,8 @@ A new chapter needs:
 - its script in `src/chapters/`;
 - an entry in `src/chapters/index.ts`;
 - its `timings.json` import in `src/Root.tsx`;
-- on the site side, its id in `src/pages/Notes/lectures.js` and a loader in `LecturePlayer.jsx`.
+- on the site side, its id in `src/pages/Notes/lectures.js` (`LecturePlayer.jsx` finds `chXX.ts` and its timings by name).
+
+Layout rules for scenes: give text boxes a width, never a height, so cards grow with their text; keep the top-right corner (x > 1340, y < 250) free in scenes that introduce a term, since the term card lands there.
 
 Images are reused under their licences and credited on screen: Jay Alammar's illustrated guides (CC BY-NC-SA 4.0) and Wikimedia Commons (CC0).

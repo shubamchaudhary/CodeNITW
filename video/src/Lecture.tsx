@@ -55,7 +55,7 @@ const TermCard = ({ sc, frame }: { sc: SceneT; frame: number }) => {
   const shown = sc.beats
     .map((b) => {
       if (!b.term) return null;
-      const first = b.term.word.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5);
+      const first = b.term.word.toLowerCase().split(/[^a-z]+/)[0].slice(0, 5);
       const hit = b.words.find((w) => w.w.toLowerCase().replace(/[^a-z]/g, "").startsWith(first));
       return { term: b.term, at: hit ? hit.f : b.stepStart };
     })
@@ -64,7 +64,7 @@ const TermCard = ({ sc, frame }: { sc: SceneT; frame: number }) => {
   if (!shown) return null;
   const p = spring({ frame: frame - shown.at, fps: FPS, config: { damping: 12, stiffness: 160 } });
   return (
-    <div style={{ position: "absolute", right: 60, top: 36, width: 520, transform: `translateX(${(1 - p) * 140}px) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5), background: "rgba(23,30,46,0.94)", border: `3px solid ${C.amber}`, borderRadius: 22, padding: "18px 26px", boxShadow: `0 0 ${40 * Math.max(0, 1 - (frame - shown.at) / 40)}px ${C.amber}` }}>
+    <div data-qa="term" style={{ position: "absolute", right: 60, top: 36, width: 520, transform: `translateX(${(1 - p) * 140}px) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5), background: "rgba(23,30,46,0.94)", border: `3px solid ${C.amber}`, borderRadius: 22, padding: "18px 26px", boxShadow: `0 0 ${40 * Math.max(0, 1 - (frame - shown.at) / 40)}px ${C.amber}` }}>
       <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 3, color: C.amber }}>NEW TERM</div>
       <div style={{ fontSize: 50, fontWeight: 900, lineHeight: 1.1 }}>{shown.term.word}</div>
       <div style={{ fontSize: 26, color: C.muted, marginTop: 4 }}>{shown.term.meaning}</div>
@@ -107,7 +107,7 @@ const Captions = ({ sc, frame }: { sc: SceneT; frame: number }) => {
   const o = enter(frame, beat.audioStart - 2, 6) * (1 - enter(frame, beat.audioEnd + 4, 6));
   return (
     <div style={{ position: "absolute", left: 0, width: W, top: 956, display: "flex", justifyContent: "center", opacity: o }}>
-      <div style={{ background: "rgba(8,11,18,0.78)", border: `1px solid ${C.line}`, borderRadius: 14, padding: "12px 28px", fontSize: 36, fontWeight: 500, maxWidth: 1500, textAlign: "center", lineHeight: 1.3 }}>
+      <div data-qa="caption" style={{ background: "rgba(8,11,18,0.78)", border: `1px solid ${C.line}`, borderRadius: 14, padding: "12px 28px", fontSize: 36, fontWeight: 500, maxWidth: 1500, textAlign: "center", lineHeight: 1.3 }}>
         {chunk.map((w, i) => (
           <span key={i} style={{ color: frame >= w.f ? C.text : C.faint }}>
             {w.w}{" "}

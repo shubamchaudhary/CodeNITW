@@ -1,0 +1,376 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "1259ca7f",
+   "say": "Three requests close the story. And each needs something new.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d0f1916",
+   "say": "A cheaper, faster ticket classifier, and notifications in FreshCart's own voice. That means changing the model itself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5d5ee175",
+   "say": "Customer data that never leaves FreshCart's own cloud. That means running a model yourself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e8a0bd4",
+   "say": "And one inventory connector for three apps. That means connecting a tool, once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bae2ee12",
+   "say": "Chapter twelve. The finale. Going further.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "ba5fc3ac",
+   "say": "First, the classifier, and the voice.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fdf7a139",
+   "say": "Back in chapter one, we said fine tuning is the wrong tool for policies. So why is it the right tool now?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2449aaa4",
+   "say": "Think about a new employee. For facts, you hand them the manual. Always current, easy to update, and they can point at the page. That's RAG.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "15f44261",
+   "say": "For a skill, you train them for a week on one job. A format, a style, one narrow task, done the same way every time. Continuing to train the model on your own examples is fine tuning.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a05564a9",
+   "say": "The classifier and the brand voice are behaviour, not knowledge. So these two are fine tuning problems.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "552d296a",
+   "say": "And the twelve thousand policies? Still knowledge. Still RAG.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "c4add073",
+   "say": "But rewriting every one of a model's billions of weights needs a lot of GPU memory, and a full copy of the model for every task.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "931e1f35",
+   "say": "So freeze the book, and add sticky notes. Train only two small matrices beside the frozen weights, often well under one percent of the model. That's LoRA.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b66fb5d4",
+   "say": "The result is a small adapter file. One base model can serve many adapters, swapped per request. The classifier now, the brand voice next.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5babce4c",
+   "say": "QLoRA does the same on a base stored with four bit numbers, so even big models fit on one GPU.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "1ccece4a",
+   "say": "For the brand voice, there's an easier way to teach. Which of these two sounds more like FreshCart? Picking the better one is easier than writing the perfect one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "54272644",
+   "say": "One approach trains a separate reward model on those picks, then trains the main model by trial and reward. Powerful, but complex.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "277716d9",
+   "say": "The simpler one trains straight on the pairs. Picked answers become more likely. Rejected ones, less. That's direct preference optimisation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c76b99ac",
+   "say": "Now the classifier. A master, and an apprentice. A small model learns to imitate a large one, on one narrow task. That's distillation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c13ac35f",
+   "say": "The large model labels a few thousand tickets. People check the hard ones. Fine tune the small model with LoRA. Then test it on tickets it never saw.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bdcbecdf",
+   "say": "And keep a safety net. The small model answers when it's confident. When it's unsure, the ticket goes to the large model. That's a cascade.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6b00a15",
+   "say": "Three hundred thousand tickets a day: from about six hundred dollars, to about ninety.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "8093240e",
+   "say": "Next: legal wants it in our own cloud.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "81ff2017",
+   "say": "One GPU serving one request at a time is mostly idle. It's a bus, carrying one passenger.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a8b890cf",
+   "say": "Batch requests together, and they share each pass through the weights. But the simple way is a bus that waits at the terminus until its very last passenger gets off.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd55dbc1",
+   "say": "Instead, let riders get on and off at every stop. A request finishes, its seat frees, and a waiting one takes it, at the very next step. That's continuous batching.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "581b7c66",
+   "say": "And what runs out first? Memory for the KV cache. Modern engines hand it out in small pages, like an operating system, so many more riders fit.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "3505bdef",
+   "say": "Memory again. A seventy billion parameter model, at sixteen bits per weight, needs about a hundred and forty gigabytes. Several GPUs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4b30392e",
+   "say": "Store the weights with fewer bits, like saving a photo at lower quality. Eight bits, about seventy gigabytes. Four bits, under forty. One large GPU. That's quantisation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "670b651c",
+   "say": "Then measure quality on your own test set, before trusting it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7cc35f01",
+   "say": "One more speed-up: a small draft model guesses the next few tokens, and the big model checks them all in one pass, keeping the ones it agrees with.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "8cdfdf54",
+   "say": "Last request: one connector, three apps.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c88ec3b",
+   "say": "If every app builds its own get stock tool, every change to the inventory system means updating all of them. Three apps, two systems, six integrations. And it grows with every new app.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "147bc3c4",
+   "say": "Before USB, every device had its own cable. MCP, the model context protocol, is the USB C port for AI apps. Wrap a system once, as a server, and any app that speaks MCP can use it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fa762724",
+   "say": "A server offers tools the model can call, resources the app can read, and prompts a person can pick. N plus M pieces, instead of N times M.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9de73913",
+   "say": "But a third party server's descriptions are untrusted input. And one server that both reads and sends email holds two keys of the lethal trifecta. Review, pin, and scope every one.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "2df28167",
+   "say": "Let's lock in the last chapter.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b0cadd3",
+   "say": "Fine tuning is for behaviour, not facts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48b537c9",
+   "say": "LoRA: sticky notes on a frozen book.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef899b3e",
+   "say": "Distillation: an apprentice, with a cascade behind it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebbf0509",
+   "say": "Continuous batching: a bus that never waits.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1b942899",
+   "say": "Quantisation: a smaller photo.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e8f2c8e4",
+   "say": "And MCP: one port, for every tool.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e96400fe",
+   "say": "Now, step back, and look at everything you built.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "28c9d4a8",
+   "say": "Twelve chapters ago, FreshCart had a plain chat model, and three confused questions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe79ee49",
+   "say": "Then came the models, and retrieval: chunks, hybrid search, and reranking.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "244912aa",
+   "say": "Workflows and agents on LangGraph, with tools, MCP servers, checkpoints and memory.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d2266c7",
+   "say": "Approvals for risky writes. Guardrails against injection. And evals that watch it all.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5367ee7",
+   "say": "And a gateway in front: auth, quotas, routing, and caching.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d677250",
+   "say": "Every interview question you'll face is about one of these boxes. Or an arrow between them.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c7fce26b",
+   "say": "So here's your last exercise. Close the book, and redraw this system from memory.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "92c6056f",
+   "say": "Then pick any box, and explain, out loud, the problem that forced it to exist. If you can do that for every box, you're ready.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "823420a9",
+   "say": "That's the whole stack. Thanks for building FreshCart with me.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

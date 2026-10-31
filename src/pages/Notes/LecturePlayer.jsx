@@ -7,22 +7,16 @@ import { Icon } from "../../components/ui";
 // The chapter as a narrated, animated lecture, drawn live in the page from the
 // same scenes the MP4 is rendered from (video/). Narration and images are
 // served from public/lectures/<chapter>/.
-const LOAD = {
-  "CH-01": () =>
-    Promise.all([import("../../../video/src/chapters/ch01.ts"), import("../../../video/data/ch01/timings.json")]).then(([m, t]) => ({
-      chapter: m.ch01,
-      timings: t.default,
-    })),
-  "CH-02": () =>
-    Promise.all([import("../../../video/src/chapters/ch02.ts"), import("../../../video/data/ch02/timings.json")]).then(([m, t]) => ({
-      chapter: m.ch02,
-      timings: t.default,
-    })),
-  "CH-03": () =>
-    Promise.all([import("../../../video/src/chapters/ch03.ts"), import("../../../video/data/ch03/timings.json")]).then(([m, t]) => ({
-      chapter: m.ch03,
-      timings: t.default,
-    })),
+// "CH-04" → video/src/chapters/ch04.ts + video/data/ch04/timings.json, each a
+// separate chunk loaded on demand.
+const SCRIPTS = import.meta.glob("../../../video/src/chapters/ch[0-9]*.ts");
+const TIMINGS = import.meta.glob("../../../video/data/*/timings.json", { import: "default" });
+const LOAD = (id) => {
+  const ch = `ch${id.slice(3)}`;
+  const script = SCRIPTS[`../../../video/src/chapters/${ch}.ts`];
+  const timings = TIMINGS[`../../../video/data/${ch}/timings.json`];
+  if (!script || !timings) return Promise.reject(new Error(`no lecture for ${id}`));
+  return Promise.all([script(), timings()]).then(([m, t]) => ({ chapter: m[ch], timings: t }));
 };
 
 // Shown before the first play (the lecture itself opens on a fade from black).
@@ -49,7 +43,7 @@ export default function LecturePlayer({ id }) {
 
   useEffect(() => {
     let live = true;
-    LOAD[id]?.()
+    LOAD(id)
       .then((d) => live && setData(d))
       .catch(() => live && setFailed(true));
     return () => {

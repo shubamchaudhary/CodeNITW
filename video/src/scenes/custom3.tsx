@@ -886,7 +886,7 @@ export const Recap = ({ t, props }: CP) => {
         const p = Math.min(1, pop(f, st));
         const col = PALETTE[i % PALETTE.length];
         return (
-          <Abs key={word} x={120 + (i % 3) * 580} y={i < 3 ? 280 : 600} w={540} h={260} style={{ ...card(t.step === i + 1 ? col : C.line), padding: 30, opacity: p, transform: `scale(${0.6 + 0.4 * p})`, display: "flex", flexDirection: "column", gap: 10, ...(i >= 3 ? { left: 410 + (i - 3) * 580 } : {}) }}>
+          <Abs key={word} x={i < 3 ? 120 + i * 580 : (1920 - (items.length - 3) * 580 + 40) / 2 + (i - 3) * 580} y={i < 3 ? 280 : 600} w={540} style={{ ...card(t.step === i + 1 ? col : C.line), padding: 30, minHeight: 260, opacity: p, transform: `scale(${0.6 + 0.4 * p})`, display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ fontSize: 64 }}>{icon}</div>
             <div style={{ fontSize: 40, fontWeight: 900, color: col }}>{word}</div>
             <div style={{ fontSize: 30, color: C.muted }}>{meaning}</div>
