@@ -47,12 +47,13 @@
 
 export const SECTIONS = [
   { key: "S", label: "Start here", chip: "Start" },
+  { key: "B", label: "How LLMs work", chip: "Basics" },
   { key: "R", label: "RAG", chip: "RAG" },
   { key: "L", label: "LangChain + LangGraph", chip: "LangGraph" },
   { key: "H", label: "Human-in-the-loop", chip: "HITL" },
   { key: "E", label: "Evals", chip: "Evals" },
   { key: "D", label: "AI system design", chip: "Design" },
-  { key: "F", label: "LLM foundations", chip: "LLMs" },
+  { key: "F", label: "Advanced: MCP, fine-tuning, serving", chip: "Advanced" },
 ];
 
 export const TOPICS = [
@@ -134,6 +135,191 @@ export const TOPICS = [
           "4. **Fallbacks** — timeouts, a fallback model, a safe default answer.",
           "5. **A feedback loop** — user corrections flow into the eval set.",
         ],
+      },
+    ],
+  },
+
+  // ─── B · How LLMs work ─────────────────────────────────────────────────────
+  {
+    id: "LLM-01",
+    section: "B",
+    priority: "P1",
+    title: "How LLMs behave — tokens, context, sampling, hallucination",
+    why: "The LLM-basics questions are short but unforgiving of vagueness: tokens against words, why long context costs more, what temperature changes, why temperature 0 still isn't deterministic, and where hallucinations come from. Karpathy's one-hour talk is the best single use of an hour here.",
+    ceiling: {
+      enough: "explain tokenisation, the context window, the KV cache, sampling and hallucination in plain words, with one example each.",
+      tooDeep: "attention maths, positional encodings, training objectives.",
+    },
+    know: [
+      "Tokens aren't words (English averages roughly ¾ of a word per token; code and other languages differ). Billing, limits and chunking are all in tokens, and tokenisers differ between providers.",
+      "Generation is next-token prediction: the model outputs a probability distribution, sampling picks a token, repeat. Temperature reshapes the distribution; top-p and top-k truncate it.",
+      "Temperature 0 isn't fully deterministic: batched inference makes floating-point results depend on server load (batch invariance), and providers change things underneath.",
+      "The KV cache stores attention keys and values for tokens already processed, so each new token doesn't recompute the prefix; it grows with context length — one reason long contexts are costly.",
+      "Hallucination: the model produces likely, fluent text, not verified facts. Causes: missing knowledge, ambiguous prompts, pressure to answer. Mitigate with grounding, an abstain path, verification, lower temperature for factual tasks.",
+      "The context window caps input plus output tokens; quality degrades well before the hard limit.",
+    ],
+    resources: [
+      {
+        video: "zjkBMFhNj_g",
+        note: "00:00–17:52 how they work; 27:43 tool use; 45:43–58:37 security (jailbreaks, and prompt injection at 51:30). Skip the appendix.",
+      },
+      { video: "LPZh9BOjkQs" },
+      { video: "-BBulGM6xF0" },
+      { video: "cfqtFvWOfg0" },
+      { video: "o0gkdZBtwEg" },
+      {
+        doc: {
+          title: "Defeating Nondeterminism in LLM Inference",
+          site: "thinkingmachines.ai",
+          url: "https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/",
+          minutes: 30,
+          estimate: true,
+          note: "The real reason temperature 0 still varies. Read the introduction and the batch-invariance section.",
+        },
+      },
+    ],
+    drill: [
+      {
+        q: "Why do token counts differ from word counts, and why does it matter?",
+        a: "Tokenisers split text into sub-word pieces learned from data: common words are one token, rare words, code, numbers and many non-English languages take several. Everything practical is in tokens — price, context limits, rate limits, chunk sizes, embedder input caps — so estimate with the right tokeniser. Different providers tokenise differently, so the same text has different counts and costs across models.",
+      },
+      {
+        q: "What do temperature, top-p and top-k change? Why is temperature 0 still not deterministic?",
+        a: [
+          "- **Temperature** rescales the token probabilities: low sharpens them (more predictable), high flattens them (more varied). 0 means always take the most likely token.",
+          "- **Top-k** samples only from the k most likely tokens; **top-p** from the smallest set whose probabilities sum to p.",
+          "",
+          "Temperature 0 still varies because inference servers batch requests together, and GPU kernels give slightly different floating-point results depending on batch size and composition — which depend on server load. Tiny differences flip a near-tie, and the outputs diverge from there. Providers also update models and infrastructure underneath you.",
+        ],
+      },
+      {
+        q: "Why does a longer prompt cost more latency and money? What is the KV cache?",
+        a: "Every input token is processed (prefill) before the first output token, and attention work grows with context length, so time to first token and price both grow with the prompt. The **KV cache** stores each processed token's attention keys and values so generating the next token doesn't recompute the whole prefix — but it takes GPU memory proportional to context length, limiting how many requests a server can batch. Provider prompt caching reuses that work across requests that share a prefix.",
+      },
+      {
+        q: "Name three causes of hallucination and a mitigation for each.",
+        a: [
+          "- **Missing knowledge** (private, recent or rare facts) → retrieval with citations; let it say it doesn't know.",
+          "- **Ambiguous or leading prompts** → clearer instructions, ask a clarifying question, structured output with explicit “unknown” values.",
+          "- **Pressure to answer / over-generalisation** → an abstain path, groundedness checks after generation, lower temperature for factual tasks.",
+          "",
+          "And measure it: faithfulness on an eval set, not anecdotes.",
+        ],
+      },
+      {
+        q: "What happens at the context-window limit?",
+        a: "The window caps input plus output tokens. Over it, the API rejects the request, or a framework silently truncates (often the oldest messages — losing instructions or key facts). Before the limit, quality already degrades on long inputs (lost in the middle, context rot) while cost and latency climb. So manage context deliberately: trim, summarise, retrieve, and reserve room for the output.",
+      },
+    ],
+  },
+  {
+    id: "LLM-04",
+    section: "B",
+    priority: "P1",
+    title: "Prompting techniques — structure, few-shot, chain-of-thought, prompts as code",
+    why: "Every AI engineer writes prompts daily, and interviewers check you treat it as engineering: a clear structure, examples chosen on purpose, chain-of-thought and self-consistency where they help, prompt chaining instead of one giant prompt, and every change tested on a labelled set.",
+    ceiling: {
+      enough: "structure a production prompt, choose few-shot examples well, say when chain-of-thought helps, and describe a versioned, tested prompt workflow.",
+      tooDeep: "prompt-optimisation research; collecting “magic phrases”.",
+    },
+    know: [
+      "Structure: role and goal, rules with edge cases, examples, output schema, and clearly delimited input.",
+      "Few-shot examples should cover hard boundaries, balance labels and vary wording; dynamic few-shot retrieves similar examples per input.",
+      "Chain-of-thought helps multi-step reasoning on standard models; self-consistency samples several paths and votes; reasoning models think internally.",
+      "ReAct alternates thought, tool call and observation; describe tools and stop rules well.",
+      "Split big prompts into chains with code checks between steps.",
+      "Prompts are code: version control, test set per category, version recorded on every trace, re-test on model upgrades.",
+    ],
+    resources: [
+      { video: "ysPbXH0LpIE" },
+      { video: "T9aRN5JkmL8", note: "Long: Anthropic's prompt engineers discussing how they actually work. Listen to the first half." },
+      {
+        doc: {
+          title: "Prompt engineering overview",
+          site: "platform.claude.com",
+          url: "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+          minutes: 25,
+          estimate: true,
+        },
+      },
+      {
+        doc: {
+          title: "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+          site: "arxiv.org",
+          url: "https://arxiv.org/abs/2201.11903",
+          minutes: 10,
+          estimate: true,
+          note: "Read the abstract and the first figure.",
+        },
+      },
+    ],
+    drill: [
+      {
+        q: "How do you structure a production prompt?",
+        a: "Role and goal in a sentence; the context and rules, including how to resolve the confusing cases; a handful of examples covering the hard boundaries; an exact output schema, ideally enforced with structured output; and the input clearly delimited (for example in tags) so its text is never mistaken for instructions. Clear rules beat emphasis in capital letters.",
+      },
+      {
+        q: "When does chain-of-thought help, and when doesn't it?",
+        a: "It helps on multi-step reasoning with standard models, because the model can use its own intermediate steps — keep the reasoning in a separate field so code reads only the answer. It adds little on simple lookups, and little extra on reasoning models, which already think internally. Self-consistency (several sampled paths, majority vote) adds reliability at several times the cost.",
+      },
+      {
+        q: "How do you choose few-shot examples?",
+        a: "Cover the hard boundaries rather than easy cases, balance the labels so the model isn't biased toward one class, and vary the wording so it doesn't copy surface features. Better still, retrieve the most similar labelled examples per input from a pool (dynamic few-shot).",
+      },
+      {
+        q: "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?",
+        a: "Treat prompts as code: in version control, every change as a pull request, run against a labelled test set with results per category, shipped only if better without any category getting worse, and the prompt version recorded on every trace. Re-run the set whenever the model changes.",
+      },
+    ],
+  },
+  {
+    id: "LLM-07",
+    section: "B",
+    priority: "P1",
+    title: "How transformers work — tokens, attention, layers (conceptual)",
+    why: "AI engineer loops don't ask you to derive attention, but they do ask “explain attention in a minute”, “why does a longer prompt cost more?”, “why is long context hard?” and “what is a mixture-of-experts model?”. The conceptual picture of the transformer answers all of them and grounds everything about context, cost and KV caches.",
+    ceiling: {
+      enough: "walk text → tokens → vectors → attention and feed-forward layers → next-token probabilities, and use it to explain cost, long-context limits and the KV cache.",
+      tooDeep: "attention maths, positional-encoding formulas, training objectives.",
+    },
+    know: [
+      "Tokens are embedded as vectors plus position information; every later step works on that list of vectors.",
+      "Attention: each token's query is compared with earlier tokens' keys, giving weights for a mix of their values; multi-head runs several in parallel.",
+      "Chat models are decoder-only with causal attention (only look backwards); embedding models and rerankers are usually encoders.",
+      "A layer is attention plus a feed-forward network; much factual knowledge sits in feed-forward weights.",
+      "Attention work grows roughly with the square of the length; the KV cache grows with context and limits batch size.",
+      "Mixture of experts: a router sends each token to a few expert networks, so only part of a huge model runs per token.",
+    ],
+    resources: [
+      { video: "wjZofJX0v4M" },
+      { video: "eMlx5fFNoYc" },
+      {
+        doc: {
+          title: "The Illustrated Transformer",
+          site: "jalammar.github.io",
+          url: "https://jalammar.github.io/illustrated-transformer/",
+          minutes: 30,
+          estimate: true,
+          note: "The classic visual walkthrough of queries, keys, values and multi-head attention.",
+        },
+      },
+    ],
+    drill: [
+      {
+        q: "Explain attention in one minute.",
+        a: "Each token produces a query, a key and a value vector. A token's query is compared with the keys of the tokens before it; the similarity scores become weights that add up to one; the token's new vector is the weighted mix of those tokens' values. So “it” in “the milk was spoiled, so the customer returned it” absorbs information from “milk”. Multi-head attention runs several of these in parallel, each tracking different relationships.",
+      },
+      {
+        q: "Why does a longer prompt cost more time and money?",
+        a: "Every prompt token is processed through every layer before the first output token (prefill), and attention compares each token with every earlier one, so the work grows faster than the length. Providers bill per token, and time to first token grows with the prompt. During generation, the KV cache also grows with context, using GPU memory and limiting how many requests a server can batch.",
+      },
+      {
+        q: "Encoder vs decoder models — which do you use where?",
+        a: "Decoder-only models with causal attention generate text: chat and agents. Encoder models attend in both directions over a fixed input, which suits understanding tasks: embedding models for search and cross-encoder rerankers.",
+      },
+      {
+        q: "What is a mixture-of-experts model?",
+        a: "Each layer has many smaller feed-forward “expert” networks and a router that sends each token to a few of them. The model has a huge total parameter count but uses only a fraction per token, so it's cheaper to run than a dense model of the same size — though all the weights still have to fit in memory.",
       },
     ],
   },
@@ -2578,190 +2764,7 @@ export const TOPICS = [
     ],
   },
 
-  // ─── F · LLM foundations ──────────────────────────────────────────────────
-  {
-    id: "LLM-01",
-    section: "F",
-    priority: "P1",
-    title: "How LLMs behave — tokens, context, sampling, hallucination",
-    why: "The LLM-basics questions are short but unforgiving of vagueness: tokens against words, why long context costs more, what temperature changes, why temperature 0 still isn't deterministic, and where hallucinations come from. Karpathy's one-hour talk is the best single use of an hour here.",
-    ceiling: {
-      enough: "explain tokenisation, the context window, the KV cache, sampling and hallucination in plain words, with one example each.",
-      tooDeep: "attention maths, positional encodings, training objectives.",
-    },
-    know: [
-      "Tokens aren't words (English averages roughly ¾ of a word per token; code and other languages differ). Billing, limits and chunking are all in tokens, and tokenisers differ between providers.",
-      "Generation is next-token prediction: the model outputs a probability distribution, sampling picks a token, repeat. Temperature reshapes the distribution; top-p and top-k truncate it.",
-      "Temperature 0 isn't fully deterministic: batched inference makes floating-point results depend on server load (batch invariance), and providers change things underneath.",
-      "The KV cache stores attention keys and values for tokens already processed, so each new token doesn't recompute the prefix; it grows with context length — one reason long contexts are costly.",
-      "Hallucination: the model produces likely, fluent text, not verified facts. Causes: missing knowledge, ambiguous prompts, pressure to answer. Mitigate with grounding, an abstain path, verification, lower temperature for factual tasks.",
-      "The context window caps input plus output tokens; quality degrades well before the hard limit.",
-    ],
-    resources: [
-      {
-        video: "zjkBMFhNj_g",
-        note: "00:00–17:52 how they work; 27:43 tool use; 45:43–58:37 security (jailbreaks, and prompt injection at 51:30). Skip the appendix.",
-      },
-      { video: "LPZh9BOjkQs" },
-      { video: "-BBulGM6xF0" },
-      { video: "cfqtFvWOfg0" },
-      { video: "o0gkdZBtwEg" },
-      {
-        doc: {
-          title: "Defeating Nondeterminism in LLM Inference",
-          site: "thinkingmachines.ai",
-          url: "https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/",
-          minutes: 30,
-          estimate: true,
-          note: "The real reason temperature 0 still varies. Read the introduction and the batch-invariance section.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "Why do token counts differ from word counts, and why does it matter?",
-        a: "Tokenisers split text into sub-word pieces learned from data: common words are one token, rare words, code, numbers and many non-English languages take several. Everything practical is in tokens — price, context limits, rate limits, chunk sizes, embedder input caps — so estimate with the right tokeniser. Different providers tokenise differently, so the same text has different counts and costs across models.",
-      },
-      {
-        q: "What do temperature, top-p and top-k change? Why is temperature 0 still not deterministic?",
-        a: [
-          "- **Temperature** rescales the token probabilities: low sharpens them (more predictable), high flattens them (more varied). 0 means always take the most likely token.",
-          "- **Top-k** samples only from the k most likely tokens; **top-p** from the smallest set whose probabilities sum to p.",
-          "",
-          "Temperature 0 still varies because inference servers batch requests together, and GPU kernels give slightly different floating-point results depending on batch size and composition — which depend on server load. Tiny differences flip a near-tie, and the outputs diverge from there. Providers also update models and infrastructure underneath you.",
-        ],
-      },
-      {
-        q: "Why does a longer prompt cost more latency and money? What is the KV cache?",
-        a: "Every input token is processed (prefill) before the first output token, and attention work grows with context length, so time to first token and price both grow with the prompt. The **KV cache** stores each processed token's attention keys and values so generating the next token doesn't recompute the whole prefix — but it takes GPU memory proportional to context length, limiting how many requests a server can batch. Provider prompt caching reuses that work across requests that share a prefix.",
-      },
-      {
-        q: "Name three causes of hallucination and a mitigation for each.",
-        a: [
-          "- **Missing knowledge** (private, recent or rare facts) → retrieval with citations; let it say it doesn't know.",
-          "- **Ambiguous or leading prompts** → clearer instructions, ask a clarifying question, structured output with explicit “unknown” values.",
-          "- **Pressure to answer / over-generalisation** → an abstain path, groundedness checks after generation, lower temperature for factual tasks.",
-          "",
-          "And measure it: faithfulness on an eval set, not anecdotes.",
-        ],
-      },
-      {
-        q: "What happens at the context-window limit?",
-        a: "The window caps input plus output tokens. Over it, the API rejects the request, or a framework silently truncates (often the oldest messages — losing instructions or key facts). Before the limit, quality already degrades on long inputs (lost in the middle, context rot) while cost and latency climb. So manage context deliberately: trim, summarise, retrieve, and reserve room for the output.",
-      },
-    ],
-  },
-  {
-    id: "LLM-07",
-    section: "F",
-    priority: "P1",
-    title: "How transformers work — tokens, attention, layers (conceptual)",
-    why: "AI engineer loops don't ask you to derive attention, but they do ask “explain attention in a minute”, “why does a longer prompt cost more?”, “why is long context hard?” and “what is a mixture-of-experts model?”. The conceptual picture of the transformer answers all of them and grounds everything about context, cost and KV caches.",
-    ceiling: {
-      enough: "walk text → tokens → vectors → attention and feed-forward layers → next-token probabilities, and use it to explain cost, long-context limits and the KV cache.",
-      tooDeep: "attention maths, positional-encoding formulas, training objectives.",
-    },
-    know: [
-      "Tokens are embedded as vectors plus position information; every later step works on that list of vectors.",
-      "Attention: each token's query is compared with earlier tokens' keys, giving weights for a mix of their values; multi-head runs several in parallel.",
-      "Chat models are decoder-only with causal attention (only look backwards); embedding models and rerankers are usually encoders.",
-      "A layer is attention plus a feed-forward network; much factual knowledge sits in feed-forward weights.",
-      "Attention work grows roughly with the square of the length; the KV cache grows with context and limits batch size.",
-      "Mixture of experts: a router sends each token to a few expert networks, so only part of a huge model runs per token.",
-    ],
-    resources: [
-      { video: "wjZofJX0v4M" },
-      { video: "eMlx5fFNoYc" },
-      {
-        doc: {
-          title: "The Illustrated Transformer",
-          site: "jalammar.github.io",
-          url: "https://jalammar.github.io/illustrated-transformer/",
-          minutes: 30,
-          estimate: true,
-          note: "The classic visual walkthrough of queries, keys, values and multi-head attention.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "Explain attention in one minute.",
-        a: "Each token produces a query, a key and a value vector. A token's query is compared with the keys of the tokens before it; the similarity scores become weights that add up to one; the token's new vector is the weighted mix of those tokens' values. So “it” in “the milk was spoiled, so the customer returned it” absorbs information from “milk”. Multi-head attention runs several of these in parallel, each tracking different relationships.",
-      },
-      {
-        q: "Why does a longer prompt cost more time and money?",
-        a: "Every prompt token is processed through every layer before the first output token (prefill), and attention compares each token with every earlier one, so the work grows faster than the length. Providers bill per token, and time to first token grows with the prompt. During generation, the KV cache also grows with context, using GPU memory and limiting how many requests a server can batch.",
-      },
-      {
-        q: "Encoder vs decoder models — which do you use where?",
-        a: "Decoder-only models with causal attention generate text: chat and agents. Encoder models attend in both directions over a fixed input, which suits understanding tasks: embedding models for search and cross-encoder rerankers.",
-      },
-      {
-        q: "What is a mixture-of-experts model?",
-        a: "Each layer has many smaller feed-forward “expert” networks and a router that sends each token to a few of them. The model has a huge total parameter count but uses only a fraction per token, so it's cheaper to run than a dense model of the same size — though all the weights still have to fit in memory.",
-      },
-    ],
-  },
-  {
-    id: "LLM-04",
-    section: "F",
-    priority: "P1",
-    title: "Prompting techniques — structure, few-shot, chain-of-thought, prompts as code",
-    why: "Every AI engineer writes prompts daily, and interviewers check you treat it as engineering: a clear structure, examples chosen on purpose, chain-of-thought and self-consistency where they help, prompt chaining instead of one giant prompt, and every change tested on a labelled set.",
-    ceiling: {
-      enough: "structure a production prompt, choose few-shot examples well, say when chain-of-thought helps, and describe a versioned, tested prompt workflow.",
-      tooDeep: "prompt-optimisation research; collecting “magic phrases”.",
-    },
-    know: [
-      "Structure: role and goal, rules with edge cases, examples, output schema, and clearly delimited input.",
-      "Few-shot examples should cover hard boundaries, balance labels and vary wording; dynamic few-shot retrieves similar examples per input.",
-      "Chain-of-thought helps multi-step reasoning on standard models; self-consistency samples several paths and votes; reasoning models think internally.",
-      "ReAct alternates thought, tool call and observation; describe tools and stop rules well.",
-      "Split big prompts into chains with code checks between steps.",
-      "Prompts are code: version control, test set per category, version recorded on every trace, re-test on model upgrades.",
-    ],
-    resources: [
-      { video: "ysPbXH0LpIE" },
-      { video: "T9aRN5JkmL8", note: "Long: Anthropic's prompt engineers discussing how they actually work. Listen to the first half." },
-      {
-        doc: {
-          title: "Prompt engineering overview",
-          site: "platform.claude.com",
-          url: "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
-          minutes: 25,
-          estimate: true,
-        },
-      },
-      {
-        doc: {
-          title: "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
-          site: "arxiv.org",
-          url: "https://arxiv.org/abs/2201.11903",
-          minutes: 10,
-          estimate: true,
-          note: "Read the abstract and the first figure.",
-        },
-      },
-    ],
-    drill: [
-      {
-        q: "How do you structure a production prompt?",
-        a: "Role and goal in a sentence; the context and rules, including how to resolve the confusing cases; a handful of examples covering the hard boundaries; an exact output schema, ideally enforced with structured output; and the input clearly delimited (for example in tags) so its text is never mistaken for instructions. Clear rules beat emphasis in capital letters.",
-      },
-      {
-        q: "When does chain-of-thought help, and when doesn't it?",
-        a: "It helps on multi-step reasoning with standard models, because the model can use its own intermediate steps — keep the reasoning in a separate field so code reads only the answer. It adds little on simple lookups, and little extra on reasoning models, which already think internally. Self-consistency (several sampled paths, majority vote) adds reliability at several times the cost.",
-      },
-      {
-        q: "How do you choose few-shot examples?",
-        a: "Cover the hard boundaries rather than easy cases, balance the labels so the model isn't biased toward one class, and vary the wording so it doesn't copy surface features. Better still, retrieve the most similar labelled examples per input from a pool (dynamic few-shot).",
-      },
-      {
-        q: "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?",
-        a: "Treat prompts as code: in version control, every change as a pull request, run against a labelled test set with results per category, shipped only if better without any category getting worse, and the prompt version recorded on every trace. Re-run the set whenever the model changes.",
-      },
-    ],
-  },
+  // ─── F · Advanced: MCP, fine-tuning, serving ──────────────────────────────
   {
     id: "LLM-02",
     section: "F",

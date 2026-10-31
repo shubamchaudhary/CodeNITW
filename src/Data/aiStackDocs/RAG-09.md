@@ -48,7 +48,7 @@ flowchart LR
 
 ## 4. Moving between them
 
-Switching vector stores is mostly a data-migration problem: re-index every chunk with its metadata into the new store, dual-write updates during the move, compare results on the test set, then cut over. The embeddings themselves can be copied if the model does not change. Keeping your retrieval code behind a small interface (search, upsert, delete) makes the swap far cheaper.
+Switching vector stores is mostly a data-migration problem: re-index every chunk with its metadata into the new store, dual-write updates during the move, compare results on the test set, then cut over. The embeddings themselves can be copied if the model does not change. Keeping your retrieval code behind a small interface (search, upsert, delete; an **upsert** inserts a row, or updates it if it already exists) makes the swap far cheaper.
 
 Correction: "we need a vector database because we are doing RAG" is not a reason. Many production RAG systems run happily on pgvector or Elasticsearch. Add a new database when measured needs (scale, filtering, operations) justify running another system.
 

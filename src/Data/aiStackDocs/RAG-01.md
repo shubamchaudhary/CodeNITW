@@ -4,7 +4,7 @@ Two things went wrong. The model has never seen FreshCart's documents, so it pro
 
 ## 1. The idea: look it up first, then answer
 
-A large language model (LLM) works by predicting likely text. It is excellent at language and at reasoning over text you give it, and unreliable at facts it was never shown. Private, recent or company-specific facts are exactly what it was never shown.
+You already know why from the first section: a language model produces likely text, not checked facts. It is excellent at language and at reasoning over text you hand it, and unreliable at facts it never saw in training. Private, recent or company-specific facts are exactly what it never saw.
 
 **Retrieval-Augmented Generation (RAG)** splits the job in two:
 
@@ -13,7 +13,7 @@ A large language model (LLM) works by predicting likely text. It is excellent at
 
 The model stops being the source of facts. It becomes a reader of the evidence you hand it. That fixes both of Meera's problems: answers come from FreshCart's policies, and every answer points to its source.
 
-One limit shapes the whole design: the **context window**, the maximum amount of text one model call can take in (prompt plus answer), measured in **tokens**. A token is a piece of text, often a short word or part of a word; roughly 100 tokens is 75 English words. You cannot paste 12,000 documents into one call, and even if you could, it would be slow and expensive. So RAG has to pick the right few passages.
+One limit shapes the whole design: the context window, the most tokens one call can take (remember: roughly 100 tokens is 75 English words). You cannot paste 12,000 documents into one call, and even if you could, it would be slow and expensive. So RAG has to pick the right few passages.
 
 ## 2. Two new building blocks: chunks and embeddings
 
@@ -139,7 +139,7 @@ The fixed parts go first so prompt caching can reuse them across questions; the 
 A design answer gets much stronger with a quick size estimate. For FreshCart:
 
 - 12,000 documents, averaging 20 pages, roughly 160 chunks each: about 2 million chunks.
-- Each chunk's embedding: 768 numbers x 4 bytes = about 3 KB. 2 million chunks = about 6 GB of raw vectors, before the index's own overhead (an HNSW graph adds links per vector, often another 20-50%).
+- Each chunk's embedding: 768 numbers x 4 bytes = about 3 KB. 2 million chunks = about 6 GB of raw vectors, before the index's own overhead (the index's own graph of links between vectors, explained on the vector search page, often adds another 20-50%).
 - Embedding everything once: 2 million chunks x 400 tokens = 800 million tokens. At an assumed $0.02 per million tokens for an embedding API, about $16. Embedding is cheap; generation is where the money goes.
 - Re-embedding is still a project at this size: rate limits mean hours, and both indexes must be swapped atomically.
 

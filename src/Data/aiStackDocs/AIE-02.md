@@ -6,7 +6,34 @@ Every page of this stack follows one company, so the ideas build on each other i
 - **Planner Copilot**: an agent that changes warehouse stock settings, but only after a planner approves.
 - The evaluation, security and scaling work that turns both into something the company can trust.
 
-This first page is about the round that opens almost every AI engineer interview: "walk me through an AI system you built."
+This first page is about the round that opens almost every AI engineer interview: "walk me through an AI system you built." Before that, here is the road ahead.
+
+## 0. The journey, and the words you will meet
+
+If you are new to all of this, good: the stack is written for you. Each section builds on the one before, and every new word is explained properly the first time it matters.
+
+```mermaid
+flowchart LR
+    A["How LLMs work:<br/>what the model<br/>actually does"] --> B["RAG:<br/>answering from<br/>FreshCart's own<br/>documents"]
+    B --> C["LangChain +<br/>LangGraph:<br/>assistants that<br/>use tools"]
+    C --> D["Human-in-the-loop:<br/>agents that ask<br/>before they act"]
+    D --> E["Evals:<br/>proving it<br/>works"]
+    E --> F["System design:<br/>making it safe,<br/>fast, affordable"]
+    F --> G["Advanced:<br/>MCP, fine-tuning,<br/>running models"]
+```
+
+Some of those words already appear on this page, so here they are in one plain sentence each. Do not memorise them; each gets its own page later.
+
+- **LLM** (large language model): a program that has read a huge amount of text and predicts what text comes next, which turns out to be enough to answer questions and follow instructions.
+- **RAG** (retrieval-augmented generation): look up the relevant documents first, then let the model answer from them, so it uses your facts instead of guessing.
+- **Embedding / vector search**: turning text into a list of numbers so that "find similar meaning" becomes "find nearby numbers".
+- **Chunk**: a small piece of a document, the unit you search and hand to the model.
+- **Agent**: a model that can ask your code to run tools (look up an order, update a setting) in a loop until a task is done.
+- **LangChain / LangGraph**: popular Python libraries for building such assistants and agents.
+- **Evals**: tests for AI systems, with a fixed set of questions and a way to grade the answers.
+- **Latency, p95**: how long a request takes; "p95" is the time within which 95% of requests finish, which shows the slow cases an average hides.
+- **CI** (continuous integration): the automatic checks that run on every code change before it is merged.
+- **Guardrails**: checks around the model that stop unsafe inputs, outputs or actions.
 
 ## 1. What an AI engineer interview is checking
 

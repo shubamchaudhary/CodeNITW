@@ -69,7 +69,7 @@ flowchart TB
 - **Use**: the host passes tool descriptions to the model as usual; when the model asks for one, the host sends the call to the server and returns the result.
 - **Change**: a server can notify clients when its list of tools changes.
 
-The protocol also lets a server ask things of the client: request a model completion through the host's model (**sampling**), or ask the user for missing input (**elicitation**). Remote servers use OAuth-based authorisation so the user grants access explicitly, and the server acts with that user's permissions, not with a shared admin key.
+The protocol also lets a server ask things of the client: request a model completion through the host's model (**sampling**), or ask the user for missing input (**elicitation**). Remote servers use OAuth-based authorisation (OAuth is the standard flow behind "allow this app to access your account" screens) so the user grants access explicitly, and the server acts with that user's permissions, not with a shared admin key.
 
 ## 5. Building an MCP server for FreshCart's inventory
 

@@ -19,6 +19,7 @@ flowchart LR
 
 - Each question is paired with its correct answer.
 - The other answers in the same batch act as wrong answers for free (**in-batch negatives**). "refund for spoiled milk" must end up closer to the dairy-refund answer than to the slot answer or the dark-store answer.
+- Training works by adjusting the model's numbers to make a **loss** smaller: a score that is high when a question sits closer to a wrong answer than to its own, and low when every question is nearest its own answer.
 - The best training sets also include **hard negatives**: wrong answers that look very similar, such as the bakery refund rule for a dairy question. They teach fine distinctions.
 - After enough batches, texts that answer each other sit close together. That is why search by embedding finds an answer whose words differ from the question's.
 
@@ -47,7 +48,7 @@ More dimensions can hold finer meaning, and cost more: memory, storage and compa
 FreshCart's agents write in English, Hindi and Marathi, often mixed in one sentence.
 
 - **Multilingual models** are trained on many languages so that a Marathi question and an English policy with the same meaning land close together. Test on your real mix: quality varies a lot between languages, and code-mixed text (Hinglish, Marathi in Latin script) is hard for all of them.
-- **Domain vocabulary** ("dark store", "FC slot", SKU codes) is where general models fail. Hybrid search covers exact codes; contextual retrieval adds explanation to chunks; for the rest, fine-tune the embedder.
+- **Domain vocabulary** ("dark store", "FC slot", SKU codes, the product codes a store uses) is where general models fail. Hybrid search covers exact codes; contextual retrieval adds explanation to chunks; for the rest, fine-tune the embedder.
 
 ## 5. Fine-tuning an embedding model
 

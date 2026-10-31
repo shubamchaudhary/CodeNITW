@@ -4,8 +4,8 @@ A FreshCart director, reviewing the AI budget, asks two questions that sound sim
 
 A model never sees letters. Text goes through three steps before any "thinking" happens:
 
-- **Tokenise**: the text is split into tokens from a fixed vocabulary (the foundations page covers tokens).
-- **Embed**: each token id is looked up in a table and replaced by a vector, for example 4,096 numbers, which the model learned during training to represent that token.
+- **Tokenise**: the text is split into tokens from a fixed vocabulary (the "How LLMs behave" page covers tokens).
+- **Embed**: each token id is looked up in a table and replaced by a **vector**, simply a list of numbers (for example 4,096 of them), which the model learned during training to represent that token.
 - **Add position**: the model also needs to know the order of tokens ("dog bites man" versus "man bites dog"), so position information is added to each token's vector.
 
 Now the sentence is a list of vectors, one per token. Everything after this works on that list.
@@ -51,7 +51,7 @@ flowchart TB
 
 - A **layer** is attention (tokens share information) followed by a **feed-forward network** (each token's vector is transformed on its own). Large models stack dozens of layers.
 - Early layers tend to capture surface patterns, later layers more abstract meaning. Much of the model's factual knowledge is stored in the feed-forward weights.
-- At the end, the final vector of the last token is turned into a probability for every token in the vocabulary. Sampling picks one (the foundations page), it is appended, and the whole thing runs again for the next token.
+- At the end, the final vector of the last token is turned into a probability for every token in the vocabulary. Sampling picks one (the "How LLMs behave" page), it is appended, and the whole thing runs again for the next token.
 
 The **parameters** of a model (7 billion, 70 billion, more) are all these learned numbers: embedding tables, attention weights, feed-forward weights. More parameters can hold more knowledge and skill, and cost more memory and compute per token.
 
