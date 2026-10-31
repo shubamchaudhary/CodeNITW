@@ -38,7 +38,7 @@ A thin card ("Approve action #42?") gets rubber-stamped. Track the approval rate
 The safest pattern keeps the proposed change completely separate from the live data until approval.
 
 - The **base** is the real table that ordering systems read.
-- The **overlay** is a staging area holding proposed changes: a separate table, or Redis with an automatic expiry time.
+- The **overlay** is a staging area holding proposed changes: a separate table, or Redis (a fast in-memory data store) with an automatic expiry time.
 
 ```mermaid
 flowchart LR

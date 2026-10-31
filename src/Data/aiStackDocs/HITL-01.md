@@ -1,6 +1,6 @@
 FreshCart's planning team wants an agent too. Arjun plans stock for the Pune warehouses. Every week he adjusts **safety stock** (the extra units kept on hand so a product does not run out when demand spikes) for hundreds of products, through tickets that take days. You build **Planner Copilot**: Arjun types "Raise safety stock for milk in all Pune warehouses by 20% before Diwali" and the agent works out the change.
 
-A wrong change here empties shelves or wastes lakhs of rupees of dairy. So Planner Copilot works out the change: 6 warehouses, milk SKU-881, safety stock from 400 to 480 each. Then it must stop, show Arjun, wait (maybe until tomorrow, maybe across a deploy), and continue only with his decision. Nothing should be left running while it waits.
+A wrong change here empties shelves or wastes lakhs of rupees of dairy (a lakh is 100,000). So Planner Copilot works out the change: 6 warehouses, milk SKU-881, safety stock from 400 to 480 each. Then it must stop, show Arjun, wait (maybe until tomorrow, maybe across a deploy), and continue only with his decision. Nothing should be left running while it waits.
 
 ## 1. The idea: human-in-the-loop
 

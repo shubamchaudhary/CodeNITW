@@ -18,6 +18,11 @@ export const AI_STACK_SECTIONS = [
     "chip": "Start"
   },
   {
+    "key": "B",
+    "label": "How LLMs work",
+    "chip": "Basics"
+  },
+  {
     "key": "R",
     "label": "RAG",
     "chip": "RAG"
@@ -44,8 +49,8 @@ export const AI_STACK_SECTIONS = [
   },
   {
     "key": "F",
-    "label": "LLM foundations",
-    "chip": "LLMs"
+    "label": "Advanced: MCP, fine-tuning, serving",
+    "chip": "Advanced"
   }
 ];
 
@@ -103,6 +108,236 @@ export const AI_STACK_TOPICS = [
     "asked": {
       "posts": 0,
       "items": 5
+    }
+  },
+  {
+    "id": "LLM-01",
+    "section": "B",
+    "sectionLabel": "How LLMs work",
+    "priority": "P1",
+    "title": "How LLMs behave — tokens, context, sampling, hallucination",
+    "why": "The LLM-basics questions are short but unforgiving of vagueness: tokens against words, why long context costs more, what temperature changes, why temperature 0 still isn't deterministic, and where hallucinations come from. Karpathy's one-hour talk is the best single use of an hour here.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "explain tokenisation, the context window, the KV cache, sampling and hallucination in plain words, with one example each.",
+      "tooDeep": "attention maths, positional encodings, training objectives."
+    },
+    "know": [
+      "Tokens aren't words (English averages roughly ¾ of a word per token; code and other languages differ). Billing, limits and chunking are all in tokens, and tokenisers differ between providers.",
+      "Generation is next-token prediction: the model outputs a probability distribution, sampling picks a token, repeat. Temperature reshapes the distribution; top-p and top-k truncate it.",
+      "Temperature 0 isn't fully deterministic: batched inference makes floating-point results depend on server load (batch invariance), and providers change things underneath.",
+      "The KV cache stores attention keys and values for tokens already processed, so each new token doesn't recompute the prefix; it grows with context length — one reason long contexts are costly.",
+      "Hallucination: the model produces likely, fluent text, not verified facts. Causes: missing knowledge, ambiguous prompts, pressure to answer. Mitigate with grounding, an abstain path, verification, lower temperature for factual tasks.",
+      "The context window caps input plus output tokens; quality degrades well before the hard limit."
+    ],
+    "resources": [
+      {
+        "id": "LLM-01-r1",
+        "kind": "video",
+        "title": "[1hr Talk] Intro to Large Language Models",
+        "source": "Andrej Karpathy",
+        "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
+        "minutes": 60,
+        "note": "00:00–17:52 how they work; 27:43 tool use; 45:43–58:37 security (jailbreaks, and prompt injection at 51:30). Skip the appendix."
+      },
+      {
+        "id": "LLM-01-r2",
+        "kind": "video",
+        "title": "Large Language Models explained briefly",
+        "source": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=LPZh9BOjkQs",
+        "minutes": 8,
+        "note": ""
+      },
+      {
+        "id": "LLM-01-r3",
+        "kind": "video",
+        "title": "LLM Prompt Engineering with Random Sampling: Temperature, Top-k, Top-p",
+        "source": "DataMListic",
+        "url": "https://www.youtube.com/watch?v=-BBulGM6xF0",
+        "minutes": 8,
+        "note": ""
+      },
+      {
+        "id": "LLM-01-r4",
+        "kind": "video",
+        "title": "Why Large Language Models Hallucinate",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=cfqtFvWOfg0",
+        "minutes": 10,
+        "note": ""
+      },
+      {
+        "id": "LLM-01-r5",
+        "kind": "video",
+        "title": "How KV Cache Speeds Up LLMs for Faster AI Models on GPUs",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=o0gkdZBtwEg",
+        "minutes": 11,
+        "note": ""
+      },
+      {
+        "id": "LLM-01-r6",
+        "kind": "doc",
+        "title": "Defeating Nondeterminism in LLM Inference",
+        "source": "thinkingmachines.ai",
+        "url": "https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/",
+        "minutes": 30,
+        "estimate": true,
+        "note": "The real reason temperature 0 still varies. Read the introduction and the batch-invariance section."
+      }
+    ],
+    "minutes": 127,
+    "duration": "≈2h 7m",
+    "questions": [
+      "Why do token counts differ from word counts, and why does it matter?",
+      "What do temperature, top-p and top-k change? Why is temperature 0 still not deterministic?",
+      "Why does a longer prompt cost more latency and money? What is the KV cache?",
+      "Name three causes of hallucination and a mitigation for each.",
+      "What happens at the context-window limit?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 5
+    }
+  },
+  {
+    "id": "LLM-04",
+    "section": "B",
+    "sectionLabel": "How LLMs work",
+    "priority": "P1",
+    "title": "Prompting techniques — structure, few-shot, chain-of-thought, prompts as code",
+    "why": "Every AI engineer writes prompts daily, and interviewers check you treat it as engineering: a clear structure, examples chosen on purpose, chain-of-thought and self-consistency where they help, prompt chaining instead of one giant prompt, and every change tested on a labelled set.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "structure a production prompt, choose few-shot examples well, say when chain-of-thought helps, and describe a versioned, tested prompt workflow.",
+      "tooDeep": "prompt-optimisation research; collecting “magic phrases”."
+    },
+    "know": [
+      "Structure: role and goal, rules with edge cases, examples, output schema, and clearly delimited input.",
+      "Few-shot examples should cover hard boundaries, balance labels and vary wording; dynamic few-shot retrieves similar examples per input.",
+      "Chain-of-thought helps multi-step reasoning on standard models; self-consistency samples several paths and votes; reasoning models think internally.",
+      "ReAct alternates thought, tool call and observation; describe tools and stop rules well.",
+      "Split big prompts into chains with code checks between steps.",
+      "Prompts are code: version control, test set per category, version recorded on every trace, re-test on model upgrades."
+    ],
+    "resources": [
+      {
+        "id": "LLM-04-r1",
+        "kind": "video",
+        "title": "Prompting 101 | Code w/ Claude",
+        "source": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=ysPbXH0LpIE",
+        "minutes": 25,
+        "note": ""
+      },
+      {
+        "id": "LLM-04-r2",
+        "kind": "video",
+        "title": "AI prompt engineering: A deep dive",
+        "source": "Anthropic",
+        "url": "https://www.youtube.com/watch?v=T9aRN5JkmL8",
+        "minutes": 77,
+        "note": "Long: Anthropic's prompt engineers discussing how they actually work. Listen to the first half."
+      },
+      {
+        "id": "LLM-04-r3",
+        "kind": "doc",
+        "title": "Prompt engineering overview",
+        "source": "platform.claude.com",
+        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+        "minutes": 25,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "LLM-04-r4",
+        "kind": "doc",
+        "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+        "source": "arxiv.org",
+        "url": "https://arxiv.org/abs/2201.11903",
+        "minutes": 10,
+        "estimate": true,
+        "note": "Read the abstract and the first figure."
+      }
+    ],
+    "minutes": 137,
+    "duration": "≈2h 17m",
+    "questions": [
+      "How do you structure a production prompt?",
+      "When does chain-of-thought help, and when doesn't it?",
+      "How do you choose few-shot examples?",
+      "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
+    }
+  },
+  {
+    "id": "LLM-07",
+    "section": "B",
+    "sectionLabel": "How LLMs work",
+    "priority": "P1",
+    "title": "How transformers work — tokens, attention, layers (conceptual)",
+    "why": "AI engineer loops don't ask you to derive attention, but they do ask “explain attention in a minute”, “why does a longer prompt cost more?”, “why is long context hard?” and “what is a mixture-of-experts model?”. The conceptual picture of the transformer answers all of them and grounds everything about context, cost and KV caches.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "walk text → tokens → vectors → attention and feed-forward layers → next-token probabilities, and use it to explain cost, long-context limits and the KV cache.",
+      "tooDeep": "attention maths, positional-encoding formulas, training objectives."
+    },
+    "know": [
+      "Tokens are embedded as vectors plus position information; every later step works on that list of vectors.",
+      "Attention: each token's query is compared with earlier tokens' keys, giving weights for a mix of their values; multi-head runs several in parallel.",
+      "Chat models are decoder-only with causal attention (only look backwards); embedding models and rerankers are usually encoders.",
+      "A layer is attention plus a feed-forward network; much factual knowledge sits in feed-forward weights.",
+      "Attention work grows roughly with the square of the length; the KV cache grows with context and limits batch size.",
+      "Mixture of experts: a router sends each token to a few expert networks, so only part of a huge model runs per token."
+    ],
+    "resources": [
+      {
+        "id": "LLM-07-r1",
+        "kind": "video",
+        "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+        "source": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+        "minutes": 27,
+        "note": ""
+      },
+      {
+        "id": "LLM-07-r2",
+        "kind": "video",
+        "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+        "source": "3Blue1Brown",
+        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+        "minutes": 26,
+        "note": ""
+      },
+      {
+        "id": "LLM-07-r3",
+        "kind": "doc",
+        "title": "The Illustrated Transformer",
+        "source": "jalammar.github.io",
+        "url": "https://jalammar.github.io/illustrated-transformer/",
+        "minutes": 30,
+        "estimate": true,
+        "note": "The classic visual walkthrough of queries, keys, values and multi-head attention."
+      }
+    ],
+    "minutes": 83,
+    "duration": "≈1h 23m",
+    "questions": [
+      "Explain attention in one minute.",
+      "Why does a longer prompt cost more time and money?",
+      "Encoder vs decoder models — which do you use where?",
+      "What is a mixture-of-experts model?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 4
     }
   },
   {
@@ -2519,239 +2754,9 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "LLM-01",
-    "section": "F",
-    "sectionLabel": "LLM foundations",
-    "priority": "P1",
-    "title": "How LLMs behave — tokens, context, sampling, hallucination",
-    "why": "The LLM-basics questions are short but unforgiving of vagueness: tokens against words, why long context costs more, what temperature changes, why temperature 0 still isn't deterministic, and where hallucinations come from. Karpathy's one-hour talk is the best single use of an hour here.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "explain tokenisation, the context window, the KV cache, sampling and hallucination in plain words, with one example each.",
-      "tooDeep": "attention maths, positional encodings, training objectives."
-    },
-    "know": [
-      "Tokens aren't words (English averages roughly ¾ of a word per token; code and other languages differ). Billing, limits and chunking are all in tokens, and tokenisers differ between providers.",
-      "Generation is next-token prediction: the model outputs a probability distribution, sampling picks a token, repeat. Temperature reshapes the distribution; top-p and top-k truncate it.",
-      "Temperature 0 isn't fully deterministic: batched inference makes floating-point results depend on server load (batch invariance), and providers change things underneath.",
-      "The KV cache stores attention keys and values for tokens already processed, so each new token doesn't recompute the prefix; it grows with context length — one reason long contexts are costly.",
-      "Hallucination: the model produces likely, fluent text, not verified facts. Causes: missing knowledge, ambiguous prompts, pressure to answer. Mitigate with grounding, an abstain path, verification, lower temperature for factual tasks.",
-      "The context window caps input plus output tokens; quality degrades well before the hard limit."
-    ],
-    "resources": [
-      {
-        "id": "LLM-01-r1",
-        "kind": "video",
-        "title": "[1hr Talk] Intro to Large Language Models",
-        "source": "Andrej Karpathy",
-        "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g",
-        "minutes": 60,
-        "note": "00:00–17:52 how they work; 27:43 tool use; 45:43–58:37 security (jailbreaks, and prompt injection at 51:30). Skip the appendix."
-      },
-      {
-        "id": "LLM-01-r2",
-        "kind": "video",
-        "title": "Large Language Models explained briefly",
-        "source": "3Blue1Brown",
-        "url": "https://www.youtube.com/watch?v=LPZh9BOjkQs",
-        "minutes": 8,
-        "note": ""
-      },
-      {
-        "id": "LLM-01-r3",
-        "kind": "video",
-        "title": "LLM Prompt Engineering with Random Sampling: Temperature, Top-k, Top-p",
-        "source": "DataMListic",
-        "url": "https://www.youtube.com/watch?v=-BBulGM6xF0",
-        "minutes": 8,
-        "note": ""
-      },
-      {
-        "id": "LLM-01-r4",
-        "kind": "video",
-        "title": "Why Large Language Models Hallucinate",
-        "source": "IBM Technology",
-        "url": "https://www.youtube.com/watch?v=cfqtFvWOfg0",
-        "minutes": 10,
-        "note": ""
-      },
-      {
-        "id": "LLM-01-r5",
-        "kind": "video",
-        "title": "How KV Cache Speeds Up LLMs for Faster AI Models on GPUs",
-        "source": "IBM Technology",
-        "url": "https://www.youtube.com/watch?v=o0gkdZBtwEg",
-        "minutes": 11,
-        "note": ""
-      },
-      {
-        "id": "LLM-01-r6",
-        "kind": "doc",
-        "title": "Defeating Nondeterminism in LLM Inference",
-        "source": "thinkingmachines.ai",
-        "url": "https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/",
-        "minutes": 30,
-        "estimate": true,
-        "note": "The real reason temperature 0 still varies. Read the introduction and the batch-invariance section."
-      }
-    ],
-    "minutes": 127,
-    "duration": "≈2h 7m",
-    "questions": [
-      "Why do token counts differ from word counts, and why does it matter?",
-      "What do temperature, top-p and top-k change? Why is temperature 0 still not deterministic?",
-      "Why does a longer prompt cost more latency and money? What is the KV cache?",
-      "Name three causes of hallucination and a mitigation for each.",
-      "What happens at the context-window limit?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 5
-    }
-  },
-  {
-    "id": "LLM-07",
-    "section": "F",
-    "sectionLabel": "LLM foundations",
-    "priority": "P1",
-    "title": "How transformers work — tokens, attention, layers (conceptual)",
-    "why": "AI engineer loops don't ask you to derive attention, but they do ask “explain attention in a minute”, “why does a longer prompt cost more?”, “why is long context hard?” and “what is a mixture-of-experts model?”. The conceptual picture of the transformer answers all of them and grounds everything about context, cost and KV caches.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "walk text → tokens → vectors → attention and feed-forward layers → next-token probabilities, and use it to explain cost, long-context limits and the KV cache.",
-      "tooDeep": "attention maths, positional-encoding formulas, training objectives."
-    },
-    "know": [
-      "Tokens are embedded as vectors plus position information; every later step works on that list of vectors.",
-      "Attention: each token's query is compared with earlier tokens' keys, giving weights for a mix of their values; multi-head runs several in parallel.",
-      "Chat models are decoder-only with causal attention (only look backwards); embedding models and rerankers are usually encoders.",
-      "A layer is attention plus a feed-forward network; much factual knowledge sits in feed-forward weights.",
-      "Attention work grows roughly with the square of the length; the KV cache grows with context and limits batch size.",
-      "Mixture of experts: a router sends each token to a few expert networks, so only part of a huge model runs per token."
-    ],
-    "resources": [
-      {
-        "id": "LLM-07-r1",
-        "kind": "video",
-        "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
-        "source": "3Blue1Brown",
-        "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
-        "minutes": 27,
-        "note": ""
-      },
-      {
-        "id": "LLM-07-r2",
-        "kind": "video",
-        "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
-        "source": "3Blue1Brown",
-        "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
-        "minutes": 26,
-        "note": ""
-      },
-      {
-        "id": "LLM-07-r3",
-        "kind": "doc",
-        "title": "The Illustrated Transformer",
-        "source": "jalammar.github.io",
-        "url": "https://jalammar.github.io/illustrated-transformer/",
-        "minutes": 30,
-        "estimate": true,
-        "note": "The classic visual walkthrough of queries, keys, values and multi-head attention."
-      }
-    ],
-    "minutes": 83,
-    "duration": "≈1h 23m",
-    "questions": [
-      "Explain attention in one minute.",
-      "Why does a longer prompt cost more time and money?",
-      "Encoder vs decoder models — which do you use where?",
-      "What is a mixture-of-experts model?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
-    }
-  },
-  {
-    "id": "LLM-04",
-    "section": "F",
-    "sectionLabel": "LLM foundations",
-    "priority": "P1",
-    "title": "Prompting techniques — structure, few-shot, chain-of-thought, prompts as code",
-    "why": "Every AI engineer writes prompts daily, and interviewers check you treat it as engineering: a clear structure, examples chosen on purpose, chain-of-thought and self-consistency where they help, prompt chaining instead of one giant prompt, and every change tested on a labelled set.",
-    "resumeLinked": false,
-    "flag": "",
-    "ceiling": {
-      "enough": "structure a production prompt, choose few-shot examples well, say when chain-of-thought helps, and describe a versioned, tested prompt workflow.",
-      "tooDeep": "prompt-optimisation research; collecting “magic phrases”."
-    },
-    "know": [
-      "Structure: role and goal, rules with edge cases, examples, output schema, and clearly delimited input.",
-      "Few-shot examples should cover hard boundaries, balance labels and vary wording; dynamic few-shot retrieves similar examples per input.",
-      "Chain-of-thought helps multi-step reasoning on standard models; self-consistency samples several paths and votes; reasoning models think internally.",
-      "ReAct alternates thought, tool call and observation; describe tools and stop rules well.",
-      "Split big prompts into chains with code checks between steps.",
-      "Prompts are code: version control, test set per category, version recorded on every trace, re-test on model upgrades."
-    ],
-    "resources": [
-      {
-        "id": "LLM-04-r1",
-        "kind": "video",
-        "title": "Prompting 101 | Code w/ Claude",
-        "source": "Anthropic",
-        "url": "https://www.youtube.com/watch?v=ysPbXH0LpIE",
-        "minutes": 25,
-        "note": ""
-      },
-      {
-        "id": "LLM-04-r2",
-        "kind": "video",
-        "title": "AI prompt engineering: A deep dive",
-        "source": "Anthropic",
-        "url": "https://www.youtube.com/watch?v=T9aRN5JkmL8",
-        "minutes": 77,
-        "note": "Long: Anthropic's prompt engineers discussing how they actually work. Listen to the first half."
-      },
-      {
-        "id": "LLM-04-r3",
-        "kind": "doc",
-        "title": "Prompt engineering overview",
-        "source": "platform.claude.com",
-        "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
-        "minutes": 25,
-        "estimate": true,
-        "note": ""
-      },
-      {
-        "id": "LLM-04-r4",
-        "kind": "doc",
-        "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
-        "source": "arxiv.org",
-        "url": "https://arxiv.org/abs/2201.11903",
-        "minutes": 10,
-        "estimate": true,
-        "note": "Read the abstract and the first figure."
-      }
-    ],
-    "minutes": 137,
-    "duration": "≈2h 17m",
-    "questions": [
-      "How do you structure a production prompt?",
-      "When does chain-of-thought help, and when doesn't it?",
-      "How do you choose few-shot examples?",
-      "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?"
-    ],
-    "asked": {
-      "posts": 0,
-      "items": 4
-    }
-  },
-  {
     "id": "LLM-02",
     "section": "F",
-    "sectionLabel": "LLM foundations",
+    "sectionLabel": "Advanced: MCP, fine-tuning, serving",
     "priority": "P2",
     "title": "MCP and calling provider APIs directly",
     "why": "Interviewers increasingly ask without framework hand-waving: call the provider's tool-use API yourself, and know the MCP vocabulary — tools, resources, prompts, transports — plus its security problem. MCP is moving fast (LangChain 1.4 moved its MCP support into langchain.mcp), so check the current spec before quoting details.",
@@ -2823,7 +2828,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "LLM-03",
     "section": "F",
-    "sectionLabel": "LLM foundations",
+    "sectionLabel": "Advanced: MCP, fine-tuning, serving",
     "priority": "P2",
     "title": "Fine-tuning — SFT, LoRA/QLoRA, RLHF vs DPO, distillation",
     "why": "Asked as “when would you fine-tune instead of using RAG?”, “what does LoRA change?” and “RLHF vs DPO?”. The strong answer separates behaviour (fine-tune) from knowledge (RAG), knows the parameter-efficient methods, and reaches for distillation when a big model is too slow or costly for a narrow task.",
@@ -2904,7 +2909,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "LLM-06",
     "section": "F",
-    "sectionLabel": "LLM foundations",
+    "sectionLabel": "Advanced: MCP, fine-tuning, serving",
     "priority": "P2",
     "title": "Serving and inference — batching, KV cache, quantisation, vLLM",
     "why": "Once a company runs its own models, the AI engineer owns why throughput collapses at peak, why GPUs run out of memory and why the first token is slow. Interviews ask these at the concept level: prefill vs decode, continuous batching, PagedAttention, quantisation and speculative decoding.",
@@ -2998,6 +3003,6 @@ export const AI_STACK_TOTAL = 39;
 
 export const AI_STACK_PRIORITY_COUNTS = {"P0":16,"P1":16,"P2":7,"P3":0};
 
-export const AI_STACK_SECTION_COUNTS = {"S":1,"R":10,"L":8,"H":3,"E":5,"D":6,"F":6};
+export const AI_STACK_SECTION_COUNTS = {"S":1,"B":3,"R":10,"L":8,"H":3,"E":5,"D":6,"F":3};
 
 export const AI_STACK_MINUTES = 3305;

@@ -12,7 +12,7 @@ Chunk size is a trade-off between two ways to fail:
 The common ways to cut:
 
 - **Fixed-size with overlap**: every 400 tokens, with the last 50 tokens repeated at the start of the next chunk so a sentence cut at the border appears whole in one of them. Simple, but it slices through sentences and tables.
-- **Recursive**: try to split on paragraph breaks; if a piece is still too big, split it on line breaks, then sentences, until every piece fits. LangChain's `RecursiveCharacterTextSplitter` works this way. A strong default.
+- **Recursive**: try to split on paragraph breaks; if a piece is still too big, split it on line breaks, then sentences, until every piece fits. The `RecursiveCharacterTextSplitter` in LangChain (a popular Python library for LLM apps, covered later) works this way. A strong default.
 - **Structure-aware**: split on the document's own structure: headings, sections, list items, table rows, keeping each heading attached to its text. Best for well-structured documents like FreshCart's policies.
 - **Semantic**: embed each sentence, and start a new chunk wherever neighbouring sentences stop being similar in meaning. More compute, sometimes better borders.
 
@@ -57,7 +57,7 @@ Recall from the RAG overview: an embedding turns text into a vector, and similar
 
 The practical trick: scale every vector to length 1 when you store it (**normalise** it). For vectors of length 1, cosine similarity and dot product give exactly the same number, and Euclidean distance ranks results in the same order. So you normalise once and use the dot product, the cheapest to compute.
 
-In Postgres with the pgvector extension, the index must be built for the same comparison the query uses: an index built with `vector_cosine_ops` is only used by queries ordered with the `<=>` operator. A mismatch makes Postgres ignore the index and compare against every row.
+In Postgres, the popular open-source database, vectors are usually stored with **pgvector**, an extension that adds a vector column type and vector indexes. The index must be built for the same comparison the query uses: an index built with `vector_cosine_ops` is only used by queries ordered with the `<=>` operator. A mismatch makes Postgres ignore the index and compare against every row.
 
 **Choosing an embedding model.** Run three or four candidate models on the same 80 labelled questions and keep the one that finds the right passage most often. Public leaderboards such as MTEB rank models on general benchmarks; use them for a shortlist, not a decision, because their tasks are not your documents. Also weigh: the model's maximum input length against your chunk size; the number of dimensions (more numbers per vector means more storage and slower search); support for the languages your documents use; price; and whether your data may leave your network.
 

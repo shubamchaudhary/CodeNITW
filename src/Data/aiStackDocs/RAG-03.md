@@ -79,7 +79,7 @@ The fixes:
 - **Iterative index scans** (pgvector 0.8 and later): `SET hnsw.iterative_scan = relaxed_order;` makes the index keep walking past its first candidate list until enough rows pass the filter.
 - **Over-fetch**: ask for 400 candidates when you need 10. A quick patch, not a design.
 
-Correction: "just add a WHERE clause" is not a complete answer to multi-tenant vector search. With a selective filter it silently returns too few results.
+Correction: "just add a WHERE clause" is not a complete answer to multi-tenant vector search (many customers, or tenants, sharing one system). With a selective filter it silently returns too few results.
 
 Also asked: "When would you not use an ANN index at all?" When a partition holds only tens of thousands of vectors, an exact scan is fast enough and always correct.
 
