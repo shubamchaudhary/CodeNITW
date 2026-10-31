@@ -215,7 +215,7 @@ export const PostFilter = ({ t }: CP) => {
       )}
       {t.step >= 1 && t.step < 4 && (
         <div style={{ opacity: 1 - from(t, 4) }}>
-          <Abs x={0} y={170} w={1920} style={{ textAlign: "center", fontSize: 40, fontWeight: 800, ...rise(f, at(t, 1)) }}>the index's 40 best candidates, from every franchise</Abs>
+          <Abs x={260} y={170} w={1060} style={{ fontSize: 40, fontWeight: 800, ...rise(f, at(t, 1)) }}>the index's 40 best candidates, from every franchise</Abs>
           {Array.from({ length: N }, (_, i) => {
             const keep = isBlr(i) && false;
             const x = 260 + (i % 10) * 150;
@@ -286,11 +286,11 @@ export const Bm25 = ({ t }: CP) => {
       )}
       {t.step >= 2 && (
         <div style={{ opacity: from(t, 2) }}>
-          <Abs x={160} y={200} w={500} style={{ textAlign: "center", ...rise(f, at(t, 2)) }}>
+          <Abs x={160} y={270} w={500} style={{ textAlign: "center", ...rise(f, at(t, 2)) }}>
             <div style={{ fontSize: 150 }}>🧑‍🏫</div>
             <div style={{ fontSize: 34, fontWeight: 800 }}>the librarian's questions</div>
           </Abs>
-          <Abs x={720} y={220} w={1080} style={{ ...rise(f, at(t, 2) + 20) }}>
+          <Abs x={720} y={290} w={1080} style={{ ...rise(f, at(t, 2) + 20) }}>
             {[
               ["How rare is the word?", t.step >= 3],
               ["How often is it in this card? (with diminishing returns)", t.step >= 4],
@@ -300,7 +300,7 @@ export const Bm25 = ({ t }: CP) => {
             ))}
           </Abs>
           {t.step >= 3 && (
-            <Abs x={720} y={600} w={1080} style={{ ...rise(f, at(t, 3)) }}>
+            <Abs x={720} y={640} w={1080} style={{ ...rise(f, at(t, 3)) }}>
               {words.map(([w, wt, note], i) => (
                 <div key={w} style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 16 }}>
                   <div style={{ width: 330, fontFamily: MONO, fontSize: 28, fontWeight: 700 }}>{w}</div>

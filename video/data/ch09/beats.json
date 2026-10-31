@@ -1,0 +1,292 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "638ac5c1",
+   "say": "Chapter eight built a safety net: a golden set, a calibrated judge, and a gate. Two things slip straight through it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8443acde",
+   "say": "Planner Copilot can say done, while having changed the wrong warehouse.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbf17acf",
+   "say": "And one Tuesday, answers change, although nobody touched the code. Today, we extend the net to agents, and then out into production.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e634e27a",
+   "say": "Chapter nine. Testing agents, and shipping safely.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a4e68b1",
+   "say": "First rule of testing agents.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "acb26137",
+   "say": "An agent's final message is a claim. Done! Raised milk safety stock in Pune.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f7f185f8",
+   "say": "The truth lives in the database. So check the outcome there. Pune: unchanged. And a warehouse in Nashik: changed. The message lied.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "f75070ea",
+   "say": "Then check the path. The sequence of tool calls is the trajectory. Did it read stock before proposing? Ask for approval before committing? Never touch a delete tool? Stay under twelve steps?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3cb686fc",
+   "say": "Check rules, not one exact sequence. There's usually more than one good path, and rigid matching punishes good runs.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "6fc07bbe",
+   "say": "Planner Copilot passes a task eight times out of ten. Is that good? Think about Arjun. He sends each request once, and dozens a week.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a8eeb97f",
+   "say": "Run the same task k times. Pass at k asks: did at least one attempt succeed? That fits a person picking the best of several, like code suggestions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdb52d93",
+   "say": "Pass to the power k asks: did all of them succeed? That's the one for anything facing customers, or changing data. Watch how fast it falls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebdda470",
+   "say": "At eighty percent per attempt, three requests in a row all go right only about half the time. A coin flip. That's why consistency matters as much as capability.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6a796216",
+   "say": "So every test run starts in a fresh sandbox. And for conversations, another model plays Arjun, from a scenario card.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "0f69ecf9",
+   "say": "Now, the Tuesday mystery.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b18ad2be",
+   "say": "Tuesday morning. Answers are suddenly longer. A few refuse simple questions. And nobody deployed anything. What would you need to have been recording, already?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "729d9707",
+   "say": "A trace for every request. Think of an X-ray: a nested entry for every model call, every search, every tool call. Being able to answer what happened, and why, after the fact, is observability.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5bfcdf24",
+   "say": "Each trace holds the model and its exact version, the prompt version, the chunks and scores, tool calls, tokens, time, cost, and who asked.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22bdefd5",
+   "say": "Traces hold sensitive data, so mask it, and decide up front how long to keep them.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "43eedb44",
+   "say": "Then grade live traffic. Run your code checks and calibrated judges on a sample of real requests, every day. These are online evals.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ee3eb17",
+   "say": "And chart them per group. Here, Bengaluru dropped hard, while the average barely moved. An average hides a regression in one city.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b3959064",
+   "say": "As for Tuesday: answer length and refusals jumped together. That's the signature of a model update. So pin dated model versions, run the regression suite daily, and keep the old version one switch away.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cc970010",
+   "say": "Last: shipping without fear.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ed7a4f99",
+   "say": "Ship in steps. First, offline: the golden set must pass.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f03aefe",
+   "say": "Then shadow: the new version answers real questions in parallel, but nobody sees its answers. You compare, with zero risk.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6247100c",
+   "say": "Then a canary: a small group, say five percent of agents in Pune, gets the new version. The success metric and the rollback triggers are written down before it starts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e89a7a4",
+   "say": "Something looks off? Roll back. It's a configuration switch, so it takes seconds, not a redeploy.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "44ada749",
+   "say": "An A B test answers a different question. Not, does it break? But, is it better? Split by agent, pick one metric in advance, and fix the sample size before you start.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "2968450b",
+   "say": "And version everything together. The prompt, the model, the search settings, the index, as one configuration, stamped on every trace.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bdfc4a5f",
+   "say": "Check the outcome in the database, not the message.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a8a740a7",
+   "say": "Check the trajectory with rules.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0c1181a",
+   "say": "Pass to the power k: every attempt must succeed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0fec3f14",
+   "say": "Observability: a trace for every request.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0370e38",
+   "say": "Online evals watch live traffic, per group.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d5dc12be",
+   "say": "And a canary goes first, with the rollback ready.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "246fbf99",
+   "say": "FreshCart is expanding. Six cities, forty franchise partners, two thousand support agents. A million questions a day.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fae0b023",
+   "say": "Each franchise must see only its own private documents, plus FreshCart's shared ones.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "daca6c4f",
+   "say": "Leadership wants a forty five minute design review of Ask FreshCart for everyone. How does it scale? How are franchises kept apart? What if the provider goes down? What does it cost?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ac1bee0",
+   "say": "These are the questions of an LLM system design interview. So, before drawing a single box: what would you need to know, and decide? Write down your first five questions.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7c8e7f1b",
+   "say": "That's chapter ten. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

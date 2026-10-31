@@ -1,0 +1,404 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "7f4fa199",
+   "say": "Ask FreshCart is an agent now. And production is teaching it some manners.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa31fb3b",
+   "say": "It forgets. Every call starts from zero.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "18d91a09",
+   "say": "A crash in the middle of an answer means starting over.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb6815c6",
+   "say": "One crash, one automatic retry, and a customer got a hundred and fifty rupees. Twice.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "542d4609",
+   "say": "And long chats get slower and pricier with every message.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "198ce2cd",
+   "say": "Chapter six. Agents that remember.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd1ca008",
+   "say": "Video games solved this long ago.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a37c4778",
+   "say": "Lose a level, and you don't replay the whole game. You load the last save.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d3742e68",
+   "say": "LangGraph does the same. After every round, a checkpointer saves the whole state to a database. Each save is a checkpoint.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c10acf46",
+   "say": "One conversation's chain of saves is a thread, named by an id you choose. Call again with the same thread id, and it picks up where it left off. So at ten twenty, and was the bread delivered, knows exactly which order.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9dc92c59",
+   "say": "And crashes? The answer step dies midway. Restart, load the last save, after retrieve, and only the answer step runs again. From its first line.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5cf44e15",
+   "say": "From its first line. So if that step was issuing the credit, it issued it again. That's our double credit.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "76bdb83f",
+   "say": "The fix has a long name, and a simple idea. A lift button. Press it five times, and the lift still comes once. That's idempotent: safe to repeat.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65b33f33",
+   "say": "So every credit carries an idempotency key. The payments service remembers keys it has seen, and ignores the repeat.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "346306d6",
+   "say": "Remember this one. Checkpoints make a run resumable. They don't make it exactly once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "be0472b8",
+   "say": "Now, conversations that remember also grow.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3381117c",
+   "say": "Think of the context window as a desk. After sixty messages, it holds forty thousand tokens. Every answer is slower, pricier, and the order number from message one is buried under the pile.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fa77d88c",
+   "say": "Deciding exactly what goes on the desk, for every single call, is called context engineering. In a long-running agent, it matters more than clever wording.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4be91966",
+   "say": "Keep the recent messages, word for word.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf10b968",
+   "say": "Squeeze the older ones into a running summary. And pin key facts, like the order id, in their own fields, so they can never be trimmed away.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "991157ad",
+   "say": "Old tool outputs are usually the biggest eaters, so shrink them first. And put fixed parts first, so they can be cached, with the question last.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "f9e7a24b",
+   "say": "Threads end. People don't.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f610a0ee",
+   "say": "Agents are annoyed that every new chat starts from zero. Ask FreshCart never remembers that agent seven handles only Pune.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a8b16500",
+   "say": "So keep a notebook about each person, outside any thread. When a chat ends, extract the lasting facts. When a new one starts, search the notebook and bring in a few. That's long term memory.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87e23cba",
+   "say": "It holds facts, past experiences, and even how to behave.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ff01ae4",
+   "say": "And it needs guards. Old facts go stale. Memories about people are personal data. Planted text can poison every future chat. So timestamp them, let people delete them, and treat every write as untrusted.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "c11671ab",
+   "say": "Next, a bigger job.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6665812",
+   "say": "Every Monday, summarise five hundred complaint emails into one report. One by one, it takes an hour.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d2adcb65",
+   "say": "But each email is independent. So split: one branch per email, all running in the same round. Then one step combines every summary. Split, run in parallel, combine. That's fan out.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "7438821b",
+   "say": "Cap how many run at once, below the provider's rate limit. And retry failures, waiting a little longer each time.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "a0e45261",
+   "say": "And because of checkpoints, if the job crashes, finished branches aren't redone.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7385e047",
+   "say": "Chapter four's retrieve, grade, rewrite loop is now needed in three different workflows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "576e7efd",
+   "say": "So package it as one piece, a whole graph used as a single step inside other graphs. A subgraph.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca692ca6",
+   "say": "And while all this runs, stream progress to the screen. Classified. Found five passages. Summarised a hundred and twenty of five hundred.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "445e637b",
+   "say": "A slow answer feels fast, when you can watch it work.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0d22924e",
+   "say": "Finally, the question every team asks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68427c15",
+   "say": "Leadership wants a team of agents. Support, refunds, logistics, and a manager coordinating them. Sounds powerful, right?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "94d6bcf9",
+   "say": "There are three common shapes. A supervisor: a manager agent sees every turn, and hands out work.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "032fca48",
+   "say": "Handoffs: the active agent passes control straight to the next one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5622c373",
+   "say": "Or agents as tools: specialists that return only a short summary to one main agent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c9044c4",
+   "say": "Here's the catch. A decision made inside one agent's context is invisible to the others. Refunds decides to refund. Logistics decides to send a fresh pack.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "333732a3",
+   "say": "And it costs. One study measured agents at about four times the tokens of a chat, and many agents at about fifteen times.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "481d42e0",
+   "say": "When you do split, don't hand over twenty five messages. Hand over a short note: the order, what happened, what the customer wants.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "840a8eab",
+   "say": "So what do you tell leadership? One agent with five good tools, first. Split only when a measured failure shows you need to.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "065cb4de",
+   "say": "A checkpointer saves the game after every round.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46d3b33a",
+   "say": "A thread is one conversation's chain of saves.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f71f75ea",
+   "say": "Idempotent means safe to press twice.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e59af730",
+   "say": "Context engineering decides what goes on the desk.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebb3adb1",
+   "say": "Long term memory is a notebook about people.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "106ba75f",
+   "say": "And fan out splits big jobs into parallel lanes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "68851a06",
+   "say": "Now the planning team wants an agent. Meet Arjun. He plans stock for the Pune warehouses.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eefecd3d",
+   "say": "He types: raise safety stock for milk in all Pune warehouses by twenty percent, before Diwali. The agent works it out. Six warehouses, milk, four hundred units to four eighty each.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "348dca41",
+   "say": "A wrong change empties shelves, or wastes lakhs of rupees of dairy.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2d7c4098",
+   "say": "So nothing gets written until Arjun approves. And he might approve tomorrow morning.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "106da996",
+   "say": "And the service might be redeployed overnight. So how does an agent stop in the middle, show a person exactly what it's about to do, wait for hours with nothing running, and continue exactly where it stopped? You already have one of the two pieces.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "12aac73d",
+   "say": "That's chapter seven. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

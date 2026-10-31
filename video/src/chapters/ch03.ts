@@ -175,7 +175,7 @@ export const ch03: Chapter = {
       props: {
         title: "Search is great now. And yet…",
         items: [
-          ["🌫️", "“it keeps failing after the update, what changed?”", "no product, no code, no date"],
+          ["❓", "“it keeps failing after the update, what changed?”", "no product, no code, no date"],
           ["↩️", "“and for bakery?”", "a follow-up finds nothing"],
           ["❌", "“48 hours” with a confident citation", "the policy says 12"],
           ["📄", "answers hidden in PDF tables fail", "far more than the rest"],

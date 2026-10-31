@@ -1,0 +1,397 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "a3ddd515",
+   "say": "Last time, three requests arrived that no document can answer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fdd49566",
+   "say": "Where is this order? That lives in the orders database.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcb2c5a5",
+   "say": "Is there milk in Kothrud? That's the inventory service.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0e7978a",
+   "say": "And issue a credit. That's the payments system. And it's not a question. It's an action. Today, Ask FreshCart stops just reading, and starts doing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "26b5b2d9",
+   "say": "Chapter five. From assistant, to agent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f96b518",
+   "say": "First, the obvious shortcut.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19f26b50",
+   "say": "Why not just give the model a connection to the database, and let it run queries? What could go wrong?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6b94648c",
+   "say": "Everything. A model can get confused. It can be tricked by text it reads. And it can't be held accountable.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1309ad96",
+   "say": "Think of a restaurant. The customer doesn't walk into the kitchen. They write an order on a slip. The waiter checks it. And the kitchen cooks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fda1e3c4",
+   "say": "That's tool calling. The model is the customer, writing slips. Your code is the waiter, and the kitchen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "54a516d3",
+   "say": "So what does the model see? A tool is one of your functions, described in plain words. A name, get order. And a description of what it does, and when to use it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c58a90c3",
+   "say": "Plus a schema: the exact shape of its arguments. Here, one order id, as a string.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a48425fc",
+   "say": "When the model wants a tool, its reply isn't text. It's a tool call: the name, the arguments, and an id.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd68de4f",
+   "say": "And notice. The model has run nothing. Your code checks the call, runs it, and sends back the result, tagged with that same id.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3c01cf6a",
+   "say": "This changes where safety lives. Only issue credits under two hundred rupees, written in the prompt, is a suggestion. The same check inside the function is a control.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "76e30cac",
+   "say": "The model's arguments are untrusted input. Validate them like data from a stranger: types, ranges, and whether this user may touch this order.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e7a4b60",
+   "say": "And errors are results too. If the orders service times out, send that back as the tool's result, so the model can adapt instead of crashing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f4b9fe8",
+   "say": "Meera asks for a smart assistant with twenty five tools, one for every FreshCart system.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7def1ed6",
+   "say": "Push back. Similar tools confuse the model's choice. Every tool's description costs tokens on every single request. And every tool can be misused.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a93cb35d",
+   "say": "Support needs about five. Get the order, search the policy, check stock, issue a credit behind an approval, and hand over to a human.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "05cd3d84",
+   "say": "Next, answers that code can trust.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3fbe38ca",
+   "say": "Ask a model for JSON, and sometimes you get: sure, here is the JSON. Or order id spelled differently. Your parser crashes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a3d5db9",
+   "say": "So don't ask for a paragraph. Hand it a form. Fixed fields, fixed choices. The provider only lets the model produce output that fits. This is structured output.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76704418",
+   "say": "One warning. The form can be filled perfectly, and still be wrong. Valid shape is not a correct answer.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "21627a19",
+   "say": "Now, the big one.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "35840546",
+   "say": "FC two zero nine three one is late, and the milk was spoiled. What do I do? One tool call isn't enough. It needs the order. Then the policy. Then maybe a credit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c2986f1b",
+   "say": "So put the tool call in a loop. The model thinks, asks for a tool, sees the result, and thinks again. Until it can answer. A model in a loop, choosing its next tool, is an agent.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2532955d",
+   "say": "Even this tiny loop needs a step limit, validation before running anything, errors returned as results, and every result tied to its call id.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "edcf4253",
+   "say": "You'll write that loop in every project.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d5cf17a",
+   "say": "And every time, you'll add the same things around it. Retries. A fallback model. Limits. Streaming. Traces. Approvals.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdad001c",
+   "say": "LangChain packages all of that. Its create agent function builds exactly the loop we just drew.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61bb6243",
+   "say": "Then production arrives. One chat makes forty tool calls. A customer's email lands in a trace. The provider goes down on a Friday evening. Long chats get slow.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60c0808b",
+   "say": "Middleware fixes these without rewriting the loop. Think of checkpoints on a conveyor belt. Every request passes a call limit, a data mask, a retry and fallback, and a summariser, on its way to the model.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26b9e2be",
+   "say": "Order matters. The first in the list wraps everything, so put logging and retries there. Put masking last, right before the model.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "465fca09",
+   "say": "Last idea of the day.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7362442e",
+   "say": "Meera reads a week of chats. Some refund answers never searched the policy. The model decided it didn't need to. She wants rules. Can a loop where the model decides everything guarantee them?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cbcc4469",
+   "say": "It can't. When you need to decide the order of steps, you draw it yourself, like a subway map. Stations are steps. Lines are what runs next. And a switch sends the train back to rewrite when the results are weak. That's LangGraph.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c13a3f7",
+   "say": "Every station reads from a shared whiteboard, and writes only its own fields. That whiteboard is the state.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "14143bb6",
+   "say": "Now the policy search can't be skipped. There's simply no line around it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3f2a759b",
+   "say": "LangGraph runs in rounds, called super steps.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0014caa3",
+   "say": "In a round, every triggered step runs side by side. Searching the policy and fetching the order, together. Neither sees the other's update.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0abfccc2",
+   "say": "At the end of the round, the updates are merged, the state is saved, and the lines decide the next round.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "04a86d64",
+   "say": "Two parallel steps writing the same field, with no rule for merging, is an error. And a recursion limit caps the rounds, so nothing loops forever.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "462dde88",
+   "say": "Tool calling: the model writes the slip, your code cooks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22a78f3e",
+   "say": "Structured output: hand it a form, not a blank page.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c72ece8f",
+   "say": "An agent is a model in a loop, choosing its next tool.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd3a5899",
+   "say": "Middleware adds checkpoints, without rewriting the loop.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f7051bd",
+   "say": "LangGraph lets you draw the map yourself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d9902b3",
+   "say": "And state is the whiteboard every step shares.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e06ee2ae",
+   "say": "Ask FreshCart is a real agent now. Then production happens.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "90b9fd42",
+   "say": "An agent asks about an order, steps away, and twenty minutes later types: and was the bread delivered? Ask FreshCart has no idea which order they mean.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "afb91658",
+   "say": "The server crashes in the middle of an answer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdbb7f4b",
+   "say": "After one crash and an automatic retry, a customer is credited a hundred and fifty rupees. Twice.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "b2597ec8",
+   "say": "And long chats get slower and pricier with every message. So where should a conversation live, so it survives a crash? And how do you make issue a credit safe to run twice?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "51563cd4",
+   "say": "That's chapter six. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}
