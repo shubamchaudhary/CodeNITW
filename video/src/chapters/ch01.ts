@@ -24,6 +24,7 @@ export const ch01: Chapter = {
     {
       kind: "story",
       intro: "Your first week at FreshCart: a plain chat model, and a notebook of questions.",
+      aside: "Let people try a plain chat model for a week, and write down every question they ask about it.",
       cards: [
         { who: "Meera", role: "Leads support", tone: "pink", text: "I asked it the same thing twice and got two different answers. Which one is right?" },
         { who: "Finance", role: "Pays the bills", tone: "amber", text: "Why does a question in Marathi cost more than the same question in English?" },
@@ -100,7 +101,7 @@ export const ch01: Chapter = {
       credit: "Jay Alammar, How GPT3 Works (CC BY-NC-SA 4.0)",
       title: "How plain text becomes training material",
       notes: ["Every position in a sentence is a small quiz.", "Guess, get corrected, adjust. Repeat trillions of times."],
-      focus: [[50, 50, 1], [50, 62, 1.12]],
+      focus: [[50, 50, 1], [60, 70, 1.06]],
       beats: [
         { say: "How does that training work? Take any sentence from the internet. Every position in it becomes a small quiz: here is the text so far, what comes next?" },
         { say: "The model guesses, gets corrected, and its parameters shift very slightly. Repeat that trillions of times, and the guesses become very good." },
@@ -400,7 +401,7 @@ export const ch01: Chapter = {
       credit: JAY_GPT2,
       title: "A weighted blend of the values",
       notes: ["New vector for \"it\" = values × scores, summed.", "In our sentence: mostly \"milk\", a bit of \"spoiled\"."],
-      focus: [[50, 50, 1], [75, 70, 1.25]],
+      focus: [[50, 50, 1], [80, 50, 1.08]],
       beats: [
         { say: "The new vector for it is a weighted blend of the values: each value multiplied by its score, then added up." },
         { say: "Here that is mostly robot. In our FreshCart sentence, it would be mostly milk, and a bit of spoiled." },
@@ -605,19 +606,19 @@ export const ch01: Chapter = {
       title: "Split big jobs: prompt chaining",
       cols: 4,
       rows: 2,
-      nodeW: 330,
+      nodeW: 270,
       nodeH: 120,
       nodes: [
-        { id: "M", c: 1.5, r: 0, label: "One prompt: classify, extract the order id,\ncheck the policy, draft a reply", tone: "red" },
+        { id: "M", c: 1.5, r: 0, w: 560, label: "One prompt: classify, extract the order id,\ncheck the policy, draft a reply", tone: "red" },
         { id: "C1", c: 0, r: 1, label: "Classify" },
         { id: "C2", c: 1, r: 1, label: "Extract\norder id" },
         { id: "C3", c: 2, r: 1, label: "Check\nthe policy" },
         { id: "C4", c: 3, r: 1, label: "Draft\nthe reply", tone: "green" },
       ],
       edges: [
-        { from: "C1", to: "C2", label: "code checks" },
-        { from: "C2", to: "C3", label: "code checks" },
-        { from: "C3", to: "C4", label: "code checks" },
+        { from: "C1", to: "C2", label: "check" },
+        { from: "C2", to: "C3", label: "check" },
+        { from: "C3", to: "C4", label: "check" },
       ],
       show: [["M"], ["C1", "C2", "C3", "C4"]],
       hide: [[], ["M"]],
@@ -631,7 +632,7 @@ export const ch01: Chapter = {
       title: "Treat prompts as code",
       cols: 4,
       rows: 2,
-      nodeW: 340,
+      nodeW: 300,
       nodeH: 140,
       nodes: [
         { id: "CH", c: 0, r: 0.5, label: "Prompt change\nas a pull request" },
@@ -643,8 +644,8 @@ export const ch01: Chapter = {
       edges: [
         { from: "CH", to: "TS" },
         { from: "TS", to: "CMP" },
-        { from: "CMP", to: "SHIP", label: "better, nothing worse" },
-        { from: "CMP", to: "FIX", label: "worse somewhere" },
+        { from: "CMP", to: "SHIP", label: "better" },
+        { from: "CMP", to: "FIX", label: "worse" },
       ],
       show: [["CH"], ["TS", "CMP"], ["SHIP", "FIX"], []],
       overlay: { step: 3, text: "Every production request records its prompt version", tone: "blue" },

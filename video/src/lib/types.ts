@@ -8,7 +8,7 @@ export type Beat = {
   hold?: number; // seconds of silence after the beat (thinking time)
 };
 
-export type FlowNode = { id: string; label: string; c: number; r: number; tone?: string };
+export type FlowNode = { id: string; label: string; c: number; r: number; tone?: string; w?: number };
 export type FlowEdge = { from: string; to: string; label?: string; bend?: number };
 
 type Base = { beats: Beat[] };
@@ -20,6 +20,7 @@ export type Scene = Base &
     | {
         kind: "story";
         intro: string;
+        aside?: string; // shown at step 1
         cards: { who: string; role: string; text: string; tone: string }[];
         closing?: string;
       }
