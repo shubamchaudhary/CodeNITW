@@ -42,20 +42,24 @@ def align(say: str, marks: list[tuple[float, str]]) -> list[dict]:
     return out
 
 
-async def record(beat, voice, rate, audio_dir: Path, sem):
+async def record(beat, voice, audio_dir: Path, sem):
     path = audio_dir / f"{beat['key']}.mp3"
     marks_path = audio_dir / f"{beat['key']}.json"
     async with sem:
         if not (path.exists() and marks_path.exists()):
             for attempt in range(4):
                 try:
-                    comm = edge_tts.Communicate(beat["say"], voice, rate=rate, boundary="WordBoundary")
+                    comm = edge_tts.Communicate(beat["say"], voice, rate=beat["rate"], pitch=beat["pitch"], boundary="WordBoundary")
                     audio, marks = bytearray(), []
-                    async for ch in comm.stream():
-                        if ch["type"] == "audio":
-                            audio += ch["data"]
-                        elif ch["type"] == "WordBoundary":
-                            marks.append((ch["offset"] / 1e7, ch["text"]))
+
+                    async def take():
+                        async for ch in comm.stream():
+                            if ch["type"] == "audio":
+                                audio.extend(ch["data"])
+                            elif ch["type"] == "WordBoundary":
+                                marks.append((ch["offset"] / 1e7, ch["text"]))
+
+                    await asyncio.wait_for(take(), 60)  # a stalled connection retries instead of hanging
                     path.write_bytes(audio)
                     marks_path.write_text(json.dumps(marks))
                     break
@@ -74,7 +78,7 @@ async def main(ids):
         audio_dir = ROOT / ".cache" / cid
         audio_dir.mkdir(parents=True, exist_ok=True)
         sem = asyncio.Semaphore(CONCURRENCY)
-        results = await asyncio.gather(*(record(b, spec["voice"], spec["rate"], audio_dir, sem) for b in spec["beats"]))
+        results = await asyncio.gather(*(record(b, spec["voice"], audio_dir, sem) for b in spec["beats"]))
         timings = dict(results)
         (ROOT / "data" / cid / "timings.json").write_text(json.dumps(timings, indent=0))
         total = sum(v["dur"] for v in timings.values())

@@ -1,4 +1,4 @@
-import type { Chapter, Scene } from "./types.ts";
+import { prosody, type Beat, type Chapter, type Scene } from "./types.ts";
 import { beatKey } from "./hash.ts";
 
 export const FPS = 30;
@@ -16,6 +16,7 @@ export type BeatT = {
   end: number; // after the gap and any hold
   stepStart: number;
   words: { w: string; f: number }[]; // f: frame relative to the scene
+  term?: Beat["term"];
 };
 
 export type SceneT = {
@@ -29,6 +30,12 @@ export type SceneT = {
 
 const fr = (s: number) => Math.round(s * FPS);
 
+// The recording of a beat is named by voice, pace, pitch and words.
+export const keyFor = (ch: Chapter, b: Beat) => {
+  const p = prosody(b);
+  return beatKey(ch.voice, `${p.rate}${p.pitch}`, b.say);
+};
+
 export const buildTimeline = (ch: Chapter, timings: Record<string, Timing>) => {
   let from = 0;
   let section = "";
@@ -36,7 +43,7 @@ export const buildTimeline = (ch: Chapter, timings: Record<string, Timing>) => {
     if (scene.kind === "section") section = `${scene.num} · ${scene.title}`;
     let cursor = fr(LEAD);
     const beats = scene.beats.map((b) => {
-      const key = beatKey(ch.voice, ch.rate, b.say);
+      const key = keyFor(ch, b);
       const tm = timings[key];
       if (!tm) throw new Error(`No recording for "${b.say.slice(0, 60)}". Run npm run tts.`);
       const audioStart = cursor;
@@ -47,8 +54,8 @@ export const buildTimeline = (ch: Chapter, timings: Record<string, Timing>) => {
         const hit = words.find((w) => w.w.toLowerCase().replace(/[^a-z0-9]/g, "").startsWith(b.at!.toLowerCase()));
         if (hit) stepStart = hit.f;
       }
-      cursor = audioEnd + fr(GAP + (b.hold ?? 0));
-      return { say: b.say, file: `${ch.id}/audio/${key}.mp3`, audioStart, audioEnd, end: cursor, stepStart, words };
+      cursor = audioEnd + fr(GAP + prosody(b).after + (b.hold ?? 0));
+      return { say: b.say, file: `${ch.id}/audio/${key}.mp3`, audioStart, audioEnd, end: cursor, stepStart, words, term: b.term };
     });
     const dur = cursor + fr(TAIL);
     const st: SceneT = { scene, index, from, dur, beats, section };

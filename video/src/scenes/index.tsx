@@ -2,8 +2,9 @@ import type { Clock, SceneT } from "../lib/timeline.ts";
 import { BigScene, BulletsScene, ChatScene, CodeScene, DecisionScene, FlowScene, ImageScene, PauseScene, SectionScene, StoryScene, TitleScene } from "./generic.tsx";
 import { Fill, Marathi, Phone, Sampling, Tokens } from "./custom1.tsx";
 import { Attempt1, Attention, Cache, Director, EncDec, Embed, Layers, Tickets } from "./custom2.tsx";
+import { Brief, BrickCost, Bricks, Cost, Hook, Idea, NoPolicy, Phone2, Quiz, Recap, Spotlight, Tickets2, WheelScene } from "./custom3.tsx";
 
-const CUSTOM = { phone: Phone, fill: Fill, tokens: Tokens, marathi: Marathi, sampling: Sampling, embed: Embed, attention: Attention, layers: Layers, encdec: EncDec, director: Director, cache: Cache, tickets: Tickets, attempt1: Attempt1 } as const;
+const CUSTOM = { phone: Phone, fill: Fill, tokens: Tokens, marathi: Marathi, sampling: Sampling, embed: Embed, attention: Attention, layers: Layers, encdec: EncDec, director: Director, cache: Cache, tickets: Tickets, attempt1: Attempt1, hook: Hook, phone2: Phone2, quiz: Quiz, idea: Idea, bricks: Bricks, brickcost: BrickCost, wheel: WheelScene, nopolicy: NoPolicy, spotlight: Spotlight, cost: Cost, tickets2: Tickets2, brief: Brief, recap: Recap } as const;
 
 export const SceneView = ({ sc, t }: { sc: SceneT; t: Clock }) => {
   const s = sc.scene;

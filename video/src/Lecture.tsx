@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { AbsoluteFill, Audio, Sequence, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Sequence, spring, useCurrentFrame } from "remotion";
 import type { Chapter } from "./lib/types.ts";
-import { buildTimeline, clock, type SceneT, type Timing } from "./lib/timeline.ts";
+import { buildTimeline, clock, FPS, type SceneT, type Timing } from "./lib/timeline.ts";
 import { C, FONT, W } from "./lib/theme.ts";
 import { enter } from "./lib/anim.ts";
 import { AssetBase, useAsset } from "./lib/assets.ts";
@@ -44,7 +44,31 @@ const SceneShell = ({ sc }: { sc: SceneT }) => {
   return (
     <AbsoluteFill style={{ opacity }}>
       <SceneView sc={sc} t={t} />
+      <TermCard sc={sc} frame={frame} />
     </AbsoluteFill>
+  );
+};
+
+// The name for what was just explained, popping in as it is said, so the
+// picture comes first and the word sticks to it.
+const TermCard = ({ sc, frame }: { sc: SceneT; frame: number }) => {
+  const shown = sc.beats
+    .map((b) => {
+      if (!b.term) return null;
+      const first = b.term.word.toLowerCase().replace(/[^a-z]/g, "").slice(0, 5);
+      const hit = b.words.find((w) => w.w.toLowerCase().replace(/[^a-z]/g, "").startsWith(first));
+      return { term: b.term, at: hit ? hit.f : b.stepStart };
+    })
+    .filter((x): x is { term: NonNullable<SceneT["beats"][number]["term"]>; at: number } => !!x && frame >= x.at)
+    .pop();
+  if (!shown) return null;
+  const p = spring({ frame: frame - shown.at, fps: FPS, config: { damping: 12, stiffness: 160 } });
+  return (
+    <div style={{ position: "absolute", right: 60, top: 36, width: 520, transform: `translateX(${(1 - p) * 140}px) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5), background: "rgba(23,30,46,0.94)", border: `3px solid ${C.amber}`, borderRadius: 22, padding: "18px 26px", boxShadow: `0 0 ${40 * Math.max(0, 1 - (frame - shown.at) / 40)}px ${C.amber}` }}>
+      <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 3, color: C.amber }}>NEW TERM</div>
+      <div style={{ fontSize: 50, fontWeight: 900, lineHeight: 1.1 }}>{shown.term.word}</div>
+      <div style={{ fontSize: 26, color: C.muted, marginTop: 4 }}>{shown.term.meaning}</div>
+    </div>
   );
 };
 
