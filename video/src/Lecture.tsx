@@ -1,13 +1,24 @@
-import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { useMemo } from "react";
+import { AbsoluteFill, Audio, Sequence, useCurrentFrame } from "remotion";
 import type { Chapter } from "./lib/types.ts";
 import { buildTimeline, clock, type SceneT, type Timing } from "./lib/timeline.ts";
 import { C, FONT, W } from "./lib/theme.ts";
 import { enter } from "./lib/anim.ts";
+import { AssetBase, useAsset } from "./lib/assets.ts";
 import { SceneView } from "./scenes/index.tsx";
 
-export const Lecture = ({ chapter, timings }: { chapter: Chapter; timings: Record<string, Timing> }) => {
+type Props = { chapter: Chapter; timings: Record<string, Timing>; assetBase?: string };
+
+export const Lecture = ({ chapter, timings, assetBase }: Props) => (
+  <AssetBase.Provider value={assetBase ?? null}>
+    <LectureBody chapter={chapter} timings={timings} />
+  </AssetBase.Provider>
+);
+
+const LectureBody = ({ chapter, timings }: Props) => {
   const frame = useCurrentFrame();
-  const { scenes, total } = buildTimeline(chapter, timings);
+  const asset = useAsset();
+  const { scenes, total } = useMemo(() => buildTimeline(chapter, timings), [chapter, timings]);
   const current = scenes.find((s) => frame >= s.from && frame < s.from + s.dur) ?? scenes[scenes.length - 1];
 
   return (
@@ -17,13 +28,8 @@ export const Lecture = ({ chapter, timings }: { chapter: Chapter; timings: Recor
           <SceneShell sc={sc} />
         </Sequence>
       ))}
-      {scenes.flatMap((sc) =>
-        sc.beats.map((b, i) => (
-          <Sequence key={`${sc.index}-${i}`} from={sc.from + b.audioStart} durationInFrames={b.audioEnd - b.audioStart + 15}>
-            <Audio src={staticFile(b.file)} />
-          </Sequence>
-        )),
-      )}
+      {/* Every line, mixed onto one track at its place (scripts/mix-audio.ts). */}
+      <Audio src={asset(`${chapter.id}/lecture.mp3`)} />
       <Header chapter={chapter} sc={current} frame={frame} />
       <Captions sc={current} frame={frame - current.from} />
       <Progress scenes={scenes} total={total} frame={frame} />

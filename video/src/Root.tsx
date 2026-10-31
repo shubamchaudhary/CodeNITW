@@ -3,7 +3,7 @@ import { CHAPTERS } from "./chapters/index.ts";
 import { buildTimeline, FPS, type Timing } from "./lib/timeline.ts";
 import { H, W } from "./lib/theme.ts";
 import { Lecture } from "./Lecture.tsx";
-import ch01Timings from "../public/ch01/timings.json";
+import ch01Timings from "../data/ch01/timings.json";
 
 const TIMINGS: Record<string, Record<string, Timing>> = { ch01: ch01Timings as Record<string, Timing> };
 

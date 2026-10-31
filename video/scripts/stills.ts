@@ -10,7 +10,7 @@ import { buildTimeline, type Timing } from "../src/lib/timeline.ts";
 
 const [id = "ch01", ...picks] = process.argv.slice(2);
 const chapter = CHAPTERS.find((c) => c.id === id)!;
-const timings = JSON.parse(readFileSync(`public/${id}/timings.json`, "utf8")) as Record<string, Timing>;
+const timings = JSON.parse(readFileSync(`data/${id}/timings.json`, "utf8")) as Record<string, Timing>;
 const { scenes } = buildTimeline(chapter, timings);
 
 const frames: [string, number][] = picks.length
@@ -24,7 +24,7 @@ const frames: [string, number][] = picks.length
     })
   : scenes.map((sc) => [`s${String(sc.index).padStart(2, "0")}-${sc.scene.kind}`, sc.from + sc.dur - 16]);
 
-const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
+const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts"), publicDir: path.resolve("../public/lectures") });
 const browser = await openBrowser("chrome");
 const composition = await selectComposition({ serveUrl, id, puppeteerInstance: browser });
 mkdirSync("out/stills", { recursive: true });

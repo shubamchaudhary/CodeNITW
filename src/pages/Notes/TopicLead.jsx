@@ -1,8 +1,11 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { toast } from "react-toastify";
 import { readingList } from "./stacks";
+import { hasLecture } from "./lectures";
 import { DoneCircle } from "./StackNav";
 import { Button, PriorityTag, Icon, buttonClass } from "../../components/ui";
+
+const LecturePlayer = lazy(() => import("./LecturePlayer"));
 
 // The top of a topic page, laid out like an article: where it sits, its title,
 // why it matters, the two things you do with a topic (finish it, plan it), and
@@ -51,6 +54,11 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
 
       <div className="mt-6 border-t border-line" />
 
+      {hasLecture(stack.key, topic.id) && (
+        <Suspense fallback={<div className="mt-6 aspect-video w-full rounded-lg border border-line bg-surface-subtle animate-pulse" />}>
+          <LecturePlayer id={topic.id} />
+        </Suspense>
+      )}
       {items.length > 0 && <WatchFirst items={items} />}
     </header>
   );

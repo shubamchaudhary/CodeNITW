@@ -56,6 +56,9 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: [{ find: /^rehype-prism-plus$/, replacement: path.resolve("src/rehypePrism.js") }],
+      // The AI Stack lectures import their scenes from video/, which has its own
+      // node_modules locally; one copy of React and Remotion for the whole page.
+      dedupe: ["react", "react-dom", "remotion", "@remotion/gif", "@remotion/google-fonts"],
     },
     // The Python exercises' worker is a module worker (it imports Pyodide's ESM build).
     worker: {

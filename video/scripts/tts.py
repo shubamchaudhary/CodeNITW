@@ -1,7 +1,8 @@
-"""Record every beat listed in public/<id>/beats.json with an edge-tts neural
-voice, and write public/<id>/timings.json: duration plus the start time of
-each displayed word (for captions and word-timed cues). Beats already recorded
-under the same key are reused, so editing one line re-records only that line.
+"""Record every beat listed in data/<id>/beats.json with an edge-tts neural
+voice (clips cached in .cache/<id>/), and write data/<id>/timings.json:
+duration plus the start time of each displayed word (for captions and
+word-timed cues). Beats already recorded under the same key are reused, so
+editing one line re-records only that line.
 
     .venv/Scripts/python scripts/tts.py [chapter-id ...]
 """
@@ -11,7 +12,7 @@ from pathlib import Path
 import edge_tts
 from mutagen.mp3 import MP3
 
-PUBLIC = Path(__file__).resolve().parent.parent / "public"
+ROOT = Path(__file__).resolve().parent.parent
 CONCURRENCY = 4
 
 
@@ -69,13 +70,13 @@ async def record(beat, voice, rate, audio_dir: Path, sem):
 
 async def main(ids):
     for cid in ids:
-        spec = json.loads((PUBLIC / cid / "beats.json").read_text(encoding="utf-8"))
-        audio_dir = PUBLIC / cid / "audio"
+        spec = json.loads((ROOT / "data" / cid / "beats.json").read_text(encoding="utf-8"))
+        audio_dir = ROOT / ".cache" / cid
         audio_dir.mkdir(parents=True, exist_ok=True)
         sem = asyncio.Semaphore(CONCURRENCY)
         results = await asyncio.gather(*(record(b, spec["voice"], spec["rate"], audio_dir, sem) for b in spec["beats"]))
         timings = dict(results)
-        (PUBLIC / cid / "timings.json").write_text(json.dumps(timings, indent=0))
+        (ROOT / "data" / cid / "timings.json").write_text(json.dumps(timings, indent=0))
         total = sum(v["dur"] for v in timings.values())
         print(f"{cid}: {len(timings)} beats recorded, {total / 60:.1f} min of speech")
 
