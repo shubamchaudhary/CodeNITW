@@ -13,6 +13,11 @@ const LOAD = {
       chapter: m.ch01,
       timings: t.default,
     })),
+  "CH-02": () =>
+    Promise.all([import("../../../video/src/chapters/ch02.ts"), import("../../../video/data/ch02/timings.json")]).then(([m, t]) => ({
+      chapter: m.ch02,
+      timings: t.default,
+    })),
 };
 
 // Shown before the first play (the lecture itself opens on a fade from black).
