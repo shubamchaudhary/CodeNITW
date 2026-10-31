@@ -1,0 +1,460 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "9743df55",
+   "say": "Meera asks: can bakery items be refunded after six hours? The answer is sitting in FreshCart's refund policy. Page four. In a table.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94ff68b4",
+   "say": "Last time we saw the problem. The model never read that page. And we can't paste in all twelve thousand documents.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "4db339a4",
+   "say": "So think about how you'd answer it yourself. Would you memorise twelve thousand documents?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "876c0026",
+   "say": "Of course not. You'd open the right policy, find the right paragraph, read it, and answer. An open-book exam.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7e977e25",
+   "say": "That's the whole idea. First, find the few passages that answer the question. Then hand them to the model and say: answer only from these, and show me where. This is called RAG: retrieval augmented generation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce11d0b5",
+   "say": "The model stops being the source of facts. It becomes a reader of the evidence you hand it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "67ce8db5",
+   "say": "Chapter two. Let's build it, one attempt at a time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74066e30",
+   "say": "Attempt zero: just paste the document.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "162e03af",
+   "say": "For one question about one policy, the simplest thing works. Paste the forty-page refund policy into the prompt, add the question, done.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52c6fcea",
+   "say": "And keep this in your pocket: when your knowledge is small and rarely changes, that's genuinely the right design. No search, no search mistakes.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "16deb10d",
+   "say": "But agents ask about everything. Refunds, slots, warehouses, franchises. Twelve thousand documents. It will never fit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "40f17d96",
+   "say": "Attempt one: search the way you search your own files. Find documents that contain the words of the question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da028140",
+   "say": "Ask about error slot expired, and exactly one runbook contains that code. Perfect.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "877ffb49",
+   "say": "Then an agent types: eggs broken on arrival, can they get money back?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ace31916",
+   "say": "The policy says: damaged items reported within twenty-four hours get a full refund. Look closely. They share almost no words.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7fbe44a5",
+   "say": "Broken versus damaged. Money back versus refund. Keyword search finds nothing. And people will always use different words.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "1d506a97",
+   "say": "So how can a computer tell that two sentences mean the same thing?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "56cd6cc3",
+   "say": "Imagine a map where every sentence has a spot, and sentences that mean similar things live next door.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec6c5f2b",
+   "say": "Refund within twenty-four hours, and money back for damaged items, are neighbours. Delivery slot moved lives in a totally different neighbourhood.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cfe3a7e1",
+   "say": "That spot is called an embedding: a list of numbers, the sentence's coordinates in meaning.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c3f47cee",
+   "say": "Now drop the question on the map. Eggs broken, money back. It lands right next to damaged items, even with no words in common.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "12691084",
+   "say": "Grab whatever is nearest. That's vector search.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91a691c1",
+   "say": "The real map has hundreds of directions, not two. But the idea is exactly this.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "ba33994d",
+   "say": "How does a model learn where to put things? This is the part interviewers love.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2c6df8ea",
+   "say": "Feed it millions of pairs that belong together: a question and its answer. A search and the page people clicked.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "53243fa5",
+   "say": "Pull each pair together. Push everything else apart. Over and over.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "de535d37",
+   "say": "That's called contrastive learning. And the best teachers are look-alike wrong answers, like the bakery rule for a dairy question, because they teach fine differences.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a505c52f",
+   "say": "One warning: switch embedding models later, and every document must be embedded again. Different models make different maps.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "9fbf8f70",
+   "say": "Now, a trap.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "f462b002",
+   "say": "Embed the whole forty-page policy as one spot on the map. Where does it land?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7ac07104",
+   "say": "It covers dairy, bakery, frozen food, fees, fraud... so it lands in the blurry middle of everything. A weak match for every question. A sharp match for none.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "de8e687a",
+   "say": "So cut documents into small cards, one idea each. Each card gets its own sharp spot.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2404c9e",
+   "say": "Too big, and it's blurry again. Too small, and you get: the limit is twenty-four hours. The limit on what?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef39d887",
+   "say": "So keep the heading on every card. Refund policy, damaged items, dairy. Now it means something.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f75f65b0",
+   "say": "What size is right? Don't guess. Try three sizes on real agent questions, and keep the winner. That's the answer interviewers want.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "5a2c68b0",
+   "say": "Here's a neat trick to get both: precision and context.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9d906682",
+   "say": "Search the small cards, because small cards are sharp. But when one matches, hand the model its whole section.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05a090e2",
+   "say": "Now the model sees the dairy rule, and the photo-proof rule sitting right next to it. This is called parent-child retrieval.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de6d3dcc",
+   "say": "Let's put it all together.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "574a3b5f",
+   "say": "There are two machines, running at different times.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2563893e",
+   "say": "Offline, whenever a document changes: read it, cut it into cards, embed each card, and store them in a vector index.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c6c444b",
+   "say": "Online, for every question: embed the question, and grab the twenty nearest cards.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0b9f65e",
+   "say": "Then a slower, sharper model rereads those twenty and keeps the best five. That's a reranker.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "199da810",
+   "say": "Build the prompt: rules first, the five cards with their labels, the question last.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a45251b",
+   "say": "And the answer cites its sources, so an agent can click and check.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6d7209c2",
+   "say": "One bug catches almost everyone. The refund policy gets updated to version four.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9647aa18",
+   "say": "The team adds the new cards... and forgets to delete the old ones.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a820ef02",
+   "say": "Now versions three and four are both searchable, and answers quietly mix them.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2a667ea6",
+   "say": "Worse: a deleted document stays searchable. That's not a stale answer. That's a data leak. So every update deletes the old version, in the same step.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "c21a335e",
+   "say": "Last thing. Interviewers rarely ask what RAG is. They ask: why RAG, and not something else?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0f2e84da",
+   "say": "Missing facts that are large and changing? RAG. Small and fixed? Just put them in the prompt.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "246e74a4",
+   "say": "Live data, like stock levels? Ask the live system. And: how many refunds did we issue last week?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a26869ba",
+   "say": "Search can't count. That's a database query, not RAG.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2a28858",
+   "say": "RAG: find the passages first, then answer only from them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "62055030",
+   "say": "Keyword search: perfect for exact codes, blind to different words.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2088da9f",
+   "say": "Embeddings put meaning on a map, so similar ideas sit close together.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21d41e4c",
+   "say": "Chunks: one idea per card, with its heading attached.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a54516ef",
+   "say": "And a reranker picks the best five from the twenty nearest.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3d45bffe",
+   "say": "Ask FreshCart goes live. Agents love it. Then, within two weeks, three complaints arrive.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a561fb8",
+   "say": "One: it's slow. Every question is compared against two million cards.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd3f3c13",
+   "say": "Two: the Bengaluru North franchise gets no results at all for its own documents.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7425335d",
+   "say": "Three: error codes fail again. The exact-match power of keyword search got lost.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc3c3dbc",
+   "say": "How would you search two million cards without checking every one? And how do you combine a keyword ranking with a meaning ranking?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "314ee66c",
+   "say": "That's chapter three. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

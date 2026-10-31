@@ -8,19 +8,19 @@ import { ease, enter, lerp, pop, rise, softmax } from "../lib/anim.ts";
 import { Abs, card, Chip } from "./ui.tsx";
 
 type CP = { t: Clock; props?: Record<string, unknown> };
-const at = (t: Clock, i: number) => (i <= 0 ? 4 : (t.beats[i]?.stepStart ?? Infinity));
+export const at = (t: Clock, i: number) => (i <= 0 ? 4 : (t.beats[i]?.stepStart ?? Infinity));
 // 1 while the scene is on step i, fading in and out around it.
-const during = (t: Clock, i: number, last = false) => {
+export const during = (t: Clock, i: number, last = false) => {
   const a = i === 0 ? 1 : enter(t.frame, at(t, i), 14);
   return Math.max(0, a - (last ? 0 : enter(t.frame, at(t, i + 1), 12)));
 };
-const from = (t: Clock, i: number) => (i === 0 ? 1 : enter(t.frame, at(t, i), 14));
-const rnd = (n: number) => {
+export const from = (t: Clock, i: number) => (i === 0 ? 1 : enter(t.frame, at(t, i), 14));
+export const rnd = (n: number) => {
   const x = Math.sin(n * 12.9898) * 43758.5453;
   return x - Math.floor(x);
 };
-const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
-const Big = ({ children, color = C.text, size = 72, style }: { children: ReactNode; color?: string; size?: number; style?: CSSProperties }) => (
+export const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+export const Big = ({ children, color = C.text, size = 72, style }: { children: ReactNode; color?: string; size?: number; style?: CSSProperties }) => (
   <div style={{ fontSize: size, fontWeight: 800, color, letterSpacing: -1, lineHeight: 1.15, ...style }}>{children}</div>
 );
 
@@ -253,7 +253,7 @@ export const Idea = ({ t }: CP) => {
 
 // ------------------------------------------------------------------ Lego bricks
 
-const Brick = ({ label, color, w, h = 92, studs = 2, font }: { label: ReactNode; color: string; w: number; h?: number; studs?: number; font?: string }) => (
+export const Brick = ({ label, color, w, h = 92, studs = 2, font }: { label: ReactNode; color: string; w: number; h?: number; studs?: number; font?: string }) => (
   <div style={{ position: "relative", width: w, height: h }}>
     <div style={{ position: "absolute", top: -14, left: 0, right: 0, display: "flex", justifyContent: "space-evenly" }}>
       {Array.from({ length: studs }, (_, i) => (
@@ -564,7 +564,7 @@ export const NoPolicy = ({ t }: CP) => {
         <Abs x={1150} y={450} w={200} style={{ textAlign: "center", fontSize: 90, color: C.red, fontWeight: 900, opacity: enter(f, 60) }}>✗</Abs>
       </div>
       {t.step >= 1 && (
-        <Abs x={500} y={680} w={920} style={{ ...card(t.step >= 2 ? C.red : C.line), padding: "22px 30px", fontSize: 36, lineHeight: 1.35, opacity: 1 - from(t, 3), ...rise(f, at(t, 1)) }}>
+        <Abs x={500} y={680} w={920} style={{ ...card(t.step >= 2 ? C.red : C.line), padding: "22px 30px", fontSize: 36, lineHeight: 1.35, ...rise(f, at(t, 1)), opacity: (1 - from(t, 3)) * enter(f, at(t, 1)) }}>
           <div style={{ fontSize: 24, color: C.muted, fontWeight: 800 }}>MOST LIKELY-SOUNDING ANSWER</div>
           {typed}
         </Abs>
@@ -867,9 +867,9 @@ export const Brief = ({ t }: CP) => {
 
 // ------------------------------------------------------------------ recap
 
-export const Recap = ({ t }: CP) => {
+export const Recap = ({ t, props }: CP) => {
   const f = t.frame;
-  const items = [
+  const items = (props?.items as string[][] | undefined) ?? [
     ["🧠", "LLM", "predicts the next token"],
     ["🎡", "Sampling + temperature", "a weighted spin, shaped by a dial"],
     ["🤥", "Hallucination", "likely, not checked"],
