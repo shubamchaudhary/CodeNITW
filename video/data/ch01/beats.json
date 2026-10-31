@@ -1,682 +1,572 @@
 {
  "voice": "en-US-AndrewMultilingualNeural",
- "rate": "+0%",
  "beats": [
   {
-   "key": "e7708301",
-   "say": "Chapter 1. How an LLM works: from next-word prediction to good prompts."
+   "key": "2b82cd3b",
+   "say": "Here's a strange thing.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
   },
   {
-   "key": "35046991",
-   "say": "It is your first week at FreshCart, a grocery delivery company in Pune and Bengaluru. Nobody expects you to build anything yet."
+   "key": "bd8d6f41",
+   "say": "You ask a chatbot about your company's refund policy. It answers instantly. Clear. Confident. Polite.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "2b7baf39",
-   "say": "Your manager says: let people try a plain chat model for a week, and write down every question they ask about it. By Friday you have three questions that come up again and again."
+   "key": "b42c4dea",
+   "say": "And the rule it just gave you... does not exist.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "9794a51d",
-   "say": "Meera, who leads support: I asked it the same thing twice and got two different answers. Which one is right?"
+   "key": "76b08879",
+   "say": "How can a machine make something up, with a straight face? By the end of this video, you'll know exactly why. And you'll know the one thing you control to keep it in line.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "cbc92102",
-   "say": "Someone from finance: why does a question in Marathi cost more than the same question in English?"
+   "key": "4b73b7b5",
+   "say": "Chapter one. How a large language model actually works.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "432a3f62",
-   "say": "And everyone, after one bad afternoon: it told me a refund rule with total confidence, and the rule does not exist. How can it just make things up?"
+   "key": "b0951876",
+   "say": "Let's start with something you use every day.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "de7e876c",
-   "say": "Each of these is a classic interview question in disguise. By the end of this chapter you will be able to answer all three, look inside the model to see why, and use the one tool you have to steer it: the prompt."
+   "key": "1e2b2a58",
+   "say": "Type: see you, on your phone. The keyboard suggests: tomorrow.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "2b2fbf0e",
-   "say": "Here is the path. First, what a model is: something that predicts the next piece of text."
+   "key": "cbbbe4d1",
+   "say": "It doesn't understand you. It has just seen, see you tomorrow, so many times that tomorrow is the most likely next word.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "f926e647",
-   "say": "Then why answers vary: sampling and temperature."
+   "key": "b7ececa3",
+   "say": "Now imagine that keyboard has read... almost the entire internet.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
   },
   {
-   "key": "4ae78482",
-   "say": "Then why it makes things up, and how it was trained."
+   "key": "bb88e159",
+   "say": "That's it. That's a large language model. A machine that predicts the next piece of text.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "ccd65545",
-   "say": "Then inside the model: tokens, attention and layers."
+   "key": "b0d9ed81",
+   "say": "So how does it get so good at guessing? Practice. Trillions of tiny quizzes.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "82409ef4",
-   "say": "Then steering it, with prompts that actually work."
+   "key": "096dd036",
+   "say": "Hide the next word. Let the model guess. Wrong? Nudge its internal dials, just a little.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "b43badf2",
-   "say": "And finally, the wall you will hit: it does not know FreshCart."
+   "key": "9d6b72be",
+   "say": "Those dials are called parameters. Big models have billions of them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "5ec7d937",
-   "say": "Part 1. Autocomplete, scaled up enormously."
+   "key": "099a13f1",
+   "say": "Repeat that trillions of times, and something surprising happens. To guess Paris, it had to learn a fact. To guess the next line of a maths problem, it had to learn something that looks like reasoning.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "335bc498",
-   "say": "Your phone's keyboard suggests the next word as you type. Type: see you, and it offers: tomorrow. It learned that from millions of messages."
+   "key": "653b002e",
+   "say": "Nobody taught it facts. Facts were just useful for guessing the next word.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "b8d59c96",
-   "say": "A large language model, an LLM, is exactly that idea, taken to an extreme. It is a program that reads some text and predicts what text is likely to come next. That is the whole job."
+   "key": "468f93fa",
+   "say": "But here's the catch. Remember this one sentence, because it explains almost every failure you'll ever see.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "6525e808",
-   "say": "What makes it large? It was trained on trillions of words: books, websites, code, forums."
+   "key": "bbc45e11",
+   "say": "It writes what is likely. Not what is checked.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "ed32332a",
-   "say": "And it contains billions of adjustable numbers, called parameters, that were tuned during training until its predictions became very good."
+   "key": "38158289",
+   "say": "Usually, likely and true are the same thing. When they're not, you get that confident, made-up refund rule.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "cda5494c",
-   "say": "How does that training work? Take any sentence from the internet. Every position in it becomes a small quiz: here is the text so far, what comes next?"
+   "key": "91fac9f6",
+   "say": "One more detail. The model doesn't actually read words. It reads chunks, a bit like Lego bricks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "b2c27bfb",
-   "say": "The model guesses, gets corrected, and its parameters shift very slightly. Repeat that trillions of times, and the guesses become very good."
+   "key": "3bd28ade",
+   "say": "Refund might be two bricks: ref, and und. Milk is just one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "d6f934b6",
-   "say": "Here is the surprising part. To predict the next word well across that much text, the model had to absorb grammar, facts about the world, writing styles, and even patterns of step-by-step reasoning."
+   "key": "f6ad3a45",
+   "say": "These bricks are called tokens. And each one is really just a number.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "b464933d",
-   "say": "If the text so far is: the capital of France is, then predicting Paris requires knowing a fact."
+   "key": "9a69d08a",
+   "say": "Handy rule: a hundred tokens is about seventy-five English words.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
   },
   {
-   "key": "b9c9ff86",
-   "say": "If the text is a maths problem followed by: step 1, then predicting a good next line requires something that looks like reasoning."
+   "key": "beebefdd",
+   "say": "This solves a puzzle from finance: why does the same question cost more in Marathi?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "3569d98d",
-   "say": "So a machine whose only job is: guess the next word, ends up able to answer questions, write code and summarise documents."
+   "key": "a8145236",
+   "say": "The box of bricks was built mostly from English. English words fit in a few big bricks. Marathi needs lots of small ones.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "d522d67e",
-   "say": "Keep one consequence in your head for the rest of this stack, because it explains most of what goes wrong."
+   "key": "a08cbc85",
+   "say": "And you pay per brick. Same question. Bigger bill.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "bfdfc704",
-   "say": "The model produces text that is likely, not text that is checked."
+   "key": "44ec8e1c",
+   "say": "Now, a mystery.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
   },
   {
-   "key": "9e1b1b8c",
-   "say": "Most of the time, likely and correct are the same thing. When they are not, you get confident nonsense."
+   "key": "81a82e6d",
+   "say": "Meera runs support. She asked the chatbot the same question twice, and got two different answers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "70d5c6b1",
-   "say": "Part 2. Tokens: the Lego pieces of text."
+   "key": "7c0d5e0e",
+   "say": "Here's why. When the model picks the next word, it doesn't have one answer. It has a list of options, each with a chance.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "cf772d6b",
-   "say": "Models do not read letters, and they do not read whole words either. They read tokens: pieces of text from a fixed vocabulary, a bit like a box of Lego bricks."
+   "key": "fa1cc64f",
+   "say": "Within: sixty-two percent. Only: twenty-one percent. And a long tail of others.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "f6a1b43b",
-   "say": "Before the model sees your text, a tokeniser breaks it into those bricks."
+   "key": "434adc08",
+   "say": "And then... it spins the wheel.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
   },
   {
-   "key": "69782284",
-   "say": "Each brick is an id number from the vocabulary. That list of numbers is what the model actually receives."
+   "key": "5a11648b",
+   "say": "That spin is called sampling. One spin, for every single word.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "8fd968d3",
-   "say": "Common English words are often a single brick. Rarer words get split into several bricks. Every tokeniser splits a little differently."
+   "key": "46d3183b",
+   "say": "So if an early spin lands on only, instead of within, the whole answer heads somewhere else.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "210edad9",
-   "say": "Codes like error slot expired, long numbers, and many non-English scripts get split into many small bricks."
+   "key": "6ed13392",
+   "say": "Same question. Different spin. Different answer. Mystery solved.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "192aeccb",
-   "say": "A rule of thumb worth remembering: 100 tokens is about 75 English words."
+   "key": "6cf15265",
+   "say": "And you control the wheel, with a dial called temperature.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "e02c6adc",
-   "say": "Now finance's question answers itself. The tokeniser's vocabulary was built mostly from English text, so English words map to few bricks."
+   "key": "c761a49a",
+   "say": "Turn it down, and the favourite slice grows. Answers become predictable.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "b5c519a5",
-   "say": "Marathi, written in the Devanagari script, has fewer ready-made bricks in the box, so the same sentence needs more of them."
+   "key": "70a26a94",
+   "say": "Turn it up, and the slices even out. Answers get creative. Sometimes, a little weird.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "6a8f75df",
-   "say": "Providers charge per token, so the same question costs more."
+   "key": "7aad5b22",
+   "say": "At zero, there's no spin at all. It always takes the favourite.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "d9ab4861",
-   "say": "Everything practical in this field is counted in tokens. The price of a call: input tokens and output tokens are priced separately, and output is usually more expensive."
+   "key": "e855c6c9",
+   "say": "There's also a pair of scissors called top p. It cuts away the tiny, absurd slices before the spin.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "08d92a76",
-   "say": "How much text one call can hold: the context window, which you will meet in part 5."
+   "key": "d04c960c",
+   "say": "So: refund rules? Low temperature. Ten catchy email subject lines? Turn it up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "2a3e5455",
-   "say": "How fast you are allowed to send requests: rate limits."
+   "key": "76d82052",
+   "say": "One thing interviewers love: even at zero, a hosted model isn't perfectly repeatable. Tiny rounding differences on shared chips can flip a near tie. So pin the model version, and expect small variations.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
   },
   {
-   "key": "da9ea064",
-   "say": "And later in this stack, how documents get cut into pieces for search. One more catch: different providers use different tokenisers, so the same text has a different count, and a different price, on different models."
+   "key": "57605940",
+   "say": "Back to that invented refund rule.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "3db054de",
-   "say": "Part 3. Why the same question gets two answers."
+   "key": "5cee3567",
+   "say": "The model learned from the public internet. FreshCart's refund policy? Private. It was never in there.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "d546089f",
-   "say": "Meera asks: can bakery items be refunded after 6 hours?"
+   "key": "2a6b54b3",
+   "say": "So when you ask about it, the model does what it always does: it writes the most likely-sounding answer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "8ce892e2",
-   "say": "She asks again, and gets a differently worded answer. To see why, slow the model down and watch it write."
+   "key": "2fec2453",
+   "say": "A generic, believable refund rule. Fluent. Confident. Wrong. This is called a hallucination.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "6e090e47",
-   "say": "The model looks at the text so far, and gives every token in its vocabulary a score. These raw scores are called logits."
+   "key": "56fe2a11",
+   "say": "Can't we just train it on our policies? Usually, no. Training teaches habits and style well, but facts learned that way are fuzzy, and you'd retrain every time a policy changes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "0bbf95a4",
-   "say": "A small function called softmax turns the scores into probabilities that add up to 1. Within: 62 percent. Only: 21 percent. Up: 9 percent. And tiny amounts for everything else."
+   "key": "9e4366d4",
+   "say": "Quick detour. How does a next-word predictor become a helpful chatbot? First, pretraining: read the internet, predict next words. Ask that raw model a question, and it might just continue with more questions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "d453613e",
-   "say": "The model picks one token by rolling a weighted die. Within comes up 62 times in 100, only comes up 21 times. This step is called sampling."
+   "key": "b77c5aa6",
+   "say": "Then instruction tuning: thousands of examples of good answers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "57c66ed9",
-   "say": "The chosen token is glued onto the text, and the whole thing runs again for the next token. An answer of 100 tokens is 100 rolls."
+   "key": "5208f1c4",
+   "say": "Then preference training: people pick the better of two answers. That's where the polite, helpful tone comes from.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "b896e32f",
-   "say": "If one early roll lands on only instead of within, every later token is predicted from a different start, so the whole answer can come out differently. That is Meera's two answers."
+   "key": "b96f5dbb",
+   "say": "And newer reasoning models get rewarded for getting maths and code right, so they learn to think step by step before answering.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "a8df2e7f",
-   "say": "Here is that loop in motion. Each new token is appended to the input, and the model runs again to produce the next one. One token at a time, until the answer is finished."
+   "key": "1a249692",
+   "say": "Quick question for you. Why would a longer prompt cost more, even when the answer is short? Think about it for a second.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "5f5d3699",
-   "say": "You control the die with two settings."
+   "key": "ebb3f002",
+   "say": "To answer that, let's peek inside.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "54327cc0",
-   "say": "Temperature changes how lopsided the die is. Low temperature makes the favourite even more likely, so answers become predictable."
+   "key": "9818def6",
+   "say": "First, every token becomes a list of numbers: its spot on a giant map of meaning. Words used in similar ways land close together.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "5c54a42f",
-   "say": "High temperature evens the odds, so unusual tokens get picked more often, and answers become varied, or creative."
+   "key": "f6c2b281",
+   "say": "Now the clever part. Take this sentence: The milk was spoiled, so the customer returned it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "ab22c06d",
-   "say": "Temperature 0 means: always pick the favourite. No roll at all."
+   "key": "bbfcf482",
+   "say": "What does it mean? You know instantly: the milk. The model works it out by letting it look back at every earlier word, and shine a light on the ones that matter.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "8564a2a2",
-   "say": "Top-p, and its cousin top-k, remove the long tail of unlikely tokens before the roll."
+   "key": "01ba2858",
+   "say": "That's called attention.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "26d191ac",
-   "say": "With top-p 0.9, the model only rolls among the smallest set of tokens whose probabilities add up to 90 percent, so it can never pick something absurd."
+   "key": "288f8ad1",
+   "say": "Stack dozens of these layers, each one refining the meaning, and out the other end comes... the spinning wheel for the next word.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "e4de5d1d",
-   "say": "For refund rules you want boring and consistent: low temperature. For writing ten different subject lines for a marketing email, you want variety: a higher temperature."
+   "key": "6ed8912f",
+   "say": "Now the cost question answers itself. Before writing a single word, every token of your prompt goes through every layer. And attention compares each token with all the ones before it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "aa5c9d8e",
-   "say": "A correction that interviewers love: set temperature to 0 and the output is reproducible. That is wrong for hosted models."
+   "key": "809923d5",
+   "say": "Double the prompt, and the work more than doubles.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "585f0a08",
-   "say": "Models run on GPUs, chips built for the enormous number of multiplications involved. Providers process many people's requests together on the same GPUs, and tiny rounding differences depend on how each batch of requests happens to be made up."
+   "key": "0a386d53",
+   "say": "It's also why you can't paste in all twelve thousand company documents. They won't fit in the model's context window: the most text it can handle at once.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "e30a2388",
-   "say": "When two tokens are almost tied, that tiny difference can flip the choice."
+   "key": "3887af38",
+   "say": "And even when it fits, things buried in the middle of a huge prompt get overlooked.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
   },
   {
-   "key": "bf750688",
-   "say": "Providers also update models without telling you. So design for some variation, and pin the exact model version you use."
+   "key": "d6f3c028",
+   "say": "So what can you actually control?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "1a268fa8",
-   "say": "Part 4. Why it makes things up."
+   "key": "6e481e3e",
+   "say": "You can't retrain it. You can't paste in everything. What's left is the prompt: the instructions you send with every request.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "55214aef",
-   "say": "Back to the invented refund rule. FreshCart's policies were never in the model's training data."
+   "key": "0135469d",
+   "say": "First real task: three thousand support tickets a day, sorted by hand into refund, late delivery, missing item, and other.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "147e4688",
-   "say": "Asked about them, the model does what it always does: it writes the most likely-sounding continuation, which is a plausible, generic refund rule."
+   "key": "016dbffa",
+   "say": "Attempt one: a single line of instructions. Eighty-one percent correct. Not bad.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "40065232",
-   "say": "Fluent, confident, and wrong. This is called a hallucination."
+   "key": "a3c9a058",
+   "say": "Then people start adding patches. IMPORTANT! Refunds are not complaints! And every patch breaks something else.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "c9c6362b",
-   "say": "It helps to know how a chat model is made, because each stage leaves fingerprints on its behaviour."
+   "key": "b9ad0e46",
+   "say": "Here's what works. Brief it like a smart new colleague on day one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "46f360f5",
-   "say": "Pretraining is the predict-the-next-token stage, on a huge pile of text. It produces a base model. Ask a base model a question and it may simply continue with three more questions, because that is what text on the internet often looks like. Its knowledge stops at a knowledge cutoff date."
+   "key": "3c16d732",
+   "say": "Who it is, and what the goal is.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "d5a0a644",
-   "say": "Instruction tuning shows it thousands of examples of a request and a good answer, so it learns to respond like an assistant."
+   "key": "de7dc70d",
+   "say": "Clear definitions, especially for the confusing cases.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "a88068f0",
-   "say": "Preference training shows it pairs of answers where people picked the better one. This is where its helpful tone, and its refusals, come from."
+   "key": "e1c8defa",
+   "say": "A few examples, picked from the hard ones. That's called few-shot prompting.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "e697cb72",
-   "say": "Reasoning models get one more stage: reinforcement learning, which is training by trial and reward. The model attempts problems with checkable answers, like maths and code, and is rewarded when the final answer is right."
+   "key": "0baceaa1",
+   "say": "And exactly what shape the answer should take.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "5b3b5c4a",
-   "say": "It learns to write out a long hidden chain of thought before answering. Much better at multi-step problems. Slower and more expensive, because all that thinking is generated, and billed, token by token."
+   "key": "5e5fd59c",
+   "say": "Same model. Ninety-three percent.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
   },
   {
-   "key": "487bc7ec",
-   "say": "Now notice what is missing from every stage: FreshCart. Nothing in this process ever showed the model your refund policy."
+   "key": "354f45fa",
+   "say": "No magic words. Clear instructions, good examples, and testing every change against those labelled tickets. Prompting, done well, is engineering.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "84ef1d22",
-   "say": "Each cause of hallucination has its own fix. Missing knowledge, meaning private, recent or rare facts: look the facts up and give them to the model together with the question. That is the subject of the next three chapters."
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "da5a1cb4",
-   "say": "Vague questions: clearer instructions, or let the model ask a clarifying question back."
+   "key": "00f74763",
+   "say": "An LLM predicts the next token.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "36273756",
-   "say": "Pressure to always answer: give it an exit, like: if you are not sure, say so. And check its answer against the source afterwards."
+   "key": "f57b420e",
+   "say": "It picks by spinning a weighted wheel, and temperature shapes that wheel.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "767bc970",
-   "say": "Decision point. A manager suggests training the model on FreshCart's policies, so it just knows them."
+   "key": "5e339bf5",
+   "say": "It writes what's likely, not what's checked, so it hallucinates about things it never saw.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "140096ad",
-   "say": "That is fine-tuning: continuing the model's training on your own examples. It sounds right, and it is usually the wrong tool for facts."
+   "key": "d77db128",
+   "say": "Attention lets each word look back at the words that matter.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "8f34baf1",
-   "say": "Fine-tuning reliably teaches behaviour: a format, a tone, a narrow task. And it unreliably teaches facts: the model cannot say where it learned something, may blend it with older knowledge, and must be retrained whenever a policy changes."
+   "key": "2372e039",
+   "say": "And the prompt is your steering wheel.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
-   "key": "e6192050",
-   "say": "Chapter 12 shows where fine-tuning does pay off."
+   "key": "a812c76c",
+   "say": "But Meera wants the real thing now: answers from FreshCart's actual policies.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
   },
   {
-   "key": "5610d0f2",
-   "say": "Pause and think. Finance's director asks two more questions. Why does a longer prompt cost more, even for the same short answer? And why can't we simply paste all 12,000 of our documents into the prompt?"
+   "key": "ab733557",
+   "say": "Only two or three pages, out of twelve thousand documents, matter for each question. If you could find those pages first, in a split second... what would you do with them?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "fb363212",
-   "say": "Before going on, guess: what inside the model would make long inputs expensive?"
-  },
-  {
-   "key": "478b774b",
-   "say": "Part 5. Inside the model: vectors, attention and layers. You do not need the maths for an AI engineer interview. You do need this picture."
-  },
-  {
-   "key": "00184506",
-   "say": "Step one: every token becomes a list of numbers. The model keeps a big lookup table. Each token id is replaced by a vector, which is simply a list of numbers, for example 4,096 of them, learned during training."
-  },
-  {
-   "key": "009e3eec",
-   "say": "Think of it as the token's coordinates in a space of meaning. Tokens used in similar ways end up with similar numbers, so they sit close together."
-  },
-  {
-   "key": "eb82263d",
-   "say": "Position information is added too, because dog bites man, and man bites dog, contain the same tokens in a different order."
-  },
-  {
-   "key": "2103f84f",
-   "say": "Step two: tokens look at each other. Take the sentence: the milk was spoiled, so the customer returned it."
-  },
-  {
-   "key": "5d272385",
-   "say": "To understand it, the model must look back and realise that it means the milk. The mechanism that does this is called attention."
-  },
-  {
-   "key": "45a498f8",
-   "say": "Here is a real attention pattern from a trained model. While processing the word it, this attention head looks mostly at: the animal. Exactly the link we just drew."
-  },
-  {
-   "key": "c0062d33",
-   "say": "In plain words: each token asks a question, and every earlier token offers an answer. In this picture, the token it holds up its question like a sticky note."
-  },
-  {
-   "key": "00a70451",
-   "say": "That note is the query: what am I looking for?"
-  },
-  {
-   "key": "e183e96a",
-   "say": "Every earlier token is a folder. On its tab is a key: what do I contain? And inside is a value: what do I pass on if you pick me?"
-  },
-  {
-   "key": "865df0a4",
-   "say": "The query of it is compared with the key of every earlier token. Good matches get high weight. Here, robot gets 50 percent, and a gets 30 percent."
-  },
-  {
-   "key": "900c43b2",
-   "say": "The new vector for it is a weighted blend of the values: each value multiplied by its score, then added up."
-  },
-  {
-   "key": "3ba6a286",
-   "say": "Here that is mostly robot. In our FreshCart sentence, it would be mostly milk, and a bit of spoiled."
-  },
-  {
-   "key": "c187587a",
-   "say": "Multi-head attention runs several of these in parallel, each free to notice a different kind of relationship: who did what, which word refers to which, grammar. Here, two heads look at different words for the same token."
-  },
-  {
-   "key": "ef9799cf",
-   "say": "In a model that writes text, a token may only look at tokens before it, never after. Because while writing, the future does not exist yet."
-  },
-  {
-   "key": "13155f59",
-   "say": "Step three: repeat in layers. A layer is one round of attention, where tokens share information, followed by a small feed-forward network that transforms each token's vector on its own."
-  },
-  {
-   "key": "5212c131",
-   "say": "A large model stacks dozens of layers, like an assembly line where each station refines the meaning a little more. Much of what the model knows as facts is stored in the feed-forward parts."
-  },
-  {
-   "key": "52c3294e",
-   "say": "At the end, the vector of the last token is turned into scores for the next token, and you are back at the weighted die from part 3."
-  },
-  {
-   "key": "fd20e67a",
-   "say": "Here is the whole design in one picture."
-  },
-  {
-   "key": "7f34ddbb",
-   "say": "At the bottom, token and position embeddings."
-  },
-  {
-   "key": "7dc18fc5",
-   "say": "In the middle, a stack of transformer blocks: attention, plus feed-forward, repeated."
-  },
-  {
-   "key": "40d10cac",
-   "say": "And at the top, the final step that produces next-token probabilities."
-  },
-  {
-   "key": "300a4a03",
-   "say": "This whole design is called a transformer. Every major chat model today is a transformer that only looks backwards: a decoder-only model."
-  },
-  {
-   "key": "b4c34fc6",
-   "say": "Embedding models and rerankers, which you will meet in chapters 2 and 3, are usually the other kind, an encoder, which looks both ways across a fixed piece of text, because it only needs to understand it, not continue it."
-  },
-  {
-   "key": "84bde4a3",
-   "say": "Now, the director's questions."
-  },
-  {
-   "key": "eb8f42af",
-   "say": "Why does a longer prompt cost more? Before writing anything, the model must run every prompt token through every layer. This first pass is called prefill."
-  },
-  {
-   "key": "b33d1d10",
-   "say": "And attention compares each token with every earlier token, so doubling the prompt more than doubles that work. You pay per input token, and you wait longer for the first word."
-  },
-  {
-   "key": "878d959f",
-   "say": "Why not paste in all 12,000 documents? First, they would be hundreds of millions of tokens, far beyond any model's context window: the maximum number of tokens one call can handle, prompt plus answer. Today's windows range from tens of thousands to over a million tokens."
-  },
-  {
-   "key": "2e7c53f5",
-   "say": "Second, even inside the window, attention spread over a huge input gets diluted. Models use information buried in the middle of a long input noticeably less reliably."
-  },
-  {
-   "key": "e9a14ae3",
-   "say": "Third, while writing, the model keeps the attention keys and values of every earlier token in GPU memory, so it does not recompute them for each new token. This is called the KV cache. That memory grows with the length of the input, and limits how many users one GPU can serve."
-  },
-  {
-   "key": "574050f3",
-   "say": "One more trick worth knowing now: prompt caching. If many requests start with exactly the same text, like the same long instructions, the provider can keep the processed start and reuse it. Requests become cheaper and faster."
-  },
-  {
-   "key": "9a24c704",
-   "say": "That is why well-built assistants put their fixed instructions at the very start of every prompt, and the changing parts at the end."
-  },
-  {
-   "key": "726be1f5",
-   "say": "A correction: the model reads the whole document like a person. That is misleading."
-  },
-  {
-   "key": "fb8f47eb",
-   "say": "Its reliability drops as the input grows, so what you put in the context, and where, matters a great deal."
-  },
-  {
-   "key": "f0354ce6",
-   "say": "Pause and think. You cannot retrain the model, and you cannot paste in everything. What is left that you control on every single call?"
-  },
-  {
-   "key": "d4923140",
-   "say": "Part 6. Steering the model: prompts that work."
-  },
-  {
-   "key": "c39a6ec6",
-   "say": "What you control is the prompt: the text instructions you send with each request."
-  },
-  {
-   "key": "3911bfb1",
-   "say": "FreshCart gives you a small first task to practise on. About 3,000 customer tickets arrive every day, and two people spend their mornings sorting them by hand into refund, late delivery, missing item, and other. Can the model do the sorting?"
-  },
-  {
-   "key": "eddbd114",
-   "say": "Attempt one. You write: classify this ticket as refund, late delivery, missing item or other."
-  },
-  {
-   "key": "95f561d9",
-   "say": "Meera's team has hand-labelled 200 tickets as a test set. Your prompt gets 81 percent right."
-  },
-  {
-   "key": "4366b2f0",
-   "say": "Then the patching starts. Someone adds: IMPORTANT, refunds are not complaints, with three exclamation marks. Another adds a rule for late deliveries. And every fix breaks something else."
-  },
-  {
-   "key": "194479ca",
-   "say": "Prompting looks like writing. Done well, it is engineering."
-  },
-  {
-   "key": "f300a26e",
-   "say": "A structure that works. Think of briefing a smart new colleague on their first day: who they are helping, what the categories mean, a few examples of tricky cases, and exactly what form you want the answer in."
-  },
-  {
-   "key": "9eee66c5",
-   "say": "Role and goal, in a sentence or two."
-  },
-  {
-   "key": "f3efc3d4",
-   "say": "Definitions and rules, including how to resolve the cases people disagree on. If money back is requested, it is refund, even if the order was also late."
-  },
-  {
-   "key": "1804b712",
-   "say": "A few examples, chosen from the hard cases."
-  },
-  {
-   "key": "d1e93fed",
-   "say": "The output format: a precise description of the fields and allowed values, called a schema. Most providers offer structured output, a feature that forces the reply to follow your schema, so your code never has to parse chatty text."
-  },
-  {
-   "key": "2d7f4231",
-   "say": "And the input, fenced off with tags, so that words inside a ticket, like: ignore your instructions, are treated as data, not instructions."
-  },
-  {
-   "key": "e1b436a4",
-   "say": "Clear rules beat emphasis. IMPORTANT, in capital letters, does nothing that a precise definition does not do better."
-  },
-  {
-   "key": "490e5603",
-   "say": "Examples teach faster than rules. Giving no examples is called zero-shot prompting. Adding a handful of input-output examples is few-shot prompting, and the model copies the pattern. So choose examples on purpose."
-  },
-  {
-   "key": "6073acdd",
-   "say": "Show the hard boundaries, not the easy cases."
-  },
-  {
-   "key": "28beb0ac",
-   "say": "Balance the labels. If seven of eight examples are refunds, the model leans towards refund."
-  },
-  {
-   "key": "4b01b2d8",
-   "say": "Vary the wording, or the model copies surface features."
-  },
-  {
-   "key": "feb7dc25",
-   "say": "Better still, keep a pool of a few hundred labelled tickets, and for each new ticket, use the most similar ones as examples. This is called dynamic few-shot. Finding the most similar ones is exactly the search problem the next chapter solves."
-  },
-  {
-   "key": "6fc88121",
-   "say": "Letting the model think. Some tickets need steps: ordered Monday, slot moved twice, arrived Thursday spoiled. Which rule applies?"
-  },
-  {
-   "key": "e8550b16",
-   "say": "Asking the model to reason step by step before answering, called chain-of-thought, measurably helps on multi-step problems, because the model can build on its own written intermediate steps. Keep that reasoning in a separate field, so your code only reads the final answer."
-  },
-  {
-   "key": "99402041",
-   "say": "Self-consistency goes further: sample several reasoning paths, at a temperature above zero, and take the majority answer."
-  },
-  {
-   "key": "cb20355f",
-   "say": "More reliable, and three times the cost. Reasoning models already think internally; for them, give the goal and the constraints, rather than a procedure."
-  },
-  {
-   "key": "3fc8f5be",
-   "say": "Split big jobs. When one prompt tries to classify, extract the order id, check the policy, and draft a reply, it does all of them a bit worse."
-  },
-  {
-   "key": "ee258224",
-   "say": "A chain of small prompts, with plain code between the steps checking each output, is easier to test, and can run on smaller, cheaper models. This is called prompt chaining."
-  },
-  {
-   "key": "534484d0",
-   "say": "Treat prompts as code. Prompts live in version control, next to the code."
-  },
-  {
-   "key": "8b3caf0a",
-   "say": "Every change runs against the 200 labelled tickets, with accuracy per category, because a fix for refunds often breaks complaints."
-  },
-  {
-   "key": "0d1bab27",
-   "say": "Ship a change only if it is better, without making any category worse."
-  },
-  {
-   "key": "e4e4d490",
-   "say": "Every request in production records which prompt version produced it, so a bad answer can be traced to its prompt. And re-run the test set whenever the model version changes."
-  },
-  {
-   "key": "a0c62747",
-   "say": "Attempt two: the prompt after applying all of this."
-  },
-  {
-   "key": "a9df29dd",
-   "say": "Every category gets a definition."
-  },
-  {
-   "key": "fcd4d08e",
-   "say": "The confusing boundary gets an explicit rule."
-  },
-  {
-   "key": "b5a9ad17",
-   "say": "The examples show the hard cases."
-  },
-  {
-   "key": "df32c0ed",
-   "say": "And the output is a format code can read, with the ticket fenced off at the end."
-  },
-  {
-   "key": "fcb9c8d9",
-   "say": "On the same 200 tickets, it scores around 93 percent. Nothing magic happened. The gains come from clear instructions, good examples, sensible splitting of the task, and measurement. Not from magic phrases."
-  },
-  {
-   "key": "0826ab4d",
-   "say": "Part 7. A complete example: the weighted die, by hand."
-  },
-  {
-   "key": "e7b26129",
-   "say": "Here is the whole sampling process in about thirty lines of Python."
-  },
-  {
-   "key": "096041fb",
-   "say": "Softmax turns raw scores into probabilities that add up to 1. At temperature 0, it simply picks the best one."
-  },
-  {
-   "key": "81a5bcb6",
-   "say": "The top-p filter keeps the most likely tokens until their probabilities reach p."
-  },
-  {
-   "key": "b167de59",
-   "say": "And sample rolls the weighted die over whatever is left."
-  },
-  {
-   "key": "53252f64",
-   "say": "Try it with three tokens: within, only and up, with scores 2, 0.9 and 0.1. At temperature 0, within always wins."
-  },
-  {
-   "key": "51deab91",
-   "say": "At temperature 1, the probabilities are about 0.67, 0.22 and 0.10. At temperature 2, the odds even out, to about 0.51, 0.29 and 0.20, so only and up come up more often."
-  },
-  {
-   "key": "c94fd50c",
-   "say": "And top-p at 0.85, at temperature 1, keeps within and only, because together they reach 0.90, the first point at or above 0.85. Up is dropped entirely."
-  },
-  {
-   "key": "b7058ed5",
-   "say": "Also asked in interviews: explain attention in one minute."
-  },
-  {
-   "key": "e64d02d7",
-   "say": "Each token compares its query with the keys of earlier tokens, turns the matches into weights, and takes a weighted blend of their values."
-  },
-  {
-   "key": "85fa3577",
-   "say": "So every token's vector absorbs information from the tokens that matter to it."
-  },
-  {
-   "key": "331a5242",
-   "say": "What breaks next."
-  },
-  {
-   "key": "1cca2790",
-   "say": "The ticket sorter works. Meera is impressed, and asks for the real thing: can it answer my agents' questions? Things like: can bakery items be refunded after 6 hours?"
-  },
-  {
-   "key": "481cabf7",
-   "say": "You now know exactly why the plain model cannot. The answer lives in FreshCart's refund policy, which the model never saw."
-  },
-  {
-   "key": "eb6b9f96",
-   "say": "Prompting cannot fix that, because the prompt would need to contain the policy. And you cannot put every policy into every prompt: 12,000 documents are hundreds of millions of tokens, far past the context window, and even a model with a huge window gets worse and slower as the input grows."
-  },
-  {
-   "key": "1dead950",
-   "say": "Pause and think. For each question, only two or three pages out of 12,000 documents actually matter. If you could somehow find those pages first, in a fraction of a second, what would you do with them?"
-  },
-  {
-   "key": "f8af5f17",
-   "say": "And how would a computer know which pages match a question that uses completely different words from the document?"
-  },
-  {
-   "key": "57657909",
-   "say": "That is chapter 2."
+   "key": "a9e55b76",
+   "say": "That's chapter two. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
   }
  ]
 }
