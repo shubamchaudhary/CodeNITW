@@ -298,7 +298,7 @@ export const Magnets = ({ t }: CP) => {
       {t.step >= 1 && t.step < 4 &&
         pairs.map(([q, a, col], i) => {
           const qx = lerp(220 + i * 520, 300 + i * 520, pull);
-          const ax = lerp(1620 - i * 560, 300 + i * 520, pull);
+          const ax = lerp(1440 - i * 520, 300 + i * 520, pull);
           const ay = lerp(760 - i * 40, 520, pull);
           const qy = lerp(320 + i * 60, 420, pull);
           const hard = t.step >= 3 && i === 0;

@@ -1,0 +1,397 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "74e88399",
+   "say": "Ask FreshCart works. And three complaints just landed on your desk.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4602fb50",
+   "say": "One. It's slow at peak.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b7a9605",
+   "say": "Two. The Bengaluru North franchise gets no results, for its own documents.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "335c0572",
+   "say": "Three. Ask about an error code, and you get vague answers about delivery delays.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "234414d6",
+   "say": "They look unrelated. They're actually the three classic problems of search: speed, filtering, and exact words.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d3d11e18",
+   "say": "Chapter three. Let's fix all three.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d568d179",
+   "say": "First, speed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee1aba36",
+   "say": "Right now, every question is compared with all two million cards. Every single one. That's over a billion multiplications, per question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb5a78dc",
+   "say": "It's like finding your nearest coffee shop by measuring the distance to every coffee shop in India.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "c8b7422c",
+   "say": "You'd never do that. You'd just look around your own neighbourhood.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0acc6e1d",
+   "say": "An index that does exactly that is called an approximate nearest neighbour index. It checks a small, clever part of the data, in milliseconds. Once in a while it misses one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6cfbc7a2",
+   "say": "How much it misses is called recall. Recall of point nine five means it finds nine and a half of the true top ten, on average.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4b12aee1",
+   "say": "The most popular index works like driving across a country.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba462744",
+   "say": "You take a highway to the right region. Then a main road to the right town. Then local streets, to the exact door.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "11c21b7f",
+   "say": "This index builds those roads between your cards. A few cards on the highway layer, more on the main roads, and every card on the local streets. It's called HNSW.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c3e58592",
+   "say": "A search starts on the highway, hops closer and closer, drops a layer, and repeats, until it reaches the closest cards.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8220ff2e",
+   "say": "One dial matters most: how many candidates it keeps while searching. Turn it up, and you find more of the true neighbours, a little slower. Measure, then stop where recall is good enough.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "0139ae95",
+   "say": "Now, the Bengaluru mystery.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "e6196bad",
+   "say": "All forty franchises share one index. Bengaluru North owns just one percent of the cards.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e60921b0",
+   "say": "The index finds its forty best candidates, from every franchise. It knows nothing about franchises.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "402a9d68",
+   "say": "Then the filter runs: keep only Bengaluru North. On average, zero point four of those forty survive. Usually, none.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "70057e60",
+   "say": "Filtering after the search is called post filtering, and with a rare filter it quietly returns nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08a42666",
+   "say": "The fix: give big franchises their own index, so the filter is free. Or tell the index to keep walking until it finds enough matches.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "b6a402fd",
+   "say": "Complaint three: the error code.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21f3a66f",
+   "say": "Meaning search is great with different words. But an error code means nothing to it. It just lands in a vague delivery trouble neighbourhood.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b54ba83",
+   "say": "Keyword search finds that code instantly. They fail in opposite places. So run both.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f5a5ab7a",
+   "say": "The keyword side uses a scoring recipe called BM25. Think of a librarian asking three questions about each word.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa100259",
+   "say": "How rare is it? This error code appears in three cards out of two million, so a match is a huge clue. Delivery appears everywhere, so it barely counts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3428ae6",
+   "say": "How often does it appear in this card? More is better, but the tenth time adds almost nothing. And is the card just long? Long cards contain more words by chance.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7efc3385",
+   "say": "Now we have two ranked lists. One gives scores like fourteen. The other gives scores like zero point eight. How do you combine those?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d211eecf",
+   "say": "You don't. Ignore the scores. Use only the positions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d754f1d7",
+   "say": "Every card gets points from each list: one, divided by sixty plus its rank. First place gets a bit more than second, but not much more.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24deafa4",
+   "say": "Cards that both searches found rise to the top. This is called reciprocal rank fusion.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b389e65a",
+   "say": "One last upgrade.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e342997e",
+   "say": "Fusion often puts the right card fourth or fifth, not first. And order matters: models trust the first passages most.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "44df2f4d",
+   "say": "Think about hiring. You screen ten thousand CVs with a quick filter. Then you properly interview the top twenty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ae3b8de",
+   "say": "Our search is the quick screen. The question and each card are turned into numbers separately, then compared. Fast, but they never really meet.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "acc9e6f7",
+   "say": "The interview is a cross encoder. It reads the question and one card together, word by word, and scores how well they fit. Slow, but sharp.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb1a1bca",
+   "say": "So: search wide to make sure the right card is somewhere in the top hundred. Then rerank, to make sure it ends up first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "931d6a4d",
+   "say": "Two finishing touches. Drop cards below a minimum score, so the system can honestly say: I found nothing. And skip near-duplicates, so five slots don't hold the same fact five times.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "32ac77cb",
+   "say": "Here's version two. A question comes in from a Bengaluru North agent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa164ab5",
+   "say": "Keyword search and meaning search run side by side, on that franchise's own index. Fast, and nothing filtered away.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcaf0ea9",
+   "say": "Rank fusion merges them into one list.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fab32cca",
+   "say": "And the reranker puts the best first. All three complaints: fixed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a7749f56",
+   "say": "HNSW: highways first, then local streets.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "626660c2",
+   "say": "Recall: how many of the true neighbours you actually found.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3df6ce93",
+   "say": "Filtering after search can silently return nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49ece93b",
+   "say": "Hybrid search runs keyword and meaning search together, and rank fusion merges them by position.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eae67017",
+   "say": "And a reranker interviews the shortlist, so the best comes first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "11d2b3b3",
+   "say": "Search is fast and accurate now. And yet, new complaints arrive.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7051bb5a",
+   "say": "A vague question: it keeps failing after the update, what changed? No product. No code. Search returns noise.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f1faee4",
+   "say": "A follow-up: and for bakery? Finds nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e328a433",
+   "say": "A confident citation, with the wrong number.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f1325278",
+   "say": "And anything hidden in a PDF table keeps failing. So where is each one going wrong? The question? The documents? Or what happens after search?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "79c3b194",
+   "say": "That's chapter four. See you there.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}
