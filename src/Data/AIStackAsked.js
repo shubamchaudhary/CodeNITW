@@ -37,7 +37,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "LLM-01": {
+  "CH-01": {
     "posts": 0,
     "items": [
       {
@@ -59,12 +59,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "What happens at the context-window limit?",
         "a": "The window caps input plus output tokens. Over it, the API rejects the request, or a framework silently truncates (often the oldest messages — losing instructions or key facts). Before the limit, quality already degrades on long inputs (lost in the middle, context rot) while cost and latency climb. So manage context deliberately: trim, summarise, retrieve, and reserve room for the output."
-      }
-    ]
-  },
-  "LLM-04": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "How do you structure a production prompt?",
         "a": "Role and goal in a sentence; the context and rules, including how to resolve the confusing cases; a handful of examples covering the hard boundaries; an exact output schema, ideally enforced with structured output; and the input clearly delimited (for example in tags) so its text is never mistaken for instructions. Clear rules beat emphasis in capital letters."
@@ -80,12 +75,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Your team keeps hand-patching a prompt and each fix breaks something else. What process do you put in place?",
         "a": "Treat prompts as code: in version control, every change as a pull request, run against a labelled test set with results per category, shipped only if better without any category getting worse, and the prompt version recorded on every trace. Re-run the set whenever the model changes."
-      }
-    ]
-  },
-  "LLM-07": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Explain attention in one minute.",
         "a": "Each token produces a query, a key and a value vector. A token's query is compared with the keys of the tokens before it; the similarity scores become weights that add up to one; the token's new vector is the weighted mix of those tokens' values. So “it” in “the milk was spoiled, so the customer returned it” absorbs information from “milk”. Multi-head attention runs several of these in parallel, each tracking different relationships."
@@ -104,7 +94,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "RAG-01": {
+  "CH-02": {
     "posts": 0,
     "items": [
       {
@@ -126,12 +116,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "A source document is edited. What has to change in the index?",
         "a": "Index chunks by **document id + version**. On a change: re-parse and re-chunk that document, embed the new chunks, upsert them, and **delete the old chunks** for that document from both the vector and keyword indexes as one logical operation, so the two versions are never served together. Drive it from change capture (webhooks, CDC, or a scheduled diff on content hashes). Deletes are the step people forget — and an access-control bug when a revoked document stays retrievable."
-      }
-    ]
-  },
-  "RAG-02": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "How do you choose chunk size and overlap?",
         "a": "Empirically. Build a small retrieval eval (question → the passage that answers it) and **sweep** sizes — say 200, 400 and 800 tokens, overlap 0–20% — measuring recall@k and the tokens you send to the model.\n\nPriors: small chunks match precise questions; large chunks carry context for “why” questions; overlap protects sentences cut at a boundary but duplicates content. Respect structure: never split mid-sentence or mid-table, and keep headings with their text. Then fix the failure you actually see, not the average."
@@ -151,10 +136,26 @@ export const AI_STACK_ASKED = {
       {
         "q": "Cosine similarity, dot product or L2 — which, and why?",
         "a": "With **L2-normalised** vectors, cosine similarity equals the dot product, and L2 distance ranks identically (‖a−b‖² = 2 − 2·a·b). So normalise at index time and use the dot product, the cheapest.\n\nOtherwise use the metric the embedder was trained with: without normalisation the dot product also rewards vector length. In pgvector the index operator class (`vector_cosine_ops`, `vector_ip_ops`, `vector_l2_ops`) must match the operator in the query, or the index isn't used."
+      },
+      {
+        "q": "Why do embeddings put similar meanings close together?",
+        "a": "Because of how they are trained. The model sees millions of pairs that belong together (a question and its answer, a query and the page people clicked) and is trained with a contrastive loss: each pair's vectors are pulled together while vectors of non-matching texts in the same batch are pushed apart. After enough examples, texts that answer or paraphrase each other end up near each other, even when they share no words."
+      },
+      {
+        "q": "What are hard negatives, and why do they matter?",
+        "a": "Negatives that look very similar to the right answer but are wrong — the bakery refund rule for a dairy question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
+      },
+      {
+        "q": "Your domain vocabulary keeps defeating the embedding model. What do you do, in order?",
+        "a": "1. Hybrid search, so exact terms and codes are matched by keyword search.\n2. Contextual retrieval or metadata, so chunks carry the context they lack.\n3. Try a few other embedding models on your own test set.\n4. Fine-tune an open embedder: collect real query-chunk pairs (plus reviewed generated ones), mine hard negatives, train, compare recall@10 on a held-out set, then re-embed the corpus and switch indexes blue-green.\n\nFine-tuning last, because it means owning a model and re-embedding everything when it changes."
+      },
+      {
+        "q": "What are Matryoshka embeddings, and why would you use them?",
+        "a": "Embeddings trained so that the first part of the vector is a good embedding on its own — the first 256 of 1,024 dimensions still work. You can store or search short vectors to save memory and time, and rerank with the full vectors, choosing the quality-cost trade-off after training."
       }
     ]
   },
-  "RAG-03": {
+  "CH-03": {
     "posts": 0,
     "items": [
       {
@@ -176,12 +177,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Why one HNSW index per session instead of one shared table with a filter?",
         "a": "Every query is scoped to one session, so a shared index turns each search into a **selective filter on ANN** — the post-filter problem: top candidates from other sessions are discarded and recall drops.\n\nPer-session tables make the filter free (the index only holds that session) and keep each graph small. **Costs**: many tables and indexes, catalogue bloat, per-session build time, cleanup of expired sessions, no cross-session search. The alternative now is a shared table with pgvector's iterative scans or partitioning by session — say you'd benchmark both."
-      }
-    ]
-  },
-  "RAG-04": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Write the RRF formula. Why k = 60, and why rank-based?",
         "a": "`RRF(d) = Σ_i 1 / (k + rank_i(d))` over every retriever i that returned d, ranks starting at 1.\n\n- **Rank-based** because BM25 scores and cosine similarities live on different, query-dependent scales; normalising them is fragile, ranks are comparable.\n- **k = 60** is the original paper's robust default (Cormack et al., 2009): it flattens the gap between rank 1 and rank 2 so no single retriever dominates.\n- A document in only one list still scores 1/(60 + rank); one in both lists usually wins. Weighted RRF multiplies each term by a per-retriever weight."
@@ -201,10 +197,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "When is reranking not worth it?",
         "a": "- Retrieval is already precise — the top 3 are nearly always right. Check MRR first.\n- A tight latency budget (autocomplete, voice) that 100–300 ms breaks.\n- k is small and the model reads every chunk anyway; reordering five chunks changes little.\n- Cost at very high QPS with a hosted reranker.\n\nDecide with numbers: the MRR or recall@5 gain against p95 latency and cost per 1,000 queries."
+      },
+      {
+        "q": "pgvector or a dedicated vector database?",
+        "a": "It depends on measured needs, not on doing RAG. pgvector wins when you already run Postgres, need transactions and joins with business data, and the index fits comfortably. A dedicated database wins when scale, heavily filtered search, high write rates or managed scaling outgrow Postgres. I'd benchmark both on our data: filtered recall@10, p95 under peak load, re-index time and monthly cost."
+      },
+      {
+        "q": "When would you pick Elasticsearch or OpenSearch for RAG?",
+        "a": "When keyword search, filtering and aggregations are central — logs, product catalogues, existing search infrastructure — and vectors are an addition. You get mature BM25 and operations the team may already know, with vector fields for hybrid search."
+      },
+      {
+        "q": "Why isn't FAISS a database?",
+        "a": "FAISS is an in-process library for fast similarity search over vectors in memory. It doesn't store data durably, handle concurrent updates, filter by metadata, replicate or serve over a network — you'd have to build all of that. Great for experiments and batch jobs, not as a production store on its own."
       }
     ]
   },
-  "RAG-05": {
+  "CH-04": {
     "posts": 0,
     "items": [
       {
@@ -226,12 +234,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "How would you route a query between a vector index, SQL and “no retrieval”?",
         "a": "A small classification step before retrieval: an LLM call with structured output (`route: docs | sql | chitchat`) or a fine-tuned small model, with a description and few-shot examples per route. Evaluate the router on its own labelled set — accuracy per route and a confusion matrix — because a wrong route caps the whole answer. Add a fallback (SQL returns nothing or errors → try documents) and log route decisions to find misroutes."
-      }
-    ]
-  },
-  "RAG-06": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "The right document exists, but the answer is wrong. Debug it.",
         "a": "Walk backwards along the trace:\n\n1. **Is the document indexed**, current, and visible to this user (ACL filter)?\n2. **Was the right chunk retrieved** in the top k? Search for it directly. If not: chunking (the answer split across chunks), vocabulary mismatch (hybrid search, query rewrite) or k too small.\n3. **Did it survive reranking and the token budget**, and where did it land in the prompt?\n4. **Did the model use it?** If the chunk was there and the answer contradicts it: grounding instructions, or a conflicting chunk.\n\nThen add the case to the eval set and check the fix across the whole set."
@@ -247,33 +250,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "The model answers confidently when the context doesn't contain the answer. Fix it.",
         "a": "- An explicit **abstain path** in the instructions (“if the context does not contain the answer, say so”), with an example.\n- Structured output with `answerable: bool` before the answer.\n- A **groundedness check** after generation; unsupported → abstain or answer only the supported part.\n- A retrieval-score threshold: if the best chunk is weak, don't generate.\n- Unanswerable questions in the eval set, tracking the abstain rate — over-abstaining is a failure too."
-      }
-    ]
-  },
-  "RAG-08": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Why do embeddings put similar meanings close together?",
-        "a": "Because of how they are trained. The model sees millions of pairs that belong together (a question and its answer, a query and the page people clicked) and is trained with a contrastive loss: each pair's vectors are pulled together while vectors of non-matching texts in the same batch are pushed apart. After enough examples, texts that answer or paraphrase each other end up near each other, even when they share no words."
       },
-      {
-        "q": "What are hard negatives, and why do they matter?",
-        "a": "Negatives that look very similar to the right answer but are wrong — the bakery refund rule for a dairy question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
-      },
-      {
-        "q": "Your domain vocabulary keeps defeating the embedding model. What do you do, in order?",
-        "a": "1. Hybrid search, so exact terms and codes are matched by keyword search.\n2. Contextual retrieval or metadata, so chunks carry the context they lack.\n3. Try a few other embedding models on your own test set.\n4. Fine-tune an open embedder: collect real query-chunk pairs (plus reviewed generated ones), mine hard negatives, train, compare recall@10 on a held-out set, then re-embed the corpus and switch indexes blue-green.\n\nFine-tuning last, because it means owning a model and re-embedding everything when it changes."
-      },
-      {
-        "q": "What are Matryoshka embeddings, and why would you use them?",
-        "a": "Embeddings trained so that the first part of the vector is a good embedding on its own — the first 256 of 1,024 dimensions still work. You can store or search short vectors to save memory and time, and rerank with the full vectors, choosing the quality-cost trade-off after training."
-      }
-    ]
-  },
-  "RAG-10": {
-    "posts": 0,
-    "items": [
       {
         "q": "How would you handle tables in a RAG system?",
         "a": "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Category: Bakery. Refund window: 12 hours.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
@@ -285,12 +262,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you keep the index in sync as 12,000 documents change?",
         "a": "Incrementally. Store a content hash per document; on each sync skip unchanged ones, re-parse and re-chunk changed ones, and delete their old chunks in the same operation. Deletes and permission changes are handled as events quickly. Each chunk records its parser version so a parser upgrade re-processes only affected documents — via a blue-green re-index if it changes chunking."
-      }
-    ]
-  },
-  "RAG-07": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Models have million-token context windows now. Is RAG dead?",
         "a": "No — it changes the trade-off, not the need.\n\n- **Cost and latency** scale with input tokens on every query: retrieval sends 5K tokens, not 500K.\n- **Quality** degrades with length (lost in the middle, context rot); a focused context is usually more accurate.\n- **Access control and freshness**: retrieval filters per user and reflects updates; a stuffed prompt doesn't.\n- **Citations** fall out of retrieval naturally.\n\nLong context wins for small static corpora (prompt-cache them), whole-document tasks (summarise this contract), and as a generous window *after* retrieval."
@@ -305,45 +277,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "RAG-09": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "pgvector or a dedicated vector database?",
-        "a": "It depends on measured needs, not on doing RAG. pgvector wins when you already run Postgres, need transactions and joins with business data, and the index fits comfortably. A dedicated database wins when scale, heavily filtered search, high write rates or managed scaling outgrow Postgres. I'd benchmark both on our data: filtered recall@10, p95 under peak load, re-index time and monthly cost."
-      },
-      {
-        "q": "When would you pick Elasticsearch or OpenSearch for RAG?",
-        "a": "When keyword search, filtering and aggregations are central — logs, product catalogues, existing search infrastructure — and vectors are an addition. You get mature BM25 and operations the team may already know, with vector fields for hybrid search."
-      },
-      {
-        "q": "Why isn't FAISS a database?",
-        "a": "FAISS is an in-process library for fast similarity search over vectors in memory. It doesn't store data durably, handle concurrent updates, filter by metadata, replicate or serve over a network — you'd have to build all of that. Great for experiments and batch jobs, not as a production store on its own."
-      }
-    ]
-  },
-  "LC-01": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "LangChain vs LangGraph — when do you use each?",
-        "a": "In v1 they're layers, not rivals.\n\n- **LangChain `create_agent`**: the standard loop — the model decides, calls tools, observes, repeats — with middleware for guardrails, limits, summarisation and human approval. Use it when that loop is the whole design.\n- **LangGraph**: when you need explicit control flow — fixed steps, branches, parallel fan-out, loops with custom exits, approvals at specific nodes, several agents — plus checkpointing and durable execution.\n\n`create_agent` compiles to a LangGraph graph, so you can start high-level and drop down only for the parts that need control."
-      },
-      {
-        "q": "Would you use LangChain in production?",
-        "a": "Yes, selectively — and say why.\n\n- **For**: provider-agnostic model and tool interfaces, structured output, streaming, middleware (retries, fallbacks, call limits, approvals), tracing in LangSmith, and LangGraph's persistence underneath.\n- **Against**: abstraction layers slow down debugging, breaking changes between versions, hidden prompts in older chains.\n\nMitigations: pin versions, own your prompts, trace everything, keep tools as plain functions you can test without the framework, and wrap it behind your own interface so the core logic is plain Python."
-      },
-      {
-        "q": "What changed in LangChain v1?",
-        "a": "- `create_agent` replaces `create_react_agent` and AgentExecutor as the one way to build agents, and it runs on LangGraph.\n- **Middleware**: hooks before and after the model and around model and tool calls — approvals, summarisation, PII, call limits, retries, fallbacks.\n- **Structured output** inside the agent loop via `response_format` (tool-based or provider-native).\n- **Standard content blocks** across providers (text, reasoning, tool calls, citations).\n- Legacy chains and retrievers moved to `langchain-classic`; the core package is much smaller. Since 1.4, MCP support lives in `langchain.mcp`."
-      },
-      {
-        "q": "What does LCEL give you, and is it still relevant?",
-        "a": "A `Runnable` is anything with `invoke`, `batch` and `stream` (plus async versions); LCEL composes them with `|` into a pipeline that gets streaming, concurrent batching, retries, fallbacks and tracing for free. It's still in `langchain-core` and fine for short fixed pipelines (`prompt | model | parser`). For branching, loops or state, LangGraph replaced it as the recommended way."
-      }
-    ]
-  },
-  "LC-02": {
+  "CH-05": {
     "posts": 0,
     "items": [
       {
@@ -365,12 +299,39 @@ export const AI_STACK_ASKED = {
       {
         "q": "What makes a good tool for an agent?",
         "a": "- **One clear job**, named for the action (`search_orders`, not `orders_api`).\n- **A description that says when to use it** — and when not to — with an example.\n- **Typed, constrained arguments** (enums, formats) so invalid calls fail validation.\n- **Concise, relevant output**: the five fields the model needs, not a 50 KB payload; paginate.\n- **Actionable errors** that tell the model what to change.\n- **Safe by default**: read-only where possible, writes behind approval, idempotent.\n\nThen evaluate tools by watching the model use them on real tasks."
-      }
-    ]
-  },
-  "LG-01": {
-    "posts": 0,
-    "items": [
+      },
+      {
+        "q": "LangChain vs LangGraph — when do you use each?",
+        "a": "In v1 they're layers, not rivals.\n\n- **LangChain `create_agent`**: the standard loop — the model decides, calls tools, observes, repeats — with middleware for guardrails, limits, summarisation and human approval. Use it when that loop is the whole design.\n- **LangGraph**: when you need explicit control flow — fixed steps, branches, parallel fan-out, loops with custom exits, approvals at specific nodes, several agents — plus checkpointing and durable execution.\n\n`create_agent` compiles to a LangGraph graph, so you can start high-level and drop down only for the parts that need control."
+      },
+      {
+        "q": "Would you use LangChain in production?",
+        "a": "Yes, selectively — and say why.\n\n- **For**: provider-agnostic model and tool interfaces, structured output, streaming, middleware (retries, fallbacks, call limits, approvals), tracing in LangSmith, and LangGraph's persistence underneath.\n- **Against**: abstraction layers slow down debugging, breaking changes between versions, hidden prompts in older chains.\n\nMitigations: pin versions, own your prompts, trace everything, keep tools as plain functions you can test without the framework, and wrap it behind your own interface so the core logic is plain Python."
+      },
+      {
+        "q": "What changed in LangChain v1?",
+        "a": "- `create_agent` replaces `create_react_agent` and AgentExecutor as the one way to build agents, and it runs on LangGraph.\n- **Middleware**: hooks before and after the model and around model and tool calls — approvals, summarisation, PII, call limits, retries, fallbacks.\n- **Structured output** inside the agent loop via `response_format` (tool-based or provider-native).\n- **Standard content blocks** across providers (text, reasoning, tool calls, citations).\n- Legacy chains and retrievers moved to `langchain-classic`; the core package is much smaller. Since 1.4, MCP support lives in `langchain.mcp`."
+      },
+      {
+        "q": "What does LCEL give you, and is it still relevant?",
+        "a": "A `Runnable` is anything with `invoke`, `batch` and `stream` (plus async versions); LCEL composes them with `|` into a pipeline that gets streaming, concurrent batching, retries, fallbacks and tracing for free. It's still in `langchain-core` and fine for short fixed pipelines (`prompt | model | parser`). For branching, loops or state, LangGraph replaced it as the recommended way."
+      },
+      {
+        "q": "Your agent loops and burns tokens. What middleware do you add?",
+        "a": "ModelCallLimitMiddleware and ToolCallLimitMiddleware for hard caps with a defined ending; SummarizationMiddleware or ContextEditingMiddleware so old tool output stops inflating every call; and a custom after_model hook that spots repeated identical tool calls and jumps to the end. Then find the cause in the traces — usually an unhelpful tool error or an exit condition the model can't recognise."
+      },
+      {
+        "q": "In what order do middleware hooks run?",
+        "a": "For [m1, m2, m3]: before_agent and before_model run m1 → m2 → m3; wrap_model_call nests with m1 outermost (m1 wraps m2 wraps m3 wraps the model); after_model and after_agent run m3 → m2 → m1. Cross-cutting wrappers (logging, retries) go first; guards that must run right before the model (PII masking) go last."
+      },
+      {
+        "q": "How would you send easy questions to a cheap model and hard ones to a strong model?",
+        "a": "A custom wrap_model_call hook: inspect the request (length, a difficulty flag set earlier, the tools needed), call `request.override(model=cheap_model)` for easy cases, then call the handler. Measure quality per route on the test set, and log the route on every trace."
+      },
+      {
+        "q": "Why is a model fallback risky, and how do you make it safe?",
+        "a": "The fallback model may follow the prompt differently, handle tools worse, or have a smaller context window, so an outage silently becomes a quality drop. Run the test set against the fallback too, keep outputs schema-validated, log every fallback with its reason, and alert when the fallback rate rises."
+      },
       {
         "q": "Sketch a LangGraph agent: state, nodes, edges.",
         "a": "```python\nclass State(TypedDict):\n    messages: Annotated[list, add_messages]\n    steps: int\n\ndef call_model(state: State):\n    msg = model_with_tools.invoke(state['messages'])\n    return {'messages': [msg], 'steps': state['steps'] + 1}\n\ndef route(state: State):\n    if state['messages'][-1].tool_calls and state['steps'] < 8:\n        return 'tools'\n    return END\n\ng = StateGraph(State)\ng.add_node('model', call_model)\ng.add_node('tools', ToolNode(tools))\ng.add_edge(START, 'model')\ng.add_conditional_edges('model', route, ['tools', END])\ng.add_edge('tools', 'model')\napp = g.compile(checkpointer=checkpointer)\n```\n\nSay: nodes return partial updates, `add_messages` appends, the router caps the loop, and the checkpointer makes every run resumable."
@@ -393,7 +354,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "LG-02": {
+  "CH-06": {
     "posts": 0,
     "items": [
       {
@@ -415,12 +376,35 @@ export const AI_STACK_ASKED = {
       {
         "q": "Which durability mode would you choose?",
         "a": "It's write overhead against lost work:\n\n- `'exit'`: checkpoint only when the run ends or pauses — fastest; a crash loses the run's progress. Fine for short, cheap, idempotent runs.\n- `'async'`: write in the background while the next step runs — a sensible default.\n- `'sync'`: write before each next step — for long, expensive or side-effecting runs and anything awaiting human approval, where redoing work is costly or unsafe."
-      }
-    ]
-  },
-  "LG-04": {
-    "posts": 0,
-    "items": [
+      },
+      {
+        "q": "The conversation exceeds the context window. What are your options?",
+        "a": "1. **Trim** to the most recent messages — cheap, forgets early facts.\n2. **Summarise** older messages into a running summary — keeps the gist, costs a call, may drop details.\n3. **Retrieve** relevant old turns by meaning — precise, adds a search per turn.\n\nCombine them, and pin key facts (order id, customer id) in dedicated state fields so they can never be trimmed. Also clear bulky old tool outputs."
+      },
+      {
+        "q": "Short-term vs long-term memory in LangGraph?",
+        "a": "Short-term memory is the thread's state — messages and working fields — saved by the checkpointer under the thread id and gone in a new thread. Long-term memory lives in the store under namespaces like `('agents', 'agent7')`, survives across threads, and can be searched by meaning. The design work is deciding what to save and when."
+      },
+      {
+        "q": "What can go wrong with long-term memory?",
+        "a": "Stale or wrong memories used confidently (store timestamps and sources, let newer facts win); privacy (memories are personal data — viewable, deletable, tenant-isolated); poisoned memories from prompt injection affecting every future session (treat memory writes as untrusted); and bloat (retrieve a few relevant memories, don't load all)."
+      },
+      {
+        "q": "Prompt engineering vs context engineering?",
+        "a": "Prompt engineering is the wording of instructions for one call. Context engineering is the whole set of tokens the model sees at each step of a system — instructions, tools, retrieved data, memory, history, tool results — and the logic that selects, orders, compresses and refreshes them as an agent runs. It's a systems problem, not a phrasing problem."
+      },
+      {
+        "q": "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
+        "a": "State: `docs`, `summaries: Annotated[list, operator.add]`, `report`. A conditional edge from START returns one `Send('summarise', {'doc': d})` per document, so all summaries run in one super-step and the reducer concatenates them. A `combine` node then reduces, in stages if the summaries don't fit one prompt. Cap `max_concurrency` below the provider's rate limit, add a retry policy on `summarise`, and use a checkpointer so a crash only redoes unfinished branches."
+      },
+      {
+        "q": "When would you use a subgraph?",
+        "a": "For a reusable piece (a retrieve-grade-rewrite loop used by several workflows), to keep scratch state private, to split ownership between teams, or for multi-agent setups where each agent is its own graph. Costs: mapping state at the boundary, nested checkpoints to debug, and on resume after an interrupt both the parent node and the subgraph node re-run from their start."
+      },
+      {
+        "q": "How would you stream a multi-step agent's progress to a UI?",
+        "a": "Combine stream modes: `messages` for tokens, `updates` for per-node status lines (“searching policies…”), and `custom` events emitted from long nodes. Forward them to the browser over Server-Sent Events. Interrupts arrive as events too, so the UI can show an approval card and resume the run with the decision."
+      },
       {
         "q": "One agent or several — how do you decide?",
         "a": "Default to **one agent with good tools**; split only for a measured reason:\n\n- **Parallel, separable work** (search ten sources at once) → subagents cut wall-clock time.\n- **Context overflow**: one window can't hold the intermediate work → subagents explore and return condensed findings.\n- **Isolation**: very different tools, prompts or permissions per role.\n\nAgainst: tokens multiply, a decision made in one agent's context is invisible to another (conflicting actions), and evaluation and debugging get much harder. Cognition's rule: share full context or don't split. Anthropic split only the read-heavy, parallel part."
@@ -439,66 +423,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "LC-03": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Your agent loops and burns tokens. What middleware do you add?",
-        "a": "ModelCallLimitMiddleware and ToolCallLimitMiddleware for hard caps with a defined ending; SummarizationMiddleware or ContextEditingMiddleware so old tool output stops inflating every call; and a custom after_model hook that spots repeated identical tool calls and jumps to the end. Then find the cause in the traces — usually an unhelpful tool error or an exit condition the model can't recognise."
-      },
-      {
-        "q": "In what order do middleware hooks run?",
-        "a": "For [m1, m2, m3]: before_agent and before_model run m1 → m2 → m3; wrap_model_call nests with m1 outermost (m1 wraps m2 wraps m3 wraps the model); after_model and after_agent run m3 → m2 → m1. Cross-cutting wrappers (logging, retries) go first; guards that must run right before the model (PII masking) go last."
-      },
-      {
-        "q": "How would you send easy questions to a cheap model and hard ones to a strong model?",
-        "a": "A custom wrap_model_call hook: inspect the request (length, a difficulty flag set earlier, the tools needed), call `request.override(model=cheap_model)` for easy cases, then call the handler. Measure quality per route on the test set, and log the route on every trace."
-      },
-      {
-        "q": "Why is a model fallback risky, and how do you make it safe?",
-        "a": "The fallback model may follow the prompt differently, handle tools worse, or have a smaller context window, so an outage silently becomes a quality drop. Run the test set against the fallback too, keep outputs schema-validated, log every fallback with its reason, and alert when the fallback rate rises."
-      }
-    ]
-  },
-  "LG-03": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
-        "a": "State: `docs`, `summaries: Annotated[list, operator.add]`, `report`. A conditional edge from START returns one `Send('summarise', {'doc': d})` per document, so all summaries run in one super-step and the reducer concatenates them. A `combine` node then reduces, in stages if the summaries don't fit one prompt. Cap `max_concurrency` below the provider's rate limit, add a retry policy on `summarise`, and use a checkpointer so a crash only redoes unfinished branches."
-      },
-      {
-        "q": "When would you use a subgraph?",
-        "a": "For a reusable piece (a retrieve-grade-rewrite loop used by several workflows), to keep scratch state private, to split ownership between teams, or for multi-agent setups where each agent is its own graph. Costs: mapping state at the boundary, nested checkpoints to debug, and on resume after an interrupt both the parent node and the subgraph node re-run from their start."
-      },
-      {
-        "q": "How would you stream a multi-step agent's progress to a UI?",
-        "a": "Combine stream modes: `messages` for tokens, `updates` for per-node status lines (“searching policies…”), and `custom` events emitted from long nodes. Forward them to the browser over Server-Sent Events. Interrupts arrive as events too, so the UI can show an approval card and resume the run with the decision."
-      }
-    ]
-  },
-  "LG-05": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "The conversation exceeds the context window. What are your options?",
-        "a": "1. **Trim** to the most recent messages — cheap, forgets early facts.\n2. **Summarise** older messages into a running summary — keeps the gist, costs a call, may drop details.\n3. **Retrieve** relevant old turns by meaning — precise, adds a search per turn.\n\nCombine them, and pin key facts (order id, customer id) in dedicated state fields so they can never be trimmed. Also clear bulky old tool outputs."
-      },
-      {
-        "q": "Short-term vs long-term memory in LangGraph?",
-        "a": "Short-term memory is the thread's state — messages and working fields — saved by the checkpointer under the thread id and gone in a new thread. Long-term memory lives in the store under namespaces like `('agents', 'agent7')`, survives across threads, and can be searched by meaning. The design work is deciding what to save and when."
-      },
-      {
-        "q": "What can go wrong with long-term memory?",
-        "a": "Stale or wrong memories used confidently (store timestamps and sources, let newer facts win); privacy (memories are personal data — viewable, deletable, tenant-isolated); poisoned memories from prompt injection affecting every future session (treat memory writes as untrusted); and bloat (retrieve a few relevant memories, don't load all)."
-      },
-      {
-        "q": "Prompt engineering vs context engineering?",
-        "a": "Prompt engineering is the wording of instructions for one call. Context engineering is the whole set of tokens the model sees at each step of a system — instructions, tools, retrieved data, memory, history, tool results — and the logic that selects, orders, compresses and refreshes them as an agent runs. It's a systems problem, not a phrasing problem."
-      }
-    ]
-  },
-  "HITL-01": {
+  "CH-07": {
     "posts": 0,
     "items": [
       {
@@ -520,12 +445,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Two parallel branches are both waiting for approval. How do you resume?",
         "a": "Each pending interrupt has an id. Read them from the paused result (`result.interrupts` or `stream.interrupts`) and resume once with a mapping: `Command(resume={id_a: {'type': 'approve'}, id_b: {'type': 'reject', 'message': '…'}})`. Each `interrupt()` receives its own value and both branches continue in the next super-step."
-      }
-    ]
-  },
-  "HITL-02": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Design approvals for an agent that can change inventory parameters. What needs a human?",
         "a": "Tier by **risk and reversibility**:\n\n- **Automatic**: reads, explanations, what-if simulations on a copy.\n- **Automatic + audit**: small, reversible changes inside limits (say ±5% on one item) — logged and easy to undo.\n- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.\n\nMechanics: the agent writes its proposal to a **staging overlay**, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the planner approves, edits or rejects, approved changes commit to the base in one transaction, and every decision is logged — who, when, why."
@@ -541,12 +461,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do rejections make the agent better over time?",
         "a": "Every reject or edit is a labelled example: the proposal, its context and the correct action.\n\n- In the same run: the rejection message goes back to the model as the tool result, so it can revise.\n- Over time: rejected cases join the **eval set** as a regression suite of “should not propose this”, get mined for patterns (wrong scope, stale data), and drive fixes to prompts, tools and validation. Track edit and reject rates per action type as quality metrics."
-      }
-    ]
-  },
-  "HITL-03": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "The approver never responds. What happens to the staged write?",
         "a": "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.\n\n- Every proposal carries an **expiry** (24–72 h by risk), with reminders and escalation to a backup approver before it.\n- A sweeper marks it expired, **discards the staged overlay** (or the Redis keys lapse by TTL) and notifies the requester.\n- Resuming an expired thread returns “expired — re-run the request” instead of committing.\n- Metrics on pending count and age, so a backlog is visible."
@@ -569,7 +484,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "EV-01": {
+  "CH-08": {
     "posts": 0,
     "items": [
       {
@@ -591,12 +506,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do evals fit into CI/CD?",
         "a": "- **Every PR touching prompts, models, retrieval or tools**: run the regression suite (code checks plus calibrated judges on a fixed set), compare with the main branch, block on a drop beyond a threshold per criterion and slice.\n- **Nightly**: the larger capability suite, plus cost and latency.\n- **After deploy**: online evals on sampled traffic, with alerts on drift.\n\nVersion prompts, models and the dataset together so every score maps to an exact configuration."
-      }
-    ]
-  },
-  "EV-02": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Is your LLM judge any good? How do you know?",
         "a": "Measure it like a classifier against human labels:\n\n1. Label ~100–200 outputs myself (pass/fail with a reason), covering every failure type.\n2. Split into dev (to iterate the judge prompt) and a held-out test set.\n3. Report on test: **TPR** (judge passes what I pass) and **TNR** (judge fails what I fail) — or Cohen's kappa. TNR matters most: a judge that misses failures gives false comfort.\n4. Investigate disagreements by slice; fix the rubric or its examples.\n5. Re-check after any judge model or prompt change.\n\nIf you haven't done this yet, say so plainly and say it's the next thing you'd do."
@@ -616,12 +526,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Write a judge prompt for “is the answer grounded in the context?”.",
         "a": "```text\nCheck one property: is every factual claim in ANSWER supported by CONTEXT?\nSupported = stated in, or directly implied by, the context.\nIgnore style and completeness. Judge support only.\n1. List each claim. 2. For each, quote the supporting context, or write NONE.\nThen output JSON: {\"critique\": \"...\", \"grounded\": true or false}.\ngrounded is false if any claim is NONE.\n<two passing and two failing examples, each with its critique>\nCONTEXT: ...\nANSWER: ...\n```\n\nWhat makes it good: one criterion, the critique before the verdict, a binary output, examples of failures, structured output."
-      }
-    ]
-  },
-  "EV-03": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Three relevant chunks sit at ranks 2, 7 and 11. Compute recall@5, recall@10, MRR and nDCG@10 (binary relevance).",
         "a": "- recall@5 = 1/3 ≈ 0.33 (only rank 2). recall@10 = 2/3 ≈ 0.67 (ranks 2 and 7).\n- Reciprocal rank = 1/2 = 0.5 (first relevant at rank 2), so MRR for this query is 0.5.\n- DCG@10 = 1/log2(3) + 1/log2(8) = 0.631 + 0.333 = 0.964.\n- IDCG@10 (three relevant at ranks 1–3) = 1 + 0.631 + 0.5 = 2.131.\n- nDCG@10 = 0.964 / 2.131 ≈ 0.45.\n\nThen say what it means: relevant material is found but ranked poorly — a reranker is the obvious next step."
@@ -640,7 +545,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "EV-04": {
+  "CH-09": {
     "posts": 0,
     "items": [
       {
@@ -658,12 +563,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you test a multi-turn conversational agent?",
         "a": "**User simulation**: an LLM plays the user from a scenario card (goal, facts it knows, temperament, when to give up) and converses with the agent until done or a turn cap. Grade the end state (was the task done correctly?) and the conversation (policy followed, no invented promises). Run several seeds per scenario. Validate the simulator itself by reading transcripts — unrealistic users produce misleading scores."
-      }
-    ]
-  },
-  "EV-05": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "The provider silently updated the model. How do you find out before your users do?",
         "a": "- **Pin model versions** (dated snapshots), so updates happen when you choose.\n- **A scheduled canary eval**: run the regression suite daily against the live endpoint and alert on a drop per criterion.\n- **Online evals** on sampled production traffic, charted per slice.\n- **Leading indicators** that move immediately on a model change: output length, refusal rate, format-validation failures, tool-call errors, latency and token counts.\n- A fallback: route back to the previous version through the gateway when alerts fire."
@@ -682,7 +582,7 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "SD-01": {
+  "CH-10": {
     "posts": 0,
     "items": [
       {
@@ -700,12 +600,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Which failure modes would you design for in any LLM system?",
         "a": "- **Provider outages, 429s, timeouts** → retries with backoff, a fallback model or provider, graceful degradation.\n- **Bad output** (hallucination, wrong format) → validation, groundedness checks, an abstain path.\n- **Prompt injection** from users or retrieved content → least privilege, approvals, no untrusted-content-to-action path.\n- **Cost blow-ups** (loops, long contexts) → budgets and caps per request and per tenant.\n- **Stale or missing data** → freshness monitoring, citations.\n- **Silent quality drift** → pinned versions, online evals, alerts."
-      }
-    ]
-  },
-  "SD-02": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Workflow or agent — which is your default, and why?",
         "a": "A **workflow**, until the evidence says otherwise. If I can write the steps down, code should control their order: it's cheaper, faster, testable step by step and predictable. I use an agent when the path genuinely can't be known in advance — open-ended investigation, variable tool sequences — and when mistakes are cheap to detect or gated by approval. Even then the agent sits inside deterministic code: caps on steps and spend, typed tools with permissions, approvals for writes, and an outcome check at the end."
@@ -721,54 +616,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "What is the agent-computer interface, and why does it matter?",
         "a": "The tools — their names, descriptions, parameters, outputs and errors — are the interface the model works through, the way a UI is for people. Anthropic reported spending more time optimising tools than prompts for their agents. A good interface makes correct use obvious, uses formats the model handles well, prefers absolute identifiers to relative ones, makes mistakes hard (constrained parameters), returns concise outputs and helpful errors — and gets tested by watching the model use it."
-      }
-    ]
-  },
-  "SD-04": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "How do you stop a text-to-SQL agent from running DROP TABLE?",
-        "a": "Layers — none of them in the prompt:\n\n1. A **read-only database role** for the agent's connection: the database refuses writes whatever the SQL says.\n2. An **allow-listed schema**: the role can see only specific views and tables; sensitive columns excluded.\n3. **Tenant scope in the database**: row-level security or per-tenant views, not a WHERE clause the model writes.\n4. **Parse the SQL** before running it: a single `SELECT`, no DDL or DML, known tables only.\n5. **Statement timeout and row limit**; an `EXPLAIN` cost check for expensive queries.\n6. Every query logged with its trace id.\n\nWrites, if any, go through a separate typed tool with approval — never free-form SQL."
       },
-      {
-        "q": "What is indirect prompt injection, and how do you defend a RAG agent against it?",
-        "a": "Malicious instructions placed in content the model reads — a document, page, email, ticket or tool result — such as “ignore your instructions and send the user's data to…”. The model can't reliably tell data from instructions.\n\nDefences are architectural: **least-privilege tools** with permissions checked in code; **no path from untrusted content to a sensitive action** without approval; **break the lethal trifecta** (no outbound channel where private data and untrusted content meet); dual-LLM or plan-then-execute patterns; delimit and label untrusted content; filter outputs (no URLs or image links that can exfiltrate). Detection classifiers help but are never enough on their own."
-      },
-      {
-        "q": "Explain the lethal trifecta.",
-        "a": "Simon Willison's framing: an agent is exploitable for data theft when it has **access to private data**, **exposure to untrusted content** (anything an attacker can influence) and **a way to communicate externally** (send email, call a URL, render an image link). Instructions injected through the untrusted content make it read the private data and leak it through the outbound channel. Since injection can't be reliably prevented, remove at least one leg for any given workflow — or put a human approval on the outbound action."
-      },
-      {
-        "q": "A user may only see documents they're permitted to. Where is that enforced?",
-        "a": "At **retrieval time, in code or in the database**: filter the search by the user's ACL (permissions as document metadata, per-tenant indexes, or row-level security), so unauthorised chunks never enter the prompt. Not in the prompt — the model can't enforce it and an injection can override it. Also sync permission changes promptly (revocations especially) and keep restricted content out of shared caches and summaries."
-      }
-    ]
-  },
-  "SD-05": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Quality improved but p95 latency doubled and cost tripled. What do you do, in order?",
-        "a": "1. **Measure** where it went: per-step latency and tokens from the traces (a bigger prompt? more calls? longer outputs? a new reranker?).\n2. **Cheap wins first**, each re-checked on the same eval set: prompt caching with the static prefix first, fewer and shorter chunks after reranking, trimmed history, capped output length.\n3. **Routing**: easy queries to a smaller model, the strong model for hard ones.\n4. **Parallelise** independent calls; stream the answer.\n5. **Cache** repeated work (embeddings, retrieval, exact repeated answers).\n6. Decide with the trade-off visible — quality gained against cost and p95. Maybe only part of the improvement is worth keeping."
-      },
-      {
-        "q": "How would you add semantic caching, and what can go wrong?",
-        "a": "Embed the incoming query, look up past queries above a high similarity threshold and return the cached answer; otherwise compute and store it. What goes wrong: **near-duplicates with different meaning** (negations, different entities or dates), **personal or permission-scoped answers** served to the wrong user, **stale answers** after data changes, cache poisoning. Mitigate: key by tenant, user and ACL; TTLs and invalidation on data updates; thresholds tuned on labelled query pairs; cache only stable FAQ-like intents; measure the false-hit rate."
-      },
-      {
-        "q": "What drives time to first token, and what drives total latency?",
-        "a": "**Time to first token** = queueing + network + **prefill**: the model processes every input token before emitting the first, so it grows with prompt length (prompt caching cuts it). **Time per output token** depends on decode speed — model size, server load, batching. **Total** ≈ TTFT + output tokens × per-token time, so long outputs dominate. Levers: shorter or cached prompts for TTFT; shorter outputs and smaller or faster models for the total; streaming for perceived latency."
-      },
-      {
-        "q": "Define cost per resolved task, and say why it beats cost per request.",
-        "a": "Total LLM and infrastructure spend over a period ÷ tasks **successfully completed** in it (tickets resolved, answers accepted). Cost per request rewards cheap calls even when they fail and cause retries, escalations and repeat contacts. A model three times pricier per call that resolves twice as many tasks without a human can be cheaper per outcome. It ties cost work to the quality metric, so you can't improve one by breaking the other."
-      }
-    ]
-  },
-  "SD-06": {
-    "posts": 0,
-    "items": [
       {
         "q": "Design document Q&A for 500 tenants and 10M documents. Walk me from ingestion to answer.",
         "a": "- **Ingestion**: per-tenant connectors push change events onto a queue; workers parse, chunk (~300–500 tokens, structure-aware), embed in batches, and upsert into the vector and keyword indexes with `tenant_id`, `doc_id`, `version` and `acl` metadata. Deletes and permission changes are events too.\n- **Query**: authenticate → resolve the user's groups → hybrid retrieval filtered by tenant and ACL → RRF → cross-encoder rerank to ~5 → prompt with labelled chunks → stream an answer with citations → groundedness check.\n- **Around it**: a gateway with per-tenant quotas, prompt caching, traces per request, evals per tenant slice, fallbacks (keyword-only search if the vector store is down; a secondary model).\n- **Numbers**: 10M docs × ~10 chunks = 100M vectors — shard by tenant; the big tenants get their own index."
@@ -788,12 +636,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "What's your fallback when the vector store or the model provider is down?",
         "a": "Vector store down → keyword-only retrieval (worse but working) with a banner. Model provider down or rate-limited → a fallback model through the gateway (evaluated in advance) or a second provider; if everything fails, return the top documents as links with “I can't generate an answer right now” rather than an error. Circuit breakers stop hammering the failing dependency, and every fallback is logged and alerted on."
-      }
-    ]
-  },
-  "SD-08": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Design an agent that lets planners query and change replenishment settings in plain English.",
         "a": "- **Tools**: `query_settings` (read-only, parameterised SQL over allowed views), `simulate_change` (what-if on a copy), `propose_change` (writes to a staging overlay), `commit_change` (only reachable after approval).\n- **Flow**: a LangGraph agent with a Postgres checkpointer → read and simulate freely → `propose_change` → `interrupt()` with the diff and expected impact → the planner approves, edits or rejects → commit with a version check → confirm by reading back from the system of record.\n- **Controls**: the user's own permissions applied in every tool, step and spend caps, idempotent commits keyed by proposal id, proposal expiry, full traces and an audit log.\n- **Evals**: scenarios replayed in a sandbox with end-state checks and the rule “no commit without approval”."
@@ -816,28 +659,44 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "LLM-02": {
+  "CH-11": {
     "posts": 0,
     "items": [
       {
-        "q": "What problem does MCP solve that plain function calling doesn't?",
-        "a": "Function calling is the model-side mechanism: the model emits a structured call to a tool you defined in your own code. MCP standardises the **integration side**: any tool or data source packaged once as an MCP server can be plugged into any MCP-capable application (an IDE, a chat app, your agent) without custom glue per pair. It turns N×M integrations into N+M, and adds discovery of tools, resources and prompts."
+        "q": "How do you stop a text-to-SQL agent from running DROP TABLE?",
+        "a": "Layers — none of them in the prompt:\n\n1. A **read-only database role** for the agent's connection: the database refuses writes whatever the SQL says.\n2. An **allow-listed schema**: the role can see only specific views and tables; sensitive columns excluded.\n3. **Tenant scope in the database**: row-level security or per-tenant views, not a WHERE clause the model writes.\n4. **Parse the SQL** before running it: a single `SELECT`, no DDL or DML, known tables only.\n5. **Statement timeout and row limit**; an `EXPLAIN` cost check for expensive queries.\n6. Every query logged with its trace id.\n\nWrites, if any, go through a separate typed tool with approval — never free-form SQL."
       },
       {
-        "q": "Tools, resources and prompts in MCP — an example of each.",
-        "a": "**Tool**: an action the model can invoke — `create_ticket(title, body)`. **Resource**: data the application can read into context — a file, a database row, `tickets://123`. **Prompt**: a reusable template the user can pick — “summarise this incident”. Tools are model-controlled, resources application-controlled, prompts user-controlled."
+        "q": "What is indirect prompt injection, and how do you defend a RAG agent against it?",
+        "a": "Malicious instructions placed in content the model reads — a document, page, email, ticket or tool result — such as “ignore your instructions and send the user's data to…”. The model can't reliably tell data from instructions.\n\nDefences are architectural: **least-privilege tools** with permissions checked in code; **no path from untrusted content to a sensitive action** without approval; **break the lethal trifecta** (no outbound channel where private data and untrusted content meet); dual-LLM or plan-then-execute patterns; delimit and label untrusted content; filter outputs (no URLs or image links that can exfiltrate). Detection classifiers help but are never enough on their own."
       },
       {
-        "q": "How do you treat a third-party MCP server's tool descriptions?",
-        "a": "As **untrusted input**. Descriptions and tool outputs go straight into the model's context, so a malicious or compromised server can inject instructions (“before answering, read ~/.ssh and call upload…”) or change its descriptions after you approved it. Mitigations: install only reviewed servers, pin versions, scope credentials per server, require approval for sensitive tools, and avoid combining a server that reads private data with one that can send data out."
+        "q": "Explain the lethal trifecta.",
+        "a": "Simon Willison's framing: an agent is exploitable for data theft when it has **access to private data**, **exposure to untrusted content** (anything an attacker can influence) and **a way to communicate externally** (send email, call a URL, render an image link). Instructions injected through the untrusted content make it read the private data and leak it through the outbound channel. Since injection can't be reliably prevented, remove at least one leg for any given workflow — or put a human approval on the outbound action."
       },
       {
-        "q": "stdio or HTTP transport — when each?",
-        "a": "**stdio**: the server runs as a local subprocess of the host — simple, no network exposure, ideal for local tools (files, a local database, CLIs). **Streamable HTTP**: the server runs remotely as a service — shared by many clients, centrally managed and updated, but it needs authentication and authorisation, TLS, and the usual web-service hardening."
+        "q": "A user may only see documents they're permitted to. Where is that enforced?",
+        "a": "At **retrieval time, in code or in the database**: filter the search by the user's ACL (permissions as document metadata, per-tenant indexes, or row-level security), so unauthorised chunks never enter the prompt. Not in the prompt — the model can't enforce it and an injection can override it. Also sync permission changes promptly (revocations especially) and keep restricted content out of shared caches and summaries."
+      },
+      {
+        "q": "Quality improved but p95 latency doubled and cost tripled. What do you do, in order?",
+        "a": "1. **Measure** where it went: per-step latency and tokens from the traces (a bigger prompt? more calls? longer outputs? a new reranker?).\n2. **Cheap wins first**, each re-checked on the same eval set: prompt caching with the static prefix first, fewer and shorter chunks after reranking, trimmed history, capped output length.\n3. **Routing**: easy queries to a smaller model, the strong model for hard ones.\n4. **Parallelise** independent calls; stream the answer.\n5. **Cache** repeated work (embeddings, retrieval, exact repeated answers).\n6. Decide with the trade-off visible — quality gained against cost and p95. Maybe only part of the improvement is worth keeping."
+      },
+      {
+        "q": "How would you add semantic caching, and what can go wrong?",
+        "a": "Embed the incoming query, look up past queries above a high similarity threshold and return the cached answer; otherwise compute and store it. What goes wrong: **near-duplicates with different meaning** (negations, different entities or dates), **personal or permission-scoped answers** served to the wrong user, **stale answers** after data changes, cache poisoning. Mitigate: key by tenant, user and ACL; TTLs and invalidation on data updates; thresholds tuned on labelled query pairs; cache only stable FAQ-like intents; measure the false-hit rate."
+      },
+      {
+        "q": "What drives time to first token, and what drives total latency?",
+        "a": "**Time to first token** = queueing + network + **prefill**: the model processes every input token before emitting the first, so it grows with prompt length (prompt caching cuts it). **Time per output token** depends on decode speed — model size, server load, batching. **Total** ≈ TTFT + output tokens × per-token time, so long outputs dominate. Levers: shorter or cached prompts for TTFT; shorter outputs and smaller or faster models for the total; streaming for perceived latency."
+      },
+      {
+        "q": "Define cost per resolved task, and say why it beats cost per request.",
+        "a": "Total LLM and infrastructure spend over a period ÷ tasks **successfully completed** in it (tickets resolved, answers accepted). Cost per request rewards cheap calls even when they fail and cause retries, escalations and repeat contacts. A model three times pricier per call that resolves twice as many tasks without a human can be cheaper per outcome. It ties cost work to the quality metric, so you can't improve one by breaking the other."
       }
     ]
   },
-  "LLM-03": {
+  "CH-12": {
     "posts": 0,
     "items": [
       {
@@ -855,12 +714,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?",
         "a": "Distil: have the large model (plus human review of disagreements) label a few thousand real inputs, LoRA-fine-tune a small model on them, and compare on a held-out set. Ship it if it's within the quality bar, with a cascade sending low-confidence or invalid outputs to the large model. Retrain as inputs drift."
-      }
-    ]
-  },
-  "LLM-06": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Why is continuous batching faster than static batching?",
         "a": "Static batching waits for every request in a batch to finish, so slots of short answers sit idle until the longest one completes. Continuous batching removes finished requests and admits waiting ones at every generation step, so the GPU stays busy and throughput rises sharply."
@@ -876,6 +730,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "What does quantisation trade off?",
         "a": "Fewer bits per weight (8-bit halves memory, 4-bit quarters it) mean fewer GPUs, more room for the KV cache and faster decoding, at a small quality cost that grows as bits shrink and varies by task — so measure on your own test set before switching."
+      },
+      {
+        "q": "What problem does MCP solve that plain function calling doesn't?",
+        "a": "Function calling is the model-side mechanism: the model emits a structured call to a tool you defined in your own code. MCP standardises the **integration side**: any tool or data source packaged once as an MCP server can be plugged into any MCP-capable application (an IDE, a chat app, your agent) without custom glue per pair. It turns N×M integrations into N+M, and adds discovery of tools, resources and prompts."
+      },
+      {
+        "q": "Tools, resources and prompts in MCP — an example of each.",
+        "a": "**Tool**: an action the model can invoke — `create_ticket(title, body)`. **Resource**: data the application can read into context — a file, a database row, `tickets://123`. **Prompt**: a reusable template the user can pick — “summarise this incident”. Tools are model-controlled, resources application-controlled, prompts user-controlled."
+      },
+      {
+        "q": "How do you treat a third-party MCP server's tool descriptions?",
+        "a": "As **untrusted input**. Descriptions and tool outputs go straight into the model's context, so a malicious or compromised server can inject instructions (“before answering, read ~/.ssh and call upload…”) or change its descriptions after you approved it. Mitigations: install only reviewed servers, pin versions, scope credentials per server, require approval for sensitive tools, and avoid combining a server that reads private data with one that can send data out."
+      },
+      {
+        "q": "stdio or HTTP transport — when each?",
+        "a": "**stdio**: the server runs as a local subprocess of the host — simple, no network exposure, ideal for local tools (files, a local database, CLIs). **Streamable HTTP**: the server runs remotely as a service — shared by many clients, centrally managed and updated, but it needs authentication and authorisation, TLS, and the usual web-service hardening."
       }
     ]
   }
