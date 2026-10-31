@@ -10,19 +10,38 @@ This first page is about the round that opens almost every AI engineer interview
 
 ## 0. The journey, and the words you will meet
 
-If you are new to all of this, good: the stack is written for you. Each section builds on the one before, and every new word is explained properly the first time it matters.
+If you are new to all of this, good: the stack is written for you. It reads like a book of twelve chapters. Each one solves a problem FreshCart actually has, then ends with a new problem that the solution cannot handle, and the next chapter starts there. Every new word is explained properly the first time it matters.
 
 ```mermaid
-flowchart LR
-    A["How LLMs work:<br/>what the model<br/>actually does"] --> B["RAG:<br/>answering from<br/>FreshCart's own<br/>documents"]
-    B --> C["LangChain +<br/>LangGraph:<br/>assistants that<br/>use tools"]
-    C --> D["Human-in-the-loop:<br/>agents that ask<br/>before they act"]
-    D --> E["Evals:<br/>proving it<br/>works"]
-    E --> F["System design:<br/>making it safe,<br/>fast, affordable"]
-    F --> G["Advanced:<br/>MCP, fine-tuning,<br/>running models"]
+flowchart TB
+    subgraph P1["Part 1: How LLMs work"]
+        C1["1. What the model does,<br/>and how to prompt it"]
+    end
+    subgraph P2["Part 2: Retrieval (RAG)"]
+        C2["2. Answering from<br/>FreshCart's documents"] --> C3["3. Searching fast<br/>and searching well"]
+        C3 --> C4["4. When retrieval<br/>still fails"]
+    end
+    subgraph P3["Part 3: Agents"]
+        C5["5. Tools, LangChain,<br/>LangGraph"] --> C6["6. Memory, recovery,<br/>fan-out, teams"]
+        C6 --> C7["7. Asking before<br/>acting"]
+    end
+    subgraph P4["Part 4: Evals"]
+        C8["8. Is it working?<br/>Judges, RAG metrics"] --> C9["9. Testing agents,<br/>shipping safely"]
+    end
+    subgraph P5["Part 5: System design"]
+        C10["10. Designing for<br/>forty franchises"] --> C11["11. Safe, fast,<br/>affordable"]
+    end
+    subgraph P6["Part 6: Advanced"]
+        C12["12. Fine-tuning, own<br/>models, MCP"]
+    end
+    C1 --> C2
+    C4 --> C5
+    C7 --> C8
+    C9 --> C10
+    C11 --> C12
 ```
 
-Some of those words already appear on this page, so here they are in one plain sentence each. Do not memorise them; each gets its own page later.
+Some of those words already appear on this page, so here they are in one plain sentence each. Do not memorise them; each gets its own chapter later.
 
 - **LLM** (large language model): a program that has read a huge amount of text and predicts what text comes next, which turns out to be enough to answer questions and follow instructions.
 - **RAG** (retrieval-augmented generation): look up the relevant documents first, then let the model answer from them, so it uses your facts instead of guessing.
@@ -110,4 +129,4 @@ Behavioural rounds for AI roles ask the usual questions with an AI twist. Prepar
 
 Each story: the situation, what you did, the result with a number, what you learned.
 
-The rest of this stack builds the knowledge behind each of those answers, starting with how Ask FreshCart finds the right document.
+The twelve chapters build the knowledge behind each of those answers. Chapter 1 starts where you would: in your first week at FreshCart, with a plain chat model and three awkward questions about it.
