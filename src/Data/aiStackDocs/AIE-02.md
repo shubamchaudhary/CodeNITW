@@ -12,33 +12,44 @@ This first page is about the round that opens almost every AI engineer interview
 
 If you are new to all of this, good: the stack is written for you. It reads like a book of twelve chapters. Each one solves a problem FreshCart actually has, then ends with a new problem that the solution cannot handle, and the next chapter starts there. Every new word is explained properly the first time it matters.
 
+The first half builds the two products:
+
 ```mermaid
-flowchart TB
+flowchart LR
     subgraph P1["Part 1: How LLMs work"]
-        C1["1. What the model does,<br/>and how to prompt it"]
+        direction TB
+        C1["1. What the model<br/>does, and how<br/>to prompt it"]
     end
-    subgraph P2["Part 2: Retrieval (RAG)"]
-        C2["2. Answering from<br/>FreshCart's documents"] --> C3["3. Searching fast<br/>and searching well"]
+    subgraph P2["Part 2: RAG"]
+        direction TB
+        C2["2. Answering from<br/>FreshCart's<br/>documents"] --> C3["3. Searching fast<br/>and well"]
         C3 --> C4["4. When retrieval<br/>still fails"]
     end
     subgraph P3["Part 3: Agents"]
+        direction TB
         C5["5. Tools, LangChain,<br/>LangGraph"] --> C6["6. Memory, recovery,<br/>fan-out, teams"]
         C6 --> C7["7. Asking before<br/>acting"]
     end
+    P1 --> P2 --> P3
+```
+
+The second half makes them trustworthy, then goes further:
+
+```mermaid
+flowchart LR
     subgraph P4["Part 4: Evals"]
-        C8["8. Is it working?<br/>Judges, RAG metrics"] --> C9["9. Testing agents,<br/>shipping safely"]
+        direction TB
+        C8["8. Is it working?<br/>Judges, RAG<br/>metrics"] --> C9["9. Testing agents,<br/>shipping safely"]
     end
     subgraph P5["Part 5: System design"]
+        direction TB
         C10["10. Designing for<br/>forty franchises"] --> C11["11. Safe, fast,<br/>affordable"]
     end
     subgraph P6["Part 6: Advanced"]
-        C12["12. Fine-tuning, own<br/>models, MCP"]
+        direction TB
+        C12["12. Fine-tuning,<br/>own models, MCP"]
     end
-    C1 --> C2
-    C4 --> C5
-    C7 --> C8
-    C9 --> C10
-    C11 --> C12
+    P4 --> P5 --> P6
 ```
 
 Some of those words already appear on this page, so here they are in one plain sentence each. Do not memorise them; each gets its own chapter later.
