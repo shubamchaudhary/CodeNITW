@@ -1,9 +1,10 @@
-import { Img, interpolate, staticFile } from "remotion";
+import { Img, interpolate } from "remotion";
 import { Gif } from "@remotion/gif";
 import type { Scene } from "../lib/types.ts";
 import type { Clock } from "../lib/timeline.ts";
 import { C, MONO, tone } from "../lib/theme.ts";
 import { ease, enter, lerp, pop, rise } from "../lib/anim.ts";
+import { useAsset } from "../lib/assets.ts";
 import { Abs, card, Chip, SceneTitle } from "./ui.tsx";
 
 type Of<K extends Scene["kind"]> = Extract<Scene, { kind: K }>;
@@ -224,6 +225,7 @@ export const FlowScene = ({ s, t }: P<"flow">) => {
 
 export const ImageScene = ({ s, t }: P<"image">) => {
   const f = t.frame;
+  const asset = useAsset();
   const notes = s.notes ?? [];
   const box = notes.length ? { x: 80, y: 225, w: 1210, h: 640 } : { x: 210, y: 225, w: 1500, h: 640 };
   const focus = s.focus ?? [[50, 50, 1]];
@@ -240,9 +242,9 @@ export const ImageScene = ({ s, t }: P<"image">) => {
       <Abs x={box.x} y={box.y} w={box.w} h={box.h} style={{ ...rise(f, 4), borderRadius: 22, overflow: "hidden", background: "#ffffff", boxShadow: "0 18px 50px rgba(0,0,0,0.45)" }}>
         <div style={{ position: "absolute", inset: 18, transform: `scale(${z})`, transformOrigin: `${fx}% ${fy}%` }}>
           {s.gif ? (
-            <Gif src={staticFile(s.src)} width={box.w - 36} height={box.h - 36} fit="contain" />
+            <Gif src={asset(s.src)} width={box.w - 36} height={box.h - 36} fit="contain" />
           ) : (
-            <Img src={staticFile(s.src)} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            <Img src={asset(s.src)} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           )}
         </div>
       </Abs>

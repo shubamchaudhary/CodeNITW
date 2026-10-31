@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "beats": "node scripts/export-beats.ts",
-    "tts": "node scripts/export-beats.ts && .venv/Scripts/python scripts/tts.py",
+    "tts": "node scripts/export-beats.ts && .venv/Scripts/python scripts/tts.py && node scripts/mix-audio.ts",
+    "mix": "node scripts/mix-audio.ts",
     "studio": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts"
   },
