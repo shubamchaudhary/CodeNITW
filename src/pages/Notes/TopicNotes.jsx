@@ -24,6 +24,7 @@ import {
 import { uploadNoteImage, loadNoteAssets, assetIdsIn, NoteAssetError } from "../../Data/noteAssets";
 import { recordNow, restoreVersion } from "../../Data/noteHistory";
 import { hasBuiltInDoc, loadBuiltInDoc } from "../../Data/aiStackDocs";
+import { builtInText, needsRebase, rebaseHighlights } from "./builtInCopy";
 import NoteReader, { useStickyHeaderOffset } from "./NoteReader";
 import StackNav from "./StackNav";
 import ResizableSide from "../../components/ResizableSide";
@@ -49,12 +50,9 @@ const VIEWS = [
 // Reading preferences are a per-device convenience, so localStorage is fine;
 // they never touch the synced note store.
 const PREFS_KEY = "notesReaderPrefs";
-// A built-in document has no images, annotations or learnt marks of its own;
-// stable empties keep the reader from re-deriving on every render.
+// A built-in document has no images of its own; a stable empty keeps the
+// reader from re-deriving on every render.
 const NO_ASSETS = {};
-const NO_ANNOTATIONS = [];
-const NO_LEARNT = {};
-const noop = () => {};
 const FONT_MIN = 14;
 const FONT_MAX = 22;
 function loadPrefs() {
@@ -364,6 +362,15 @@ export default function TopicNotes() {
     [source, topicId, completed, setDone]
   );
 
+  // A built-in document was rewritten since this viewer highlighted it: carry
+  // their highlights over to the new text, and say so if some were lost.
+  useEffect(() => {
+    if (!builtIn || !loaded || doc == null || !needsRebase(doc, text)) return;
+    const { text: next, kept, total } = rebaseHighlights(text, doc);
+    commit(next);
+    if (kept < total) toast.info(`This page was updated — ${kept} of ${total} highlights carried over.`);
+  }, [builtIn, loaded, doc, text, commit]);
+
   // Flush on unmount (or topic switch) so leaving inside the debounce window
   // still saves — to the note that was being edited.
   useEffect(
@@ -612,7 +619,7 @@ export default function TopicNotes() {
         </span>
       )}
       {uploading > 0 && <span className={accent.text}>· uploading {uploading}…</span>}
-      {!builtIn && <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user && !sandbox} />}
+      <SaveState dirty={dirty} savedAt={savedAt} accent={accent} guest={!user && !sandbox} />
     </span>
   );
 
@@ -706,7 +713,9 @@ export default function TopicNotes() {
             </div>
           )}
 
-          {/* The topic's built-in document: read-only, the same for every viewer. */}
+          {/* The topic's built-in document, the same for every viewer: its text
+              can't be edited, but highlights (kept in the viewer's own copy),
+              personal notes and learnt marks are the viewer's, as on any note. */}
           {loaded && builtIn && doc !== null && !topic.noteless && (
             <NoteReader
               key={`${source}:${topic.id}:doc`}
@@ -714,8 +723,8 @@ export default function TopicNotes() {
               lead={lead}
               starterQuestions={null}
               footer={asked}
-              text={doc}
-              onCommit={noop}
+              text={builtInText(doc, text)}
+              onCommit={commit}
               assets={NO_ASSETS}
               colorMode={colorMode}
               fontSize={prefs.fontSize}
@@ -724,11 +733,11 @@ export default function TopicNotes() {
               immersive={immersive}
               railTop={immersive ? null : fullScreenButton("rail")}
               railTopShown={!immersive && !toolbarFsInView}
-              annotations={NO_ANNOTATIONS}
-              onAnnotationsChange={noop}
-              learnt={NO_LEARNT}
-              onToggleLearnt={noop}
-              readOnly
+              annotations={annotations}
+              onAnnotationsChange={changeAnnotations}
+              learnt={learnt}
+              onToggleLearnt={toggleLearnt}
+              editable={false}
             />
           )}
 
