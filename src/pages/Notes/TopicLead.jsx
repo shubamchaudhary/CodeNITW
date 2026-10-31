@@ -52,7 +52,6 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
       <div className="mt-6 border-t border-line" />
 
       {items.length > 0 && <WatchFirst items={items} />}
-      {stack.key === "aistack" && <AIDepth topic={topic} />}
     </header>
   );
 }
@@ -159,63 +158,5 @@ function WatchItem({ r, n }) {
         </div>
       )}
     </li>
-  );
-}
-
-// `code` spans inside a plain-text line, for API names in the "know cold" list.
-function withCode(text) {
-  return text.split(/`([^`]+)`/).map((part, i) =>
-    i % 2 ? (
-      <code key={i} className="font-mono text-[0.92em] px-1 py-px rounded bg-surface-subtle border border-line text-fg">
-        {part}
-      </code>
-    ) : (
-      part
-    )
-  );
-}
-
-// AI Stack topics carry a "how deep is enough" line, what to know cold and, for
-// resume topics, a warning — study guidance rather than questions, so it stays.
-// The questions themselves, with answers, sit under the note (AskedQuestions).
-function AIDepth({ topic }) {
-  const c = topic.ceiling || {};
-  const know = topic.know || [];
-  if (!c.enough && !c.tooDeep && !know.length && !(topic.resumeLinked && topic.flag)) return null;
-  return (
-    <section className="mt-5 space-y-2">
-      {topic.resumeLinked && topic.flag && (
-        <p className="rounded-lg px-4 py-3 bg-warning-subtle text-[14px] leading-relaxed text-warning-fg">
-          <span className="font-semibold">On your resume: </span>
-          {topic.flag}
-        </p>
-      )}
-      {(c.enough || c.tooDeep) && (
-        <div className="grid sm:grid-cols-2 gap-2">
-          {c.enough && (
-            <p className="rounded-lg px-4 py-3 border border-line text-[14px] leading-relaxed text-fg-muted">
-              <span className="font-semibold text-success-fg">Enough: </span>
-              {c.enough}
-            </p>
-          )}
-          {c.tooDeep && (
-            <p className="rounded-lg px-4 py-3 border border-line text-[14px] leading-relaxed text-fg-muted">
-              <span className="font-semibold text-danger-fg">Too deep: </span>
-              {c.tooDeep}
-            </p>
-          )}
-        </div>
-      )}
-      {know.length > 0 && (
-        <div className="rounded-lg px-4 py-3 border border-line">
-          <p className="text-[14px] font-semibold text-fg">Know cold</p>
-          <ul className="mt-1.5 list-disc pl-5 space-y-1 text-[14px] leading-relaxed text-fg-muted marker:text-fg-subtle">
-            {know.map((k, i) => (
-              <li key={i}>{withCode(k)}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </section>
   );
 }

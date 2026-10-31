@@ -196,6 +196,7 @@ export default function NoteReader({
   starterQuestions = null, // offered when the note is empty
   footer = null, // fixed below the note, outside it: never edited, never annotated
   readOnly = false, // an old version being previewed: look, don't touch
+  editable = true, // false: a built-in document — highlight and annotate it, never rewrite it
   annotations = [],
   onAnnotationsChange,
   learnt = {},
@@ -538,7 +539,7 @@ export default function NoteReader({
   // (write below it); on a touch screen, tapping the part does.
   const placeGutter = useCallback(
     (target) => {
-      if (readOnly || editing) return;
+      if (readOnly || !editable || editing) return;
       const unit = unitAt(target);
       const article = articleRef.current;
       const md = mdRef.current;
@@ -558,7 +559,7 @@ export default function NoteReader({
       };
       setGutter((g) => (g && ["sec", "s", "e", "top", "height", "left"].every((k) => g[k] === next[k]) ? g : next));
     },
-    [readOnly, editing]
+    [readOnly, editable, editing]
   );
   // On a wide screen the pen shows only while the pointer is in the left
   // margin, beside a part: reading the text itself stays undisturbed.
@@ -592,7 +593,7 @@ export default function NoteReader({
 
   const startUnit = useCallback(
     (mode, unit) => {
-      if (readOnly || !unit) return;
+      if (readOnly || !editable || !unit) return;
       if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) return;
       const sec = sections[unit.sec];
       if (!sec) return;
@@ -613,7 +614,7 @@ export default function NoteReader({
       setGutter(null);
       setEditing({ mode, sec: unit.sec, s: unit.s, e: unit.e, li: unit.li, source, indent, marker });
     },
-    [readOnly, sections, text]
+    [readOnly, editable, sections, text]
   );
 
   const editFromSelection = useCallback(() => {
@@ -643,14 +644,14 @@ export default function NoteReader({
   );
 
   const startAppend = useCallback(() => {
-    if (readOnly) return;
+    if (readOnly || !editable) return;
     if (!requireAuth("Sign in to edit notes — your notes, highlights and personal notes are saved to your account.")) return;
     setToolbar(null);
     setMarkMenu(null);
     setNotePop(null);
     setGutter(null);
     setEditing({ mode: "append" });
-  }, [readOnly]);
+  }, [readOnly, editable]);
 
   // Save: the part goes back exactly where it came from. Emptied, it's
   // removed. Nothing typed below a part adds nothing.
@@ -820,7 +821,8 @@ export default function NoteReader({
                 <InlineEditor initial="" onSave={saveUnit} onCancel={() => setEditing(null)} uploadInto={uploadInto} navTop={navTop} />
               ) : (
                 !isEmpty &&
-                !readOnly && (
+                !readOnly &&
+                editable && (
                   <button
                     onClick={startAppend}
                     className="note-add mt-12 w-full rounded-2xl border-2 border-dashed border-gray-300/80 dark:border-white/10 py-4 text-[14px] font-semibold text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-400 dark:hover:border-white/25 transition-colors"
@@ -922,7 +924,7 @@ export default function NoteReader({
           >
             Copy
           </FloatText>
-          <FloatText onPick={editFromSelection}>Edit</FloatText>
+          {editable && <FloatText onPick={editFromSelection}>Edit</FloatText>}
         </FloatingBar>
       )}
 
