@@ -1,0 +1,20 @@
+{
+  "name": "codenitw-video",
+  "private": true,
+  "description": "Animated, narrated lectures for the AI Stack chapters (Remotion).",
+  "type": "module",
+  "scripts": {
+    "beats": "node scripts/export-beats.ts",
+    "tts": "node scripts/export-beats.ts && .venv/Scripts/python scripts/tts.py",
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.536",
+    "@remotion/gif": "4.0.536",
+    "@remotion/google-fonts": "4.0.536",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.536"
+  }
+}
