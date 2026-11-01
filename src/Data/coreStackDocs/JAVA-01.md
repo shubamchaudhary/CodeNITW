@@ -188,22 +188,14 @@ The table is created lazily. `new HashMap<>()` has no array at all; the first `p
 
 ```mermaid
 flowchart TB
-    A["put(BB, 20)"] --> B["1. h = hashCode<br/>XOR (hashCode >>> 16)"]
-    B --> C["2. i = h AND (n - 1)<br/>n = 16 -> bucket 0"]
-    C --> D{"3. bucket<br/>empty?"}
+    A["put(BB, 20)"] --> B["1-2. mix the hash,<br/>bucket = h AND (n - 1)"]
+    B --> D{"3. bucket<br/>empty?"}
     D -->|"yes"| E["store new node"]
     D -->|"no"| F["4. walk the chain:<br/>same hash AND equals?"]
-    F -->|"match"| G["replace value,<br/>return old value"]
-    F -->|"no match"| H["append node<br/>at the tail"]
-    H --> I{"5. chain had 8,<br/>this is the 9th?"}
-    I -->|"yes, n >= 64"| J["bucket becomes<br/>red-black tree"]
-    I -->|"yes, n < 64"| K["resize instead"]
-    E --> L{"6. size ><br/>n x 0.75?"}
-    G --> M["done"]
-    J --> L
-    I -->|"no"| L
-    L -->|"yes"| N["resize: double n"]
-    L -->|"no"| M
+    F -->|"match"| G["replace value"]
+    F -->|"no match"| H["append at the tail"]
+    E --> L["5-6. 9th node in bucket?<br/>treeify. size over 0.75?<br/>resize."]
+    H --> L
 ```
 
 1. HashMap calls `key.hashCode()` and mixes it: `h ^ (h >>> 16)`. This folds the top 16 bits into the bottom 16 (5.5 shows why).

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 530" width="1000" height="530" role="img" aria-label="Heap generations">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker></defs>
+<rect width="1000" height="530" rx="18" fill="#0f1420"/>
+<text x="40" y="50" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Heap generations and metaspace</text>
+<text x="40" y="78" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">new objects start in Eden; survivors age in S0/S1; at the threshold they move to old</text>
+<rect x="40" y="110" width="560" height="230" rx="10" fill="#121a2a" stroke="#5b9cff" stroke-width="2"/>
+<text x="56" y="136" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#5b9cff" text-anchor="start" font-weight="700">young generation  (minor GC, copying)</text>
+<rect x="56" y="152" width="250" height="170" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="181" y="176" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#38d996" text-anchor="middle" font-weight="700">Eden</text>
+<rect x="76" y="194" width="96" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="124" y="221" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">O6</text>
+<rect x="186" y="194" width="96" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="234" y="221" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">O7</text>
+<rect x="76" y="250" width="96" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="124" y="277" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">O8</text>
+<rect x="186" y="250" width="96" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="234" y="277" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">O9</text>
+<rect x="320" y="152" width="130" height="170" rx="10" fill="#1a2235" stroke="#ff6fa5" stroke-width="2"/>
+<text x="385" y="176" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#ff6fa5" text-anchor="middle" font-weight="700">S0</text>
+<rect x="332" y="194" width="106" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="385" y="213" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">O1</text>
+<text x="385" y="229" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#93a0b8" text-anchor="middle" font-weight="400">age 2</text>
+<rect x="332" y="248" width="106" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="385" y="267" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">O3</text>
+<text x="385" y="283" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="11" fill="#93a0b8" text-anchor="middle" font-weight="400">age 2</text>
+<rect x="462" y="152" width="122" height="170" rx="10" fill="#1a2235" stroke="#ff6fa5" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="523" y="176" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#ff6fa5" text-anchor="middle" font-weight="700">S1</text>
+<text x="523" y="245" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="middle" font-weight="400">empty</text>
+<rect x="620" y="110" width="340" height="230" rx="10" fill="#121a2a" stroke="#ffb547" stroke-width="2"/>
+<text x="636" y="136" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#ffb547" text-anchor="start" font-weight="700">old generation (major GC)</text>
+<rect x="640" y="156" width="300" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="790" y="183" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">cache</text>
+<rect x="640" y="212" width="300" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="790" y="239" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">pool</text>
+<rect x="640" y="268" width="300" height="42" rx="8" fill="#141b2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="790" y="295" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="400">O0  age 15</text>
+<path d="M440,330 C520,380 700,380 760,325" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#ar)"/>
+<text x="600" y="392" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="middle" font-weight="400">promotion at MaxTenuringThreshold (default 15)</text>
+<rect x="40" y="420" width="920" height="80" rx="10" fill="#16142a" stroke="#a78bfa" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="56" y="448" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#a78bfa" text-anchor="start" font-weight="700">metaspace (native memory, outside the heap)</text>
+<text x="56" y="476" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">class metadata, method bytecode, constant pool  -  replaced PermGen in Java 8</text>
+</svg>
