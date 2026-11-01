@@ -109,16 +109,17 @@ export default function TopicNotes() {
   const [loaded, setLoaded] = useState(false);
   // A topic that ships with a document (AI Stack) reads that document, the same
   // for every viewer, instead of the viewer's own note.
-  const builtIn = hasBuiltInDoc(source, topicId);
+  const owner = isOwner(user);
+  const builtIn = hasBuiltInDoc(source, topicId, owner);
   const [doc, setDoc] = useState(null);
   useEffect(() => {
     let live = true;
     setDoc(null);
-    loadBuiltInDoc(source, topicId).then((d) => live && setDoc(d));
+    loadBuiltInDoc(source, topicId, owner).then((d) => live && setDoc(d));
     return () => {
       live = false;
     };
-  }, [source, topicId]);
+  }, [source, topicId, owner]);
   const [savedAt, setSavedAt] = useState(null);
   const [dirty, setDirty] = useState(false);
   const [uploading, setUploading] = useState(0);
@@ -632,6 +633,7 @@ export default function TopicNotes() {
   const lead = (
     <TopicLead
       stack={shown}
+      owner={owner}
       topic={topic}
       done={!!completed[topic.id]}
       doneDays={doneDays}

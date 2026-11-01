@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 410" width="1000" height="410" role="img" aria-label="HashMap treeify rules">
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker>
+</defs>
+<rect width="1000" height="410" rx="18" fill="#0f1420"/>
+<text x="40" y="50" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">A crowded bucket becomes a red-black tree</text>
+<text x="40" y="78" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">TREEIFY_THRESHOLD = 8 . MIN_TREEIFY_CAPACITY = 64 . UNTREEIFY_THRESHOLD = 6</text>
+<rect x="40" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="63" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k1</text>
+<line x1="86" y1="138" x2="96" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="98" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="121" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k2</text>
+<line x1="144" y1="138" x2="154" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="156" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="179" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k3</text>
+<line x1="202" y1="138" x2="212" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="214" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="237" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k4</text>
+<line x1="260" y1="138" x2="270" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="272" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="295" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k5</text>
+<line x1="318" y1="138" x2="328" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="330" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="353" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k6</text>
+<line x1="376" y1="138" x2="386" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="388" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="411" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k7</text>
+<line x1="434" y1="138" x2="444" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="446" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="469" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">k8</text>
+<line x1="492" y1="138" x2="502" y2="138" stroke="#93a0b8" stroke-width="2"/>
+<rect x="504" y="120" width="46" height="36" rx="7" fill="#1a2235" stroke="#ff6fa5" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="527" y="143" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ff6fa5" text-anchor="middle" font-weight="400">k9</text>
+<text x="40" y="190" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">a list: lookup walks every node, O(n)</text>
+<line x1="590" y1="140" x2="680" y2="140" stroke="#38d996" stroke-width="3" marker-end="url(#arg)"/>
+<text x="635" y="124" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#38d996" text-anchor="middle" font-weight="400">9th node</text>
+<text x="635" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="middle" font-weight="400">n &gt;= 64</text>
+<line x1="830" y1="125" x2="760" y2="195" stroke="#2f3a55" stroke-width="3"/>
+<line x1="830" y1="125" x2="900" y2="195" stroke="#2f3a55" stroke-width="3"/>
+<line x1="760" y1="195" x2="725" y2="265" stroke="#2f3a55" stroke-width="3"/>
+<line x1="760" y1="195" x2="795" y2="265" stroke="#2f3a55" stroke-width="3"/>
+<line x1="900" y1="195" x2="865" y2="265" stroke="#2f3a55" stroke-width="3"/>
+<line x1="900" y1="195" x2="935" y2="265" stroke="#2f3a55" stroke-width="3"/>
+<line x1="935" y1="265" x2="900" y2="335" stroke="#2f3a55" stroke-width="3"/>
+<line x1="935" y1="265" x2="960" y2="335" stroke="#2f3a55" stroke-width="3"/>
+<circle cx="830" cy="125" r="21" fill="#151a26" stroke="#eef2f8" stroke-width="2"/>
+<text x="830" y="130" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k1</text>
+<circle cx="760" cy="195" r="21" fill="#3a1620" stroke="#ff6262" stroke-width="2"/>
+<text x="760" y="200" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k2</text>
+<circle cx="900" cy="195" r="21" fill="#151a26" stroke="#eef2f8" stroke-width="2"/>
+<text x="900" y="200" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k3</text>
+<circle cx="725" cy="265" r="21" fill="#151a26" stroke="#eef2f8" stroke-width="2"/>
+<text x="725" y="270" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k4</text>
+<circle cx="795" cy="265" r="21" fill="#151a26" stroke="#eef2f8" stroke-width="2"/>
+<text x="795" y="270" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k5</text>
+<circle cx="865" cy="265" r="21" fill="#151a26" stroke="#eef2f8" stroke-width="2"/>
+<text x="865" y="270" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k6</text>
+<circle cx="935" cy="265" r="21" fill="#151a26" stroke="#eef2f8" stroke-width="2"/>
+<text x="935" y="270" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k7</text>
+<circle cx="900" cy="335" r="21" fill="#3a1620" stroke="#ff6262" stroke-width="2"/>
+<text x="900" y="340" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k8</text>
+<circle cx="960" cy="335" r="21" fill="#3a1620" stroke="#ff6262" stroke-width="2"/>
+<text x="960" y="340" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="400">k9</text>
+<text x="710" y="385" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">a tree: O(log n) lookup</text>
+<rect x="40" y="230" width="560" height="150" rx="12" fill="#1a2235" stroke="#2f3a55"/>
+<text x="60" y="262" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#ffb547" text-anchor="start" font-weight="600">9th node but table &lt; 64 buckets: resize instead</text>
+<text x="60" y="288" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">a crowded bucket in a small table = table too small</text>
+<text x="60" y="326" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#3fd2e8" text-anchor="start" font-weight="600">a resize splits a tree; a half with 6 or fewer</text>
+<text x="60" y="352" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">nodes goes back to a plain list</text>
+</svg>

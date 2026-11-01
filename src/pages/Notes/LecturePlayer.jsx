@@ -7,12 +7,12 @@ import { Icon } from "../../components/ui";
 // The chapter as a narrated, animated lecture, drawn live in the page from the
 // same scenes the MP4 is rendered from (video/). Narration and images are
 // served from public/lectures/<chapter>/.
-// "CH-04" → video/src/chapters/ch04.ts + video/data/ch04/timings.json, each a
-// separate chunk loaded on demand.
-const SCRIPTS = import.meta.glob("../../../video/src/chapters/ch[0-9]*.ts");
+// "CH-04" → video/src/chapters/ch04.ts + video/data/ch04/timings.json, and
+// "JAVA-01" → java01.ts, each a separate chunk loaded on demand.
+const SCRIPTS = import.meta.glob("../../../video/src/chapters/[a-z]*[0-9].ts");
 const TIMINGS = import.meta.glob("../../../video/data/*/timings.json", { import: "default" });
 const LOAD = (id) => {
-  const ch = `ch${id.slice(3)}`;
+  const ch = id.toLowerCase().replace(/[^a-z0-9]/g, "");
   const script = SCRIPTS[`../../../video/src/chapters/${ch}.ts`];
   const timings = TIMINGS[`../../../video/data/${ch}/timings.json`];
   if (!script || !timings) return Promise.reject(new Error(`no lecture for ${id}`));
