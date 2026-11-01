@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 445" width="980" height="445" role="img" aria-label="JWT anatomy">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker></defs>
+<rect width="980" height="445" rx="18" fill="#0f1420"/>
+<text x="40" y="46" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#eef2f8" text-anchor="start" font-weight="700">A JWT: three Base64URL parts</text>
+<text x="40" y="72" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">signed, not encrypted: anyone can decode the payload</text>
+<text x="40" y="112" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="18" fill="#ff6fa5" text-anchor="start" font-weight="400">eyJhbGciOiJSUzI1NiJ9</text>
+<text x="262" y="112" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="18" fill="#eef2f8" text-anchor="start" font-weight="400">.</text>
+<text x="276" y="112" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="18" fill="#a78bfa" text-anchor="start" font-weight="400">eyJzdWIiOiJhc2hhIiwiZXhwIjox...</text>
+<text x="614" y="112" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="18" fill="#eef2f8" text-anchor="start" font-weight="400">.</text>
+<text x="628" y="112" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="18" fill="#3fd2e8" text-anchor="start" font-weight="400">Q2xHk9_rT...</text>
+<rect x="40" y="140" width="280" height="250" rx="10" fill="#1a2235" stroke="#ff6fa5" stroke-width="2"/>
+<text x="56" y="168" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#ff6fa5" text-anchor="start" font-weight="700">header</text>
+<text x="56" y="198" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"alg": "RS256"</text>
+<text x="56" y="226" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"kid": "k1"</text>
+<text x="56" y="254" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"typ": "JWT"</text>
+<rect x="340" y="140" width="330" height="250" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="356" y="168" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#a78bfa" text-anchor="start" font-weight="700">payload (claims)</text>
+<text x="356" y="198" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"iss": "https://auth.example"</text>
+<text x="356" y="226" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"sub": "asha"</text>
+<text x="356" y="254" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"aud": "orders-api"</text>
+<text x="356" y="282" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"exp": 1767225600</text>
+<text x="356" y="310" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"jti": "7f3a..."</text>
+<text x="356" y="338" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">"roles": ["USER"]</text>
+<rect x="690" y="140" width="250" height="250" rx="10" fill="#1a2235" stroke="#3fd2e8" stroke-width="2"/>
+<text x="706" y="168" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#3fd2e8" text-anchor="start" font-weight="700">signature</text>
+<text x="706" y="198" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">RS256(</text>
+<text x="706" y="226" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">  header + '.' + payload,</text>
+<text x="706" y="254" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">  private key)</text>
+<text x="706" y="282" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400"></text>
+<text x="706" y="310" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">verified with the</text>
+<text x="706" y="338" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">public key (JWKS)</text>
+<text x="40" y="420" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#ffb547" text-anchor="start" font-weight="400">change one character of the payload and the signature no longer matches</text>
+</svg>

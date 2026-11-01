@@ -1,0 +1,313 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "ec645d85",
+   "say": "You add one dependency, the Spring Boot security starter, to a working API.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "981a3e54",
+   "say": "Now every endpoint answers four oh one. A login page appears. And the log prints a generated password.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7e68fa8",
+   "say": "You didn't touch a single controller. Everything happened in a chain of filters, sitting in front of them. That chain is what interviewers want you to draw.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1b31b34f",
+   "say": "Spring, part nine. How Spring Security is built.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb1b302b",
+   "say": "First, two words people mix up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0cf6979",
+   "say": "Authentication asks: who are you? Checking a password, a token, or a certificate.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d36cd2c2",
+   "say": "Authorization asks: what may you do? Checking your roles for this URL or this method. It always comes second.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7fe6cf5d",
+   "say": "And their failures. Four oh one: we don't know who you are, log in again. Four oh three: we know exactly who you are, and the answer is no. Despite its name, four oh one really means unauthenticated.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ec03fc95",
+   "say": "Now, the chain itself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d46bf75",
+   "say": "A servlet filter sees every request before Spring MVC does. But Tomcat knows nothing about Spring beans. So Spring Security registers one plain servlet filter as a bridge: the delegating filter proxy.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb2c7f05",
+   "say": "It hands the request to a bean called spring security filter chain: the filter chain proxy. That proxy picks the first security filter chain whose URL pattern matches.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4506e7dd",
+   "say": "Then the request walks the filters, in order. Load any existing context. CORS answers preflights. CSRF checks its token. Then the authentication filters, basic, bearer token or form login, read credentials and log the user in. If nobody did, an anonymous user is set.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24b77fa4",
+   "say": "Last come the exception translation filter, and the authorization filter. Authorization runs last, because it needs to know who you are.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a104b80b",
+   "say": "In Spring Security six, you configure this by declaring security filter chain beans. The old web security configurer adapter is gone.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "24c30087",
+   "say": "Here's a real chain for an API. Security matcher limits it to slash API.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "62de10f1",
+   "say": "CSRF off, because tokens travel in a header. And no sessions at all: stateless.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b018e64",
+   "say": "Then the rules. They're checked top to bottom, and the first match wins. So specific rules first, and any request last.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5fe74959",
+   "say": "And finally, how users authenticate. Here, basic auth.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c173ee2b",
+   "say": "Now, who actually checks the password?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a36d50c1",
+   "say": "Asha logs in. An authentication filter reads her username and password, and wraps them in an unauthenticated token.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51e63151",
+   "say": "It hands the token to the authentication manager. The usual one, the provider manager, asks each of its providers: can you handle this kind of token? The DAO authentication provider says yes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0094e91",
+   "say": "That provider loads Asha through the user details service: her password hash, and her roles. That's where users come from: memory, or your database.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d279fcf",
+   "say": "Then the password encoder compares the raw password with the stored hash.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57af560c",
+   "say": "It matches. The authenticated token goes into the security context holder, a thread local. Any code on this request thread can now ask: who is this?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0608ed75",
+   "say": "A wrong password throws an authentication exception. The exception translation filter turns it into a four oh one. It all happens in the filter chain, so controller advice never sees it.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "e3dddc51",
+   "say": "So how is that hash made?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "566c1682",
+   "say": "Two users pick the same password. With a fast hash like SHA two fifty six, they get the same hash. And attackers can test billions of guesses a second.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c8e5604",
+   "say": "B crypt adds a random salt to every password, so equal passwords get different hashes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "554a080d",
+   "say": "And it's deliberately slow, with a work factor. Spring's delegating password encoder stores the algorithm as a prefix, so you can upgrade later. And you never compare hashes yourself: call matches.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1ae93065",
+   "say": "Last: where does the logged-in state live?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ed4ffc43",
+   "say": "Stateful: the server keeps a session, and the browser holds a J session I D cookie. Easy to revoke, just delete the session. But many instances need a shared store, and cookies bring CSRF.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf2a741a",
+   "say": "Stateless: the server keeps nothing. Every request carries a token, and any instance can verify it. It scales freely. But a token is hard to revoke before it expires.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "399dc3e1",
+   "say": "Session creation policy stateless tells Spring Security never to create or read a session.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0f69ae8b",
+   "say": "And for ownership checks, add pre authorize on service methods. It works through a proxy, so a call from inside the same class skips it.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1cd435b7",
+   "say": "Four oh one: unknown. Four oh three: known, but not allowed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70906dae",
+   "say": "The delegating filter proxy bridges Tomcat to Spring's filter chain proxy.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4da58fb",
+   "say": "The security filter chain runs CORS, CSRF, authentication, and authorization last.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dc0294a5",
+   "say": "The authentication manager asks providers to check the token.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3caea975",
+   "say": "The user details service loads users, and their hashes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "577f77d8",
+   "say": "And B crypt hashes are salted, and slow.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "abdcb782",
+   "say": "Before your interview: from memory, draw one request, from Tomcat, through the filter chain, to the controller.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8bc52e30",
+   "say": "Then draw the login path. Filter, manager, provider, user details service, and password encoder.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4303dcac",
+   "say": "That's Spring Security. Next: the JWT itself.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

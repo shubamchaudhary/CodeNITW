@@ -1,0 +1,257 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "fe41ab1d",
+   "say": "Get order nine nine nine. The order doesn't exist, the service throws, and with no handling, the client gets a five hundred. Maybe even a stack trace, with your class names in it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77ebf409",
+   "say": "What you want is a four oh four, with a body every client can parse.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f9494e9",
+   "say": "Built in one place, in one shape, for the whole API.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "351d280b",
+   "say": "Spring, part eight. Exception handling.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdc355c0",
+   "say": "First: who catches a thrown exception?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e3f41e4f",
+   "say": "The controller throws. The dispatcher servlet asks a list of exception resolvers, in order, to turn it into a response.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc82be8c",
+   "say": "First, the exception handler resolver. It looks for an exception handler method: in the controller that threw, then in controller advice classes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eea5da24",
+   "say": "If nothing matches, the response status resolver handles exceptions marked with at response status, or a response status exception.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9463297d",
+   "say": "Then Spring's own mappings: a missing parameter is four hundred, a wrong method four oh five. And anything left falls through to the slash error page: a five hundred.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1ef6eb3",
+   "say": "And the trap. An exception thrown in a servlet filter, including Spring Security's four oh one and four oh three, happens before the dispatcher servlet. Controller advice never sees it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a9573795",
+   "say": "Now the three annotations.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64e3f6eb",
+   "say": "An exception handler method inside a controller handles that controller's exceptions, and nothing else.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f2648106",
+   "say": "Put it in a class marked controller advice, and it applies to every controller. Or to the ones you pick, by package or type.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25c900fd",
+   "say": "Rest controller advice is the same thing, plus response body, so return values become JSON. That's the one for REST APIs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16762736",
+   "say": "The rules: local beats global. The most specific exception type wins. Order several advices with at order. And add one catch all for exception, returning a clean five hundred with a trace id, never a stack trace.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "55a4050f",
+   "say": "So what should the body look like?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b174556",
+   "say": "There's a standard: RFC nine four five seven, problem details. Type is a URI naming the kind of error. Clients switch on it, not on the message.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "766266e0",
+   "say": "Title is a fixed summary for that type. Status repeats the HTTP code. Detail describes this occurrence. And instance says which request failed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0dc6e5f",
+   "say": "Then add extensions. A trace id lets support find the exact log line, while the stack trace stays in your logs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6bee77f1",
+   "say": "In Spring six, return a problem detail from your handler. And turn on problem details, so Spring's own errors use the same shape.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa276164",
+   "say": "Last: which layer should know about HTTP?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "307c35ff",
+   "say": "If the service throws a response status exception, HTTP has leaked into your business layer. And when a Kafka consumer calls the same service, what does a four oh four even mean there?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6f2e9b8f",
+   "say": "So the service throws a domain exception: order not found. It knows nothing about HTTP. One rest controller advice, at the web edge, maps each domain exception to a status and a problem detail.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3f629cd7",
+   "say": "Get the codes right. Four hundred for invalid input. Four oh four not found. Four oh nine for a conflict. Four twenty two for a broken business rule. And five hundred only for our own bugs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d8a618a",
+   "say": "Validation failures throw method argument not valid exception. Map it to four hundred, with every field error listed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbb18961",
+   "say": "And make domain exceptions unchecked. No throws clauses everywhere, and transactional rolls back on them by default.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "821abdfd",
+   "say": "Resolvers run in order: handler methods, response status, Spring's defaults, then slash error.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "18a0e3ca",
+   "say": "Rest controller advice holds global handlers, returning JSON.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "173b9cd5",
+   "say": "The most specific, most local handler wins.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b38311ef",
+   "say": "Problem details is the standard error contract.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00f8cd26",
+   "say": "Services throw domain exceptions, with no HTTP in them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c23b3e5",
+   "say": "And exceptions from filters never reach controller advice.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9c398f50",
+   "say": "Before your interview: from memory, draw the resolver chain, from a thrown exception, to slash error.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "253a8058",
+   "say": "Then write the five problem detail fields, and a handler mapping a domain exception to four oh four.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ef13469f",
+   "say": "That's exception handling. Next: filters versus interceptors.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

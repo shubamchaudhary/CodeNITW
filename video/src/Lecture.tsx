@@ -66,7 +66,7 @@ const TermCard = ({ sc, frame }: { sc: SceneT; frame: number }) => {
   return (
     <div data-qa="term" style={{ position: "absolute", right: 60, top: 36, width: 520, transform: `translateX(${(1 - p) * 140}px) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5), background: "rgba(23,30,46,0.94)", border: `3px solid ${C.amber}`, borderRadius: 22, padding: "18px 26px", boxShadow: `0 0 ${40 * Math.max(0, 1 - (frame - shown.at) / 40)}px ${C.amber}` }}>
       <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 3, color: C.amber }}>NEW TERM</div>
-      <div style={{ fontSize: shown.term.word.length > 14 ? 40 : 50, fontWeight: 900, lineHeight: 1.1, overflowWrap: "anywhere" }}>{shown.term.word}</div>
+      <div style={{ fontSize: shown.term.word.length > 18 ? 34 : shown.term.word.length > 14 ? 40 : 50, fontWeight: 900, lineHeight: 1.1, overflowWrap: "anywhere" }}>{shown.term.word}</div>
       <div style={{ fontSize: 26, color: C.muted, marginTop: 4 }}>{shown.term.meaning}</div>
     </div>
   );

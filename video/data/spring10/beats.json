@@ -1,0 +1,278 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "4b995e95",
+   "say": "A photo printing site wants to print your Google Photos.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea2a39b2",
+   "say": "Give it your Google password? It could read your mail. And you could never take access back, without changing your password.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "54e38913",
+   "say": "So you give it a valet key instead. It opens only your photos, it expires, and you can revoke it. Your password never leaves Google. That valet key is OAuth.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5837d572",
+   "say": "Spring, part ten. OAuth two, and service to service tokens.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e18eebd2",
+   "say": "First, who's who.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f64d7de4",
+   "say": "You, the user who owns the photos, are the resource owner.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37d17aed",
+   "say": "The printing site is the client: the app that wants access.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "39635858",
+   "say": "The authorization server logs you in and issues tokens. Google's login, or Keycloak, or Okta, in a company. And the resource server is the photos API, which accepts those tokens.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9001204d",
+   "say": "What the client gets is an access token, limited by a scope, like photos read.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f91a84e4",
+   "say": "And remember: OAuth two is delegated authorization, not login. Login is added on top, by OpenID Connect.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "b9b95439",
+   "say": "Now the flow you'll be asked to draw.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "1d1164d7",
+   "say": "The client makes a random code verifier, and its hash, the code challenge. Then it sends the browser to the authorization server, with the challenge, the scopes, and a random state value.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a96ace41",
+   "say": "You log in there, and approve photos read. The client never sees your password.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "526ab5c9",
+   "say": "The authorization server redirects back, with a short lived, one time code, and the same state. The client checks that state matches.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f11595b",
+   "say": "Now the client's backend calls the token endpoint directly, never through the browser, with the code and the code verifier. The server hashes the verifier, compares it with the challenge, and returns an access token, and a refresh token.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "07035145",
+   "say": "Then the client calls the photos API, with the access token as a bearer header.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "115bc724",
+   "say": "Why all the pieces? The browser only ever sees a short lived code, not the token. And if an attacker steals the code, they can't redeem it without the verifier. That's PKCE. State stops CSRF on the callback.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7ab67169",
+   "say": "And the implicit grant, and the password grant? Deprecated. RFC nine seven hundred, from twenty twenty five, says use authorization code with PKCE, for every app with a user.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "6fc63183",
+   "say": "Now, your own microservices.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "80ecbb7a",
+   "say": "The order service calls the inventory service in a nightly job. There's no user anywhere. The service acts as itself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0a33b4b4",
+   "say": "It sends its own client id and secret to the token endpoint, with grant type client credentials, and the scope it needs. Back comes a short lived access token for the service itself. No refresh token: it just asks again.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e8f90f3e",
+   "say": "It calls inventory with that token. Inventory is a resource server: it verifies the JWT locally, with the issuer's cached public keys, and checks the scope.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "815d8e3e",
+   "say": "In production, cache the token until just before it expires. Spring's authorized client manager does that. And give every service its own client, with the narrowest scopes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "10a1c241",
+   "say": "Need the user's identity downstream? Pass the user's token along, or swap it with token exchange. And mutual TLS can prove which service is calling, at the network level.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "cd8de225",
+   "say": "OAuth doesn't say what a token looks like. A JWT access token is verified locally. Fast, no call per request. But hard to revoke early.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "53d90a1c",
+   "say": "An opaque token is just a random string. The API asks the authorization server's introspection endpoint: is this active, and what may it do? Instantly revocable, but a call per request.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2252af4a",
+   "say": "So OAuth versus JWT isn't a real choice. OAuth is the framework. JWT is just a token format it often uses.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bfde7d46",
+   "say": "Sign in with Google adds OpenID Connect. Ask for the open I D scope, and the same flow also returns an ID token: a JWT about the user, meant for the client.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7bfbdfb9",
+   "say": "The ID token says who logged in. The access token is for APIs. Never send the ID token to an API.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "119054ce",
+   "say": "An access token is a scoped, expiring key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f04fd040",
+   "say": "Authorization code with PKCE: a one time code, and a verifier only the client knows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e47f4b7",
+   "say": "Client credentials: a service gets a token as itself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a67f46d0",
+   "say": "Cache service tokens until they're about to expire.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9da570f8",
+   "say": "Opaque tokens are checked through introspection, and can be revoked instantly.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f2cf450",
+   "say": "And OpenID Connect adds login, with the ID token.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b539ee78",
+   "say": "Before your interview: from memory, draw the authorization code flow with PKCE, with the parameters on each arrow.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "14d592b7",
+   "say": "Then draw client credentials between two services. And say why the code, PKCE, and state each exist.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b9c33563",
+   "say": "That's OAuth. Next: exception handling.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

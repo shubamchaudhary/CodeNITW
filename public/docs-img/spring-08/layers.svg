@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 610" width="980" height="610" role="img" aria-label="Exception translation layers">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker></defs>
+<rect width="980" height="610" rx="18" fill="#0f1420"/>
+<text x="40" y="46" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#eef2f8" text-anchor="start" font-weight="700">Translate exceptions once, at the web edge</text>
+<text x="40" y="72" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">only the advice knows HTTP; the service works the same from REST, Kafka or a batch job</text>
+<rect x="40" y="100" width="900" height="80" rx="10" fill="#1a2235" stroke="#93a0b8" stroke-width="2"/>
+<text x="60" y="132" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="start" font-weight="700">Repository</text>
+<text x="60" y="158" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">DataAccessException for SQL errors</text>
+<text x="920" y="146" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="end" font-weight="400">repo.findById(999) -&gt; Optional.empty()</text>
+<line x1="490" y1="182" x2="490" y2="206" stroke="#93a0b8" stroke-width="2.5" marker-end="url(#am)"/>
+<rect x="40" y="210" width="900" height="80" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="60" y="242" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="start" font-weight="700">Service</text>
+<text x="60" y="268" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">domain language, no HTTP</text>
+<text x="920" y="256" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#5b9cff" text-anchor="end" font-weight="400">throw new OrderNotFoundException(999)</text>
+<line x1="490" y1="292" x2="490" y2="316" stroke="#5b9cff" stroke-width="2.5" marker-end="url(#ab)"/>
+<rect x="40" y="320" width="900" height="80" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="60" y="352" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="start" font-weight="700">@RestControllerAdvice</text>
+<text x="60" y="378" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">maps domain -&gt; status + ProblemDetail</text>
+<text x="920" y="366" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#a78bfa" text-anchor="end" font-weight="400">@ExceptionHandler(OrderNotFoundException)</text>
+<line x1="490" y1="412" x2="490" y2="436" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#ap)"/>
+<rect x="40" y="438" width="900" height="150" rx="10" fill="#11221c" stroke="#38d996" stroke-width="2"/>
+<text x="60" y="464" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#38d996" text-anchor="start" font-weight="400">HTTP/1.1 404   Content-Type: application/problem+json</text>
+<text x="60" y="492" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">{ "type": "https://api.example/errors/order-not-found",</text>
+<text x="60" y="514" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">  "title": "Order not found",  "status": 404,</text>
+<text x="60" y="536" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">  "detail": "Order 999 does not exist",  "instance": "/orders/999",</text>
+<text x="60" y="558" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">  "traceId": "4bf92f3577b34da6" }</text>
+</svg>
