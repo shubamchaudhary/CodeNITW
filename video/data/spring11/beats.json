@@ -1,0 +1,278 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "cf3bb692",
+   "say": "A multi tenant API needs a few things on every single request.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b5e03723",
+   "say": "Which tenant is calling, with no chance of seeing another tenant's data.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a7e2271c",
+   "say": "A correlation id, on every log line.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "09931cc2",
+   "say": "And timing, or an audit, for some endpoints. Each could live in a filter, an interceptor, or an aspect. Which runs first, and what can each one see?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f35e5212",
+   "say": "Spring, part eleven. Filters versus interceptors.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "330fa13f",
+   "say": "First, the order everything runs in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5664cc12",
+   "say": "Tomcat passes the request through every servlet filter. Spring Security's whole chain is one of them. Then the dispatcher servlet picks the controller method.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "617a5fe9",
+   "say": "Now Spring MVC's interceptors run their pre handle. Then the controller.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f84c369",
+   "say": "Then post handle, and finally after completion.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6906693f",
+   "say": "And the response unwinds back out, through the filters again.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "726c40ea",
+   "say": "Now, what a filter can do.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9779948e",
+   "say": "A filter belongs to the servlet container, not to Spring MVC. It runs code before and after the rest of the chain, around one call: chain dot do filter. Here, a correlation id goes into the logging context, and is removed in finally.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3559312c",
+   "say": "It sees every request, even static files and errors. And it sees the raw request and response, so it can wrap them, for example to log a body.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e45e9ec1",
+   "say": "But it doesn't know which controller will run. And its exceptions never reach controller advice.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75f8434a",
+   "say": "So filters are for authentication, CORS, correlation ids, logging and rate limiting.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4098b179",
+   "say": "Next, interceptors.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a98301d4",
+   "say": "A handler interceptor belongs to Spring MVC. You register it in a web MVC configurer, for chosen paths.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "960a5c05",
+   "say": "Pre handle runs before the controller, and receives the handler: the actual controller method. So it can read the method's annotations, like a custom at audited. That's what a filter can't do. Return false, and the request stops.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5e2a559e",
+   "say": "Post handle runs after the controller, but it's skipped if the controller threw. And for REST, the body is already written, so it's too late to change it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f2eb0baa",
+   "say": "After completion always runs, even after an exception. That's the place for timing and cleanup.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1f6ab81",
+   "say": "To change a REST body, use response body advice. And for method arguments, in any layer, use an aspect.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "73bc5af4",
+   "say": "So the rule. Every raw request, or before security: a filter. Needs the controller method or its annotations: an interceptor. Needs method arguments, anywhere: an aspect.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f766b06c",
+   "say": "Auth, CORS and correlation ids go in filters. Annotation checks and per handler audit go in interceptors.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dd82d02e",
+   "say": "Now the design question: where does tenant resolution go?",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "51317aa5",
+   "say": "In a filter, placed right after authentication in the security chain. It reads the tenant from the signed JWT claim, checks any tenant header against it, and stores it in a thread local tenant context.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4da6a4cc",
+   "say": "The data layer reads that context, and scopes every query to the tenant.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d06e71dc",
+   "say": "And in finally, the filter clears it. Here's why that matters.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b86f6912",
+   "say": "Tomcat reuses threads. Thread seven serves tenant A, and nobody clears the context. The next request on thread seven, from tenant B, still sees A. Tenant B reads tenant A's data.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "f7dee788",
+   "say": "Async methods run on other threads, so copy the tenant with a task decorator. Kafka listeners get it from a message header. And enforce it in the database too, as defence in depth.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e83a3c6d",
+   "say": "Filters run first, then the dispatcher servlet, then interceptors.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68a41715",
+   "say": "A filter sees every raw request.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04218127",
+   "say": "An interceptor knows the controller method, and its annotations.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45ba2e88",
+   "say": "Post handle is skipped on exceptions. After completion always runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ef4c1bd",
+   "say": "Resolve the tenant in a filter after authentication, from the JWT.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "324852b0",
+   "say": "And always clear the thread local, because threads are reused.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f3c10a07",
+   "say": "Before your interview: from memory, draw a request through the filters, the dispatcher servlet, and the three interceptor hooks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b154953d",
+   "say": "Then place the tenant filter in the security chain, and say why it must clear the thread local.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "098eee36",
+   "say": "That's filters and interceptors. Good luck in the interview.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

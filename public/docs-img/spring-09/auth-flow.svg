@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 475" width="980" height="475" role="img" aria-label="Spring Security authentication flow">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker></defs>
+<rect width="980" height="475" rx="18" fill="#0f1420"/>
+<text x="40" y="46" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#eef2f8" text-anchor="start" font-weight="700">Username and password: who checks what</text>
+<rect x="40" y="90" width="270" height="78" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="175" y="122" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">Authentication filter</text>
+<text x="175" y="146" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">UsernamePasswordAuthenticationFilter</text>
+<rect x="360" y="90" width="270" height="78" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="495" y="122" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">AuthenticationManager</text>
+<text x="495" y="146" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">ProviderManager</text>
+<rect x="680" y="90" width="270" height="78" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="815" y="122" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">AuthenticationProvider</text>
+<text x="815" y="146" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">DaoAuthenticationProvider</text>
+<rect x="680" y="250" width="270" height="78" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="815" y="282" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">UserDetailsService</text>
+<text x="815" y="306" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">loadUserByUsername(email)</text>
+<rect x="360" y="250" width="270" height="78" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="495" y="282" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">PasswordEncoder</text>
+<text x="495" y="306" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">matches(raw, bcryptHash)</text>
+<rect x="40" y="250" width="270" height="78" rx="10" fill="#1a2235" stroke="#3fd2e8" stroke-width="2"/>
+<text x="175" y="282" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">SecurityContextHolder</text>
+<text x="175" y="306" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">ThreadLocal: Authentication</text>
+<line x1="312" y1="129" x2="356" y2="129" stroke="#5b9cff" stroke-width="2.5" marker-end="url(#ab)"/>
+<text x="334" y="118" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#5b9cff" text-anchor="middle" font-weight="700">1</text>
+<line x1="632" y1="129" x2="676" y2="129" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#ap)"/>
+<text x="654" y="118" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#a78bfa" text-anchor="middle" font-weight="700">2</text>
+<line x1="815" y1="170" x2="815" y2="246" stroke="#38d996" stroke-width="2.5" marker-end="url(#ag)"/>
+<text x="830" y="212" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#38d996" text-anchor="start" font-weight="400">3 load user</text>
+<line x1="678" y1="289" x2="632" y2="289" stroke="#ffb547" stroke-width="2.5" marker-end="url(#aa)"/>
+<text x="655" y="280" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#ffb547" text-anchor="middle" font-weight="700">4</text>
+<line x1="358" y1="289" x2="312" y2="289" stroke="#3fd2e8" stroke-width="2.5" marker-end="url(#am)"/>
+<text x="335" y="280" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#3fd2e8" text-anchor="middle" font-weight="700">5</text>
+<rect x="40" y="360" width="900" height="92" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="2"/>
+<text x="60" y="388" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#eef2f8" text-anchor="start" font-weight="400">1 wrap credentials in an unauthenticated token   2 ProviderManager asks each provider</text>
+<text x="60" y="410" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#eef2f8" text-anchor="start" font-weight="400">3 load the user, hash and roles   4 compare the raw password with the bcrypt hash</text>
+<text x="60" y="432" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">5 success: store the authenticated token for this request.  failure: AuthenticationException -&gt; 401</text>
+</svg>

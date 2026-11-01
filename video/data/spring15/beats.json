@@ -1,0 +1,306 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "2455d0d3",
+   "say": "Every answer about JWTs or Spring Security draws the same follow ups. Why is a token in local storage risky? Why can a stateless API turn off CSRF? Who actually enforces CORS?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7fb83129",
+   "say": "SQL injection: input that becomes code.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c86063f",
+   "say": "Cross site scripting: the attacker's script, running in your page.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba42e6fe",
+   "say": "Cross site request forgery: your own browser, used against you.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c64ce9a2",
+   "say": "And CORS: who is allowed to read a response. Let's take them one at a time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "59760b44",
+   "say": "Spring, part fifteen. Web attacks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1018548a",
+   "say": "First, the oldest one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c495df2",
+   "say": "A search endpoint builds its SQL by gluing the user's email into the query text.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f40d138",
+   "say": "Now the attacker types: quote, or, one equals one. The query becomes: email equals nothing, or one equals one. Always true. Every user comes back. The input became code. That's SQL injection.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "4a3ef1ca",
+   "say": "The fix is a prepared statement. The query shape, with a question mark, is sent and parsed first. The value travels separately, as data, and is never parsed as SQL. Now the same input is just an odd email address. Zero rows.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ecda8aaf",
+   "say": "ORMs are safe only when you use their parameters. Find by email, or J P Q L with a named parameter, is safe. Gluing input into an at query string, or a native query, is not. And a column for order by can't be a parameter, so check it against an allow list.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "6041f31f",
+   "say": "Next, cross site scripting.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95cb8a9b",
+   "say": "A product page shows reviews as raw HTML.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8e27573a",
+   "say": "An attacker posts a review containing a script tag. Now every visitor's browser runs that script, inside your site, with your site's permissions. That's cross site scripting.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe9dfa22",
+   "say": "And the script reads the token from local storage, and sends it to the attacker. Any script on the page can read local storage. An HttpOnly cookie, though, is invisible to JavaScript, so it can't be stolen this way.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ebee8e7a",
+   "say": "The fix: escape output. The angle bracket becomes ampersand l t, so the script shows as text instead of running. Templates like Thymeleaf's t h text and React do it by default. Then add a content security policy, so the browser refuses inline and foreign scripts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e8b5d36",
+   "say": "One correction. HttpOnly doesn't stop XSS itself. The script can still send requests from the victim's browser. It only stops the token being stolen and used elsewhere.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "cf0c37c5",
+   "say": "Now the one people mix up the most.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "55179d86",
+   "say": "You're logged in to your bank. Your browser holds the bank's session cookie.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b1a3dce",
+   "say": "You visit an evil page. It holds a hidden form that posts to the bank's transfer endpoint, and submits it. Your browser attaches the bank's cookie automatically, because the request goes to the bank. The bank sees a valid session, and moves the money. That's cross site request forgery.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c03f5ab",
+   "say": "The classic fix is a CSRF token. The bank puts a random token in its own pages, and demands it on every post. The evil page can't read the bank's pages, so the forged request has no token. Forbidden.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec9e6053",
+   "say": "Same site cookies help too. With same site lax, the browser won't send the cookie on a cross site post.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1147c5bf",
+   "say": "And here's the interview question. Why can a stateless JWT API disable CSRF? Because the token travels in an authorization header. No browser ever adds that header by itself, so a forged form arrives with no credentials at all.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c0d37133",
+   "say": "But if you store the JWT in a cookie, the browser sends it automatically again. Then CSRF protection has to stay on.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "d997e121",
+   "say": "Last, CORS.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4a591cd",
+   "say": "An origin is the scheme, the host, and the port, together. App dot example and A P I dot example are different origins. So are localhost three thousand, and localhost eight thousand eighty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d36c464",
+   "say": "The browser's same origin policy says: a page may send a request to another origin, but may not read the answer. CORS is how that other origin says: you may.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e1e294a0",
+   "say": "For anything beyond a simple request, like a PUT, a JSON body, or an authorization header, the browser first sends a preflight. An options request, asking: may this origin send a PUT, with an authorization header?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4de69788",
+   "say": "The server answers with access control allow origin, and the allowed methods and headers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "faa41e57",
+   "say": "Only then does the browser send the real request, and let the page read the response.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0614fdbb",
+   "say": "Two traps. The preflight carries no credentials, so if you only use at cross origin, Spring Security rejects it with a four oh one first. Configure CORS in the security chain, with h t t p dot cors. And allow origin star can't be combined with credentials.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "43483443",
+   "say": "And the line interviewers love. CORS does not protect your API. Curl, Postman, or another server ignore it completely. It only tells browsers who may read a response. Authentication and authorization protect the API.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3066d6b0",
+   "say": "It's not a CSRF defence either. A forged form post needs no preflight. CORS only stops the evil page from reading the answer.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6daa65e",
+   "say": "SQL injection: send values separately, with prepared statements.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e1022792",
+   "say": "XSS: escape output, and add a content security policy.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0be245f",
+   "say": "Keep tokens in HttpOnly cookies, out of the attacker's script.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87463472",
+   "say": "CSRF: a token, same site cookies, or a Bearer header API.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74fc6d87",
+   "say": "A preflight asks permission before the real call.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e9cd866",
+   "say": "And CORS is enforced by browsers. It is not a shield for your API.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9dca3eda",
+   "say": "Before your interview: from memory, draw the CSRF attack, and then the CORS preflight.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "222e780a",
+   "say": "Then say, in one line each, why a Bearer header API is safe from CSRF, and why CORS doesn't protect an API.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4a0e705a",
+   "say": "That's web attacks. Next: how Spring Security is built.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

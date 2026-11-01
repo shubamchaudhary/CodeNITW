@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 688" width="980" height="688" role="img" aria-label="Spring Security filter chain">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker></defs>
+<rect width="980" height="688" rx="18" fill="#0f1420"/>
+<text x="40" y="46" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#eef2f8" text-anchor="start" font-weight="700">One request through the security filter chain</text>
+<text x="40" y="72" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">FilterChainProxy runs the filters of the first SecurityFilterChain that matches the URL</text>
+<rect x="40" y="100" width="170" height="60" rx="10" fill="#1a2235" stroke="#93a0b8" stroke-width="2"/>
+<text x="125" y="136" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="700">Tomcat</text>
+<line x1="212" y1="130" x2="248" y2="130" stroke="#93a0b8" stroke-width="2.5" marker-end="url(#am)"/>
+<rect x="250" y="100" width="230" height="60" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="365" y="126" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="700">DelegatingFilterProxy</text>
+<text x="365" y="146" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">servlet filter (bridge)</text>
+<line x1="482" y1="130" x2="518" y2="130" stroke="#93a0b8" stroke-width="2.5" marker-end="url(#am)"/>
+<rect x="520" y="100" width="230" height="60" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="635" y="126" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="700">FilterChainProxy</text>
+<text x="635" y="146" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12" fill="#93a0b8" text-anchor="middle" font-weight="400">springSecurityFilterChain</text>
+<line x1="635" y1="162" x2="635" y2="190" stroke="#93a0b8" stroke-width="2.5" marker-end="url(#am)"/>
+<rect x="330" y="192" width="610" height="382" rx="10" fill="#121a2a" stroke="#2f3a55" stroke-width="2"/>
+<text x="346" y="214" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="600">SecurityFilterChain for /api/**</text>
+<rect x="346" y="226" width="578" height="36" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="2"/>
+<text x="360" y="249" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">1. SecurityContextHolderFilter</text>
+<text x="910" y="249" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">load existing context</text>
+<rect x="346" y="270" width="578" height="36" rx="8" fill="#1a2235" stroke="#3fd2e8" stroke-width="2"/>
+<text x="360" y="293" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">2. CorsFilter</text>
+<text x="910" y="293" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">answer preflights</text>
+<rect x="346" y="314" width="578" height="36" rx="8" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="360" y="337" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">3. CsrfFilter</text>
+<text x="910" y="337" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">token on POST/PUT/DELETE</text>
+<rect x="346" y="358" width="578" height="36" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="2"/>
+<text x="360" y="381" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">4. LogoutFilter</text>
+<text x="910" y="381" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400"></text>
+<rect x="346" y="402" width="578" height="36" rx="8" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="360" y="425" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">5. UsernamePassword / BearerToken / Basic</text>
+<text x="910" y="425" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">read credentials, authenticate</text>
+<rect x="346" y="446" width="578" height="36" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="2"/>
+<text x="360" y="469" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">6. AnonymousAuthenticationFilter</text>
+<text x="910" y="469" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">nobody yet? anonymous</text>
+<rect x="346" y="490" width="578" height="36" rx="8" fill="#1a2235" stroke="#ff6262" stroke-width="2"/>
+<text x="360" y="513" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">7. ExceptionTranslationFilter</text>
+<text x="910" y="513" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">401 entry point / 403 handler</text>
+<rect x="346" y="534" width="578" height="36" rx="8" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="360" y="557" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="600">8. AuthorizationFilter</text>
+<text x="910" y="557" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#93a0b8" text-anchor="end" font-weight="400">authorizeHttpRequests rules</text>
+<line x1="635" y1="588" x2="635" y2="618" stroke="#93a0b8" stroke-width="2.5" marker-end="url(#am)"/>
+<rect x="520" y="620" width="230" height="50" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="635" y="650" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#eef2f8" text-anchor="middle" font-weight="700">DispatcherServlet -&gt; controller</text>
+<text x="40" y="260" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="600">order matters:</text>
+<text x="40" y="282" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">CORS before auth,</text>
+<text x="40" y="302" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">authentication before</text>
+<text x="40" y="322" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">authorization,</text>
+<text x="40" y="342" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">AuthorizationFilter last</text>
+</svg>
