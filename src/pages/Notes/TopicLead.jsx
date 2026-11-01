@@ -11,7 +11,7 @@ const LecturePlayer = lazy(() => import("./LecturePlayer"));
 // why it matters, the two things you do with a topic (finish it, plan it), and
 // then what to watch before reading the notes. The questions that used to sit
 // on the topic card live in the notes themselves now.
-export default function TopicLead({ stack, topic, done, doneDays, planned, onToggleDone, onTogglePlanned, meta, tools }) {
+export default function TopicLead({ stack, owner, topic, done, doneDays, planned, onToggleDone, onTogglePlanned, meta, tools }) {
   const items = readingList(stack, topic);
   const tag = stack.tag(topic);
   const summary = stack.summary(topic);
@@ -54,7 +54,7 @@ export default function TopicLead({ stack, topic, done, doneDays, planned, onTog
 
       <div className="mt-6 border-t border-line" />
 
-      {hasLecture(stack.key, topic.id) && (
+      {hasLecture(stack.key, topic.id, owner) && (
         <Suspense fallback={<div className="mt-6 aspect-video w-full rounded-lg border border-line bg-surface-subtle animate-pulse" />}>
           <LecturePlayer id={topic.id} />
         </Suspense>

@@ -1,0 +1,460 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "158268c7",
+   "say": "A game server keeps every player's score. Two million players. Ten thousand lookups a second. Keep them in a list, and every lookup checks about a million entries.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "06df9573",
+   "say": "A HashMap gets there in about one step. It jumps straight to the right place.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9df55eba",
+   "say": "So how does it know where to jump?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "87a129ef",
+   "say": "Java, part one. Collections, and how a HashMap really works.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55d2dad0",
+   "say": "Let's open one up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a9a7129",
+   "say": "Inside, a HashMap is just an array. Each slot is called a bucket, and a new map has sixteen of them. Each bucket holds a little chain of nodes: the hash, the key, the value, and a pointer to the next node.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5691a26",
+   "say": "Put Dhoni with fifty six. Java takes the key's hash code, mixes its high bits into its low bits, and keeps the last four bits. One zero zero one. Bucket nine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa373b87",
+   "say": "Now two famous strings. Capital A small a, and capital B capital B. They have exactly the same hash code: twenty one twelve. Same bucket. They share one chain. Two keys in one bucket is a collision.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "bf324d0b",
+   "say": "So how does get B B return twenty, and not ten? It walks the chain. It checks the hash first, a cheap number compare. Then it calls equals. A a? No. B B? Yes. Twenty.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "81fcac68",
+   "say": "And keys can collide without equal hash codes. Rohit and Ishan have different hash codes, but the same last four bits. Bucket one, for both.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "e525bbc0",
+   "say": "Which brings us to the most asked rule in Java.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45592dbb",
+   "say": "Remember the split. Hash code picks the bucket. Equals picks the entry inside it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "093792f8",
+   "say": "Now a Point class that overrides equals, but not hash code. Two equal points get different default hash codes. So the lookup goes to a different bucket, and equals never even runs. Get returns null, and the map holds duplicates.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f77b721",
+   "say": "The fix: build equals and hash code from the same fields. Or just use a record, which writes both for you.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8a93567",
+   "say": "One more trap. Put a point, one comma two, as a key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e479734",
+   "say": "Then change its x to five. The node still sits in the bucket for one comma two. But the key now says five comma two.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0971784a",
+   "say": "Look it up with p, and Java searches the bucket for five comma two. Empty. Look it up with a fresh one comma two, and equals fails. The entry is still counted, but nobody can reach it. A memory leak.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "2c563e11",
+   "say": "So keys must be immutable. Strings, records, integers, enums.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ed8c8fa6",
+   "say": "Now, what happens when a bucket gets crowded?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "016b6743",
+   "say": "Pile keys with the same hash code into one bucket. Eight of them. Every lookup in this bucket walks the whole chain.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23256aac",
+   "say": "Here comes the ninth. Java asks one question: does the table have at least sixty four buckets?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8142fe93",
+   "say": "Not yet. So it resizes the whole table instead, sixteen to thirty two, then thirty two to sixty four. In a small table, a crowded bucket just means the table is too small.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "997dd292",
+   "say": "Now at sixty four buckets, the chain becomes a red black tree. Lookups in this bucket drop from linear, to log n. That's treeify.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "54bdd516",
+   "say": "Three numbers to remember. Tree on the ninth node. Only with sixty four buckets. And back to a list at six.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "115dddd2",
+   "say": "The whole table has a limit too. Sixteen buckets times a load factor of zero point seven five is twelve.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "347a026c",
+   "say": "So the thirteenth put doubles the table, to thirty two buckets.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "60090a6d",
+   "say": "And Java doesn't recompute every bucket. Doubling adds exactly one bit. Rohit's bit is zero, so he stays in bucket one. Ishan's bit is one, so he moves to one plus sixteen, bucket seventeen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "df8bcd79",
+   "say": "That one put copies everything, a latency spike. If you know the size, pre size the map.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "008da2b8",
+   "say": "That's why capacity is always a power of two. With sixteen buckets, hash and fifteen gives the same answer as hash mod sixteen, in one fast instruction.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59d678b1",
+   "say": "And doubling adds one bit, so a resize can split each bucket on that one bit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3703d351",
+   "say": "Why mix the high bits in? Only the low bits pick the bucket. Keys like sixty five five three six differ only in their high bits, so without mixing they'd all pile into bucket zero. Mixing spreads them out.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fd1302b0",
+   "say": "Now add threads.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "6242cbc2",
+   "say": "A web server counts page views. Two threads each count fifty thousand views of the home page, with get, then put.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6107919",
+   "say": "Thread A reads forty one. Thread B reads forty one. A writes forty two. B writes forty two. Two views, counted as one. Nothing crashes, so tests pass. This is check then act.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "34c74f4d",
+   "say": "The fix is one atomic call on a ConcurrentHashMap. Merge. Exactly a hundred thousand.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1bc9ffa4",
+   "say": "ConcurrentHashMap uses the same bucket array, built for many threads.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50aeeed1",
+   "say": "Filling an empty bucket takes no lock. It uses compare and swap: write only if the slot is still empty. Lose the race, and simply retry.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e58e54cb",
+   "say": "Writing to a busy bucket locks only that bucket's first node. Every other bucket stays free.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e304b429",
+   "say": "And reads take no lock at all.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "80f7da8a",
+   "say": "It allows no nulls, since a null from get would be ambiguous. And forget the sixteen segments. That was Java seven.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "b73ff9c1",
+   "say": "A bug you can hit with just one thread.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b859b40",
+   "say": "Loop over players, and remove the ones who went offline. One thread. Plain for each loop.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3011e81e",
+   "say": "The list counts every change in mod count. The iterator saved seven. Remove bumps it to eight. On the next step, eight isn't seven, and it throws a concurrent modification exception. That's fail fast.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c4134136",
+   "say": "So use remove if, or the iterator's own remove.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9a809bc2",
+   "say": "Last, a quick tour of the rest of the family.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "690e335a",
+   "say": "An ArrayList is one array. It starts at ten, and grows one and a half times when full. Get by index jumps straight there.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f17fb1fa",
+   "say": "A LinkedList is a chain of nodes. Get ten walks node by node. Its fast insert only starts after that walk.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f65e7068",
+   "say": "So default to ArrayList. And for queues and stacks, ArrayDeque.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a7378230",
+   "say": "A LinkedHashMap is a HashMap plus a linked list through its entries.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "06007cbc",
+   "say": "In access order, every read moves that entry to the tail. So the head is always the least recently used.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75b9d823",
+   "say": "Cap it at three, and evict the head on every put. That's an LRU cache, in five lines.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "53445104",
+   "say": "A TreeMap keeps keys sorted, in a red black tree. Its superpower is nearest key lookups. Tax slabs at zero, three lakh, and seven lakh. Floor entry of four point five lakh: the five percent slab.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4a34f2f",
+   "say": "It uses only compare to, never equals. So compare returning zero means the same key.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "3e152482",
+   "say": "And a PriorityQueue is a min heap in an array. Each parent is smaller than its children, so only the head is in order. Print it, and it looks unsorted.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9a4ff599",
+   "say": "Offer and poll are log n. Peek is constant time. For a max heap, pass reverse order.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49caefba",
+   "say": "Hash code picks the bucket. Equals picks the entry.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef176a97",
+   "say": "Equal objects need equal hash codes, from immutable fields.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "342daa37",
+   "say": "A crowded bucket becomes a tree on the ninth node, with sixty four buckets.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e70e5c32",
+   "say": "The thirteenth put doubles the table, and each entry moves on one bit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b8b9ea96",
+   "say": "ConcurrentHashMap locks one bucket, and merge makes updates atomic.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ffcc02f0",
+   "say": "And never remove inside a for each loop.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4c9a9a18",
+   "say": "Before the next part: from memory, draw the sixteen buckets after the six puts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "586fb190",
+   "say": "Then walk put Ishan through every step. And say where Ishan goes, when the table grows to thirty two.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "44fc859f",
+   "say": "That's HashMap. See you in part two.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

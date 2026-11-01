@@ -99,6 +99,7 @@ export type Scene = Base &
 export type Chapter = {
   id: string;
   title: string;
+  label?: string; // header tag, e.g. "Java 1"; defaults to "Ch N"
   voice: string;
   next?: string;
   scenes: Scene[];

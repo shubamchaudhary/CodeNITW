@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 450" width="980" height="450" role="img" aria-label="HashMap resize from 16 to 32 buckets">
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker>
+</defs>
+<rect width="980" height="450" rx="18" fill="#0f1420"/>
+<text x="40" y="50" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Resize 16 -&gt; 32: one bit decides</text>
+<text x="40" y="78" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">check the bit worth the old capacity (16): 0 = stay, 1 = move to index + 16</text>
+<text x="40" y="125" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#93a0b8" text-anchor="start" font-weight="600">before: 16 buckets</text>
+<rect x="40" y="140" width="62" height="40" rx="6" fill="#1a2235" stroke="#2f3a55"/><text x="71.0" y="165.0" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">[1]</text>
+<line x1="104" y1="160" x2="134" y2="160" stroke="#93a0b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="138" y="140" width="190" height="40" rx="9" fill="#1a2235" stroke="#ffb547" stroke-width="2"/><text x="150" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">"Rohit"</text><text x="316" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#ffb547" text-anchor="end" font-weight="400">45</text>
+<line x1="330" y1="160" x2="358" y2="160" stroke="#93a0b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="362" y="140" width="190" height="40" rx="9" fill="#1a2235" stroke="#ffb547" stroke-width="2"/><text x="374" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">"Ishan"</text><text x="540" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#ffb547" text-anchor="end" font-weight="400">30</text>
+<text x="600" y="152" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">Rohit  ...0 0001</text>
+<text x="600" y="180" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">Ishan  ...1 0001</text>
+<rect x="693" y="134" width="22" height="56" rx="4" fill="none" stroke="#ff6fa5" stroke-width="2"/>
+<text x="704" y="214" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#ff6fa5" text-anchor="middle" font-weight="400">bit 16</text>
+<text x="40" y="270" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#93a0b8" text-anchor="start" font-weight="600">after: 32 buckets</text>
+<rect x="40" y="290" width="62" height="40" rx="6" fill="#1a2235" stroke="#2f3a55"/><text x="71.0" y="315.0" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">[1]</text>
+<line x1="104" y1="310" x2="134" y2="310" stroke="#93a0b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="138" y="290" width="190" height="40" rx="9" fill="#1a2235" stroke="#38d996" stroke-width="2"/><text x="150" y="316" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">"Rohit"</text><text x="316" y="316" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#38d996" text-anchor="end" font-weight="400">45</text>
+<text x="350" y="316" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#38d996" text-anchor="start" font-weight="600">bit 0: stays at 1</text>
+<rect x="40" y="350" width="62" height="40" rx="6" fill="#1a2235" stroke="#2f3a55"/><text x="71.0" y="375.0" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">[17]</text>
+<line x1="104" y1="370" x2="134" y2="370" stroke="#93a0b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="138" y="350" width="190" height="40" rx="9" fill="#1a2235" stroke="#ff6fa5" stroke-width="2"/><text x="150" y="376" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">"Ishan"</text><text x="316" y="376" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="16" fill="#ff6fa5" text-anchor="end" font-weight="400">30</text>
+<text x="350" y="376" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#ff6fa5" text-anchor="start" font-weight="600">bit 1: 1 + 16 = 17</text>
+<text x="600" y="306" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">no hash is recomputed</text>
+<text x="600" y="332" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">chain order is kept</text>
+<text x="600" y="358" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="400">capacity stays a power of 2</text>
+<text x="600" y="396" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">threshold = capacity x 0.75</text>
+<text x="600" y="420" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">16 x 0.75 = 12: the 13th put resizes</text>
+</svg>

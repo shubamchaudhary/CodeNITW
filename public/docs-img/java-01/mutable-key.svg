@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 390" width="1000" height="390" role="img" aria-label="A mutable HashMap key">
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker>
+</defs>
+<rect width="1000" height="390" rx="18" fill="#0f1420"/>
+<text x="40" y="50" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">A mutable key strands its entry</text>
+<text x="40" y="78" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">put with Point(1, 2), then the key object changes to (5, 2)</text>
+<rect x="40" y="110" width="62" height="40" rx="6" fill="#1a2235" stroke="#2f3a55"/><text x="71.0" y="135.0" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="400">[ ]</text>
+<text x="40" y="172" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">bucket of (1, 2)</text>
+<line x1="104" y1="130" x2="134" y2="130" stroke="#93a0b8" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="138" y="106" width="340" height="48" rx="9" fill="#1a2235" stroke="#ff6262" stroke-width="2"/>
+<text x="152" y="136" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="start" font-weight="400">key: Point(5, 2)  value: home</text>
+<rect x="40" y="220" width="62" height="40" rx="6" fill="#141b2a" stroke="#2f3a55"/><text x="71.0" y="245.0" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="middle" font-weight="400">[ ]</text>
+<text x="40" y="282" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="400">bucket of (5, 2)</text>
+<text x="124" y="246" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">empty</text>
+<rect x="540" y="100" width="420" height="76" rx="10" fill="#1a2235" stroke="#2f3a55"/>
+<text x="556" y="128" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="start" font-weight="400">get(Point(1, 2)) -&gt; right bucket</text>
+<text x="556" y="156" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ff6262" text-anchor="start" font-weight="400">finds the node, equals((1,2), (5,2)) fails</text>
+<rect x="540" y="196" width="420" height="76" rx="10" fill="#1a2235" stroke="#2f3a55"/>
+<text x="556" y="224" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="start" font-weight="400">get(p) hashes (5, 2) -&gt; other bucket</text>
+<text x="556" y="252" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ff6262" text-anchor="start" font-weight="400">empty: returns null</text>
+<text x="40" y="330" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#ffb547" text-anchor="start" font-weight="600">size() still counts it. get, containsKey and remove all miss: a memory leak.</text>
+<text x="40" y="360" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#38d996" text-anchor="start" font-weight="600">Fix: immutable keys, such as String, records, UUID and enums.</text>
+</svg>
