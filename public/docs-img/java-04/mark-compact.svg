@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 410" width="1000" height="410" role="img" aria-label="Mark sweep compact">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker></defs>
+<rect width="1000" height="410" rx="18" fill="#0f1420"/>
+<text x="40" y="50" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Mark, sweep, compact</text>
+<text x="40" y="78" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">mark what is reachable from GC roots; free the rest; slide survivors together</text>
+<text x="40" y="140" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="600">1. mark</text>
+<rect x="200" y="110" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="227" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">live</text>
+<rect x="262" y="110" width="54" height="46" rx="6" fill="#ff626222" stroke="#ff6262" stroke-width="2"/>
+<text x="289" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">dead</text>
+<rect x="324" y="110" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="351" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">live</text>
+<rect x="386" y="110" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="413" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">live</text>
+<rect x="448" y="110" width="54" height="46" rx="6" fill="#ff626222" stroke="#ff6262" stroke-width="2"/>
+<text x="475" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">dead</text>
+<rect x="510" y="110" width="54" height="46" rx="6" fill="#ff626222" stroke="#ff6262" stroke-width="2"/>
+<text x="537" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">dead</text>
+<rect x="572" y="110" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="599" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">live</text>
+<rect x="634" y="110" width="54" height="46" rx="6" fill="#ff626222" stroke="#ff6262" stroke-width="2"/>
+<text x="661" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">dead</text>
+<rect x="696" y="110" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="723" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">live</text>
+<rect x="758" y="110" width="54" height="46" rx="6" fill="#ff626222" stroke="#ff6262" stroke-width="2"/>
+<text x="785" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">dead</text>
+<rect x="820" y="110" width="54" height="46" rx="6" fill="#ff626222" stroke="#ff6262" stroke-width="2"/>
+<text x="847" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">dead</text>
+<rect x="882" y="110" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="909" y="139" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#eef2f8" text-anchor="middle" font-weight="400">live</text>
+<text x="40" y="230" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="600">2. sweep</text>
+<rect x="200" y="200" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="262" y="200" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="324" y="200" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="386" y="200" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="448" y="200" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="510" y="200" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="572" y="200" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="634" y="200" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="696" y="200" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="758" y="200" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="820" y="200" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="882" y="200" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<text x="40" y="330" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="600">3. compact</text>
+<rect x="200" y="300" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="262" y="300" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="324" y="300" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="386" y="300" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="448" y="300" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="510" y="300" width="54" height="46" rx="6" fill="#38d99633" stroke="#38d996" stroke-width="2"/>
+<rect x="572" y="300" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="634" y="300" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="696" y="300" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="758" y="300" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="820" y="300" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<rect x="882" y="300" width="54" height="46" rx="6" fill="#141b2a" stroke="#2f3a55" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="576" y="370" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">one free block</text>
+<text x="200" y="272" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="400">free space is scattered holes: fragmentation</text>
+</svg>

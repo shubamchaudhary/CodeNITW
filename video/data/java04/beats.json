@@ -1,0 +1,418 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "f67e2d6c",
+   "say": "A service runs fine for three days. Its heap rises, drops at every garbage collection, rises again. But the low point keeps creeping up. Then: out of memory error, Java heap space.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8acdfda8",
+   "say": "Restart it, and it's fine for three more days. Then it dies again.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcf447ec",
+   "say": "So where does memory go in Java? And who is supposed to free it?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "38961a41",
+   "say": "Java, part four. JVM memory, and garbage collection.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e640c27",
+   "say": "Start with where values live.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "86a207bf",
+   "say": "Every thread gets its own stack. Calling main pushes a frame, holding main's local variables. Here, demo: a reference to an object.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d28e8fa",
+   "say": "Main calls run, and a second frame goes on top. Count equals ten is stored right in the frame. But new Person creates the object on the heap, shared by every thread. P one holds its address. P two copies the address, so both point to one object.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c33633e7",
+   "say": "String literals go to the String pool, inside the heap. S one and S two share one pooled string. New String always makes a fresh object, so s one equals equals s three is false.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d2999062",
+   "say": "When run returns, its frame is popped. Last in, first out. The variables are gone. But the Person object is still on the heap, with nothing pointing to it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "71d5180e",
+   "say": "And if recursion never stops, frames pile up until the stack runs out: a stack overflow error.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "94ec7290",
+   "say": "So when is an object garbage?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f77b10fd",
+   "say": "A equals b. Now nothing points to object one. It looks like garbage. But that's not quite how Java decides.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e66805f",
+   "say": "The JVM starts from GC roots. Local variables in live stack frames, static fields, running threads. It follows every reference from there. Whatever it reaches is live.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "118ea44d",
+   "say": "Objects four and five point to each other, but no root reaches them. So both are garbage. Java doesn't count references. It traces from roots, so cycles get collected.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b62dacf7",
+   "say": "And System dot gc is only a hint. The JVM decides when to collect.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "34874251",
+   "say": "References also come in strengths. A normal, strong reference keeps an object alive, no matter what.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b312df4f",
+   "say": "A soft reference lets the GC take the object, but only when memory runs low. Perfect for a cache.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "650fbfdf",
+   "say": "A weak reference lets it go at the very next collection. That's how a weak hash map drops entries nobody uses.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17ddba80",
+   "say": "And a phantom reference never returns the object. It only tells you it's gone, so you can clean up.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "4acc3c83",
+   "say": "Now, how the heap is organised.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9d0df1ce",
+   "say": "Most objects die young. A request creates thousands of little objects, and a few milliseconds later they're garbage. So the heap is split by age: a young generation, and an old one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ca7ea93",
+   "say": "Every new object starts in Eden. Here are five: O one to O five.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e17c2962",
+   "say": "Eden fills, and a minor GC runs. It pauses the app, finds O one, three and four still alive, and copies them into survivor space zero, with age one. Then it wipes Eden in one go. Dead objects cost nothing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "eb607e5b",
+   "say": "Two new objects arrive. Next minor GC: O four and O six are dead. The survivors move to survivor space one, and their ages go up. The two survivor spaces swap every time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "379bd186",
+   "say": "With a threshold of three, O one and O three have now survived three collections. They're promoted to the old generation.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "312ada1e",
+   "say": "The real default threshold is fifteen. And the old generation is collected less often, by a major GC, with longer pauses.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "300a626e",
+   "say": "How does a collector actually free memory? First, mark: everything reachable from the roots gets marked live.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "968d7dd1",
+   "say": "Then sweep: everything unmarked is freed. But now free space is scattered in little holes. A big array might not fit anywhere.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cc05803",
+   "say": "So compact: slide the survivors together, leaving one free block.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3dfdbbcc",
+   "say": "The young generation skips all that. It copies live objects out, and wipes the whole space.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "5ef7e218",
+   "say": "Class metadata lives outside the heap, in metaspace. Before Java eight, it lived in a fixed size area called perm gen, which filled up and crashed app servers. Metaspace grows as needed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5cae371f",
+   "say": "Static fields and the string pool are not there. They're on the heap.",
+   "rate": "+12%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "e8b4fd5c",
+   "say": "Next: which collector?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f1b92b7",
+   "say": "Every collector trades throughput against pauses. A stop the world pause freezes every application thread while the collector works.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e8e3aec",
+   "say": "Serial uses one GC thread. One long pause. Fine for tiny heaps.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5e192165",
+   "say": "Parallel uses many GC threads. Shorter pauses, the best throughput. Great for batch jobs. It was the default up to Java eight.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "176f1286",
+   "say": "G1, the default since Java nine, splits the heap into regions, and keeps each pause near a target of two hundred milliseconds.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "376f757b",
+   "say": "And ZGC does almost all its work while your app keeps running. Pauses under about a millisecond, even on huge heaps.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a77ac578",
+   "say": "So: default to G1. Parallel for batch. ZGC for strict latency. And CMS? Removed in Java fourteen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dd941bb9",
+   "say": "Here's G1's heap. Equal regions, each one Eden, survivor, old, or humongous, for very large objects.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27f73f14",
+   "say": "Each pause collects the regions with the most garbage first. That's the name: garbage first. Their live objects are copied into free regions, so it compacts as it goes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7745b7c8",
+   "say": "Back to the service that dies every three days.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "a696da0f",
+   "say": "Login puts each session into a static map. Logout never removes it. A static field is a GC root.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6faa8d7",
+   "say": "So every session ever created stays reachable, and the GC can never free it. The low point after each collection keeps rising, until the heap is full.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "12af7b79",
+   "say": "To prove it, take a heap dump, automatically on out of memory, or live with j c m d. Open it in Eclipse MAT, and the leak suspect points straight at the map.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b8e331f",
+   "say": "The fix: remove on logout, and bound the cache, with a size limit or an expiry.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "42f87cfc",
+   "say": "One more trap, in Kubernetes. A pod with a one gigabyte limit, and no heap flags. The JVM takes just a quarter of it: two hundred fifty six megabytes. Out of memory, with most of the pod unused.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ce5769f",
+   "say": "Set the heap to the full gigabyte instead, and the JVM still needs memory outside the heap: metaspace, thread stacks, the code cache. The pod goes over its limit, and the kernel kills it. O O M killed. Exit code one three seven.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "9a6a2ea2",
+   "say": "So set max RAM percentage to around seventy five. The heap scales with the pod, and leaves room for the rest.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabde104",
+   "say": "Let's lock it in.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad2c5f0c",
+   "say": "Stack frames hold locals, per thread. Every object lives on the shared heap.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa0843f3",
+   "say": "Anything reachable from a GC root is live. Everything else is garbage.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51c35654",
+   "say": "A minor GC copies survivors between survivor spaces, and ages them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87e95e95",
+   "say": "Old enough, and they're promoted to the old generation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4ccd58e",
+   "say": "G1 is the default: regions, and a pause target.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dfd815e9",
+   "say": "And a memory leak is something still reachable, that you no longer need.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8b49ec52",
+   "say": "Before the next part: from memory, draw Eden, the two survivor spaces, and the old generation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43adbcec",
+   "say": "Then walk five objects through three minor GCs, with a threshold of three, and write every age.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "14cec785",
+   "say": "That's JVM memory. See you in part five.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  }
+ ]
+}

@@ -244,7 +244,7 @@ export const ChainTree = ({ t }: CP) => {
   ];
   return (
     <>
-      <Abs x={140} y={260} w={900} style={{ fontFamily: MONO, fontSize: 28, color: C.muted, ...rise(f, 4) }}>
+      <Abs x={140} y={260} w={1400} style={{ fontFamily: MONO, fontSize: 28, color: C.muted, ...rise(f, 4) }}>
         keys with the same hashCode, one bucket · table: <span style={{ color: t.step === 2 ? C.amber : C.text }}>{tableSize} buckets</span>
       </Abs>
       {Array.from({ length: n }, (_, i) => {
