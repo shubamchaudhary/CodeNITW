@@ -276,7 +276,7 @@ ordered = sorted(fused.values(), key=lambda r: scores[r["chunk_id"]], reverse=Tr
   },
   {
     kind: "seq",
-    title: "September 29: hybrid scored EXACTLY like vector-only",
+    title: "Sep 29: hybrid = vector-only. Why?",
     actors: [
       { id: "q", name: "Question", icon: "❓" },
       { id: "v", name: "Vector leg", icon: "🧭" },
@@ -285,8 +285,8 @@ ordered = sorted(fused.values(), key=lambda r: scores[r["chunk_id"]], reverse=Tr
     ],
     msgs: [
       { from: "q", to: "v", label: "embed → 30 rows", step: 1 },
-      { from: "q", to: "f", label: "websearch_to_tsquery: which & upstream & …", step: 2 },
-      { from: "f", to: "r", label: "0 rows: no chunk contains 'which'", step: 2, tone: "red", dash: true },
+      { from: "q", to: "f", label: "AND of every word", step: 2 },
+      { from: "f", to: "r", label: "0 rows", step: 2, tone: "red", dash: true },
       { from: "v", to: "r", label: "30 rows", step: 3, dash: true },
       { from: "r", to: "q", label: "RRF of one list = vector-only", step: 3, tone: "red" },
     ],

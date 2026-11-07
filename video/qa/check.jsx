@@ -34,7 +34,9 @@ function check(root, frame, label) {
     if (!own || opacityOf(el, root) < 0.2) continue;
     const range = document.createRange();
     range.selectNodeContents(el);
-    const r = range.getBoundingClientRect();
+    // A Range over SVG text inside a viewBox-scaled <svg> drifts in Chrome; the
+    // element's own box is right there.
+    const r = el.tagName === "text" ? el.getBoundingClientRect() : range.getBoundingClientRect();
     if (!r.width) continue;
     const tol = 2;
     if (el.tagName === "text") {
