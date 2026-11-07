@@ -2,7 +2,8 @@
 // able to explain end to end in an interview, one section per project and one
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
-// stored in the owner's own progress document and never ship with the site.
+// stored in the owner's own progress document and never ship with the site,
+// except where a built-in document replaces them (Data/projectsDocs, LL-01).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -111,8 +112,8 @@ export const PROJECT_TOPICS = [
     id: "LL-01",
     section: "loglens",
     sectionLabel: "LogLens",
-    title: "Overview & architecture",
-    summary: "What LogLens does, the pitch, and how ingest, analysis and querying fit together.",
+    title: "LogLens, end to end",
+    summary: "The whole architecture in the lecture's order: every decision, every number and how to derive it, the gaps, and the follow-ups.",
   },
   {
     id: "LL-02",
