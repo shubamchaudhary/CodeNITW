@@ -3,7 +3,7 @@ import { loadFont as mono } from "@remotion/google-fonts/JetBrainsMono";
 import { loadFont as deva } from "@remotion/google-fonts/NotoSansDevanagari";
 
 export const FONT = inter("normal", { weights: ["400", "500", "600", "700", "800"], subsets: ["latin"] }).fontFamily;
-export const MONO = mono("normal", { weights: ["400", "600"], subsets: ["latin"] }).fontFamily;
+export const MONO = mono("normal", { weights: ["400", "600", "700", "800"], subsets: ["latin"] }).fontFamily;
 export const DEVA = deva("normal", { weights: ["500", "700"], subsets: ["devanagari"] }).fontFamily;
 
 export const W = 1920;
@@ -27,6 +27,36 @@ export const C = {
   purple: "#a78bfa",
   red: "#ff6262",
   cyan: "#3fd2e8",
+  head: FONT, // headline font
+  glow1: "#5b9cff", // the two drifting backdrop lights
+  glow2: "#a78bfa",
+};
+
+// A chapter can restyle every scene by naming a theme: C is reset from BASE and
+// overlaid with the theme each time the lecture renders, so other chapters
+// shown later in the same page get the default look back.
+const BASE = { ...C };
+const THEMES: Record<string, Partial<typeof C>> = {
+  // The LogLens site: near-black, one amber accent, a teal second colour, mono headlines.
+  loglens: {
+    bg: "#0b0d10",
+    bg2: "#12161b",
+    card: "#12161b",
+    card2: "#161b21",
+    line: "#2a333e",
+    text: "#ece8df",
+    muted: "#a3abb6",
+    faint: "#6b737e",
+    blue: "#ffa23e",
+    amber: "#5fd3d0",
+    cyan: "#5fd3d0",
+    head: MONO,
+    glow1: "#ffa23e",
+    glow2: "#5fd3d0",
+  },
+};
+export const applyTheme = (name?: string) => {
+  Object.assign(C, BASE, (name && THEMES[name]) || {});
 };
 
 export const tone = (name?: string): string =>

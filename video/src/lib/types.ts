@@ -131,6 +131,7 @@ export type Chapter = {
   title: string;
   label?: string; // header tag, e.g. "Java 1"; defaults to "Ch N"
   voice: string;
+  theme?: string; // a look from lib/theme.ts THEMES, e.g. "loglens"
   next?: string;
   scenes: Scene[];
 };

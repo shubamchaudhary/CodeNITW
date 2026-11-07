@@ -20,7 +20,7 @@ export const TitleScene = ({ s, t }: P<"title">) => {
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: 180, paddingRight: 140 }}>
       <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", color: C.blue, ...rise(f, 2) }}>{s.eyebrow}</div>
-      <div style={{ fontSize: s.title.length > 24 ? 96 : 120, fontWeight: 800, letterSpacing: -2, lineHeight: 1.08, marginTop: 18, ...rise(f, 8, 40) }}>{s.title}</div>
+      <div style={{ fontSize: s.title.length > 24 ? 96 : 120, fontWeight: 800, letterSpacing: -2, lineHeight: 1.08, marginTop: 18, fontFamily: C.head, ...rise(f, 8, 40) }}>{s.title}</div>
       <div style={{ height: 8, width: 520 * bar, background: `linear-gradient(90deg, ${C.blue}, ${C.purple})`, borderRadius: 4, marginTop: 26 }} />
       {s.subtitle && <div style={{ fontSize: 48, color: C.muted, marginTop: 30, ...rise(f, 18) }}>{s.subtitle}</div>}
     </div>
@@ -55,7 +55,7 @@ export const SectionScene = ({ s, t }: P<"section">) => {
         >
           {s.num}
         </div>
-        <div style={{ fontSize: map ? 72 : 84, fontWeight: 800, width: map ? 800 : 1250, lineHeight: 1.1, ...rise(f, 8, 40) }}>{s.title}</div>
+        <div style={{ fontSize: map ? 72 : 84, fontWeight: 800, width: map ? 800 : 1250, lineHeight: 1.1, fontFamily: C.head, ...rise(f, 8, 40) }}>{s.title}</div>
       </div>
       {map && (
         <div data-qa="section map" style={{ position: "absolute", left: 1330, top: 540, width: 520, transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 10, opacity: enter(f, 10, 18) }}>
@@ -292,7 +292,7 @@ export const ImageScene = ({ s, t }: P<"image">) => {
 export const BigScene = ({ s, t }: P<"big">) => {
   const f = t.frame;
   const n = s.beats.length;
-  const textStep = n === 2 ? 0 : 1;
+  const textStep = n <= 2 ? 0 : 1;
   const afterStep = n - 1;
   const col = s.tone === "myth" ? C.red : s.tone === "interview" ? C.purple : C.amber;
   const strike = s.tone === "myth" ? enter(f, at(t, afterStep), 18) : 0;

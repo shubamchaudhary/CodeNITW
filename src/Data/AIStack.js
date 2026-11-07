@@ -1223,7 +1223,7 @@ export const AI_STACK_TOPICS = [
     "section": "D",
     "sectionLabel": "Part 5 · System design",
     "priority": "P0",
-    "title": "Chapter 10 — Designing LLM systems: from one assistant to forty franchises",
+    "title": "Chapter 10 — Designing LLM systems: from one assistant to 500 companies",
     "why": "The design round rewards a repeatable structure, the simplest architecture that works, and controls designed in from the start. Two complete worked designs, document Q&A for many tenants and an agent that changes data, cover most of what gets asked.",
     "resumeLinked": false,
     "flag": "",

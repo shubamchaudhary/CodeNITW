@@ -625,22 +625,22 @@
    "after": 0
   },
   {
-   "key": "169385b5",
-   "say": "A quick estimate makes any design answer stronger. Three thousand documents, about fifty chunks each: a hundred and fifty thousand chunks.",
+   "key": "3a873847",
+   "say": "A quick estimate makes any design answer stronger. Three thousand documents, about twenty million tokens. At four hundred tokens per chunk: about fifty thousand chunks.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "57c40c07",
-   "say": "At a thousand and twenty four numbers, four bytes each, that's about zero point six gigabytes of vectors. It fits in memory on one machine.",
+   "key": "37050b8d",
+   "say": "At a thousand and twenty four numbers, four bytes each, that's about zero point two gigabytes of vectors. It fits in memory on one machine.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "7612ed90",
-   "say": "And embedding all of it costs about a dollar twenty.",
+   "key": "d12c4618",
+   "say": "And embedding all twenty million tokens costs about forty cents.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0

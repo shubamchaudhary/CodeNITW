@@ -143,7 +143,7 @@ export const AI_STACK_ASKED = {
       },
       {
         "q": "What are hard negatives, and why do they matter?",
-        "a": "Negatives that look very similar to the right answer but are wrong — the bakery refund rule for a dairy question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
+        "a": "Negatives that look very similar to the right answer but are wrong — the leave carry-over rule for a parental leave question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
       },
       {
         "q": "Your domain vocabulary keeps defeating the embedding model. What do you do, in order?",
@@ -253,7 +253,7 @@ export const AI_STACK_ASKED = {
       },
       {
         "q": "How would you handle tables in a RAG system?",
-        "a": "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Category: Bakery. Refund window: 12 hours.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
+        "a": "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Country: Germany. Parental leave: 14 weeks.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
       },
       {
         "q": "Some of your PDFs are scans. What changes?",

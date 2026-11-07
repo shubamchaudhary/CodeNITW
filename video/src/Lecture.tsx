@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AbsoluteFill, Audio, Sequence, spring, useCurrentFrame } from "remotion";
 import type { Chapter } from "./lib/types.ts";
 import { buildTimeline, clock, FPS, type SceneT, type Timing } from "./lib/timeline.ts";
-import { C, FONT, W } from "./lib/theme.ts";
+import { applyTheme, C, FONT, W } from "./lib/theme.ts";
 import { enter } from "./lib/anim.ts";
 import { AssetBase, useAsset } from "./lib/assets.ts";
 import { SceneView } from "./scenes/index.tsx";
@@ -17,6 +17,7 @@ export const Lecture = ({ chapter, timings, assetBase }: Props) => (
 );
 
 const LectureBody = ({ chapter, timings }: Props) => {
+  applyTheme(chapter.theme);
   const frame = useCurrentFrame();
   const asset = useAsset();
   const { scenes, total } = useMemo(() => buildTimeline(chapter, timings), [chapter, timings]);
@@ -53,7 +54,7 @@ const Backdrop = ({ frame }: { frame: number }) => {
   return (
     <AbsoluteFill
       style={{
-        background: `radial-gradient(900px 700px at ${x1}% ${y1}%, ${C.blue}17, transparent 70%), radial-gradient(800px 650px at ${x2}% ${y2}%, ${C.purple}14, transparent 70%), radial-gradient(1400px 900px at 50% 35%, ${C.bg2}, ${C.bg})`,
+        background: `radial-gradient(900px 700px at ${x1}% ${y1}%, ${C.glow1}17, transparent 70%), radial-gradient(800px 650px at ${x2}% ${y2}%, ${C.glow2}14, transparent 70%), radial-gradient(1400px 900px at 50% 35%, ${C.bg2}, ${C.bg})`,
       }}
     >
       <AbsoluteFill style={{ backgroundImage: `radial-gradient(${C.line} 1.2px, transparent 1.2px)`, backgroundSize: "44px 44px", backgroundPosition: `${(frame * 0.15) % 44}px 0px`, opacity: 0.35 }} />
@@ -94,7 +95,7 @@ const TermCard = ({ sc, frame }: { sc: SceneT; frame: number }) => {
   if (!shown) return null;
   const p = spring({ frame: frame - shown.at, fps: FPS, config: { damping: 12, stiffness: 160 } });
   return (
-    <div data-qa="term" style={{ position: "absolute", right: 60, top: 36, width: 520, transform: `translateX(${(1 - p) * 140}px) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5), background: "rgba(23,30,46,0.94)", border: `3px solid ${C.amber}`, borderRadius: 22, padding: "18px 26px", boxShadow: `0 0 ${40 * Math.max(0, 1 - (frame - shown.at) / 40)}px ${C.amber}` }}>
+    <div data-qa="term" style={{ position: "absolute", right: 60, top: 36, width: 520, transform: `translateX(${(1 - p) * 140}px) scale(${0.8 + 0.2 * p})`, opacity: Math.min(1, p * 1.5), background: `${C.card2}f0`, border: `3px solid ${C.amber}`, borderRadius: 22, padding: "18px 26px", boxShadow: `0 0 ${40 * Math.max(0, 1 - (frame - shown.at) / 40)}px ${C.amber}` }}>
       <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 3, color: C.amber }}>NEW TERM</div>
       <div style={{ fontSize: shown.term.word.length > 18 ? 34 : shown.term.word.length > 14 ? 40 : 50, fontWeight: 900, lineHeight: 1.1, overflowWrap: "anywhere" }}>{shown.term.word}</div>
       <div style={{ fontSize: 26, color: C.muted, marginTop: 4 }}>{shown.term.meaning}</div>

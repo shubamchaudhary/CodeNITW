@@ -5,8 +5,8 @@
    three depths per topic: understand it (`know`), design with it (the drill's
    design questions) and clear the interview (the drill's model answers).
    Written for every reader of the site: no personal projects or resume lines.
-   The stack is a book: a start page and twelve chapters, each built as a
-   story (FreshCart) that grows one problem at a time. Each chapter's text is
+   The stack is a book: a start page and twelve chapters, each with its own
+   everyday example, growing one problem at a time. Each chapter's text is
    src/Data/aiStackDocs/<id>.md, the page's notes for every viewer.
 
    Researched 2026-10-30 against the current docs (langchain 1.4, langgraph 1.2,
@@ -444,7 +444,7 @@ export const TOPICS = [
       },
       {
         q: "What are hard negatives, and why do they matter?",
-        a: "Negatives that look very similar to the right answer but are wrong — the bakery refund rule for a dairy question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
+        a: "Negatives that look very similar to the right answer but are wrong — the leave carry-over rule for a parental leave question. Random negatives are easy to tell apart, so the model learns little from them; hard negatives force it to learn fine distinctions. You mine them by retrieving top results with the current model and keeping the wrong ones."
       },
       {
         q: "Your domain vocabulary keeps defeating the embedding model. What do you do, in order?",
@@ -785,7 +785,7 @@ export const TOPICS = [
       },
       {
         q: "How would you handle tables in a RAG system?",
-        a: "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Category: Bakery. Refund window: 12 hours.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
+        a: "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Country: Germany. Parental leave: 14 weeks.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
       },
       {
         q: "Some of your PDFs are scans. What changes?",
@@ -1773,7 +1773,7 @@ export const TOPICS = [
     id: "CH-10",
     section: "D",
     priority: "P0",
-    title: "Chapter 10 — Designing LLM systems: from one assistant to forty franchises",
+    title: "Chapter 10 — Designing LLM systems: from one assistant to 500 companies",
     why: "The design round rewards a repeatable structure, the simplest architecture that works, and controls designed in from the start. Two complete worked designs, document Q&A for many tenants and an agent that changes data, cover most of what gets asked.",
     ceiling: {
       enough: "run the seven-step framework with numbers, choose workflow vs agent with the controls every agent needs, and present both worked designs.",

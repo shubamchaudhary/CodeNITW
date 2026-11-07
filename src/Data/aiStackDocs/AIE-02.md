@@ -1,18 +1,19 @@
-Every page of this stack follows one company, so the ideas build on each other instead of floating in the air.
+Every chapter of this stack stands on its own, with one everyday example that makes its ideas concrete, so you can open any chapter the night before an interview:
 
-**FreshCart** is a grocery delivery company in Pune and Bengaluru. It has 12,000 internal documents: refund policies, delivery-slot rules, warehouse runbooks, incident write-ups and franchise agreements. Over these pages you will build three things for it:
+- an HR assistant that answers "how many weeks of parental leave do I get?" from the employee handbook (RAG, chapter 2);
+- a support search over 10 million chunks for 500 customer companies (chapter 3);
+- an airline agent that rebooks a cancelled flight, a store agent that must never refund twice, and a pricing agent that waits for a manager's approval (agents, chapters 5 to 7);
+- a support chatbot you have to prove is working, and an email assistant that hidden instructions try to hijack (evals and security, chapters 8 to 11).
 
-- **Ask FreshCart**: an assistant that answers support agents' questions from those documents, and later looks up live orders.
-- **Planner Copilot**: an agent that changes warehouse stock settings, but only after a planner approves.
-- The evaluation, security and scaling work that turns both into something the company can trust.
+Read in order, the chapters also build on each other: each ends with a problem the solution cannot handle, and the next one starts there.
 
 This first page is about the round that opens almost every AI engineer interview: "walk me through an AI system you built." Before that, here is the road ahead.
 
 ## 0. The journey, and the words you will meet
 
-If you are new to all of this, good: the stack is written for you. It reads like a book of twelve chapters. Each one solves a problem FreshCart actually has, then ends with a new problem that the solution cannot handle, and the next chapter starts there. Every new word is explained properly the first time it matters.
+If you are new to all of this, good: the stack is written for you. It reads like a book of twelve chapters. Each one solves a concrete problem well, then ends with a new problem that the solution cannot handle, and the next chapter starts there. Every new word is explained properly the first time it matters.
 
-The first half builds the two products:
+The first half builds assistants and agents:
 
 ```mermaid
 flowchart LR
@@ -22,7 +23,7 @@ flowchart LR
     end
     subgraph P2["Part 2: RAG"]
         direction TB
-        C2["2. Answering from<br/>FreshCart's<br/>documents"] --> C3["3. Searching fast<br/>and well"]
+        C2["2. Answering from<br/>your company's<br/>documents"] --> C3["3. Searching fast<br/>and well"]
         C3 --> C4["4. When retrieval<br/>still fails"]
     end
     subgraph P3["Part 3: Agents"]
@@ -43,7 +44,7 @@ flowchart LR
     end
     subgraph P5["Part 5: System design"]
         direction TB
-        C10["10. Designing for<br/>forty franchises"] --> C11["11. Safe, fast,<br/>affordable"]
+        C10["10. Designing for<br/>500 companies"] --> C11["11. Safe, fast,<br/>affordable"]
     end
     subgraph P6["Part 6: Advanced"]
         direction TB
@@ -79,9 +80,9 @@ So an AI interview loop is mostly a backend loop with an AI centre:
 
 Correction: the most common gap is not prompting skill. It is the answer to "how do you know it works?" A good answer has a test set, a metric and a baseline. "It looked good when I tried it" fails.
 
-## 2. Telling the story of Ask FreshCart in two minutes
+## 2. Telling the story of a RAG assistant in two minutes
 
-Imagine you built Ask FreshCart and an interviewer says "walk me through it." Rambling through every component loses them in thirty seconds. Use one fixed shape, with a number in it:
+Imagine you built Ask HR, the HR assistant from chapter 2, and an interviewer says "walk me through it." Rambling through every component loses them in thirty seconds. Use one fixed shape, with a number in it:
 
 ```mermaid
 flowchart LR
@@ -91,12 +92,12 @@ flowchart LR
     D --> E["5. What you<br/>would do next"]
 ```
 
-For Ask FreshCart:
+For Ask HR:
 
-- **Problem and baseline**: 80 support agents spent about 4 minutes per question searching the wiki, and sometimes quoted outdated refund rules.
-- **The key decision**: retrieval from FreshCart's own documents with citations, instead of a bare model or fine-tuning, because policies change monthly and agents must be able to check the source. Mention one alternative you rejected and why.
+- **Problem and baseline**: the HR team answered about 600 questions a week by hand, each taking about 4 minutes of searching the wiki, and sometimes quoted outdated leave rules.
+- **The key decision**: retrieval from the company's own documents with citations, instead of a bare model or fine-tuning, because policies change every year and employees must be able to check the source. Mention one alternative you rejected and why.
 - **How you measured it**: an 80-question test set with the right passage for each question; the share of questions where the right passage was retrieved went from 0.61 to 0.86 after adding keyword search alongside meaning-based search.
-- **What broke**: an outdated policy kept being cited because old document versions were never removed from the index. The fix was deleting old chunks whenever a document changed.
+- **What broke**: an outdated policy ("16 weeks" instead of "26 weeks" of parental leave) kept being cited because old document versions were never removed from the index. The fix was deleting old chunks whenever a document changed.
 - **Next**: a quality gate in CI, so a prompt change can never silently make answers worse.
 
 Interviewers interrupt at steps 3 and 4, so those must be concrete.
@@ -140,4 +141,4 @@ Behavioural rounds for AI roles ask the usual questions with an AI twist. Prepar
 
 Each story: the situation, what you did, the result with a number, what you learned.
 
-The twelve chapters build the knowledge behind each of those answers. Chapter 1 starts where you would: in your first week at FreshCart, with a plain chat model and three awkward questions about it.
+The twelve chapters build the knowledge behind each of those answers. Chapter 1 starts where you would: in your first week as an AI engineer, with a plain chat model and three awkward questions about it.
