@@ -2,25 +2,25 @@
  "voice": "en-US-AndrewMultilingualNeural",
  "beats": [
   {
-   "key": "e9635c53",
-   "say": "Planner Copilot has worked out its change. Milk, six Pune warehouses, safety stock from four hundred to four eighty, each.",
+   "key": "87e02088",
+   "say": "A pricing agent has worked out a change. Wireless headphones X two, in six regions, from seventy nine dollars to eighty nine.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "89d537a8",
-   "say": "Now it has to stop before writing anything, show Arjun exactly this, and wait. Maybe until tomorrow. Maybe across a deploy.",
+   "key": "5f264049",
+   "say": "Now it must stop before changing anything, show the pricing manager exactly what will change, and continue only with their decision.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "636bc489",
-   "say": "Chapter six gave you half the answer: saving the run. The other half is stopping on purpose. Together, they make human in the loop.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
+   "key": "86cff4b8",
+   "say": "And that decision might take minutes, or hours, or arrive after a deploy. How does a program wait that long, safely?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
    "key": "b184b478",
@@ -30,207 +30,515 @@
    "after": 0
   },
   {
-   "key": "cf62969b",
-   "say": "First, how to stop.",
+   "key": "559717a0",
+   "say": "By the end, you'll be able to answer these.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "f12bef5e",
-   "say": "LangGraph gives you two pieces. Watch the run move from plan, to review.",
+   "key": "9bc5786d",
+   "say": "How interrupt and resume actually work.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "4373dc1e",
-   "say": "Inside the review step, call interrupt, with the diff. The run freezes, and the diff goes to Arjun's screen.",
+   "key": "c2f69eeb",
+   "say": "Why code before the pause runs twice.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "dbf84576",
-   "say": "And here's the beautiful part. While it waits, nothing is running. No process, no connection. The paused run is just rows in a database. It can wait a week.",
+   "key": "03ffcef0",
+   "say": "What should need a human, and what they should see.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a50c4d50",
+   "say": "And what to do when the data changed while the proposal waited.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b894586",
+   "say": "Chapter six gave us half the answer: a checkpointer that saves the run after every step. The other half is a way to stop on purpose.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "513e2c08",
+   "say": "The agent plans with read only tools, and builds the diff: the exact list of what would change, from what, to what.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8fb8ce98",
+   "say": "Then, inside a step, it calls interrupt, with the diff as the payload. The state and the pending question are saved, and the call returns. A paused run is just rows in a database. No thread, connection, or process waits.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6f8a6ed",
+   "say": "When the manager clicks a decision, any server, any time later, invokes the graph on the same thread, with command, resume, and the decision. LangGraph loads the saved state, and carries on.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "865c01a0",
+   "say": "And if nobody answers in time, the proposal expires, and a cleanup job closes it. All of this needs a durable checkpointer. With an in memory one, a restart silently loses every paused proposal.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "0ebb1842",
-   "say": "When Arjun decides, any server resumes it, on the same thread, with his answer. Inside the step, interrupt simply returns approve. Like a function call that took a day.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "0ee5e388",
-   "say": "But wait. A Python function can't be frozen halfway, and thawed tomorrow on a different server. So where does it actually restart?",
+   "key": "1af03c88",
+   "say": "Now a question that catches almost everyone. When the run resumes, where exactly does execution restart?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "95dd2ac8",
-   "say": "From the first line of the step. Every line before interrupt runs again.",
+   "key": "51d771bc",
+   "say": "Here's a step. Build the diff. Insert a proposal row. Then interrupt. The first run pauses at the interrupt, with one row saved.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3731deb0",
+   "say": "A Python function can't be frozen halfway and thawed a day later on another server. So on resume, LangGraph runs the whole step again, from line one. This time, interrupt finds the saved answer, and returns it. But the insert ran twice. Two rows for one proposal.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "04e75587",
+   "say": "The fix: give the side effect its own step, stage, which finished in an earlier round and won't re run. And make the insert idempotent anyway, keyed by the proposal id. Then the review step only interrupts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c85549ae",
+   "say": "So the trap, stated plainly: the run continues from the interrupt line.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae4b848d",
+   "say": "No. It continues from the start of the step that paused. Everything before interrupt, in that step, runs again.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a0a6e37c",
+   "say": "The mechanism explains every rule interviewers check.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76c2d073",
+   "say": "Several interrupts in one step are matched by order. If a condition changes how many run on resume, answers land on the wrong question. So work out the whole batch first, and interrupt once.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e281020b",
+   "say": "Never wrap interrupt in a bare try except. The pause works by raising a special exception. Catch everything, and the run never pauses.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "01c1f47e",
+   "say": "The payload must be plain data, because it's saved in the database.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05e7f389",
+   "say": "And breakpoints are different. Interrupt before pauses before a step every time, with no payload, like a debugger. Real approvals use interrupt inside the step, so they pause only when your code decides, and carry the diff.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8db796f4",
+   "say": "In LangChain's create agent, the human in the loop middleware pauses before the tools you choose, like update price.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ac1f45bb",
+   "say": "The reviewer has four choices. Approve: run as proposed. Edit: run with changed arguments. Reject: skip it, and tell the model why. Or respond: send a message back as the tool's result, without running it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3dd4da0",
+   "say": "And the trap: don't use respond to refuse a call. The model treats a responded result as success. Use reject, with a reason.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ba812a86",
+   "say": "Version one of the pricing agent asks for approval on everything, including, show me current prices. After a week, the manager approves each request in two seconds, without reading it. What went wrong?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "318e3ad9",
+   "say": "The approval became theatre. Sort actions by damage if wrong, and by how easy they are to undo. Read only actions, like checking prices: automatic.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c30aec1",
+   "say": "Small, reversible changes, like a two percent price tweak, or a draft email: automatic, with an audit trail.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0a58ad5c",
+   "say": "Large or hard to undo, like a price change over five percent, or a refund over two hundred dollars: approval.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f082f7af",
+   "say": "And some things the agent should never do at all, like deleting a product line.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e290f2e1",
+   "say": "And the thresholds live in code, not in the prompt. A prompt can be ignored. A check in code can't.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1a14bb11",
+   "say": "Then, what the reviewer sees. Approve action forty two? gets rubber stamped. Unread, in two seconds.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88c2a66a",
+   "say": "A good review card lets them decide in under a minute. The exact diff: six regions, seventy nine to eighty nine, plus twelve point seven percent. Approve the exact change, never the idea, so the agent can't get details wrong after approval.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbb5bacc",
+   "say": "Why: the agent's reasoning and the numbers it used. And risk flags: above the usual five percent step, and competitor data that's three days old.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8db01dfc",
+   "say": "Then measure the loop itself. Approval rate, time to decide, edit rate. And above all, approved changes later reverted. A hundred percent approvals, in three seconds each, means the gate adds nothing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ab21d9b8",
+   "say": "Not every touchpoint is an approval. LangChain's work on ambient agents, which run in the background, names three patterns. Notify: tell a person what happened, no action needed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "466a0bad",
+   "say": "Question: ask for missing information. Asking beats guessing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6edcedc0",
+   "say": "Review: approve, edit, or reject a risky action.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f7ab986",
+   "say": "And approval is itself an action. Check the approver may approve this change, and that nobody approves their own large change when policy needs someone else. That's separation of duties.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a9f2f888",
+   "say": "While the manager thinks, where does the proposed change live?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ee37996",
+   "say": "Not in the live table, because the store reads it. The base is the real table.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe657d1e",
+   "say": "The overlay is a staging area for proposed changes, with an expiry time. Like a shopping cart before checkout: chosen, but not paid for. Nothing in the store changes yet.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de045375",
+   "say": "Approve, and the overlay is applied to the base in one database transaction: every row changes, or none does.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0e298c6",
+   "say": "Edit: the manager's values replace the proposal, then the same commit runs. Reject or expiry: the overlay is deleted, and the reason goes back to the agent. And after committing, read the base back. Report success only if the new prices are really there.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4a182081",
+   "say": "Now the standard follow up questions for any human in the loop design.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "751a1e93",
+   "say": "The data changed while the manager was deciding. The proposal was built when the US price row was at version seven.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4183139e",
+   "say": "Meanwhile, a colleague set the price to eighty four. The row is now version eight. Applying our diff would silently overwrite their change, with numbers computed from old data.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b118713d",
+   "say": "So the commit says: update, only where the version is still seven. Zero rows updated. The commit aborts, and the agent rebuilds its proposal on fresh data. That's optimistic concurrency, also called compare and swap.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b30e2d5",
+   "say": "Why not lock the row while waiting? That's pessimistic locking, and holding a lock for hours blocks everyone. Optimistic: no lock, and a cheap check at commit time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3218a6cf",
+   "say": "The other follow ups. Nobody answers: every proposal gets an expiry, a reminder, and an escalation to a backup approver.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8704161",
+   "say": "Two people approve conflicting changes: allow one open proposal per item, keep the version check, and key every commit by its proposal id, so a double click applies once.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c60d4cfe",
+   "say": "A deploy lands while two hundred runs are paused: they were saved by the old workflow. Keep state changes backward compatible, keep step names, or drain pending runs first.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41131a5a",
+   "say": "And who changed this, and why? Keep an append only audit log: the request, the diff, the approver, any edits, the trace id, and row versions before and after.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "056077d7",
+   "say": "Interview round.",
    "rate": "+10%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "0ec5b988",
-   "say": "So if that step saved the proposal before pausing, it saves it twice. Two rows, for one proposal.",
+   "key": "a1e5154f",
+   "say": "Design human approval, for an agent that changes prices.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f7b7a4f8",
+   "say": "Risk tiers in code. Read only is automatic, small reversible changes are audited, and large changes need approval.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5475631d",
+   "say": "The agent stages an exact diff in an overlay, and the run pauses with interrupt, on a durable checkpointer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f6e5bd5b",
+   "say": "The reviewer sees the diff, the reasoning, and risk flags, and can approve, edit, or reject with a reason.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "492586b2",
+   "say": "Resume with a command. Side effects live in their own idempotent steps, because the paused step re-runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2d21ede",
+   "say": "Commit in one transaction, with a version check. Plus expiry, an audit log, and a metric on reverted approvals.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "4ab29095",
-   "say": "The fix: put the side effect in its own earlier step, which won't re-run. And key it by the proposal id, so a repeat does nothing anyway.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "6a13af48",
-   "say": "Two more rules. Never wrap interrupt in a catch-everything block: the pause is an exception, and you'd swallow it. And ask once, with the whole batch.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "c9c38b8f",
-   "say": "Now, what should actually need Arjun?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "ea87eb56",
-   "say": "Version one asked Arjun to approve everything. Even show me milk stock. After a week, he approved each one in two seconds, without reading. Including a forty percent jump.",
+   "key": "6780f415",
+   "say": "Rapid fire. Where does a resumed run restart?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "4fe728b3",
-   "say": "The approval became theatre. A bank vault's two person rule works precisely because it's rare, and deliberate.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "f90d1f30",
-   "say": "So sort actions by damage, and by how easy they are to undo. Reads run automatically. Small, reversible changes run and get logged. Bigger ones need Arjun. Huge ones need his manager too.",
+   "key": "be2f530f",
+   "say": "At the first line of the step that called interrupt.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "355d323a",
-   "say": "And those thresholds live in code. A prompt can be ignored. A check in code can't.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "71e2051b",
-   "say": "Next: approve the exact change, not the idea. If Arjun approves a sentence, and the agent builds the update afterwards, it can still get it wrong. All of Maharashtra, instead of Pune.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "8781589b",
-   "say": "So his card shows the exact diff. Why the agent proposed it. Risk flags, like this is double the usual size. And his options: approve, edit the number, or reject with a reason.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "fdc176c6",
-   "say": "Then measure the gate. If everything is approved in three seconds, it adds nothing.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "b1842e00",
-   "say": "While Arjun thinks, where does the change live?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "7029047e",
-   "say": "Not in the live table. Ordering systems read it, and trucks would move on a number nobody approved.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "6fafff8e",
-   "say": "Instead, it's a sticky note on the live sheet. The proposal sits in a separate staging area, the overlay, while the base stays at four hundred.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "cc6b8878",
-   "say": "Approve, and the note is applied in one transaction. All six rows, or none.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "13828d4a",
-   "say": "Reject, or let it expire, and the note is simply removed. The reason goes back to the agent, so it can try again.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "a2e2b453",
-   "say": "Last: the world doesn't wait with you.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "961bd038",
-   "say": "Sixty planners use it now. What can go wrong between the proposal, and the commit?",
+   "key": "b83eb52d",
+   "say": "What does a paused run cost while it waits?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "848caea6",
-   "say": "The data changes. Another planner raised Kothrud an hour later. So every row carries a version. The commit only succeeds if it's still the version Arjun saw. Otherwise, zero rows change, and the agent re-proposes on fresh data. That's optimistic concurrency.",
+   "key": "07ecec2d",
+   "say": "Nothing running. It's saved state, in the checkpointer's database.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8c79af07",
-   "say": "Arjun goes on leave. So every proposal expires, with a reminder and a backup approver.",
+   "key": "4c88dced",
+   "say": "Why not wrap interrupt in a try except?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "65ed014d",
+   "say": "The pause is raised as an exception. Catch it, and the run never pauses.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "41e47294",
-   "say": "Two planners approve conflicting changes. Allow one open proposal per item, and key every commit by its proposal id.",
+   "key": "ef1b234a",
+   "say": "Respond versus reject, in the human in the loop middleware?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9f02df1f",
+   "say": "Respond returns a result the model treats as success. Reject skips the call, with a reason.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "64ea1131",
-   "say": "And a deploy lands while two hundred runs are paused. Keep changes backward compatible, or let them drain first.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
+   "key": "35015781",
+   "say": "Approve the plan, or the exact change?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6934fcd1",
+   "say": "The exact change. Whatever is approved is exactly what runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
    "after": 0
+  },
+  {
+   "key": "517b2742",
+   "say": "How do you stop stale overwrites?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "dd9a5644",
+   "say": "Optimistic concurrency. Commit only if the row's version is unchanged.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5942329e",
+   "say": "Last one. What's the best signal the review gate works?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c0a30780",
+   "say": "Approved changes that were later reverted. Plus the approval rate, and time to decide.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
    "key": "fabde104",
@@ -240,71 +548,57 @@
    "after": 0
   },
   {
-   "key": "702d9289",
-   "say": "Human in the loop: the agent pauses for a person.",
+   "key": "81bf6044",
+   "say": "Interrupt pauses a run. Resume continues it. A paused run is just saved rows.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8a6ebb9e",
-   "say": "Interrupt freezes the run, and asks.",
+   "key": "04047b34",
+   "say": "The paused step re-runs from the top, so side effects get their own idempotent steps.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6cb64714",
-   "say": "Resume brings the answer back.",
+   "key": "075ab4a9",
+   "say": "Risk tiers decide what needs a human, with thresholds in code.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "fd89bea7",
-   "say": "The trap: the step restarts from its first line.",
+   "key": "ccbc1db5",
+   "say": "The review card shows the exact diff, the reasoning, and the risks.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "b77cb0a7",
-   "say": "The overlay holds the change, like a sticky note.",
+   "key": "cbf5e0b1",
+   "say": "Changes wait in an overlay, and land in one transaction.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "2f3f3a63",
-   "say": "And optimistic concurrency commits only if nothing changed.",
+   "key": "dec5dc55",
+   "say": "And optimistic concurrency stops stale overwrites.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "9d77a8bf",
-   "say": "Both agents are in production. Three months later, the COO forwards a screenshot.",
+   "key": "f4dc541e",
+   "say": "The agent has been live for a month. Then leadership asks one simple question.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "96b94651",
-   "say": "Ask FreshCart told an agent that bakery refunds take forty eight hours. The policy says twelve.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "8017bb29",
-   "say": "Her message has one line. Is this thing actually working? And how would we even know?",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "84a743ce",
-   "say": "The honest answer, today, is: agents seem to like it. That's not an answer. So how would you prove an assistant works, when its answers are free text, and there's no unit test for a good answer?",
+   "key": "42f1792c",
+   "say": "Is it actually working? What would you show them?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3

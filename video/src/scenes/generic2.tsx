@@ -16,7 +16,7 @@ const at = (t: Clock, i: number) => (i <= 0 ? 4 : (t.beats[i]?.stepStart ?? Infi
 
 export const Title = ({ text, f, sub, w = 1220 }: { text: string; f: number; sub?: string; w?: number }) => (
   <Abs x={80} y={118} w={w} style={rise(f, 2)}>
-    <div style={{ fontSize: 50, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.15 }}>{text}</div>
+    <div style={{ fontSize: text.length > 40 ? 42 : 50, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.15 }}>{text}</div>
     {sub && <div style={{ fontSize: 30, color: C.muted, marginTop: 8 }}>{sub}</div>}
   </Abs>
 );

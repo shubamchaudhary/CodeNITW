@@ -1,8 +1,22 @@
 import type { Chapter } from "../lib/types.ts";
 
-// Chapter 8 (src/Data/aiStackDocs/CH-08.md): answering the COO. Look first,
-// name and count the failures, turn them into checks, check the checker,
-// and measure search and answers separately.
+// Chapter 8 of the AI Stack: is it actually working? Interview-ready evals.
+// The running example is a software company's support chatbot that told a
+// customer refunds are allowed for 60 days (the policy says 30).
+
+const JUDGE = `Check one property: is every factual claim in ANSWER
+supported by CONTEXT? Supported means stated in, or directly
+implied by, the context. Ignore style.
+
+1. List each claim.
+2. For each, quote the supporting context, or write NONE.
+Then output JSON: {"critique": "...", "grounded": true | false}
+grounded is false if any claim is NONE.
+
+<two passing and two failing examples, each with its critique>
+
+CONTEXT: ...
+ANSWER: ...`;
 
 export const ch08: Chapter = {
   id: "ch08",
@@ -12,115 +26,364 @@ export const ch08: Chapter = {
   scenes: [
     {
       kind: "custom",
-      name: "score",
+      name: "a8hook",
       beats: [
-        { say: "The COO's question is sitting in your inbox. Is this thing actually working? And how would we even know? Attached: the forty eight hour screenshot." },
-        { say: "The tempting first move: install an evaluation library, run it, and report: helpfulness, four point one out of five." },
-        { say: "That number tells her nothing. Not what's wrong. Not how often. Not what to fix.", tone: "key" },
-        { say: "So we'll do it the way the best practitioners do. Look first. Name the failures. Count them. And only then, measure.", tone: "excite" },
+        { say: "A message from the VP of support. Is this thing actually working? And how would we even know?" },
+        { say: "Attached, a screenshot. The bot told a customer they can request a refund within sixty days. The policy says thirty." },
+        { say: "The tempting move: install an evaluation library, and report helpfulness, four point one out of five. That number says nothing. Not what's wrong, not how often, not what to fix. Let's do it the way the best practitioners do.", tone: "key" },
       ],
     },
     {
       kind: "title",
       eyebrow: "AI Stack · Chapter 8",
       title: "Is it actually working?",
-      subtitle: "error analysis, judges, metrics, eval gates",
+      subtitle: "error analysis, checks, judges and metrics",
       beats: [{ say: "Chapter eight. Is it actually working?" }],
+    },
+    {
+      kind: "bullets",
+      title: "By the end, you can answer",
+      firstItemStep: 1,
+      items: [
+        { icon: "🔎", text: "What is error analysis, and why does it come first?" },
+        { icon: "⚖️", text: "Code checks vs LLM judges; why pass/fail labels?" },
+        { icon: "🧪", text: "How do you know your LLM judge is right?" },
+        { icon: "📏", text: "Retrieval metrics vs answer metrics: which tell you what?" },
+      ],
+      beats: [
+        { say: "By the end, you'll be able to answer these." },
+        { say: "What error analysis is, and why it comes before any metric." },
+        { say: "When to use code checks versus an LLM judge, and why pass or fail beats a one to five score." },
+        { say: "How you know your LLM judge is actually right." },
+        { say: "And how retrieval metrics and answer metrics split every failure." },
+      ],
     },
 
     // ------------------------------------------------------------ 1
-    { kind: "section", num: "1", title: "Look before you measure", beats: [{ say: "Step one is the one everybody skips." }] },
+    { kind: "section", num: "1", title: "Look before you measure", beats: [{ say: "First, a definition, and then the most valuable habit in AI engineering." }] },
     {
-      kind: "custom",
-      name: "piles",
+      kind: "compare",
+      title: "An eval is an exam, not a unit test",
+      cols: [
+        { title: "Unit test", icon: "🧮", tone: "blue", items: ["add(2, 3) == 5", "one right answer, exact check"] },
+        { title: "Eval", icon: "📝", tone: "green", items: ["“refunds within 30 days, from the purchase date”", "many correct wordings", "graded by code, a model judge, or a person"] },
+      ],
+      footer: "golden set: a fixed, versioned set of cases with expected outcomes, run on every change",
       beats: [
-        { say: "A doctor reads the charts before prescribing. So in week one, sample a hundred real traces from production. Every type of question, every day of the week." },
+        { say: "A unit test checks add two and three equals five. One right answer, an exact check." },
         {
-          say: "Read each one, and write down in plain words what went wrong. Cited the twenty twenty three bakery policy. Never searched. Right chunk, wrong number. Or: fine. This is error analysis.",
-          term: { word: "Error analysis", meaning: "read real outputs, name the failures, count them" },
+          say: "An eval is a test for an AI system. Give it an input, and grade the output. But an answer like refunds within thirty days has many correct wordings. So grading can mean a code check, a model acting as a judge, or a person's verdict.",
+          term: { word: "Eval", meaning: "a graded test for an AI system's output" },
         },
-        { say: "Then group the notes into piles, and count them. Eleven outdated documents. Six answers that contradict their own chunk. Five order questions with no order lookup. Four answers too long to read on a call." },
-        { say: "And look at the biggest pile. It isn't a prompt problem at all. It's old policies that were never deleted. The bakery bug.", tone: "key" },
+        {
+          say: "And a golden set is a fixed, versioned collection of test cases, with their expected outcomes, run against every change.",
+          tone: "key",
+          term: { word: "Golden set", meaning: "versioned test cases with expected outcomes" },
+        },
       ],
     },
     {
       kind: "custom",
-      name: "checks",
+      name: "a8piles",
       beats: [
-        { say: "Now turn every pile into a check. Code first, wherever you can. Code checks are cheap, fast, and never disagree with themselves." },
-        { say: "Use a model as the judge only where code can't decide. Like: is every claim actually supported by the chunks it cites?" },
-        { say: "And grade pass or fail, not one to five. You say three, I say four, and three point four average fixes nothing. Yes or no, we agree. And a no tells you exactly what to fix.", tone: "key" },
         {
-          say: "Collect the cases into a golden set: fixed, versioned test cases, with the right sources and the facts each answer must contain.",
-          term: { word: "Golden set", meaning: "fixed, versioned test cases with expected outcomes" },
+          say: "A doctor doesn't prescribe before reading the charts. So week one: sample a hundred real traces from production, spread across question types and days. That's error analysis.",
+          term: { word: "Error analysis", meaning: "read real traces, name and count failures" },
         },
-        { say: "Include the awkward ones. Unanswerable questions, ambiguous ones, hidden instructions, and policies that just changed.", tone: "aside" },
+        {
+          say: "Read each trace, and write a short note in plain words. Cited the twenty twenty three refund policy. Never searched, answered from memory. Fine. That's open coding.",
+          term: { word: "Open coding", meaning: "free-text notes on each trace" },
+        },
+        {
+          say: "Then group the notes into categories, and count them. That's axial coding. Outdated policy version: eleven. Right chunk found, answer contradicts it: six. Account never looked up: five. Too long: four.",
+          term: { word: "Axial coding", meaning: "group notes into counted categories" },
+        },
+        { say: "Now you know what to fix first. And the biggest pile isn't a prompt problem at all. It's old documents that were never deleted. That's the sixty day bug.", tone: "key" },
       ],
     },
     {
-      kind: "custom",
-      name: "cigate",
+      kind: "bullets",
+      title: "Common eval mistakes",
+      firstItemStep: 1,
+      items: [
+        { icon: "🏆", text: "Treating benchmark scores as your app's quality" },
+        { icon: "📦", text: "Generic metrics instead of your own failure modes" },
+        { icon: "🙈", text: "Not looking at the data; outsourcing labels to non-experts" },
+        { icon: "🎯", text: "Overfitting prompts to the test set" },
+      ],
       beats: [
-        { say: "Then run it on every change. A pull request edits a prompt. The golden set runs." },
-        {
-          say: "Compare the results with the main branch, check by check, group by group. Model outputs wobble from run to run, so block only a drop bigger than the normal noise. That's an eval gate.",
-          term: { word: "Eval gate", meaning: "CI blocks a change that makes evals worse" },
-        },
-        { say: "And don't just say blocked. Show exactly which cases got worse, and why.", tone: "key" },
+        { say: "Practitioners like Hamel Husain and Shreya Shankar see the same mistakes again and again." },
+        { say: "Treating a model's benchmark scores as your application's quality. They measure different things." },
+        { say: "Generic metrics, like helpfulness, instead of checks built from your own failure categories." },
+        { say: "Not looking at the data. And handing labelling to people who don't know the domain. The expert who knows the policies must label." },
+        { say: "And tweaking prompts until the test set passes. Keep a held back set you don't tune against.", tone: "key" },
       ],
     },
 
     // ------------------------------------------------------------ 2
-    { kind: "section", num: "2", title: "Who checks the judge?", beats: [{ say: "Now, the question every interviewer asks next.", tone: "excite" }] },
+    { kind: "section", num: "2", title: "Turning failures into checks", beats: [{ say: "Four failure categories. How do you check each one automatically?", tone: "ask" }] },
     {
       kind: "custom",
-      name: "judgecal",
+      name: "a8checks",
       beats: [
-        { say: "Some checks need a model as judge. And the COO asks: who checks the judge?", tone: "ask" },
+        { say: "Code first, where code can decide. Every cited chunk is the latest version. The account tool was called whenever an account id appears. The answer is under a hundred and twenty words." },
         {
-          say: "A judge is a measuring instrument. A kitchen scale that reads two hundred grams low is worse than no scale at all. Because you trust it.",
-          tone: "key",
-          term: { word: "LLM-as-judge", meaning: "a model grading another model's output" },
+          say: "A model as judge only where code can't decide. Is every claim actually supported by the chunks it cites?",
+          term: { word: "LLM-as-judge", meaning: "a model grading output against criteria" },
         },
-        { say: "So calibrate it against a person. Meera labels a hundred and fifty answers, pass or fail. Use half to tune the judge, reading every disagreement. Keep the other half back, and use it once, at the end." },
+        { say: "So: code first, because it's cheap, fast, and never disagrees with itself. A judge where judgement is needed, checked against people. And people, the domain experts, to label examples.", tone: "key" },
+      ],
+    },
+    {
+      kind: "compare",
+      title: "Pass/fail, not 1 to 5",
+      cols: [
+        { title: "1–5 scores", icon: "🎚️", tone: "red", items: ["people disagree: is it a 3 or a 4?", "“3.4 average” says nothing to fix"] },
+        { title: "Binary checks", icon: "✅", tone: "green", items: ["“cites the correct policy: yes or no?”", "far more agreement", "a failure says exactly what to fix", "nuance = several checks, each with a reason"] },
+      ],
+      beats: [
+        { say: "People, and models, disagree about whether an answer is a three or a four. And three point four, on average, tells you nothing to fix." },
+        { say: "They agree far more on yes or no: does it cite the correct policy? A failed check tells you exactly what to fix. Capture nuance as several separate yes or no checks, each with a short written reason.", tone: "key" },
+      ],
+    },
+    {
+      kind: "compare",
+      title: "Two kinds of suite",
+      cols: [
+        { title: "Capability evals", icon: "🚀", tone: "purple", items: ["“can it do this hard thing yet?”", "pass rate starts low; you raise it", "e.g. questions about several orders at once"] },
+        { title: "Regression evals", icon: "🛡️", tone: "blue", items: ["“does it still do what it did yesterday?”", "near 100%; a drop blocks the change", "solved capability tasks graduate here"] },
+      ],
+      beats: [
         {
-          say: "Then report two numbers. Of the answers Meera passed, how many did the judge pass? And of the answers she failed, how many did the judge fail? That second one matters most. A judge that never fails anything scores zero on it.",
-          term: { word: "TPR / TNR", meaning: "how often the judge agrees on passes / on fails" },
+          say: "Keep two kinds of suite. Capability evals ask: can it do this hard thing yet? The pass rate starts low, and you work to raise it.",
+          term: { word: "Capability eval", meaning: "can it do this yet? starts low" },
+        },
+        {
+          say: "Regression evals ask: does it still do what it did yesterday? They should stay near a hundred percent, and a drop blocks the change. Once a capability is reliably solved, it graduates into the regression suite.",
+          term: { word: "Regression eval", meaning: "still works? stays near 100%" },
         },
       ],
     },
     {
-      kind: "custom",
-      name: "biases",
+      kind: "bullets",
+      title: "A golden set that means something",
+      firstItemStep: 1,
+      items: [
+        { icon: "📐", text: "Start with 50–100 cases; grow to a few hundred" },
+        { icon: "🗺️", text: "Spread across every group", sub: "question type, language, difficulty: report per group" },
+        { icon: "🧨", text: "Awkward cases on purpose", sub: "unanswerable, ambiguous, adversarial, recently changed" },
+        { icon: "🧬", text: "Synthetic from a grid, then reviewed", sub: "type × language × difficulty × persona; real questions keep it honest" },
+      ],
       beats: [
-        { say: "Judges have habits. Show two answers, and they often prefer whichever came first. So run both orders, and count only the verdicts that agree." },
-        { say: "They prefer longer answers." },
-        { say: "They prefer answers from their own model family." },
-        { say: "And they're lenient. So give each judge one narrow question, ask for its reasoning before its verdict, and show it failing examples, not just good ones.", tone: "key" },
+        { say: "How to build a golden set that means something." },
+        { say: "Start with fifty to a hundred cases, drawn from real failures, and grow towards a few hundred." },
+        { say: "Spread them across every group, so you can report results per group, not just one average." },
+        { say: "Include awkward cases on purpose: unanswerable questions, ambiguous ones, adversarial ones, and questions about policies that just changed." },
+        { say: "And if you generate cases, generate from a grid of type, language, difficulty and persona, and review every one. Questions written from a document reuse its words, and make search look better than it is.", tone: "key" },
+      ],
+    },
+    {
+      kind: "custom",
+      name: "a8gate",
+      beats: [
+        {
+          say: "Then gate every change in CI. A prompt change opens a pull request. The golden set runs, and results are compared with the main branch, per group.",
+          term: { word: "Eval gate", meaning: "CI blocks changes that regress the golden set" },
+        },
+        { say: "Billing improved slightly. Account questions held. But refund questions dropped from ninety seven to eighty eight percent." },
+        { say: "So the merge is blocked. A fix for one category often breaks another, and an average would have hidden it.", tone: "key" },
+        { say: "Because model outputs vary between runs: compare with main rather than a fixed number, re run flaky cases a few times, show which cases changed, and cache responses for unchanged inputs." },
       ],
     },
 
     // ------------------------------------------------------------ 3
-    { kind: "section", num: "3", title: "Search, or the answer?", beats: [{ say: "Last: which half is broken?" }] },
+    { kind: "section", num: "3", title: "Checking the checker", beats: [{ say: "Now the question every interviewer asks next: and who checks the judge?", tone: "ask" }] },
     {
       kind: "custom",
-      name: "rankmetrics",
+      name: "a8judge",
       beats: [
-        { say: "The bakery failure was a search problem. Right chunk, wrong answer, is an answer problem. To fix the right half, you need numbers that separate them.", tone: "ask" },
+        { say: "A judge is a measuring instrument. A kitchen scale that reads two hundred grams low is worse than no scale, because you trust it. So calibrate it. Two hundred answers, labelled pass or fail by the domain expert. Twenty five become examples in the judge's prompt. A hundred are a dev set to iterate on. And seventy five are held back, used once, at the end." },
+        { say: "Run the judge on the held back set, and compare with the expert." },
         {
-          say: "For search: for each test question, you know which chunks answer it. Here, three. Search returns them at positions two, seven, and eleven. In the top five, it found one of three. In the top ten, two of three. That's recall at k.",
-          term: { word: "Recall@k", meaning: "share of the right chunks found in the top k" },
+          say: "True positive rate: of the answers the expert passed, the share the judge also passed. Ninety out of a hundred: zero point nine.",
+          term: { word: "TPR", meaning: "of real passes, share the judge passed" },
         },
         {
-          say: "And where does the first right one sit? Second. That's worth one half. Averaged over every question, it's called mean reciprocal rank.",
-          term: { word: "MRR", meaning: "how high the first right chunk sits, on average" },
+          say: "True negative rate: of the answers the expert failed, the share the judge also failed. This matters most. A judge that misses failures gives false comfort, and one that never fails anything has a TNR of zero.",
+          tone: "key",
+          term: { word: "TNR", meaning: "of real failures, share the judge caught" },
+        },
+      ],
+    },
+    {
+      kind: "custom",
+      name: "a8kappa",
+      beats: [
+        {
+          say: "Raw agreement can flatter. Say you and the judge agree on thirty four of forty answers. Eighty five percent.",
+          term: { word: "Cohen's kappa", meaning: "agreement beyond what chance would give" },
+        },
+        { say: "But two people flipping coins agree half the time. That's not skill. If each of you passes half the answers, chance agreement is zero point five." },
+        { say: "Cohen's kappa removes it: observed minus chance, over one minus chance. Zero point eight five minus zero point five, over zero point five. Zero point seven." },
+        { say: "Usually read as substantial agreement.", tone: "key" },
+      ],
+    },
+    {
+      kind: "compare",
+      title: "How judges go wrong",
+      cols: [
+        { title: "Position bias", icon: "↔️", tone: "blue", items: ["prefers whichever answer is first", "run both orders; count consistent wins"] },
+        { title: "Verbosity bias", icon: "📜", tone: "amber", items: ["prefers longer answers", "criteria about content, not length"] },
+        { title: "Self-preference", icon: "🪞", tone: "purple", items: ["prefers its own model family", "judge with a different family"] },
+        { title: "Leniency", icon: "😇", tone: "red", items: ["passes too much", "failing examples; reason first; watch TNR"] },
+      ],
+      footer: "one narrow criterion per judge · “is it helpful?” produces noise",
+      beats: [
+        { say: "How judges go wrong. Position bias: in a pairwise comparison, it prefers whichever answer comes first. Run both orders, and count only consistent verdicts." },
+        { say: "Verbosity bias: it prefers longer answers. Write criteria about content, not length." },
+        { say: "Self preference: it prefers answers from its own model family. Judge with a different family." },
+        { say: "Leniency: it passes too much. Include failing examples, ask for its reasoning before the verdict, and watch TNR. And one narrow criterion per judge. Is it helpful? produces noise.", tone: "key" },
+      ],
+    },
+    {
+      kind: "code",
+      title: "A judge prompt that works",
+      lang: "text",
+      code: JUDGE,
+      highlight: [
+        [1, 3],
+        [5, 6],
+        [7, 8],
+        [10, 10],
+        [12, 13],
+      ],
+      beats: [
+        { say: "Here's a judge prompt that works. One property, defined precisely: is every claim supported by the context?" },
+        { say: "Reasoning before the verdict: list each claim, and quote its support, or write none." },
+        { say: "A yes or no output, in structured JSON, with a critique." },
+        { say: "Examples of failure, as well as success." },
+        { say: "And the context and answer fenced off at the end. Narrow, reasoned, binary, with examples." },
+      ],
+    },
+    {
+      kind: "custom",
+      name: "a8correct",
+      beats: [
+        { say: "A bonus that impresses interviewers. The judge says eighty two percent of production answers are grounded. But the judge itself isn't perfect." },
+        { say: "Knowing its TPR and TNR, you can correct the rate: observed plus TNR minus one, over TPR plus TNR minus one." },
+        { say: "Zero point eight two plus zero point eight minus one, over zero point nine plus zero point eight minus one. Zero point six two, over zero point seven. About eighty nine percent." },
+        { say: "It's the Rogan Gladen correction, from medical testing. And it only works when TPR plus TNR is clearly above one, another reason to measure them.", tone: "aside" },
+      ],
+    },
+
+    // ------------------------------------------------------------ 4
+    { kind: "section", num: "4", title: "Search metrics and answer metrics", beats: [{ say: "The sixty day bug was a search problem. Right chunk, wrong answer is an answer problem. To fix the right half, measure them separately." }] },
+    {
+      kind: "custom",
+      name: "a8ranks",
+      beats: [
+        { say: "Search metrics need, for each test question, the chunks that actually answer it. Say three chunks are relevant, and search ranks them at positions two, seven, and eleven." },
+        {
+          say: "Recall at five: one of three relevant chunks is in the top five. Zero point three three. Recall at ten: two of three. Zero point six seven. Did we find it?",
+          term: { word: "Recall@k", meaning: "share of relevant items in the top k" },
+        },
+        { say: "Reciprocal rank: the first relevant chunk is at position two, so one half. Averaged over questions, that's MRR." },
+        {
+          say: "Average precision: the precision at each relevant hit, averaged over all relevant chunks. One half, plus two sevenths, over three. Zero point two six. Averaged over questions, that's MAP.",
+          term: { word: "MAP", meaning: "mean of average precision over queries" },
         },
         {
-          say: "For the answer: list its claims, and check each one against the chunks. Two of three are supported. That's faithfulness.",
-          term: { word: "Faithfulness", meaning: "share of the answer's claims backed by its chunks" },
+          say: "And n D C G: every relevant chunk earns credit, discounted by the log of its position, divided by the score of the perfect order. Zero point four five. Reading: the material is found, but ranked poorly. Add a reranker.",
+          tone: "key",
+          term: { word: "nDCG", meaning: "position-discounted gain vs the ideal order" },
         },
-        { say: "Low recall? Fix search. Good recall, but low faithfulness? Fix the answer step.", tone: "key" },
-        { say: "And remember: faithful isn't correct. An answer perfectly faithful to an outdated policy is still wrong.", tone: "aside" },
+      ],
+    },
+    {
+      kind: "compare",
+      title: "Answer metrics (popularised by RAGAS)",
+      cols: [
+        { title: "Faithfulness", icon: "🧷", tone: "green", items: ["claims supported by the chunks", "no reference needed"] },
+        { title: "Answer relevance", icon: "🎯", tone: "blue", items: ["addresses the question asked", "no reference needed"] },
+        { title: "Context precision", icon: "🥇", tone: "purple", items: ["relevant chunks ranked high", "needs relevance labels"] },
+        { title: "Context recall", icon: "🧺", tone: "amber", items: ["needed facts were retrieved", "needs a reference answer"] },
+      ],
+      footer: "low context recall → fix search · good recall, low faithfulness → fix generation",
+      beats: [
+        { say: "On the answer side, four metrics popularised by the RAGAS library. Faithfulness: the share of the answer's claims supported by the retrieved chunks." },
+        { say: "Answer relevance: does it address the question that was asked?" },
+        { say: "Context precision: are the relevant chunks ranked near the top?" },
+        { say: "And context recall: of the facts in a reference answer, how many were in the retrieved chunks? Low context recall: fix search. Good recall but low faithfulness: fix generation.", tone: "key" },
+      ],
+    },
+    {
+      kind: "trap",
+      myth: "Faithfulness is 0.95, so the answers are correct.",
+      truth: "Faithful isn't correct. An answer perfectly faithful to an outdated policy is still wrong.",
+      why: "Suspect the chunks (stale or wrong documents), check context recall and answer relevance, and check the judge's TNR.",
+      beats: [
+        { say: "The trap: faithfulness is zero point nine five, so the answers are correct." },
+        { say: "Faithful isn't correct. An answer perfectly faithful to an outdated policy is still wrong.", tone: "key" },
+        { say: "So suspect the chunks: a stale or wrong document. Check context recall and answer relevance. And check the judge isn't lenient." },
+      ],
+    },
+    {
+      kind: "trap",
+      myth: "Recall@10 rose by 0.02 on 51 questions. Ship it.",
+      truth: "0.02 of 51 is about one question. Look at which questions changed, use a paired test, or grow the set.",
+      beats: [
+        { say: "And one more. Recall at ten went up by zero point zero two, on fifty one questions. Ship it?" },
+        { say: "Zero point zero two of fifty one is about one question flipping. Look at which questions improved and which got worse, use a paired test, like a bootstrap, or grow the set to a few hundred.", tone: "key" },
+      ],
+    },
+
+    // ------------------------------------------------------------ 5
+    { kind: "section", num: "5", title: "Interview round", beats: [{ say: "Interview round.", tone: "excite" }] },
+    {
+      kind: "sayit",
+      q: "How would you evaluate a RAG chatbot?",
+      lines: [
+        "Start with error analysis: read ~100 real traces, code the failures, count the categories.",
+        "Turn each category into a binary check: code where possible, an LLM judge where needed.",
+        "Calibrate the judge on expert labels; report TPR and TNR on a held-out set.",
+        "Measure search (recall@k, MRR, nDCG) and answers (faithfulness, relevance) separately.",
+        "Gate changes in CI per group against main; keep sampling production and growing the set.",
+      ],
+      beats: [
+        { say: "How would you evaluate a RAG chatbot?" },
+        { say: "Start with error analysis. Read about a hundred real traces, code the failures, and count the categories." },
+        { say: "Turn each category into a binary check. Code where possible, an LLM judge where needed." },
+        { say: "Calibrate the judge on expert labels, and report its TPR and TNR on a held out set." },
+        { say: "Measure search and answers separately: recall, MRR and n D C G for search, faithfulness and relevance for answers." },
+        { say: "And gate changes in CI, per group, against main. Keep sampling production, and keep growing the set.", tone: "key" },
+      ],
+    },
+    {
+      kind: "drill",
+      items: [
+        { q: "Open coding vs axial coding?", a: "Open: a free note per trace. Axial: group notes into categories and count them." },
+        { q: "Why binary labels over 1–5?", a: "Higher agreement, and a failure says exactly what to fix." },
+        { q: "Which matters more for a judge, TPR or TNR?", a: "Usually TNR: a judge that misses failures gives false comfort." },
+        { q: "Why Cohen's kappa instead of raw agreement?", a: "It removes agreement that chance alone would produce." },
+        { q: "Recall@k vs precision@k?", a: "Recall: share of relevant items found. Precision: share of the top k that is relevant." },
+        { q: "Faithfulness is high but answers are wrong. Why?", a: "The chunks are wrong or stale, or the judge is lenient. Faithful isn't correct." },
+        { q: "Capability vs regression eval?", a: "Capability: can it do it yet, starts low. Regression: still works, near 100%, blocks merges." },
+      ],
+      beats: [
+        { say: "Rapid fire. Open coding versus axial coding?", tone: "ask", hold: 2.5 },
+        { say: "Open coding is a free note on each trace. Axial coding groups the notes into categories, and counts them." },
+        { say: "Why binary labels, over one to five?", tone: "ask", hold: 2.5 },
+        { say: "Higher agreement. And a failure says exactly what to fix." },
+        { say: "Which matters more for a judge: TPR, or TNR?", tone: "ask", hold: 2.5 },
+        { say: "Usually TNR. A judge that misses failures gives false comfort." },
+        { say: "Why Cohen's kappa, instead of raw agreement?", tone: "ask", hold: 2.5 },
+        { say: "It removes the agreement that chance alone would produce." },
+        { say: "Recall at k, versus precision at k?", tone: "ask", hold: 2.5 },
+        { say: "Recall is the share of relevant items you found. Precision is the share of the top k that's relevant." },
+        { say: "Faithfulness is high, but answers are wrong. Why?", tone: "ask", hold: 2.5 },
+        { say: "The chunks are wrong or stale, or the judge is lenient. Faithful isn't correct." },
+        { say: "Last one. Capability eval, versus regression eval?", tone: "ask", hold: 2.5 },
+        { say: "Capability asks, can it do it yet, and starts low. Regression asks, does it still work. It stays near a hundred percent, and blocks merges.", tone: "key" },
       ],
     },
     {
@@ -128,51 +391,36 @@ export const ch08: Chapter = {
       name: "recap",
       props: {
         items: [
-          ["🩺", "Error analysis", "look, name, count"],
-          ["🏅", "Golden set", "fixed cases, run on every change"],
-          ["⛔", "Eval gate", "CI blocks a worse change"],
-          ["⚖️", "LLM-as-judge", "an instrument: calibrate it"],
-          ["🎯", "Recall@k", "did search find it?"],
-          ["🔗", "Faithfulness", "did the answer stick to it?"],
+          ["🔎", "Error analysis", "read, code, count"],
+          ["✅", "Binary checks", "code first, judge where needed"],
+          ["🧪", "Golden set + CI gate", "per group, against main"],
+          ["⚖️", "Judge calibration", "TPR, TNR, kappa"],
+          ["📏", "Search metrics", "recall@k, MRR, MAP, nDCG"],
+          ["🧷", "Answer metrics", "faithful isn't correct"],
         ],
       },
       beats: [
         { say: "Let's lock it in." },
-        { say: "Error analysis: look, name, count. Before any metric." },
-        { say: "A golden set runs on every change." },
-        { say: "And an eval gate blocks the change that makes it worse." },
-        { say: "A judge is an instrument. Calibrate it against a person." },
-        { say: "Recall at k asks: did search find it?" },
-        { say: "And faithfulness asks: did the answer stick to it?", tone: "key" },
+        { say: "Error analysis first: read real traces, code the failures, and count them." },
+        { say: "Binary checks: code first, a judge only where needed." },
+        { say: "A golden set, and a CI gate that compares each group against main." },
+        { say: "Calibrate every judge: TPR, TNR, and kappa." },
+        { say: "Search metrics: recall, MRR, MAP, and n D C G." },
+        { say: "And answer metrics, remembering that faithful isn't correct.", tone: "key" },
       ],
     },
     {
-      kind: "custom",
-      name: "cardlist",
-      props: {
-        title: "Two new problems",
-        items: [
-          ["🤖", "Planner Copilot says “Done!”", "and updated the wrong warehouse"],
-          ["🎲", "it doesn't behave the same twice", "8 runs out of 10: is that working?"],
-          ["📈", "one Tuesday, answers get longer", "nothing in your code changed"],
-        ],
-        pause: "If the final message can lie, what do you check instead?",
-      },
+      kind: "pause",
+      question: "An agent replies “Done! Refund issued.” But it refunded the wrong order. And the same test passes on Monday and fails on Tuesday. How do you test an agent?",
       beats: [
-        { say: "The bakery bug can't come back silently now. But two new problems appear." },
-        { say: "Planner Copilot takes a dozen steps, and changes data. It can write: done! While having updated the wrong warehouse." },
-        { say: "It doesn't behave the same way twice. If it succeeds eight times in ten, is that working?" },
-        {
-          say: "And one Tuesday, answers suddenly get longer, and a few start refusing. Nothing in your code changed. The provider quietly updated the model. So if the final message can lie, what do you check instead?",
-          tone: "ask",
-          hold: 3,
-        },
+        { say: "Answers are measured now. But agents act." },
+        { say: "One replies: done, refund issued. It refunded the wrong order. And the same test passes on Monday, and fails on Tuesday. How do you test an agent?", tone: "ask", hold: 3 },
       ],
     },
     {
       kind: "title",
       eyebrow: "Next",
-      title: "Chapter 9 — Testing agents and shipping safely",
+      title: "Chapter 9 — Testing agents, shipping safely",
       subtitle: "outcomes, trajectories, pass^k, canaries",
       beats: [{ say: "That's chapter nine. See you there.", tone: "excite" }],
     },

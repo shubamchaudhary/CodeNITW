@@ -3,8 +3,8 @@ import { C } from "../lib/theme.ts";
 import { rise } from "../lib/anim.ts";
 
 export const SceneTitle = ({ text, frame, start = 0, sub }: { text: string; frame: number; start?: number; sub?: string }) => (
-  <div style={{ position: "absolute", left: 80, top: 118, right: 80, ...rise(frame, start) }}>
-    <div style={{ fontSize: 50, fontWeight: 800, letterSpacing: -0.5 }}>{text}</div>
+  <div style={{ position: "absolute", left: 80, top: 118, width: 1220, ...rise(frame, start) }}>
+    <div style={{ fontSize: text.length > 40 ? 42 : 50, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.15 }}>{text}</div>
     {sub && <div style={{ fontSize: 30, color: C.muted, marginTop: 8 }}>{sub}</div>}
   </div>
 );
