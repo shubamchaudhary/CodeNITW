@@ -8,6 +8,8 @@ import { openBrowser, renderStill, selectComposition } from "@remotion/renderer"
 import { CHAPTERS } from "../src/chapters/index.ts";
 import { buildTimeline, type Timing } from "../src/lib/timeline.ts";
 
+// STILLS_SCALE=1 renders full size (for images used in the notes); review stills are half size.
+const SCALE = Number(process.env.STILLS_SCALE || 0.5);
 const [id = "ch01", ...picks] = process.argv.slice(2);
 const chapter = CHAPTERS.find((c) => c.id === id)!;
 const timings = JSON.parse(readFileSync(`data/${id}/timings.json`, "utf8")) as Record<string, Timing>;
@@ -29,7 +31,7 @@ const browser = await openBrowser("chrome");
 const composition = await selectComposition({ serveUrl, id, puppeteerInstance: browser });
 mkdirSync("out/stills", { recursive: true });
 for (const [name, frame] of frames) {
-  await renderStill({ serveUrl, composition, frame, output: `out/stills/${name}.jpeg`, imageFormat: "jpeg", scale: 0.5, puppeteerInstance: browser });
+  await renderStill({ serveUrl, composition, frame, output: `out/stills/${name}.jpeg`, imageFormat: "jpeg", scale: SCALE, puppeteerInstance: browser });
   console.log(name, frame);
 }
 await browser.close({ silent: true });
