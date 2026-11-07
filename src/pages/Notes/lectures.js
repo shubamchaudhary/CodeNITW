@@ -1,11 +1,13 @@
 // Topics with a narrated lecture (built in video/, played in the page by
 // LecturePlayer). Kept apart from the player so the topic header can check
 // without loading Remotion.
-// Core Stack is public, so its lectures are shown to the owner only.
+// Core Stack is public, so its lectures are shown to the owner only; Projects
+// is owner-only already, and its lectures stay that way.
 const LECTURES = {
   aistack: new Set(["CH-01", "CH-02", "CH-03", "CH-04", "CH-05", "CH-06", "CH-07", "CH-08", "CH-09", "CH-10", "CH-11", "CH-12"]),
   corestack: new Set(["JAVA-01", "JAVA-04", "SPRING-15", "SPRING-09", "SPRING-23", "SPRING-10", "SPRING-08", "SPRING-11"]),
+  projects: new Set(["LL-01"]),
 };
-const OWNER_ONLY = new Set(["corestack"]);
+const OWNER_ONLY = new Set(["corestack", "projects"]);
 
 export const hasLecture = (source, id, owner) => !!LECTURES[source]?.has(id) && (owner || !OWNER_ONLY.has(source));

@@ -1,0 +1,4541 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "39c916c3",
+   "say": "LogLens, end to end. The architecture, every decision behind it, how each number was measured, and the follow-up questions an AI engineering interview will throw at you.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "125b9543",
+   "say": "By the end of this, you should be able to defend five things.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "169cd910",
+   "say": "The whole system, box by box. Which service calls which, and why it's built that way.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "536f9213",
+   "say": "Every number. Where it came from, and how to work it out again on a whiteboard.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9043bc4",
+   "say": "Every decision. What the options were, what you tried first, and what shipped.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "458a6feb",
+   "say": "The bugs your own tests found, each with a before and an after.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d69dd3e1",
+   "say": "And the follow-up questions, including the gaps you should admit before anyone asks.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cc3ffece",
+   "say": "Start where every design interview starts. The problem.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ff6e8de",
+   "say": "It's three in the morning, and checkout is returning five oh threes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cc0d9b7",
+   "say": "You have a two gigabyte log archive from twelve services, and your manager wants three answers. What broke. Since when. And how many users were hit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70a12cb3",
+   "say": "The obvious move is to paste the logs into a chat model. It fails, in four separate ways.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b08348b3",
+   "say": "One. Volume. Two gigabytes is about fifteen million lines. No context window holds that.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61b48130",
+   "say": "Two. Counting. Ask how many five oh threes there were, and a language model estimates from what it happens to see. It does not count.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b533faee",
+   "say": "Three. Trust. The answer comes back with no line numbers, so nobody can check it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40b35769",
+   "say": "Four. Cost. You pay for every minute of logs, just to learn about the handful of minutes that matter.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5a0a9c4",
+   "say": "So LogLens gives each job to the tool that's good at it. Code counts every line exactly. The model only explains the minutes that look abnormal. And every claim points at stored evidence.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "55d43b82",
+   "say": "If someone asks what LogLens is, in thirty seconds, say this.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cd8a71d6",
+   "say": "It turns a large log archive into a cited incident report, and a question and answer chat.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa6b578c",
+   "say": "Parsers compute exact per minute metrics on every line, and a statistical gate picks out the few abnormal minutes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a80278a",
+   "say": "Only those go to an LLM, which explains them. A LangGraph pipeline groups the explanations into incidents, with a judge checking each story.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f96bbc29",
+   "say": "Questions are answered with corrective RAG over hybrid search, citing the exact log windows it used.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f9676f8",
+   "say": "It's Java, Spring Boot and Kafka for ingest, Postgres with pgvector for everything stored, and Python LangGraph for the two graphs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf35ca35",
+   "say": "And I built evals and fault injection tests for it, which found real bugs, each fixed with a before and after number.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0eada7c6",
+   "say": "Lay out the requirements the way a system design round expects. Functional first: upload an archive of several gigabytes, watch progress live, see exact per minute metrics, get a report of incidents with root causes and evidence, and ask questions with cited answers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17846ee9",
+   "say": "Then the non functional ones, which are what actually shaped the design. A five hundred and twelve megabyte box, so a heap of about two hundred and fifty six. Free tier LLM rate limits. Counts that are exactly right, even after a crash. Every claim traceable. And cost that grows with anomalies, not with bytes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95842684",
+   "say": "And say what's out of scope. No live streaming from log agents, no alerting, no long retention. Compressed uploads are rejected with a clear message. And only ISO and syslog timestamps are recognised.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ab28e4e",
+   "say": "In an interview, name the three hardest constraints early: bounded memory, provider rate limits, and exactly once effects under crashes. They explain most of the design before anyone asks.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6c15de20",
+   "say": "One phrase to avoid. Real time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c62a474b",
+   "say": "It doesn't need to be. The upload returns immediately, and a report within a few minutes is fine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9240235e",
+   "say": "If you say real time, you pull the conversation towards a streaming design you never built.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "469da3e3",
+   "say": "Here are the constraints as numbers. Render's free tier gives you five hundred and twelve megabytes, and the JVM is told to use fifty percent of it, so the heap is about two hundred and fifty six.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69f5a78d",
+   "say": "Groq allows thirty requests and six thousand tokens per minute, per key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "73fb4e77",
+   "say": "Gemini embeddings allow a hundred requests and thirty thousand tokens per minute, per key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48fcb846",
+   "say": "And the counts must be one hundred percent exact. Language models estimate, and crashes can double count.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "823785ac",
+   "say": "Every one of these comes back later as a design decision.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "779ab84d",
+   "say": "Now the core entities.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d71fa6c1",
+   "say": "A session is one investigation. A document is one uploaded file.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be4a82cc",
+   "say": "A part is a byte range of a document. It's never copied, just described by two offsets.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a6aa549",
+   "say": "And the central one. A window, also called a chunk: sixty seconds of log lines, stored as one row, with its exact line range.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b848604a",
+   "say": "A metric is an exact count for one window and one category, like five oh threes at nine thirty one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee5215ba",
+   "say": "Then a finding is the LLM's explanation of one window, an incident groups related findings with a judge's verdict, and the report summarises the session.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2a2007b",
+   "say": "Why is the window the centre? Because metrics, anomaly flags, findings, search results and citations all share it.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d5fcfcfb",
+   "say": "So a citation points at exactly the minute that was counted, flagged and explained. That one choice keeps the whole system consistent.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6c88bc9f",
+   "say": "And the API, in the order a file moves through it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41975f7d",
+   "say": "Create a session. That also creates the session's own table for its chunks, which matters a lot later.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5bf9e97",
+   "say": "Ask for a presigned upload link, valid for fifteen minutes, then the browser puts the file straight into blob storage. The bytes never touch the API.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "54e8f2e9",
+   "say": "Then confirm. The server checks the object really exists and how big it is, saves the document row, and sends a small pointer to Kafka.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8a3b67d",
+   "say": "Progress comes back as server sent events.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1cdd4a8c",
+   "say": "Then the results: metrics, findings, incidents, the report. A question goes to drilldown, and evidence returns the cited windows with their line ranges.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "234a5839",
+   "say": "Internally, Java calls the Python service: analyze, which returns two oh two and runs in the background, and drilldown for questions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f452145c",
+   "say": "Now the whole system, on one board. This is the same diagram the LogLens site shows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30c6d7fb",
+   "say": "Here it is. The client, the blob store, the application server with the API and the workers inside it, Kafka, the LLM providers, Postgres for data and vectors, LangGraph for root cause and questions, and Redis for chat history. Follow one file through it, in seven steps.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ac4220a",
+   "say": "Step one. Upload. The browser sends the file straight to the blob store with a short lived link, and the API only checks that it arrived. In the live demo, that's a one gigabyte file.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d79607f",
+   "say": "Step two. Split. A splitter reads the file once and cuts it into pieces of about five megabytes, always at a minute boundary, and puts a small pointer to each piece on Kafka. The demo file became two hundred and five pieces.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a100fe85",
+   "say": "Step three. Parse. Workers take pieces in parallel, read only their slice with a ranged read, and eight parsers count errors, five hundreds, latency and SQL failures for every minute. Each piece is saved in one database transaction. Three thousand and nineteen windows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e30ccc1a",
+   "say": "Step four. Detect. Each minute is compared with the rest of the same log, using median based baselines, rare error patterns, and hard rules like out of memory or deadlocks. A hundred and one of five hundred and ninety one minutes were flagged.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b600694",
+   "say": "Step five. Explain. Only flagged minutes go to the LLM. Every API key has its own Kafka partition and its own worker, so each key runs at its full rate limit. Forty two thousand calls, out of two hundred and twenty thousand possible.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "42d46abe",
+   "say": "Step six. Root cause. A LangGraph pipeline groups related findings into incidents and ranks the likely causes, and a judge checks each story against its evidence. Six incidents.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a65d6f59",
+   "say": "Step seven. Ask. A decision graph reads the chat so far from Redis, works out whether you're following up, and picks a route: hybrid search over the failures in Postgres, the log profile, or general knowledge. Answers about the log cite exact lines.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "90c33f41",
+   "say": "One sentence explains most of that board. Kafka moves facts. Blob storage moves bytes. Postgres holds the truth.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "601c6669",
+   "say": "That was the logical picture. Here's where each piece actually runs, and which one calls which.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6388d05",
+   "say": "The React app and two small serverless functions live on Vercel. A single Spring Boot jar, in Docker on Render's free tier, runs the API and every Kafka worker. One Java deployable and one Python sidecar. That's a modular monolith.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bce08e4a",
+   "say": "Bytes go from the browser to Backblaze B2 with a presigned URL. B2 speaks the S3 API, so the same code runs against MinIO on a laptop. Workers read the file back in byte ranges, and the staged object is deleted after ingest.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "502f068c",
+   "say": "Facts go through Redpanda Cloud, which speaks the Kafka protocol, secured with SASL over TLS and SCRAM SHA two fifty six. Messages are pointers, never file content.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c395b89",
+   "say": "The truth lives in Render's Postgres sixteen with pgvector. Note the connection pool: five in production, thirty locally, because the free database allows few connections.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "92dd508d",
+   "say": "Groq serves chat and Gemini serves embeddings, called from both Java and Python. They're split because Groq has no embedding models.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37ce1ae6",
+   "say": "The two graphs run in a FastAPI and LangGraph service on its own free instance. Java calls it over public HTTPS, because free Render services can't talk on a private network, and Python reads Postgres directly.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b6b216f3",
+   "say": "And be precise about the public demo. It replays a precomputed one gigabyte run, made by the same Java parsers and gate, and its Ask runs live in Vercel functions over Neon pgvector, with Redis memory. Say that before an interviewer finds it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b4df40f1",
+   "say": "The same story as a sequence, because you'll be asked to walk through it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88407df0",
+   "say": "The browser presigns, uploads straight to blob storage, and confirms. The API puts one ingest request on Kafka.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4d93c47",
+   "say": "The splitter consumes it, streams the file once, and publishes one pointer per part, each a byte range.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db65734c",
+   "say": "Part workers consume those in parallel, each doing a ranged read, and each part commits in one transaction, together with a marker row.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "35bd3014",
+   "say": "When the last part lands, the finalizer claims the document, runs the session wide statistics, and publishes enrichment items, for flagged windows only.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c70d653c",
+   "say": "The enrichment lanes call the LLM and store findings and embeddings.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5cae43c",
+   "say": "When every item is done, Java calls the Python service, which builds incidents with a judge loop and writes the report. Status: done.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f2579324",
+   "say": "And the whole time, the browser is watching over server sent events.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e12c5772",
+   "say": "Progress is one status column on the session, moving forward one state at a time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "355ba6d9",
+   "say": "Created, chunking, parsing, enriching, correlating, reporting, done. A scheduled check runs every one and a half seconds and pushes an event when a subscribed session's status changes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7d18385b",
+   "say": "Any stage can fail, and failure is a state too, with a reason the user can read. The rule the robustness tests enforce: every upload ends in a clear state, never an endless spinner.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f5f65520",
+   "say": "And here's a gap I found reading the code. Java's call to Python is best effort, three attempts, and the graph runs as a FastAPI background task. If the Python service is cold or restarts mid run, a session can wait in correlating. The fix is a small job that re-triggers stuck sessions. Mention it yourself.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0ea13b4e",
+   "say": "Quick check. Why does the browser upload straight to blob storage?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "35feb879",
+   "say": "So a two gigabyte upload costs the five hundred megabyte API no memory and no threads. The API answers in milliseconds.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "01a57b75",
+   "say": "What travels on Kafka, bytes or pointers?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5e77be83",
+   "say": "Pointers. An ingest request, then byte ranges. The file itself only ever lives in blob storage.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "67afd89b",
+   "say": "Why one Java deployable, instead of microservices?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d77d7983",
+   "say": "One deployable fits the free tier, and Kafka consumer groups already let you run more copies of it. If you had to split something out, it would be the enrichment lane, which is slow, rate limited, and scales differently from HTTP.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2714504d",
+   "say": "Is the public demo running the whole pipeline live?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21598b59",
+   "say": "No. It replays a precomputed one gigabyte run, made by the same Java parsers and gate. Its question answering is live.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ad1707d",
+   "say": "Before the mechanics, the history. Every piece of this design was forced by something that broke, and interviewers love those stories.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22bf0ae2",
+   "say": "LogLens began in twenty twenty five as a document question and answer app. Jobs sat in a Postgres table that a worker polled every three seconds. Three failures from that version shaped everything after. First: the same document processed twice. CompletableFuture all of was called without join, so the scheduler returned at once, its transaction committed, and the job locks were released while the jobs were still running.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "247f1ee4",
+   "say": "Second: the connection pool ran dry. A transactional annotation wrapped a two to five minute embedding job, holding one database connection the entire time. That produced the rule you'll see everywhere: short transaction, then slow I O with no transaction, then another short transaction.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2c8f7e22",
+   "say": "Third: out of memory crashes on the five hundred megabyte box, from holding whole files and big batches. The fixes: the serial garbage collector, a heap capped at half the RAM, and smaller batches.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f00a360c",
+   "say": "That short transaction rule is still in every consumer today.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d61cde06",
+   "say": "Then the pivot to log analysis, and a series of walls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c610ed8",
+   "say": "July fourteenth, twenty twenty six. The design doc for logs included a cut list: things deliberately left out. The main one was Elasticsearch. Evidence lookup is by ID, and exact token search only ever runs inside one session, which a Postgres GIN index covers. Being able to name what you removed, and why, is a strong signal.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "66a4a905",
+   "say": "July fifteenth. Gemini's free tier dropped to twenty requests a day, so chat moved to Groq. Groq has no embedding models, so embeddings stayed on Gemini.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c9d01ac",
+   "say": "July sixteenth. A production session embedded only seven of a hundred and sixty seven windows, and the consumers fell into a rebalance storm. Both stories come later, in full.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d55b3f8",
+   "say": "July twenty second. Byte range ingest and presigned uploads shipped, and memory stopped growing with the file.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55ccb79c",
+   "say": "And September twenty ninth and thirtieth. The project had no tests at all. Evals, benchmarks and fault injection found twelve real fixes, each with a before and after number. That pass is the backbone of how you defend this project.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e6186466",
+   "say": "Here's what that pass found, as four numbers you should know cold. Killing the JVM at the worst moment showed the enrichment lane double counted by five point eight percent. Now it's exact.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdfea1aa",
+   "say": "The anomaly gate's savings fell to zero on busy logs. After the fix, about seventy four percent, and its F1 went from point five seven six to point nine oh one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1b1bd94a",
+   "say": "Hybrid search turned out to be secretly vector only. Fixing the full text leg took recall at ten from point three nine to point seven six.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d200d317",
+   "say": "And the model could see only ten point seven percent of the evidence it was asked to cite. Now forty four.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f66683f2",
+   "say": "The common thread: every fix started with a measurement that disagreed with what I expected, and twice, the measurement proved my first theory wrong.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0495323a",
+   "say": "Which sets up a classic question. What would you do differently?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8648aca2",
+   "say": "Write the evals before the features.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c40560dd",
+   "say": "Two real bugs, an enrichment lane that wasn't exactly once, and a full text search leg that returned nothing, hid for months behind a UI that looked fine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a33a0aea",
+   "say": "And at demo scale, fewer moving parts. An in JVM queue and a Java state machine would be enough. Kafka and Python are there to show the scaled design, and it's fine to say so.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "09243be1",
+   "say": "Now the mechanics, in the order a file meets them. First, the upload.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b86184a1",
+   "say": "Three ways to get a two gigabyte file in. One: save it to the server's disk. Version one did that, and Render wipes that disk on every deploy, and the API and workers can't share it anyway.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13391457",
+   "say": "Two: stream it through the backend into blob storage. That endpoint still exists. It works, but the bytes still pass through the JVM, and a request thread is held for minutes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "766c6af4",
+   "say": "Three, what shipped: a presigned upload straight from the browser to blob storage, then a confirm call where the server checks the object.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc93be12",
+   "say": "So a two gigabyte upload costs the five hundred megabyte API no memory and no threads.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e3662f76",
+   "say": "Here's the exchange.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb3dc535",
+   "say": "The browser asks to presign, with the file name and size. The API first checks whether the same session already has a file with that name and size.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6bb32f64",
+   "say": "If so, it answers duplicate, and the upload is skipped entirely. Otherwise it returns a document ID and a presigned PUT URL, valid for fifteen minutes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "31f15a09",
+   "say": "The browser PUTs the file straight to the blob store. The API sees none of it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26228815",
+   "say": "Then the browser calls confirm, and the API asks the blob store whether the object exists and how big it really is. It doesn't trust the client.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6f4459a",
+   "say": "Only then does it save the document row, and put a small ingest request on Kafka.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e438487a",
+   "say": "And here's a gap to admit before you're asked. The Kafka send isn't awaited. If Kafka is down right after the database commit, the row exists but no message was sent.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "028e6901",
+   "say": "That's a classic follow-up. Kafka is down right after confirm commits. What happens?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bc9a0f09",
+   "say": "The document row exists, and the event is lost. That's a dual write: two systems updated without one transaction across them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d14fd738",
+   "say": "The standard fix is a transactional outbox. Write the event into an outbox table in the same transaction as the row, and let a relay publish it to Kafka, retrying until it lands. Duplicates are fine, because the consumers are already idempotent. Today the same unawaited send pattern also appears in the splitter and in the retry path.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9958fd4b",
+   "say": "Name the gap, and the fix, before the interviewer does. It turns a weakness into a design discussion you're leading.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0f028daf",
+   "say": "Why a confirm step, instead of trusting the client?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6953dd7",
+   "say": "The server checks the object itself, so the size and existence recorded in the database are real. And confirm turns the upload finished into one explicit event to publish.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9269a19b",
+   "say": "Why is the staged file deleted after ingest?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b79879c7",
+   "say": "Because the chunks in Postgres are the durable copy. Blob storage is only staging.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "92939728",
+   "say": "A detail from the code. Inside Docker, the API reaches MinIO at the host name minio. How does a URL handed to the browser still work?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f0cdaa5",
+   "say": "Presigned URLs are signed with a second client configured with the public endpoint. The host is part of the signature, so signing with the internal name would break it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "647b3a5f",
+   "say": "Next, Kafka. What it is, how LogLens uses it, and why it's there at all.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d3dea83",
+   "say": "A topic is a named log that only grows at the end. Reading doesn't delete anything; records stay until retention ends. That's what makes replay possible.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b71ba27e",
+   "say": "A topic is split into partitions. Each one is an ordered list of records numbered by offset, and the producer hashes the record's key to pick a partition, so the same key always lands in the same place, in order.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "35b75175",
+   "say": "And a consumer group is a set of consumers reading together. Kafka gives each partition to exactly one member at a time. So six partitions means at most six threads doing work, and a seventh sits idle.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e435451",
+   "say": "Parallelism is the minimum of partitions and consumer threads.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "284e6f4c",
+   "say": "Where you commit the offset decides what a crash does. Commit first, then process, and a crash loses the work. At most once.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d1719e5",
+   "say": "Process first, then commit, and a crash means the record is delivered again. At least once. Duplicates happen.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a85b26b2",
+   "say": "And an exactly once effect is at least once delivery, plus a write that's harmless to apply twice. In LogLens, that's a marker row committed in the same transaction as the data. Part nine is all about it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad9e320f",
+   "say": "LogLens turns auto commit off, and acknowledges each record manually, after the database commit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d4bb27de",
+   "say": "Six topics. Learn this table.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f5516773",
+   "say": "Ingest requests: six partitions, keyed by session, one splitter thread. One record per uploaded file.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "460bf048",
+   "say": "Ingest parts: six partitions, keyed by document ID and part index. Three part threads locally, two in production.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c71e99e",
+   "say": "The ingest dead letter queue, one partition, where poison records are parked.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f100fbb",
+   "say": "Enrichment requests: one partition per chat API key, with the partition chosen explicitly by the producer, and one thread per key. That's the rate limiting design.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba8978b9",
+   "say": "A sixty second retry topic for rate limited items, with a single retry thread, and an enrichment dead letter queue.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c36ceed3",
+   "say": "And the consumer settings: auto commit off, manual acknowledgement, one record per poll, a fifteen minute poll interval, and start from the earliest offset.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7c9138e6",
+   "say": "A favourite detail question. Why is the parts topic keyed by document and part index, and not just the document?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7410f238",
+   "say": "Because the key picks the partition. With only the document as key, every part of one file lands in the same partition, which one thread owns. No parallelism at all.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c29daa77",
+   "say": "The composite key spreads a single file's parts across all six partitions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d2f8b1a8",
+   "say": "Now the first production incident in Kafka: the rebalance storm.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b43714e",
+   "say": "Each poll returned up to five hundred records, the default. Enrichment records can block for about ninety seconds while waiting on rate limits, and Spring processes every record from one poll before polling again.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d97633ca",
+   "say": "Five hundred slow records blew past the fifteen minute max poll interval. The coordinator decided the consumer was dead and removed it from the group.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dade8c3c",
+   "say": "It rejoined, got the same uncommitted records back, and the cycle repeated. Offsets never committed, so embeddings were never saved.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04ccc71d",
+   "say": "The fix was one line: max poll records equals one. Each poll returns one record, so one slow record can't push the consumer past its deadline.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "320e1fce",
+   "say": "Why Kafka, and not RabbitMQ or a database table?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a9f26ec",
+   "say": "I needed replay, for rebuilding and for testing. Partitions as per key lanes for rate limiting. And consumer groups for parallelism. RabbitMQ removes a message once it's acknowledged, and has no partition level ordering. A database table is what version one used, with three second polling and lock leases, and I removed it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ada4292",
+   "say": "Doesn't Kafka's exactly once mean duplicates can't happen?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b64d842e",
+   "say": "Kafka's exactly once covers reading from and writing to Kafka, inside a Kafka transaction. Consumers still see redelivered records after a crash, and my side effects go to Postgres, so they have to be idempotent there.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7eca0404",
+   "say": "Isn't Kafka overkill for a small app?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cca15383",
+   "say": "At demo scale, honestly, yes. An in JVM queue would work. The design targets the scaled shape, the rate limiting depends on partitions, and the crash tests depend on replay.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "72383a6d",
+   "say": "Does processing need ordering?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "003bfe76",
+   "say": "No. Completion is a counter plus an atomic claim, so parts can finish in any order.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edabe479",
+   "say": "Now the most interesting piece of ingest. How do you split a two gigabyte log so several workers can parse it at once, without copying it, and without cutting a stack trace in half?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f33b650b",
+   "say": "Three options. The first version sent one message per file, and a single consumer collected every window of the file in a list. Memory grew with the file, and one thread did everything.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79c4ad35",
+   "say": "The July seventeenth spec considered physical part files: write five megabyte pieces to storage. Parallel, but it writes the whole file a second time, and leaves N objects to clean up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1b117d8",
+   "say": "What shipped: virtual parts. Byte ranges cut at minute boundaries, which workers read with ranged GETs. No copy of the file is ever written.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd558859",
+   "say": "If that sounds familiar, Hadoop and Spark call them input splits. LogLens adds one rule: never cut inside a log record, or inside a minute.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ac955ddd",
+   "say": "Here's a two gigabyte file, about fifteen and a half million lines.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f3ed630",
+   "say": "The splitter reads the object exactly once, as a stream, with a sixty four kilobyte buffer, counting bytes exactly at each newline, so every offset is a true byte position. It holds one line and a few counters. Nothing else.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "07fc8a29",
+   "say": "A line counts as a record start if it begins with a timestamp, ISO eight six oh one or syslog. Stack trace lines, the ones starting with at, have no timestamp. They're never record starts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f6827e6",
+   "say": "The cut rule: at least five megabytes since the last cut, and this line starts a new minute, and it has a timestamp. Then the part ends at this line's first byte. So stack traces and minutes always stay whole.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5ca94164",
+   "say": "The numbers. Five megabytes is the target.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d98fa5d0",
+   "say": "Twenty megabytes, four times the target, is a hard cap, still only on a record start, so one runaway minute can't produce a giant part. And a file with no timestamps at all is cut every five thousand lines.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d3cf04e",
+   "say": "Each part becomes a tiny Kafka message: its index, the total, the byte start and end, and the global line number of its first line, so citations later use the original line numbers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a475adde",
+   "say": "And total parts is saved before the first part is sent, so the finalizer can never run early. The file itself is never copied.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4506877a",
+   "say": "The real code is short.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52935c35",
+   "say": "Record start: the line has a timestamp, or the file has none at all.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f124d143",
+   "say": "Window boundary: this line's minute differs from the previous line's.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "981fc862",
+   "say": "The normal cut: timestamps exist, a new minute starts, and five megabytes have accumulated.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e73964bb",
+   "say": "The no timestamp fallback: five thousand lines.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22b9d433",
+   "say": "And the hard cap at four times the target. Notice it's still inside the record start check, so even the cap never splits a stack trace.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8ae54449",
+   "say": "Interviewers love it when you can re-derive your own numbers. Two gigabytes over fifteen and a half million lines is about a hundred and twenty nine bytes per line.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f43c6e1",
+   "say": "A part is cut just after five megabytes, at the next minute boundary, so two gigabytes is roughly four hundred parts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9eda8b31",
+   "say": "The benchmark file was generated at twenty lines per second. Fifteen and a half million lines, divided by twenty, divided by sixty, is about twelve thousand nine hundred minutes. The run produced twelve thousand nine hundred and twenty chunks. One per minute, exactly as designed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f08df59",
+   "say": "The demo file is denser: one gigabyte over five hundred and ninety one minutes, about nine thousand lines a minute, so about three minutes per part, which gives two hundred and five parts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ad5cfa2",
+   "say": "And why three thousand and nineteen chunks for five hundred and ninety one minutes? Because a chunk is capped at two thousand lines or five hundred and twelve kilobytes. Nine thousand lines a minute is about five chunks per minute, all with the same time bucket.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2d963b34",
+   "say": "How do you avoid splitting a stack trace?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9dafbbd8",
+   "say": "Cuts only happen on a line that has a timestamp and starts a new minute. Stack frames have no timestamp, so they always stay with their record.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e2bbb5b",
+   "say": "Don't ranged reads need the whole object downloaded first?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcb77007",
+   "say": "No. S3 and MinIO serve a range header directly, and the client streams only that slice.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c6f0e1d",
+   "say": "What if the log has no timestamps?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca461351",
+   "say": "Parts of five thousand lines and windows of five hundred, and window buckets come from the global line number, so independent parts agree without coordinating.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55d9ca95",
+   "say": "How much memory does the splitter use?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "733a0d92",
+   "say": "One line, capped at one megabyte, and a few counters. It streams with a sixty four kilobyte buffer. Never say it loads the file.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "896e4833",
+   "say": "Now the workers that process each part, and the trick that decides when a whole file is finished, without any coordinator.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1a41935b",
+   "say": "Here's ingest, component by component. Follow the amber path.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7ab98e9",
+   "say": "The browser asks the API for an upload link.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27a51b52",
+   "say": "The bytes go straight to the blob store.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21f1f747",
+   "say": "Confirm: the API checks the object, saves the row, and publishes one pointer on the requests topic.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22ac5d1b",
+   "say": "One splitter thread consumes it and streams the object once. On the two gigabyte run, the splitter reached the end after a hundred and thirty seven seconds, about fourteen and a half megabytes a second.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0bfc145d",
+   "say": "It publishes one pointer per part, with byte offsets and the first line number. Total parts was saved before the first of them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60862c44",
+   "say": "Part workers take parts in parallel, and each reads only its slice with a ranged GET.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edbbd1ae",
+   "say": "Each part ends in one short transaction: the marker row, the chunks, the metrics, and an increment of the parsed parts counter, all together. All the slow work happened before the transaction opened.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "15cbf9ab",
+   "say": "Then every part, on every path, tries the atomic finalize claim. Exactly one caller wins, and runs the session wide statistics.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e2e9a34",
+   "say": "The winner publishes enrichment items, for flagged windows only, plus embedding batches for every chunk, and deletes the staged file.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "df852890",
+   "say": "This is the part consumer, shortened from the real code. Four moves.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcd0beaa",
+   "say": "One. Check the marker first, with a cheap select. If this part was already processed, skip it before doing any I O, but still call try finalize.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7647c89e",
+   "say": "Two. Do the slow work outside any transaction. The ranged read, chunking into sixty second windows, the eight parsers, the local hard rules.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71fd16bb",
+   "say": "Three. One short transaction. Claim part inserts the marker row with on conflict do nothing. One row inserted means this part is mine. Zero means someone already did it, so write nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea6b1b35",
+   "say": "Inside the same transaction: insert the chunks, upsert the metrics, and increment parsed parts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f42d2780",
+   "say": "Four. Always call try finalize, on every path, even when the part was skipped.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6dca1de4",
+   "say": "Four parts finish in random order. How do you know the last one is done, and make the finishing step run exactly once, with no coordinator?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ea62d51",
+   "say": "One conditional update. It only matches when total parts is known and parsed parts has reached it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce8f4fee",
+   "say": "And only while the status is still processing. The update itself flips it to completed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9f2b5e0",
+   "say": "So Postgres row locking lets exactly one caller get one row back. Everyone else gets zero. No lock service, no leader election, no ZooKeeper.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "38948802",
+   "say": "Why does even the skip path call try finalize?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9e13a9e3",
+   "say": "Picture the last part committing its transaction, and the JVM dying before try finalize runs. When the part is redelivered, the marker says it's done and the writes are skipped. But the finalizer still has to run, or the session waits forever.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59ed7b49",
+   "say": "Calling it on every path, guarded by the atomic claim, covers that crash window.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c30fa85d",
+   "say": "But here's a subtler gap I found reading the code. Is the finalizer crash proof?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5be8292e",
+   "say": "Not quite. The claim commits first. The outlier statistics, the enrichment publishes and the file delete run after it, outside that transaction.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c30835b",
+   "say": "If the process dies right after the claim, the claim can never be won again, so nobody publishes the enrichment work. The fix: a finalizing state plus a sweeper that resumes it, or make the follow up idempotent and re-runnable. That's a strong thing to raise yourself.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ac956ea6",
+   "say": "The headline claim of ingest is bounded memory. Here's how JVM memory works, how it was measured, and how the first measurement misled me.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "faeb1504",
+   "say": "A quick model of the heap, with the serial collector production uses. New objects are created in the young generation. Most die young, a parsed line, a temporary string, and a minor collection clears them quickly and often.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc986934",
+   "say": "Objects that survive several collections are promoted to the old generation. A full collection cleans the whole heap. It's slower, and it stops the application.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "203f2e2f",
+   "say": "So memory in use looks like a sawtooth. The top of each tooth, peak heap used, depends on when the collector decides to run, and SerialGC lets the heap fill close to its limit first. The bottom, right after a full collection, is the live set: what the program really holds.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eefead1a",
+   "say": "To prove memory is bounded, use the live set, not the peak.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e6422acf",
+   "say": "The setup: the real backend jar, with a hard heap cap of two hundred and fifty six megabytes, so a leak would crash instead of hiding. SerialGC, three part threads, embeddings off, a stub LLM, and seeded files of a hundred megabytes, five hundred, one gigabyte and two gigabytes, each from a clean state.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6bcacba",
+   "say": "The first measurement misled me. Peak heap from jstat went from a hundred and eighty six to two hundred and twenty eight megabytes as the input grew. It looked like a leak, and I nearly went hunting for one.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "40219f5e",
+   "say": "It wasn't. It was the top of the sawtooth. Reading the live set from the GC log, the heap left after each full collection, the maximum was seventy six, ninety one, ninety two, and eighty one megabytes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0a5f44f9",
+   "say": "The median, even flatter: sixty nine to seventy six.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b8a10218",
+   "say": "The input grew twenty times. What the program holds stayed between seventy and ninety two megabytes. And the two gigabyte run peaked lower than the one gigabyte run, which proves the peak is just GC timing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3be1d81d",
+   "say": "The two gigabyte run, in four numbers. Nine hundred and seventy seven seconds from confirm until every part was parsed. Fifteen and a half million lines.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83aceb9f",
+   "say": "Two gigabytes over nine hundred and seventy seven seconds is two point oh five megabytes a second, about fifteen thousand nine hundred lines a second.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24ca859a",
+   "say": "Garbage collection took three and a half percent of the run. Thousands of pauses, the longest a hundred and ninety six milliseconds, a full collection on a small heap. Fine for a batch pipeline, not for a latency sensitive API.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fe59cd9",
+   "say": "Process memory, the RSS, stayed between five hundred and fifty and six hundred and thirty megabytes at every size. That's heap plus metaspace, thread stacks and code cache.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a20be26b",
+   "say": "So what grows with the file? Time, messages, rows, and the number of collections. Not memory.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6efeee3a",
+   "say": "So what does control memory? Same one gigabyte file, a bigger cap, and one, two, four and eight part threads.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c192f4d1",
+   "say": "Live set: fifty six, eighty one, a hundred and eleven, a hundred and sixty three megabytes. Each extra thread adds fifteen to twenty five megabytes, its part in flight. A five megabyte slice held as Java strings is ten to fifteen.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "487888b3",
+   "say": "So the live set is roughly threads times one part in flight, plus a baseline for Spring, the Kafka clients and the pool. Independent of file size.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6c5d422d",
+   "say": "And throughput on the same runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea6b60ab",
+   "say": "Nought point eight one, one point three five, two point one five, two point two five megabytes a second. Close to linear up to the four cores, then flat.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3436e897",
+   "say": "Eight threads on four cores bought five percent more throughput, for forty seven percent more live memory. So more partitions only help until CPU, then the database, is the bottleneck.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bd6a0d25",
+   "say": "So when someone says, prove that memory is constant, say this.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "62ec2915",
+   "say": "I ran the real jar with a two hundred and fifty six megabyte heap cap, on seeded files from a hundred megabytes to two gigabytes, from a clean state each time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a375aada",
+   "say": "The live set after full collection stayed between seventy and ninety two megabytes, with no out of memory error.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f163411",
+   "say": "I used the live set from the GC logs, not peak heap, because the peak follows when the collector runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f6c2ea34",
+   "say": "What grows with the file is time, messages, rows and the number of collections, and collection stayed at three to three and a half percent of the run.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d33db689",
+   "say": "And the real knob is concurrency: about fifteen to twenty five megabytes of live set per part thread.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8000b94d",
+   "say": "Is memory constant for any input?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd929f4a",
+   "say": "For any file size. Not for any line size. A single hundred megabyte line with no newline caused an out of memory error, which comes back in part ten. Lines are now capped at one megabyte in the splitter, and sixty four thousand characters when stored.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5dc19fc9",
+   "say": "Why SerialGC?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d4f0217",
+   "say": "It has the lowest overhead on a small heap with one or two cores. G1's per region bookkeeping costs memory the free tier doesn't have. A nuance: the benchmarks ran on JDK twenty one, the production image is Temurin seventeen, with the same collector and flags.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8162cf03",
+   "say": "Why do the slow work outside the transaction?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf6c707e",
+   "say": "A transaction around slow I O holds a pooled connection the whole time. Version one exhausted its pool that way, and production has only five connections.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee80ce0b",
+   "say": "Where does throughput stop scaling, and why?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eae33d0d",
+   "say": "At the core count. Regex parsing is CPU bound and shares four virtual CPUs with Postgres and Kafka. And the splitter reads each file once, a serial part that caps how fast one file can finish. Amdahl's law. Several files in parallel don't share that cap.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd5ccd98",
+   "say": "Part nine. Exactly once. The claim interviewers poke at hardest, and the one your own tests broke.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4bafbc02",
+   "say": "First, the words. Never say exactly once delivery.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e47575f9",
+   "say": "Over a network, exactly once delivery is impossible. Exactly once effect is achievable.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c97ebd0",
+   "say": "A sender can't tell a lost message from a slow one, so it has to retry, and retries create duplicates. So you deliver at least once, and make applying a message twice give the same result as applying it once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a145af3c",
+   "say": "Here's the mechanism.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ef58737",
+   "say": "Kafka delivers part seven at offset forty one. The consumer reads and parses it outside any transaction.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d8110b0",
+   "say": "Then it opens one transaction: insert the marker for part seven, then the chunks, the metrics and the counter, and commit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1b60e2da",
+   "say": "Now kill the process, with kill minus nine, right after the commit and before the offset commit. The worst possible moment.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "4bd8c452",
+   "say": "After restart, Kafka redelivers part seven, because offset forty one was never committed. The consumer sees the marker and skips the writes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b67e9385",
+   "say": "Then it commits offset forty one, and moves on.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcd088a8",
+   "say": "Why the same transaction? A transaction is all or nothing, so the database can never hold the data without the marker, or the marker without the data. Write the marker in a separate transaction, and a crash between the two leaves data with no marker, and the redelivery writes it again.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c7a8bff0",
+   "say": "How it got here. Auto committed offsets were considered. They commit on a timer, so a crash loses work or duplicates it, depending on luck.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89929cc9",
+   "say": "Then what the resume originally claimed: idempotent upserts keyed by fingerprint. The mechanism was wrong. The metrics upsert is count equals count plus new, and findings add one to an occurrence count. Both are additive, so a redelivery doubles them.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "e9b164ce",
+   "say": "What shipped: a marker row in the same transaction. Ingest parts, keyed by document and part index, for the ingest lane. Enrich work done, keyed by work ID, for the enrichment lane.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65bca152",
+   "say": "Never say idempotent upserts, when your upserts add.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "13a68e95",
+   "say": "The enrichment lane follows the same pattern.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f1a6a194",
+   "say": "Before calling the LLM at all, it checks the ledger. If this work item is done, it returns, so a redelivery costs zero tokens.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77bfaacd",
+   "say": "The LLM and embedding calls run outside any transaction.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d37f3964",
+   "say": "Then one transaction claims the work ID in the ledger. If the claim fails, another delivery already committed, so nothing is written.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9556356e",
+   "say": "Otherwise, the findings, the embeddings and the enriched window counter commit together with the claim.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe3aec3b",
+   "say": "How was it proven? A harness runs the real jar and watches its log. The moment a unit of work logs committed, after the database commit and before the offset commit, it sends kill minus nine. Restart, repeat three times, compare every count with a clean run. Before the fix: six hundred and fifty seven finding occurrences against six hundred and twenty one. Five point eight percent too many.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0602060",
+   "say": "After the fix, three hundred and fifteen against three hundred and fifteen. Exact.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "424e21dc",
+   "say": "Then replay. Rewind the enrichment group to offset zero and wait for lag zero. The old code redid eight thousand eight hundred and twenty LLM calls, and doubled the counts. One session ended at three hundred and eighty two of a hundred and ninety one windows.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "46239dda",
+   "say": "After the fix, the measured session is unchanged, and two thousand three hundred and seventy nine items are skipped by their markers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b009c29b",
+   "say": "And there's a white box test in CI, with Testcontainers, that delivers every part and every enrichment item twice and checks the database is identical, and that the LLM is called once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3b943ce4",
+   "say": "Replay is one of Kafka's main promises. When I tried it on the parts topic, four finished sessions turned failed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "288a6ca1",
+   "say": "The data was correct. Only the status was wrong.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68ee990f",
+   "say": "The consumer did the slow ranged read before checking its marker, and the finalizer had already deleted the staged file. Every replayed part threw, retried three times, went to the dead letter queue, and the failure handler marked the session failed. The fix: check the marker first, and never let a late failure mark a completed document failed. Lesson: exactly once also means a redelivery mustn't trip over a precondition that has since changed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "69f21f4b",
+   "say": "Why not Kafka transactions?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f49711b",
+   "say": "They make consuming and producing atomic within Kafka. My effect is a write to Postgres, which can't be part of a Kafka transaction, so I'd still need idempotency in Postgres.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0a3df433",
+   "say": "Is there an alternative to a marker table?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fffeb9ec",
+   "say": "Store the consumed offset in Postgres, in the same transaction as the data, and on partition assignment, seek to it. Also exactly once, saves a table, but needs custom code per consumer. At very high message rates I'd switch to it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46389ff4",
+   "say": "Anything to watch when deploying this?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e68c6558",
+   "say": "Work finished by the old code has no marker, so replaying across the deploy re-runs it. I measured about a thousand and eighty old items. Backfill the markers, or don't rewind past the deploy. And run the migration that creates the marker table before the new code starts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b39063a",
+   "say": "How long is recovery after a crash?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89bdfaf9",
+   "say": "Until the group rebalances. Measured at about thirty seconds, bounded by the consumer session timeout.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b034d5db",
+   "say": "Part ten. What happens when things fail, and the three ways one bad file used to stop ingest for everyone.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e8365db7",
+   "say": "Three ideas. A retry fixes a transient error, like a timeout or a rate limit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "97de392a",
+   "say": "A poison message fails every time. Retry it forever, and its partition is blocked, and every record behind it waits.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "38ae6cf9",
+   "say": "A dead letter queue is where poison is parked, so the partition can move on.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "524c5adf",
+   "say": "Here's every path a record can take.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae25281e",
+   "say": "The happy path. Process, commit the transaction with its marker, then acknowledge the offset.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ab0e2d7",
+   "say": "A rate limit, a four two nine, never puts a worker to sleep. The item goes to the sixty second retry topic with a not before time, and one retry thread re-publishes it when it's due. Up to one thousand four hundred and forty attempts, about a day. Nothing is dropped. And every final outcome counts towards completion, so one bad item can't block a session.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb9fa02d",
+   "say": "Any other error goes to Spring's default error handler with a fixed back off of two seconds, two retries. Three delivery attempts in total.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69e43892",
+   "say": "Then the failure is loud. The session is marked failed, with a reason the user can read, and the record is published to the dead letter queue, with its headers capped in size. You'll see why that cap exists in a minute.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "29d22483",
+   "say": "The robustness test sent eight bad inputs to the real jar with a two hundred and fifty six megabyte heap, and required a clear end state for each. Before the fixes, four went wrong. A single NUL byte, stuck in parsing forever. A gzip file, stuck too. One hundred megabyte line, out of memory, and the split consumer stopped. And a hundred and twenty thousand lines in one minute failed, then blocked its partition.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ce9b69d",
+   "say": "After: the NUL file parses all six hundred and one lines in nought point six seconds. The gzip file fails in nought point six seconds with a readable message. The huge line finishes in seven point seven seconds, and the busy minute in seventeen and a half, as sixty chunks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "179776ed",
+   "say": "The rule: every upload ends parsed, or failed with a reason. Never stuck, because stuck means a user watching a spinner and nobody alerted.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "076b3050",
+   "say": "Case one. One byte that froze a session.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "97be8b91",
+   "say": "A log line contained a NUL byte. Java strings allow it, but Postgres text does not, so the chunk insert failed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "930e85f2",
+   "say": "After three attempts, the failure handler ran.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f908904",
+   "say": "It tried to save the error message on the session. But the message quoted the failing row, NUL byte included, so the handler's own update failed with the same error.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "824c7df2",
+   "say": "It logged that and gave up, and the session sat in parsing forever. A gzip upload hit the same path, because compressed bytes are full of NULs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33a97504",
+   "say": "The fixes: strip NUL bytes at the edge, before any SQL. Make the stored failure reason NUL safe. And reject compressed files up front by their first bytes. The lesson: test the error path with the same bad input. An error handler that can fail on its own input turns a failure into a hang.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "edd113e9",
+   "say": "Case two. The zombie consumer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f36bfdf",
+   "say": "A hundred megabyte line with no newline. The splitter buffered it whole, hit out of memory at the heap cap, and Spring Kafka stopped that listener container.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "baf7e36b",
+   "say": "But the HTTP API kept answering. A health check would pass, while every later upload sat in created. The real fix: bound every buffer. One megabyte per line in the splitter, sixty four thousand characters per stored line, at most two thousand lines per chunk. And a safety net, exit on out of memory error in the Dockerfile, so the platform restarts the process and Kafka redelivers. The trade off: a record that always ran out of memory would crash loop, which the bounds prevent, and a restart counter alert would catch.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cc1edc66",
+   "say": "Case three, found because a chaos run hung for thirty minutes. The busy minute part failed, and the JDBC error message quoted the fourteen megabyte chunk, several times.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5dbc8834",
+   "say": "Spring's dead letter publisher copies the full exception message and stack trace into the record's headers. So the dead letter record was forty two megabytes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5f4494f",
+   "say": "Kafka's limit is one megabyte. It refused the record. A record that can't be dead lettered is never recovered, so it was retried forever, and blocked its partition for every later upload.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "3957d91c",
+   "say": "The fix caps the headers and writes a compact trace. A unit test drives Spring's real recoverer: forty two million bytes of headers became nine thousand six hundred and eighty one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b288642",
+   "say": "The last line of defence needs a size limit too.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7422fe72",
+   "say": "Why not retry forever, so nothing is ever lost?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55e4cf1b",
+   "say": "Only errors that clear on their own, like rate limits, are retried for about a day, on a separate retry topic. For bugs and bad data, infinite retries just block a partition.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "802bcfed",
+   "say": "Doesn't an out of memory error just kill one request?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5955be6e",
+   "say": "Not inside a Kafka listener. An Error stops the listener container, so the process looks healthy while ingest is dead.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2359df73",
+   "say": "What's still missing?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9800f06",
+   "say": "A tool to replay the dead letter queue, alerts when it grows, and a background job that re-triggers sessions stuck in correlating.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aaf9d6e5",
+   "say": "Part eleven. Layer one. How lines become exact numbers, with no model involved.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c0ba26f",
+   "say": "Take one line.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f89f91c2",
+   "say": "Nine thirty and two seconds, error, from the database proxy: SQL timeout, twelve thousand milliseconds.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59e51ace",
+   "say": "The parsers turn it into rows: one more error, one more SQL timeout, and a latency sample of twelve thousand milliseconds, all for the nine thirty window. Every line of every minute, no model involved, so the numbers are exact and repeatable.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb415505",
+   "say": "So, how many five oh threes between ten and ten ten? That's a SQL query, not an LLM call.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "55f84c0b",
+   "say": "Four pieces.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e87e9df",
+   "say": "Windowing groups lines into sixty second buckets. A line with no timestamp, a stack frame, inherits the timestamp of the line before it, so a stack trace stays in its minute.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40163f5c",
+   "say": "Caps, added in the robustness work: at most two thousand lines or five hundred and twelve kilobytes per chunk. A busy minute becomes several chunks with the same time bucket.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e75efd29",
+   "say": "Eight parsers, each a set of regular expressions for one topic: API calls, SQL, errors, performance, auth, lifecycle, traffic, and signatures, which counts warnings and normalises error templates.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77291396",
+   "say": "And the metrics upsert, keyed by session, time bucket, category and metric. Count and summed milliseconds add up. The p95 keeps the larger value.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b819e8e",
+   "say": "One precise claim to get right. Are the metrics exact?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6a38ddf",
+   "say": "Counts are exact, per window. But when two parts write the same minute, the upsert keeps the larger p95, which is an upper bound, not the true p95.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c48719fe",
+   "say": "Two partial percentiles can't be merged exactly. An exact merge would need the raw samples, or a sketch like t digest. Saying that unprompted shows you understand percentiles.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "72794fde",
+   "say": "Why regex, and not an LLM, for extraction?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa41a6aa",
+   "say": "Counting must be exact and repeatable. Regexes run on every line for free and give the same answer every time. The LLM later receives these numbers as authoritative context, and is told not to compute its own.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b55fd255",
+   "say": "Why not template mining, like Drain?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87e5e9bc",
+   "say": "It's good for unknown formats, but it produces message templates, not domain metrics like connection pool exhausted.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc2e3d72",
+   "say": "Tell me about a real parser bug.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bacbe365",
+   "say": "A case insensitive error pattern counted parity error corrected, which is an info line in the Loghub BGL dataset, as an error. Log levels are now matched case sensitively. The old rule survives only in legacy mode.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "833bebfa",
+   "say": "What about timestamp formats you don't know?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "616ab3ec",
+   "say": "An honest gap. Only ISO and syslog are recognised, and on five Loghub formats native recognition was zero percent. The fix is configurable timestamp formats.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4cfd5943",
+   "say": "Part twelve. The anomaly gate. It decides which minutes the LLM ever sees, so it decides the cost. And your own measurement broke it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a2bb5c2",
+   "say": "The original rules were absolute. Flag a window for any error or exception line, five or more warnings, or latency above three times the session's p95. I measured them with the same generator, changing only the line rate.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4cb23edd",
+   "say": "Windows flagged: twenty one percent at one line a second. Eighty two percent at five. A hundred percent at twenty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "487b5333",
+   "say": "And the LLM call reduction, the whole point of the gate, fell from seventy seven percent to zero.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b354d433",
+   "say": "At twenty lines a second, every minute contains some harmless error line, an email retry, a client disconnecting, so the gate saved nothing. None of this is visible by reading the code. It only showed up when measured on labelled data across traffic rates.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "64d111b3",
+   "say": "And a second, sneakier failure. The latency rule masked itself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9ef8703",
+   "say": "It compared each window with the session's p95. But once an incident covers more than five percent of the windows, the incident becomes the p95.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e179b018",
+   "say": "On a two hour corpus, a payment latency incident covered six point seven percent of windows, and was invisible to the very rule meant to catch it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "432ef648",
+   "say": "So the fix uses robust statistics. Ten minutes of error counts: two, three, two, four, three, two, three, two hundred and fifty, two, three.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a9e23dba",
+   "say": "The mean is twenty seven point four. One bad minute dragged it up ten times, and inflated the standard deviation with it. A big incident raises the very baseline it's compared against, and hides itself.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1ed3ab4",
+   "say": "The median is three. It ignores the extreme value. In fact, the median barely moves until half the data is abnormal.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "01adc77a",
+   "say": "The MAD, the median absolute deviation, is the median of the distance from the median. Here, one. Times one point four eight two six, it estimates a standard deviation. The rule: a count of at least three, and above the median plus three point five times that scale, floored at one. Here, eight point two.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b8dfe06",
+   "say": "Two hundred and fifty has a modified z score of about a hundred and sixty seven. Three point five is the textbook cut off, from Iglewicz and Hoaglin. Textbook, not tuned, which matters when someone asks about overfitting.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5bf32069",
+   "say": "The robust gate has four rules, behind a feature flag, anomaly mode, default robust.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "153594cb",
+   "say": "Hard rules, local to one window and independent of traffic: fatal or severe, out of memory, deadlock, connection pool exhausted, and not just Hikari pool starting, thread pool rejection, a failed health check.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af5a5ee8",
+   "say": "Count spikes on errors, warnings, exceptions, five hundreds, four oh ones, four oh threes and SQL failures, using the median and MAD rule, with minutes that have zero counted as zero.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a30539a",
+   "say": "Latency spikes: the window's p95 is more than twice the median, and also a MAD outlier.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "764e5656",
+   "say": "And rare signatures: an error template that appears in at most two percent of windows. An email retry error that appears all day is ignored. A single SSL handshake exception is caught.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f665bd9f",
+   "say": "One design subtlety. A part thread sees only its own slice, so it can't know the session's median. So the rules run in two phases, like MapReduce. Part threads apply only the hard rules, and write the counts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "268ef0a2",
+   "say": "The session wide statistics need every window, so the finalizer runs them once, after all parts are in, as a single SQL statement using percentile cont for the medians, ending in an update that sets the anomaly flag.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1320fd3d",
+   "say": "And it's kept honest. A Testcontainers test checks that the SQL version flags exactly the same windows as the Java version the eval uses. And the real pipeline, with a stub LLM counting HTTP calls, flagged seventy seven windows and made three hundred and fifteen calls, the same as the eval.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ee6349ea",
+   "say": "Results, same build, only the flag switched. F1 on the six hour medium noise log: point five seven six to point nine oh one. Precision more than doubled.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "62cb5da5",
+   "say": "False alarms: fourteen point eight per hour down to one point five. All twelve injected incidents still caught.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ab2d807a",
+   "say": "LLM call reduction at fifty lines a second: from nought point three percent to seventy four point three. About seventy five percent at every rate.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94acf203",
+   "say": "And on held out seeds the rules were never tuned on: point nine two to point nine five. On real Loghub BGL labels, point five oh one to point five eight one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1bce2ddb",
+   "say": "Plus a silent credential stuffing incident, logged only at info level as status four oh one, was invisible to the old rules. The robust gate catches it through the spike in four oh ones.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "974cf45c",
+   "say": "The MAD is zero for sparse counts. Doesn't everything fire?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58a11d4d",
+   "say": "The scale is floored at one, and at least three events are required, so a single harmless error never fires.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c626954a",
+   "say": "Your resume said ninety percent fewer calls. Now you're saying seventy five?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46f7462a",
+   "say": "Different data. On the demo log it's eighty seven point five percent. The eval corpus is deliberately dense with incidents, so fewer windows should be skipped. Savings depend on the share of abnormal windows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8088785",
+   "say": "You wrote the generator and the rules. Isn't that overfitting?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4ca9e87",
+   "say": "That's why I used held out seeds, real Loghub BGL labels, the owner's real demo log, and textbook thresholds rather than tuned ones.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dea113ba",
+   "say": "What does the gate miss?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5cf32f26",
+   "say": "Slow drifts over hours. Incidents that change what's logged without changing volumes or templates. And a session that's abnormal from start to finish, because the median moves with it. Next steps: baselines per hour of day, or comparing against a known healthy session.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3cc81c4",
+   "say": "Why a feature flag?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d532fe71",
+   "say": "To measure both rule sets on one build and one dataset, and to roll back without a deploy, by setting the anomaly mode to legacy.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d0fef1b",
+   "say": "Part thirteen. Calling LLMs on free tier limits. The most original design decision in the project: one Kafka partition per API key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ce6610d",
+   "say": "First, how rate limiters work. A provider limits requests per minute and tokens per minute, per key. A four two nine means slow down. The simplest limiter is a fixed interval: thirty requests a minute means wait two seconds between calls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "72ab190f",
+   "say": "A sliding window remembers the last minute's calls and tokens, and waits while the next call wouldn't fit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a9f31836",
+   "say": "A token bucket refills at a steady rate, and each call takes from it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46fb84bc",
+   "say": "All of these are easy on a single thread. Across many threads, or many instances, a shared limiter needs a lock or a coordinator, which is easy to get wrong.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d260c91a",
+   "say": "Here's the trick.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25b8d8d2",
+   "say": "A consumer group already gives each partition to exactly one thread. So pair partition p with API key p, and every key has a single owner thread.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49146bdb",
+   "say": "And a limiter with a single owner needs no lock at all. Kafka's partition assignment does the coordination for you.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1fc7226e",
+   "say": "Here are the lanes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa17e89e",
+   "say": "The finalizer publishes one enrichment item per flagged window, choosing the partition itself, by hashing the work ID modulo the number of key slots.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48951e9a",
+   "say": "Lane thread i owns partition i, and with it, key i. If you later have fewer keys than partitions, lanes share, partition modulo slots. And because Kafka assigns each partition to one consumer in the group, a key still has a single owner even with several instances running.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f2bb7fcb",
+   "say": "Each lane paces itself, with no shared state. One call every sixty thousand divided by thirty times nought point eight milliseconds: two and a half seconds. Plus a sliding sixty second token budget of six thousand times nought point eight: four thousand eight hundred tokens. The nought point eight leaves twenty percent headroom.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f89e4476",
+   "say": "Results commit with the enrich work done marker. And a window bigger than five thousand characters is split on record boundaries into several calls, so a stack trace is never cut across two calls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f764b815",
+   "say": "A four two nine never puts a lane to sleep. The item goes to the sixty second retry topic with a not before time. One retry thread waits and re-publishes it. Up to one thousand four hundred and forty attempts, about a day. Nothing is dropped.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "422ae67c",
+   "say": "Any other error goes to the enrichment dead letter queue, and still counts as done, so a session always finishes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94eff41d",
+   "say": "Now a napkin calculation interviewers love. Which limit actually binds? By requests: sixty thousand milliseconds over two thousand five hundred is twenty four calls a minute.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c911fab",
+   "say": "By tokens: a full five thousand character segment is about one thousand two hundred and fifty tokens, plus the system prompt, the metrics and the output. Call it sixteen hundred.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4cc1568e",
+   "say": "Four thousand eight hundred tokens a minute over sixteen hundred per call is about three calls a minute.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e48db42c",
+   "say": "So for large windows, the token budget binds, not the request budget. Eight times lower. That's exactly the trap that caused the next story.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c45bbb5a",
+   "say": "The hardest bug. A production session had a hundred and sixty seven windows, and only seven got embeddings. The chat was useless.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a1bd7cc",
+   "say": "Seven. Then eighty seven. Then all hundred and sixty seven. Here's how.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd40e71d",
+   "say": "My first theory: the daily quota was exhausted.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8543ccec",
+   "say": "The evidence disagreed. The provider dashboard showed fourteen of a thousand daily requests used, but tokens per minute at twenty eight point four six thousand, of thirty thousand.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "576fb345",
+   "say": "So the real limit was tokens per minute. Batches of ten large windows were about sixteen thousand tokens, roughly one call per minute per key. And my client read per minute four two nines as daily quota exhausted, and gave up on healthy keys. Fixing the classification and the batch size gave eighty seven. Per key request and token budgets, so a call is only sent when it fits, gave a hundred and sixty seven.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7e8c3297",
+   "say": "And notice there are two limiter designs. Chat uses a key slot owned by one thread. No lock: the enforce rate limit method just sleeps until the interval has passed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3902f742",
+   "say": "Embeddings use a shared pool, because embedding batches arrive from every lane thread. It's a monitor with wait and notify all, with per key sliding windows of seventy five of the real hundred requests, and twenty four thousand of the real thirty thousand tokens. A four two nine benches that key for fifteen seconds, and callers rotate to the next key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b6df1c1",
+   "say": "So if asked why both: embedding work comes from every lane, so it can't have a single owner. The lock is the price of sharing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1c463445",
+   "say": "What are the trade offs of partition per key?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0dec9b62",
+   "say": "Kafka can't reduce a topic's partition count, so having fewer keys later means lanes have to share. And a busy key can't borrow capacity from an idle one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "81815260",
+   "say": "If you just answer, I added retries, what's wrong with that?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7fc493c",
+   "say": "Retries without pacing only reach the limit faster. Pace first, then retry through a separate topic.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d738747d",
+   "say": "Why not let the lane simply sleep sixty seconds on a four two nine?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40a2c697",
+   "say": "It would stall everything behind it in that partition, and risk the poll deadline, the rebalance storm all over again. The retry thread holds the wait instead.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b2a6034",
+   "say": "Part fourteen. The first LangGraph graph: turning findings into incidents, without letting the model invent connections.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e0e413d",
+   "say": "LangGraph in one slide. The state is a typed dictionary passed from step to step. Here it holds the session, the findings, metrics, clusters, the current cluster, an attempt counter, the incidents and the report.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7efefb4d",
+   "say": "Nodes are functions that read the state and return updates. Edges are fixed, or conditional, where a function looks at the state and picks the next node. Conditional edges are what make loops possible.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7074425b",
+   "say": "And a recursion limit caps the steps in one run. Twenty five by default. That default caused a real bug, coming up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4d55184",
+   "say": "Here's Graph one, in the Python orchestrator.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4048df78",
+   "say": "Load reads the session's findings and top metrics from Postgres.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d452609",
+   "say": "Cluster is plain Python, no LLM. Findings with the same category whose time ranges are within three hundred seconds of each other form one cluster. So the model can't invent which findings belong together.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bba82f91",
+   "say": "Correlate asks the LLM for a narrative and a root cause for one cluster, as JSON.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74153208",
+   "say": "Ground check is the judge. A second prompt answers grounded true or false, with a reason, by comparing the story with that cluster's findings.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9febd5c4",
+   "say": "If it's not grounded and attempts are left, write again. At most three attempts. On the last one the story is accepted, but stored with grounded false and the judge's reason. Visible, not hidden.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c22d5d23",
+   "say": "If accepted, move on to the next cluster.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6603b346",
+   "say": "When every cluster is done, write the incidents, compose the report with an exact metrics table straight from SQL, save it, and the session is done.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25c215e7",
+   "say": "Three real bugs, each with a fix. Recursion limit twenty five reached. With Llama, the judge rejected more often, the loop ran longer, and LangGraph stopped at its default. The limit is now sized from the work: twelve, plus findings times seven. Three attempts of two calls each, plus one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d7d829f0",
+   "say": "A JSON list crashed the whole session. The stub LLM returned a list where an object was expected, and a dictionary get threw. A real model can do the same. Now there's a contract: the reply must be an object with the required keys, a one element list is accepted, and otherwise the model is asked once more with the contract restated, then a clear error.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48694475",
+   "say": "And force accepted stories were invisible, just a log line. Now grounded and the judge's reason are columns on every incident.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9403ae1b",
+   "say": "The trap answer here: the judge proves the story is grounded.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edfe1433",
+   "say": "No. The judge is another probabilistic model, and here it's from the same family as the writer. It's a filter, not a proof.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "565aeff0",
+   "say": "They share blind spots. How often it agrees with a human, measured with Cohen's kappa, is unverified. It needs about forty human labels, and ideally a judge from a different model family. Say unverified, in those words.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "36564fb4",
+   "say": "Why can the model never make up a citation in a finding? Follow the chain.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21a45f7c",
+   "say": "A report points at incidents, and an incident at its finding IDs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fef3013c",
+   "say": "A finding stores evidence chunk IDs, and those are the chunk the enrichment call was about, attached by code. The model's JSON has no ID field at all.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "724f7b00",
+   "say": "A chunk is a sixty second window with its line range, which leads to the raw lines.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0439c21d",
+   "say": "And repeated findings merge: the fingerprint is a SHA two fifty six of the category and the normalised title, so the same finding seen again adds one to its occurrence count.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68f8dcf4",
+   "say": "Now cost, worked out. On the ten thousand line demo log, sixteen of a hundred and sixty seven windows were flagged, so forty three chat calls instead of three hundred and forty five. Eighty seven point five percent fewer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f336349",
+   "say": "On the one gigabyte demo, if every byte went to the model in five thousand character segments, that's a billion bytes divided by five thousand, about two hundred and fifteen thousand calls. The site says two hundred and twenty thousand six hundred and fifty seven, because segments end on record boundaries, so they run a little short.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a33bc9f6",
+   "say": "The gate flagged five hundred and seventy one of three thousand and nineteen chunks, and those come to forty two thousand two hundred and five calls. Eighty point nine percent fewer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0d8ec08",
+   "say": "And notice: one full five hundred and twelve kilobyte chunk is about a hundred calls by itself. So cost is flagged windows times their size. A file with the same density of incidents costs proportionally more, and the fix for huge windows is a cap on segments per window.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a15fb440",
+   "say": "Which raises a sharp question. Could the live demo run that, live, on free keys?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ac7a4a1a",
+   "say": "Forty two thousand calls, at about three a minute per key, is days of work. So the one gigabyte demo is precomputed, and its incident write ups took six LLM calls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ba3cd87",
+   "say": "Clusters, counts and evidence lines are computed by code. One G P T O S S call per incident writes the title, summary, impact, ranked causes and fixes, and any cause that cites lines outside the evidence is dropped. Knowing that, and saying it, is exactly the honesty interviewers test for.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7341bdb",
+   "say": "Part fifteen. Retrieval. How LogLens finds evidence for a question, and the bug that made hybrid search secretly vector only.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b40a7721",
+   "say": "Two retrievers with opposite strengths. Embeddings capture meaning: throttled lands near rate limited. But they're weak at exact tokens like an Oracle error code or status equals four two nine. And an embedding model only reads the beginning of a text: here the first eight thousand characters.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e487cc79",
+   "say": "Full text search matches exact words and tokens, and is weak at paraphrase. LogLens uses Postgres's simple configuration: no stemming and no stop words, which suits logs, because SQL timeout exception stays exactly as it is.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c17b71e",
+   "say": "Logs are full of exact tokens, so full text matters more here than in ordinary document RAG.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b15e794d",
+   "say": "Why is a chunk one sixty second window, rather than, say, fifty lines?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0efb3702",
+   "say": "Because the minute is the unit metrics, flags and findings already share, so a citation points at exactly the window that was counted and explained.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c425c9c7",
+   "say": "The cost: at two lines a second, a minute is about a hundred and twenty lines, sixteen kilobytes. The embedding sees only its start, and one vector for sixteen kilobytes averages away the line you need. Vector only recall at ten measured point three nine three. Tested offline, embedding a digest of each window's distinct message shapes raised it to point four eight eight. Not shipped yet.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "14c13534",
+   "say": "The two lists are fused with reciprocal rank fusion. Why not add the scores? A cosine distance and a ts rank are different units. Adding them needs a normalisation that changes from corpus to corpus.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de041f09",
+   "say": "So each leg returns its top thirty: the vector leg ordered by cosine distance on the HNSW index, and the full text leg using the GIN index, ordered by ts rank.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a4bf77e",
+   "say": "Each chunk scores one over sixty plus its rank, summed over the lists. Ranks start at zero, and k equals sixty, the standard value.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1eeffe0c",
+   "say": "Worked example. Chunk A is first in the vector list and fourth in full text: one over sixty plus one over sixty three, nought point nought three two five. Chunk B is first in full text only: one over sixty, nought point nought one six seven. A wins. Agreement between two lists beats being top of one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ac519138",
+   "say": "Now the bug. The ablation showed hybrid search scoring exactly like vector only, on every question, to three decimal places. That's not a coincidence.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "7c2f3998",
+   "say": "The vector leg returned its thirty rows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "441a9da8",
+   "say": "The full text leg used web search to ts query, which ANDs every word. With the simple configuration, which, did and the became required words. No log chunk contains the word which. Zero rows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "006e6970",
+   "say": "So RRF was fusing a single list. And the OR query fallback only ran when both legs were empty, which never happens when an embedding exists.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c26d7f1",
+   "say": "The fix: OR the meaningful terms, stop words removed, always include both legs, and store the tsvector as a generated column with a GIN index. Ranking had been recomputing the tsvector of every matching sixteen kilobyte row, a median of one thousand three hundred and seventy four milliseconds. With the stored column, nineteen point three.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "32cc79d8",
+   "say": "The ablation, on fifty one answerable questions, with a local embedding model standing in for Gemini.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3f7547c",
+   "say": "Vector only, which is what hybrid had been: recall at ten point three nine three.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9f7a073",
+   "say": "Full text only: point seven seven nine. Much stronger on logs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "03ab7335",
+   "say": "Hybrid after the fix: recall at ten point seven five seven, and the best recall at thirty, point eight seven four.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ed40a3d",
+   "say": "And state the nuance honestly. Full text alone beats hybrid at the very top, an MRR of point six one four against point four four nine, because the weak vector leg's noise rises with equal weights. Hybrid wins at recall at thirty, which matters most here, because the grader reads the top thirty. So never claim hybrid is always better.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d5fc697a",
+   "say": "Doesn't the GIN index make ranking fast?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad3a2b12",
+   "say": "It makes matching fast. Ranking still needs each row's tsvector, which is why it's stored.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e2687036",
+   "say": "Why did questions about time ranges score only point one six seven?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5dd83d81",
+   "say": "Between what times did X happen needs the first and last lines of an incident, in two distant windows, while retrieval finds the middle. The right tool is SQL over the metrics table, minimum and maximum time. Not RAG.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "178d9afc",
+   "say": "GIN or B tree?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9278f0c4",
+   "say": "A B tree keeps whole values in order, which suits time ranges. GIN maps each word to the rows that contain it, which suits which rows contain stripe.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0dc8d21a",
+   "say": "What breaks if you change the embedding model?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22a0ec18",
+   "say": "Vectors from different models aren't comparable. Stored and query vectors must come from the same model with the same dimensions, so you re-embed everything. That's also why Gemini is asked for seven hundred and sixty eight dimensions: its default of three thousand and seventy two broke the column.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ab03e0cf",
+   "say": "Part sixteen. Graph two, the question answering graph. Don't trust the first retrieval blindly.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef7fcd39",
+   "say": "Corrective RAG, as a graph.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e294a966",
+   "say": "Retrieve embeds the question, falling back to full text only if embedding fails, and fetches the hybrid top thirty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4d66ec7",
+   "say": "Grade is one LLM call over the retrieved chunks, returning the relevant IDs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "80764c86",
+   "say": "If nothing is relevant, and fewer than two rewrites have happened, rewrite the question and retrieve again. A fixed budget.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "319d1544",
+   "say": "Once something's relevant, or the budget is spent, generate an answer as JSON with citations. And a best docs fallback keeps the first non empty retrieval, so a poor rewrite or a strict grader can't leave the answer with nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8f2175b",
+   "say": "Finally, the citations are filtered to IDs that were actually retrieved. Made up IDs: zero, by construction.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "abea5b65",
+   "say": "Then a quieter bug. What could the model actually see?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b63909b",
+   "say": "The prompts sent the first eight hundred characters of each chunk to the generator, and five hundred to the grader. About five percent of a sixteen kilobyte window. Measuring gold lines present in the exact prompt text: ten point seven percent for the generator, six point nine for the grader.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "354d908b",
+   "say": "The model was being asked to cite lines it could not see.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "8f52bc8c",
+   "say": "The fix, focus snippet, spends the same character budget on the lines that match the question's terms, boosts warning, error and exception lines, and keeps them in log order. Forty four point one and thirty seven point six percent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0fb16fa6",
+   "say": "Same budget, better lines. And a metric worth naming: evidence visibility, the share of gold lines present in the exact prompt. A retrieved line the model can't see is useless.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2ea54138",
+   "say": "Does the loop guarantee a correct answer?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5bdb377e",
+   "say": "It guarantees a bounded attempt. If the evidence isn't in the logs, the right answer is not found, which is measured as abstention on the unanswerable questions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6140e57",
+   "say": "Do valid citations mean the answer is faithful?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b5cca04",
+   "say": "No. A valid ID proves the chunk was retrieved, not that it supports the claim. That needs a judge, or a human.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef99094f",
+   "say": "What does one question cost?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9717f23f",
+   "say": "Two calls normally, grade and generate. At most six: three gradings, two rewrites, and one answer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3abef3fd",
+   "say": "Would you make it agentic?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "80850a8f",
+   "say": "Partly, as a router. Count and time questions go to SQL over the metrics, which is exact, and why questions go to RAG. Each route stays predictable and testable. And the live demo's Ask is exactly that kind of router.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fca30d02",
+   "say": "Part seventeen. The Ask panel on the live site. It's the newest code, so expect questions on it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6266f961",
+   "say": "The live Ask runs in a Vercel function, as a LangGraph JS decision graph.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c7e6abe9",
+   "say": "It loads memory first: the last four turns of this conversation, from Redis, keyed by a conversation ID the browser makes. So a follow up resolves against what was actually said.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6859dcd",
+   "say": "Understand is one LLM call. It decides the route, whether this is a follow up, rewriting it as a standalone question if so, and the language. A greeting can't be followed up; only a real earlier question can.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6b10308",
+   "say": "The cheap routes answer directly: small talk, and general questions not about this log. A web question uses Groq's built in browser search tool, and if that fails, falls back to general knowledge.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ff9a76dc",
+   "say": "System questions, about services, tenants and dependencies, are answered from a profile of the whole log, precomputed into a JSON file. If the profile doesn't cover it, the nearest facts it does have.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e21b2163",
+   "say": "Failure questions retrieve. Failure types by pgvector and by full text, fused with RRF, k sixty, plus matching log lines, restricted to any time window the question names. A hundred and twenty seven thousand error and warning records.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17baf88b",
+   "say": "Then grade. Weak means no lexical hit, a best similarity under nought point five five, and no time window. Then the LLM proposes log keywords, and it searches again. Once.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f7f850bf",
+   "say": "Generate, then verify in code. Citations that aren't in the context are removed. And any number in the answer that appears nowhere in the context forces the confidence to low. A cheap hallucination check.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "15f10f3c",
+   "say": "If no point is supported, it abstains gracefully: try the system route, then the nearest facts. And every turn is saved back to Redis: the question, its standalone form, the route, and the answer. Twenty turns kept, expiring after a day.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f893c47",
+   "say": "And the guards around it, in the Ask endpoint. Abuse and cost: questions under three hundred characters, twenty five per visitor per day, fifteen hundred per day for everyone. And a visitor is a salted SHA two fifty six of the IP address, never the raw IP.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6d8f535",
+   "say": "Speed: opening questions are cached in Postgres, keyed by a version prefix plus the normalised question, so the suggested questions answer instantly. Bump the prefix when answers change shape. Follow ups are never cached, because they depend on the conversation. And the response streams as newline delimited JSON, one line per step, so the UI can show what's happening.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0a64b805",
+   "say": "Resilience: API keys rotate from a random starting key, and move on after a four oh one, four oh three, four two nine or a server error. A bad request doesn't retry, because it won't succeed on another key. If Redis is down, memory falls back to a Postgres table. And the model is G P T O S S one twenty B, with low reasoning effort, because its reasoning tokens count against max tokens.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "eb1c8bb0",
+   "say": "Model answer. How does your chat handle follow ups, and hallucinations?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8fd65da7",
+   "say": "Every turn goes to Redis, and the graph reads the last four before it decides anything.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "73560e16",
+   "say": "An understand step rewrites a follow up into a standalone question, so retrieval never sees something like, what about it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b57f303c",
+   "say": "Answers about the log come from hybrid retrieval, with one bounded rewrite.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ee68c0b",
+   "say": "Then code verifies. Citations that aren't in the context are dropped, and numbers that don't appear in the context force low confidence.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1d1fe44",
+   "say": "And if nothing is supported, it abstains, then falls back to the log profile, instead of guessing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2ef7339c",
+   "say": "Part eighteen. Storage. Why one Postgres holds everything, and why every session gets its own table.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9fec3706",
+   "say": "Three options. Elasticsearch next to Postgres was the version two draft, cut on July fourteenth. Evidence lookup is by ID, and exact token search only runs within one session, which a GIN index covers. It would have been another cluster to run, back up and keep consistent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "abcb321c",
+   "say": "A dedicated vector database next to Postgres was considered. Every chunk would need two writes that can drift apart, with no joins and no shared transaction.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb271ffa",
+   "say": "What shipped: Postgres sixteen with pgvector as the only store. pgvector adds a vector column, distance operators, and approximate nearest neighbour indexes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1dd9953d",
+   "say": "So one transaction covers a chunk, its vector, its full text index and its findings. The real risk, filtered vector search, was measured, and that's the next scene.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a0aa846b",
+   "say": "The schema, in one screen.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "beec5571",
+   "say": "Sessions carry the status and window counters. Documents are unique per session, file name and size, which is how a duplicate upload returns the existing row, and they hold total parts and parsed parts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76714312",
+   "say": "The two marker tables: ingest parts, keyed by document and part, and enrich work done, keyed by work ID.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5576b93",
+   "say": "Metrics keyed by session, time bucket, category and metric, with the additive upsert. Findings unique per fingerprint. Incidents with the judge's verdict. One report per session.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4077ef3d",
+   "say": "And one chunk table per session, named from the session's UUID: the text, the line range, a seven hundred and sixty eight dimension vector, the anomaly flag, and the stored tsvector column.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "548f7fec",
+   "say": "With three indexes: HNSW on the vector, with m sixteen and ef construction sixty four, GIN on the tsvector, and a B tree on the time bucket. And the table name is built only from a parsed UUID, in Java and in Python, so SQL injection through it is impossible.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1fa17e8e",
+   "say": "Why a table per session? Picture one shared table, a hundred and twenty thousand vectors from a hundred and one sessions. A small session, s oh five oh, owns less than one percent of the rows.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40992a78",
+   "say": "Its query vector arrives, and the shared HNSW index is walked.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7758e72b",
+   "say": "HNSW keeps its forty best candidates, ef search forty, without knowing about the filter. Those forty belong to everybody else.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f1beae6",
+   "say": "Then the session filter runs, and almost nothing survives. Measured: nought point six eight rows back, of ten asked for. Recall nought point oh six eight.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "ba55a941",
+   "say": "With its own table, the walk only ever sees that session's vectors. Recall one point oh, in a quarter of a millisecond. What breaks filtered vector search is selectivity, not table size.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b6d5628f",
+   "say": "Can't you just raise ef search? Measured, on the same vectors in seven layouts.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af779668",
+   "say": "Own table per session: one point oh, at every setting.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59113986",
+   "say": "Shared table with pgvector point eight's iterative scan: stuck at point two five six, because the scan stops at its cap of twenty thousand tuples.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "56b1d33e",
+   "say": "Shared HNSW, then filter: from point oh six eight up to point two four four.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b2189c8",
+   "say": "A tenfold larger ef search moved it from nought point seven rows to two and a half, out of ten. The extra candidates are spent on other sessions. And one more nuance: a quick test on a small session passes, because for a thousand matching rows the planner skips HNSW and does an exact scan. Two sessions of the same size got sixty five and seven percent. That's an intermittent, customer specific bug.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4004b8b6",
+   "say": "So the trade off. What it buys: recall one point oh, in a quarter to six tenths of a millisecond, the fastest layout, because each graph holds only its own rows. Deleting a session is a drop table: instant, no dead rows, nothing to vacuum.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21b95b6e",
+   "say": "What it costs: tables created at runtime, raw JDBC because JPA can't map dynamic tables, and catalog growth. Tens of thousands of tables slow query planning. The way out is partitions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "12bb8f0d",
+   "say": "And moving to partitions is cheap, because every query is already scoped to one session. Only the table name resolution changes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9b628940",
+   "say": "Is the HNSW index always used?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68386568",
+   "say": "No. On a three hundred and sixty row session, the planner chose a sequential scan with a top N sort: two milliseconds, and exact. Forcing HNSW gave nought point eight four. The planner compares estimated costs, and EXPLAIN shows it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f7a6c14",
+   "say": "Why a composite index on session, category and time bucket?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "afd04c9b",
+   "say": "The leftmost prefix rule. One index serves filtering by session, by session and category, and by session, category and time range. Those metric queries run in a fifth of a millisecond.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0e29254",
+   "say": "What do m and ef construction trade?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59e1a018",
+   "say": "They're fixed at build time. M is links per node, which sets memory and the recall ceiling. Ef construction is how carefully the graph is built. Ef search is the query time knob, recall against latency. On isolated tables, going from forty to four hundred was two point one times slower, with no gain.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "afdc2e63",
+   "say": "Each chunk is inserted, then updated with its embedding. Any problem?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4d4fc15",
+   "say": "One dead row version per chunk for autovacuum to clean. At scale, compute the embedding first and insert once, or set fill factor below a hundred so updates can be HOT updates.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b724d42",
+   "say": "Wouldn't a vector database help at a hundred times the scale?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0161335c",
+   "say": "The measured bottlenecks are CPU for parsing, then Postgres writes and catalog size. None of them is vector search. Never say pgvector doesn't scale, so I'd use Pinecone. What was measured was a filtering problem.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6ab3bf3",
+   "say": "Part nineteen. How you know any of this works. This is where an AI engineering round spends the most time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fedf0a67",
+   "say": "Work the metrics once, out loud. A log has twenty incident windows. The gate flags eighteen, and fifteen of those are real. Precision: fifteen over eighteen, nought point eight three. Low precision means wasted LLM calls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1553bd0d",
+   "say": "Recall: fifteen over twenty, nought point seven five. Low recall means missed problems.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "322c2675",
+   "say": "F1: two P R over P plus R, nought point seven nine. It's high only when both are.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cc516ac3",
+   "say": "For retrieval, if the gold chunk comes back third, the reciprocal rank is one third, and recall at k counts it for any k of three or more. MRR rewards putting the best evidence first.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c436787f",
+   "say": "Then the LLM specific ones: evidence visibility, citation precision, faithfulness from a judge, and abstention on questions the logs can't answer.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6330049e",
+   "say": "The datasets.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3087b552",
+   "say": "A seeded synthetic corpus: six hours, about forty four thousand lines, three hundred and sixty windows, with twelve injected incidents and their gold line numbers, at three noise levels. The generator deliberately adds incident shaped noise: harmless errors, warning bursts at the owner's real warning rate of one point seven percent, and an incident logged only at info level.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "556fae46",
+   "say": "Held out seeds that the rules were never tuned on.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "522cc42c",
+   "say": "Real Loghub samples, BGL, Thunderbird, HDFS, Spark and Apache. BGL has labelled alert lines.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1680dc17",
+   "say": "And a golden set of sixty five questions, twenty one and a half percent unanswerable, whose gold answers and gold lines are computed by code from the incident labels. Not hand written.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e165df05",
+   "say": "Three properties make these evals trustworthy. They run the same code: a Java entry point runs the production chunker, parsers, gate and splitter over a file, with no LLM, so the eval measures exactly what ships.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "12ae0ed2",
+   "say": "They're cross checked: the SQL rules match the Java rules in a Testcontainers test, and the real pipeline, with a stub LLM counting calls, agrees with the eval.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3a53d0e6",
+   "say": "And the LLM evals are cost guarded. Every call is cached by a hash of prompt, model, parameters and endpoint, and the run stops before spending five dollars.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "630b70bf",
+   "say": "And this is how a regression is caught tomorrow. Continuous integration runs unit tests, Testcontainers integration tests, and a fast seeded eval, about a minute, no cost.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93106486",
+   "say": "It fails the build if window F1 drops below nought point eight eight, incident recall below one, or the call reduction below seventy five percent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "787b6141",
+   "say": "Thresholds sit just under the first robust run. Because the eval is deterministic, any drop is a real behaviour change, not noise, and an intentional change updates this file in the same pull request. And a prompt version string is written into every eval report, so a prompt change shows up next to its effect.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "27026ac8",
+   "say": "And a story that shows maturity: the benchmark was wrong more often than the system was.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "482124f6",
+   "say": "The heap is growing: no, peak occupancy follows GC timing. Report the live set.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b463312",
+   "say": "Throughput looks too low: parts left in Kafka by an interrupted run were being consumed during the next one. Start every run clean, resetting groups and dropping old sessions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83355f72",
+   "say": "A class not found exception mid run: the jar was rebuilt while a JVM was still loading classes from it. Each launch now runs its own copy.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b02067aa",
+   "say": "Exact search has forty percent recall, which is impossible by definition. Log lines repeat, so on average a hundred and thirty three rows tie with the tenth best similarity. Use tie aware recall, and exact search scores one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65dafebe",
+   "say": "And the replay test reported another run's numbers, counting skip messages in a log appended across runs, after a fixed forty second wait. Now it waits for lag zero and counts the stub's calls. The attitude: a benchmark is an experiment. Suspect the measurement first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1d0ee675",
+   "say": "Your eval set is synthetic. Isn't it meaningless?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "381ea0ef",
+   "say": "It's synthetic on purpose, so the ground truth is known exactly. Overfitting is guarded with held out seeds, real Loghub BGL labels, and the owner's real log. Absolute numbers on customer logs would differ, and I'd say so.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e8e4c99d",
+   "say": "Why a stub LLM in the benchmarks?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b2b00c5",
+   "say": "With a real provider I'd be measuring their rate limits, not my pipeline. The stub answers instantly, so any slowness is mine. Quality is measured separately.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f7345d35",
+   "say": "It ran on one small VM. Do the numbers mean anything?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "35405a86",
+   "say": "The shape holds on bigger machines: a flat live set, CPU bound parsing, where the time goes. The absolute megabytes per second don't. I'd never quote two megabytes a second as a service level.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b733151a",
+   "say": "What's still unverified?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f47e42d2",
+   "say": "Answer faithfulness, citation precision and recall, and abstention with a real model, plus the judge's agreement with humans. The harness is built and wired against the stub. It needs an API key and a budget. Say unverified, plainly.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f6ba1c2",
+   "say": "Part twenty. The system design follow up. Same pipeline, a thousand tenants, a terabyte a day. Work the numbers first.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "517358b0",
+   "say": "One terabyte a day, divided by eighty six thousand four hundred seconds, is about eleven point six megabytes a second. At around a hundred and fifty bytes a line, seventy five thousand lines a second. That's roughly a gigabyte a day per tenant.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4fe209ca",
+   "say": "Windows: a thousand tenants times one thousand four hundred and forty minutes, one point four four million a day.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76e08b7e",
+   "say": "If ten percent are flagged, at about four segments each, that's five hundred and seventy six thousand chat calls a day. Six point seven a second, sustained.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d44d927f",
+   "say": "At the measured two megabytes a second per four core machine, ingest alone needs at least six machines, before any headroom.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52977b50",
+   "say": "And storage for vectors: one point four four million times seven hundred and sixty eight dimensions times four bytes is about four point four gigabytes a day, before the index. Doing this out loud, in this order, is what the round is really testing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "51f0abce",
+   "say": "And the design.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4cc05d4",
+   "say": "Bytes still bypass the API. Presigned uploads and ranged reads stay exactly as they are. The API fleet only signs and confirms.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8970892a",
+   "say": "Fix the dual write with an outbox: the document row and its event commit together, and a relay publishes to Kafka.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f461a916",
+   "say": "A separate ingest fleet, on sixty four or more partitions, autoscaled on consumer lag, with per tenant quotas so one noisy tenant can't starve the others. And COPY instead of row inserts, because Postgres writes are the next bottleneck after CPU.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f16c8c91",
+   "say": "Replace per session tables with partitions: by tenant, then by day, each with its own HNSW and GIN index. Retention becomes dropping old day partitions. Raw chunks for seven to thirty days, metrics and findings for longer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dfd63c37",
+   "say": "A separate enrichment fleet, with per key lanes as today, a cheap model for window explanations and a stronger one for reports.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60d33e27",
+   "say": "And a query service that routes before it retrieves. Counts and time ranges go to SQL over metrics. Only why questions pay for RAG.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c71dcb05",
+   "say": "Name the trade offs. Isolation: partitions against per tenant tables, catalog limits against perfect isolation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5611097",
+   "say": "Recall against latency: ef search, and the iterative scan with its tuple cap.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fdc0cff",
+   "say": "Baselines: shared statistics, or per tenant ones, so one noisy tenant can't skew everyone's median.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e3d5310f",
+   "say": "And what breaks first. At ten times: CPU for parsing, then Postgres writes. At a hundred times: catalog size, GIN write cost, and the size of the shared metrics table.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5e239bdf",
+   "say": "Part twenty one. The honest list. Gaps found reading the code, and the security and operations answers.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95300f1e",
+   "say": "Raise these before you're asked. Each one shows you know the system better than its happy path.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b7920024",
+   "say": "One. The dual write. The Kafka send isn't awaited after the database commit, in confirm, in the splitter, and in the retry re-publish. Fix: a transactional outbox.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "807ada57",
+   "say": "Two. The finalizer's claim commits before its follow up work, so a crash right after the claim strands the session. Fix: a finalizing state with a sweeper, or a re-runnable follow up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0501b129",
+   "say": "Three. Graph one runs as a FastAPI background task, and Java's trigger is best effort, three attempts. A Python restart leaves the session in correlating. Fix: a re-trigger job, or put analyze on a Kafka topic too.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aadfb2d0",
+   "say": "Four. The Python service opens a new Postgres connection per query, with no pool. Fix: a connection pool sized to the free database's connection limit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1af59ce9",
+   "say": "Five. The judge is from the same model family as the writer, and its agreement with humans isn't measured. Fix: a judge from another family, and forty human labels for kappa.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f88e07f8",
+   "say": "Security. Authentication is a stateless JWT, signed with HMAC, expiring after twenty four hours. Production requires the secret, with no insecure default, and Render generates it. Guest login opens one designated demo session.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d54dfdcd",
+   "say": "Access. Every analysis endpoint asks one guard whether the caller owns the session: four oh four if it doesn't exist, four oh three if it belongs to someone else. And a nice detail: it returns the status rather than throwing, because the app's catch all exception handler would turn a thrown four oh three into a five hundred.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f4976c74",
+   "say": "Operations. Run the idempotent migration first, then deploy the code. Exit on out of memory. Roll the gate back with one environment variable. And a keep alive ping every fourteen minutes, eight hundred and forty thousand milliseconds, because Render's free tier spins a service down after fifteen idle minutes, and a cold start takes about fifty seconds.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e43ea02",
+   "say": "Monitoring, proposed and not built, so say so. Pipeline: consumer lag per topic, dead letter queue size, the four two nine rate per key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f160665e",
+   "say": "Model: calls, tokens and cost per session, the share of windows flagged, where over forty percent means the gate is drifting, and the no evidence rate.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "300ce7fe",
+   "say": "Input: the share of lines with a recognised timestamp, where under ninety percent means a new log format, and new message templates.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b146fddf",
+   "say": "Those signals would have shown every production incident in this project's history: the rate limit wall, the rebalance storm, and the gate collapse.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e38046b9",
+   "say": "Last part. The stories to tell, in about sixty seconds each, and a final rapid fire drill.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4f9efd8",
+   "say": "Story one, for tell me about a hard bug. The rate limit wall.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c7c455de",
+   "say": "A production session had a hundred and sixty seven windows, and only seven got embeddings. The chat was useless.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0756357",
+   "say": "My first theory was an exhausted daily quota. The dashboard said fourteen of a thousand daily requests used, but tokens per minute at twenty eight point four six thousand of thirty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b0fa9fc",
+   "say": "So the causes were batches of about sixteen thousand tokens, one call a minute per key, and a client misreading per minute four two nines as daily quota exhausted, and dropping healthy keys.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6044c700",
+   "say": "I fixed the classification and the batch size: eighty seven of a hundred and sixty seven. Then per key request and token budgets, with rate limited work cycling through a retry topic: all hundred and sixty seven.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5943a2ef",
+   "say": "What it taught me: let the evidence overrule the first theory.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2db955a1",
+   "say": "Story two, for a design decision under constraints. Partition per key.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fb4b0e6a",
+   "say": "Several free API keys, strict limits per key, bursty work, and many threads.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f54988e9",
+   "say": "I made one Kafka partition per key. A consumer group gives each partition to one thread, so each key has exactly one owner, pacing itself with no shared state.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60e71760",
+   "say": "Two and a half seconds between calls, plus a rolling token budget. Four two nines go to a sixty second retry topic, so lanes never sleep.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d2f6e19e",
+   "say": "The trade off: Kafka can't shrink a partition count, so fewer keys later means lanes share, and a busy key can't borrow from an idle one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bdbbe6b9",
+   "say": "Story three, for how do you know your system works.",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5a922b7c",
+   "say": "My resume claimed exactly once effects, and the project had no tests. I built a harness that sends kill minus nine to the real JVM right after a commit, three times, and added a replay from offset zero.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb4d2be8",
+   "say": "Ingest held, thanks to its marker rows. Enrichment didn't: five point eight percent too many after crashes, and a replay redid eight thousand eight hundred and twenty LLM calls.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3379c5c",
+   "say": "A marker in the same transaction, checked before the LLM call, made the counts exact, and a replay now costs nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "649eba7e",
+   "say": "Same habit on retrieval. An ablation showed hybrid equal to vector only, to three decimals. The full text query ANDed every word. Recall at ten went from point three nine to point seven six.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7342ac64",
+   "say": "Final rapid fire. Say each answer before I do. How big is a part?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2818e2bb",
+   "say": "About five megabytes, cut at a minute boundary on a timestamped line. Hard cap twenty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c7bc3f8",
+   "say": "Why max poll records one?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b07922b",
+   "say": "Records block for about ninety seconds on rate limits. Five hundred per poll blew the fifteen minute poll interval. The rebalance storm.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b659a6d1",
+   "say": "What makes ingest exactly once?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb1c3aa4",
+   "say": "The ingest parts marker, in the same transaction as the chunks, the metrics and the counter, with offsets acknowledged after the commit.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f1cdc37",
+   "say": "Live set on two gigabytes, at a two fifty six megabyte heap?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5c346f6",
+   "say": "Eighty one megabytes maximum, seventy median, after full collection. Never quote peak occupancy.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5efc5a3c",
+   "say": "The gate's threshold?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "10443609",
+   "say": "A count of at least three, and above the median plus three point five times the larger of one point four eight two six MAD, and one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "403d079c",
+   "say": "Groq lane pacing?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d7dc4e01",
+   "say": "Sixty thousand over thirty times nought point eight: two thousand five hundred milliseconds. Plus four thousand eight hundred tokens per sliding minute.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b436c564",
+   "say": "The RRF constant?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb3b2326",
+   "say": "K equals sixty, ranks from zero, top thirty per leg.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "282e6d69",
+   "say": "Per session tables against a shared index, for a small session?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "049ee0fe",
+   "say": "Recall one point oh, against nought point oh six eight. Nought point six eight rows back, of ten.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e975f80",
+   "say": "Graph one's loop limit?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9669db0f",
+   "say": "Three attempts per cluster, then stored with grounded false and the judge's reason.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91f6288a",
+   "say": "What does CI check?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f00030f6",
+   "say": "A seeded eval: F1 at least nought point eight eight, incident recall one, call reduction at least seventy five percent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "671e46e2",
+   "say": "One rule to end on, for any challenge to any claim.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2942f3fe",
+   "say": "State the number, and its scope. Name the evidence: a file, a test, a commit. Name the known limit. Then say what you'd measure next. Never argue from adjectives.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "040105c7",
+   "say": "And use the precise words. Exactly once effects. Cited windows with exact line ranges. Eighty seven and a half percent on the demo corpus. And unverified, wherever it is. Good luck in the interview.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}

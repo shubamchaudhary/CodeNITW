@@ -21,15 +21,22 @@ const LOAD = (id) => {
 
 // Shown before the first play (the lecture itself opens on a fade from black).
 // Sized in container units (cqw), so it scales with the player.
+// A chapter with a theme (video/src/lib/theme.ts) gets the matching poster.
+const POSTER = {
+  default: { bg: "radial-gradient(120% 90% at 50% 35%, #121826, #0c1018)", text: "#eef2f8", accent: "#5b9cff", bar: "linear-gradient(90deg, #5b9cff, #a78bfa)", muted: "#93a0b8", head: undefined },
+  loglens: { bg: "radial-gradient(120% 90% at 50% 35%, #12161b, #0b0d10)", text: "#ece8df", accent: "#ffa23e", bar: "linear-gradient(90deg, #ffa23e, #5fd3d0)", muted: "#a3abb6", head: '"JetBrains Mono", ui-monospace, monospace' },
+};
+
 function Poster({ chapter }) {
   const title = chapter.scenes[0].kind === "title" ? chapter.scenes[0] : null;
+  const p = POSTER[chapter.theme] ?? POSTER.default;
   return (
     <div style={{ position: "absolute", inset: 0, containerType: "size", pointerEvents: "none" }}>
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 90% at 50% 35%, #121826, #0c1018)", display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: "9cqw", color: "#eef2f8" }}>
-        <div style={{ fontSize: "1.6cqw", fontWeight: 700, letterSpacing: "0.2cqw", textTransform: "uppercase", color: "#5b9cff" }}>{title?.eyebrow}</div>
-        <div style={{ fontSize: "6cqw", fontWeight: 800, lineHeight: 1.1, marginTop: "1cqw" }}>{title?.title ?? chapter.title}</div>
-        <div style={{ height: "0.45cqw", width: "27cqw", background: "linear-gradient(90deg, #5b9cff, #a78bfa)", borderRadius: "1cqw", marginTop: "1.4cqw" }} />
-        {title?.subtitle && <div style={{ fontSize: "2.5cqw", color: "#93a0b8", marginTop: "1.6cqw" }}>{title.subtitle}</div>}
+      <div style={{ position: "absolute", inset: 0, background: p.bg, display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: "9cqw", color: p.text }}>
+        <div style={{ fontSize: "1.6cqw", fontWeight: 700, letterSpacing: "0.2cqw", textTransform: "uppercase", color: p.accent }}>{title?.eyebrow}</div>
+        <div style={{ fontSize: "6cqw", fontWeight: 800, lineHeight: 1.1, marginTop: "1cqw", fontFamily: p.head }}>{title?.title ?? chapter.title}</div>
+        <div style={{ height: "0.45cqw", width: "27cqw", background: p.bar, borderRadius: "1cqw", marginTop: "1.4cqw" }} />
+        {title?.subtitle && <div style={{ fontSize: "2.5cqw", color: p.muted, marginTop: "1.6cqw" }}>{title.subtitle}</div>}
       </div>
     </div>
   );
