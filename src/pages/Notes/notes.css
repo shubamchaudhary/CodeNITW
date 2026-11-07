@@ -260,6 +260,28 @@
   margin-bottom: 0;
 }
 
+/* Something to un-learn, e.g. a built-in document correcting its own lecture:
+   <div class="note-correction"> + a blank line + Markdown + a blank line + </div>. */
+.note-md .wmde-markdown .note-correction {
+  margin: 1.2em 0;
+  padding: 0.8em 1.1em;
+  border: 1px solid var(--warning-fg);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background: var(--warning-subtle);
+  color: var(--color-fg-default);
+}
+.note-md .wmde-markdown .note-correction > :first-child {
+  margin-top: 0;
+}
+.note-md .wmde-markdown .note-correction > :last-child {
+  margin-bottom: 0;
+}
+.note-md .wmde-markdown .note-correction strong:first-child {
+  color: var(--warning-fg);
+  letter-spacing: 0.04em;
+}
+
 .note-md .wmde-markdown details {
   border: 1px solid var(--color-border-default);
   border-radius: 8px;
