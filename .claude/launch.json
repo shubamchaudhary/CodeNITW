@@ -7,6 +7,12 @@
       "runtimeArgs": ["start", "--", "--port", "5173", "--strictPort"],
       "port": 5173,
       "env": { "VITE_FIREBASE_API_KEY": "local-preview-placeholder", "VITE_FIREBASE_PROJECTID": "local-preview", "VITE_FIREBASE_APPID": "1:0:web:0" }
+    },
+    {
+      "name": "loglens",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:/PROJECTS/LogLens/loglens-frontend", "run", "dev", "--", "--port", "5181", "--strictPort"],
+      "port": 5181
     }
   ]
 }
