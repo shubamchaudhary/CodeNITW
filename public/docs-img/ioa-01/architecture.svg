@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 860" width="1240" height="860" role="img" aria-label="Inventory Ops Agent: one chat turn, end to end">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="860" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Inventory Ops Agent: one chat turn, end to end</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">planner -&gt; FastAPI -&gt; LangGraph supervisor -&gt; domain subagent -&gt; data-management layer</text>
+<rect x="1000" y="30" width="211.44" height="25" rx="12.5" fill="#ffb547" fill-opacity="0.14" stroke="#ffb547" stroke-width="1.3"/>
+<text x="1105.72" y="45.5" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffb547" text-anchor="middle" font-weight="700">amber = the part I built</text>
+<rect x="30" y="330" width="160" height="80" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="110.0" y="364.665" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">Planner</text>
+<text x="110.0" y="384.55" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">Planning UI (chat)</text>
+<rect x="220" y="120" width="230" height="380" rx="14" fill="none" stroke="#93a0b8" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="234" y="142" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="700">FastAPI service</text>
+<rect x="240" y="170" width="190" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="335.0" y="199.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">POST /inventory_ops</text>
+<text x="335.0" y="219.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">router: identity, LLM client</text>
+<rect x="240" y="300" width="190" height="80" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="335.0" y="325.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">InventoryOpsAgent</text>
+<text x="335.0" y="345.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">execute() -&gt; astream_events</text>
+<text x="335.0" y="362.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">events -&gt; SSE envelopes</text>
+<rect x="240" y="410" width="190" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="335.0" y="430.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Checkpointer</text>
+<text x="335.0" y="450.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">in-memory, flushed</text>
+<text x="335.0" y="467.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">to Postgres per turn</text>
+<rect x="480" y="120" width="270" height="380" rx="14" fill="none" stroke="#5b9cff" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="494" y="142" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#5b9cff" text-anchor="start" font-weight="700">LangGraph supervisor (DeepAgents)</text>
+<rect x="500" y="160" width="230" height="66" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="615.0" y="187.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Identity middleware</text>
+<text x="615.0" y="207.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">realm / user / scenario -&gt; state</text>
+<rect x="500" y="248" width="230" height="92" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="615.0" y="280.21" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#eef2f8" text-anchor="middle" font-weight="650">Supervisor</text>
+<text x="615.0" y="300.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">create_agent + SubAgentMiddleware</text>
+<text x="615.0" y="317.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">its only tool: task()</text>
+<rect x="500" y="362" width="230" height="118" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="615.0" y="389.02" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Guard middleware</text>
+<text x="615.0" y="408.72499999999997" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">model retry x2, fallback model</text>
+<text x="615.0" y="426.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">model calls &lt;= 40, task &lt;= 8</text>
+<text x="615.0" y="443.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">summarize at 50 msgs / 40k tok</text>
+<text x="615.0" y="461.37499999999994" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">prune tool output at 80k</text>
+<rect x="780" y="120" width="220" height="380" rx="14" fill="none" stroke="#93a0b8" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="794" y="142" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="700">Domain subagents</text>
+<rect x="795" y="160" width="190" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="890.0" y="189.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Allocation</text>
+<text x="890.0" y="209.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">read + gated writes</text>
+<rect x="795" y="244" width="190" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="890.0" y="273.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">MSS / Sourcing</text>
+<text x="890.0" y="293.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">read + gated writes</text>
+<rect x="795" y="328" width="190" height="70" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="890.0" y="357.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Replenishment / BBO</text>
+<text x="890.0" y="377.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">read -&gt; stage -&gt; commit</text>
+<rect x="795" y="412" width="190" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="890.0" y="441.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Supplier Ordering</text>
+<text x="890.0" y="461.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">read + gated writes</text>
+<rect x="1030" y="160" width="180" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1120.0" y="189.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Snowflake</text>
+<text x="1120.0" y="209.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">analytics</text>
+<path d="M987 195 L1028 195" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<rect x="1030" y="244" width="180" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1120.0" y="273.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Atlas MCP</text>
+<text x="1120.0" y="293.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">entity resolution</text>
+<path d="M987 279 L1028 279" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<rect x="1030" y="328" width="180" height="70" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1120.0" y="357.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Forecast agent</text>
+<text x="1120.0" y="377.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">A2A: demand forecast</text>
+<path d="M987 363 L1028 363" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<rect x="1030" y="560" width="180" height="64" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1120.0" y="586.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Azure Key Vault</text>
+<text x="1120.0" y="606.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">per-instance DB password</text>
+<rect x="1030" y="700" width="180" height="100" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="1120.0" y="726.795" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">UICache PostgreSQL</text>
+<text x="1120.0" y="746.5" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">one per planning instance</text>
+<text x="1120.0" y="764.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">Base VIEWs (read)</text>
+<text x="1120.0" y="781.6" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">_u Overlay tables (write)</text>
+<rect x="30" y="720" width="170" height="80" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="115.0" y="754.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">App PostgreSQL</text>
+<text x="115.0" y="774.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">LangGraph checkpoints</text>
+<rect x="220" y="540" width="780" height="290" rx="14" fill="none" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="234" y="562" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="700">Data-management layer (Replenishment / BBO)</text>
+<rect x="240" y="590" width="230" height="84" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="355.0" y="618.87" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Redis staging</text>
+<text x="355.0" y="637.625" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#93a0b8" text-anchor="middle" font-weight="400">param_read:{conv}:...</text>
+<text x="355.0" y="653.875" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#93a0b8" text-anchor="middle" font-weight="400">param_prepared:{conv}:{uuid}</text>
+<rect x="500" y="590" width="250" height="84" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="625.0" y="617.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">ReplenishmentParamHelper</text>
+<text x="625.0" y="637.2750000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">hierarchy-aware SELECT (Base)</text>
+<text x="625.0" y="654.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">UPSERT into _u Overlay</text>
+<rect x="780" y="590" width="200" height="84" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="880.0" y="617.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Connection resolver</text>
+<text x="880.0" y="637.2750000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">controller API + Key Vault</text>
+<text x="880.0" y="654.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">cached with a short TTL</text>
+<rect x="500" y="715" width="250" height="70" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="625.0" y="744.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">UICache connector</text>
+<text x="625.0" y="764.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">psycopg v3, sets search_path</text>
+<path d="M190 350 L212 350 L212 205 L238 205" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<text x="110" y="318" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#5b9cff" text-anchor="middle" font-weight="600">chat turn (JWT)</text>
+<path d="M240 360 L204 360 L204 392 L192 392" fill="none" stroke="#5b9cff" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ab)"/>
+<text x="110" y="432" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#5b9cff" text-anchor="middle" font-weight="600">SSE: delta / complete</text>
+<text x="110" y="450" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#5b9cff" text-anchor="middle" font-weight="600">/ interrupt</text>
+<path d="M335 240 L335 298" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<path d="M335 380 L335 408" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<path d="M430 320 L498 300" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<path d="M615 226 L615 246" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<path d="M615 340 L615 360" fill="none" stroke="#93a0b8" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#am)" marker-start="url(#am)"/>
+<path d="M730 294 L762 294 L762 195 L793 195" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<path d="M730 294 L762 294 L762 279 L793 279" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<path d="M730 294 L762 294 L762 363 L793 363" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<path d="M730 294 L762 294 L762 447 L793 447" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<text x="748" y="242" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="end" font-weight="700">task()</text>
+<path d="M890 482 L890 556 L625 556 L625 588" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<text x="760" y="551" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#ffb547" text-anchor="middle" font-weight="500">read / stage / commit tools</text>
+<path d="M498 632 L472 632" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)" marker-start="url(#aa)"/>
+<path d="M625 674 L625 713" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<path d="M880 674 L880 750 L752 750" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<text x="815" y="742" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#ffb547" text-anchor="middle" font-weight="500">conn dict</text>
+<path d="M980 615 L1004 615 L1004 592 L1028 592" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<text x="1008" y="648" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="12.5" fill="#ffb547" text-anchor="start" font-weight="500">password</text>
+<path d="M625 785 L625 816 L1120 816 L1120 802" fill="none" stroke="#38d996" stroke-width="2" marker-end="url(#ag)"/>
+<text x="870" y="810" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#38d996" text-anchor="middle" font-weight="500">SELECT Base  |  UPSERT _u Overlay</text>
+<path d="M335 480 L335 518 L115 518 L115 718" fill="none" stroke="#93a0b8" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#am)"/>
+<text x="124" y="610" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="500">flush per turn</text>
+</svg>

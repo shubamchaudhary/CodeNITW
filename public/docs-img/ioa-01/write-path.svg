@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 620" width="1240" height="620" role="img" aria-label="The gated write path: read -&gt; stage -&gt; approve -&gt; commit">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="620" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">The gated write path: read -&gt; stage -&gt; approve -&gt; commit</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">nothing touches the database until a human approves; Base is never written</text>
+<rect x="30" y="105" width="280" height="400" rx="14" fill="#141b2b" stroke="#5b9cff" stroke-width="2"/>
+<text x="48" y="140" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="22" fill="#5b9cff" text-anchor="start" font-weight="800">1  READ</text>
+<text x="48" y="164" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="500">Base, hierarchy-aware</text>
+<text x="64" y="200" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">Planner: &quot;show BBO params for</text>
+<text x="64" y="219" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">item A100 at DC West&quot;</text>
+<circle cx="52" cy="196" r="3.5" fill="#5b9cff"/>
+<text x="64" y="250" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">read_parameters(view,</text>
+<text x="64" y="269" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">item/location filters)</text>
+<circle cx="52" cy="246" r="3.5" fill="#5b9cff"/>
+<text x="64" y="300" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">SELECT ... FROM &lt;view&gt; JOIN</text>
+<text x="64" y="319" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">dim_item, dim_loc WHERE</text>
+<text x="64" y="338" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">&lt;level_col&gt; = ANY(%s)</text>
+<circle cx="52" cy="296" r="3.5" fill="#5b9cff"/>
+<text x="64" y="369" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">rows -&gt; DataFrame -&gt; markdown</text>
+<text x="64" y="388" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">summary for the LLM</text>
+<circle cx="52" cy="365" r="3.5" fill="#5b9cff"/>
+<text x="64" y="419" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">SET param_read:{conv}:...</text>
+<text x="64" y="438" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">(rows, TTL)</text>
+<circle cx="52" cy="415" r="3.5" fill="#5b9cff"/>
+<path d="M312 305 L328 305" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<rect x="330" y="105" width="280" height="400" rx="14" fill="#141b2b" stroke="#a78bfa" stroke-width="2"/>
+<text x="348" y="140" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="22" fill="#a78bfa" text-anchor="start" font-weight="800">2  STAGE</text>
+<text x="348" y="164" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="500">Redis only, no DB write</text>
+<text x="364" y="200" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">Planner: &quot;set Ordering Cost to</text>
+<text x="364" y="219" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">12&quot;</text>
+<circle cx="352" cy="196" r="3.5" fill="#a78bfa"/>
+<text x="364" y="250" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#a78bfa" text-anchor="start" font-weight="500">prepare_parameter_update(</text>
+<text x="364" y="269" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#a78bfa" text-anchor="start" font-weight="500">param_changes)</text>
+<circle cx="352" cy="246" r="3.5" fill="#a78bfa"/>
+<text x="364" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">GET latest param_read (a read</text>
+<text x="364" y="319" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">must come first)</text>
+<circle cx="352" cy="296" r="3.5" fill="#a78bfa"/>
+<text x="364" y="350" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">fuzzy name -&gt; canonical column;</text>
+<text x="364" y="369" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">range checks; filter to targeted</text>
+<text x="364" y="388" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">rows</text>
+<circle cx="352" cy="346" r="3.5" fill="#a78bfa"/>
+<text x="364" y="419" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#a78bfa" text-anchor="start" font-weight="500">SET</text>
+<text x="364" y="438" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#a78bfa" text-anchor="start" font-weight="500">param_prepared:{conv}:{uuid}</text>
+<circle cx="352" cy="415" r="3.5" fill="#a78bfa"/>
+<text x="364" y="469" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">-&gt; &quot;Proposed update: N rows ...&quot;</text>
+<circle cx="352" cy="465" r="3.5" fill="#a78bfa"/>
+<path d="M612 305 L628 305" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<rect x="630" y="105" width="280" height="400" rx="14" fill="#141b2b" stroke="#ffb547" stroke-width="2"/>
+<text x="648" y="140" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="22" fill="#ffb547" text-anchor="start" font-weight="800">3  APPROVE</text>
+<text x="648" y="164" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="500">LangGraph interrupt</text>
+<text x="664" y="200" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffb547" text-anchor="start" font-weight="500">LLM calls update_parameters()</text>
+<circle cx="652" cy="196" r="3.5" fill="#ffb547"/>
+<text x="664" y="231" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">HITL middleware raises</text>
+<text x="664" y="250" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">GraphInterrupt: the graph pauses</text>
+<circle cx="652" cy="227" r="3.5" fill="#ffb547"/>
+<text x="664" y="281" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">graph state saved by the</text>
+<text x="664" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">checkpointer</text>
+<circle cx="652" cy="277" r="3.5" fill="#ffb547"/>
+<text x="664" y="331" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffb547" text-anchor="start" font-weight="500">SSE complete.interrupted =</text>
+<text x="664" y="350" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffb547" text-anchor="start" font-weight="500">true + pending_actions</text>
+<circle cx="652" cy="327" r="3.5" fill="#ffb547"/>
+<text x="664" y="381" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">Planner: approve / reject (next</text>
+<text x="664" y="400" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">HTTP turn)</text>
+<circle cx="652" cy="377" r="3.5" fill="#ffb547"/>
+<text x="664" y="431" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffb547" text-anchor="start" font-weight="500">Command(resume={&quot;decisions&quot;:</text>
+<text x="664" y="450" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffb547" text-anchor="start" font-weight="500">[...]})</text>
+<circle cx="652" cy="427" r="3.5" fill="#ffb547"/>
+<path d="M912 305 L928 305" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<rect x="930" y="105" width="280" height="400" rx="14" fill="#141b2b" stroke="#38d996" stroke-width="2"/>
+<text x="948" y="140" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="22" fill="#38d996" text-anchor="start" font-weight="800">4  COMMIT</text>
+<text x="948" y="164" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="500">scenario-scoped Overlay</text>
+<text x="964" y="200" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">update_parameters resumes</text>
+<circle cx="952" cy="196" r="3.5" fill="#38d996"/>
+<text x="964" y="231" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">GET</text>
+<text x="964" y="250" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">param_prepared:{conv}:{uuid}</text>
+<circle cx="952" cy="227" r="3.5" fill="#38d996"/>
+<text x="964" y="281" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">INSERT INTO &lt;kind&gt;_u ... ON</text>
+<text x="964" y="300" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">CONFLICT (pk, user, scenario)</text>
+<text x="964" y="319" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">DO UPDATE</text>
+<circle cx="952" cy="277" r="3.5" fill="#38d996"/>
+<text x="964" y="350" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">one transaction: commit, or</text>
+<text x="964" y="369" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">rollback on error</text>
+<circle cx="952" cy="346" r="3.5" fill="#38d996"/>
+<text x="964" y="400" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">invalidate the connection cache</text>
+<circle cx="952" cy="396" r="3.5" fill="#38d996"/>
+<text x="964" y="431" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">SSE complete: &quot;Updated n rows&quot;</text>
+<circle cx="952" cy="427" r="3.5" fill="#38d996"/>
+<rect x="30" y="530" width="280" height="66" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="170.0" y="557.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">UICache Base VIEW</text>
+<text x="170.0" y="577.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">read</text>
+<rect x="330" y="530" width="280" height="66" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="470.0" y="557.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Redis</text>
+<text x="470.0" y="577.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">staged change</text>
+<rect x="630" y="530" width="280" height="66" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="770.0" y="557.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">App Postgres + Redis</text>
+<text x="770.0" y="577.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">paused graph + proposal</text>
+<rect x="930" y="530" width="280" height="66" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="1070.0" y="557.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">UICache _u Overlay</text>
+<text x="1070.0" y="577.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">write</text>
+</svg>

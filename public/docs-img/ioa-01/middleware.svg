@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 700" width="1240" height="700" role="img" aria-label="The supervisor&#x27;s middleware stack, in order">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="700" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">The supervisor&#x27;s middleware stack, in order</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">each layer wraps model or tool calls; the order matters</text>
+<rect x="30" y="108" width="830" height="40" rx="8" fill="#1a2235" stroke="#5b9cff" stroke-width="1.5"/>
+<rect x="30" y="108" width="8" height="40" rx="3" fill="#5b9cff"/>
+<text x="60" y="134" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#5b9cff" text-anchor="start" font-weight="800"> 1</text>
+<text x="95" y="134" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">make_identity_middleware()</text>
+<text x="500" y="134" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">seed realm / user / scenario onto state</text>
+<rect x="30" y="155" width="830" height="40" rx="8" fill="#1a2235" stroke="#5b9cff" stroke-width="1.5"/>
+<rect x="30" y="155" width="8" height="40" rx="3" fill="#5b9cff"/>
+<text x="60" y="181" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#5b9cff" text-anchor="start" font-weight="800"> 2</text>
+<text x="95" y="181" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">make_ephemeral_reminder_middleware()</text>
+<text x="500" y="181" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">per-turn reminder prompt</text>
+<rect x="30" y="202" width="830" height="40" rx="8" fill="#1a2235" stroke="#3fd2e8" stroke-width="1.5"/>
+<rect x="30" y="202" width="8" height="40" rx="3" fill="#3fd2e8"/>
+<text x="60" y="228" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="800"> 3</text>
+<text x="95" y="228" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">SkipSynthesisMiddleware</text>
+<text x="500" y="228" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">skip the extra synthesis LLM call (1 subagent)</text>
+<rect x="30" y="249" width="830" height="40" rx="8" fill="#1a2235" stroke="#ffb547" stroke-width="1.5"/>
+<rect x="30" y="249" width="8" height="40" rx="3" fill="#ffb547"/>
+<text x="60" y="275" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ffb547" text-anchor="start" font-weight="800"> 4</text>
+<text x="95" y="275" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">ModelRetryMiddleware(max_retries=2)</text>
+<text x="500" y="275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">retry transient model errors (Azure 429)</text>
+<rect x="30" y="296" width="830" height="40" rx="8" fill="#1a2235" stroke="#ffb547" stroke-width="1.5"/>
+<rect x="30" y="296" width="8" height="40" rx="3" fill="#ffb547"/>
+<text x="60" y="322" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ffb547" text-anchor="start" font-weight="800"> 5</text>
+<text x="95" y="322" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">ModelFallbackMiddleware (optional)</text>
+<text x="500" y="322" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">fail over to an alternate model</text>
+<rect x="30" y="343" width="830" height="40" rx="8" fill="#1a2235" stroke="#ffb547" stroke-width="1.5"/>
+<rect x="30" y="343" width="8" height="40" rx="3" fill="#ffb547"/>
+<text x="60" y="369" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ffb547" text-anchor="start" font-weight="800"> 6</text>
+<text x="95" y="369" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">ToolRetryMiddleware(insights, forecast)</text>
+<text x="500" y="369" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">retry direct supervisor tools, NOT task</text>
+<rect x="30" y="390" width="830" height="40" rx="8" fill="#1a2235" stroke="#ff6262" stroke-width="1.5"/>
+<rect x="30" y="390" width="8" height="40" rx="3" fill="#ff6262"/>
+<text x="60" y="416" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ff6262" text-anchor="start" font-weight="800"> 7</text>
+<text x="95" y="416" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">ModelCallLimitMiddleware(run_limit=40)</text>
+<text x="500" y="416" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">hard cap on LLM calls per run</text>
+<rect x="30" y="437" width="830" height="40" rx="8" fill="#1a2235" stroke="#ff6262" stroke-width="1.5"/>
+<rect x="30" y="437" width="8" height="40" rx="3" fill="#ff6262"/>
+<text x="60" y="463" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ff6262" text-anchor="start" font-weight="800"> 8</text>
+<text x="95" y="463" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">ToolCallLimitMiddleware(task, run_limit=8)</text>
+<text x="500" y="463" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">cap subagent dispatches per run</text>
+<rect x="30" y="484" width="830" height="40" rx="8" fill="#1a2235" stroke="#a78bfa" stroke-width="1.5"/>
+<rect x="30" y="484" width="8" height="40" rx="3" fill="#a78bfa"/>
+<text x="60" y="510" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#a78bfa" text-anchor="start" font-weight="800"> 9</text>
+<text x="95" y="510" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">SummarizationMiddleware</text>
+<text x="500" y="510" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">compress history at 50 msgs / 40k tokens</text>
+<rect x="30" y="531" width="830" height="40" rx="8" fill="#1a2235" stroke="#a78bfa" stroke-width="1.5"/>
+<rect x="30" y="531" width="8" height="40" rx="3" fill="#a78bfa"/>
+<text x="60" y="557" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#a78bfa" text-anchor="start" font-weight="800">10</text>
+<text x="95" y="557" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">ContextEditingMiddleware</text>
+<text x="500" y="557" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">clear old tool payloads at 80k tokens</text>
+<rect x="30" y="578" width="830" height="40" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="1.5"/>
+<rect x="30" y="578" width="8" height="40" rx="3" fill="#93a0b8"/>
+<text x="60" y="604" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="800">11</text>
+<text x="95" y="604" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">caller extra_middleware</text>
+<text x="500" y="604" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">injection point (tests, variants)</text>
+<rect x="30" y="625" width="830" height="40" rx="8" fill="#1a2235" stroke="#38d996" stroke-width="1.5"/>
+<rect x="30" y="625" width="8" height="40" rx="3" fill="#38d996"/>
+<text x="60" y="651" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#38d996" text-anchor="start" font-weight="800">12</text>
+<text x="95" y="651" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="500">StreamingSubAgentMiddleware</text>
+<text x="500" y="651" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">the task() tool: dispatch + stream subagents</text>
+<rect x="890" y="108" width="320" height="300" rx="14" fill="#141b2b" stroke="#ff6262" stroke-width="2"/>
+<text x="910" y="142" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#ff6262" text-anchor="start" font-weight="800">Why task() is excluded</text>
+<text x="910" y="165" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#ff6262" text-anchor="start" font-weight="800">from ToolRetryMiddleware</text>
+<text x="910" y="188" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400"></text>
+<text x="910" y="211" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">A gated write raises</text>
+<text x="910" y="234" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">GraphInterrupt to pause the</text>
+<text x="910" y="257" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">graph for approval. Inside</text>
+<text x="910" y="280" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">task(), a retry wrapper would</text>
+<text x="910" y="303" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">catch it as an ordinary</text>
+<text x="910" y="326" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">exception and retry it away:</text>
+<text x="910" y="349" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">the approval would never</text>
+<text x="910" y="372" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">reach the planner.</text>
+<rect x="890" y="430" width="320" height="236" rx="14" fill="#141b2b" stroke="#2f3a55"/>
+<text x="910" y="462" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="700">Colour key</text>
+<rect x="910" y="480" width="16" height="16" rx="4" fill="#5b9cff"/>
+<text x="936" y="493" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#93a0b8" text-anchor="start" font-weight="400">identity and prompt</text>
+<rect x="910" y="509" width="16" height="16" rx="4" fill="#3fd2e8"/>
+<text x="936" y="522" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#93a0b8" text-anchor="start" font-weight="400">cost</text>
+<rect x="910" y="538" width="16" height="16" rx="4" fill="#ffb547"/>
+<text x="936" y="551" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#93a0b8" text-anchor="start" font-weight="400">resilience</text>
+<rect x="910" y="567" width="16" height="16" rx="4" fill="#ff6262"/>
+<text x="936" y="580" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#93a0b8" text-anchor="start" font-weight="400">hard limits</text>
+<rect x="910" y="596" width="16" height="16" rx="4" fill="#a78bfa"/>
+<text x="936" y="609" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#93a0b8" text-anchor="start" font-weight="400">context size</text>
+<rect x="910" y="625" width="16" height="16" rx="4" fill="#38d996"/>
+<text x="936" y="638" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#93a0b8" text-anchor="start" font-weight="400">dispatch</text>
+</svg>
