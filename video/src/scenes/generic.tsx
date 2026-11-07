@@ -21,7 +21,7 @@ export const TitleScene = ({ s, t }: P<"title">) => {
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: 180, paddingRight: 140 }}>
       <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", color: C.blue, ...rise(f, 2) }}>{s.eyebrow}</div>
       <div style={{ fontSize: s.title.length > 24 ? 96 : 120, fontWeight: 800, letterSpacing: -2, lineHeight: 1.08, marginTop: 18, fontFamily: C.head, ...rise(f, 8, 40) }}>{s.title}</div>
-      <div style={{ height: 8, width: 520 * bar, background: `linear-gradient(90deg, ${C.blue}, ${C.purple})`, borderRadius: 4, marginTop: 26 }} />
+      <div style={{ height: 8, width: 520 * bar, background: `linear-gradient(90deg, ${C.blue}, ${C.glow2})`, borderRadius: 4, marginTop: 26 }} />
       {s.subtitle && <div style={{ fontSize: 48, color: C.muted, marginTop: 30, ...rise(f, 18) }}>{s.subtitle}</div>}
     </div>
   );
@@ -326,7 +326,7 @@ export const BulletsScene = ({ s, t }: P<"bullets">) => {
       <Abs x={80} y={128} w={1760} style={rise(f, 4)}>
         <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
           {myth && <Chip color={C.red}>MYTH</Chip>}
-          <div style={{ fontSize: 54, fontWeight: 800, textDecoration: myth && t.step >= 1 ? "line-through" : "none", textDecorationColor: C.red }}>{s.title}</div>
+          <div style={{ fontSize: 54, fontWeight: 800, fontFamily: C.head, textDecoration: myth && t.step >= 1 ? "line-through" : "none", textDecorationColor: C.red }}>{s.title}</div>
         </div>
         {s.lead && <div style={{ fontSize: 34, color: myth ? C.red : C.muted, marginTop: 14, fontWeight: 600 }}>{s.lead}</div>}
       </Abs>
@@ -334,7 +334,7 @@ export const BulletsScene = ({ s, t }: P<"bullets">) => {
         const st = Math.min(first + i, s.beats.length - 1);
         const start = at(t, st);
         const active = t.step === st;
-        const gap = s.items.length > 3 ? 150 : 175;
+        const gap = s.items.length > 4 ? 128 : s.items.length > 3 ? 150 : 175;
         return (
           <Abs key={i} x={110} y={(s.lead ? 300 : 270) + i * gap} w={1700} style={{ ...rise(f, start), opacity: (rise(f, start).opacity as number) * (active || t.step < st ? 1 : 0.62) }}>
             <div style={{ display: "flex", alignItems: "center", gap: 34 }}>

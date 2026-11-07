@@ -116,6 +116,15 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
   const seen = (a?: number) => step >= (a ?? 0);
   const fadeIn = (a?: number) => (!a ? 1 : step > a ? 1 : enter(since, 0, 16));
   const dash = (f * 0.55) % 22;
+  // Text is sized for the screen, not the view: a wide board scaled down
+  // still reads at ~25 px titles and ~18 px labels. Text too wide for its box
+  // is squeezed to fit.
+  const sc = w / vw;
+  const tF = Math.max(24, 26 / sc);
+  const sF = Math.max(17, 18.5 / sc);
+  const lF = Math.max(17, 18 / sc);
+  const fit = (text: string, size: number, k: number, room: number) =>
+    text.length * size * k > room ? { textLength: room, lengthAdjust: "spacingAndGlyphs" as const } : {};
   return (
     <svg viewBox={`0 0 ${vw} ${vh}`} width={w} height={h} style={{ position: "absolute", left: x, top: y, overflow: "visible" }}>
       <defs>
@@ -132,7 +141,7 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
         return (
           <g key={`g${i}`} opacity={lit * fadeIn(g.at)}>
             <rect x={g.x} y={g.y} width={g.w} height={g.h} rx={18} fill="none" strokeDasharray="7 6" strokeWidth={1.6} stroke={on ? C.blue : LINE2} />
-            <text x={g.x + g.w / 2} y={g.y + 30} textAnchor="middle" fontSize={18} fontWeight={600} fill={on ? C.blue : C.muted} fontFamily="Inter">
+            <text x={g.x + g.w / 2} y={g.y + 8 + lF} textAnchor="middle" fontSize={lF} fontWeight={600} fill={on ? C.blue : C.muted} fontFamily="Inter">
               {g.t}
             </text>
           </g>
@@ -150,7 +159,7 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
           <g key={e.id} opacity={o}>
             <path d={d} fill="none" strokeWidth={on ? 2.8 : 1.6} stroke={on ? C.blue : LINE2} strokeDasharray={on ? "8 6" : undefined} strokeDashoffset={on ? -dash : 0} markerEnd={`url(#${on ? "ll-arrow-on" : "ll-arrow"})`} />
             {e.l && (
-              <text x={lx} y={ly} textAnchor={la} fontSize={17} fontWeight={500} fill={on ? C.blue : C.muted} fontFamily="Inter">
+              <text x={lx} y={ly} textAnchor={la} fontSize={lF} fontWeight={500} fill={on ? C.blue : C.muted} fontFamily="Inter">
                 {e.l}
               </text>
             )}
@@ -163,15 +172,16 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
         const o = lerp(0.42, 1, mix("nodes", n.id)) * fadeIn(n.at);
         const col = n.tone === "teal" ? C.cyan : n.tone === "red" ? C.red : n.tone === "green" ? C.green : C.blue;
         const lines = n.s ? n.s.split("\n") : [];
-        const ty = n.y + nh / 2 - (lines.length * 20) / 2 + 8;
+        const blockH = tF + lines.length * sF * 1.2 + (lines.length ? 4 : 0);
+        const top = n.y + (nh - blockH) / 2;
         return (
           <g key={n.id} opacity={o}>
             <rect x={n.x} y={n.y} width={n.w} height={nh} rx={14} strokeWidth={on ? 2.4 : 1.2} fill={on ? (n.tone ? `${col}22` : SOFT) : C.card} stroke={on ? col : LINE2} />
-            <text x={n.x + n.w / 2} y={lines.length ? ty - 4 : n.y + nh / 2 + 9} textAnchor="middle" fontSize={24} fontWeight={600} fill={C.text} fontFamily="Inter">
+            <text x={n.x + n.w / 2} y={top + tF * 0.82} textAnchor="middle" fontSize={tF} fontWeight={600} fill={C.text} fontFamily="Inter" {...fit(n.t, tF, 0.56, n.w - 16)}>
               {n.t}
             </text>
             {lines.map((ln, i) => (
-              <text key={i} x={n.x + n.w / 2} y={ty + 22 + i * 20} textAnchor="middle" fontSize={17} fill={C.muted} fontFamily="Inter">
+              <text key={i} x={n.x + n.w / 2} y={top + tF + 4 + sF * 0.95 + i * sF * 1.2} textAnchor="middle" fontSize={sF} fill={C.muted} fontFamily="Inter" {...fit(ln, sF, 0.5, n.w - 14)}>
                 {ln}
               </text>
             ))}
@@ -247,7 +257,7 @@ export const LLSplit = ({ t }: CP) => {
     { ts: "09:30:59.870", lvl: "ERROR", txt: "payment  SSLHandshakeException: PKIX path" },
     { txt: "    at sun.security.ssl.Alert.createSSLException" },
     { txt: "    at sun.security.ssl.TransportContext.fatal" },
-    { txt: "    at com.shop.pay.BankClient.authorize(BankClient.java:88)" },
+    { txt: "    at com.shop.pay.BankClient.authorize" },
     { ts: "09:31:00.004", lvl: "WARN", txt: "api-gateway  upstream payment 502 in 1.2s" },
     { ts: "09:31:00.311", lvl: "INFO", txt: "cart-service  POST /api/cart 200 18ms" },
   ];
@@ -339,7 +349,7 @@ export const LLMad = ({ t }: CP) => {
   const xs = [2, 3, 2, 4, 3, 2, 3, 250, 2, 3];
   const X0 = 200;
   const Y0 = 800; // baseline
-  const top = 300;
+  const top = 440;
   const cap = 40; // the axis tops out here; 250 is drawn broken
   const yOf = (v: number) => Y0 - (Math.min(v, cap) / cap) * (Y0 - top);
   const bw = 100;
@@ -384,14 +394,14 @@ export const LLMad = ({ t }: CP) => {
         {s >= 3 && line(thr, C.cyan, "threshold 8.2", at(t, 3))}
       </svg>
       {s >= 3 && (
-        <Abs x={1180} y={196} w={680} style={{ ...card(C.cyan), padding: "16px 24px", fontFamily: MONO, fontSize: 24, lineHeight: 1.5, ...rise(f, at(t, 3)) }}>
+        <Abs x={80} y={200} w={760} style={{ ...card(C.cyan), padding: "16px 24px", fontFamily: MONO, fontSize: 24, lineHeight: 1.5, ...rise(f, at(t, 3)) }}>
           MAD = median |x − 3| = 1<br />
           flag if count ≥ 3 and<br />
           count &gt; 3 + 3.5 × max(1.4826 × 1, 1) = 8.2
         </Abs>
       )}
       {s >= 4 && (
-        <Abs x={1180} y={392} w={680} style={{ ...card(C.red), padding: "16px 24px", fontFamily: MONO, fontSize: 26, lineHeight: 1.5, ...rise(f, at(t, 4)) }}>
+        <Abs x={880} y={200} w={660} style={{ ...card(C.red), padding: "16px 24px", fontFamily: MONO, fontSize: 26, lineHeight: 1.5, ...rise(f, at(t, 4)) }}>
           modified z for 250 = (250 − 3) / 1.48 ≈ 167
         </Abs>
       )}
@@ -432,7 +442,7 @@ export const LLFilter = ({ t }: CP) => {
   return (
     <>
       <Abs x={80} y={128} w={1300} style={{ fontFamily: MONO, fontSize: 44, fontWeight: 800, ...rise(f, 2) }}>
-        Why one shared vector index fails small sessions
+        Shared index vs a small session
       </Abs>
       <Box x={80} title="shared table · 120,000 vectors · 101 sessions" col={s >= 1 && s < 4 ? C.red : undefined}>
         {pts.map((p, i) => {
@@ -445,7 +455,7 @@ export const LLFilter = ({ t }: CP) => {
         {s >= 2 && <circle cx={q.x} cy={q.y} r={R * ease(f, at(t, 2), 30)} fill="none" stroke={C.cyan} strokeWidth={3} strokeDasharray="10 8" />}
       </Box>
       <Abs x={80} y={900} w={820} style={{ textAlign: "center", fontSize: 28, color: C.muted }}>
-        {s < 2 ? "● session s050: 0.83% of rows" : s < 3 ? "HNSW walk keeps the 40 nearest (ef_search = 40), from every session" : "filter session_id = s050 → 0.68 rows back, of 10 asked · recall 0.068"}
+        {s < 2 ? "● session s050: 0.83% of rows" : s < 3 ? "HNSW keeps the 40 nearest, from every session" : "filter session_id = s050 → 0.68 of 10 rows · recall 0.068"}
       </Abs>
       {s >= 4 && (
         <>

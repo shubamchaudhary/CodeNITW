@@ -28,10 +28,10 @@ export const partC: Scene[] = [
     ],
     msgs: [
       { from: "k", to: "c", label: "part 7 at offset 41", step: 1 },
-      { from: "c", to: "c", label: "ranged read + parse, no tx", step: 1 },
+      { from: "c", to: "c", label: "read + parse", step: 1 },
       { from: "c", to: "p", label: "BEGIN · insert marker for part 7", step: 2 },
       { from: "c", to: "p", label: "chunks, metrics, counter · COMMIT", step: 2 },
-      { from: "c", to: "c", label: "kill -9 here: offset 41 not committed", step: 3, tone: "red" },
+      { from: "c", to: "c", label: "kill -9 here", step: 3, tone: "red" },
       { from: "k", to: "c", label: "part 7 again, after restart", step: 4 },
       { from: "c", to: "p", label: "marker exists → skip", step: 4, tone: "green" },
       { from: "c", to: "k", label: "commit offset 41", step: 5 },
@@ -186,8 +186,8 @@ Boolean won = txTemplate.execute(status -> {
     title: "Case 1: one byte that froze a session",
     actors: [
       { id: "w", name: "Part worker", icon: "⚙️" },
-      { id: "p", name: "Postgres", icon: "🐘" },
       { id: "h", name: "Failure handler", icon: "🚑" },
+      { id: "p", name: "Postgres", icon: "🐘" },
     ],
     msgs: [
       { from: "w", to: "p", label: "INSERT chunk containing 0x00", step: 1 },
@@ -195,7 +195,7 @@ Boolean won = txTemplate.execute(status -> {
       { from: "w", to: "h", label: "3 attempts failed", step: 2 },
       { from: "h", to: "p", label: "UPDATE sessions SET error = '…0x00…'", step: 3 },
       { from: "p", to: "h", label: "same error: the reason quotes the NUL", step: 3, tone: "red", dash: true },
-      { from: "h", to: "h", label: "logs it, gives up: PARSING forever", step: 4, tone: "red" },
+      { from: "h", to: "h", label: "gives up: PARSING forever", step: 4, tone: "red" },
     ],
     note: { step: 5, text: "strip NUL at the edge · NUL-safe reasons · reject gzip by magic bytes" },
     beats: B(
