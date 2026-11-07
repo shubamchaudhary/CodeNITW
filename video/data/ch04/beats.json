@@ -2,36 +2,29 @@
  "voice": "en-US-AndrewMultilingualNeural",
  "beats": [
   {
-   "key": "55d62fe4",
-   "say": "Search is fast and accurate now. And Meera, who runs support, still forwards you four kinds of failure.",
+   "key": "e0c9972b",
+   "say": "Search is fast and precise now. And answers still fail. Here's the inbox. One: it keeps failing after the update, what changed? There's nothing useful to search with.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "eb3a55f1",
-   "say": "A vague question gets an answer built from noise.",
+   "key": "9fe51687",
+   "say": "Two: and in Germany? On its own, that means nothing.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "d1ba087d",
-   "say": "A follow-up, and for bakery, finds nothing at all.",
+   "key": "62ab80cd",
+   "say": "Three: the right policy was found, and the answer still says sixteen weeks. The policy says twenty six.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "e328a433",
-   "say": "A confident citation, with the wrong number.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "fe103182",
-   "say": "And anything that lives inside a PDF table keeps failing.",
+   "key": "94ccac03",
+   "say": "And four: a PDF table that came out of the parser as a soup of numbers and page footers. Each failure has a standard fix, and interviewers love asking which one you'd reach for.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -44,316 +37,645 @@
    "after": 0
   },
   {
-   "key": "0ca95018",
-   "say": "Here's the habit that saves weeks. Before fixing anything, find where it breaks.",
+   "key": "559717a0",
+   "say": "By the end, you'll be able to answer these.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cfb6bf8",
+   "say": "How to handle vague questions, and follow ups.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23e6d0b0",
+   "say": "What corrective RAG is, and when it's worth the cost.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9f943d7",
+   "say": "How to debug a wrong answer, step by step.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3a8e2b9",
+   "say": "And when messy PDFs, long context, or GraphRAG come into play.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e080d806",
+   "say": "Start with the question itself. Often, the search engine is fine. The question is a bad search query.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d7994cd",
+   "say": "It keeps failing after the update, what changed? Search for that, and you get vague matches about updates in general.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "47d09104",
+   "say": "Multi query: one extra model call writes three to five sharper rephrasings. App crashes after version four point two. Login error since the latest release. What changed in release four point two.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a74152cd",
+   "say": "Each one is searched, and the lists are merged with reciprocal rank fusion. Now the release notes come back.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f0c7c02",
+   "say": "The cost: one more model call, before every search. So turn it on where your test questions show vague questions failing.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "29d49cb9",
-   "say": "The vague question and the follow-up break right here, at the question. The search engine is fine. The question is a bad search query.",
+   "key": "2f76e59e",
+   "say": "A cleverer trick. Short questions and long answer paragraphs look different, even when they're about the same thing. How long do refunds take sits far from the real answer paragraphs.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "fd289cc1",
-   "say": "Sometimes search itself comes back weak.",
+   "key": "33822ff0",
+   "say": "So ask a model to write a plausible, fake answer. Refunds are usually processed within five to ten business days, and so on.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3bf2ef59",
-   "say": "The wrong number breaks after search. The right document arrived, and the answer still went wrong.",
+   "key": "42937563",
+   "say": "Embed the fake answer instead of the question. Shaped like an answer, it lands right among the real ones. That's hypothetical document embeddings.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6b2536aa",
-   "say": "And the PDF tables? They broke before anyone asked anything. In the documents.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
-  },
-  {
-   "key": "a36c19c3",
-   "say": "So let's start at the question.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "f5e0e7d4",
-   "say": "It keeps failing after the update. What changed? There's nothing here to search with. No product, no code, no date. So search returns noise.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "cfce3e84",
-   "say": "The fix is one extra model call before searching. Ask a model to rewrite the question three ways, each one sharp. This is called multi query.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "fd5ced8f",
-   "say": "Search each one, then merge the lists with rank fusion, the trick from chapter three.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "0e4c1d70",
-   "say": "A two part question gets the opposite treatment. Compare the Pune and Bengaluru slot rules becomes two questions, searched separately, then combined.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "fddb5a95",
-   "say": "Every rewrite costs a call and some waiting. So switch each one on only where your test questions show that failure.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "0380de8e",
-   "say": "Here's a stranger trick. On the meaning map, answers live in one neighbourhood. Long paragraphs that explain things.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "711b17d9",
-   "say": "But a question is short, and shaped like a question. It lands far away from the answers it's looking for.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "c395711c",
-   "say": "So ask a model to write a fake answer first. Then search with the fake. A paragraph shaped like an answer lands right next to the real answers.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
-  },
-  {
-   "key": "c56250b3",
+   "key": "69f5896f",
    "say": "The risk: a confidently wrong fake answer pulls in the wrong documents.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "fbc8fd67",
-   "say": "Now the follow-up. What is the refund window for dairy? Answered. Then: and for bakery?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "ad53898d",
-   "say": "Search that, on its own, and you get nothing. And for bakery means something only next to the conversation.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "f7f4b7f5",
-   "say": "So before searching, a model rewrites the last message into a standalone question, using the chat. What is the refund window for bakery? This is called condensing.",
+   "key": "d379579a",
+   "say": "Three more. Decomposition: compare UK and German parental leave becomes two questions, searched separately, and answered together.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "fd114520",
-   "say": "Search uses only the rewrite. But the answer still sees the whole chat, so it can say: unlike dairy, bakery is twelve hours.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "7e35a0a6",
-   "say": "Next: when search itself comes back weak.",
+   "key": "d92e5879",
+   "say": "Step back: also search a broader version of the question, so the general rule comes back next to the specific detail.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "b2cf93cc",
-   "say": "Sometimes none of the five chunks really answers the question. And right now, the model answers from them anyway.",
+   "key": "b8262371",
+   "say": "And routing: decide where the question should go at all. Policy documents, the incident archive, a database, or nowhere, for small talk. A wrong route caps the whole answer, so test the router on its own.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b59b9d98",
+   "say": "Every one of these costs latency. Use each only where your tests show the failure it fixes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "99f5a20b",
+   "say": "Next, conversations.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f50166f5",
+   "say": "What's the parental leave policy in the UK? Answered. Then: and in Germany? Search for that literally, and nothing relevant comes back.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91c7ebb3",
+   "say": "The fix is condensing. Before searching, a model rewrites the latest message, together with the chat history, into one standalone question. What is the parental leave policy in Germany? Now search works.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02f2b2e2",
+   "say": "Search uses the standalone question, but the answer still sees the chat, so it can say: unlike the UK, Germany... And skip the extra call when the message already stands alone.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ede49239",
+   "say": "A related trick. Berlin incident reports from last week about outages. That's a meaning to search for, plus exact filters, hiding in one sentence.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7d81255f",
+   "say": "Self query: a model splits it into search text, outages, and structured filters: city, type, and date, chosen from a list of allowed metadata fields. Filters run exactly. Meaning ranks what's left.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee40444c",
+   "say": "Validate every generated filter, because models invent fields. And a generated filter must never widen what the user is allowed to see.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0c716db5",
+   "say": "Sometimes, even a good question gets weak search results. Could the system notice?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "7c41b7c2",
-   "say": "A good student doesn't do that. They flip to the chapter, read it, and say: wrong chapter. Let me look again.",
+   "key": "f17ed25f",
+   "say": "Corrective RAG adds a grader after retrieval. A small, cheap model reads each chunk and answers, in structured output: relevant, yes or no?",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "cf20ff06",
-   "say": "So add a grader after search. A small, cheap model checks: do these chunks answer it? If yes, answer. If not, rewrite the question, and search again. This is corrective RAG.",
+   "key": "31bcf103",
+   "say": "If the evidence is relevant, answer from it.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a269a9d4",
-   "say": "Three brakes stop it looping forever. A tries counter. A hard step limit. And a fallback: answer from the best chunks seen so far, or say, I could not find this.",
+   "key": "f9110740",
+   "say": "If it's weak, and tries are left, rewrite the query, and search again. Like a student who flips to a chapter and says: wrong chapter, let me look again.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8f81f4b4",
-   "say": "Never an empty answer. Never an invented one.",
+   "key": "4db38572",
+   "say": "And when no tries are left, stop. Answer from the best set seen so far, or say: I couldn't find this. Never an empty answer. Never an invented one. A counter, a step limit, and this fallback keep it from looping forever.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "505b4133",
-   "say": "And measure it. If the grader fires on most questions, your search is the real problem. If it rarely changes an answer, delete it.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
+   "key": "c4535a22",
+   "say": "The grader adds a model call to every question, and retries roughly double latency. Keep it only if, on your test questions, retries rescue questions the first search missed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "38ab5e79",
-   "say": "Now the strangest one. The wrong number.",
+   "key": "56163b43",
+   "say": "If it fires on most questions, your search is the real problem. Fix that instead.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "12454785",
+   "say": "Related names you'll hear: self RAG, which decides whether to search at all and checks its own answer. And agentic RAG, where an agent calls search whenever it wants, across many sources. More flexible, harder to bound and test.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3603d1af",
+   "say": "The hardest bug: search worked, and the answer is still wrong.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08c2e48e",
+   "say": "Guessing and editing the prompt is how teams lose weeks. You need the trace: a record of one question's whole journey. The rewritten query, every chunk with its score, what the reranker kept, the exact final prompt, the answer, and the time of each step.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "928b25ed",
+   "say": "Then walk backwards from the answer, checking each step. The answer: wrong. The final prompt...",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27f5dbc3",
+   "say": "There it is. The prompt held two versions of the policy. Twenty twenty six says twenty six weeks. A twenty twenty three copy, never deleted, says sixteen. The model picked the wrong one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5960eee8",
+   "say": "One trace can be read by hand. A thousand need numbers. Context recall: did the retrieved chunks contain the facts the answer needed? If not, fix search or ingestion.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbe600ad",
+   "say": "Faithfulness: is every claim in the answer supported by those chunks? If the facts were there and the answer strayed, fix generation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "921c1d48",
+   "say": "And if both are high, and the answer is still wrong, the documents themselves are wrong or out of date. Chapter eight computes these properly.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d79814e9",
+   "say": "And more text is not safer. Researchers put the one document containing the answer at different positions among twenty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17d315a7",
+   "say": "Accuracy was best when it came first, good when it came last, and worst in the middle. A U shape. That's the lost in the middle finding, and later studies on context rot point the same way: quality drops as inputs grow.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "382bfe0c",
+   "say": "So send fewer, better chunks, with the most relevant first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b4982693",
+   "say": "Two data problems to fix in the data, not the prompt. When documents disagree: every chunk carries a version, an effective date, and a status. Superseded documents are filtered out by default. And each policy has one owner document.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e89e540d",
+   "say": "When the evidence is missing and the model answers anyway, defend in layers. A clear instruction with an example. A structured answerable field before the answer. No generation at all when the best search score is weak. And unanswerable questions in your test set, checking that it declines. Declining too often is a failure too.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "05d53a02",
+   "say": "The trap: fix a RAG bug by tweaking the prompt until the failing example passes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e95dadf7",
+   "say": "That usually breaks other questions. Add the example to your test set, find its failure category, and fix the category.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "912f042a",
+   "say": "Now, the failure that happens before search ever runs.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "654f9b76",
+   "say": "Most real RAG failures start at ingestion: turning documents into text. Here's a policy PDF: two columns, a table, a footer. A naive extractor reads straight across both columns.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3f2608d",
+   "say": "Columns interleaved. The table flattened into one line of numbers. The footer repeated forty times. And scanned PDFs are only pictures, so they need OCR, which brings its own errors.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fdd2aea2",
+   "say": "Layout aware parsers, like Docling or Unstructured, find columns, headings, and tables, and output clean Markdown. For awkward pages, some teams hand the page image to a vision model, and ask for Markdown.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "89f0cf41",
+   "say": "Tables hold many of the most asked facts, so treat them specially.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e33fac42",
+   "say": "Write each row as its own chunk, with the column names repeated: parental leave, country UK, weeks twenty six, full pay. Add one summary chunk for overview questions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf8d2444",
+   "say": "And a five thousand row price list? Don't chunk it at all. Load it into a database, and answer with SQL.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c7910069",
+   "say": "Four habits keep ingestion honest.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b49df028",
+   "say": "Fingerprint every document with a hash. Skip unchanged ones, reprocess changed ones, and treat deletions and access changes as urgent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9a36191",
+   "say": "Record which parser version produced each chunk, so an upgrade reprocesses only what it affects.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68585ad2",
+   "say": "Clean before indexing: strip headers, footers and menus, and mask personal data before it ever reaches the index.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4378eb3",
+   "say": "And keep a few golden documents, whose correct parsed output is known, and check them on every parser change.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "572b5bc6",
+   "say": "So when someone says: the PDF loader handles it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4cedbbf3",
+   "say": "Read the parsed text of your most important documents, before tuning anything else. It's the cheapest win in RAG.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1ea0daf4",
+   "say": "Finally, three questions from an architecture review.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a99b57a3",
+   "say": "One. Models read a million tokens now. Why not skip retrieval, and give them everything?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0481a8b7",
+   "say": "Because every question pays for every token, in money and in waiting. Quality drops as inputs grow. A stuffed prompt can't hide documents a user isn't allowed to see. And citations come naturally from retrieval.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "97da0e01",
+   "say": "Long context is right for a small, fixed corpus, like a forty page handbook. Load it once, and let the provider cache it. That's cache augmented generation.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "018d4931",
+   "say": "Two. Some questions defeat chunk search. GraphRAG, from Microsoft, uses an LLM to extract entities and relationships from every document, into a knowledge graph.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0150ac11",
+   "say": "Multi hop questions, like: which vendors of Acme had security incidents? need following links. Acme, to vendor B, to incident twelve.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "135efb56",
+   "say": "Whole corpus questions, like: what are the main complaint themes? live in no single chunk. GraphRAG groups the graph into communities, and summarizes each one.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4ce1512",
+   "say": "But it's slow and costly to build, and hard to update. Use it when those question types really matter, and measure the gain.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2cb58ae5",
+   "say": "And three: how many incidents last week? Search will find them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ae86c07",
+   "say": "Search returns some incident documents. It can never count all of them. That's a database query, through a safe SQL tool. Keep RAG for the why questions that follow.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "056077d7",
+   "say": "Interview round.",
    "rate": "+10%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "f0e7baa3",
-   "say": "Bakery refunds, forty eight hours, with a citation. Search found the right policy. The grader said relevant. The policy says twelve. So where did it go wrong?",
+   "key": "805e514b",
+   "say": "Your RAG system gives a wrong answer. How do you debug it?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6ae91ef",
+   "say": "Pull the trace: the rewritten query, retrieved chunks with scores, the reranked set, the final prompt, and the answer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "adb76ba7",
+   "say": "Walk backwards. Was the needed fact in the prompt? If not, check retrieval, and then ingestion.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4568dbd9",
+   "say": "If it was there, check faithfulness: conflicting versions, a fact lost in the middle, or the prompt's rules.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4a2ecdb",
+   "say": "At scale, split failures with context recall and faithfulness, over a labelled question set.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a338f5be",
+   "say": "Then fix the failure category, add the case to the test set, and re-run everything.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "edba2a8c",
+   "say": "Rapid fire. And in Germany, returns nothing. What's the fix?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "5c907fd9",
-   "say": "Most teams start editing the prompt and hoping. That's how weeks disappear. Instead, walk backwards, with evidence.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "9d06d593",
-   "say": "The evidence is a trace. For every question, a record of the rewritten query, every chunk found and its score, the exact final prompt, and the answer.",
+   "key": "b848906d",
+   "say": "Condense the chat into a standalone question, before searching.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "d96b6765",
-   "say": "Then walk it backwards. Was the right document indexed? Yes. Was it in the results? Yes. Did it reach the prompt? Yes. So the problem is in the answer step.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "b541d436",
-   "say": "And there it is. The prompt held two bakery chunks. Today's policy, twelve hours. And a twenty twenty three version, forty eight hours, that nobody ever deleted.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
-  },
-  {
-   "key": "18feb173",
-   "say": "The fix lives in the data, not the prompt. Every chunk carries a version and a status, and superseded documents are filtered out.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "9f4bd29d",
-   "say": "While we're here: more text in the prompt is not safer.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "eb4e5e7c",
-   "say": "Models use what's at the start and the end of a long prompt best. Put the answer in the middle, and accuracy drops. It's called lost in the middle.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "cedc069a",
-   "say": "So send fewer, better chunks. And put the best one first.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "9583bca6",
-   "say": "Last one: the PDF tables.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "1627b840",
-   "say": "Refund questions fail three times more than others. Look at what search actually sees. Dairy twenty four, bakery twelve, frozen six, photo, photo, none. Page seven.",
+   "key": "6e561d43",
+   "say": "What is HyDE, and what's its risk?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "ef031b26",
-   "say": "Here's the page. Two columns, a table, a footer. The first parser read straight across both columns, flattened the table into one line, and kept the footer, forty times.",
+   "key": "de747801",
+   "say": "Embed a model written fake answer, instead of the question. A wrong fake answer retrieves the wrong documents.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8c060a27",
-   "say": "Search can only ever be as good as this text.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
+   "key": "c0d56d70",
+   "say": "How does corrective RAG avoid looping forever?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "239ac774",
-   "say": "So parse with layout. Find the columns, headings and tables, and write every table row as its own sentence, with the column names repeated.",
+   "key": "a38256bc",
+   "say": "A tries counter, a hard step limit, and a fallback: the best evidence so far, or not found.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "e800c8af",
-   "say": "Scanned pages need OCR, which turns pictures of text into text, with its own typos. And very large tables belong in a database, not in chunks.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
+   "key": "1eab006e",
+   "say": "What is lost in the middle?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
   },
   {
-   "key": "1351a8f2",
-   "say": "Everything between a document existing somewhere, and its chunks sitting in the index, is called ingestion. Parse, clean, and drop the footers.",
+   "key": "74e926a1",
+   "say": "Models use facts at the start and end of a long prompt better than facts in the middle.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "fb3cc6d7",
-   "say": "Then chunk, with the version and status attached, and index.",
+   "key": "77b4a50d",
+   "say": "Context recall is low, faithfulness is high. Where's the bug?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f9c18565",
+   "say": "Retrieval, or ingestion. The needed facts never reached the prompt.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "99434ba6",
-   "say": "And before tuning anything else, read the parsed text of your most important documents. Many failing systems never did.",
+   "key": "6017f86b",
+   "say": "How do you chunk a table?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "84ba1ffe",
+   "say": "One chunk per row with the headers repeated, plus a summary chunk. Huge tables go in a database.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ce2069b",
+   "say": "Last one. When does GraphRAG help?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6cd0d2c8",
+   "say": "Multi hop questions, and whole corpus questions, like themes across thousands of documents.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -366,71 +688,57 @@
    "after": 0
   },
   {
-   "key": "b5ccae56",
-   "say": "Multi query turns one vague question into several sharp ones.",
+   "key": "a0e16a3c",
+   "say": "Fix the question first: multi query, HyDE, decomposition, routing.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "456a0f0c",
-   "say": "HyDE searches with a fake answer.",
+   "key": "cfec3c14",
+   "say": "Condense follow ups into standalone questions.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "15c3d7c0",
-   "say": "Condensing turns a follow-up into a standalone question.",
+   "key": "0b1bcc64",
+   "say": "Corrective RAG grades the evidence, retries, and falls back honestly.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "abc80f4d",
-   "say": "Corrective RAG checks the evidence, and retries before answering.",
+   "key": "6c8e85a1",
+   "say": "Debug with traces, walking backwards from the answer.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "5cf85178",
-   "say": "A trace lets you walk a wrong answer backwards.",
+   "key": "36c76fb2",
+   "say": "Parse layout properly, and treat table rows as chunks.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "2db7fde6",
-   "say": "And ingestion decides how good search can ever be.",
+   "key": "42817ac9",
+   "say": "And ask whether the question needs CAG, GraphRAG, or a database instead.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "9ddd8249",
-   "say": "Ask FreshCart now answers policy questions well, and admits when it can't. Then the questions change.",
+   "key": "0a5cbc33",
+   "say": "And now, a different kind of request arrives.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "60aef1cd",
-   "say": "Where is order F C two zero nine three one, right now?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "d78ef0b6",
-   "say": "Is there milk in the Kothrud warehouse?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "6bcfe58a",
-   "say": "And: the milk was spoiled. Issue a hundred and fifty rupee credit. That's not even a question. None of these answers lives in any document. The model only writes text. So how could it look up an order? Or issue a credit?",
+   "key": "b3059895",
+   "say": "What's my leave balance? Reset my VPN. Book the meeting room. No document can answer these. What does the assistant need?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3

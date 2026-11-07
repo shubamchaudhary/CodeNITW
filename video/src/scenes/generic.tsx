@@ -5,6 +5,7 @@ import type { Clock } from "../lib/timeline.ts";
 import { C, MONO, tone } from "../lib/theme.ts";
 import { ease, enter, lerp, pop, rise } from "../lib/anim.ts";
 import { useAsset } from "../lib/assets.ts";
+import { useSections } from "../lib/sections.ts";
 import { Abs, card, Chip, SceneTitle } from "./ui.tsx";
 
 type Of<K extends Scene["kind"]> = Extract<Scene, { kind: K }>;
@@ -29,28 +30,50 @@ export const TitleScene = ({ s, t }: P<"title">) => {
 export const SectionScene = ({ s, t }: P<"section">) => {
   const f = t.frame;
   const p = pop(f, 2);
+  const all = useSections();
+  const map = all.length >= 3;
+  const here = all.findIndex((x) => x.num === s.num && x.title === s.title);
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", paddingLeft: 200, gap: 70 }}>
-      <div
-        style={{
-          width: 230,
-          height: 230,
-          borderRadius: 999,
-          border: `6px solid ${C.blue}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 120,
-          fontWeight: 800,
-          color: C.blue,
-          transform: `scale(${p})`,
-          boxShadow: `0 0 80px ${C.blue}44`,
-        }}
-      >
-        {s.num}
+    <>
+      <div style={{ position: "absolute", left: map ? 140 : 200, top: 0, bottom: 0, display: "flex", alignItems: "center", gap: 60 }}>
+        <div
+          style={{
+            width: 210,
+            height: 210,
+            flexShrink: 0,
+            borderRadius: 999,
+            border: `6px solid ${C.blue}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 110,
+            fontWeight: 800,
+            color: C.blue,
+            transform: `scale(${p})`,
+            boxShadow: `0 0 80px ${C.blue}44`,
+          }}
+        >
+          {s.num}
+        </div>
+        <div style={{ fontSize: map ? 72 : 84, fontWeight: 800, width: map ? 800 : 1250, lineHeight: 1.1, ...rise(f, 8, 40) }}>{s.title}</div>
       </div>
-      <div style={{ fontSize: 84, fontWeight: 800, maxWidth: 1250, lineHeight: 1.1, ...rise(f, 8, 40) }}>{s.title}</div>
-    </div>
+      {map && (
+        <div data-qa="section map" style={{ position: "absolute", left: 1330, top: 540, width: 520, transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 10, opacity: enter(f, 10, 18) }}>
+          {all.map((x, i) => {
+            const on = i === here;
+            const done = i < here;
+            return (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 24, fontWeight: on ? 800 : 600, color: on ? C.text : done ? C.muted : C.faint, transform: `translateX(${on ? lerp(30, 0, enter(f, 14, 16)) : 0}px)` }}>
+                <div style={{ width: 34, height: 34, flexShrink: 0, borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, background: on ? C.blue : "transparent", color: on ? C.bg : undefined, border: `2px solid ${on ? C.blue : done ? C.muted : C.line}` }}>
+                  {done ? "✓" : x.num}
+                </div>
+                <div style={{ lineHeight: 1.2 }}>{x.title}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 };
 

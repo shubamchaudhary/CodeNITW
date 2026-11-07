@@ -2,372 +2,869 @@
  "voice": "en-US-AndrewMultilingualNeural",
  "beats": [
   {
-   "key": "9743df55",
-   "say": "Meera asks: can bakery items be refunded after six hours? The answer is sitting in FreshCart's refund policy. Page four. In a table.",
+   "key": "fae37dd0",
+   "say": "An employee asks the company's new HR assistant: how many weeks of parental leave do I get? And it answers, instantly and politely: most companies offer around twelve weeks.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "94ff68b4",
-   "say": "Last time we saw the problem. The model never read that page. And we can't paste in all twelve thousand documents.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "4db339a4",
-   "say": "So think about how you'd answer it yourself. Would you memorise twelve thousand documents?",
-   "rate": "-2%",
-   "pitch": "+4Hz",
-   "after": 0.3
-  },
-  {
-   "key": "876c0026",
-   "say": "Of course not. You'd open the right policy, find the right paragraph, read it, and answer. An open-book exam.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "7e977e25",
-   "say": "That's the whole idea. First, find the few passages that answer the question. Then hand them to the model and say: answer only from these, and show me where. This is called RAG: retrieval augmented generation.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "ce11d0b5",
-   "say": "The model stops being the source of facts. It becomes a reader of the evidence you hand it.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "67ce8db5",
-   "say": "Chapter two. Let's build it, one attempt at a time.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "74066e30",
-   "say": "Attempt zero: just paste the document.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "162e03af",
-   "say": "For one question about one policy, the simplest thing works. Paste the forty-page refund policy into the prompt, add the question, done.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "52c6fcea",
-   "say": "And keep this in your pocket: when your knowledge is small and rarely changes, that's genuinely the right design. No search, no search mistakes.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "16deb10d",
-   "say": "But agents ask about everything. Refunds, slots, warehouses, franchises. Twelve thousand documents. It will never fit.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "40f17d96",
-   "say": "Attempt one: search the way you search your own files. Find documents that contain the words of the question.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "da028140",
-   "say": "Ask about error slot expired, and exactly one runbook contains that code. Perfect.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "877ffb49",
-   "say": "Then an agent types: eggs broken on arrival, can they get money back?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "ace31916",
-   "say": "The policy says: damaged items reported within twenty-four hours get a full refund. Look closely. They share almost no words.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "7fbe44a5",
-   "say": "Broken versus damaged. Money back versus refund. Keyword search finds nothing. And people will always use different words.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "1d506a97",
-   "say": "So how can a computer tell that two sentences mean the same thing?",
-   "rate": "-2%",
-   "pitch": "+4Hz",
-   "after": 0.3
-  },
-  {
-   "key": "56cd6cc3",
-   "say": "Imagine a map where every sentence has a spot, and sentences that mean similar things live next door.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "ec6c5f2b",
-   "say": "Refund within twenty-four hours, and money back for damaged items, are neighbours. Delivery slot moved lives in a totally different neighbourhood.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "cfe3a7e1",
-   "say": "That spot is called an embedding: a list of numbers, the sentence's coordinates in meaning.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "c3f47cee",
-   "say": "Now drop the question on the map. Eggs broken, money back. It lands right next to damaged items, even with no words in common.",
+   "key": "ab8b6d01",
+   "say": "Wrong. Your handbook says twenty six.",
    "rate": "+10%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "12691084",
-   "say": "Grab whatever is nearest. That's vector search.",
+   "key": "0e4245dc",
+   "say": "And the model never had a chance. Your employee handbook is private. It was never in its training data.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "91a691c1",
-   "say": "The real map has hundreds of directions, not two. But the idea is exactly this.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "ba33994d",
-   "say": "How does a model learn where to put things? This is the part interviewers love.",
-   "rate": "-2%",
-   "pitch": "+4Hz",
-   "after": 0.3
-  },
-  {
-   "key": "2c6df8ea",
-   "say": "Feed it millions of pairs that belong together: a question and its answer. A search and the page people clicked.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "53243fa5",
-   "say": "Pull each pair together. Push everything else apart. Over and over.",
+   "key": "cc0ce65e",
+   "say": "The fix is the one architecture you'll be asked about in almost every AI engineering interview. RAG.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "de535d37",
-   "say": "That's called contrastive learning. And the best teachers are look-alike wrong answers, like the bakery rule for a dairy question, because they teach fine differences.",
+   "key": "8b29efef",
+   "say": "Chapter two. Retrieval augmented generation, from scratch.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a505c52f",
-   "say": "One warning: switch embedding models later, and every document must be embedded again. Different models make different maps.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
+   "key": "559717a0",
+   "say": "By the end, you'll be able to answer these.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "9fbf8f70",
-   "say": "Now, a trap.",
+   "key": "af318c58",
+   "say": "Why RAG, and when it's the wrong tool.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94b7d42e",
+   "say": "How embeddings capture meaning, and how embedding models are trained.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7be6b9e4",
+   "say": "How you'd chunk a set of documents, and why.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f0f64b2",
+   "say": "And the big one: walk me through a RAG pipeline, end to end.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad8f5111",
+   "say": "First, the idea, in one picture.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f46e790e",
+   "say": "Right now, the model is sitting a closed book exam. It answers from memory, and when it doesn't know, it guesses something plausible.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e42d9aaa",
+   "say": "RAG turns it into an open book exam. Before answering, find the few pages that matter, and put them in front of the model.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5249342c",
+   "say": "That's retrieval augmented generation. Two jobs. Retrieve the relevant chunks. Then generate an answer, only from them, with citations.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "21ad2821",
+   "say": "The model doesn't need to know your facts. It needs to read them at the right moment.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae0ac36e",
+   "say": "Why not skip retrieval, and paste in every document? Say the company has three thousand internal documents.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "718aa35a",
+   "say": "That's roughly twenty million tokens.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a872426d",
+   "say": "Even the largest context windows hold about a million, and models use a very full window less reliably.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3688fcf4",
+   "say": "And even if it fit, at three dollars per million input tokens, that's sixty dollars for every single question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f75970bc",
+   "say": "So the whole game is finding the few chunks that matter, first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "17da70f0",
+   "say": "So, how do we find them? The obvious first try: keywords.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0ba6e73",
+   "say": "The employee writes: how much time off do I get when my baby is born? Keyword search ranks documents by the words they share with the question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8022a89f",
+   "say": "Time off request form: time, off, a perfect match. Number one. The parental leave policy shares no words at all. It lands at number nine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7bf82ba9",
+   "say": "That's the vocabulary mismatch problem. People describe the same thing in different words.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "27822f1a",
+   "say": "But don't throw keyword search away. For exact codes, error numbers and names, like error E four zero one two, nothing beats it. Chapter three combines both.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d42e9456",
+   "say": "We need search that understands meaning, not spelling.",
    "rate": "+10%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "f462b002",
-   "say": "Embed the whole forty-page policy as one spot on the map. Where does it land?",
-   "rate": "-2%",
-   "pitch": "+4Hz",
-   "after": 0.3
-  },
-  {
-   "key": "7ac07104",
-   "say": "It covers dairy, bakery, frozen food, fees, fraud... so it lands in the blurry middle of everything. A weak match for every question. A sharp match for none.",
-   "rate": "-12%",
-   "pitch": "-3Hz",
-   "after": 0.6
-  },
-  {
-   "key": "de8e687a",
-   "say": "So cut documents into small cards, one idea each. Each card gets its own sharp spot.",
+   "key": "83c52bcb",
+   "say": "An embedding model turns any piece of text into a vector: a list of, say, a thousand numbers. Texts with similar meaning get nearby numbers, even when they share no words.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "b2404c9e",
-   "say": "Too big, and it's blurry again. Too small, and you get: the limit is twenty-four hours. The limit on what?",
+   "key": "e6281388",
+   "say": "Embed every chunk of every document once, and store them. You get a map: leave policies in one corner, expenses in another, IT help in a third.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ef39d887",
-   "say": "So keep the heading on every card. Refund policy, damaged items, dairy. Now it means something.",
+   "key": "73a4b441",
+   "say": "Now embed the question. Time off, when my baby is born, lands right next to parental leave. No shared words needed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "912d490f",
+   "say": "Return the nearest few. That's vector search, and the data structure that answers which vectors are nearest, fast, is a vector index.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "f75f65b0",
-   "say": "What size is right? Don't guess. Try three sizes on real agent questions, and keep the winner. That's the answer interviewers want.",
+   "key": "3d48f92b",
+   "say": "How do we measure near? Cosine similarity compares the directions two vectors point in, and ignores their length. One means same direction. Zero means unrelated.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f69ce683",
+   "say": "The dot product multiplies the vectors number by number, and adds it all up. It cares about direction and length.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d74edcf1",
+   "say": "And Euclidean distance is the straight line between the two points.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "333b550f",
+   "say": "The practical trick: scale every vector to length one when you store it. Then cosine and dot product give the same answer, and Euclidean ranks results in the same order. So you normalise once, and use the cheapest: the dot product.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2981d394",
+   "say": "The interview favourite: how does the model learn where to put things? From millions of pairs that belong together. A question and its answer. A search and the page people clicked.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aeb42ab8",
+   "say": "In each batch, every question has its own passage. And every other passage in the batch is a wrong answer, for free. Those are in batch negatives.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df5b011f",
+   "say": "Training pulls each real pair together, and pushes the wrong ones apart. Step by step, the loss falls, and the diagonal lights up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d9d160f",
+   "say": "The best training sets add hard negatives: wrong answers that look almost right. Carry over leave, versus parental leave. They teach the fine distinctions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "457d4a52",
+   "say": "How do you pick an embedding model? Four checks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fab49267",
+   "say": "Test on your own questions. Fifty to a hundred, where you know the right document. Public leaderboards like M T E B give you a shortlist, not a decision.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2c3be3d5",
+   "say": "Check the input limit. Many models read only five hundred and twelve tokens, and silently ignore the rest.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b4fb3fa",
+   "say": "Dimensions cost memory and speed. Matryoshka models are trained so that just the first part of the vector works on its own.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b981773",
+   "say": "And use the prefixes. Many models expect a query marker on questions, and a passage marker on documents. Forget them, and quality drops quietly.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "56aed779",
+   "say": "A trap that sounds harmless: we can switch embedding models later. It's just a config change.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "293e06b6",
+   "say": "It isn't. Vectors from different models live in different spaces, and can't be compared. Every chunk has to be embedded again.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3aa51081",
+   "say": "Now, what exactly do we embed?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c148a25",
+   "say": "Say we embed the whole forty page handbook as one vector. Leave, expenses, IT, conduct, all in one point.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e0f34b1",
+   "say": "That point is an average of everything. It's close to nothing in particular. The leave question can't find it.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88e11316",
+   "say": "So we cut documents into chunks, a few hundred tokens each. Every chunk is a sharp point, and one of them lands right next to the question.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "84cae2dc",
+   "say": "But cut too small, and a chunk loses its meaning. It is twenty six weeks for the primary carer. What is it?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6802b2f",
+   "say": "Four ways to cut, from crude to clever. Fixed size: every so many characters or tokens. Simple, but it slices words and sentences in half.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c133896",
+   "say": "Add overlap, so neighbouring chunks share an edge. A sentence that gets cut still survives whole in one of them.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f949da0",
+   "say": "Recursive splitting tries the biggest natural break first: paragraphs, then sentences, then words, until each piece fits. It's the sensible default.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d635385a",
+   "say": "Semantic chunking embeds each sentence, and cuts where neighbouring sentences stop being similar: here, where leave turns into expenses. Smarter, and slower to build.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ba03ac2",
+   "say": "So which chunk size? Don't guess. Take eighty real questions, mark the passage that answers each one, and build the index three times.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6324e91e",
+   "say": "Count how often the right passage lands in the top ten. Here, four hundred tokens wins. On your data, it may not.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0044c901",
+   "say": "In an interview, I compared three sizes on our real questions, beats five twelve, because everyone uses it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a6f8f37a",
+   "say": "Two upgrades fix the too small problem. First, parent child retrieval. Embed small, sharp chunks, but each one remembers the section it came from: its parent.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e957422",
+   "say": "The question, how long is parental leave, matches one small child chunk.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9eadd411",
+   "say": "But the model receives the whole parent section: the twenty six weeks, the start date, and the notice rule. Precise search, full context.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ceb5433c",
+   "say": "Second: contextual retrieval. Here's a chunk as stored. It is twenty six weeks for the primary carer. Alone, it makes no sense.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "73b7f799",
+   "say": "Before indexing, an LLM reads each chunk together with its whole document, and writes one sentence that places it. From the twenty twenty six employee handbook, section four point two, parental leave. That's glued on, before embedding.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "318cb028",
+   "say": "Anthropic reported this cut failed retrievals by thirty five percent. And by forty nine percent, when the keyword index gets the same treatment.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e1a0287",
+   "say": "The cost: one model call per chunk, once, at indexing time. Prompt caching makes the repeated document cheap.",
    "rate": "+12%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "5a2c68b0",
-   "say": "Here's a neat trick to get both: precision and context.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "9d906682",
-   "say": "Search the small cards, because small cards are sharp. But when one matches, hand the model its whole section.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "05a090e2",
-   "say": "Now the model sees the dairy rule, and the photo-proof rule sitting right next to it. This is called parent-child retrieval.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "de6d3dcc",
-   "say": "Let's put it all together.",
+   "key": "e37ae8dc",
+   "say": "Let's put the whole pipeline together.",
    "rate": "+10%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "574a3b5f",
-   "say": "There are two machines, running at different times.",
+   "key": "7e32f7dd",
+   "say": "The offline half runs whenever a document changes. Parse PDFs and wiki pages into clean text. Cut it into chunks, each with metadata: which document, which version, and who's allowed to see it.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "2563893e",
-   "say": "Offline, whenever a document changes: read it, cut it into cards, embed each card, and store them in a vector index.",
+   "key": "de9dd9af",
+   "say": "Embed every chunk, and store it in a vector index, and in a keyword index too, for exact codes.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6c6c444b",
-   "say": "Online, for every question: embed the question, and grab the twenty nearest cards.",
+   "key": "91862ac8",
+   "say": "The online half runs for every question. Embed the question with the same model. Search for the best twenty candidates, but only among chunks this user may see.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a0b9f65e",
-   "say": "Then a slower, sharper model rereads those twenty and keeps the best five. That's a reranker.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "199da810",
-   "say": "Build the prompt: rules first, the five cards with their labels, the question last.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "8a45251b",
-   "say": "And the answer cites its sources, so an agent can click and check.",
+   "key": "e7456a19",
+   "say": "A reranker rereads those twenty, and keeps the best five. Then the model generates an answer, with citations.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "6d7209c2",
-   "say": "One bug catches almost everyone. The refund policy gets updated to version four.",
+   "key": "73c3b9ec",
+   "say": "Here's the same thing as calls between services. The employee's question reaches the RAG service.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "9647aa18",
-   "say": "The team adds the new cards... and forgets to delete the old ones.",
+   "key": "d437cf0c",
+   "say": "It's embedded, with the same model used for the documents.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a820ef02",
-   "say": "Now versions three and four are both searchable, and answers quietly mix them.",
+   "key": "9ef1af52",
+   "say": "The vector index returns the top twenty chunks, filtered to the groups this employee belongs to. Permissions are checked during search, never after.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98c76f08",
+   "say": "The reranker keeps the best five.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e1c07e92",
+   "say": "The LLM gets the rules, the five chunks, and the question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22a62363",
+   "say": "And the answer streams back, with a citation the employee can click to check. Streaming matters: people start reading at the first word, not the last.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "2a667ea6",
-   "say": "Worse: a deleted document stays searchable. That's not a stale answer. That's a data leak. So every update deletes the old version, in the same step.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
+   "key": "d323ad47",
+   "say": "Inside that prompt, order matters. Instructions first. Answer only from the documents below. If they don't answer it, say so. Cite every passage you use.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "c21a335e",
-   "say": "Last thing. Interviewers rarely ask what RAG is. They ask: why RAG, and not something else?",
+   "key": "39ba3382",
+   "say": "Then the documents, each wrapped with an id, a title, and an updated date. The date lets the model prefer the newer of two passages that disagree.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "008e082c",
+   "say": "And the question, last.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "058be073",
+   "say": "Fixed parts first, so prompt caching can reuse them. And remove near duplicate chunks, so one fact doesn't take five slots.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e777ed17",
+   "say": "A typical budget is about four thousand tokens. When answers need more evidence, the fix is better chunks or better ranking. More chunks often make answers worse.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5d1e8112",
+   "say": "And citations need checking too. First, ask for structured output: an answer field, and a citations field.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b329b7b",
+   "say": "Then, in code, drop any cited id that wasn't actually retrieved. Models can invent ids, just like they invent court cases.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b1f4b7e",
+   "say": "Finally, a second model call checks each sentence: is it actually supported by the chunk it cites? If not, remove it, or say the answer wasn't found. That measures groundedness.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5991cc58",
+   "say": "Documents change. The index has to keep up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ced7bc4a",
+   "say": "The handbook goes from version three to version four. Parental leave changes from sixteen weeks to twenty six.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fd00382",
+   "say": "The classic bug: add the new chunks, and forget to delete the old ones. Now both versions are searchable, and answers mix them. Worse, a deleted or restricted document stays searchable. That's a data leak.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2be236ec",
+   "say": "The fix: every chunk stores its document id and version. On an update, insert the new chunks, and delete every old chunk of that document, in both indexes, as one operation. Triggered by a webhook, or a nightly check of content hashes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "259f79b7",
+   "say": "Now the index holds version four only.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e7f34b1",
+   "say": "A bigger change, like a new embedding model, means rebuilding everything. Build the new index beside the old one, test it, switch queries over in one step, and keep the old one for rollback.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "169385b5",
+   "say": "A quick estimate makes any design answer stronger. Three thousand documents, about fifty chunks each: a hundred and fifty thousand chunks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57c40c07",
+   "say": "At a thousand and twenty four numbers, four bytes each, that's about zero point six gigabytes of vectors. It fits in memory on one machine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7612ed90",
+   "say": "And embedding all of it costs about a dollar twenty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6720637b",
+   "say": "Embedding is cheap. Generating answers is where the money goes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d29f3b00",
+   "say": "Interviewers rarely ask what is RAG. They ask: why RAG, and not something else?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "0f2e84da",
-   "say": "Missing facts that are large and changing? RAG. Small and fixed? Just put them in the prompt.",
+   "key": "58c203c3",
+   "say": "Ask what's missing from the answer. Facts the model never saw, that are large, changing, or need citations and per user access? That's RAG.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "246e74a4",
-   "say": "Live data, like stock levels? Ask the live system. And: how many refunds did we issue last week?",
+   "key": "af41f2f6",
+   "say": "A small, fixed set of facts that fits in the prompt? Just paste it all in, and cache it. No retrieval needed.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a26869ba",
-   "say": "Search can't count. That's a database query, not RAG.",
+   "key": "e0db9b82",
+   "say": "A behaviour, like a format, a tone, or a narrow task? Prompting first, and fine tuning if that's not enough.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba19077b",
+   "say": "Live data, like my leave balance, or a count, like how many requests last month? Call a tool, or run a database query.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b48ae8c2",
+   "say": "That last one is the trap. Search returns some leave documents. It can never count all the leave records.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2d9b7a30",
+   "say": "One last trap. The top model on the leaderboard will be the best one for us.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f3ad0c5",
+   "say": "Often false. Leaderboard tasks aren't your documents. A smaller model, fine tuned on your own question and passage pairs, can beat it on your data.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1c86a4fa",
+   "say": "But fine tune last. First add keyword search, better chunk context, and try other models. Fine tuning means you own a model, and re-embed everything when it changes.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "056077d7",
+   "say": "Interview round.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "2e686444",
+   "say": "Walk me through a RAG pipeline, end to end.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4cca5dc",
+   "say": "Offline: parse the documents, chunk them with metadata, embed each chunk, and store them in a vector index and a keyword index.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e290858",
+   "say": "Updates replace a document's chunks in one operation. Model changes use a blue green rebuild.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6a2bf58",
+   "say": "Online: embed the question with the same model, and retrieve the top twenty or so, filtered by the user's permissions.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30cd9b54",
+   "say": "Rerank to the best five. Build the prompt: rules first, then chunks with ids and dates, and the question last.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b5cce6dc",
+   "say": "Generate with citations, verify the cited ids and their support, and stream the answer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "270e6efc",
+   "say": "And measure retrieval and answer quality separately, on a labelled set of real questions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8833f994",
+   "say": "Rapid fire. Cosine similarity, or dot product?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "26cb6925",
+   "say": "Normalise the vectors to length one, and they're identical. Then use the dot product, because it's cheapest.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "512a8ca7",
+   "say": "How are embedding models trained?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5322d8c7",
+   "say": "Contrastive learning on matching pairs. Pull each pair together, and push in batch and hard negatives apart.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "631ef234",
+   "say": "Why not embed whole documents?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "927ae0bf",
+   "say": "One vector averages every topic, and matches none. Chunks keep each point sharp.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b40bd913",
+   "say": "What does chunk overlap buy you?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e5224807",
+   "say": "A sentence cut at a boundary still appears whole, in one of the neighbouring chunks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33b90681",
+   "say": "What is parent child retrieval?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c7533991",
+   "say": "Search small child chunks for precision, then send their larger parent section, for context.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d395c0fb",
+   "say": "Where do you enforce document permissions?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4be44f3b",
+   "say": "As a filter inside the search, using metadata stored on every chunk. Never after the answer is written.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3a953a15",
+   "say": "Last one. How many requests last month: would you use RAG?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "76ec5156",
+   "say": "No. Search can't count all the records. That's a database query, or a tool.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -380,71 +877,57 @@
    "after": 0
   },
   {
-   "key": "a2a28858",
-   "say": "RAG: find the passages first, then answer only from them.",
+   "key": "bb6dad79",
+   "say": "RAG means retrieve first, then generate from what you found.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "62055030",
-   "say": "Keyword search: perfect for exact codes, blind to different words.",
+   "key": "340ee67e",
+   "say": "Embeddings put similar meanings close together.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "2088da9f",
-   "say": "Embeddings put meaning on a map, so similar ideas sit close together.",
+   "key": "d9b04f60",
+   "say": "They're trained by pulling matching pairs together, and pushing negatives apart.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "21d41e4c",
-   "say": "Chunks: one idea per card, with its heading attached.",
+   "key": "24b9cc83",
+   "say": "Chunk recursively by default, and measure the size on real questions.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a54516ef",
-   "say": "And a reranker picks the best five from the twenty nearest.",
+   "key": "087890ea",
+   "say": "Index offline. Answer online, with permissions, reranking and citations.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d36bc341",
+   "say": "And always ask: is this RAG, a prompt, a tool, or a database query?",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "3d45bffe",
-   "say": "Ask FreshCart goes live. Agents love it. Then, within two weeks, three complaints arrive.",
+   "key": "f6f45b9f",
+   "say": "Version one works. Then the company grows to ten million chunks.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8a561fb8",
-   "say": "One: it's slow. Every question is compared against two million cards.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "dd3f3c13",
-   "say": "Two: the Bengaluru North franchise gets no results at all for its own documents.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "7425335d",
-   "say": "Three: error codes fail again. The exact-match power of keyword search got lost.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "fc3c3dbc",
-   "say": "How would you search two million cards without checking every one? And how do you combine a keyword ranking with a meaning ranking?",
+   "key": "4f9a2262",
+   "say": "Search slows down. Exact error codes get missed. And permission filters sometimes leave no results at all. What would you change?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
