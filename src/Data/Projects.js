@@ -3,13 +3,14 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs, LL-01).
+// except where a built-in document replaces them (Data/projectsDocs: LL-01, IOA-01).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
 export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
   { key: "loglens", label: "LogLens" },
+  { key: "invops", label: "Inventory Ops Agent" },
   { key: "kafka", label: "Kafka" },
 ];
 
@@ -114,6 +115,15 @@ export const PROJECT_TOPICS = [
     sectionLabel: "LogLens",
     title: "LogLens, end to end",
     summary: "The whole project in one place, in the lecture's order: every decision, every number and how to derive it, the gaps, resume defence, pitches and the follow-ups.",
+  },
+  // A previous job's LLM inventory-operations agent: its architecture and the
+  // data-management layer built there, from the team's code documentation.
+  {
+    id: "IOA-01",
+    section: "invops",
+    sectionLabel: "Inventory Ops Agent",
+    title: "Inventory Ops Agent, end to end",
+    summary: "The LangGraph supervisor and its four subagents, and the data layer you built: hierarchy-aware reads, Redis-staged writes, HITL interrupts and Base + Overlay commits, with the follow-ups.",
   },
   // Checked against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as

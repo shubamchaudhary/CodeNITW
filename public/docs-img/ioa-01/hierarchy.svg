@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 640" width="1240" height="640" role="img" aria-label="Hierarchy-aware reads: filter at any level, not just the leaf">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="640" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Hierarchy-aware reads: filter at any level, not just the leaf</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">example levels; the real level columns come from each planning instance&#x27;s hierarchy</text>
+<text x="30" y="110" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#5b9cff" text-anchor="start" font-weight="800">Item hierarchy (dim_item)</text>
+<text x="30" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="600">department</text>
+<rect x="150" y="140" width="116" height="40" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="208.0" y="164.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">Dairy</text>
+<rect x="280" y="140" width="116" height="40" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="338.0" y="164.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">Bakery</text>
+<text x="30" y="252" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="600">class</text>
+<path d="M208 180 L208 202 L208 202 L208 226" fill="none" stroke="#5b9cff" stroke-width="2"/>
+<rect x="150" y="226" width="116" height="40" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="208.0" y="250.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">Milk</text>
+<path d="M208 180 L208 202 L338 202 L338 226" fill="none" stroke="#2f3a55" stroke-width="1.4"/>
+<rect x="280" y="226" width="116" height="40" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="338.0" y="250.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">Cheese</text>
+<text x="30" y="338" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="600">item</text>
+<path d="M208 266 L208 288 L208 288 L208 312" fill="none" stroke="#5b9cff" stroke-width="2"/>
+<rect x="150" y="312" width="116" height="40" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="208.0" y="336.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">A100</text>
+<path d="M208 266 L208 288 L338 288 L338 312" fill="none" stroke="#5b9cff" stroke-width="2"/>
+<rect x="280" y="312" width="116" height="40" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="338.0" y="336.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">A101</text>
+<path d="M338 266 L338 288 L468 288 L468 312" fill="none" stroke="#2f3a55" stroke-width="1.4"/>
+<rect x="410" y="312" width="116" height="40" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="468.0" y="336.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">A102</text>
+<text x="560" y="110" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#38d996" text-anchor="start" font-weight="800">Location hierarchy (dim_loc)</text>
+<text x="560" y="166" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="600">region</text>
+<rect x="680" y="140" width="116" height="40" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="738.0" y="164.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">West</text>
+<rect x="810" y="140" width="116" height="40" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="868.0" y="164.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">East</text>
+<text x="560" y="252" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="600">dc</text>
+<path d="M738 180 L738 202 L738 202 L738 226" fill="none" stroke="#38d996" stroke-width="2"/>
+<rect x="680" y="226" width="116" height="40" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="738.0" y="250.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">DC1</text>
+<path d="M738 180 L738 202 L868 202 L868 226" fill="none" stroke="#38d996" stroke-width="2"/>
+<rect x="810" y="226" width="116" height="40" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="868.0" y="250.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">DC2</text>
+<path d="M868 180 L868 202 L998 202 L998 226" fill="none" stroke="#2f3a55" stroke-width="1.4"/>
+<rect x="940" y="226" width="116" height="40" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="998.0" y="250.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">DC3</text>
+<text x="560" y="338" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="600">location</text>
+<path d="M738 266 L738 288 L738 288 L738 312" fill="none" stroke="#38d996" stroke-width="2"/>
+<rect x="680" y="312" width="116" height="40" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="738.0" y="336.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">S101</text>
+<path d="M868 266 L868 288 L868 288 L868 312" fill="none" stroke="#38d996" stroke-width="2"/>
+<rect x="810" y="312" width="116" height="40" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="868.0" y="336.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">S102</text>
+<path d="M998 266 L998 288 L998 288 L998 312" fill="none" stroke="#2f3a55" stroke-width="1.4"/>
+<rect x="940" y="312" width="116" height="40" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="998.0" y="336.64" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="middle" font-weight="650">S201</text>
+<rect x="30" y="420" width="1180" height="196" rx="14" fill="#141b2b" stroke="#2f3a55"/>
+<text x="50" y="452" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="start" font-weight="600">&quot;Show ordering cost for the Milk class in the West region&quot;  becomes:</text>
+<text x="50" y="484" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">SELECT fact.item, fact.location, fact.&lt;param cols&gt;</text>
+<text x="50" y="505" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">FROM &lt;base view&gt; fact</text>
+<text x="50" y="526" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">JOIN &lt;dim_item&gt; dim_item ON fact.item = dim_item.item</text>
+<text x="50" y="547" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">JOIN &lt;dim_loc&gt;  dim_loc  ON fact.location = dim_loc.location</text>
+<text x="50" y="568" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">WHERE dim_item.&lt;class col&gt; = ANY(%s)   -- [&#x27;Milk&#x27;]</text>
+<text x="50" y="589" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">  AND dim_loc.&lt;region col&gt; = ANY(%s)   -- [&#x27;West&#x27;]</text>
+<text x="790" y="470" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#38d996" text-anchor="start" font-weight="500">-&gt; every Milk item at every West</text>
+<text x="790" y="489" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#38d996" text-anchor="start" font-weight="500">location (lit up above).</text>
+<text x="790" y="508" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="500"></text>
+<text x="790" y="527" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="500">Level -&gt; column comes from the</text>
+<text x="790" y="546" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="500">resolved hierarchy map (cached).</text>
+<text x="790" y="565" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">Column names are checked against a</text>
+<text x="790" y="584" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">safe-identifier pattern; values</text>
+<text x="790" y="603" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">are always bound as %s.</text>
+</svg>
