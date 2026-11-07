@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Player } from "@remotion/player";
 import { Lecture } from "../../../video/src/Lecture.tsx";
 import { buildTimeline, FPS } from "../../../video/src/lib/timeline.ts";
-import { Icon } from "../../components/ui";
 
 // The chapter as a narrated, animated lecture, drawn live in the page from the
 // same scenes the MP4 is rendered from (video/). Narration and images are
@@ -42,11 +41,36 @@ function Poster({ chapter }) {
   );
 }
 
-export default function LecturePlayer({ id }) {
+// Slower and faster than normal, in YouTube-like small steps.
+const RATES = [0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2];
+const SKIP_S = 10;
+
+// Styled like Remotion's own control buttons (white icon, no chrome).
+const ctrlButton = { appearance: "none", background: "none", border: "none", padding: "0 4px", color: "white", cursor: "pointer", display: "inline-flex", alignItems: "center", height: 25 };
+
+// A circular arrow with "10" in it; mirrored for forward, the digits kept readable.
+const SkipIcon = ({ back }) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <g transform={back ? undefined : "translate(24 0) scale(-1 1)"}>
+      <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+      <path d="M6.4 2.9v4H10.4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+    <text x="12" y="15.6" textAnchor="middle" fontSize="7.6" fontWeight="700" fill="currentColor">
+      10
+    </text>
+  </svg>
+);
+
+// The lecture body: the player and its section chips. The card around it
+// (TopicLead) mounts this only when "Watch" is clicked.
+export default function LecturePlayer({ id, autoPlay = false }) {
   const [data, setData] = useState(null);
   const [failed, setFailed] = useState(false);
   const [section, setSection] = useState(-1);
   const player = useRef(null);
+  const wrap = useRef(null);
+  // Arrow keys seek only while the lecture is "in hand": clicked last, or full screen.
+  const active = useRef(autoPlay);
 
   useEffect(() => {
     let live = true;
@@ -65,10 +89,15 @@ export default function LecturePlayer({ id }) {
   );
   const inputProps = useMemo(() => data && { ...data, assetBase: "/lectures/" }, [data]);
 
+  // Opened with "Watch": start playing as soon as it has loaded.
+  useEffect(() => {
+    if (autoPlay && timeline) player.current?.play();
+  }, [autoPlay, timeline]);
+
   // Highlight the section being played.
   useEffect(() => {
     const p = player.current;
-    if (!p || !sections.length) return;
+    if (!p || !sections.length) return undefined;
     const onFrame = (e) => {
       const f = e.detail.frame;
       let i = -1;
@@ -81,24 +110,91 @@ export default function LecturePlayer({ id }) {
     return () => p.removeEventListener("frameupdate", onFrame);
   }, [sections, timeline]);
 
+  // Resume where the voice stopped. On pause Remotion seeks the narration to
+  // the video frame, and the frame clock can lag the audio (more on a busy
+  // page), so a pause rewound the voice and resuming repeated a syllable. The
+  // narration's own clock is sampled while it plays, and on pause the frame is
+  // moved to the last sample (at most one sampling interval behind).
+  useEffect(() => {
+    const p = player.current;
+    if (!p || !timeline) return undefined;
+    let heard = null;
+    let settleUntil = 0; // after a seek the audio needs a moment to follow
+    const sample = setInterval(() => {
+      if (performance.now() < settleUntil) return;
+      const a = [...(wrap.current?.querySelectorAll("audio") ?? [])].find((x) => !x.paused && /lecture\.mp3/.test(x.src));
+      if (a) heard = a.currentTime;
+    }, 15);
+    const onPause = () => {
+      if (heard == null) return;
+      const f = Math.round(heard * FPS);
+      heard = null;
+      if (f > p.getCurrentFrame() && f < timeline.total) p.seekTo(f);
+    };
+    const onSeek = () => {
+      heard = null;
+      settleUntil = performance.now() + 250;
+    };
+    p.addEventListener("pause", onPause);
+    p.addEventListener("seeked", onSeek);
+    return () => {
+      clearInterval(sample);
+      p.removeEventListener("pause", onPause);
+      p.removeEventListener("seeked", onSeek);
+    };
+  }, [sections, timeline]);
+
+  const skip = useCallback(
+    (seconds) => {
+      const p = player.current;
+      if (!p || !timeline) return;
+      p.seekTo(Math.max(0, Math.min(timeline.total - 1, p.getCurrentFrame() + seconds * FPS)));
+    },
+    [timeline],
+  );
+
+  // Left and right arrows: 10 s back and forward, like YouTube.
+  useEffect(() => {
+    const onPointer = (e) => {
+      active.current = !!wrap.current?.contains(e.target);
+    };
+    const onKey = (e) => {
+      if ((e.key !== "ArrowLeft" && e.key !== "ArrowRight") || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.target.closest?.("input, textarea, select, [contenteditable='true']")) return;
+      const full = document.fullscreenElement && wrap.current?.contains(document.fullscreenElement);
+      if (!active.current && !full) return;
+      e.preventDefault();
+      skip(e.key === "ArrowLeft" ? -SKIP_S : SKIP_S);
+    };
+    document.addEventListener("pointerdown", onPointer, true);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer, true);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [skip]);
+
+  const renderSkip = useCallback(
+    () => (
+      <>
+        <button type="button" style={ctrlButton} onClick={() => skip(-SKIP_S)} title="Back 10 seconds (←)" aria-label="Back 10 seconds">
+          <SkipIcon back />
+        </button>
+        <button type="button" style={ctrlButton} onClick={() => skip(SKIP_S)} title="Forward 10 seconds (→)" aria-label="Forward 10 seconds">
+          <SkipIcon />
+        </button>
+      </>
+    ),
+    [skip],
+  );
+
   const jump = (from) => {
     player.current?.seekTo(from);
     player.current?.play();
   };
 
-  const minutes = timeline ? Math.round(timeline.total / FPS / 60) : null;
-
   return (
-    <section className="mt-6 rounded-lg border border-line bg-canvas overflow-hidden">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 bg-surface-subtle border-b border-line">
-        <span className="text-fg-subtle">
-          <Icon.play />
-        </span>
-        <p className="text-[15px] leading-[22px] font-semibold text-fg">Watch the lecture</p>
-        {minutes && <p className="font-mono text-[12px] tabular-nums text-fg-subtle">{minutes} min · narrated · captions</p>}
-        <p className="ml-auto text-[12px] text-fg-subtle hidden sm:block">The whole chapter, animated</p>
-      </div>
-
+    <div ref={wrap}>
       {failed ? (
         <p className="px-4 py-6 text-[14px] text-fg-subtle">The lecture could not be loaded. Reload the page to try again.</p>
       ) : !data ? (
@@ -119,7 +215,8 @@ export default function LecturePlayer({ id }) {
           allowFullscreen
           spaceKeyToPlayOrPause
           showVolumeControls
-          showPlaybackRateControl={[0.75, 1, 1.25, 1.5, 1.75, 2]}
+          showPlaybackRateControl={RATES}
+          renderCustomControls={renderSkip}
           showPosterWhenUnplayed
           renderPoster={() => <Poster chapter={data.chapter} />}
           acknowledgeRemotionLicense
@@ -143,6 +240,6 @@ export default function LecturePlayer({ id }) {
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }
