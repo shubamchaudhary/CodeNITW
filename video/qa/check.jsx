@@ -52,7 +52,9 @@ function check(root, frame, label) {
       out.push({ frame, label, text: own.slice(0, 60), issue: "off frame" });
     else if (box && box !== root && el !== box) {
       const b = box.getBoundingClientRect();
-      if (r.right > b.right + tol || r.bottom > b.bottom + tol || r.left < b.left - tol) out.push({ frame, label, text: own.slice(0, 60), issue: "outside its card" });
+      // a scrolling panel (overflow: hidden) clips what lies outside it on purpose
+      const clipped = getComputedStyle(box).overflow === "hidden" && (r.top >= b.bottom || r.bottom <= b.top);
+      if (!clipped && (r.right > b.right + tol || r.bottom > b.bottom + tol || r.left < b.left - tol)) out.push({ frame, label, text: own.slice(0, 60), issue: "outside its card" });
     }
   }
   // the term card and captions float over the scene: nothing may hide under them

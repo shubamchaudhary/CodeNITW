@@ -18,9 +18,9 @@ export const TitleScene = ({ s, t }: P<"title">) => {
   const f = t.frame;
   const bar = enter(f, 14, 24);
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: 180 }}>
+    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingLeft: 180, paddingRight: 140 }}>
       <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", color: C.blue, ...rise(f, 2) }}>{s.eyebrow}</div>
-      <div style={{ fontSize: 120, fontWeight: 800, letterSpacing: -2, marginTop: 18, ...rise(f, 8, 40) }}>{s.title}</div>
+      <div style={{ fontSize: s.title.length > 24 ? 96 : 120, fontWeight: 800, letterSpacing: -2, lineHeight: 1.08, marginTop: 18, ...rise(f, 8, 40) }}>{s.title}</div>
       <div style={{ height: 8, width: 520 * bar, background: `linear-gradient(90deg, ${C.blue}, ${C.purple})`, borderRadius: 4, marginTop: 26 }} />
       {s.subtitle && <div style={{ fontSize: 48, color: C.muted, marginTop: 30, ...rise(f, 18) }}>{s.subtitle}</div>}
     </div>
@@ -460,7 +460,7 @@ export const CodeScene = ({ s, t }: P<"code">) => {
   const lines = s.code.split("\n");
   const panel = { x: 80, y: 220, w: 1760, h: 650 };
   // Fit short listings whole; longer ones scroll to the highlighted lines.
-  const lh = Math.max(31, Math.min(35, Math.floor((panel.h - 28) / lines.length)));
+  const lh = Math.max(28, Math.min(35, Math.floor((panel.h - 28) / lines.length)));
   const fs = lh < 35 ? 22 : 24;
   const visible = Math.floor((panel.h - 28) / lh);
   const hl = s.highlight[Math.min(t.step, s.highlight.length - 1)];
