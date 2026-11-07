@@ -6,6 +6,7 @@ import { C, FONT, W } from "./lib/theme.ts";
 import { enter } from "./lib/anim.ts";
 import { AssetBase, useAsset } from "./lib/assets.ts";
 import { SceneView } from "./scenes/index.tsx";
+import { Sections } from "./lib/sections.ts";
 
 type Props = { chapter: Chapter; timings: Record<string, Timing>; assetBase?: string };
 
@@ -20,9 +21,12 @@ const LectureBody = ({ chapter, timings }: Props) => {
   const asset = useAsset();
   const { scenes, total } = useMemo(() => buildTimeline(chapter, timings), [chapter, timings]);
   const current = scenes.find((s) => frame >= s.from && frame < s.from + s.dur) ?? scenes[scenes.length - 1];
+  const sections = useMemo(() => chapter.scenes.flatMap((s) => (s.kind === "section" ? [{ num: s.num, title: s.title }] : [])), [chapter]);
 
   return (
-    <AbsoluteFill style={{ background: `radial-gradient(1400px 900px at 50% 35%, ${C.bg2}, ${C.bg})`, fontFamily: FONT, color: C.text }}>
+    <Sections.Provider value={sections}>
+    <AbsoluteFill style={{ background: C.bg, fontFamily: FONT, color: C.text }}>
+      <Backdrop frame={frame} />
       {scenes.map((sc) => (
         <Sequence key={sc.index} from={sc.from} durationInFrames={sc.dur} premountFor={30}>
           <SceneShell sc={sc} />
@@ -34,16 +38,42 @@ const LectureBody = ({ chapter, timings }: Props) => {
       <Captions sc={current} frame={frame - current.from} />
       <Progress scenes={scenes} total={total} frame={frame} />
     </AbsoluteFill>
+    </Sections.Provider>
+  );
+};
+
+// Two soft lights drifting slowly behind everything, and a faint dot grid,
+// so a still diagram never looks like a frozen slide.
+const Backdrop = ({ frame }: { frame: number }) => {
+  const a = frame / 420;
+  const x1 = 30 + 12 * Math.sin(a);
+  const y1 = 30 + 10 * Math.cos(a * 0.8);
+  const x2 = 72 + 10 * Math.cos(a * 0.7);
+  const y2 = 70 + 8 * Math.sin(a * 1.1);
+  return (
+    <AbsoluteFill
+      style={{
+        background: `radial-gradient(900px 700px at ${x1}% ${y1}%, ${C.blue}17, transparent 70%), radial-gradient(800px 650px at ${x2}% ${y2}%, ${C.purple}14, transparent 70%), radial-gradient(1400px 900px at 50% 35%, ${C.bg2}, ${C.bg})`,
+      }}
+    >
+      <AbsoluteFill style={{ backgroundImage: `radial-gradient(${C.line} 1.2px, transparent 1.2px)`, backgroundSize: "44px 44px", backgroundPosition: `${(frame * 0.15) % 44}px 0px`, opacity: 0.35 }} />
+    </AbsoluteFill>
   );
 };
 
 const SceneShell = ({ sc }: { sc: SceneT }) => {
   const frame = useCurrentFrame();
   const t = clock(sc, frame);
-  const opacity = Math.min(enter(frame, 0, 12), 1 - enter(frame, sc.dur - 10, 10));
+  const inP = enter(frame, 0, 16);
+  const opacity = Math.min(inP, 1 - enter(frame, sc.dur - 10, 10));
+  // Settle in from slightly larger, then drift closer very slowly: the
+  // picture stays alive while it is being explained.
+  const scale = 1.03 - 0.03 * inP + 0.01 * Math.min(1, frame / Math.max(1, sc.dur));
   return (
     <AbsoluteFill style={{ opacity }}>
-      <SceneView sc={sc} t={t} />
+      <AbsoluteFill style={{ transform: `scale(${scale})`, transformOrigin: "50% 48%" }}>
+        <SceneView sc={sc} t={t} />
+      </AbsoluteFill>
       <TermCard sc={sc} frame={frame} />
     </AbsoluteFill>
   );

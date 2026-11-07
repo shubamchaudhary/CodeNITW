@@ -93,6 +93,36 @@ export type Scene = Base &
         right: { title: string; items: string[] };
         footer?: string;
       }
+    // A model answer, spoken line by line: beat 0 asks q, beat i shows lines[i - 1].
+    | { kind: "sayit"; q: string; lines: string[] }
+    // Rapid fire: beats alternate question, answer (give the question a hold).
+    | { kind: "drill"; items: { q: string; a: string }[] }
+    // A wrong belief, struck out: beat 0 myth, beat 1 truth, beat 2 why.
+    | { kind: "trap"; myth: string; truth: string; why?: string }
+    // Columns side by side: beat i reveals column i, then the footer.
+    | { kind: "compare"; title: string; cols: { title: string; icon?: string; tone?: string; items: string[] }[]; footer?: string }
+    // Big numbers: beat i reveals tile i, then the footer.
+    | { kind: "numbers"; title: string; items: { value: string; label: string; sub?: string; tone?: string }[]; footer?: string }
+    // Who talks to whom: actors with lifelines, each message arrives at its step.
+    | {
+        kind: "seq";
+        title: string;
+        actors: { id: string; name: string; icon: string; tone?: string }[];
+        msgs: { from: string; to: string; label: string; step: number; tone?: string; dash?: boolean }[];
+        note?: { step: number; text: string; tone?: string };
+      }
+    // Bars or lines over labelled x positions; each series appears at its step.
+    | {
+        kind: "chart";
+        title: string;
+        type: "bars" | "line";
+        labels: string[];
+        series: { name: string; values: number[]; tone?: string; step: number }[];
+        max?: number;
+        unit?: string;
+        xLabel?: string;
+        note?: { step: number; text: string; tone?: string };
+      }
     | { kind: "custom"; name: string; props?: Record<string, unknown> }
   );
 

@@ -2,309 +2,722 @@
  "voice": "en-US-AndrewMultilingualNeural",
  "beats": [
   {
-   "key": "74e88399",
-   "say": "Ask FreshCart works. And three complaints just landed on your desk.",
+   "key": "ea17f70a",
+   "say": "Version one of your RAG assistant shipped. Then it grew to ten million chunks, for five hundred customer workspaces. And four bugs arrived. Searches take two point four seconds.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "4602fb50",
-   "say": "One. It's slow at peak.",
+   "key": "f7215a7b",
+   "say": "Workspace acme gets no results at all, although its documents are right there.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "7b7a9605",
-   "say": "Two. The Bengaluru North franchise gets no results, for its own documents.",
+   "key": "fa48d532",
+   "say": "A search for the error code, E R R token expired, finds nothing useful, although a runbook names it exactly.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "335c0572",
-   "say": "Three. Ask about an error code, and you get vague answers about delivery delays.",
+   "key": "9022a164",
+   "say": "And when the right answer is found, it ranks fourth, and the model trusts the first ones.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "234414d6",
-   "say": "They look unrelated. They're actually the three classic problems of search: speed, filtering, and exact words.",
+   "key": "72163a89",
+   "say": "Four bugs. Four ideas that every retrieval interview probes.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "d3d11e18",
-   "say": "Chapter three. Let's fix all three.",
+   "key": "7a8154ce",
+   "say": "Chapter three. Search fast, and search well.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "d568d179",
-   "say": "First, speed.",
+   "key": "559717a0",
+   "say": "By the end, you'll be able to answer these.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ee1aba36",
-   "say": "Right now, every question is compared with all two million cards. Every single one. That's over a billion multiplications, per question.",
+   "key": "882c1b8f",
+   "say": "How HNSW works, and what its settings trade off.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "bb5a78dc",
-   "say": "It's like finding your nearest coffee shop by measuring the distance to every coffee shop in India.",
+   "key": "7eccbbc1",
+   "say": "Why a filtered vector search can come back empty.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc8268b5",
+   "say": "What hybrid search is, and how reciprocal rank fusion merges two rankings.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79a98037",
+   "say": "And bi encoders versus cross encoders: why we rerank.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0217fda3",
+   "say": "Bug one: speed.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "660e68e3",
+   "say": "Version one finds the nearest chunks the honest way. Compare the question's vector with every stored vector, and sort. Ten million vectors, a thousand numbers each: about ten billion multiplications, per question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9efc9b6d",
+   "say": "Always correct. And like finding the nearest coffee shop by measuring the distance to every coffee shop in the country.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "868a719e",
+   "say": "You'd start from your own neighbourhood. An approximate nearest neighbour index does exactly that: it looks at a small, cleverly chosen part of the data, and answers in milliseconds.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a80e5483",
+   "say": "The price: it occasionally misses a true neighbour. We measure that as recall. Of the true ten nearest, how many came back? Nine means a recall of zero point nine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6200e3b4",
+   "say": "The most popular ANN index is HNSW. To get it, start with a simpler idea.",
    "rate": "+10%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "c8b7422c",
-   "say": "You'd never do that. You'd just look around your own neighbourhood.",
+   "key": "21e631d9",
+   "say": "Find forty seven in a sorted linked list. Walking item by item takes nine hops. A skip list adds express lanes: a few items linked with long jumps above the full list.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a43a4371",
+   "say": "Ride the express lane while you can. Three, twenty four, forty seven. Found.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a684b28b",
+   "say": "Three hops instead of nine. Express lanes, and drop down a level when the next jump would overshoot. Keep that picture.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "0acc6e1d",
-   "say": "An index that does exactly that is called an approximate nearest neighbour index. It checks a small, clever part of the data, in milliseconds. Once in a while it misses one.",
+   "key": "8e449f89",
+   "say": "HNSW does the same with vectors. Hierarchical navigable small world. Every chunk is a point, linked to a few of its nearest neighbours: local roads. A random few also live on higher layers, with long links: the highways.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6cfbc7a2",
-   "say": "How much it misses is called recall. Recall of point nine five means it finds nine and a half of the true top ten, on average.",
+   "key": "430dd8dc",
+   "say": "Here's the question, the pink circle, down in the bottom layer.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "4b12aee1",
-   "say": "The most popular index works like driving across a country.",
+   "key": "7b1a10aa",
+   "say": "Search starts at an entry point on top. Hop to whichever neighbour is closer to the question. When none is closer, drop a layer, and repeat, with shorter links.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ba462744",
-   "say": "You take a highway to the right region. Then a main road to the right town. Then local streets, to the exact door.",
+   "key": "281a3ccf",
+   "say": "In the bottom layer, it keeps a short list of the best candidates seen so far, and returns the top ten from it. The length of that list is called ef search.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "11c21b7f",
-   "say": "This index builds those roads between your cards. A few cards on the highway layer, more on the main roads, and every card on the local streets. It's called HNSW.",
+   "key": "ba3f915c",
+   "say": "It's approximate because a greedy walk can stop at a spot that's only locally best, like a driver who turns into a nearby dead end. A longer candidate list explores more side streets.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "c3e58592",
-   "say": "A search starts on the highway, hops closer and closer, drops a layer, and repeats, until it reaches the closest cards.",
+   "key": "195c82dd",
+   "say": "Three knobs. M: how many links each point keeps. More links, better recall, but more memory, and a slower build.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d64277a",
+   "say": "E F construction: how hard the build works to find good links. Higher builds a better graph, more slowly.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4fdcd93f",
+   "say": "And E F search: the candidate list at query time. Higher means better recall, and slower queries. It's the one you tune most.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9da3085b",
+   "say": "You'll also hear about I V F flat. It groups vectors into clusters with k means, then scans only the few clusters nearest the question. It builds faster and uses less memory, but must be rebuilt as the data shifts. HNSW is the usual default.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb9b1bce",
+   "say": "How do you pick ef search? Take a thousand real questions, and find their true top ten with an exact scan. That's your answer key.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aab5d46c",
+   "say": "Raise ef search step by step, and record recall. The first steps buy a lot. The last ones buy almost nothing, and cost latency.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1813b99f",
+   "say": "Stop where recall meets your target, while watching p ninety five latency: the time within which ninety five percent of searches finish.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "8220ff2e",
-   "say": "One dial matters most: how many candidates it keeps while searching. Turn it up, and you find more of the true neighbours, a little slower. Measure, then stop where recall is good enough.",
+   "key": "feded07a",
+   "say": "Bug two. Workspace acme sees nothing.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee7f0af0",
+   "say": "All five hundred workspaces share one index. Acme's search is: the ten nearest chunks, where workspace equals acme. And acme owns one percent of the chunks.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1444fbff",
+   "say": "The index knows nothing about workspaces. It returns its forty best from everyone, and only then does the filter run. On average, less than one of those forty belongs to acme. The user asked for ten. That's post filtering.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b74a549a",
+   "say": "Filter during the walk instead? That's pre filtering, and it has its own problem. If ninety nine percent of points are off limits, the walk keeps hitting dead ends, and recall drops again.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "44b26b4b",
+   "say": "Fixes, from most robust. Partition by the filter: one index per large tenant. The filter becomes free, and each graph is small.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "09f7aae2",
+   "say": "Or use filter aware, iterative scans, which keep walking until enough rows pass. Pgvector added this in version zero point eight. And over fetching, asking for four hundred to keep ten, is a quick patch, not a design.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b43791d",
+   "say": "So the trap: for multi tenant vector search, just add a where clause.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd3e776d",
+   "say": "With a selective filter, that silently returns too few results. Partition, or use filter aware scans. And measure recall with the filter on.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "75084239",
+   "say": "HNSW is fast because the whole graph sits in memory. What happens when it doesn't fit?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74c87ad7",
+   "say": "One vector: a thousand and twenty four 32 bit numbers. Four kilobytes. Ten million of them: forty gigabytes, before the graph's own overhead.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ab22a5c",
+   "say": "Store smaller numbers. Sixteen bits halves it, with almost no loss. Eight bits, a quarter, with a small loss. That's quantization.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77faa412",
+   "say": "Binary quantization keeps just one bit per number: is it positive or negative? Thirty two times smaller, and comparing becomes counting differing bits, which is extremely fast.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d731ef36",
+   "say": "Too rough on its own, so pair it with rescoring. Search the tiny index for two hundred rough candidates, then rescore just those with the full vectors. Hugging Face reported this keeping around ninety six percent of retrieval quality.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f36bee19",
+   "say": "Beyond that: disk based indexes like disk A N N, and sharding the index across machines, with replicas for capacity and failover.",
    "rate": "+12%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "0139ae95",
-   "say": "Now, the Bengaluru mystery.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
-  },
-  {
-   "key": "e6196bad",
-   "say": "All forty franchises share one index. Bengaluru North owns just one percent of the cards.",
+   "key": "74e31058",
+   "say": "Bug three. The error code.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "e60921b0",
-   "say": "The index finds its forty best candidates, from every franchise. It knows nothing about franchises.",
+   "key": "3e309420",
+   "say": "E R R token expired means nothing to an embedding model. It maps the question to a vague, login trouble neighbourhood. Vector search wins on paraphrase: logged out after an hour finds session timeout.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "402a9d68",
-   "say": "Then the filter runs: keep only Bengaluru North. On average, zero point four of those forty survive. Usually, none.",
+   "key": "f839cfdd",
+   "say": "Keyword search wins on exact codes, IDs, product names, and rare terms.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "549e799a",
+   "say": "They fail in opposite places. So you run both. That's hybrid search.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "70057e60",
-   "say": "Filtering after the search is called post filtering, and with a rare filter it quietly returns nothing.",
+   "key": "985f7006",
+   "say": "The keyword side almost always uses BM25, the classic ranking formula behind search engines. For each word of the query, it asks three questions.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "08a42666",
-   "say": "The fix: give big franchises their own index, so the filter is free. Or tell the index to keep walking until it finds enough matches.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "b6a402fd",
-   "say": "Complaint three: the error code.",
+   "key": "a9ef3c40",
+   "say": "How rare is the word? E R R token expired appears in three chunks out of ten million. A match is very telling. Login appears everywhere, so a match means little. That's inverse document frequency.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "21f3a66f",
-   "say": "Meaning search is great with different words. But an error code means nothing to it. It just lands in a vague delivery trouble neighbourhood.",
+   "key": "43ebbdc1",
+   "say": "How often does it appear in this chunk? More is better, with diminishing returns. A setting called k one controls how quickly it levels off.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8b54ba83",
-   "say": "Keyword search finds that code instantly. They fail in opposite places. So run both.",
+   "key": "0bd90ad7",
+   "say": "And is the chunk just long? Long chunks contain more words by chance, so scores are adjusted for length. That's the setting b.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ba39bb0",
+   "say": "A trap for Postgres users. Built in full text ranking, T S rank, is BM25.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3e3196c",
+   "say": "It isn't. It ignores how rare a word is across the whole collection, so a rare error code isn't rewarded the way it should be. Use a real BM25 implementation.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "f5a5ab7a",
-   "say": "The keyword side uses a scoring recipe called BM25. Think of a librarian asking three questions about each word.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "aa100259",
-   "say": "How rare is it? This error code appears in three cards out of two million, so a match is a huge clue. Delivery appears everywhere, so it barely counts.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "f3428ae6",
-   "say": "How often does it appear in this card? More is better, but the tenth time adds almost nothing. And is the card just long? Long cards contain more words by chance.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "7efc3385",
-   "say": "Now we have two ranked lists. One gives scores like fourteen. The other gives scores like zero point eight. How do you combine those?",
+   "key": "302ac1c2",
+   "say": "Now we have two ranked lists. How do we merge them?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "d211eecf",
-   "say": "You don't. Ignore the scores. Use only the positions.",
+   "key": "b8d10c02",
+   "say": "Keyword search says runbook seventeen scores fourteen point two. Vector search says F A Q three scores zero point eight three. Completely different scales.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d49a302e",
+   "say": "So don't combine scores at all. Combine positions. Reciprocal rank fusion gives each chunk one over sixty plus its rank, in every list it appears in, and adds them up.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a71a3883",
+   "say": "F A Q three: one over sixty two, plus one over sixty one. Runbook seventeen: one over sixty one, plus one over sixty three. Incident nine, only found once: one over sixty two.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b7a52595",
+   "say": "Chunks both searches found rise to the top. A chunk found by one still gets some points. And the sixty keeps any single list from dominating.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "d754f1d7",
-   "say": "Every card gets points from each list: one, divided by sixty plus its rank. First place gets a bit more than second, but not much more.",
+   "key": "6f509a64",
+   "say": "Bug four. The right answer ranks fourth.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "24deafa4",
-   "say": "Cards that both searches found rise to the top. This is called reciprocal rank fusion.",
+   "key": "5de2ba03",
+   "say": "The embedding model we search with is a bi encoder. The question and each chunk become vectors separately, so chunk vectors are computed in advance, and searching millions takes milliseconds. But question and chunk never actually see each other.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "b389e65a",
-   "say": "One last upgrade.",
+   "key": "e2da3ceb",
+   "say": "A cross encoder reads the question and one chunk together, as one input, and outputs a relevance score. It sees how each word relates to each word, so it judges far more accurately. But nothing can be precomputed.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "e342997e",
-   "say": "Fusion often puts the right card fourth or fifth, not first. And order matters: models trust the first passages most.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "44df2f4d",
-   "say": "Think about hiring. You screen ten thousand CVs with a quick filter. Then you properly interview the top twenty.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "7ae3b8de",
-   "say": "Our search is the quick screen. The question and each card are turned into numbers separately, then compared. Fast, but they never really meet.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "acc9e6f7",
-   "say": "The interview is a cross encoder. It reads the question and one card together, word by word, and scores how well they fit. Slow, but sharp.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "fb1a1bca",
-   "say": "So: search wide to make sure the right card is somewhere in the top hundred. Then rerank, to make sure it ends up first.",
+   "key": "d89c5527",
+   "say": "So it's like hiring. Screen ten thousand CVs with a quick filter. Then properly interview the top twenty. Nobody interviews all ten thousand.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "931d6a4d",
-   "say": "Two finishing touches. Drop cards below a minimum score, so the system can honestly say: I found nothing. And skip near-duplicates, so five slots don't hold the same fact five times.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "32ac77cb",
-   "say": "Here's version two. A question comes in from a Bengaluru North agent.",
+   "key": "38bee02c",
+   "say": "So the full retrieval stage. Run BM25 and vector search, fifty candidates each.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "aa164ab5",
-   "say": "Keyword search and meaning search run side by side, on that franchise's own index. Fast, and nothing filtered away.",
+   "key": "c69eefcb",
+   "say": "Fuse them with RRF. The goal here is recall: the right chunk must be somewhere in the list.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "bcaf0ea9",
-   "say": "Rank fusion merges them into one list.",
+   "key": "9efe8cb8",
+   "say": "Then a cross encoder reranks that list. The goal here is order: the right chunk must end up first.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "fab32cca",
-   "say": "And the reranker puts the best first. All three complaints: fixed.",
+   "key": "fc337cf4",
+   "say": "And the best three to five go into the prompt.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1ba0e450",
+   "say": "Should you keep a reranker that adds two hundred milliseconds? Measure, with and without. Recall at five. And M R R, mean reciprocal rank: one over the position of the first right chunk, averaged. Plus latency and cost.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e82253f3",
+   "say": "Skip it when the right chunk is already nearly always in the top three, when latency is tight, like voice, or when you only send three chunks anyway.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c4c22bb",
+   "say": "Two finishing touches. Here's a top five by score alone. Three of them are the same fact: the policy, the F A Q, and a training deck.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6e42761",
+   "say": "Maximal marginal relevance picks chunks one at a time: each one relevant to the question, but least similar to those already picked. One fact, once. Room for the runbook and the incident.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af0fe435",
+   "say": "And a score threshold. Always sending the top five means always sending five, even when nothing is relevant. Drop low scores, and the assistant can honestly say it couldn't find the answer.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "120a0279",
+   "say": "Finally, the architecture review question.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9bad1831",
+   "say": "Where should the vectors live? Four families. An extension in the database you already run, like pgvector in Postgres. Joins, transactions, and backups come for free.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75521269",
+   "say": "A dedicated vector database, like Qdrant, Weaviate, Milvus, or Pinecone. Built for scale, with filtering and sharding handled for you.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e015439f",
+   "say": "A search engine with vectors added, like Elasticsearch or OpenSearch. Excellent BM25 and filtering in the same engine.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "709abb1a",
+   "say": "And a library like FAISS: very fast inside your program, but no storage, updates or durability. Great for experiments.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eeee966c",
+   "say": "Decide on numbers, from your own data: filtered recall, p ninety five at peak load, re-index time, and the monthly bill. And keep retrieval behind a small interface, so switching later is cheap.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8e7830f3",
+   "say": "And the classic trap: we need a vector database, because we're doing RAG.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e2ed12f3",
+   "say": "That's not a reason. Plenty of production RAG systems run on pgvector or Elasticsearch. Choose by scale, filtering, keyword needs, and who will run it at three in the morning.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "056077d7",
+   "say": "Interview round.",
+   "rate": "+10%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "4a1cbdad",
+   "say": "How does HNSW work, and how would you tune it?",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e69c14a4",
+   "say": "It's a multi layer graph. Every vector is on the bottom layer, and a random few also live on higher layers, with longer links.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf234fb6",
+   "say": "Search starts at the top, greedily hops toward the query, and drops a layer when no neighbour is closer.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45ba7102",
+   "say": "On the bottom layer, it keeps ef search candidates, and returns the best k.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a207fe02",
+   "say": "M and ef construction shape the graph. Ef search trades recall for latency, at query time.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4b69f40",
+   "say": "I'd tune ef search against exact scan ground truth, watching recall at ten and p ninety five.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "04cfeb4f",
+   "say": "Rapid fire. Why does a filtered vector search return too few results?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ab3535c1",
+   "say": "Post filtering. The index returns its best k from everyone, then the filter removes most of them. Partition, or use filter aware scans.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3dc10dd0",
+   "say": "Why RRF, instead of adding scores?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "749bcfa2",
+   "say": "Scores sit on different scales that shift from query to query. Ranks are always comparable.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8215d38e",
+   "say": "Bi encoder versus cross encoder?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c0df74d5",
+   "say": "A bi encoder makes separate vectors: precomputed, fast, and rough. A cross encoder reads both together: accurate, so only for a shortlist.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5518724b",
+   "say": "What does I D F do in BM25?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "74bb35ba",
+   "say": "It rewards rare words. A match on a rare code is far more telling than a match on a common word.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "09dbf0a4",
+   "say": "How do you fit ten million vectors in less memory?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "546abc20",
+   "say": "Quantize: sixteen bit, eight bit, or binary with rescoring. Or use fewer dimensions, or a disk based index.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f4d250a",
+   "say": "What is M R R?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "48af739c",
+   "say": "The average of one over the rank of the first relevant result.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "665461d8",
+   "say": "Last one. HNSW, or I V F flat?",
+   "rate": "-2%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6563e334",
+   "say": "HNSW by default, for better recall and speed. I V F flat builds faster and uses less memory, but needs rebuilding as the data shifts.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -317,71 +730,57 @@
    "after": 0
   },
   {
-   "key": "a7749f56",
-   "say": "HNSW: highways first, then local streets.",
+   "key": "4f429735",
+   "say": "HNSW: highways down to local roads, with a greedy walk.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "626660c2",
-   "say": "Recall: how many of the true neighbours you actually found.",
+   "key": "10799fd5",
+   "say": "Ef search trades recall for latency. Tune it by measuring.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3df6ce93",
-   "say": "Filtering after search can silently return nothing.",
+   "key": "eb9bb5b0",
+   "say": "Post filtering can empty your results. Partition, or filter during the scan.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "49ece93b",
-   "say": "Hybrid search runs keyword and meaning search together, and rank fusion merges them by position.",
+   "key": "d98ae4c0",
+   "say": "Quantization shrinks vectors. Binary plus rescoring keeps most of the quality.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "eae67017",
-   "say": "And a reranker interviews the shortlist, so the best comes first.",
+   "key": "71870ce4",
+   "say": "Hybrid search runs BM25 and vectors, merged by rank with RRF.",
+   "rate": "+4%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8c4eb9c",
+   "say": "And a cross encoder reranks the shortlist, so the best chunk comes first.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "11d2b3b3",
-   "say": "Search is fast and accurate now. And yet, new complaints arrive.",
+   "key": "7fad93dc",
+   "say": "Search is now fast, and precise.",
    "rate": "+4%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "7051bb5a",
-   "say": "A vague question: it keeps failing after the update, what changed? No product. No code. Search returns noise.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "0f1faee4",
-   "say": "A follow-up: and for bakery? Finds nothing.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "e328a433",
-   "say": "A confident citation, with the wrong number.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "f1325278",
-   "say": "And anything hidden in a PDF table keeps failing. So where is each one going wrong? The question? The documents? Or what happens after search?",
+   "key": "c4383b97",
+   "say": "But users ask vague questions. They send follow ups like, and for contractors? And PDF tables come out garbled. Which of these breaks your answers first?",
    "rate": "-2%",
    "pitch": "+4Hz",
    "after": 0.3
