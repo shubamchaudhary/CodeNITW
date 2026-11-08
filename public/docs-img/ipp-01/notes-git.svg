@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 640" width="1240" height="640" role="img" aria-label="Notes are versioned like git: fast-forward only">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="640" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Notes are versioned like git: fast-forward only</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">every save names the revision it was built on; the security rules refuse it unless that is still the head</text>
+<text x="40" y="130" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="600">cloud head</text>
+<line x1="150" y1="125" x2="1200" y2="125" stroke="#2f3a55" stroke-width="2"/>
+<circle cx="200" cy="125" r="13" fill="#93a0b8"/>
+<text x="200" y="104" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="700">rev 7</text>
+<circle cx="520" cy="125" r="13" fill="#ffb547"/>
+<text x="520" y="104" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="700">rev 8</text>
+<circle cx="980" cy="125" r="13" fill="#ffb547"/>
+<text x="980" y="104" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="700">rev 9</text>
+<text x="40" y="230" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#5b9cff" text-anchor="start" font-weight="700">laptop</text>
+<text x="40" y="360" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#ff6fa5" text-anchor="start" font-weight="700">phone</text>
+<rect x="170" y="195" width="260" height="66" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="300.0" y="222.025" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">edit from rev 7</text>
+<text x="300.0" y="241.54999999999998" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">base = 7</text>
+<path d="M430 228 L510 135" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<text x="470" y="205" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#38d996" text-anchor="middle" font-weight="600">save base 7: accepted</text>
+<rect x="170" y="325" width="260" height="66" rx="10" fill="#1a2235" stroke="#ff6fa5" stroke-width="2"/>
+<text x="300.0" y="352.02500000000003" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">offline edit from rev 7</text>
+<text x="300.0" y="371.55" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">base = 7 (missed rev 8)</text>
+<rect x="560" y="325" width="260" height="66" rx="10" fill="#1a2235" stroke="#ff6262" stroke-width="2"/>
+<text x="690.0" y="352.02500000000003" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">save base 7: REFUSED</text>
+<text x="690.0" y="371.55" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">rules: 7 is not the head</text>
+<path d="M430 358 L558 358" fill="none" stroke="#ff6fa5" stroke-width="2" marker-end="url(#ap)"/>
+<rect x="560" y="200" width="260" height="70" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="690.0" y="220.25" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">fetch head (rev 8)</text>
+<text x="690.0" y="239.77499999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">three-way merge:</text>
+<text x="690.0" y="257.325" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">base 7, ours, theirs (8)</text>
+<path d="M690 325 L690 272" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<rect x="880" y="200" width="300" height="70" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="1030.0" y="229.025" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">different lines: merged</text>
+<text x="1030.0" y="248.54999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">saved as rev 9 (base 8)</text>
+<path d="M820 235 L878 235" fill="none" stroke="#38d996" stroke-width="2" marker-end="url(#ag)"/>
+<path d="M1030 200 L990 140" fill="none" stroke="#38d996" stroke-width="2" marker-end="url(#ag)"/>
+<rect x="880" y="325" width="300" height="66" rx="10" fill="#1a2235" stroke="#ff6262" stroke-width="2"/>
+<text x="1030.0" y="352.02500000000003" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">same lines: conflict</text>
+<text x="1030.0" y="371.55" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">rev 8 stays; this edit kept in History</text>
+<path d="M820 240 L850 240 L850 358 L878 358" fill="none" stroke="#ff6262" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#ar)"/>
+<rect x="30" y="430" width="1180" height="185" rx="14" fill="#141b2b" stroke="#2f3a55"/>
+<text x="50" y="462" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="start" font-weight="700">What the rules check on userProgress/{uid}/notes/{key}~{id}</text>
+<text x="50" y="494" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">create: base == the main document&#x27;s _rev for this note (0 if none)</text>
+<text x="50" y="518" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">update: request.resource.data.base == resource.data.rev   (compare-and-swap)</text>
+<text x="50" y="542" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">always: rev == base + 1; only the fields key, id, value, deleted, rev, base, updatedAt</text>
+<text x="50" y="566" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">never deleted: a deleted note keeps its document with deleted = true</text>
+<text x="50" y="590" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14" fill="#3fd2e8" text-anchor="start" font-weight="400">history/{note}/revisions/{time-device}: create and read only (append-only, like commits)</text>
+</svg>

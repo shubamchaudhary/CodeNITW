@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 560" width="1240" height="560" role="img" aria-label="One edit: instant on the device, synced in the background">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="560" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">One edit: instant on the device, synced in the background</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">the UI never waits on the network; the journal makes an unsent change survive a refresh, a crash or a closed tab</text>
+<rect x="30" y="120" width="180" height="150" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="120.0" y="180.89" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">1  saveJSON</text>
+<text x="120.0" y="200.77499999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">localStorage, under</text>
+<text x="120.0" y="218.325" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">u:{uid}:{key}</text>
+<text x="120" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">instant: the UI re-renders</text>
+<text x="120" y="318" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">from it right away</text>
+<path d="M212 195 L228 195" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<rect x="230" y="120" width="180" height="150" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="320.0" y="180.89" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">2  emit</text>
+<text x="320.0" y="200.77499999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">{ ids, prev } to every</text>
+<text x="320.0" y="218.325" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">subscriber</text>
+<text x="320" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">other pages update;</text>
+<text x="320" y="318" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">other tabs via &#x27;storage&#x27;</text>
+<path d="M412 195 L428 195" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<rect x="430" y="120" width="180" height="150" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="520.0" y="180.89" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">3  journal</text>
+<text x="520.0" y="200.77499999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">sync:pending:{uid}</text>
+<text x="520.0" y="218.325" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">{ key: { id: editedAt } }</text>
+<text x="520" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">persisted: survives</text>
+<text x="520" y="318" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">refresh, crash, close</text>
+<path d="M612 195 L628 195" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<rect x="630" y="120" width="180" height="150" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="720.0" y="172.115" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">4  push</text>
+<text x="720.0" y="192.0" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">after 800 ms of quiet,</text>
+<text x="720.0" y="209.55" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">only once the server</text>
+<text x="720.0" y="227.1" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">has been heard from</text>
+<text x="720" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">mergeFields writes,</text>
+<text x="720" y="318" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">one doc per note</text>
+<path d="M812 195 L828 195" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<rect x="830" y="120" width="180" height="150" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="920.0" y="172.115" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">5  Firestore</text>
+<text x="920.0" y="192.0" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">SDK queues it in</text>
+<text x="920.0" y="209.55" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">IndexedDB, sends when</text>
+<text x="920.0" y="227.1" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">online; rules check</text>
+<text x="920" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">refused note save:</text>
+<text x="920" y="318" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">fetch, decide, retry</text>
+<path d="M1012 195 L1028 195" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<rect x="1030" y="120" width="180" height="150" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="1120.0" y="172.115" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">6  snapshot</text>
+<text x="1120.0" y="192.0" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">reconcile: newer edit</text>
+<text x="1120.0" y="209.55" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">wins per entry; notes</text>
+<text x="1120.0" y="227.1" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">by revision</text>
+<text x="1120" y="300" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">status: synced</text>
+<rect x="30" y="350" width="1180" height="180" rx="14" fill="#141b2b" stroke="#2f3a55"/>
+<text x="50" y="382" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="start" font-weight="700">The status pill the planner sees</text>
+<rect x="50" y="399" width="84" height="19" rx="9.5" fill="#93a0b8" fill-opacity="0.16" stroke="#93a0b8"/>
+<text x="92" y="413" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12.5" fill="#93a0b8" text-anchor="middle" font-weight="700">pending</text>
+<text x="150" y="413" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">waiting for the 800 ms debounce</text>
+<rect x="50" y="422" width="84" height="19" rx="9.5" fill="#5b9cff" fill-opacity="0.16" stroke="#5b9cff"/>
+<text x="92" y="436" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12.5" fill="#5b9cff" text-anchor="middle" font-weight="700">syncing</text>
+<text x="150" y="436" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">a push is on its way</text>
+<rect x="50" y="445" width="84" height="19" rx="9.5" fill="#ffb547" fill-opacity="0.16" stroke="#ffb547"/>
+<text x="92" y="459" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12.5" fill="#ffb547" text-anchor="middle" font-weight="700">offline</text>
+<text x="150" y="459" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">changes wait for the network (&#x27;online&#x27; event)</text>
+<rect x="50" y="468" width="84" height="19" rx="9.5" fill="#ff6262" fill-opacity="0.16" stroke="#ff6262"/>
+<text x="92" y="482" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12.5" fill="#ff6262" text-anchor="middle" font-weight="700">error</text>
+<text x="150" y="482" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">push failed: retry after 1 s, 2 s, 4 s ... up to 30 s</text>
+<rect x="50" y="491" width="84" height="19" rx="9.5" fill="#38d996" fill-opacity="0.16" stroke="#38d996"/>
+<text x="92" y="505" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="12.5" fill="#38d996" text-anchor="middle" font-weight="700">synced</text>
+<text x="150" y="505" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">&quot;Saved&quot; only once the cloud has the change</text>
+<text x="700" y="412" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">Flushed early on pagehide, beforeunload and</text>
+<text x="700" y="432" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">visibilitychange: a change made in the debounce</text>
+<text x="700" y="452" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">window is handed to Firestore before the tab goes.</text>
+<text x="700" y="482" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">Signed out: everything sits in u:anon and pages</text>
+<text x="700" y="502" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="400">show a guest view; a write asks to sign in.</text>
+</svg>
