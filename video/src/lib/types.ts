@@ -21,7 +21,13 @@ export const PROSODY: Record<Tone | "normal", { rate: string; pitch: string; aft
   excite: { rate: "+10%", pitch: "+5Hz", after: 0 },
   aside: { rate: "+12%", pitch: "-1Hz", after: 0 },
 };
-export const prosody = (b: Beat) => PROSODY[b.tone ?? "normal"];
+// A chapter can speak some tones at its own pace (Chapter.pace), e.g. a slower
+// lecture; the pitch and the pause after stay the same.
+export const prosody = (b: Beat, ch?: { pace?: Partial<Record<Tone | "normal", string>> }) => {
+  const p = PROSODY[b.tone ?? "normal"];
+  const rate = ch?.pace?.[b.tone ?? "normal"];
+  return rate ? { ...p, rate } : p;
+};
 
 export type FlowNode = { id: string; label: string; c: number; r: number; tone?: string; w?: number };
 export type FlowEdge = { from: string; to: string; label?: string; bend?: number };
@@ -132,6 +138,7 @@ export type Chapter = {
   label?: string; // header tag, e.g. "Java 1"; defaults to "Ch N"
   voice: string;
   theme?: string; // a look from lib/theme.ts THEMES, e.g. "loglens"
+  pace?: Partial<Record<Tone | "normal", string>>; // speaking rate per tone, overriding PROSODY
   next?: string;
   scenes: Scene[];
 };

@@ -32,7 +32,7 @@ const fr = (s: number) => Math.round(s * FPS);
 
 // The recording of a beat is named by voice, pace, pitch and words.
 export const keyFor = (ch: Chapter, b: Beat) => {
-  const p = prosody(b);
+  const p = prosody(b, ch);
   return beatKey(ch.voice, `${p.rate}${p.pitch}`, b.say);
 };
 

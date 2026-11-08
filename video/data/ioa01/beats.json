@@ -1,0 +1,4121 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "9739356d",
+   "say": "The Inventory Ops Agent. We are going to go slowly. One idea at a time, and after every idea, I'll stop and ask you a question, so you know it has stuck before we build anything on top of it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5e0d099f",
+   "say": "Here's how each topic will go.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbd3fea6",
+   "say": "First, an everyday picture. Something you already understand, like a shopping cart or a sheet of tracing paper.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f7321b3",
+   "say": "Then the real mechanism, on a diagram, with the names the system actually uses.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7e6eb1b",
+   "say": "Then a check. A question appears, a ring counts down a few seconds of thinking time. Pause the video if you need more. Answer out loud, with the reason, and then compare with mine.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e74521d",
+   "say": "And every idea comes back later. The interrupt from topic fifteen depends on the checkpointer, which depends on the graph state. So if you miss a check, rewind to the start of that topic before moving on.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2bd2ed30",
+   "say": "This is the line on your resume. Planners read and update inventory parameters by chatting, in minutes, instead of multi day ticket cycles. Inside it are four claims, and by the end of this lecture you will be able to defend every one of them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb2692af",
+   "say": "One. You built a LangGraph data management agent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "973a1746",
+   "say": "Two. Hierarchy aware PostgreSQL querying. Planners ask about a whole class of items or a whole region, not one row.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91f60627",
+   "say": "Three. Writes that are staged in Redis, and saved with a pattern called Base plus Overlay.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89ce6d96",
+   "say": "Four. A human approves every write, and that approval is built on a LangGraph feature called an interrupt.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9644bacc",
+   "say": "And here is the whole system in one sentence. Don't try to understand it yet. Just hear it once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1cf15b6",
+   "say": "The LLM decides what to do. Middleware decides what it's allowed to do. Redis holds what it wants to do. And Postgres only changes after a human says yes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "33236f3c",
+   "say": "By the end, every word of that sentence will mean something precise to you. We'll come back to it three times.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf7a0a67",
+   "say": "Topic one. The problem this agent solves. Every good system design answer starts here.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74660c68",
+   "say": "Meet an inventory planner. Their job is replenishment: making sure every distribution centre and store gets restocked at the right time, in the right amount.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1635bf9",
+   "say": "To do that, the planning system uses parameters for each item at each location. Ordering cost, safety stock, and the like. Think of them as the dials on a thermostat. The heating system runs by itself, but someone has to set the dials.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "870d4fbe",
+   "say": "Now our planner decides that the ordering cost for Milk at the West distribution centres should be twelve, not ten. But they can't turn the dial themselves. They raise a ticket.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91de3ea9",
+   "say": "The ticket waits in a queue for someone who has access to the database.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b462e31",
+   "say": "Days later, an engineer makes what is often a one line change, and replies on the ticket. That's the problem. A multi day cycle, for turning one dial.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8433b670",
+   "say": "Now the same change, after the agent. It lives in a chat panel inside the planning UI.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2536a95b",
+   "say": "The planner asks: show me the B B O parameters for Milk at the West D Cs. B B O is the name your team used for this replenishment domain.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87c2b696",
+   "say": "The agent reads the live values. In this example, nine item location rows, all with an ordering cost of ten.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6fbbb93",
+   "say": "The planner says: set ordering cost to twelve.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fecf95fe",
+   "say": "And now notice what the agent does not do. It does not change anything. It proposes. Nine rows, ten becomes twelve. Approve, or reject?",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "42069f97",
+   "say": "The planner says approve.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c60b7f00",
+   "say": "And only then is the change written, into the planner's own scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a53a5ff1",
+   "say": "Minutes, instead of days.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5f996d0d",
+   "say": "Out of that chat, take two guarantees. Every write in this system has both. Guarantee one. A human said yes. The agent can propose, but it cannot write on its own. Its write tool physically pauses the whole agent until the planner approves. Reject, and nothing changes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fee4abbb",
+   "say": "Guarantee two. The change landed in that planner's own scenario. A scenario is a planner's what if workspace. The shared plan that everyone else uses is never modified, and every written row records who made it and in which scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "485c1f93",
+   "say": "Hold on to those two. Almost every design decision in this lecture exists to protect one of them.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "52f6db22",
+   "say": "One more thing before any mechanism. Be precise about what's yours. Your resume claims the data management layer behind the replenishment subagent. Hierarchy aware reads. Redis staged writes. Base plus Overlay persistence. And the human in the loop approval. Those four, you own in depth.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "28707158",
+   "say": "The supervisor, the middleware stack, checkpointing and streaming were the agent platform you built on. You should understand them well, because your layer plugs into them, but say our supervisor, or the framework we built on.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d803375f",
+   "say": "Interviewers respect a clear sentence like this: I built X, the team owned Y, and here is exactly how they connect. Far more than vague ownership of everything.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "443be3ed",
+   "say": "Check 1. What are the two guarantees every write in this system has?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a5d60df6",
+   "say": "One. A human approved it before it ran. The agent only proposes. Two. It landed only in that planner's own scenario, never in the shared plan that everyone else reads.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91598372",
+   "say": "Check 2. Which part of the system is yours to defend in depth? A, The supervisor and its middleware. B, The data-management layer behind the replenishment subagent. C, The SSE streaming layer. Or D, The checkpointer.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "85068bae",
+   "say": "B. The data management layer behind the replenishment subagent. Hierarchy aware reads, Redis staging, Base plus Overlay, and the approval. The others are the platform you built on.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ffc864bb",
+   "say": "Topic two. Six words. The rest of the lecture is built out of them, so we'll take each one slowly, with a picture.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69dbe596",
+   "say": "On the left, an everyday picture. On the right, the system's word for it. Let's go one row at a time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3bced2d",
+   "say": "Word one. Planning instance. Picture a company that serves many customers, and gives each customer a separate office with its own filing cabinet. In this system, each planning instance is one customer environment, and it has its own PostgreSQL database. The team calls that database the UI cache. So there isn't one database. There are many, one per instance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36a383a4",
+   "say": "Word two. Scenario. Imagine getting a photocopy of the plan that you're allowed to scribble on, to try ideas out. That's a scenario: a planner's what if workspace. Every edit is scoped to a pair: which user, and which scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16ebe373",
+   "say": "Word three. Base. The printed map that everybody shares. Base is the shared planning data. The agent reads it through database views, and it never, ever writes to it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45744e32",
+   "say": "Word four. Overlay. Your own sheet of tracing paper, laid over that shared map. You draw your changes on the tracing paper, and the map underneath stays clean. In the system, the overlay is a set of tables whose names end in underscore U. They hold one user's edits, for one scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05358253",
+   "say": "Word five. Hierarchy. Like a postal address, which goes from state, to city, to street. Items have levels too: department, then class, then the item itself. And locations have levels: region, then distribution centre, then store.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64c372b6",
+   "say": "Word six. Subagent. Picture a hospital with one front desk and four specialist doctors behind it. A subagent is a domain specialist. There are four: Allocation, M S S or Sourcing, Replenishment or B B O, and Supplier Ordering.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "059c7eb8",
+   "say": "A small warning about acronyms. B B O, M S S, S O Q. The documentation uses them without ever expanding them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f17d4c6",
+   "say": "So before the interview, recall how your team expanded them, and say it that way. Don't guess an expansion in the room.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4f51d684",
+   "say": "Check 3. A planner edits ordering cost in their what-if. Where does that edit finally live? A, In the Base table, overwriting the old value. B, In an overlay table, tagged with their user and scenario. C, In Redis, permanently. Or D, In the checkpointer.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2908c8b5",
+   "say": "B. In an overlay table, the one ending in underscore U, on a row tagged with that user and that scenario. Base is never written.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9a527d6",
+   "say": "Redis only holds the proposal until it's approved, so not C. And the checkpointer holds the conversation, not inventory parameters, so not D.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8147606",
+   "say": "Check 4. Why can't the database connection be one fixed setting in a config file?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4fec3420",
+   "say": "Because there isn't one database. Every planning instance, every customer environment, has its own PostgreSQL, its own UI cache. So for each request, the agent has to work out which database, and fetch its credentials.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a5e071f",
+   "say": "Topic three. Before the architecture, let's be exact about what an LLM agent actually does. This one idea makes all the safety design obvious.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce64f2b7",
+   "say": "Here are the four players in one tool call. The planner, the LLM, our agent code, and the database.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74e03d72",
+   "say": "The planner's message goes to the LLM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b53f809c",
+   "say": "Now, an LLM is a text predictor. It cannot open a database connection. What it can do is write a special kind of text: a tool call. A tool name, here read parameters, and some arguments, as structured data. It's a request, nothing more.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d718de7a",
+   "say": "Our code reads that request, checks it, and runs the real function. That function queries the database and gets rows back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "937b8cd1",
+   "say": "Code hands the result back to the model, here as a small markdown table.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f9e4b1b",
+   "say": "And the model writes the answer to the planner. If it needed another tool, the loop would simply go round again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "006672b1",
+   "say": "So, the key point. The model only ever writes a request. Whether that request runs is decided by code.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1aa728ee",
+   "say": "Here's the idea in four words. The model proposes. Code disposes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d8e551ca",
+   "say": "Every safety feature you'll see, the approval pause, the scenario scoping, the loop limits, is code standing between the model's request and its effect. None of them relies on the model behaving well.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d3edc32",
+   "say": "Check 5. The LLM outputs a tool call to update parameters. What has happened to the database at that instant? A, It has been updated. B, Nothing: a tool call is only a request, written as text. C, The rows are locked. Or D, A pending row is inserted.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "829abcd7",
+   "say": "B. Nothing at all. A tool call is just a request, written as text. Code decides whether it runs. And for this particular tool, as we'll see, a human has to say yes first.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3cdd52f1",
+   "say": "Topic four. The whole system on one board. We'll follow a single chat turn through it, in eight steps, slowly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5271446b",
+   "say": "Here's the board. Top row: the planning UI, the Fast A P I service, the agent object, and a checkpointer. In the middle, the middleware stack around the supervisor. Then four subagents. And at the bottom, the data layer tools, Redis, and the planning instance's Postgres.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2cd58a81",
+   "say": "Step one. The planning UI posts the planner's message to a single endpoint, slash inventory ops, along with the user's J W T, the login token. The router injects the identity and an LLM client, and builds an Inventory Ops Agent object for this request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e734460c",
+   "say": "Step two. The agent's execute method runs the supervisor graph using a LangGraph function called a stream events, version two. That function emits an event for every token, every tool call, and every subagent step, which is what lets the UI watch the turn happen live.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba564bba",
+   "say": "Step three. Identity first. Before the model does anything, the first middleware writes the realm, the user, and the scenario onto the graph's state. It takes them from the authenticated request. Not from the model.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "313cc01d",
+   "say": "Step four. The supervisor. Its one real capability is a tool called task, which hands a goal to one of the four domain subagents. For a parameter change, that's Replenishment.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebb18eb4",
+   "say": "Step five. The Replenishment subagent calls the data layer tools. Read, stage, and commit. This is the part you built.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6aafcc05",
+   "say": "Step six. Those tools touch the stores. Reads go to the Base views of that instance's Postgres. Staged edits sit in Redis. And only approved edits are upserted into the overlay tables.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d766d0cd",
+   "say": "Step seven. Back to the planner. Events stream back over S S E, as small envelopes called delta, complete and error. When approval is needed, the turn ends with a complete envelope that says interrupted equals true.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22652568",
+   "say": "Step eight. Saved for next time. The conversation's state is checkpointed, so the planner's next HTTP request, including their approval, continues the very same conversation.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a6349741",
+   "say": "Now let's pin the sentence onto the board, clause by clause.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6834e7d6",
+   "say": "The LLM decides what to do. That's the supervisor choosing a subagent, and the subagent choosing a tool.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a56376f9",
+   "say": "Middleware decides what it's allowed to do. Identity comes from the request, there are hard limits on loops, and the write tool is an approval interrupt.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c24f2b61",
+   "say": "Redis holds what it wants to do. The rows the planner saw, and the proposed change, live in Redis keys that expire on their own.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2c997827",
+   "say": "And Postgres only changes after a human says yes. The upsert into the overlay table runs only when the agent resumes with an approval.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "19e167ac",
+   "say": "Check 6. Where does the scenario id on a write come from? A, The LLM passes it as a tool argument. B, The identity middleware, from the authenticated request. C, It's read back from Redis. Or D, The planner types it in the chat.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "614f8178",
+   "say": "B. The identity middleware puts it on the graph state, from the authenticated request, and the tools read it from state. The model never supplies it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2614c87d",
+   "say": "Why does that matter? If the model supplied the scenario, then text hidden in the data could talk it into writing to somebody else's scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a9fe6ecd",
+   "say": "Check 7. Without looking: the eight steps of one turn, in order.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5c10a4c5",
+   "say": "Planner to Fast A P I. The agent runs the supervisor graph. Identity is seeded onto state. The supervisor calls task to dispatch a subagent. The subagent calls the data tools. The tools read Postgres, stage in Redis, or commit to the overlay. Events stream back over S S E. And the state is checkpointed for the next turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fa95ae8",
+   "say": "Topic five. The tech stack. For each piece, the question an interviewer really asks is not what, but why.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b9feaca",
+   "say": "Sort the stack into four jobs. First, the brain. LangGraph, version zero point two point fifty or later, as the agent runtime. LangChain's create agent function as the host. The Deep Agents library for subagents. And three LLM providers behind one client interface: Azure Open A I, Open A I, and Anthropic, so a call can fall back to another model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e7eb08b",
+   "say": "Second, the service. Python three point twelve, because the LangGraph and LangChain ecosystem is Python first. Fast A P I with Uvicorn, because it's async, it has dependency injection for things like identity and clients, and it streams S S E easily. Pydantic for validated schemas. And uv, ruff, mypy and pytest for packaging, linting, types and tests.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98dc98d5",
+   "say": "Third, the memory. Notice there are two Postgres databases. The app's own Postgres stores conversation checkpoints. Each planning instance's UI cache Postgres stores the actual parameters. Redis holds staged writes. And Snowflake serves heavier analytical queries.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "717ec844",
+   "say": "Fourth, the plumbing. Azure Key Vault for per instance database passwords. M C P and A to A, two protocols for talking to other tools and agents. And OpenTelemetry, struct log and Elastic A P M, so every call is traced.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a31748f6",
+   "say": "You don't need to recite this list. You need one sentence of why, for each piece, and we'll build those sentences as we go.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c432f58f",
+   "say": "Python, because the agent ecosystem is Python first, and the code is typed with mypy.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b5e02ef9",
+   "say": "Fast A P I, because it's async, it injects identity and clients into each request, and it streams.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dea93579",
+   "say": "LangGraph, because this product needs four things that plain function calling doesn't give you: typed state, checkpoints, interrupts to pause for a human, and event streaming.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9373200a",
+   "say": "Redis, because it's fast, every worker can see it, and a time to live cleans up proposals nobody approved.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43052d8a",
+   "say": "And Key Vault, because each customer's database has its own password, and passwords never belong in config files.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d84c59c8",
+   "say": "Check 8. Two different Postgres databases appear in this system. What lives in each?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e6c1df74",
+   "say": "The app's own Postgres holds the checkpoints: the conversation's graph state. And each planning instance's UI cache Postgres holds the inventory parameters themselves: the Base views and the overlay tables.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e8982dfd",
+   "say": "Mixing these two up is the most common slip when people explain this system, so say it precisely.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76635f02",
+   "say": "Topic six. One request, end to end. What happens between the planner pressing enter, and the first word appearing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e3ed380",
+   "say": "Six players this time. The UI, Fast A P I, the agent object, the supervisor graph, a subagent, and the checkpointer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0dbe3ef3",
+   "say": "The UI posts to slash inventory ops. The request carries the message, the conversation id, and the user's J W T.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7d46083c",
+   "say": "Fast A P I builds an agent for this request, with the identity, the LLM client and the services injected.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37db5ae2",
+   "say": "The agent loads the saved state for this conversation from the checkpointer. The conversation id is the key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ddeca9c7",
+   "say": "It runs the supervisor graph with a stream events, version two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bea37795",
+   "say": "The supervisor dispatches to a subagent, and results come back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94fa3c37",
+   "say": "Meanwhile, every event is streamed to the UI as S S E envelopes, ending with complete.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b251da6c",
+   "say": "And when the turn is over, the state is flushed to the checkpointer, ready for the next request.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fd288439",
+   "say": "The code behind that endpoint follows a classic pattern. Picture a recipe card with one blank on it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "202bffa3",
+   "say": "The fixed steps are the same for every dish. That's Base Agent's run method. It's a template method: it defines the order of steps that every agent shares.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d052933",
+   "say": "The blank is what each dish fills in. That's the Inventory Ops Agent's execute method, where the real work happens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36b90e2c",
+   "say": "And if the request asks for streaming, execute returns an S S E response that wraps a generator. The generator produces events one by one, as the graph runs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b47fd0d2",
+   "say": "So what exactly is S S E? Server Sent Events. It's a single, ordinary HTTP response that the server keeps open, and writes small events into, one after another. The content type is text slash event stream. And it flows in one direction, from server to browser.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "56bbac5d",
+   "say": "Here the stream events function yields LangGraph events, and an event processor turns them into envelopes. Most are delta envelopes: the next small piece of content. The UI appends each one as it arrives, which is why the planner sees the answer appear word by word.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17454535",
+   "say": "The turn ends with a complete envelope. And when the agent needs approval, that complete envelope says interrupted equals true, and carries the pending actions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "11492d83",
+   "say": "The UI turns that into an approval card. The label comes from a description map, so the planner reads update replenishment parameters, not a raw dump of a tool call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de09d57a",
+   "say": "On the wire, each envelope is just a few lines of text: event, colon, the type. Data, colon, some JSON. Then a blank line. There's a third type, error, for when something goes wrong.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55a6a9c2",
+   "say": "Interviewers love this one. Why S S E, and not WebSockets?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f591767d",
+   "say": "Because within a turn, traffic flows only one way: from the server to the browser.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59baf0a9",
+   "say": "S S E is a plain HTTP response, so it works through proxies and load balancers, reconnects by itself, and is authenticated exactly like any other request. WebSockets give you a two way channel you don't need, and connection state you'd have to manage. The planner's next message is simply the next POST.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "189ebcde",
+   "say": "Think radio broadcast versus a phone call. During a turn, the planner only needs to listen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9202ed1e",
+   "say": "One detail to park for later.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "282a8803",
+   "say": "If this conversation is waiting on an approval, the input to the graph is not the planner's new message. It's a resume command. We'll open that up properly in topic fifteen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "81fa0d2c",
+   "say": "Check 9. How does the UI learn that an approval is needed? A, A WebSocket push. B, An SSE complete envelope with interrupted = true and pending_actions. C, It polls the database. Or D, An error envelope.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ad4a3ee0",
+   "say": "B. The turn ends with an S S E complete envelope, with interrupted set to true, and the pending actions attached. The UI renders that as the approval card.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db1b0e0b",
+   "say": "Check 10. Why is SSE enough here, so that WebSockets aren't needed?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "acff806f",
+   "say": "Because within a turn, traffic only flows from server to browser. S S E is a plain HTTP response, so it goes through proxies and load balancers, reconnects natively, and is authenticated like any request. And the planner's next message is simply the next POST.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d59a7147",
+   "say": "Topic seven. The supervisor, and why the agent is split into specialists at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "710e8614",
+   "say": "Picture a hospital with a front desk. Let's map it, row by row.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cca04f1d",
+   "say": "The receptionist can't treat you. All she can do is send you to the right specialist. That's the supervisor. Its only real capability is the task tool: dispatch work to a subagent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e3fa5b67",
+   "say": "Each specialist has their own room and their own instruments. Each subagent has its own short prompt, its own tools, and its own middleware.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7dbb3784",
+   "say": "The specialist sends back a short report, not every scan. That's isolation. A subagent's tool payloads, maybe hundreds of rows, stay in its own context. The supervisor sees the result.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2506a84a",
+   "say": "Surgery needs a signed consent form, and the surgery department decides when. Each subagent declares its own human approval on its own write tools.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16050a9f",
+   "say": "And each department can change its procedures without asking the others. Teams can work on one domain's prompt and tools without touching the other three.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7a2856ad",
+   "say": "Here's the real shape.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37f8215e",
+   "say": "At the top, the supervisor: an LLM whose only real tool is task.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f15a6cec",
+   "say": "For a parameter change, it calls task with the replenishment subagent and a goal, in plain words. The subagent does the work and reports back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5285ad2",
+   "say": "There are four subagents. Each one is built with create agent, and wrapped as a compiled subagent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e1d82698",
+   "say": "And under each one, its own tools. Look at the pattern: read tools are free to call, and every write tool is gated by a human. It's the same in all four domains.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2cabf6ec",
+   "say": "Three facts to say about how it's built. First, nobody drew this graph node by node. It's LangChain's create agent as the host, and Deep Agents' streaming subagent middleware attaches the four subagents and provides the task tool.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ea12d7d",
+   "say": "Second, who decides which subagent to call? The LLM itself, by reading the description of the task tool and of each subagent. There's no separate classifier. And as we'll see, a limit caps how many dispatches one turn can make.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9560b387",
+   "say": "Third, the cost. The supervisor is an extra LLM hop on every turn. That's the price of the split, and part of it is won back by a middleware we'll meet next.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7bdecd3b",
+   "say": "Check 11. What is the supervisor's only real capability? A, read_parameters. B, A SQL tool. C, The task() tool, which dispatches a goal to a subagent. Or D, Approving writes.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a0515882",
+   "say": "C. The task tool. It hands a goal to one of the four subagents. The supervisor never touches the data itself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b4b67e3",
+   "say": "Check 12. Give two reasons for subagents, instead of one agent holding every tool.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "969124f2",
+   "say": "Focus. Each subagent has a short domain prompt and only its own tools, so it picks tools better and spends fewer tokens per call. And isolation. Raw payloads stay inside the subagent's context. Bonus points for per domain approval, and team ownership.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dc860555",
+   "say": "Topic eight. Middleware. This is where most of the system's safety and reliability actually lives.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b39e34bb",
+   "say": "First, what is a middleware, from scratch?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c0c8fa1",
+   "say": "It's a wrapper around a call. It sees the request on the way in, it sees the result on the way out, and in between, it can change the request, block it, or retry it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "844141c8",
+   "say": "Think of airport security. Each checkpoint checks one thing: your ticket, your bag, your passport. And every passenger passes through all of them, in the same order, every time. Here, the passengers are model calls and tool calls.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2869ed53",
+   "say": "Here are the supervisor's twelve layers, in order. Every model call and every tool call passes down through them. There are a lot of names, so we'll group them into six jobs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebae6e7a",
+   "say": "Job one: set the scene. Layer one is identity: it seeds realm, user and scenario onto the state, from the request. Layer two adds a short reminder prompt for this turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1eecd32d",
+   "say": "Job two: save a round trip. Skip synthesis. When only one subagent ran, the supervisor would normally make one more LLM call just to restate the answer. This layer skips that call. On most turns, that's a whole model round trip saved.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0902ae62",
+   "say": "Job three: survive failures. Model retry, at most two retries, for transient errors such as Azure returning four twenty nine, too many requests. An optional fallback to a different model. And tool retry, for the supervisor's own direct tools, like the insights link and the forecast.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46605664",
+   "say": "Notice the word bounded. Two retries, then the error is shown. Retrying forever just hides a problem.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d29395cb",
+   "say": "Job four: hard limits. At most forty model calls in one run, and at most eight task dispatches. These live in code, not in the prompt.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e58b02c3",
+   "say": "Why in code? Because a prompt that says please don't loop is a request the model can ignore. A counter in middleware simply stops the run.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0dae1d47",
+   "say": "Job five: keep the context small. Summarisation compresses the history once it reaches fifty messages or forty thousand tokens. And context editing clears out old tool payloads once the context reaches eighty thousand tokens. Long conversations stay inside the window.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4a34469",
+   "say": "Job six: plug in and dispatch. Caller extras is an injection point for tests and variants. And the last layer, the streaming subagent middleware, is the task tool itself, which dispatches subagents and streams their events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6630a676",
+   "say": "Now look at layer six once more. Tool retry deliberately does not wrap the task tool. That one line hides the most interesting bug in the system.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f2383448",
+   "say": "Here are the layers around one write, like Russian dolls. The supervisor graph. Imagine a tool retry wrapper around task. Inside, the replenishment subagent. And inside that, the update parameters tool, with the human approval middleware on it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "064419da",
+   "say": "When the model calls update parameters, the approval middleware does not run the tool. It raises something called a Graph Interrupt, to pause the graph. And here's the catch. In Python, it travels upward exactly like an exception.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d77f846d",
+   "say": "So if a retry wrapper sat around task, it would catch that interrupt, think something failed, and retry. Again, and again. The approval request would never reach the planner.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0f93004a",
+   "say": "So the real design excludes task from tool retry. Tool retry only wraps the supervisor's direct tools. The interrupt passes straight through task to the graph, the state is saved, and the planner sees the approval card.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee160715",
+   "say": "Here's the lesson, worth saying word for word in an interview. Retries are for failures. An interrupt is control flow.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5bca69d1",
+   "say": "Check 13. Why is task() excluded from ToolRetryMiddleware? A, task() never fails. B, Retrying task() would cost too many tokens. C, An approval pause is raised as GraphInterrupt; a retry would catch and retry it, so the approval would never reach the planner. Or D, LangGraph forbids retrying it.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "683e2a51",
+   "say": "C. The approval pause is raised as a Graph Interrupt, which travels up like an exception. A retry around task would catch it and retry, and the planner would never be asked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2fffa31",
+   "say": "Check 14. Where do the agent's loop limits live, and what are the numbers?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bccb11bc",
+   "say": "In middleware, in code, not in the prompt. At most forty model calls, and eight task dispatches, in one run. And model retries are bounded at two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88d8cc7b",
+   "say": "Check 15. A conversation reaches 50 messages. What happens? A, The run stops. B, SummarizationMiddleware compresses the history. C, Old tool payloads are deleted. Or D, Nothing.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "65b54abe",
+   "say": "B. Summarisation compresses the history. It triggers at fifty messages, or forty thousand tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0922ba46",
+   "say": "C is a different layer: context editing clears old tool payloads, and it triggers at eighty thousand tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a0745b4",
+   "say": "Topic nine. The graph state, and a small idea called a reducer, which turns out to protect the planner's scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55193fbf",
+   "say": "From scratch. A LangGraph graph is a set of steps, called nodes, that all read from and write to one shared notebook, called the state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3a73869",
+   "say": "When a node returns an update, something has to decide how that update is merged into each field. That rule is a reducer. A small function: it takes the old value and the update, and returns the new value.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a630aa15",
+   "say": "Here, the state is a typed dictionary called Inventory Ops State, and each field carries its own reducer. Let's look at it as a whiteboard with four columns, each with its own rule.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fbda8a64",
+   "say": "Here's the whiteboard. Messages. Identity. Per turn values. And subagent memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fee8f243",
+   "say": "Column one, messages. The rule is add messages: append the new message to the list. It also merges by message id, so the same message sent twice replaces itself, instead of appearing twice.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05bee92e",
+   "say": "Column two, identity. The conversation id, the realm, the user id. The rule is keep identity: set once, and never changed again within a conversation. Here, an update tries to change the user. It's simply refused.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1374826d",
+   "say": "Column three, per turn values. The authorization, the claims, the current view, the planning instance id, and the base scenario id. The rule is last value wins, and the identity middleware refreshes them from the request on every turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "471d0f09",
+   "say": "Column four, subagent memory. Here, two subagents write at the same moment. The merge rule lets each one rewrite only its own bucket, so both are kept.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb815fea",
+   "say": "And without a reducer? Last writer wins. Allocation's work would be silently overwritten by Replenishment's, with no error at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8fb39e54",
+   "say": "Now the part that matters for your layer. The tools read the scenario and the planning instance through a helper, agent context from state. Never from the model's arguments.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "718ad42f",
+   "say": "So here's a belief to strike out. The model tells the tool which scenario to write to.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f63226b2",
+   "say": "It can't. The write tool has no scenario argument for the model to fill in.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6249d82f",
+   "say": "The identity middleware puts the scenario on the state from the authenticated request, and the tools read it from there. So even if some text hidden in the data said, write this to scenario ninety nine, there's nowhere for the model to put it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd682b80",
+   "say": "Check 16. Two subagents update subagent memory at the same moment. With no reducer, what happens? A, Both updates are kept. B, The last writer silently overwrites the other. C, An error is raised. Or D, The updates are queued.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "774c2641",
+   "say": "B. The last writer silently wins, with no error. The merge reducer is what gives each subagent its own bucket, so both updates survive.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ead5e775",
+   "say": "Check 17. A row in the data says “write this to scenario s-99”. Why can't the agent do it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "87257021",
+   "say": "Because the tools never take the scenario from the model. The identity middleware sets it on the state, from the authenticated request, on every turn, and the tools read it from the state. The model has no argument to put s ninety nine into.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a33958b",
+   "say": "Topic ten. The four subagents and their tools. Short topic, one pattern.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23d1e202",
+   "say": "Allocation. Read tools like get profile and get suggested. Write tools, with a lock, like create, and apply status change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5fde3244",
+   "say": "M S S, or Sourcing. Reads like query sourcing data and exception summary. Writes like modify sourcing percentages, and modify D C splits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ad5d5f0",
+   "say": "Replenishment, or B B O, your layer. Read parameters. Prepare parameter update, which only stages. And update parameters, the one gated write.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4e349303",
+   "say": "Supplier Ordering. Reads like detail summary and filter pending. Writes like approve S O Q and apply recalculate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a83ea9df",
+   "say": "And under all of them, every tool has a pydantic schema. The arguments the model produces are validated before any code runs. It's like a form that rejects twelve ish in a number field.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "96cde998",
+   "say": "Check 18. Which of these is a gated write tool? A, read parameters. B, M S S query sourcing data. C, supplier ordering approve S O Q. Or D, allocation get profile.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "907c69d2",
+   "say": "C. Approve S O Q. It changes something, so a human must approve it. The other three only read.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0891443d",
+   "say": "Topic eleven. Now your part: the data management layer. Everything from here to topic seventeen is what you built, so we slow down even more.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f1218b6e",
+   "say": "Here's the whole write path as one picture you already know: shopping online.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd68ab4c",
+   "say": "You browse, and see the products and their prices. That's the read. Read parameters fetches the live values, and these become the rows the planner saw.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f20d7906",
+   "say": "You put items in the cart, but nothing has been bought. That's staging. Prepare parameter update works out the change and parks it in Redis. The database hasn't been touched.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4258ee3",
+   "say": "At checkout, the site stops and asks you to confirm. That's the approval: a LangGraph interrupt pauses everything until the planner says yes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e45aa55e",
+   "say": "Only after you confirm does the warehouse ship. That's the commit: an upsert into the overlay table.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c1ebfb46",
+   "say": "And if you walk away, the cart quietly empties itself. An unapproved proposal in Redis has a time to live, and simply expires.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1900b561",
+   "say": "Read, stage, approve, commit. Four steps, and the database changes only in the last one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "10135cf6",
+   "say": "Check 19. In which of the four steps does the planning database change? A, Read. B, Stage. C, Approve. Or D, Commit.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8efd0c0a",
+   "say": "D. Only in commit. The read only selects. Staging writes to Redis, not the database. And approval is just a pause.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f58fdaf",
+   "say": "Topic twelve. Before any read, the tool has to find the right database. Remember: one per planning instance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e08a0eb",
+   "say": "Start from the constraint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0c66a78",
+   "say": "There is no single database. Each planning instance has its own PostgreSQL. So the credentials can't be a static environment variable, set once at deploy time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d16365a8",
+   "say": "Think of a courier serving many buildings. For each delivery, they look up the address in a directory, sign the right key out of a key safe, and remember both for a little while, because locks do get changed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c7b53cbc",
+   "say": "Here's that courier in code. A class called the U I cache connection resolver.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b898c75",
+   "say": "A tool needs the database. It knows which planning instance from the graph state. Again, never from the model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58b3d9e0",
+   "say": "First it checks: did we resolve this instance recently? If not, that's a miss, and the resolver calls the controller A P I, the directory, for this instance's host and schema.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83cdce99",
+   "say": "The controller also returns the hierarchy levels for the instance: which item and location levels exist. Those are cached separately, under their own key, U I cache colon hierarchy colon the instance id. We'll need them in the next topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75f8c771",
+   "say": "Next, the key safe. The database password comes from Azure Key Vault, per instance, at the moment of resolving. It's never in config, and never anywhere near a prompt.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7d98006e",
+   "say": "Host, port, database name, user, password, S S L mode and schema are put together into one connection dictionary, and cached with a short time to live.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d9cad79",
+   "say": "Then the connector opens the connection and sets the search path. Search path is like the current directory in a terminal: once it's set, a bare table name is looked up in that schema. So every query can use plain table names, and still hit the right customer's schema.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3cc67439",
+   "say": "On the next tool call within the time to live, it's a hit. No controller call. No Key Vault round trip.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d021823d",
+   "say": "And after a commit, the connection cache is invalidated on purpose, so the next read reflects the change.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "846a9914",
+   "say": "Why a short time to live, and not cache forever? Because credentials rotate, and instances move. A short time to live bounds how long a stale host or password can be used, while still saving a Key Vault round trip on almost every call.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "12b74e47",
+   "say": "And for development, there's a local test mode, which uses local credentials instead of Key Vault. The schema and the hierarchy still come from the controller.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c66d0fae",
+   "say": "Check 20. Where does the database password come from? A, A .env file on the server. B, The prompt. C, Azure Key Vault, per planning instance, at resolve time. Or D, The controller API.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "084f6363",
+   "say": "C. Azure Key Vault, per planning instance, fetched when resolving, and cached briefly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4071103c",
+   "say": "D is a common slip. The controller gives the host, the schema and the hierarchy. The password comes from Key Vault.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b8a0673",
+   "say": "Check 21. Why cache the resolved connection with a short TTL, instead of forever?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d92d252f",
+   "say": "Because credentials rotate and instances move. A short time to live bounds how long a stale host or password can be used, but still avoids a Key Vault round trip on every tool call. And a commit invalidates it on purpose.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f09f96aa",
+   "say": "Topic thirteen. Hierarchy aware reads. The first of your four resume claims.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3edd647",
+   "say": "Planners don't think in rows. They say, the Milk class in the West. To answer that, you need two kinds of table.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "778e5416",
+   "say": "The fact view has one row per item per location, with its parameters. But it only knows item codes and location codes. The dimension tables are the lookups: for each item, its department and class. For each location, its region.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "698391f2",
+   "say": "It's like a school register. One sheet has marks by roll number. Another sheet says which section each roll number belongs to. To get section B's marks, you join the two sheets on roll number.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02ed693e",
+   "say": "On the left, the item hierarchy: department, then class, then item. On the right, locations: region, then distribution centre.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e40db81a",
+   "say": "The planner says: the Milk class. That lights up a whole subtree. Three items, in this example.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae03324d",
+   "say": "In the West. Another subtree. Three distribution centres.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2827a349",
+   "say": "And the rows we want are every combination. Three items times three D Cs. Nine item location rows, from one short sentence.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e5998a54",
+   "say": "One more twist. Which actual column holds class, or region, differs from one planning instance to another. So the code keeps a level to column map, built from the hierarchy the resolver fetched for this instance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a1cd115",
+   "say": "Here's the shape of the query. Slowly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef638d44",
+   "say": "From the Base view, the fact rows. This is the view, read only.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c982415",
+   "say": "Join it to the item dimension on the item code, and to the location dimension on the location code. Now each fact row knows its class and its region.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a91bbd86",
+   "say": "Then filter at whatever level the planner asked. Item level column equals Milk. Location level column equals West.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c0a534d",
+   "say": "Those level columns come from the level to column maps: item level column map, and location level column map, resolved per instance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6742ee1e",
+   "say": "And look at the percent S markers. Every value, the item codes, Milk, West, is bound as a parameter. Never pasted into the SQL text.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8f4a28ff",
+   "say": "Now, SQL injection, done properly. A query has two kinds of moving part, and each gets its own defence. First, identifiers: the table and column names. Those can't be bound as parameters, because the database needs the query's structure, which table, which columns, fixed before any values arrive. So before an identifier goes into the SQL text, it's checked against a safe identifier pattern. And it comes from the instance's own hierarchy map, not from the user.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "572147f2",
+   "say": "Second, values. Milk, West, the item codes. Those are always bound with percent S. The driver sends them separately from the SQL text, so a value can never turn into SQL, whatever it contains.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ef76b6e",
+   "say": "Think of a form letter. You can leave blanks for the name and the amount. You can't leave a blank for which form it is. Values go in the blanks. Identifiers are part of the form, so they get checked against a guest list.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4f633d25",
+   "say": "The rows come back as a pandas data frame.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61afbf48",
+   "say": "But the model doesn't get the raw rows. It gets a markdown summary. Fewer tokens, and the model reasons much better over a small readable table than over a dump.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "858e0a57",
+   "say": "And the raw rows are cached in Redis, under a key that starts with param read, and the conversation id. So the next step, staging, reuses exactly the rows the planner saw, without a second query.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "76d444f4",
+   "say": "The obvious follow up. Why not text to SQL? Why not let the model write the query?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dda424f4",
+   "say": "Because the goal is flexibility in what the model asks for, and full control over how it's asked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d6360bc",
+   "say": "A tool with a typed schema gives a fixed query shape, whitelisted identifiers, bound values and validated arguments. Text to SQL lets a model run any SQL it likes against a production planning database.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "97d8f47d",
+   "say": "Be honest about the cost: a genuinely new kind of question may need a change to the tool.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4d0e070d",
+   "say": "Check 22. Why can't a column name be passed as a percent S parameter, like a value? A, It would be too slow. B, Parameters stand only for values; the query's structure (tables, columns) must be fixed before values are bound. C, It's a psycopg bug. Or D, It can be.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c34bb089",
+   "say": "B. Placeholders can only stand for values. The query's structure has to be fixed first. So identifiers get a different defence: a safe identifier pattern check, and they come from the instance's hierarchy map.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f0da3063",
+   "say": "Check 23. The read returns a markdown summary to the model. Where do the raw rows go, and why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "69e4d60e",
+   "say": "Into Redis, under the param read key for this conversation. So staging works on exactly the rows the planner saw, with no second query, and the model never has to carry raw rows in its context.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8116df27",
+   "say": "Check 24. In one sentence: why not text-to-SQL?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "60852be6",
+   "say": "Because a typed tool gives the model flexibility in what to ask for, and the code full control over how it's asked: a fixed shape, whitelisted identifiers, and bound values.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fef8fb26",
+   "say": "Topic fourteen. Staging. The shopping cart, in detail.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3aa0c34f",
+   "say": "The planner says, set ordering cost to twelve. The model calls prepare parameter update. Here's what it does, in four steps.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9129430c",
+   "say": "One. It loads the latest param read entry from Redis. So a read must come first. A change is always computed against rows the planner has actually seen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "08f9d823",
+   "say": "Two. It resolves fuzzy names. The planner might say order cost, and that's mapped to the real, canonical column. It checks the new value is in a valid range. And it filters down to just the targeted items and locations.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58ac622f",
+   "say": "Three. It stores the pending change set in Redis, under param prepared, the conversation id, and a fresh unique id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21c9d15a",
+   "say": "Four. It returns a readable summary to the model: proposed parameter update, so many rows, old value to new value. The model passes that on to the planner.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b54d94c",
+   "say": "Now watch the keys. Three tools on the left, Redis in the middle, the instance's Postgres on the right.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b6f55e3e",
+   "say": "The read selects rows from Postgres, and sets the param read key: the nine rows the planner saw.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "09bbc9bd",
+   "say": "Prepare gets that key, computes the change, and sets a second key, param prepared, holding the pending changes and the affected rows. Postgres still hasn't been touched.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79795884",
+   "say": "Only after approval does update parameters get the param prepared key, and upsert into the overlay.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3cfec67f",
+   "say": "And if the planner never answers? The time to live runs out, both keys disappear, and there's nothing to clean up, because the database was never written.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "55624d7e",
+   "say": "Why Redis? List what the staging buffer has to do. One. Survive between requests. The approval pause can last minutes, across several HTTP calls.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d721f54",
+   "say": "Two. Be visible to whichever worker handles the next request, because the approval may land on a different process.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0a6a5d3",
+   "say": "Three. Stay out of the LLM's context. A proposal can be thousands of rows.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "15c00208",
+   "say": "Four. Vanish on its own if the planner never answers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27ebcb62",
+   "say": "Redis, with namespaced keys and a time to live, does all four.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e1f6c954",
+   "say": "And the follow up: where else could it live? In the graph state? Then the checkpoint would carry thousands of rows through every super step, and every flush, and the state is read on every turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0bf5fafc",
+   "say": "In a pending table in Postgres? It works, but it writes to the production planning database for something that may never be approved, it needs its own cleanup job, and it ties staging to one instance's database.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d8af5dfc",
+   "say": "In Redis, the state only needs the key, cleanup is free, and every worker can see it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f1301ba",
+   "say": "And the honest cost: if Redis evicts the key before approval, the planner simply re-prepares the change.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6cfc38e6",
+   "say": "Check 25. Prepare parameter update is called, but nothing was read in this conversation. What happens? A, It reads automatically. B, It refuses: there's no param_read entry, and a change must be computed against rows the planner saw. C, It writes directly to Postgres. Or D, It guesses the current values.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "426c2829",
+   "say": "B. It refuses. With no param read entry, there are no rows the planner has seen, and a change is always computed against those.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5432c092",
+   "say": "Check 26. Name the four things the staging buffer must do.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "de30eb0b",
+   "say": "Survive between requests. Be visible to any worker. Stay out of the LLM's context. And vanish if abandoned. Redis, with namespaced keys and a time to live, does all four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "213301f0",
+   "say": "Check 27. Why not keep the proposal in the graph state? A, The state can't hold dictionaries. B, The checkpoint would carry thousands of rows through every super-step and flush. C, Redis is more secure. Or D, LangGraph forbids it.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2c9ea0ee",
+   "say": "B. The checkpoint would carry thousands of rows through every super step and every flush. With Redis, the checkpoint stays small, because the state only needs the key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d758d2d",
+   "say": "Topic fifteen. The approval. This is the heart of the system, so we'll take it in three passes: a picture, the code, and then the two HTTP turns, step by step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "101f0edb",
+   "say": "Picture a bank, and a cheque over the clerk's limit. It needs the manager's signature. There are two ways a bank could enforce that.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98e378f5",
+   "say": "The weak way. A sign on the wall: please ask the manager first. That's an instruction in the prompt. A busy clerk, or a persuasive customer, can ignore it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5806abb8",
+   "say": "The strong way. The till physically won't open without the manager's key. That's an interrupt in middleware. It's code, and the graph simply stops.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "71ad562d",
+   "say": "The manager isn't there right now, so the clerk files the cheque in a folder and goes home. That's the checkpoint. The state is saved, and the HTTP request ends.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be08040e",
+   "say": "Next morning, the manager signs, and the clerk takes out the very same folder. That's the next turn: the agent resumes with the decision, approve.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94bfc581",
+   "say": "And the cheque is processed exactly where it stopped. The paused update parameters tool now actually runs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b5be3041",
+   "say": "Here's the strong way, in code. It sits in the replenishment subagent's middleware.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "386d4eca",
+   "say": "Interrupt on is a map from a tool's name to its rule. Update parameters is registered here as an interrupt point. So whenever the model calls it, the middleware stops the graph before the tool body runs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "11301ca8",
+   "say": "Allowed decisions: approve or reject. Just those two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49a1d52b",
+   "say": "And a description, which becomes the clean label on the planner's approval card.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4bf03041",
+   "say": "Now the precise version. The approval spans two separate HTTP turns, with a pause in between. Let's walk it, one step at a time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "63ec93fd",
+   "say": "Turn one. The planner posts: set ordering cost to twelve. Earlier in this same turn, prepare parameter update has already staged the proposal in Redis.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ebef145",
+   "say": "The model calls update parameters.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dbaec9dc",
+   "say": "The approval middleware raises a Graph Interrupt. The graph pauses before the tool body runs. Not one line of the write has executed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a8137009",
+   "say": "LangGraph saves the state, including the pending interrupt, under the thread id, which is the conversation id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48358af0",
+   "say": "The stream layer turns this into a complete envelope, with interrupted equals true, and the pending actions. The planner sees the card.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f40a85f",
+   "say": "And then the HTTP request ends. This is the part people miss. Nothing is waiting in memory. There is no open connection holding the turn.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "53e44594",
+   "say": "Now the pause. Seconds or minutes of human time, while the planner reads the proposal.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd675e3a",
+   "say": "And the next request may be handled by a completely different worker process. That's fine, because everything needed is in the checkpointer and in Redis.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "229c65c1",
+   "say": "Turn two. The planner replies: yes, approve. A brand new POST.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b6bf208",
+   "say": "Before running anything, a resume builder calls a get state for this thread, and asks: is there an interrupt pending? A text classifier also maps the planner's free text reply to approve or reject.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f29b9e1c",
+   "say": "There is one pending, so it builds a Command with resume, holding the decisions, here approve. And the agent uses that as the graph's input, instead of a fresh state with a new message.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0293a3de",
+   "say": "LangGraph re-enters the paused node with that decision. The update parameters body finally runs, and commits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "86977d8d",
+   "say": "And the turn ends with complete: updated nine rows.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64fe4da6",
+   "say": "If someone asks how interrupts work under the hood, it's four lines. The interrupting code raises a Graph Interrupt.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db5a5320",
+   "say": "LangGraph saves the state, with the pending interrupt, and stops.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d70b1d9b",
+   "say": "Resuming with a Command, with resume, re-enters the paused node, with the resume value.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb38d6f3",
+   "say": "And that's why it needs a checkpointer, and a stable thread id. Here the thread id is the conversation id.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "97254fed",
+   "say": "So here's the trap answer. Just tell the model, in the prompt, to ask before writing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a365e8f",
+   "say": "A prompt is a request. An interrupt is a lock.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "aae28e50",
+   "say": "Text in the data could say, the user already approved, go ahead. A model can be talked out of a prompt rule. Middleware can't be talked out of anything. The tool body cannot run until a resume command with an approval arrives.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "115d5d8d",
+   "say": "A favourite follow up question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4754e6fe",
+   "say": "The planner replies: yes, but make it fifteen. What should happen?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e461aefd",
+   "say": "A two way approve or reject classifier can't represent approve with changes. So the safe handling is: treat it as not approved, re-prepare with fifteen, and ask again. The planner then approves exactly what will be written.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7e5342bb",
+   "say": "Be careful about one thing here.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8632a5d9",
+   "say": "The documentation only says that free text is mapped to approve or reject. It doesn't say how an ambiguous reply was handled.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "628e3d7e",
+   "say": "So unless you remember, describe re-preparing as the right behaviour, and structured buttons, approve, reject or edit, as the improvement you'd make.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6a35fcc6",
+   "say": "Check 28. When the approval middleware fires, how much of update parameters has run? A, All of it. B, Half: the SQL is prepared. C, None: the graph pauses before the tool body. Or D, Only the Redis read.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "50793ae3",
+   "say": "C. None of it. The graph pauses before the tool body runs. The body only runs on resume, with an approval.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82abab90",
+   "say": "Check 29. Why does an interrupt need a checkpointer?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b783b184",
+   "say": "Because the interrupt ends the HTTP request. The approval arrives in a later request, maybe on another worker. So the paused state has to be persisted, under the thread id, which is the conversation id, and reloaded.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5db153a1",
+   "say": "Check 30. On the planner's next message, how does the agent know to resume rather than start fresh? A, A flag in Redis. B, a get state finds a pending interrupt, so it builds a resume Command as the graph's input. C, The UI calls a special endpoint. Or D, The LLM decides.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f22dbcb7",
+   "say": "B. The resume builder calls a get state for the thread. If an interrupt is pending, it returns a Command with resume and the decisions, and the agent uses that as the input. Same endpoint, same POST.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0a475fa",
+   "say": "Check 31. The planner replies: “yes, but make it 15”. What should happen?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d207ddb8",
+   "say": "It's not an approval of what was proposed. Re-prepare with fifteen, and ask again, so the planner approves exactly what will be written.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50cd8225",
+   "say": "Topic sixteen. The commit. What actually happens to the database when the planner says yes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1d5ce38",
+   "say": "When the paused tool resumes, update parameters calls write parameters. Four steps.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04587b9a",
+   "say": "One. Read the staged payload from the param prepared key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba1a5c2b",
+   "say": "Two. Re-read the full source rows from Base, right now. Why? So that columns the planner didn't touch are written from current values, never from a stale copy.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fa5041d7",
+   "say": "Three. Apply only the approved changes, and stamp each row with who and where.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4eeb9024",
+   "say": "Four. Upsert into the overlay table for that scenario, in one transaction.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "caddf065",
+   "say": "Here's the stamping.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd660aa0",
+   "say": "The user id column, from the state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "062b3831",
+   "say": "The scenario id column, also from the state. Remember topic nine: the model never supplies either of these.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4ffd8fe4",
+   "say": "A status of one, and a last modified timestamp in UTC. Together, every overlay row says who changed it, in which scenario, and when.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "971fca64",
+   "say": "Now the picture. On the left, Base: the shared plan. The agent reads it through views, and never writes it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "758ca940",
+   "say": "Planner A approves ordering cost twelve for Milk one litre at West D C one. A single row appears in the overlay table: the item, the location, the new value, and planner A's user and scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2abc6ea",
+   "say": "What does planner A see? Base, with A's overlay laid on top. Ordering cost twelve.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "83ccb3e7",
+   "say": "And planner B, in their own scenario? Base only. Still ten. A's edit lives on A's tracing paper, not on the map.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8470cae6",
+   "say": "To undo, remove that overlay row, or change its status. Base was never touched, so there's nothing to restore.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb3520c1",
+   "say": "Tracing paper over a printed map. Or, in engineering words, copy on write, or a git branch over a shared main.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "69f35657",
+   "say": "Now, how the overlay row is written. With an upsert: insert the row, or, if a row with the same key already exists, update it instead. The key here is the row's natural key, item and location, plus the user id, plus the scenario id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca24401e",
+   "say": "First approval. No row with that key yet, so it's inserted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "648d922c",
+   "say": "Now suppose the same approval is processed again, say a retried request. Same key, so on conflict, the existing row is updated. Still exactly one row. That's what idempotent means.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "20a4b1a1",
+   "say": "The same planner later changes it to fifteen. Same key, the same row, now fifteen.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f2a171c",
+   "say": "Planner B, in scenario s seven, edits the same item at the same location. Different user and scenario, so a different key, and its own row. No interference.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3439abf5",
+   "say": "Here's the statement. Insert into the overlay table, on conflict, the key columns, do update set each column to excluded dot that column. Excluded simply means the row you just tried to insert.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2877c21a",
+   "say": "So list what the commit guarantees. Safety first. Base is never mutated, because writes only go to the underscore U tables. Every write is scoped, because the key includes the user and the scenario. It's constrained: the item and location can't be changed, and only whitelisted columns can be edited. And it's bounded: max write rows, five thousand by default, refuses oversized writes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa3434ff",
+   "say": "Then correctness. It's idempotent, because of the upsert. It's atomic: an explicit transaction, with autocommit off, commit on success, and rollback on any error. It's auditable, with user, scenario, status and timestamp on every row. And it's visible next time, because the connection cache is invalidated after a commit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b840d36",
+   "say": "Atomic means all or nothing, like a bank transfer. Either all nine rows are written, or none are.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "afaedd76",
+   "say": "A question you might get: if writes go to the overlay, how does the next read see them?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "976f0744",
+   "say": "The documentation says reads go through the Base views, calls their rows scenario scoped, and states that the next read reflects a commit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33a560d8",
+   "say": "So the views present Base with the scenario's overlay applied. The doc doesn't show the view's definition, so describe it at exactly that level, unless you remember the mechanism.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cff54054",
+   "say": "And the classic follow up. Why not just update the Base table?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1b8f8ec5",
+   "say": "Because Base is shared by every planner and every scenario. An edit in my what if must not change yours, or the plan of record.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8e86bd62",
+   "say": "An overlay keeps every edit isolated, reversible, attributable, and idempotent. Updating in place changes everyone's plan, makes undo a data restore, and loses who changed what.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7fec14b2",
+   "say": "And the honest cost: reads have to layer the overlay over Base, and overlays eventually need publishing or cleanup.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe1753ec",
+   "say": "Check 32. What is the overlay's conflict key? A, item and location only. B, the conversation id. C, the natural primary key, plus the user id, plus the scenario id. Or D, a fresh UUID per write.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d85fe522",
+   "say": "C. The row's natural primary key, plus the user id, plus the scenario id. That's what makes each edit belong to one user's scenario.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf4e5e3b",
+   "say": "Check 33. The same approval is processed twice. What's in the overlay afterwards? A, Two duplicate rows. B, One row, updated in place. C, An error and a rollback. Or D, The Base row is updated.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "76596831",
+   "say": "B. One row. The second write hits the same key, so on conflict it updates the same row. Idempotent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c80134aa",
+   "say": "Check 34. Why does the commit re-read the source rows from Base, instead of writing exactly what was staged?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bb4bf497",
+   "say": "So that columns the planner didn't touch are never written from a stale copy. It takes the current row, applies only the approved changes, stamps who and where, and writes that.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43f0f1a3",
+   "say": "A stronger version would compare the staged before values with the current ones, and ask again if they differ. That's optimistic concurrency. The doc doesn't describe it, so present it as an improvement.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ecfb3bd6",
+   "say": "Check 35. A broad filter would change 12,000 rows. What happens? A, All twelve thousand are written. B, The first five thousand are written. C, It's refused by max write rows, five thousand by default. Or D, It's queued for later.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d24cb950",
+   "say": "C. It's refused. Max write rows, five thousand by default, stops one chat sentence from turning into a mass update. The planner narrows the scope.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f13b150a",
+   "say": "Check 36. Two planners edit the same item at the same location. Do they interfere?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ffbe6cb0",
+   "say": "No. A different user and scenario means a different conflict key, so separate overlay rows. Each planner sees Base, plus their own layer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3cb66bc4",
+   "say": "Topic seventeen. Now we put topics eleven to sixteen together, and walk one request all the way through the board.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4ad6157",
+   "say": "Same board as topic four. This time, we follow one real request: set ordering cost to twelve, for Milk, in the West.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b916433",
+   "say": "Read, part one. The planner asks for the B B O parameters for the Milk class in the West. The request goes through Fast A P I to the supervisor, which dispatches to Replenishment.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bba547ee",
+   "say": "Read, part two. Read parameters joins the Base view to the item and location dimensions, filtered at class and region level. Values bound, identifiers checked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71ff728b",
+   "say": "Read, part three. The raw rows go to Redis under param read. The model gets a short markdown table, and the planner sees nine rows.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa784dc8",
+   "say": "Stage. Set ordering cost to twelve. Prepare parameter update loads param read, resolves the column, checks the range, and saves the proposal under param prepared. Still no database write.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3ac75a0e",
+   "say": "Approve, part one. The model calls update parameters. The approval middleware raises an interrupt before the body runs, and the state is saved.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3abb51fd",
+   "say": "Approve, part two. The stream ends with complete, interrupted equals true. The planner sees the approval card.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd61f79f",
+   "say": "Approve, part three. The planner says yes, in a new request. The agent finds the pending interrupt and resumes with the decision.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "542e5b19",
+   "say": "Commit. Update parameters reads param prepared, re-reads Base, stamps the user and scenario, and upserts into the overlay, in one transaction.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e62d352d",
+   "say": "Done. Updated nine rows. The connection cache is invalidated, so the next read shows twelve. And Base was never touched.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "525defdd",
+   "say": "If an interviewer says, walk me through set ordering cost to twelve for Milk in the West, here's the model answer, in four lines.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "01e35f55",
+   "say": "Read. A hierarchy aware select on the Base view. The rows are cached in Redis, and the model gets a markdown summary.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ef93a57",
+   "say": "Stage. The canonical column, a range check, the target rows. Saved under param prepared, with a proposed summary.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb6fd237",
+   "say": "Approve. The interrupt. An S S E complete with interrupted true. And the resume command on the next turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c2c19f28",
+   "say": "Commit. Re-read Base, stamp the user and scenario, upsert into the overlay in one transaction, invalidate the cache, and reply: updated n rows.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "03ddc689",
+   "say": "Check 37. Without looking: the four steps, and the Redis key or table each one touches.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5c190af9",
+   "say": "Read: the Base view joined to the dimensions, writing param read. Stage: param read in, param prepared out. Approve: the interrupt, the checkpoint, and the resume command. Commit: param prepared in, and an upsert into the overlay table.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dfc99394",
+   "say": "Topic eighteen. Checkpointing. You've already seen why the interrupt needs it. Now, how it's built.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc56bf53",
+   "say": "From scratch, again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "051ad924",
+   "say": "A checkpoint is a saved copy of the graph state, taken after each super step.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c61e35e8",
+   "say": "And a super step is one tick of the graph. The nodes that are ready run, the reducers from topic nine merge their updates, and the result is saved. One turn can have many super steps, so it writes many checkpoints.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "390533e8",
+   "say": "Here's the picture: taking notes in a meeting.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b7ee3263",
+   "say": "When the meeting starts, you pull out the minutes from last time. The first time a turn needs the conversation, the in memory saver is seeded from Postgres.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60927824",
+   "say": "During the meeting, you scribble on a notepad, fast. Every checkpoint read and write during the turn hits memory. Microseconds, not database round trips.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cfcbd79b",
+   "say": "Afterwards, you type it all into the official record, once. At the end of the turn, a flush thread call writes it to Postgres in one go.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ef3c4c8f",
+   "say": "Then you throw the notepad away. Evict thread frees the memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9b3d0e7",
+   "say": "And the trade off. If the room catches fire mid meeting, the scribbles are lost. A crash mid turn loses that turn's intermediate steps. The turn fails visibly, and the planner retries it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ea8984b3",
+   "say": "And the same thing as a board. It's a class called the caching Postgres checkpointer, wrapped around LangGraph's async Postgres saver.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb75d595",
+   "say": "First touch. The in memory saver is seeded from Postgres. The thread is the conversation id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "055be094",
+   "say": "During the turn, every super step writes to memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "537adcf2",
+   "say": "When the turn ends, the thread is flushed to Postgres, once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7dabc6ba",
+   "say": "Then it's evicted from memory. The next turn seeds it again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd0bc018",
+   "say": "And notice: a turn that ends in an interrupt is still a turn end, so it's flushed too. That's what lets an approval resume minutes later, on any worker.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1095afaa",
+   "say": "Three details to say precisely. Get default checkpointer builds it: LangGraph's async Postgres saver, wrapped in the caching checkpointer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1a986f2f",
+   "say": "The thread id is the conversation id. It's also set as the session id in the metadata, so a trace can be matched to a conversation.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b899c3b",
+   "say": "And this is not the UI cache. Checkpoints live in the app's own Postgres. The parameters live in each instance's UI cache. Two different databases.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "032e6a45",
+   "say": "So, the trade off as a decision. Flush once per turn, or write every checkpoint straight to Postgres?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d00662b3",
+   "say": "Once per turn. Far fewer writes, and lower latency. A failed turn is visible, and the planner retries.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d3a9b87",
+   "say": "Writing every checkpoint would make the turn durable mid way, at the price of a database round trip on every super step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0059462",
+   "say": "And the one place where durability really matters, the approval pause, is covered, because the pause ends a turn, and turn ends are flushed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e5b75946",
+   "say": "Check 38. A worker crashes halfway through a turn. What is lost? A, The whole conversation. B, That turn's intermediate steps; the turn fails visibly and is retried. C, Approved writes. Or D, Nothing at all.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ee1ccc63",
+   "say": "B. Only that turn's intermediate steps. Earlier turns were flushed to Postgres. The turn fails visibly, and the planner retries it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee058b00",
+   "say": "Check 39. Why is losing a mid-turn crash acceptable, but not losing an approval pause, and how is the pause protected?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "81444e28",
+   "say": "A failed turn is visible, and simply retried. But a pause has to survive minutes, and a brand new request, maybe on another worker. So a turn that ends in an interrupt is flushed to Postgres, like any turn end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0b69d1e",
+   "say": "Topic nineteen. External integrations. Three protocols, and how to choose between them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb995f9e",
+   "say": "There are three ways this agent reaches something outside itself. Here's a picture for each.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bba87705",
+   "say": "M C P, the Model Context Protocol, is like a standard wall socket. Any appliance with the right plug can use it. It exposes tools and context to any agent. Here, an M C P server called Atlas does entity resolution, turning names into ids, and another serves context.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "66790f19",
+   "say": "A to A, agent to agent, is like asking a colleague to take a whole task off your hands. You delegate a goal, not a function call. Here, that's the forecast agent.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "830890ed",
+   "say": "And REST is ordering from a fixed menu: ordinary platform A P I s with fixed contracts, called with an async H T T P client, a bearer token, and automatic retries.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf2d0ba1",
+   "say": "For data: the instance's Postgres with per instance credentials, Redis with namespaced keys and a time to live, and Snowflake for analytics.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6543e2f2",
+   "say": "For secrets and services: Key Vault, through Azure's default credential and a secret client. Upstream REST services, with an async client, a bearer J W T, and tenacity for retries. And the three LLM providers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d52ad25",
+   "say": "For agents and tools: Atlas over M C P, a context server over M C P, and the forecast agent over A to A.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a1681647",
+   "say": "And all of it is configured through typed pydantic settings models, one per area.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c79b2b52",
+   "say": "Check 40. How is the forecast agent called, and why that protocol? A, MCP. B, A2A. C, REST. Or D, Direct SQL.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d5f5838a",
+   "say": "B. A to A. You're delegating a goal to another agent, not calling a function. M C P is for exposing tools and context, and REST is for ordinary services with fixed contracts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98d150d7",
+   "say": "Topic twenty. Observability. Short, but it's what you'd reach for first when something goes wrong.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49528d63",
+   "say": "Think of a flight recorder. Tracing first. The OpenTelemetry S D K exports over O T L P H T T P. OpenInference instruments LangChain, Open A I agents and M C P automatically. The traces are shaped for Langfuse, and each run is wrapped in one agent run trace.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69a28ec9",
+   "say": "Logging: struct log everywhere, so logs are key value pairs, not free text.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e012aba",
+   "say": "And A P M: an Elastic transaction wrapped around each request, which simply does nothing when A P M isn't configured.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82828105",
+   "say": "A planner says: the agent did something weird. What do you look at first?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5779653e",
+   "say": "The trace for that conversation, found by its session id, which is the conversation id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0efd0543",
+   "say": "Which subagent was dispatched, and which tools were called, with which arguments.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc728958",
+   "say": "What the model actually saw. The markdown summary, not the raw rows.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f96e5a26",
+   "say": "And whether an interrupt fired, and how it was resumed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3a0c4bec",
+   "say": "Check 41. How do you find the trace for one planner's conversation?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8fdcfe9a",
+   "say": "By the session id. The conversation id is the thread id, and it's also set as the session id in the metadata, so every trace lines up with its conversation.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8bae16c3",
+   "say": "Topic twenty one. Design decisions. You've heard the why for each one. In an interview, the follow up is always: and what did it cost you? Answer each before I do.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "657f9949",
+   "say": "Supervisor plus four subagents. What did it cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9aa575cc",
+   "say": "An extra LLM hop on every turn, partly won back by skip synthesis.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9155b8d8",
+   "say": "Create agent plus middleware, instead of a hand built graph. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5404bb03",
+   "say": "Ordering subtleties. Like having to exclude task from tool retry.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f4c6422",
+   "say": "Tools with schemas, instead of text to SQL. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f4968d6f",
+   "say": "A genuinely new kind of question may need a tool change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "11255ec5",
+   "say": "Hierarchy aware SQL. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3270c41f",
+   "say": "Per instance level to column maps, which have to be resolved and cached.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75864de1",
+   "say": "Staging in Redis. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4ebf2352",
+   "say": "If Redis evicts the key before approval, the planner has to re-prepare.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ba0a2c1",
+   "say": "Approval as an interrupt. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "27455a88",
+   "say": "It needs a checkpointer, and resume handling.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa1982ef",
+   "say": "Base plus Overlay. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c0f24167",
+   "say": "Reads must layer the overlay over Base, and overlays eventually need publishing or cleanup.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb53f1ac",
+   "say": "Per instance credentials. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6491f862",
+   "say": "A resolver, and a cache.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5b4c901",
+   "say": "The caching checkpointer. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ba6fca13",
+   "say": "A crash in the middle of a turn loses that turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1596ce6f",
+   "say": "S S E. The cost?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f7c3fb37",
+   "say": "Each user message is a new HTTP request. Which, here, is exactly what we want.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "314ce26d",
+   "say": "Topic twenty two. Failure modes. Each one is a question. Say what happens, then hear mine. If you've followed the checks so far, you know every answer already.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa295dc3",
+   "say": "Azure returns four twenty nine, too many requests.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b670c89f",
+   "say": "Model retry, up to two times, then the optional fallback model. Bounded retries, then fail visibly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca7b6756",
+   "say": "The model starts looping.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b74258dc",
+   "say": "The forty model call limit, or the eight dispatch limit, stops the run. The limits live in code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c022870",
+   "say": "A conversation gets very long.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "aa8fa96c",
+   "say": "Summarise at fifty messages or forty thousand tokens. And clear old tool payloads at eighty thousand.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da59139a",
+   "say": "Prepare is called, with no read before it.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1d97d7e5",
+   "say": "There's no param read entry, so the tool refuses.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45a5aba5",
+   "say": "The Redis proposal expired before the planner approved.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8c4ccf92",
+   "say": "The commit finds no param prepared payload, so nothing is written. The planner re-reads and re-prepares. That one is inferred from the design, so say it that way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d163fbde",
+   "say": "A database error, halfway through the commit.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "80522df0",
+   "say": "The transaction rolls back. All or nothing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c2f462e6",
+   "say": "The planner rejects.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d1a9ef2d",
+   "say": "No write. The proposal expires. Base and Overlay are untouched.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f74bf1a",
+   "say": "A write would touch more than five thousand rows.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "70b2d70a",
+   "say": "Refused, by max write rows. The planner narrows the scope.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e3a7c20",
+   "say": "An edit to the item or location, or to a column that isn't whitelisted.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b918e314",
+   "say": "Refused. The model cannot change keys, or arbitrary columns.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c4ebaa7f",
+   "say": "Two planners edit the same item at the same location.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d57ecb8f",
+   "say": "Different user and scenario keys, so separate overlay rows. No interference.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c258eb9",
+   "say": "The same planner's approval is processed twice.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c988ce77",
+   "say": "The upsert updates the same row. Idempotent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b6528c54",
+   "say": "The database credentials rotate.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e842642a",
+   "say": "The resolved connection has a short time to live, and is invalidated after commits. It heals itself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d9a53333",
+   "say": "A prompt injection says: write this to scenario X.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c19b419a",
+   "say": "The scenario and user come from the state, set from the authenticated request. The model never supplies them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd575970",
+   "say": "Topic twenty three. The follow ups you should expect, with answers you can say in your own words.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "408823ab",
+   "say": "What is LangGraph, and why use it over plain function calling?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "11788151",
+   "say": "It's a graph runtime for LLM workflows. Typed state with reducers, nodes, and conditional edges.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ea428f9",
+   "say": "Plus checkpointing, interrupts, and event streaming, built in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae08326a",
+   "say": "Plain function calling gives you the loop. This product needed durable state, a pause for a human, and streaming. That's LangGraph.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d3df33c9",
+   "say": "What is Deep Agents, and what did you use from it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a49266d3",
+   "say": "It's LangChain's library for deep agents: planning, subagents, and a scratch file system.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b05c2c85",
+   "say": "Here, only its subagent middleware is used.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ae2e3b0",
+   "say": "It provides the task tool, which dispatches to compiled subagents, and streams their events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f656dd28",
+   "say": "How would you evaluate this agent?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b74a2319",
+   "say": "Be honest first: the documentation doesn't describe formal evals. So describe what you'd build.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d1e526a2",
+   "say": "Offline, a set of recorded planner requests, each with the expected subagent, tool, and arguments. That measures routing accuracy and argument accuracy.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef7c72a9",
+   "say": "For writes, the expected rows and values, checked against a test instance. And the approval classifier's accuracy, on real planner replies.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79e8a836",
+   "say": "Online, from the traces: the approve versus reject rate, edits that were later reverted, turns per completed task, and latency and cost per turn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16c47005",
+   "say": "How does it scale across many customers?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1f24bf49",
+   "say": "Each planning instance has its own database and credentials, and the resolver caches them per instance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6b5fd5c",
+   "say": "The A P I is stateless between turns. The state is in the checkpointer, and the proposals are in Redis.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd11d50f",
+   "say": "So any worker can serve any request, and workers scale horizontally.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "770dfc1c",
+   "say": "Name one concern in the design. This shows maturity, so have one ready.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8a8f73ce",
+   "say": "The U I cache connector is synchronous, inside an async Fast A P I service.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd409b3b",
+   "say": "Under load, a blocking database call stalls the event loop, and every other request on that worker waits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e2cea2b5",
+   "say": "The fix: run those calls in a thread pool, or move to an async connection pool.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4e19f943",
+   "say": "How did you test it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4837de24",
+   "say": "Pytest with coverage, and ruff and mypy for linting and type checks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ba9fc65",
+   "say": "A local test mode for the U I cache, using local credentials.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7f29977",
+   "say": "And if you wrote them, mention unit tests around the identifier guard, the upsert builder, and the resume command builder. Only if you wrote them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1145134c",
+   "say": "Security, rapid fire. Can the LLM write without approval?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "19cc2cc1",
+   "say": "No. The write tool is an interrupt point in middleware. Its body cannot run without a resume command carrying an approval.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1db5f002",
+   "say": "Can it write to someone else's scenario?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c02ee233",
+   "say": "No. The user and scenario come from the state, set by the identity middleware from the request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b446d316",
+   "say": "Where do the database passwords live?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f3c93344",
+   "say": "In Azure Key Vault, per instance, fetched at resolve time and cached briefly. Never in config, never in prompts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "47f6332f",
+   "say": "How do you handle prompt injection through the data?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "54d6a0ad",
+   "say": "The gating and scoping are in code. So injected text can, at most, make the model propose something, which a human then sees, and can reject.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "697ff525",
+   "say": "Topic twenty four. Honest gaps. Say these as what I'd do next. None of them is claimed by the documentation as built.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79d41bf4",
+   "say": "One. Optimistic concurrency at commit. Store the before values in the staged payload, and if Base has changed since the read, refuse, or ask again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb02fd40",
+   "say": "Two. Approve with changes. Structured approve, reject and edit decisions in the UI, instead of classifying free text.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e30fb613",
+   "say": "Three. Time to live alignment. Make a proposal live at least as long as an approval can reasonably take, and tell the planner when it has expired.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51dbd127",
+   "say": "Four. An idempotency key on resume. The staged unique id already identifies the change. Record it with the commit, and double resumes become provably harmless. The upsert already makes them mostly harmless.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0f9b2e7",
+   "say": "Five. Async database access, with an async pool for the U I cache.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8aae2cd9",
+   "say": "Six. Evals in C I. The routing, argument and write correctness set, run on every prompt change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87bb521a",
+   "say": "Seven. A diff preview. Old to new, per row, in the approval card, for large updates. Saying these before you're asked is a strength, not a weakness.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f07f62ff",
+   "say": "Topic twenty five. The numbers. There are only ten, and every one of them has come up already.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb598c49",
+   "say": "One endpoint. Slash inventory ops.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad619645",
+   "say": "Four domain subagents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eaf2c126",
+   "say": "Twelve middleware layers on the supervisor.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ed0cd8f2",
+   "say": "Two model retries.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1fb67fad",
+   "say": "Forty model calls, at most, in one run.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "973bf63d",
+   "say": "Eight task dispatches, at most, per run.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0dda0055",
+   "say": "Summarise at fifty messages, or forty thousand tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "261d8166",
+   "say": "Prune old tool payloads at eighty thousand tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9d9f1c6",
+   "say": "Five thousand rows, at most, per write.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e41ca4f4",
+   "say": "And four steps in the write: read, stage, approve, commit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5906061f",
+   "say": "The documentation gives no usage or latency figures. Before the interview, recall your own: how many planners used it, how many changes went through, typical turn latency, how long the old ticket cycle took. If you don't know one, say so, and say how you'd measure it from the traces.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "35593ed4",
+   "say": "Numbers check. Forty, and eight. What are they?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6fed9208",
+   "say": "At most forty model calls, and eight task dispatches, in one run.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "247f4fd6",
+   "say": "Five thousand?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e27d213b",
+   "say": "Max write rows. The default cap on rows in one write.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65fba8a5",
+   "say": "Fifty messages, forty thousand tokens, and eighty thousand tokens?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4af58e65",
+   "say": "Summarise at fifty messages or forty thousand tokens. Clear old tool payloads at eighty thousand.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6bdf6edb",
+   "say": "Topic twenty six. Three stories, for the behavioural side of the interview. Each one is a mechanism you now understand, told as a story.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "337cb252",
+   "say": "Story A. Making writes safe. A story about design under constraints.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5e5e387a",
+   "say": "Planners needed to change live planning parameters by chat. But an LLM must never write on its own.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "033b714e",
+   "say": "So I split the write into read, stage, approve and commit. Reads are cached in Redis, and the proposal is staged in Redis, not in the database.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "11138eb1",
+   "say": "The commit tool is registered as a LangGraph interrupt, so it physically can't run until the planner approves.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f199499",
+   "say": "And the commit itself is an upsert into a per user, per scenario overlay table, so Base is never modified.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91b35c15",
+   "say": "The result: planners change parameters in a chat turn instead of a multi day ticket, and every write is approved, scoped, and auditable.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "59982a81",
+   "say": "Story B. The interrupt that would have been retried away. A story about a subtle class of bug.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ea043500",
+   "say": "Our supervisor wraps tool calls in retry middleware, for transient errors.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "945b98c0",
+   "say": "But an approval interrupt is raised like an exception: a Graph Interrupt.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c55fb4f",
+   "say": "So a retry wrapper around the subagent dispatch would catch it and retry it, and the approval would never reach the planner.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9bd28dc9",
+   "say": "That's why the dispatch tool is deliberately excluded from tool retry.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52ba60e2",
+   "say": "The lesson: retries are for failures, not for control flow.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dddeeae7",
+   "say": "Story C. Hierarchy aware reads.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7f1b8a37",
+   "say": "Planners don't think in item location pairs. They ask about a class, or a region.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "846ae0ac",
+   "say": "So I made the read join the fact view to the item and location dimensions, and filter at any level.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74f1bd4a",
+   "say": "The level to column maps come from each planning instance's own hierarchy.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c0d3e57",
+   "say": "Identifiers are checked against a safe pattern, and values are always bound as parameters.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d82413a8",
+   "say": "And the results are summarised to markdown for the model, while the raw rows are cached for staging.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b1cc2e90",
+   "say": "Check 42. Which story fits “tell me about a subtle bug or design detail”? A, Story A: making writes safe. B, Story B: the interrupt that would have been retried away. C, Story C: hierarchy-aware reads. Or D, None of them.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0061af1a",
+   "say": "B. The interrupt that would have been retried away. Retry middleware would have swallowed the approval, so task is excluded. Retries are for failures, not control flow.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3605ad8b",
+   "say": "Last topic. Putting it all together, so you can say it in thirty seconds, or in two minutes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3aab3074",
+   "say": "The thirty second pitch.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ab0302e8",
+   "say": "It's a LangGraph agent inside our planning UI. A supervisor routes each request to one of four domain subagents, each with its own tools.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e5a4777",
+   "say": "I built the data management layer behind the replenishment subagent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f678c3b",
+   "say": "Hierarchy aware PostgreSQL reads, so a planner can ask about a whole class or region, rather than one item.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "744e7ee4",
+   "say": "Writes that are staged in Redis instead of hitting the database, and a human in the loop approval, implemented as a LangGraph interrupt.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa42869b",
+   "say": "And on approval, a scenario scoped upsert into an Overlay table, so the shared Base data is never modified.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "311e1cce",
+   "say": "Planners went from multi day ticket cycles, to a chat turn.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a320d537",
+   "say": "Safety by construction. The LLM can propose, but it cannot write. The write tool is an interrupt point, so the graph physically stops until a human approves. And the scenario and user come from the authenticated request, never from the model.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4b55e919",
+   "say": "Base plus Overlay. Edits are rows in a per user, per scenario overlay, keyed by the natural primary key. So they're isolated, idempotent, and auditable, and Base stays clean for everyone else.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "708e8f59",
+   "say": "Production plumbing. Streaming over S S E. Conversation state checkpointed to Postgres, with an in memory cache during a turn. Per instance database credentials from Key Vault. Retries, fallback models, hard loop limits, summarisation, and OpenTelemetry traces.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "92a2964c",
+   "say": "And the sentence from the start. One last time. This time, you know what every word means.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1cf15b6",
+   "say": "The LLM decides what to do. Middleware decides what it's allowed to do. Redis holds what it wants to do. And Postgres only changes after a human says yes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a5bc1751",
+   "say": "The supervisor and the subagents decide. The identity, the limits and the interrupt allow. param read and param prepared hold. And the upsert into the overlay changes Postgres, only on an approved resume.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c963fe4",
+   "say": "Check 43. Last check. Draw the board from memory, and say the sentence, clause by clause, pointing at each box.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "58e43003",
+   "say": "Planning UI, Fast A P I, the agent, identity and the supervisor, task to Replenishment, the tools, Redis and the U I cache, S S E back, and the checkpointer. Then: the LLM decides, middleware allows, Redis holds, and Postgres changes only after a human says yes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5aa041c8",
+   "say": "Your homework for tonight. Draw the board on paper, from memory. Then walk set ordering cost to twelve through it, out loud, naming every Redis key and table.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7dd1e4fd",
+   "say": "If any step feels fuzzy, rewind to that topic's check, not to the start. That's the Inventory Ops Agent. You've got this.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}

@@ -33,6 +33,8 @@ export const SectionScene = ({ s, t }: P<"section">) => {
   const all = useSections();
   const map = all.length >= 3;
   const here = all.findIndex((x) => x.num === s.num && x.title === s.title);
+  const WIN = all.length > 18 ? 15 : all.length;
+  const first = Math.max(0, Math.min(here - 6, all.length - WIN));
   return (
     <>
       <div style={{ position: "absolute", left: map ? 140 : 200, top: 0, bottom: 0, display: "flex", alignItems: "center", gap: 60 }}>
@@ -59,7 +61,10 @@ export const SectionScene = ({ s, t }: P<"section">) => {
       </div>
       {map && (
         <div data-qa="section map" style={{ position: "absolute", left: 1330, top: 540, width: 520, transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 10, opacity: enter(f, 10, 18) }}>
-          {all.map((x, i) => {
+          {/* a long lecture shows a window of the map around the current section */}
+          {first > 0 && <div style={{ fontSize: 22, color: C.faint, paddingLeft: 48 }}>+ {first} earlier</div>}
+          {all.slice(first, first + WIN).map((x, j) => {
+            const i = first + j;
             const on = i === here;
             const done = i < here;
             return (
@@ -71,6 +76,7 @@ export const SectionScene = ({ s, t }: P<"section">) => {
               </div>
             );
           })}
+          {first + WIN < all.length && <div style={{ fontSize: 22, color: C.faint, paddingLeft: 48 }}>+ {all.length - first - WIN} more</div>}
         </div>
       )}
     </>

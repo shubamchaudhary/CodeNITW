@@ -6,14 +6,14 @@ editing one line re-records only that line.
 
     .venv/Scripts/python scripts/tts.py [chapter-id ...]
 """
-import asyncio, json, re, sys
+import asyncio, json, os, re, sys
 from pathlib import Path
 
 import edge_tts
 from mutagen.mp3 import MP3
 
 ROOT = Path(__file__).resolve().parent.parent
-CONCURRENCY = 4
+CONCURRENCY = int(os.environ.get("TTS_CONCURRENCY", 4))  # lower it when the service throttles
 
 
 def norm(w: str) -> str:
@@ -47,7 +47,7 @@ async def record(beat, voice, audio_dir: Path, sem):
     marks_path = audio_dir / f"{beat['key']}.json"
     async with sem:
         if not (path.exists() and marks_path.exists()):
-            for attempt in range(4):
+            for attempt in range(8):
                 try:
                     comm = edge_tts.Communicate(beat["say"], voice, rate=beat["rate"], pitch=beat["pitch"], boundary="WordBoundary")
                     audio, marks = bytearray(), []
@@ -65,7 +65,7 @@ async def record(beat, voice, audio_dir: Path, sem):
                     break
                 except Exception as e:  # network hiccups: retry
                     print(f"  retry {beat['key']}: {e}")
-                    await asyncio.sleep(2 + attempt * 3)
+                    await asyncio.sleep(2 + attempt * 4)
             else:
                 raise RuntimeError(f"could not record {beat['key']}")
     marks = json.loads(marks_path.read_text())
