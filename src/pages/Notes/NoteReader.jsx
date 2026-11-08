@@ -111,6 +111,8 @@ function notePre(dark) {
 
 // How far into the text the left-margin hover zone reaches, in px.
 const GUTTER_ZONE = 16;
+// The progress strip pinned above the note: 44px of content and a 1px border.
+const STRIP_H = 45;
 
 // The part of the note under the pointer: a list item, or else the top-level
 // block (paragraph, heading, list, code block, quote, table…). Offsets are
@@ -219,6 +221,7 @@ export default function NoteReader({
   const [markMenu, setMarkMenu] = useState(null); // clicked highlight
   const [notePop, setNotePop] = useState(null); // { mode: new|view|edit, id?, anchor?, top, left }
   const [progress, setProgress] = useState(0);
+  const [active, setActive] = useState(0); // the section being read, for the contents column
   const [placed, setPlaced] = useState({ order: [], badges: [] }); // located notes + margin markers
   const articleRef = useRef(null);
   const mdRef = useRef(null);
@@ -231,7 +234,8 @@ export default function NoteReader({
 
   const isEmpty = !text.trim();
 
-  // ── Scroll: reading progress (the strip above the note) ──
+  // ── Scroll: reading progress (the strip above the note) and the contents
+  // column's current section ──
   useEffect(() => {
     let frame = 0;
     const measure = () => {
@@ -242,6 +246,12 @@ export default function NoteReader({
       const span = rect.height - (window.innerHeight - navTop);
       setProgress(span > 0 ? Math.min(1, Math.max(0, (navTop - rect.top) / span)) : 1);
 
+      let current = 0;
+      for (const el of article.querySelectorAll("section[data-sec]")) {
+        if (el.getBoundingClientRect().top <= navTop + STRIP_H + 96) current = Number(el.dataset.sec);
+        else break;
+      }
+      setActive(current);
     };
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(measure);
@@ -716,6 +726,24 @@ export default function NoteReader({
   const learntCount = useMemo(() => [...topicKeys.values()].filter((k) => learnt[k]).length, [topicKeys, learnt]);
   const toggleLearntTopic = useCallback((key) => onToggleLearnt?.(key, [...topicKeys.values()]), [onToggleLearnt, topicKeys]);
 
+  const activeTocId = useMemo(() => {
+    let id = toc[0]?.id;
+    for (const entry of toc) if (entry.index <= active) id = entry.id;
+    return id;
+  }, [toc, active]);
+
+  // Jump to a section, landing its heading just under the progress strip.
+  const jumpTo = useCallback(
+    (id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const y = el.getBoundingClientRect().top + window.scrollY - (navTop + STRIP_H + 16);
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    },
+    [navTop]
+  );
+  const showContents = toc.length > 1 && !isEmpty;
+
   const byId = useMemo(() => new Map(annotations.map((a) => [a.id, a])), [annotations]);
   const popNote = notePop?.id ? byId.get(notePop.id) : null;
 
@@ -746,7 +774,8 @@ export default function NoteReader({
           )}
           {railTop && railTopShown && railTop}
         </ProgressStrip>
-        <div>
+        {/* The note, and on wide screens its contents in a column on the right. */}
+        <div className={showContents ? "xl:grid xl:grid-cols-[minmax(0,1fr)_16rem] 2xl:grid-cols-[minmax(0,1fr)_18rem]" : undefined}>
           <article
             ref={articleRef}
             onMouseUp={onMouseUp}
@@ -896,6 +925,21 @@ export default function NoteReader({
             )}
           </article>
 
+          {showContents && (
+            <aside className="hidden xl:block border-l border-line">
+              <ContentsPanel
+                toc={toc}
+                activeId={activeTocId}
+                activeIndex={active}
+                onJump={jumpTo}
+                accent={accent}
+                topicKeys={topicKeys}
+                learnt={learnt}
+                learntCount={learntCount}
+                top={navTop + STRIP_H}
+              />
+            </aside>
+          )}
         </div>
       </div>
 
@@ -1330,6 +1374,107 @@ function outlineLevel(toc) {
 // Which entries to list: everything at the outline level, plus the
 // sub-headings of the part you are reading. A 13-topic note with ten
 // sub-headings each stays a short list instead of 130 lines.
+function visibleEntries(toc, activeIndex) {
+  const top = outlineLevel(toc);
+  let group = -1; // index into toc of the outline entry you are inside
+  toc.forEach((t, i) => {
+    if (t.level === top && t.index <= activeIndex) group = i;
+  });
+  const out = [];
+  let parent = -1;
+  toc.forEach((t, i) => {
+    if (t.level < top) {
+      // A heading above the outline is the note's title: the page header
+      // already shows the topic, and "Back to top" goes there.
+      parent = -1;
+    } else if (t.level === top) {
+      parent = i;
+      out.push(t);
+    } else if (parent === group && group !== -1) out.push(t);
+  });
+  return { entries: out.length ? out : toc, top };
+}
+
+// Keep one entry in view inside a list that scrolls without a scrollbar:
+// scroll the list itself, never the page.
+function useKeepInView(listRef, selector, deps) {
+  useEffect(() => {
+    const list = listRef.current;
+    const el = selector && list?.querySelector(selector);
+    if (!list || !el) return;
+    const above = el.offsetTop - list.scrollTop;
+    const below = above + el.offsetHeight - list.clientHeight;
+    if (above < 24) list.scrollTo({ top: el.offsetTop - 24, behavior: "smooth" });
+    else if (below > -24) list.scrollTo({ top: el.offsetTop - list.clientHeight + el.offsetHeight + 24, behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
+// The note's own topics, in a column on the right of wide screens, pinned
+// under the progress strip while the note scrolls: each outline heading with
+// its learnt tick, and the sub-headings of the part you're reading. The
+// current one is highlighted and kept in view; a click jumps to it.
+function ContentsPanel({ toc, activeId, activeIndex, onJump, accent, topicKeys, learnt, learntCount, top }) {
+  const listRef = useRef(null);
+  const { entries, top: outline } = useMemo(() => visibleEntries(toc, activeIndex), [toc, activeIndex]);
+  const minLevel = Math.min(...entries.map((t) => t.level), outline);
+  useKeepInView(listRef, activeId && `[data-toc="${CSS.escape(activeId)}"]`, [activeId, entries.length]);
+
+  return (
+    <div className="sticky px-5 pt-7 pb-6" style={{ top }}>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-fg-subtle">On this page</p>
+        {topicKeys.size > 0 && (
+          <span className="font-mono text-[12px] tabular-nums text-fg-subtle" title="Topics learnt">
+            {learntCount}/{topicKeys.size}
+          </span>
+        )}
+      </div>
+      <nav ref={listRef} className="note-toc relative mt-3 -ml-2 overflow-y-auto" style={{ maxHeight: `calc(100vh - ${top + 120}px)` }}>
+        {entries.map((t) => {
+          const on = t.id === activeId;
+          const depth = t.level - minLevel;
+          const key = topicKeys.get(t.index);
+          const done = !!(key && learnt[key]);
+          return (
+            <button
+              key={t.id}
+              data-toc={t.id}
+              onClick={() => onJump(t.id)}
+              title={t.title}
+              style={{ paddingLeft: `${8 + depth * 14}px` }}
+              className={`flex w-full items-start gap-2 rounded-md pr-2 text-left leading-snug transition-colors hover:bg-surface-hover ${
+                depth === 0 ? "py-1.5 text-[14px]" : "py-1 text-[13px]"
+              } ${
+                on
+                  ? `${accent?.text || "text-fg"} font-semibold`
+                  : done
+                  ? "text-success-fg"
+                  : depth === 0
+                  ? "text-fg-muted hover:text-fg"
+                  : "text-fg-subtle hover:text-fg"
+              }`}
+            >
+              {key && (
+                <span className="mt-[2px]" title={done ? "Learnt" : "Not learnt yet"}>
+                  <CheckCircle done={done} className="w-3.5 h-3.5" />
+                </span>
+              )}
+              <span className="line-clamp-2">{t.title}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="mt-4 text-[12.5px] font-medium text-fg-subtle hover:text-fg"
+      >
+        Back to top
+      </button>
+    </div>
+  );
+}
+
 function NoteIcon({ className }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 16 16">
