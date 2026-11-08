@@ -39,7 +39,6 @@ export type ArchProps = {
 };
 
 const NH = 84; // default node height, in view units
-const SOFT = "#2a1f12"; // the site's accent-soft, behind a lit box
 const LINE2 = "#3a4552";
 
 const anchor = (n: ANode, side: Side, off = 0): [number, number] => {
@@ -176,7 +175,7 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
         const top = n.y + (nh - blockH) / 2;
         return (
           <g key={n.id} opacity={o}>
-            <rect x={n.x} y={n.y} width={n.w} height={nh} rx={14} strokeWidth={on ? 2.4 : 1.2} fill={on ? (n.tone ? `${col}22` : SOFT) : C.card} stroke={on ? col : LINE2} />
+            <rect x={n.x} y={n.y} width={n.w} height={nh} rx={14} strokeWidth={on ? 2.4 : 1.2} fill={on ? (n.tone ? `${col}22` : C.soft) : C.card} stroke={on ? col : LINE2} />
             <text x={n.x + n.w / 2} y={top + tF * 0.82} textAnchor="middle" fontSize={tF} fontWeight={600} fill={C.text} fontFamily="Inter" {...fit(n.t, tF, 0.56, n.w - 16)}>
               {n.t}
             </text>
@@ -195,10 +194,10 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
 // The step explained beside the board: number, title, text, and a measured fact.
 const Panel = ({ s, f, start, idx }: { s: AStep; f: number; start: number; idx: number }) => (
   <Abs x={1352} y={262} w={500} style={rise(f, start, 18)}>
-    <div style={{ fontFamily: MONO, fontSize: 84, fontWeight: 800, lineHeight: 1, background: `linear-gradient(90deg, ${C.blue}, #ffd08a)`, WebkitBackgroundClip: "text", color: "transparent" }}>
+    <div style={{ fontFamily: MONO, fontSize: 84, fontWeight: 800, lineHeight: 1, background: `linear-gradient(90deg, ${C.blue}, ${C.grad2})`, WebkitBackgroundClip: "text", color: "transparent" }}>
       {s.n ?? String(idx + 1).padStart(2, "0")}
     </div>
-    {s.t && <div style={{ fontFamily: MONO, fontSize: s.t.length > 22 ? 32 : 38, fontWeight: 800, lineHeight: 1.15, marginTop: 14, letterSpacing: -0.5 }}>{s.t}</div>}
+    {s.t && <div style={{ fontFamily: C.head, fontSize: s.t.length > 22 ? 32 : 38, fontWeight: 800, lineHeight: 1.15, marginTop: 14, letterSpacing: -0.5 }}>{s.t}</div>}
     {s.b && <div style={{ fontSize: 27, lineHeight: 1.45, color: "#c9cdd3", marginTop: 14 }}>{s.b}</div>}
     {s.m && (
       <div style={{ display: "inline-block", marginTop: 20, fontFamily: MONO, fontSize: 22, fontWeight: 600, color: C.blue, background: C.card2, border: `1px solid ${C.line}`, borderRadius: 8, padding: "8px 14px", lineHeight: 1.35 }}>
@@ -229,7 +228,7 @@ export const LLArch = ({ t, props }: CP) => {
   return (
     <>
       {p.title && (
-        <Abs x={80} y={128} w={1220} style={{ fontFamily: MONO, fontSize: p.title.length > 40 ? 40 : 46, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.15, ...rise(f, 2) }}>
+        <Abs x={80} y={128} w={1220} style={{ fontFamily: C.head, fontSize: p.title.length > 40 ? 40 : 46, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.15, ...rise(f, 2) }}>
           {p.title}
         </Abs>
       )}

@@ -30,6 +30,8 @@ export const C = {
   head: FONT, // headline font
   glow1: "#5b9cff", // the two drifting backdrop lights
   glow2: "#a78bfa",
+  soft: "#1a2a47", // behind a lit box on a board
+  grad2: "#a78bfa", // second stop of a board's step-number gradient
 };
 
 // A chapter can restyle every scene by naming a theme: C is reset from BASE and
@@ -53,6 +55,8 @@ const THEMES: Record<string, Partial<typeof C>> = {
     head: MONO,
     glow1: "#ffa23e",
     glow2: "#5fd3d0",
+    soft: "#2a1f12",
+    grad2: "#ffd08a",
   },
 };
 export const applyTheme = (name?: string) => {
