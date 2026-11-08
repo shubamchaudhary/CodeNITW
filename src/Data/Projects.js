@@ -3,7 +3,7 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs: LL-01, IOA-01).
+// except where a built-in document replaces them (Data/projectsDocs: IPP-01, LL-01, IOA-01).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -50,8 +50,8 @@ export const PROJECT_TOPICS = [
     parts: [0],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
-    title: "Overview & architecture",
-    summary: "The pitch, the architecture diagram, the tech stack and why each piece was chosen, and where everything lives in the repo.",
+    title: "Architecture & decisions",
+    summary: "The whole site, verified against the code: local-first sync, git-style notes, contests and reminders, the planner, security, and the follow-ups.",
   },
   {
     id: "IPP-02",

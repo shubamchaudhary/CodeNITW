@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 600" width="1240" height="600" role="img" aria-label="Where an account&#x27;s data lives in Firestore">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="600" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Where an account&#x27;s data lives in Firestore</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">split across documents because one Firestore document holds at most 1 MiB</text>
+<rect x="40" y="110" width="430" height="44" rx="8" fill="#1a2235" stroke="#5b9cff" stroke-width="1.6"/>
+<text x="54" y="138" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#5b9cff" text-anchor="start" font-weight="700">userProgress/{uid}</text>
+<text x="500" y="130" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">the main document: DSA ticks, solve times, stars, planned days, time log, _meta (edit times)</text>
+<text x="500" y="148" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#5b9cff" text-anchor="start" font-weight="500">read/create by owner; update only if fastForward()</text>
+<path d="M58 138 L58 190 L76 190" fill="none" stroke="#2f3a55" stroke-width="1.5"/>
+<rect x="80" y="168" width="390" height="44" rx="8" fill="#1a2235" stroke="#a78bfa" stroke-width="1.6"/>
+<text x="94" y="196" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#a78bfa" text-anchor="start" font-weight="700">data/{key}</text>
+<text x="500" y="188" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">one per other key: Core Stack ticks, job tracker, timer... { value, _meta, updatedAt }</text>
+<text x="500" y="206" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#a78bfa" text-anchor="start" font-weight="500">owner read/write; decided per entry by edit time</text>
+<path d="M58 196 L58 248 L76 248" fill="none" stroke="#2f3a55" stroke-width="1.5"/>
+<rect x="80" y="226" width="390" height="44" rx="8" fill="#1a2235" stroke="#ffb547" stroke-width="1.6"/>
+<text x="94" y="254" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#ffb547" text-anchor="start" font-weight="700">notes/{key}~{id}</text>
+<text x="500" y="246" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">one per note: { key, id, value, deleted, rev, base, updatedAt }</text>
+<text x="500" y="264" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#ffb547" text-anchor="start" font-weight="500">owner; compare-and-swap on base; never deleted</text>
+<path d="M58 254 L58 306 L76 306" fill="none" stroke="#2f3a55" stroke-width="1.5"/>
+<rect x="80" y="284" width="390" height="44" rx="8" fill="#1a2235" stroke="#38d996" stroke-width="1.6"/>
+<text x="94" y="312" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#38d996" text-anchor="start" font-weight="700">history/{note}/revisions/{time-device}</text>
+<text x="500" y="304" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">every saved version: full text + personal notes</text>
+<text x="500" y="322" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#38d996" text-anchor="start" font-weight="500">owner; create + read only: append-only</text>
+<path d="M58 312 L58 364 L76 364" fill="none" stroke="#2f3a55" stroke-width="1.5"/>
+<rect x="80" y="342" width="390" height="44" rx="8" fill="#1a2235" stroke="#3fd2e8" stroke-width="1.6"/>
+<text x="94" y="370" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#3fd2e8" text-anchor="start" font-weight="700">noteAssets/{id}</text>
+<text x="500" y="362" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">a screenshot as a compressed data URL (&lt; 900 KB)</text>
+<text x="500" y="380" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#3fd2e8" text-anchor="start" font-weight="500">owner; size-checked in the rules</text>
+<rect x="40" y="400" width="430" height="44" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="1.6"/>
+<text x="54" y="428" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="700">appCache/contests</text>
+<text x="500" y="420" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">the shared 10-minute contest cache</text>
+<text x="500" y="438" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="500">server only (Admin SDK)</text>
+<rect x="40" y="458" width="430" height="44" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="1.6"/>
+<text x="54" y="486" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="700">contestSubscribers/{uid}</text>
+<text x="500" y="478" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">email, time zone, confirmed</text>
+<text x="500" y="496" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="500">server only</text>
+<rect x="40" y="516" width="430" height="44" rx="8" fill="#1a2235" stroke="#93a0b8" stroke-width="1.6"/>
+<text x="54" y="544" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="700">contestReminders/{contest@start:kind}</text>
+<text x="500" y="536" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="start" font-weight="400">sentTo: { uid: sentAt }</text>
+<text x="500" y="554" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="start" font-weight="500">server only</text>
+<line x1="30" y1="392" x2="1210" y2="392" stroke="#2f3a55" stroke-dasharray="6 6"/>
+<text x="1210" y="386" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#93a0b8" text-anchor="end" font-weight="600">below: the browser can&#x27;t read these at all</text>
+</svg>

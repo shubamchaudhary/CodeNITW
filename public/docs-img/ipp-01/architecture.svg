@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 860" width="1240" height="860" role="img" aria-label="InterviewPlanPrep: the whole system">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="860" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">InterviewPlanPrep: the whole system</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">a React SPA on Vercel&#x27;s CDN, Firebase for accounts and data, Vercel functions for everything server-side</text>
+<g transform="translate(0,40)">
+<rect x="30" y="105" width="400" height="690" rx="14" fill="none" stroke="#5b9cff" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="44" y="127" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#5b9cff" text-anchor="start" font-weight="700">Browser: React single-page app</text>
+<rect x="50" y="145" width="360" height="74" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="230.0" y="176.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Pages, one lazy chunk each</text>
+<text x="230.0" y="196.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">Planner · Core Stack notes · DSA · Contests · Job Tracker</text>
+<rect x="50" y="245" width="360" height="84" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="230.0" y="272.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">planStore: localStorage</text>
+<text x="230.0" y="292.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">the instant source of truth, keys namespaced per uid</text>
+<text x="230.0" y="309.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">guests read everything, writes ask to sign in</text>
+<rect x="50" y="355" width="170" height="90" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="135.0" y="385.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">cloudSync</text>
+<text x="135.0" y="405.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">pending journal</text>
+<text x="135.0" y="422.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">reconcile, push</text>
+<rect x="240" y="355" width="170" height="90" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="325.0" y="385.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">noteHistory</text>
+<text x="325.0" y="405.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">revisions,</text>
+<text x="325.0" y="422.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">restore</text>
+<rect x="50" y="470" width="360" height="74" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="230.0" y="501.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Firestore SDK cache (IndexedDB)</text>
+<text x="230.0" y="521.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">offline write queue, shared across tabs</text>
+<rect x="50" y="570" width="360" height="74" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="230.0" y="601.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">authGate + Firebase Auth SDK</text>
+<text x="230.0" y="621.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">email/password, Google; ID tokens</text>
+<rect x="50" y="670" width="360" height="100" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="230.0" y="705.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Small caches</text>
+<text x="230.0" y="725.2750000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">contests list: 1 minute in memory</text>
+<text x="230.0" y="742.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">reading prefs, device id, sync maps: localStorage</text>
+<rect x="470" y="105" width="360" height="690" rx="14" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="484" y="127" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#a78bfa" text-anchor="start" font-weight="700">Vercel</text>
+<rect x="490" y="145" width="320" height="74" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="650.0" y="176.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">CDN (edge)</text>
+<text x="650.0" y="196.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">static build + cached API answers</text>
+<rect x="490" y="245" width="320" height="150" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="650.0" y="279.245" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Serverless functions (Node)</text>
+<text x="650.0" y="298.95" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">GET /api/contests</text>
+<text x="650.0" y="316.5" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">GET|POST|DELETE /api/contest-alerts</text>
+<text x="650.0" y="334.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">GET|POST /api/email-link</text>
+<text x="650.0" y="351.59999999999997" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">GET /api/contest-reminders</text>
+<text x="650.0" y="369.15" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">POST /api/track</text>
+<rect x="490" y="420" width="320" height="84" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="650.0" y="447.57" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Vercel Cron</text>
+<text x="650.0" y="467.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">96 daily jobs = one run every ~15 min</text>
+<text x="650.0" y="484.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">(Hobby: each job once a day)</text>
+<rect x="490" y="530" width="320" height="74" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="650.0" y="561.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">GitHub Actions (backup)</text>
+<text x="650.0" y="581.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">every 10 min, same job, same secret</text>
+<rect x="490" y="630" width="320" height="140" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="650.0" y="668.02" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Shared server code</text>
+<text x="650.0" y="687.725" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">contest sources + 10-min cache</text>
+<text x="650.0" y="705.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">reminder windows, HMAC links</text>
+<text x="650.0" y="722.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">Gmail SMTP transport</text>
+<text x="650.0" y="740.375" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">firebase-admin + ID-token check</text>
+<rect x="870" y="105" width="340" height="440" rx="14" fill="none" stroke="#ffb547" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="884" y="127" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#ffb547" text-anchor="start" font-weight="700">Google Firebase</text>
+<rect x="890" y="145" width="300" height="74" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="1040.0" y="176.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Firebase Auth</text>
+<text x="1040.0" y="196.04999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">accounts, ID tokens (JWT)</text>
+<rect x="890" y="245" width="300" height="120" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="1040.0" y="273.02" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Firestore: per user</text>
+<text x="1040.0" y="292.72499999999997" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">userProgress/{uid}</text>
+<text x="1040.0" y="310.275" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">  /data, /notes, /history</text>
+<text x="1040.0" y="327.825" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">  /noteAssets</text>
+<text x="1040.0" y="345.37499999999994" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">client access, security rules</text>
+<rect x="890" y="390" width="300" height="130" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="1040.0" y="414.245" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">Firestore: server only</text>
+<text x="1040.0" y="433.95" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">appCache/contests</text>
+<text x="1040.0" y="451.5" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">contestSubscribers/{uid}</text>
+<text x="1040.0" y="469.05" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">contestReminders/{key}</text>
+<text x="1040.0" y="486.59999999999997" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">visits</text>
+<text x="1040.0" y="504.15" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">rules deny the browser</text>
+<rect x="870" y="570" width="340" height="225" rx="14" fill="none" stroke="#93a0b8" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="884" y="592" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#93a0b8" text-anchor="start" font-weight="700">Outside services</text>
+<rect x="890" y="605" width="300" height="64" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1040.0" y="631.345" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="16" fill="#eef2f8" text-anchor="middle" font-weight="650">clist.by</text>
+<text x="1040.0" y="651.0500000000001" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">primary contest source</text>
+<rect x="890" y="680" width="300" height="50" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1040.0" y="709.48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14" fill="#eef2f8" text-anchor="middle" font-weight="650">LeetCode · Codeforces · CodeChef</text>
+<rect x="890" y="738" width="300" height="46" rx="10" fill="#1a2235" stroke="#2f3a55" stroke-width="1.2"/>
+<text x="1040.0" y="765.8" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="15" fill="#eef2f8" text-anchor="middle" font-weight="650">Gmail SMTP</text>
+<path d="M430 180 L488 180" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<text x="459" y="170" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#a78bfa" text-anchor="middle" font-weight="500">static files</text>
+<path d="M430 285 L488 285" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<text x="459" y="276" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#a78bfa" text-anchor="middle" font-weight="500">fetch</text>
+<path d="M410 400 L442 400 L442 78 L1200 78 L1200 305 L1192 305" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<text x="760" y="70" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#ffb547" text-anchor="middle" font-weight="500">live sync: snapshots + writes (cloudSync, noteHistory)</text>
+<path d="M410 607 L452 607 L452 92 L1040 92 L1040 143" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<text x="1050" y="126" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#ffb547" text-anchor="start" font-weight="500">sign in, ID tokens</text>
+<path d="M810 320 L888 440" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<text x="842" y="372" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13" fill="#ffb547" text-anchor="middle" font-weight="600">admin</text>
+<path d="M810 462 L835 462 L835 300 L812 300" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<path d="M810 567 L845 567 L845 330 L812 330" fill="none" stroke="#93a0b8" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#am)"/>
+<path d="M810 680 L888 637" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<path d="M810 700 L888 705" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+<path d="M810 740 L888 760" fill="none" stroke="#93a0b8" stroke-width="2" marker-end="url(#am)"/>
+</g>
+</svg>

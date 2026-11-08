@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 470" width="1240" height="470" role="img" aria-label="Upcoming contests: four caches between a visitor and clist.by">
+<defs><marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#93a0b8"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b9cff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#38d996"/></marker><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffb547"/></marker><marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6fa5"/></marker><marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker><marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3fd2e8"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff6262"/></marker></defs>
+<rect width="1240" height="470" rx="18" fill="#0f1420"/>
+<text x="36" y="48" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="24" fill="#eef2f8" text-anchor="start" font-weight="700">Upcoming contests: four caches between a visitor and clist.by</text>
+<text x="36" y="76" font-family="JetBrains Mono, Consolas, Menlo, monospace" font-size="15" fill="#93a0b8" text-anchor="start" font-weight="400">most visits are answered by the edge; the platforms are asked at most every 10 minutes</text>
+<rect x="30" y="120" width="220" height="120" rx="10" fill="#1a2235" stroke="#5b9cff" stroke-width="2"/>
+<text x="140.0" y="174.665" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">Browser</text>
+<text x="140.0" y="194.54999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">1 min in memory</text>
+<text x="140" y="270" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">the same promise reused;</text>
+<text x="140" y="289" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">the tour warms it up</text>
+<path d="M252 180 L268 180" fill="none" stroke="#5b9cff" stroke-width="2" marker-end="url(#ab)"/>
+<rect x="270" y="120" width="220" height="120" rx="10" fill="#1a2235" stroke="#a78bfa" stroke-width="2"/>
+<text x="380.0" y="165.89" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">Vercel edge</text>
+<text x="380.0" y="185.77499999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">s-maxage=300</text>
+<text x="380.0" y="203.325" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">stale-while-revalidate=1 day</text>
+<text x="380" y="270" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">answers instantly, refetches</text>
+<text x="380" y="289" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">in the background</text>
+<path d="M492 180 L508 180" fill="none" stroke="#a78bfa" stroke-width="2" marker-end="url(#au)"/>
+<rect x="510" y="120" width="220" height="120" rx="10" fill="#1a2235" stroke="#3fd2e8" stroke-width="2"/>
+<text x="620.0" y="174.665" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">Function memory</text>
+<text x="620.0" y="194.54999999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">this instance&#x27;s copy</text>
+<text x="620" y="270" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">skips Firestore while fresh</text>
+<path d="M732 180 L748 180" fill="none" stroke="#3fd2e8" stroke-width="2" marker-end="url(#ac)"/>
+<rect x="750" y="120" width="220" height="120" rx="10" fill="#1a2235" stroke="#ffb547" stroke-width="2"/>
+<text x="860.0" y="165.89" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">Firestore appCache</text>
+<text x="860.0" y="185.77499999999998" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">10 min, shared by all</text>
+<text x="860.0" y="203.325" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">instances and the cron job</text>
+<text x="860" y="270" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">a failed platform keeps its</text>
+<text x="860" y="289" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">last contests; retry after 60 s</text>
+<path d="M972 180 L988 180" fill="none" stroke="#ffb547" stroke-width="2" marker-end="url(#aa)"/>
+<rect x="990" y="120" width="220" height="120" rx="10" fill="#1a2235" stroke="#38d996" stroke-width="2"/>
+<text x="1100.0" y="157.115" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" fill="#eef2f8" text-anchor="middle" font-weight="650">Sources</text>
+<text x="1100.0" y="177.0" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">clist.by (with key)</text>
+<text x="1100.0" y="194.55" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">else LeetCode GraphQL,</text>
+<text x="1100.0" y="212.1" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">Codeforces, CodeChef</text>
+<text x="1100" y="270" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">8 s timeout each;</text>
+<text x="1100" y="289" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13.5" fill="#93a0b8" text-anchor="middle" font-weight="400">normalised to one shape</text>
+<rect x="30" y="335" width="1180" height="110" rx="14" fill="#141b2b" stroke="#2f3a55"/>
+<text x="50" y="367" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">An answer with no contests because everything failed is sent with no-store, so the edge never caches an empty list.</text>
+<text x="50" y="393" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">Per platform: if only CodeChef fails, CodeChef keeps its last known contests while the other two refresh.</text>
+<text x="50" y="419" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="14.5" fill="#eef2f8" text-anchor="start" font-weight="400">Filters: future only, at most 6 hours long (no marathons), de-duplicated by id, sorted by start time.</text>
+</svg>
