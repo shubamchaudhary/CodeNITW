@@ -17,8 +17,7 @@
 // A note references an image by path (/note-asset/{id}); the notes page resolves
 // those to data URLs when it renders the preview.
 
-import { doc, getDoc, setDoc, deleteDoc, collection } from "firebase/firestore";
-import { db } from "../firebase";
+import { loadFirestore } from "./firestore";
 
 // Raw bytes before base64. 500 KB → ~667 KB encoded, comfortably inside the
 // 1 MB document limit with room for the other fields.
@@ -42,12 +41,42 @@ export class NoteAssetError extends Error {
   }
 }
 
-// Resolved images, kept for the tab's lifetime so flipping between topics does
-// not re-read the same documents.
+// Resolved images, so flipping between topics does not re-read the same
+// documents. Bounded: the most recently used ones up to CACHE_CHARS of data
+// URL (~12 MB), so a long session among image-heavy notes doesn't keep every
+// screenshot it has ever shown in memory.
+const CACHE_CHARS = 12_000_000;
 const cache = new Map();
+let cachedChars = 0;
+const cacheGet = (id) => {
+  const data = cache.get(id);
+  if (data !== undefined) {
+    cache.delete(id); // most recently used goes last
+    cache.set(id, data);
+  }
+  return data;
+};
+const cacheSet = (id, data) => {
+  cacheDelete(id);
+  cache.set(id, data);
+  cachedChars += data.length;
+  for (const [old, oldData] of cache) {
+    if (cachedChars <= CACHE_CHARS || old === id) break;
+    cache.delete(old);
+    cachedChars -= oldData.length;
+  }
+};
+const cacheDelete = (id) => {
+  const data = cache.get(id);
+  if (data === undefined) return;
+  cache.delete(id);
+  cachedChars -= data.length;
+};
 
-function assetDoc(uid, id) {
-  return doc(collection(doc(db, "userProgress", uid), "noteAssets"), id);
+// The SDK loads on first use (Data/firestore.js).
+async function assetDoc(uid, id) {
+  const fs = await loadFirestore();
+  return { fs, ref: fs.doc(fs.collection(fs.doc(fs.db, "userProgress", uid), "noteAssets"), id) };
 }
 
 // Render at a given max edge and JPEG quality. White is painted first so a PNG
@@ -110,7 +139,8 @@ export async function uploadNoteImage({ uid, source, topicId, file }) {
   const id = newId();
 
   try {
-    await setDoc(assetDoc(uid, id), {
+    const { fs, ref } = await assetDoc(uid, id);
+    await fs.setDoc(ref, {
       data,
       source,
       topicId,
@@ -129,7 +159,7 @@ export async function uploadNoteImage({ uid, source, topicId, file }) {
     throw new NoteAssetError(err?.message || "Couldn't save the screenshot.", code || "unknown");
   }
 
-  cache.set(id, data);
+  cacheSet(id, data);
   return { id, path: `${ASSET_PREFIX}${id}` };
 }
 
@@ -147,7 +177,8 @@ export async function loadNoteAssets(uid, ids) {
   const out = {};
   const missing = [];
   for (const id of ids) {
-    if (cache.has(id)) out[id] = cache.get(id);
+    const hit = cacheGet(id);
+    if (hit !== undefined) out[id] = hit;
     else missing.push(id);
   }
   if (!uid || !missing.length) return out;
@@ -155,10 +186,11 @@ export async function loadNoteAssets(uid, ids) {
   await Promise.all(
     missing.map(async (id) => {
       try {
-        const snap = await getDoc(assetDoc(uid, id));
+        const { fs, ref } = await assetDoc(uid, id);
+        const snap = await fs.getDoc(ref);
         const data = snap.exists() ? snap.data()?.data : null;
         if (data) {
-          cache.set(id, data);
+          cacheSet(id, data);
           out[id] = data;
         }
       } catch (_) {
@@ -172,8 +204,9 @@ export async function loadNoteAssets(uid, ids) {
 
 export async function deleteNoteAsset(uid, id) {
   try {
-    await deleteDoc(assetDoc(uid, id));
-    cache.delete(id);
+    const { fs, ref } = await assetDoc(uid, id);
+    await fs.deleteDoc(ref);
+    cacheDelete(id);
     return true;
   } catch (_) {
     return false;

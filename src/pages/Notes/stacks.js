@@ -9,8 +9,6 @@ import { AI_STACK_SECTIONS, AI_STACK_TOPICS } from "../../Data/AIStack";
 import { PROJECT_SECTIONS, PROJECT_TOPICS, getProjectTopic } from "../../Data/Projects";
 import {
   KEYS,
-  getCoreStackTopic,
-  getAIStackTopic,
   coreStackPlanItem,
   aiStackPlanItem,
   coreStackDaysSinceChecked,
@@ -18,6 +16,7 @@ import {
   projectPlanItem,
   projectDaysSinceChecked,
 } from "../../Data/planStore";
+import { getCoreStackTopic, getAIStackTopic } from "../../Data/catalog";
 
 // Priority tags (the design system's PriorityTag): only P0 and P1 carry a
 // status colour; the rest are grey. The label always shows.

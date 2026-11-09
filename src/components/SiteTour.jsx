@@ -5,6 +5,7 @@ import { onAuthStateChange, requestSignIn } from "../Data/authGate";
 import { fetchContests } from "../Data/contestsFeed";
 import { enterSandbox, leaveSandbox } from "../Data/tourSandbox";
 import { DSAPrep, StackHome, TopicNotes, JobTracker, Contests, Planning } from "../pageLoaders";
+import { onTourStart } from "./tourControl";
 
 // A guided, auto-played walk through the site. startTour() (the landing
 // page's "Take a quick tour" button) loads every page first, then a cursor
@@ -46,10 +47,8 @@ const preloadAll = () =>
     fetchContests(),
   ]);
 
-const listeners = new Set();
-export function startTour() {
-  listeners.forEach((fn) => fn());
-}
+// startTour() lives in tourControl.js, so a page can offer the tour without
+// loading it: App mounts this component the first time it's asked for.
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
 const CANCELLED = Symbol("tour cancelled");
@@ -449,10 +448,7 @@ export default function SiteTour() {
     }
   };
 
-  useEffect(() => {
-    listeners.add(begin);
-    return () => listeners.delete(begin);
-  });
+  useEffect(() => onTourStart(begin));
 
   // Leaving the page mid-tour (or a hot reload) must not strand the sandbox.
   useEffect(() => () => stop(), []); // eslint-disable-line react-hooks/exhaustive-deps

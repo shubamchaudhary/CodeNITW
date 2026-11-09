@@ -17,8 +17,7 @@
 // "<time>-<device>", so revisions sort by time and a retried write can't make
 // a duplicate.
 
-import { collection, doc, getDocs, limit, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { loadFirestore } from "./firestore";
 import { KEYS, loadJSON, subscribe } from "./planStore";
 
 const NOTE_KEYS = new Set([KEYS.CS_NOTES, KEYS.AI_NOTES, KEYS.PJ_NOTES, KEYS.DSA_NOTES, KEYS.IK_NOTES, KEYS.IP_NOTES]);
@@ -158,16 +157,22 @@ function write(target, content, { at = Date.now(), reason = "edit", extra = {} }
     return;
   }
   // Not awaited: offline, Firestore queues it and sends it later — harmless,
-  // since a revision is only ever created, never changed.
-  setDoc(doc(db, "userProgress", uid, "history", target, "revisions", id), {
-    ...revision,
-    savedAt: serverTimestamp(),
-  }).catch((err) => {
-    if (!warned) {
-      warned = true;
-      console.warn("[history] couldn't save a revision:", err?.code || err);
-    }
-  });
+  // since a revision is only ever created, never changed. (The SDK itself
+  // loads on first use; revisions written meanwhile simply wait for it.)
+  const owner = uid;
+  loadFirestore()
+    .then((fs) =>
+      fs.setDoc(fs.doc(fs.db, "userProgress", owner, "history", target, "revisions", id), {
+        ...revision,
+        savedAt: fs.serverTimestamp(),
+      })
+    )
+    .catch((err) => {
+      if (!warned) {
+        warned = true;
+        console.warn("[history] couldn't save a revision:", err?.code || err);
+      }
+    });
 }
 
 // Before the first change a session makes to a note, keep what it was — so
@@ -305,8 +310,9 @@ export function isInMemoryHistory() {
 export async function listRevisions(notesKey, id, max = 100) {
   if (!uid) return [];
   if (memory) return [...(memory.get(targetOf(notesKey, id)) || [])].reverse().slice(0, max);
-  const snap = await getDocs(
-    query(collection(db, "userProgress", uid, "history", targetOf(notesKey, id), "revisions"), orderBy("at", "desc"), limit(max))
+  const fs = await loadFirestore();
+  const snap = await fs.getDocs(
+    fs.query(fs.collection(fs.db, "userProgress", uid, "history", targetOf(notesKey, id), "revisions"), fs.orderBy("at", "desc"), fs.limit(max))
   );
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from "react";
 import PageSkeleton from "../../components/PageSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -7,7 +7,6 @@ import { DSA_DIFFICULTY_CONFIG } from "../../Data/DSAPrep";
 import { CORE_STACK_PRIORITY_CONFIG } from "../../Data/CoreStack";
 import { AI_STACK_TOPICS } from "../../Data/AIStack";
 import {
-  InterviewCardDetail,
   DsaProblemDetail,
   CoreStackTopicDetail,
   AIStackTopicDetail,
@@ -16,17 +15,12 @@ import {
 import { GLASS, GLASS_ROW, LIGHT_BUTTON } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {
-  CORE_STACK_TOPICS,
-  DSA_PROBLEMS,
   KEYS,
   loadJSON,
   saveJSON,
   setSourceComplete,
   setSourceNote,
-  getCoreStackTopic,
-  getAIStackTopic,
   projectDaysSinceChecked,
-  getDsaProblem,
   setDsaStarred,
   dsaDaysSinceSolved,
   coreStackDaysSinceChecked,
@@ -48,11 +42,12 @@ import {
   setDayTime,
   migrateCardTime,
 } from "../../Data/planStore";
-import { getInterviewCard } from "../../Data/interviewCards";
+import { CORE_STACK_TOPICS, DSA_PROBLEMS, getCoreStackTopic, getAIStackTopic, getDsaProblem } from "../../Data/catalog";
+const LegacyInterviewDetail = lazy(() => import("./LegacyInterviewDetail"));
 import { getProjectTopic } from "../../Data/Projects";
 import { demoPlan } from "../../Data/planDemo";
 import { requireAuth, requestSignIn } from "../../Data/authGate";
-import { startTour } from "../../components/SiteTour";
+import { startTour } from "../../components/tourControl";
 import OfferHero from "./OfferHero";
 import useTourSandbox from "../../hooks/useTourSandbox";
 
@@ -593,7 +588,6 @@ function DayCard({
     setEditingSubTime(null);
   };
 
-  const interviewCard = item.source === "interview" ? getInterviewCard(item.refId) : null;
   const coreStackTopic = item.source === "corestack" ? getCoreStackTopic(item.refId) : null;
   const aiStackTopic = item.source === "aistack" ? getAIStackTopic(item.refId) : null;
   const projectTopic = item.source === "projects" ? getProjectTopic(item.refId) : null;
@@ -885,7 +879,11 @@ function DayCard({
                     checkedDays={complete ? aiStackDaysSinceChecked(item.refId) : null}
                   />
                 )}
-                {item.source === "interview" && <InterviewCardDetail item={interviewCard} note={note} onNoteChange={onNoteChange} />}
+                {item.source === "interview" && (
+                  <Suspense fallback={null}>
+                    <LegacyInterviewDetail refId={item.refId} note={note} onNoteChange={onNoteChange} />
+                  </Suspense>
+                )}
                 {item.source === "dsa" && <DsaProblemDetail problem={dsaProblem} note={note} onNoteChange={onNoteChange} isStarred={isStarred} onToggleStar={onToggleStar} solvedDays={solvedDays} />}
                 {item.source === "custom" && (
                   <div>

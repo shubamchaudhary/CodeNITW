@@ -1,4 +1,4 @@
-import { useEffect, Suspense } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "./App.css";
@@ -12,13 +12,17 @@ import { startCloudSync, stopCloudSync, onSyncNotice } from "./Data/cloudSync";
 import { startNoteHistory, stopNoteHistory } from "./Data/noteHistory";
 import { setAuthState } from "./Data/authGate";
 import { trackSignIn, trackVisit } from "./Data/visitTracker";
-import SiteTour from "./components/SiteTour";
+import { setTourMount } from "./components/tourControl";
 import PageSkeleton from "./components/PageSkeleton";
 import { StackHome, TopicNotes, DSAPrep, HLDPrep, WebBasics, Planning, Contests, AuthPage, JobTracker } from "./pageLoaders";
 
 // Every page is its own chunk, so opening one downloads only that page — not
 // the notes page's markdown renderer, the planner and the rest with it.
 // (See pageLoaders: the site tour preloads them.)
+
+// The guided tour, with the animation library it uses, loads only when
+// someone starts it (tourControl.js).
+const SiteTour = lazy(() => import("./components/SiteTour"));
 
 // A page view for every route the app shows (see Data/visitTracker).
 function VisitTracker() {
@@ -30,6 +34,9 @@ function VisitTracker() {
 }
 
 function App() {
+  const [tourWanted, setTourWanted] = useState(false);
+  useEffect(() => setTourMount(() => setTourWanted(true)), []);
+
   // Anyone can browse; a signed-in account syncs its own progress to Firestore
   // (scoped by uid). The auth state is published first, so the store knows
   // whether a write is allowed before any page can make one.
@@ -132,7 +139,11 @@ function App() {
         </div>
         <Footer />
         <AuthPrompt />
-        <SiteTour />
+        {tourWanted && (
+          <Suspense fallback={null}>
+            <SiteTour />
+          </Suspense>
+        )}
       </Router>
       {/* Only for what the screen can't show by itself (errors, sync
           conflicts, undo): a small dark pill, styled in App.css. An action
