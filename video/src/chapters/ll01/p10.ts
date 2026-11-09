@@ -1,0 +1,277 @@
+import type { Scene } from "../../lib/types.ts";
+import { B, arch, sec } from "./h.ts";
+import { check } from "./k.ts";
+import { ERRORS, SCALE } from "./diagrams.ts";
+
+// Part 10: failures and robustness, scaling, defending the resume line by
+// line, rapid fire, the pitch, the final check and the homework.
+export const p10: Scene[] = [
+  // ------------------------------------------------------------ 27
+  sec("27", "Failures: retries, poison, and the DLQ", "Topic twenty seven. What happens when things go wrong. Every upload must end parsed, or failed with a reason. Never stuck."),
+  {
+    kind: "bullets",
+    title: "Three words first",
+    items: [
+      { icon: "🔁", text: "Retry", sub: "fixes transient errors: timeouts, rate limits" },
+      { icon: "☠️", text: "Poison message", sub: "fails every time · retried forever, it blocks its partition: head-of-line blocking" },
+      { icon: "🅿️", text: "Dead-letter queue (DLQ)", sub: "parks the poison so the partition moves on" },
+    ],
+    beats: B(
+      "Three words first. A retry fixes transient errors: a timeout, a rate limit.",
+      { say: "A poison message fails every single time. If you retry it forever, it blocks everything behind it in its partition. That's head of line blocking.", term: { word: "Head-of-line blocking", meaning: "one stuck record blocks its whole partition" } },
+      "A dead letter queue parks the poison message, so the partition can move on.",
+    ),
+  },
+  arch(
+    ERRORS,
+    [
+      { all: true },
+      { t: "The happy path", b: "Process, commit the transaction, then acknowledge the offset.", nodes: ["item", "cons", "ok"], edges: ["a", "b"] },
+      { t: "Rate limited", b: "A 429 never sleeps a worker: the item goes to the 60 s retry topic with notBefore, and the retry thread re-publishes it when due.", m: "up to 1,440 attempts ≈ 24 h", nodes: ["cons", "retry", "item"], edges: ["c", "g"] },
+      { t: "Anything else", b: "Spring's DefaultErrorHandler retries with FixedBackOff(2000 ms, 2): three attempts in total.", m: "setCommitRecovered(true)", nodes: ["cons", "eh"], edges: ["d"] },
+      { t: "Then, loudly", b: "The session is marked FAILED with a readable reason, and the record goes to the DLQ with size-capped headers.", m: "the user sees an error, not a spinner", nodes: ["eh", "fail", "dlq"], edges: ["e", "f"] },
+    ],
+    B(
+      "Here's every path a record can take.",
+      "The happy path: process, commit the transaction, acknowledge the offset.",
+      "A rate limit never puts a worker to sleep. The item goes to the sixty second retry topic, and the retry thread re publishes it when it's due. About a day of attempts. Nothing is dropped.",
+      "Any other error goes to Spring's default error handler, with a fixed back off of two seconds and two retries. Three attempts in total.",
+      { say: "And then the failure is loud. The session is marked failed with a reason the user can read, and the record goes to the dead letter queue, with its headers capped in size. The user sees an error, not a spinner that never stops.", tone: "key" },
+    ),
+    "Every path a record can take",
+  ),
+  {
+    kind: "bullets",
+    title: "Three bad inputs, and what each one taught",
+    items: [
+      { icon: "0️⃣", text: "One NUL byte froze a session", sub: "Postgres TEXT can't store 0x00, and the error handler quoted the bad row, NUL included · fix: replace NUL at the edge, NUL-safe reasons, reject gzip by magic bytes" },
+      { icon: "📏", text: "One 100 MB line stopped a consumer", sub: "an OutOfMemoryError stops a Kafka listener while HTTP stays healthy · fix: bound every buffer + ExitOnOutOfMemoryError, so the platform restarts it" },
+      { icon: "📮", text: "A 42 MB record couldn't be dead-lettered", sub: "Spring copied the full exception into DLQ headers; Kafka's limit is 1 MB · fix: capped headers, 42,010,200 → 9,681 bytes" },
+    ],
+    beats: B(
+      { say: "Three bad inputs from the robustness tests, and what each one taught. One NUL byte froze a session. Postgres text can't store it, so the insert failed, and then the error handler's own update quoted the bad row, NUL included, and failed too. The session sat in parsing forever. The fix: replace NUL at the edge, keep error reasons NUL safe, and reject gzip files by their magic bytes. The lesson: test the error path with the same bad input.", tone: "key" },
+      { say: "One hundred megabyte line with no newline stopped a consumer. An out of memory error in a Kafka listener stops that listener, while HTTP keeps answering health checks. A zombie. The fix: bound every buffer, and exit on out of memory, so the platform restarts the process and Kafka redelivers.", tone: "key" },
+      { say: "And a forty two megabyte record couldn't be dead lettered. Spring copied the full exception into the dead letter headers, and Kafka's limit is one megabyte. So it was retried forever. Capped headers took it from forty two million bytes to under ten thousand. The last line of defence needs a size limit too.", tone: "key" },
+    ),
+  },
+  check({
+    topic: "failures",
+    q: "Why must a dead-letter queue exist at all, if you already retry?",
+    options: ["To store successful records", "A poison message fails every retry; without a DLQ it blocks its whole partition (head-of-line blocking)", "Kafka requires one", "To speed up retries"],
+    answer: 1,
+    a: "Retries fix transient errors. A poison message fails every time; retried forever it blocks everything behind it. The DLQ parks it, the session fails loudly, and the partition moves on.",
+    aSay: "B. Retries only fix transient errors. A poison message fails every time, and retried forever it blocks everything behind it in the partition. The dead letter queue parks it, the session fails loudly with a reason, and the partition moves on.",
+  }),
+
+  // ------------------------------------------------------------ 28
+  sec("28", "Scaling it: 1,000 tenants, 1 TB a day", "Topic twenty eight. The system design follow up. What changes at a thousand tenants and a terabyte a day, and what stays."),
+  {
+    kind: "numbers",
+    title: "Napkin math, out loud",
+    items: [
+      { value: "11.6 MB/s", label: "1 TB ÷ 86,400 s", sub: "≈ 75,000 lines/s at ~150 bytes a line", tone: "blue" },
+      { value: "1.44 M", label: "windows a day", sub: "1,000 tenants × 1,440 minutes", tone: "amber" },
+      { value: "6.7 /s", label: "LLM calls", sub: "10% flagged × ~4 segments = 576 k a day", tone: "red" },
+      { value: "≥ 6", label: "ingest machines", sub: "11.6 ÷ ~2 MB/s per 4-vCPU box, before headroom", tone: "green" },
+    ],
+    footer: "and ~4.4 GB of new vectors a day (1.44 M × 768 × 4 bytes), before the index",
+    beats: B(
+      "Napkin math first, out loud. A terabyte a day, divided by eighty six thousand four hundred seconds, is eleven point six megabytes a second. About seventy five thousand lines a second.",
+      "A thousand tenants times one thousand four hundred and forty minutes: one point four four million windows a day.",
+      "If ten percent are flagged, at about four segments each, that's five hundred and seventy six thousand LLM calls a day. Six point seven per second.",
+      "Ingest runs about two megabytes a second on a four core box, so at least six ingest machines, before headroom.",
+      "And about four point four gigabytes of new vectors a day, before the index.",
+    ),
+  },
+  arch(
+    SCALE,
+    [
+      { all: true },
+      { t: "Bytes still bypass the API", b: "Presigned uploads and ranged reads stay exactly as they are.", m: "11.6 MB/s straight into the object store", nodes: ["ten", "api", "s3"], edges: ["a", "b"] },
+      { t: "A transactional outbox", b: "The document row and its event are written in one transaction; a relay publishes the event. Consumers are idempotent already, so a duplicate publish is harmless.", m: "no event lost between the DB and Kafka", nodes: ["api", "obx", "k"], edges: ["c", "d"] },
+      { t: "An ingest fleet", b: "64+ partitions, autoscaling on consumer lag, per-tenant quotas, COPY instead of row inserts.", m: "parsing CPU, then Postgres writes, bind first", nodes: ["k", "iw", "s3", "pg"], edges: ["e", "f", "g"] },
+      { t: "Partitions, not tables", b: "Chunks move to partitions by tenant, then day. Retention = drop a day's partition.", m: "replaces per-session tables at this scale", nodes: ["pg"] },
+      { t: "An enrich fleet", b: "Per-key lanes as today; a cheap model for windows, a strong one for incident stories.", m: "cost scales with anomalies", nodes: ["k", "ew", "llm", "pg"], edges: ["h", "i", "j"] },
+      { t: "A query service that routes", b: "SQL for counts and time ranges, the stored report for summaries, corrective RAG only for why.", nodes: ["qs", "pg"], edges: ["l"] },
+    ],
+    B(
+      "Here's the scaled design. What stays, and what changes.",
+      "The bytes still bypass the API. Presigned uploads and ranged reads stay exactly as they are.",
+      { say: "A transactional outbox. The document row and its event are written in one transaction, and a relay publishes the event. And because every consumer is already idempotent, a duplicate publish is harmless. That's a nice payoff of the design: idempotency makes the outbox easy.", tone: "key" },
+      "A separate ingest fleet. Sixty four or more partitions, autoscaling on consumer lag, per tenant quotas, and Postgres COPY instead of row inserts. Parsing CPU, then database writes, are what bind first.",
+      { say: "And at this scale, per session tables become partitions: by tenant, then by day. Retention becomes dropping a day's partition. The queries don't change.", tone: "key" },
+      "A separate enrichment fleet, with the same per key lanes. A cheap model for windows, a strong one for incident stories.",
+      "And a query service that routes: SQL for counts and time ranges, the stored report for summaries, and corrective RAG only for the why questions.",
+    ),
+    "DeepLogLens at 1,000 tenants, 1 TB a day",
+  ),
+  check({
+    topic: "scaling",
+    q: "At 1 TB a day, what's the first bottleneck, and what's the first change to storage?",
+    a: "Parsing CPU (then Postgres writes): add an ingest fleet with more partitions and COPY. Storage: per-session tables become partitions by tenant, then day.",
+    aSay: "Parsing CPU first, then Postgres writes. So a separate ingest fleet, more partitions, autoscaling on lag, and COPY. And the per session tables become partitions, by tenant, then by day.",
+  }),
+
+  // ------------------------------------------------------------ 29
+  sec("29", "Defending the resume, line by line", "Topic twenty nine. Now we put it all together. Each bullet of your resume, as you would say it in an interview, with the number behind each phrase."),
+  {
+    kind: "sayit",
+    q: "Bullet 1: \"Log intelligence over GB-scale archives … cutting LLM calls by 80%.\"",
+    lines: [
+      "GB-scale: a 2 GB, 15.5-million-line archive ingested under a 256 MB heap.",
+      "Anomalies: a median/MAD gate, F1 0.90, 36 of 36 injected incidents found.",
+      "Grounded reports: findings cite chunks attached by code, and a judge checks every incident story.",
+      "Exact lines: every citation is a content fingerprint that resolves to line_start … line_end.",
+      "Deterministic parsers compute every metric; the LLM only sees flagged windows: 42,205 calls instead of 220,657, 80.9% fewer.",
+    ],
+    beats: B(
+      { say: "Bullet one. Say it with the evidence. Log intelligence over gigabyte scale archives, cutting LLM calls by eighty percent.", tone: "ask" },
+      "Gigabyte scale: a two gigabyte, fifteen and a half million line archive, ingested under a two hundred and fifty six megabyte heap.",
+      "Anomalies: a median and MAD gate. F one nought point nine, thirty six of thirty six injected incidents found.",
+      "Grounded reports: findings cite chunks attached by code, and a judge checks every incident story.",
+      "Exact lines: every citation is a content fingerprint that resolves to a line start and a line end.",
+      { say: "And deterministic parsers compute every metric, while the LLM only sees flagged windows. Forty two thousand calls instead of two hundred and twenty thousand. Eighty point nine percent fewer.", tone: "key" },
+    ),
+  },
+  {
+    kind: "sayit",
+    q: "Bullet 2: \"Constant-heap streaming ingest … exactly-once effects.\"",
+    lines: [
+      "A splitter streams the file once and emits window-aligned byte ranges: cut only on a timestamped line, at a new minute, after 5 MB.",
+      "Each range is a ~300-byte pointer on Kafka, keyed documentId:partIdx so one file spreads over all partitions.",
+      "Consumers do ranged GETs in parallel: the live set stayed 70-92 MB from 100 MB to 2 GB.",
+      "Offsets commit only after the transaction commits.",
+      "Every write is an idempotent upsert: chunks keyed by a SHA-256 content fingerprint, counts added only for rows RETURNING reports as new. Proven with kill -9, replay and rebalance.",
+    ],
+    beats: B(
+      { say: "Bullet two. Constant heap streaming ingest, through to exactly once effects.", tone: "ask" },
+      "A splitter streams the file once and emits window aligned byte ranges. It cuts only on a timestamped line, at a new minute, after five megabytes.",
+      "Each range is a three hundred byte pointer on Kafka, keyed by document ID and part index, so one file spreads across every partition.",
+      "Consumers do ranged GETs in parallel. The live set stayed between seventy and ninety two megabytes, from a hundred megabytes up to two gigabytes.",
+      "Offsets commit only after the database transaction commits.",
+      { say: "And every write is an idempotent upsert. Chunks are keyed by a S H A two fifty six content fingerprint, and counts are only added for rows that returning reports as new. Proven with kill minus nine, a full replay, and a rebalance.", tone: "key" },
+    ),
+  },
+  {
+    kind: "sayit",
+    q: "Bullet 3: \"Two LangGraph graphs … per-session HNSW/GIN-indexed chunk tables.\"",
+    lines: [
+      "Ingest-time: findings are clustered in code, an LLM writes each incident story, and a separate judge loops it up to 3 times; unverified stories are stored as grounded = false.",
+      "Query-time: corrective RAG: retrieve the top 30, grade, rewrite up to twice, re-retrieve; citations are filtered to retrieved ids.",
+      "Hybrid search: HNSW cosine + GIN full text, fused with RRF (k = 60): recall@30 0.874.",
+      "Per-session tables: a shared HNSW index post-filters to recall 0.068 for a small session; its own table gives 1.0 at 0.24 ms.",
+    ],
+    beats: B(
+      { say: "Bullet three. Two LangGraph graphs, over per session H N S W and gin indexed chunk tables.", tone: "ask" },
+      "Ingest time: findings are clustered in code, an LLM writes each incident story, and a separate judge loops it, up to three times. A story it can't verify is stored with grounded false.",
+      "Query time: corrective RAG. Retrieve the top thirty, grade, rewrite up to twice, and re retrieve. Citations are filtered to retrieved IDs.",
+      "Hybrid search: H N S W cosine plus gin full text, fused with Reciprocal Rank Fusion, k sixty. Recall at thirty, nought point eight seven four.",
+      { say: "And per session tables, because a shared H N S W index post filters. For a small session I measured recall nought point oh six eight. Its own table gives one point oh, in a quarter of a millisecond.", tone: "key" },
+    ),
+  },
+  {
+    kind: "big",
+    tone: "idea",
+    lead: "When a claim is challenged",
+    text: "Number and dataset → mechanism → the alternative you rejected → the known limit.",
+    after: "never argue from adjectives",
+    beats: B(
+      "And when any claim is challenged, answer in this order.",
+      { say: "The number, with its dataset. Then the mechanism. Then the alternative you rejected, and why. Then the known limit, before they find it.", tone: "key" },
+      "Never argue from adjectives. Fast, scalable, robust mean nothing. Seventy to ninety two megabytes from a hundred megabytes to two gigabytes means something.",
+    ),
+  },
+
+  // ------------------------------------------------------------ 30
+  sec("30", "Rapid fire, the pitch, and the final check", "Topic thirty. The last one. A rapid fire round, the pitch, and one final check. Answer each one out loud before the answer appears."),
+  {
+    kind: "drill",
+    items: [
+      { q: "What's inside a part message?", a: "sessionId, userId, documentId, fileUrl, partIdx, totalParts, byteStart, byteEndExclusive, firstLineNumber" },
+      { q: "The parts topic's key?", a: "documentId:partIdx · spreads one file over all partitions" },
+      { q: "When does the splitter cut?", a: "≥ 5 MB since the last cut, a new minute, a timestamped line · hard cap 20 MB" },
+      { q: "The chunk table's primary key?", a: "SHA-256(document_id ‖ line_start ‖ content) · INSERT … ON CONFLICT DO NOTHING RETURNING" },
+      { q: "Why gate the metrics upsert?", a: "it adds counts: it only runs for chunks RETURNING reports as new" },
+      { q: "When are embeddings created?", a: "after the finalizer's claim, by EMBED_BATCH items (80 chunks) on the enrichment lane" },
+      { q: "Embedding model and size?", a: "gemini-embedding-001 · outputDimensionality 768 · first 8,000 chars" },
+      { q: "Who attaches a finding's evidence ids?", a: "code: the chunk the call was about · never the model" },
+      { q: "Groq lane pacing?", a: "60,000 / (30 × 0.8) = 2,500 ms per call + 4,800 tokens per sliding minute" },
+      { q: "Graph 1's loop cap?", a: "3 attempts per cluster, then stored grounded = false with the reason" },
+      { q: "RRF constant?", a: "k = 60, ranks from 0, top 30 per leg" },
+      { q: "Shared index vs own table, small session?", a: "recall 0.068 vs 1.00 (0.24 ms)" },
+      { q: "What does CI fail on?", a: "window F1 < 0.88, incident recall < 1.0, call reduction < 75%" },
+    ],
+    beats: B(
+      { say: "What's inside a part message?", hold: 4 },
+      "Session ID, user ID, document ID, file URL, part index, total parts, byte start, byte end exclusive, and first line number.",
+      { say: "The parts topic's key?", hold: 3 },
+      "Document ID colon part index, so one file spreads over all partitions.",
+      { say: "When does the splitter cut?", hold: 4 },
+      "At least five megabytes since the last cut, a new minute, on a timestamped line. Hard cap twenty megabytes.",
+      { say: "The chunk table's primary key?", hold: 4 },
+      "The S H A two fifty six of the document ID, line start, and content. Inserted with on conflict do nothing, returning.",
+      { say: "Why gate the metrics upsert?", hold: 3 },
+      "Because it adds counts. It only runs for chunks that returning reports as new.",
+      { say: "When are embeddings created?", hold: 4 },
+      "After the finalizer's claim, by embed batch items of eighty chunks, on the enrichment lane.",
+      { say: "Embedding model and size?", hold: 3 },
+      "Gemini embedding oh oh one, seven hundred and sixty eight dimensions, from the first eight thousand characters.",
+      { say: "Who attaches a finding's evidence IDs?", hold: 3 },
+      "Code. The chunk the call was about. Never the model.",
+      { say: "Groq lane pacing?", hold: 4 },
+      "Sixty thousand over thirty times nought point eight: two and a half seconds per call, plus four thousand eight hundred tokens per sliding minute.",
+      { say: "Graph one's loop cap?", hold: 3 },
+      "Three attempts per cluster, then the story is stored with grounded false and the reason.",
+      { say: "The RRF constant?", hold: 3 },
+      "k equals sixty, ranks from zero, top thirty per leg.",
+      { say: "Shared index versus own table, for a small session?", hold: 3 },
+      "Recall nought point oh six eight, against one point oh, in a quarter of a millisecond.",
+      { say: "What does C I fail on?", hold: 4 },
+      "Window F one below nought point eight eight, incident recall below one, or a call reduction below seventy five percent.",
+    ),
+  },
+  {
+    kind: "sayit",
+    q: "The 30-second pitch",
+    lines: [
+      "DeepLogLens turns a GB-scale log archive into a grounded incident report and a Q&A chat that cites exact lines.",
+      "Deterministic parsers compute every metric; a robust statistical gate sends only abnormal windows to the LLM: 80% fewer calls.",
+      "Ingest streams byte ranges over Kafka with a constant heap, and idempotent upserts on content fingerprints give exactly-once effects.",
+      "Two LangGraph graphs: a judge loop for incident stories, and corrective RAG over hybrid search on per-session indexed tables.",
+      "Java, Spring Boot and Kafka for ingest, Postgres with pgvector for everything stored, Python LangGraph for the graphs, and evals in CI.",
+    ],
+    beats: B(
+      { say: "Now the thirty second pitch. Say it with me.", tone: "ask" },
+      "DeepLogLens turns a gigabyte scale log archive into a grounded incident report, and a Q and A chat that cites exact lines.",
+      "Deterministic parsers compute every metric, and a robust statistical gate sends only the abnormal windows to the LLM. Eighty percent fewer calls.",
+      "Ingest streams byte ranges over Kafka with a constant heap, and idempotent upserts on content fingerprints give exactly once effects.",
+      "Two LangGraph graphs: a judge loop for incident stories, and corrective RAG over hybrid search, on per session indexed tables.",
+      { say: "Java, Spring Boot and Kafka for ingest. Postgres with P G vector for everything stored. Python LangGraph for the graphs. And evals that guard every commit in C I.", tone: "key" },
+    ),
+  },
+  check({
+    topic: "final check",
+    q: "Walk one redelivered part through the whole system: what does each component do?",
+    a: "Kafka redelivers (offset not committed). The fast path finds ingest_parts and skips the read; if not, every chunk_id conflicts, RETURNING is empty, no metrics move, parsed_parts isn't bumped. tryFinalize still runs; its claim returns 0 if already finalized. Nothing changes.",
+    aSay: "Kafka redelivers, because the offset never committed. The fast path finds the part marker and skips the read. Even without it, every chunk ID would conflict, returning would be empty, no metrics would move, and parsed parts wouldn't be bumped. Try finalize still runs, and its claim returns zero if the file was already finalized. Nothing changes. Exactly once effects.",
+    hold: 14,
+  }),
+  check({
+    topic: "final check",
+    q: "Why a new table for every session, in one sentence, with the number?",
+    a: "Every query is a vector search filtered to one session; a shared HNSW index post-filters (recall 0.068 for a small session), while its own table gives recall 1.0 at 0.24 ms.",
+    aSay: "Because every query is a vector search filtered to one session, and a shared H N S W index post filters, recall nought point oh six eight for a small session, while its own table gives one point oh at a quarter of a millisecond.",
+  }),
+  {
+    kind: "big",
+    tone: "idea",
+    lead: "Your homework",
+    text: "Draw the board from memory. Then walk one part through it, out loud: the message, the transaction, the crash.",
+    after: "if you can draw the part message and the chunk table without looking, you can defend every line of the resume",
+    beats: B(
+      "And your homework.",
+      { say: "Close this, and draw the board from memory. Then walk one part through it, out loud. The message and its nine fields. The transaction, statement by statement. And a crash at point B.", tone: "key" },
+      { say: "If you can draw the part message and the chunk table without looking, you can defend every line of that resume. That's the whole lecture. Well done.", tone: "key" },
+    ),
+  },
+];
