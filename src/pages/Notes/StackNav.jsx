@@ -287,7 +287,7 @@ function ImportChapters({ stack, onPick }) {
 // A round tick: filled green when done, an empty ring when not.
 export function DoneCircle({ done, className = "w-4 h-4" }) {
   return done ? (
-    <svg className={`${className} shrink-0 text-success`} viewBox="0 0 16 16" fill="none" aria-label="Done">
+    <svg className={`${className} shrink-0 text-accent`} viewBox="0 0 16 16" fill="none" aria-label="Done">
       <circle cx="8" cy="8" r="7.5" fill="currentColor" />
       <path d="M4.8 8.2l2.1 2.1 4.3-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>

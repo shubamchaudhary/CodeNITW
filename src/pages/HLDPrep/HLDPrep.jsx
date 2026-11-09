@@ -242,7 +242,7 @@ function ProblemRow({ problem, isDone, isStarred, isNext, onToggleDone, onToggle
         onClick={() => setOpen((s) => !s)}
         className={`group flex items-center gap-2.5 rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
           isDone
-            ? "bg-success-subtle border border-line "
+            ? "bg-accent-subtle border border-line "
             : `${ROW} hover:border-line-strong      `
         } ${isNext ? "ring-1 ring-focus " : ""}`}
       >
@@ -283,7 +283,7 @@ function ProblemRow({ problem, isDone, isStarred, isNext, onToggleDone, onToggle
           {doneLabel && (
             <span
               title={`You finished this ${doneLabel}`}
-              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-success-fg whitespace-nowrap"
+              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-accent-fg whitespace-nowrap"
             >
               ✓ {doneLabel}
             </span>
@@ -313,7 +313,7 @@ function ProblemRow({ problem, isDone, isStarred, isNext, onToggleDone, onToggle
           <button
             onClick={(e) => { e.stopPropagation(); onToggleDone(problem.id, !isDone); }}
             title={isDone ? "Mark not done" : "Mark done"}
-            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isDone ? "bg-success border-success " : "border-line-strong hover:border-success "}`}
+            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0 ${isDone ? "bg-accent border-accent " : "border-line-strong hover:border-success "}`}
           >
             {isDone && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
