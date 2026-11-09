@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { AbsoluteFill, Audio, Sequence, spring, useCurrentFrame } from "remotion";
+import { useEffect, useMemo } from "react";
+import { AbsoluteFill, Audio, Sequence, spring, useBufferState, useCurrentFrame } from "remotion";
 import type { Chapter } from "./lib/types.ts";
 import { buildTimeline, clock, FPS, type SceneT, type Timing } from "./lib/timeline.ts";
 import { applyTheme, C, FONT, W } from "./lib/theme.ts";
@@ -8,15 +8,42 @@ import { AssetBase, useAsset } from "./lib/assets.ts";
 import { SceneView } from "./scenes/index.tsx";
 import { Sections } from "./lib/sections.ts";
 
-type Props = { chapter: Chapter; timings: Record<string, Timing>; assetBase?: string };
+// On the site the page plays the narration itself (src/pages/Notes/narration.js)
+// and passes this handle: the picture then follows the voice instead of
+// carrying an <Audio> of its own. Renders leave it out.
+type Narration = { waiting: () => boolean; subscribe: (f: () => void) => () => void };
+type Props = { chapter: Chapter; timings: Record<string, Timing>; assetBase?: string; narration?: Narration };
 
-export const Lecture = ({ chapter, timings, assetBase }: Props) => (
+export const Lecture = ({ chapter, timings, assetBase, narration }: Props) => (
   <AssetBase.Provider value={assetBase ?? null}>
-    <LectureBody chapter={chapter} timings={timings} />
+    <LectureBody chapter={chapter} timings={timings} narration={narration} />
   </AssetBase.Provider>
 );
 
-const LectureBody = ({ chapter, timings }: Props) => {
+// Holds the picture (the Player shows it buffering) while the voice should be
+// playing but is still loading, so neither runs ahead of the other.
+const WaitForNarration = ({ narration }: { narration: Narration }) => {
+  const { delayPlayback } = useBufferState();
+  useEffect(() => {
+    let hold: { unblock: () => void } | null = null;
+    const update = () => {
+      if (narration.waiting() && !hold) hold = delayPlayback();
+      else if (!narration.waiting() && hold) {
+        hold.unblock();
+        hold = null;
+      }
+    };
+    const off = narration.subscribe(update);
+    update();
+    return () => {
+      off();
+      hold?.unblock();
+    };
+  }, [narration, delayPlayback]);
+  return null;
+};
+
+const LectureBody = ({ chapter, timings, narration }: Props) => {
   applyTheme(chapter.theme);
   const frame = useCurrentFrame();
   const asset = useAsset();
@@ -34,7 +61,7 @@ const LectureBody = ({ chapter, timings }: Props) => {
         </Sequence>
       ))}
       {/* Every line, mixed onto one track at its place (scripts/mix-audio.ts). */}
-      <Audio src={asset(`${chapter.id}/lecture.mp3`)} />
+      {narration ? <WaitForNarration narration={narration} /> : <Audio src={asset(`${chapter.id}/lecture.mp3`)} />}
       <Header chapter={chapter} sc={current} frame={frame} />
       <Captions sc={current} frame={frame - current.from} />
       <Progress scenes={scenes} total={total} frame={frame} />
