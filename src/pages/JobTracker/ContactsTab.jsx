@@ -528,7 +528,7 @@ export default function ContactsTab({
       {filtered.length > limit && (
         <button
           onClick={() => setLimit((l) => l + PAGE_SIZE)}
-          className={`w-full mt-3 py-3 text-sm font-semibold text-brand-fg hover:bg-surface-hover ${GLASS} rounded-lg`}
+          className={`w-full mt-3 py-3 text-sm font-semibold text-accent-fg hover:bg-surface-hover ${GLASS} rounded-lg`}
         >
           Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
         </button>

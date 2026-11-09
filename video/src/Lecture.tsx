@@ -151,7 +151,7 @@ const Captions = ({ sc, frame }: { sc: SceneT; frame: number }) => {
 
 const Progress = ({ scenes, total, frame }: { scenes: SceneT[]; total: number; frame: number }) => (
   <div style={{ position: "absolute", left: 0, bottom: 0, width: W, height: 6, background: "rgba(255,255,255,0.06)" }}>
-    <div style={{ width: (frame / total) * W, height: 6, background: C.blue }} />
+    <div style={{ width: (frame / total) * W, height: 6, background: C.progress }} />
     {scenes
       .filter((s) => s.scene.kind === "section")
       .map((s) => (

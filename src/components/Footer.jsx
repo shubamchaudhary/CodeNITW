@@ -49,11 +49,11 @@ export default function Footer() {
       {noMailApp && (
         <p className="mt-1.5 text-[12px] text-fg-subtle">
           No mail app opened.{" "}
-          <a href={GMAIL} target="_blank" rel="noopener noreferrer" className={`${linkClass} !text-brand-fg`}>
+          <a href={GMAIL} target="_blank" rel="noopener noreferrer" className={`${linkClass} !text-accent-fg`}>
             Write in Gmail
           </a>
           {" · "}
-          <button onClick={copy} className={`${linkClass} !text-brand-fg`}>
+          <button onClick={copy} className={`${linkClass} !text-accent-fg`}>
             Copy address
           </button>
         </p>

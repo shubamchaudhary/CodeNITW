@@ -337,7 +337,7 @@
 }
 
 .note-reader ::selection {
-  background: rgba(124, 58, 237, 0.2);
+  background: var(--accent-tint);
 }
 
 /* ── Writing in place (InlineEditor) & contents rail ───────────────────── */
@@ -345,7 +345,7 @@
    are, like writing in a notebook. */
 .note-inline {
   padding-left: 0.9rem;
-  border-left: 2px solid var(--brand);
+  border-left: 2px solid var(--accent);
 }
 .note-inline-bar {
   padding: 2px 4px;
@@ -367,7 +367,7 @@
   font-size: var(--note-fs, 17px);
   line-height: 1.75;
   color: var(--fg);
-  caret-color: var(--brand);
+  caret-color: var(--accent);
 }
 .note-inline-area:focus {
   box-shadow: none;
@@ -379,7 +379,7 @@
 .note-gutter-line {
   width: 2px;
   border-radius: 2px;
-  background: var(--brand);
+  background: var(--accent);
 }
 /* The contents list scrolls to follow you, but shows no scrollbar. */
 .note-toc {

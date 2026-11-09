@@ -27,6 +27,7 @@ export const C = {
   purple: "#a78bfa",
   red: "#ff6262",
   cyan: "#3fd2e8",
+  progress: "#f97316", // the line along the bottom: the site's orange
   head: FONT, // headline font
   glow1: "#5b9cff", // the two drifting backdrop lights
   glow2: "#a78bfa",
@@ -51,6 +52,7 @@ const THEMES: Record<string, Partial<typeof C>> = {
     faint: "#6b737e",
     blue: "#ffa23e",
     amber: "#5fd3d0",
+    progress: "#ffa23e",
     cyan: "#5fd3d0",
     head: MONO,
     glow1: "#ffa23e",

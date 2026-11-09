@@ -192,7 +192,7 @@ const DSAPrep = () => {
                 <div className="relative w-16 h-16 shrink-0">
                   <svg className="w-16 h-16 -rotate-90" viewBox="0 0 56 56">
                     <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="5" />
-                    <circle cx="28" cy="28" r="22" fill="none" stroke="var(--brand)" strokeWidth="5" strokeLinecap="round"
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="var(--accent)" strokeWidth="5" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 22}`}
                       strokeDashoffset={`${2 * Math.PI * 22 * (1 - scoped.pct / 100)}`}
                       style={{ transition: "stroke-dashoffset 0.5s ease" }} />
@@ -208,7 +208,7 @@ const DSAPrep = () => {
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-4 rounded-lg border border-line bg-brand-subtle px-4 py-3 flex items-center gap-3"
+              className="mb-4 rounded-lg border border-line bg-accent-subtle px-4 py-3 flex items-center gap-3"
             >
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-fg">Continue from your Personal Plan</p>
@@ -335,7 +335,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
           )}
           {queued > 0 && (
             <span
-              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-brand-fg whitespace-nowrap"
+              className="inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none text-accent-fg whitespace-nowrap"
               title={`${queued} queued on today's plan`}
             >
               {queued} today
@@ -343,7 +343,7 @@ function TopicCard({ topic, accent, isOpen, onToggle, solved, starred, notes, pl
           )}
           <span className="text-[11px] font-semibold text-fg-subtle tabular-nums">{done}/{topic.problems.length}</span>
           <div className="w-16 sm:w-24 h-1 rounded-full bg-surface-hover overflow-hidden">
-            <div className={`h-full rounded-full ${accent.bar} bg-brand`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
+            <div className={`h-full rounded-full ${accent.bar} bg-accent`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
           </div>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-fg-subtle">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -483,7 +483,7 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
             title={isPlanned ? "Remove from today's plan" : "Add to today's plan"}
             className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-md border transition-all ${
               isPlanned
-                ? "bg-brand border-line text-white "
+                ? "bg-accent border-transparent text-white "
                 : `bg-canvas  border-line  text-fg-subtle  hover:border-line-strong hover:text-fg  ${LIGHT_BUTTON} `
             }`}
           >

@@ -834,8 +834,8 @@ export default function TopicNotes() {
                   className={`w-full min-h-[75vh] resize-y px-5 py-4 text-[14px] leading-[1.7] font-mono rounded-lg bg-surface-subtle text-fg placeholder:text-fg-subtle border border-line focus:outline-none focus:ring-2 ${accent.ring}`}
                 />
                 {dragging && (
-                  <div className="absolute inset-0 rounded-lg bg-brand-subtle border-2 border-dashed border-brand flex items-center justify-center pointer-events-none">
-                    <p className="text-[14px] font-medium text-brand-fg">Drop the image to upload</p>
+                  <div className="absolute inset-0 rounded-lg bg-accent-subtle border-2 border-dashed border-accent flex items-center justify-center pointer-events-none">
+                    <p className="text-[14px] font-medium text-accent-fg">Drop the image to upload</p>
                   </div>
                 )}
               </div>
@@ -907,7 +907,7 @@ function SaveState({ dirty, savedAt, accent, guest }) {
 
   if (guest) {
     return (
-      <button onClick={() => requestSignIn()} className="text-[13px] font-medium text-brand-fg hover:underline underline-offset-2">
+      <button onClick={() => requestSignIn()} className="text-[13px] font-medium text-accent-fg hover:underline underline-offset-2">
         Sign in to save changes
       </button>
     );

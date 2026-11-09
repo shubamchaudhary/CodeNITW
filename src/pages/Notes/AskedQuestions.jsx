@@ -87,7 +87,7 @@ function AskedItem({ index, item, counted, colorMode }) {
         <div className="min-w-0 flex-1">
           <p className="text-[15px] leading-[22px] font-semibold text-fg">{item.q}</p>
           <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[12px] text-fg-subtle">
-            {item.resume && <span className="mr-1 font-medium text-brand-fg">From your resume</span>}
+            {item.resume && <span className="mr-1 font-medium text-accent-fg">From your resume</span>}
             {item.n ? (
               <span className="mr-1 font-mono font-medium tabular-nums text-fg">
                 {item.n} write-up{item.n === 1 ? "" : "s"}
@@ -96,7 +96,7 @@ function AskedItem({ index, item, counted, colorMode }) {
               <span className="mr-1 text-warning-fg">Question banks only</span>
             )}
             {item.video && (
-              <span className="mr-1 inline-flex items-center h-5 px-1.5 rounded font-mono font-medium text-sky-600 dark:text-sky-400 bg-surface-subtle border border-line">
+              <span className="mr-1 inline-flex items-center h-5 px-1.5 rounded font-mono font-medium text-accent-fg bg-surface-subtle border border-line">
                 {item.video}
               </span>
             )}

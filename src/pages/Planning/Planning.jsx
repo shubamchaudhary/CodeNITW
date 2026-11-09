@@ -313,7 +313,7 @@ function ProgressRing({ pct, size = 56 }) {
         <circle cx="26" cy="26" r={r} fill="none" stroke="var(--surface-hover)" strokeWidth="5" />
         <circle
           cx="26" cy="26" r={r} fill="none" strokeWidth="5" strokeLinecap="round"
-          stroke={pct >= 100 ? "var(--success)" : "var(--brand)"}
+          stroke={pct >= 100 ? "var(--success)" : "var(--accent)"}
           strokeDasharray={c}
           strokeDashoffset={c * (1 - pct / 100)}
           style={{ transition: "stroke-dashoffset 0.5s ease" }}
@@ -348,16 +348,16 @@ function WeekStrip({ current, today, onSelect, statsFor }) {
             title={total ? `${done} of ${total} done` : "Nothing planned"}
             className={`flex flex-col items-center gap-1.5 py-2 rounded-md transition-colors ${selected ? "bg-surface-hover" : "hover:bg-surface-subtle"}`}
           >
-            <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isT ? "text-brand-fg" : "text-fg-subtle"}`}>
+            <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isT ? "text-accent-fg" : "text-fg-subtle"}`}>
               {date.toLocaleDateString(undefined, { weekday: "short" })}
             </span>
-            <span className={`text-[15px] leading-5 font-semibold tabular-nums ${isT ? "text-brand-fg" : key < today && !selected ? "text-fg-muted" : "text-fg"}`}>
+            <span className={`text-[15px] leading-5 font-semibold tabular-nums ${isT ? "text-accent-fg" : key < today && !selected ? "text-fg-muted" : "text-fg"}`}>
               {kd}
             </span>
             <span className={`h-1 w-6 sm:w-8 rounded-full overflow-hidden ${total ? "bg-line" : ""}`}>
               {total > 0 && (
                 <span
-                  className={`block h-full rounded-full ${done === total ? "bg-success" : "bg-brand"}`}
+                  className={`block h-full rounded-full ${done === total ? "bg-success" : "bg-accent"}`}
                   style={{ width: `${(done / total) * 100}%` }}
                 />
               )}
@@ -429,12 +429,12 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
                 isSel
                   ? "bg-primary text-on-primary font-medium"
                   : isT
-                  ? "text-brand-fg font-semibold hover:bg-surface-hover"
+                  ? "text-accent-fg font-semibold hover:bg-surface-hover"
                   : "text-fg hover:bg-surface-hover"
               }`}
             >
               {d}
-              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand" />}
+              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />}
             </button>
           );
         })}
@@ -461,8 +461,8 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
   const totalWork = sessions.filter((s) => s.type === "work").length;
 
   // Focus is the brand colour, a break is green, a pause is grey.
-  const stroke = isComplete || !isWork ? "var(--success)" : isPaused ? "var(--fg-subtle)" : "var(--brand)";
-  const tone = isComplete || (!isWork && !isPaused) ? "text-success-fg" : isPaused ? "text-fg-subtle" : "text-brand-fg";
+  const stroke = isComplete || !isWork ? "var(--success)" : isPaused ? "var(--fg-subtle)" : "var(--accent)";
+  const tone = isComplete || (!isWork && !isPaused) ? "text-success-fg" : isPaused ? "text-fg-subtle" : "text-accent-fg";
   const state = isComplete ? "Complete" : isPaused ? "Paused" : isWork ? "Focus" : "Break";
 
   const extend = () => {
@@ -518,7 +518,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
               return (
                 <span
                   key={i}
-                  className={`h-1 w-5 rounded-full transition-colors ${active ? "bg-brand animate-pulse" : done ? "bg-brand" : "bg-surface-hover"}`}
+                  className={`h-1 w-5 rounded-full transition-colors ${active ? "bg-accent animate-pulse" : done ? "bg-accent" : "bg-surface-hover"}`}
                 />
               );
             })}
@@ -645,7 +645,7 @@ function DayCard({
       onDragEnd={onDragEnd}
       className={`relative transition-opacity ${isDragging ? "opacity-30" : ""}`}
     >
-      {isOver && !isDragging && <div className="absolute inset-x-0 -top-px h-0.5 bg-brand z-10" />}
+      {isOver && !isDragging && <div className="absolute inset-x-0 -top-px h-0.5 bg-accent z-10" />}
 
       <div
         className={`group flex items-center gap-3 pl-3 sm:pl-2 pr-2 sm:pr-3 min-h-[56px] py-2 cursor-pointer select-none transition-colors ${
@@ -675,8 +675,8 @@ function DayCard({
               {item.title}
             </h3>
             {isThisPomo && (
-              <span className="shrink-0 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-brand-subtle font-mono text-[11px] text-brand-fg">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+              <span className="shrink-0 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-accent-subtle font-mono text-[11px] text-accent-fg">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                 Focusing
               </span>
             )}
@@ -735,7 +735,7 @@ function DayCard({
           ) : (
             <button
               onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
-              className="w-[60px] h-7 inline-flex items-center justify-end gap-1 rounded-md px-1.5 font-mono text-[12px] text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
+              className="min-w-[60px] h-7 inline-flex items-center justify-end gap-1 rounded-md px-1.5 font-mono text-[12px] whitespace-nowrap text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
               title="Set time estimate"
             >
               <Icon.clock className="w-3 h-3 text-fg-subtle" />
@@ -754,7 +754,7 @@ function DayCard({
                 title={pomoActive && !isThisPomo ? "Stop the running session first" : isThisPomo ? "Focusing on this" : "Start focus"}
                 className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                   isThisPomo
-                    ? "bg-brand text-white"
+                    ? "bg-accent text-white"
                     : "border border-line-strong text-fg-muted enabled:hover:bg-primary enabled:hover:text-on-primary enabled:hover:border-transparent"
                 }`}
               >
@@ -831,7 +831,7 @@ function DayCard({
                         ) : (
                           <button
                             onClick={() => { setSubTimeVal(String(s.estimatedMinutes || 25)); setEditingSubTime(s.uid); }}
-                            className="h-7 px-1.5 rounded-md font-mono text-[12px] text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
+                            className="h-7 px-1.5 rounded-md font-mono text-[12px] whitespace-nowrap text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
                             title="Set time estimate"
                           >
                             {s.estimatedMinutes ? fmt(s.estimatedMinutes) : "set"}
@@ -986,7 +986,7 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime, className = "" }) {
                 title={r.live ? "Timer running" : canEdit ? "Correct the time (minutes, 0 removes it)" : undefined}
                 className="shrink-0 inline-flex items-center gap-1.5 h-7 px-1.5 rounded-md font-mono text-[13px] tabular-nums text-fg enabled:hover:bg-surface-hover transition-colors"
               >
-                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />}
+                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />}
                 {fmtSpent(r.sec)}
               </button>
             )}

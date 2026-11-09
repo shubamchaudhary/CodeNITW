@@ -128,7 +128,7 @@ export default function Header() {
      w-full h-10 px-3 rounded-md lg:w-auto lg:h-14 lg:px-2 xl:px-3 lg:rounded-none
      ${
        active
-         ? "text-fg bg-surface-hover lg:bg-transparent lg:after:absolute lg:after:inset-x-2 xl:after:inset-x-3 lg:after:bottom-0 lg:after:h-0.5 lg:after:bg-fg"
+         ? "text-fg bg-surface-hover lg:bg-transparent lg:after:absolute lg:after:inset-x-2 xl:after:inset-x-3 lg:after:bottom-0 lg:after:h-0.5 lg:after:bg-accent"
          : "text-fg-muted hover:text-fg hover:bg-surface-hover lg:hover:bg-transparent"
      }`;
 

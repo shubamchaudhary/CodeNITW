@@ -298,7 +298,7 @@ export default function JobTracker() {
                 undo();
                 closeToast();
               }}
-              className="underline font-semibold text-brand-fg"
+              className="underline font-semibold text-accent-fg"
             >
               Undo
             </button>

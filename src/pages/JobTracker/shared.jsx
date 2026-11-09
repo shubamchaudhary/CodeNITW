@@ -339,7 +339,7 @@ export function LinksEditor({ links, onChange }) {
               className={`truncate max-w-[380px] hover:underline ${
                 l.applied
                   ? "text-success-fg "
-                  : "text-brand-fg "
+                  : "text-accent-fg "
               }`}
               title={l.url}
             >
@@ -423,7 +423,7 @@ export function CompanyDetail({ company, entry, onPatch, templates }) {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setShowTemplate((s) => !s)}
-              className="text-xs font-semibold text-brand-fg hover:underline"
+              className="text-xs font-semibold text-accent-fg hover:underline"
             >
               {showTemplate ? "Hide" : "Show"} referral template ({company.template})
             </button>

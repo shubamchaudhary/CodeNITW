@@ -109,7 +109,7 @@ const HLDPrep = () => {
                 <div className="relative w-16 h-16 shrink-0">
                   <svg className="w-16 h-16 -rotate-90" viewBox="0 0 56 56">
                     <circle cx="28" cy="28" r="22" fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="5" />
-                    <circle cx="28" cy="28" r="22" fill="none" stroke="var(--brand)" strokeWidth="5" strokeLinecap="round"
+                    <circle cx="28" cy="28" r="22" fill="none" stroke="var(--accent)" strokeWidth="5" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 22}`}
                       strokeDashoffset={`${2 * Math.PI * 22 * (1 - stats.pct / 100)}`}
                       style={{ transition: "stroke-dashoffset 0.5s ease" }} />
@@ -207,7 +207,7 @@ function TierCard({ tier, accent, done, starred, nextId, onToggleDone, onToggleS
           </span>
           <span className="text-[11px] font-semibold text-fg-subtle tabular-nums">{n}/{all.length}</span>
           <div className="w-16 sm:w-24 h-1 rounded-full bg-surface-hover overflow-hidden">
-            <div className={`h-full rounded-full ${accent.bar} bg-brand`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
+            <div className={`h-full rounded-full ${accent.bar} bg-accent`} style={{ width: `${pct}%`, transition: "width 0.4s ease" }} />
           </div>
         </div>
       </div>

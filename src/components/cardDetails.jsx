@@ -102,7 +102,7 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
         </div>
       )}
 
-      <div className="rounded-lg border border-line p-4 bg-brand">
+      <div className="rounded-lg border border-line p-4 bg-surface-subtle">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-xs font-semibold text-fg-muted flex items-center gap-1.5">
             My Notes
@@ -215,10 +215,10 @@ export function CoreStackTopicDetail({ topic, note, checkedDays }) {
         note={note}
         checkedDays={checkedDays}
         accent={{
-          panel: "border-line bg-brand",
+          panel: "border-line bg-surface-subtle",
           bar: "bg-success",
           badge: "bg-success-subtle text-success-fg border-line",
-          button: "    bg-brand",
+          button: "",
         }}
       />
     </div>
@@ -524,15 +524,18 @@ export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onTog
 
   if (!problem) return null;
 
+  // Same colours as the DSA list: green, amber, red.
   const diff =
     problem.difficulty === "Hard"
-      ? "bg-danger-subtle text-danger-fg "
-      : "bg-warning-subtle text-warning-fg ";
+      ? "bg-danger-subtle text-danger-fg"
+      : problem.difficulty === "Easy"
+      ? "bg-success-subtle text-success-fg"
+      : "bg-warning-subtle text-warning-fg";
 
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <span className={ bg-brand`text-[10px] font-semibold px-2 py-0.5 rounded-md ${diff}`}>{problem.difficulty}</span>
+        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${diff}`}>{problem.difficulty}</span>
         <a
           href={problem.link}
           target="_blank"
@@ -552,13 +555,13 @@ export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onTog
           </button>
         )}
         {solvedDays != null && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-200 text-success-fg font-semibold whitespace-nowrap">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success-subtle text-success-fg font-semibold whitespace-nowrap">
             ✓ solved {solvedDays === 0 ? "today" : `${solvedDays}d ago`}
           </span>
         )}
       </div>
 
-      <div className="rounded-lg border border-line p-3 bg-brand">
+      <div className="rounded-lg border border-line p-3 bg-surface-subtle">
         <div className="flex items-center justify-between mb-2">
           <h4 className="text-[11px] font-semibold text-fg-subtle flex items-center gap-1.5">
             Solution Notes
