@@ -646,8 +646,8 @@
    "after": 0.6
   },
   {
-   "key": "db174976",
-   "say": "Check 6. The IngestRequest is keyed by sessionId. What does that key decide? A, Which blob bucket the file is read from. B, The partition: one session's requests always land in the same partition, in order. C, The chunk table's primary key. Or D, How many parts the file is split into.",
+   "key": "78e650d1",
+   "say": "Check 6. The ingest request is keyed by the session ID. What does that key decide? A, Which blob bucket the file is read from. B, The partition: one session's requests always land in the same partition, in order. C, The chunk table's primary key. Or D, How many parts the file is split into.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -765,8 +765,8 @@
    "after": 0
   },
   {
-   "key": "d3ffbcfb",
-   "say": "Check 7. Why does the splitter only cut on a line that has a timestamp? A, Timestamps are always at 5 MB boundaries. B, So a stack trace (lines with no timestamp) and a minute are never split across two parts. C, Because ranged GETs need a timestamp. Or D, To keep parts exactly 5 MB.",
+   "key": "b976ecc9",
+   "say": "Check 7. Why does the splitter only cut on a line that has a timestamp? A, Timestamps are always at five megabyte boundaries. B, So a stack trace, whose lines have no timestamp, and a minute are never split across two parts. C, Because ranged GETs need a timestamp. Or D, To keep parts exactly five megabytes.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -961,8 +961,8 @@
    "after": 0.6
   },
   {
-   "key": "803e8ba7",
-   "say": "Check 8. Why does the part message carry firstLineNumber? A, To verify the ranged GET. B, A worker reading the middle of the file can't count earlier lines; it needs the global number so citations use original line numbers. C, It's the Kafka offset. Or D, To pick the partition.",
+   "key": "c67305b4",
+   "say": "Check 8. Why does the part message carry the first line number? A, To verify the ranged GET. B, A worker reading the middle of the file can't count earlier lines; it needs the global number so citations use original line numbers. C, It's the Kafka offset. Or D, To pick the partition.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -975,8 +975,8 @@
    "after": 0
   },
   {
-   "key": "1bba0cb1",
-   "say": "Check 9. If the parts topic were keyed by documentId alone, what would go wrong?",
+   "key": "420e6592",
+   "say": "Check 9. If the parts topic were keyed by the document ID alone, what would go wrong?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -1332,8 +1332,8 @@
    "after": 0.6
   },
   {
-   "key": "495a1023",
-   "say": "Check 11. A chunk row is inserted. Which of its columns is still empty, and who fills it? A, content_tsv, filled by a nightly job. B, embedding, filled later by the enrichment lane. C, line_end, filled by the finalizer. Or D, chunk_id, filled by Postgres.",
+   "key": "6920b1e0",
+   "say": "Check 11. A chunk row is inserted. Which of its columns is still empty, and who fills it? A, content T S V, filled by a nightly job. B, the embedding, filled later by the enrichment lane. C, line end, filled by the finalizer. Or D, the chunk ID, filled by Postgres.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -1346,8 +1346,8 @@
    "after": 0
   },
   {
-   "key": "e3cc6d5e",
-   "say": "Check 12. Why is the log_metrics upsert, on its own, not safe to repeat?",
+   "key": "0011c33d",
+   "say": "Check 12. Why is the log metrics upsert, on its own, not safe to repeat?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -1479,8 +1479,8 @@
    "after": 0
   },
   {
-   "key": "a6805bb5",
-   "say": "Check 13. A part is redelivered. Walk the chunk insert: what does the database do, and what does RETURNING give back?",
+   "key": "b1a0e5d5",
+   "say": "Check 13. A part is redelivered. Walk the chunk insert: what does the database do, and what does returning give back?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -1493,8 +1493,8 @@
    "after": 0
   },
   {
-   "key": "713712cf",
-   "say": "Check 14. An interviewer asks: \"why not just key chunks by (document_id, line_start)?\" Give your argument.",
+   "key": "b759e3a3",
+   "say": "Check 14. An interviewer asks: why not just key chunks by document ID and line start? Give your argument.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -1766,8 +1766,8 @@
    "after": 0.6
   },
   {
-   "key": "e641b7f9",
-   "say": "Check 15. Crash B: the transaction committed, the ack didn't. What exactly happens on the redelivery? A, Duplicate chunks are inserted, then cleaned up. B, The fast path sees the part marker and skips; even without it, every chunk_id conflicts and RETURNING is empty, so no count moves. C, The session is marked FAILED. Or D, Kafka skips the record automatically.",
+   "key": "6c180adc",
+   "say": "Check 15. Crash B: the transaction committed, the ack didn't. What exactly happens on the redelivery? A, Duplicate chunks are inserted, then cleaned up. B, The fast path sees the part marker and skips; even without it, every chunk ID conflicts and returning is empty, so no count moves. C, The session is marked failed. Or D, Kafka skips the record automatically.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -1983,8 +1983,8 @@
    "after": 0.6
   },
   {
-   "key": "6ed04233",
-   "say": "Check 18. \"How many 503s between 10:00 and 10:10?\" Which component answers, and how? A, The LLM, from the retrieved chunks. B, SQL over log_metrics: an index scan summing count for that range. C, The judge in Graph 1. Or D, Full-text search over chunks.",
+   "key": "4a0f385c",
+   "say": "Check 18. How many five oh threes between ten o'clock and ten past ten? Which component answers, and how? A, The LLM, from the retrieved chunks. B, SQL over log metrics: an index scan summing the count for that range. C, The judge in Graph one. Or D, Full text search over chunks.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2151,8 +2151,8 @@
    "after": 0.6
   },
   {
-   "key": "9495fb17",
-   "say": "Check 19. Why can't a single part thread run the count-spike rule? A, It has no database connection. B, The rule needs the session-wide median and MAD, which only exist after every part is in. C, Count spikes need the LLM. Or D, Part threads can't read log_metrics.",
+   "key": "c76db90d",
+   "say": "Check 19. Why can't a single part thread run the count-spike rule? A, It has no database connection. B, The rule needs the session wide median and MAD, which only exist after every part is in. C, Count spikes need the LLM. Or D, Part threads can't read log metrics.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2165,8 +2165,8 @@
    "after": 0
   },
   {
-   "key": "3901bf76",
-   "say": "Check 20. Your resume says 80% fewer LLM calls. Where does the number come from, exactly?",
+   "key": "5fc08518",
+   "say": "Check 20. Your resume says eighty percent fewer LLM calls. Where does the number come from, exactly?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2410,8 +2410,8 @@
    "after": 0.6
   },
   {
-   "key": "b5cfb97c",
-   "say": "Check 21. When exactly are a chunk's embeddings created? A, Inside the part's ingest transaction. B, When the first question is asked. C, After the finalizer's claim, by EMBED_BATCH items on the enrichment lane. Or D, By a nightly batch job.",
+   "key": "e9671b57",
+   "say": "Check 21. When exactly are a chunk's embeddings created? A, Inside the part's ingest transaction. B, When the first question is asked. C, After the finalizer's claim, by embed batch items on the enrichment lane. Or D, By a nightly batch job.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2424,8 +2424,8 @@
    "after": 0
   },
   {
-   "key": "a3943aea",
-   "say": "Check 22. Why must total_parts be saved before part 0 is sent?",
+   "key": "5733b277",
+   "say": "Check 22. Why must total parts be saved before part zero is sent?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2585,8 +2585,8 @@
    "after": 0
   },
   {
-   "key": "33d8c200",
-   "say": "Check 24. A call returns 429. Why not just sleep the lane for 60 seconds?",
+   "key": "027b56bc",
+   "say": "Check 24. A call returns four two nine. Why not just sleep the lane for sixty seconds?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2704,8 +2704,8 @@
    "after": 0.6
   },
   {
-   "key": "992b8ff7",
-   "say": "Check 25. A lane thread polls an EMBED_BATCH item whose workId is already in enrich_work_done. What happens? A, It re-embeds the batch and overwrites the vectors. B, It skips the item before any API call, then acks. C, It sends the item to the DLQ. Or D, It waits 60 seconds.",
+   "key": "289ef4d3",
+   "say": "Check 25. A lane thread polls an embed batch item whose work ID is already in the enrich work done table. What happens? A, It re-embeds the batch and overwrites the vectors. B, It skips the item before any API call, then acks. C, It sends the item to the DLQ. Or D, It waits 60 seconds.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2718,8 +2718,8 @@
    "after": 0
   },
   {
-   "key": "4823436a",
-   "say": "Check 26. Why is the embedding requested with outputDimensionality = 768?",
+   "key": "b3677c4a",
+   "say": "Check 26. Why is the embedding requested with an output dimensionality of seven hundred and sixty eight?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2928,8 +2928,8 @@
    "after": 0.6
   },
   {
-   "key": "03608789",
-   "say": "Check 27. Where do a finding's evidence_chunk_ids come from? A, The model's JSON output. B, Code: the chunk(s) the enrichment call was about. C, A vector search after the call. Or D, The judge in Graph 1.",
+   "key": "1036a01d",
+   "say": "Check 27. Where do a finding's evidence chunk IDs come from? A, The model's JSON output. B, Code: the chunk or chunks the enrichment call was about. C, A vector search after the call. Or D, The judge in Graph one.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2942,8 +2942,8 @@
    "after": 0
   },
   {
-   "key": "5afd3a92",
-   "say": "Check 28. Two windows both report \"Payment DB pool exhausted\" with different counts. How many finding rows, and why?",
+   "key": "43ebf548",
+   "say": "Check 28. Two windows both report: payment DB pool exhausted, with different counts. How many finding rows, and why?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -3327,8 +3327,8 @@
    "after": 0.6
   },
   {
-   "key": "7605872c",
-   "say": "Check 31. Chunk X is rank 0 in the vector list only. Chunk Y is rank 1 in both lists. Which ranks higher after RRF (k = 60)? A, X: 1/60 beats everything. B, Y: 1/61 + 1/61 ≈ 0.0328 > 1/60 ≈ 0.0167. C, They tie. Or D, It depends on the cosine scores.",
+   "key": "bb12f5a1",
+   "say": "Check 31. Chunk X is rank zero in the vector list only. Chunk Y is rank one in both lists. Which ranks higher after RRF, with k equal to sixty? A, X: one over sixty beats everything. B, Y: one over sixty one, twice, is about nought point oh three three, which beats one over sixty, about nought point oh one seven. C, They tie. Or D, It depends on the cosine scores.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -3523,8 +3523,8 @@
    "after": 0.6
   },
   {
-   "key": "bb4fec5c",
-   "say": "Check 32. What is the most LLM calls one question can cost in Graph 2, and why is it bounded?",
+   "key": "ff0265fc",
+   "say": "Check 32. What is the most LLM calls one question can cost in Graph two, and why is it bounded?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -3698,8 +3698,8 @@
    "after": 0.6
   },
   {
-   "key": "8ec750a5",
-   "say": "Check 34. On a shared table, why does raising ef_search barely help a small session? A, ef_search only affects index builds. B, The walk ignores the filter, so the extra candidates mostly belong to other sessions and are filtered out afterwards. C, Small sessions have no embeddings. Or D, HNSW caps results at 10.",
+   "key": "e9e33995",
+   "say": "Check 34. On a shared table, why does raising ef search barely help a small session? A, ef search only affects index builds. B, The walk ignores the filter, so the extra candidates mostly belong to other sessions and are filtered out afterwards. C, Small sessions have no embeddings. Or D, H N S W caps results at ten.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -3901,8 +3901,8 @@
    "after": 0.6
   },
   {
-   "key": "63963f9e",
-   "say": "Check 35. Which alternative is closest to a table per session, and when would you switch to it? A, A separate vector DB, at any scale. B, LIST partitions per session (or tenant, then day), once table count makes the catalog and planning slow. C, The iterative scan, immediately. Or D, One shared table with a bigger ef_search.",
+   "key": "303ab75b",
+   "say": "Check 35. Which alternative is closest to a table per session, and when would you switch to it? A, A separate vector database, at any scale. B, List partitions per session, or per tenant then day, once the table count makes the catalog and planning slow. C, The iterative scan, immediately. Or D, One shared table with a bigger ef search.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -3915,8 +3915,8 @@
    "after": 0
   },
   {
-   "key": "859ec1b7",
-   "say": "Check 36. \"Why not a dedicated vector database?\" Give two arguments.",
+   "key": "7c7ec51f",
+   "say": "Check 36. Why not a dedicated vector database? Give two arguments.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -4097,8 +4097,8 @@
    "after": 0
   },
   {
-   "key": "10ba349b",
-   "say": "Check 37. The gate flags 18 windows; 15 are real. There were 20 real incident windows. Precision, recall? A, P 0.75 · R 0.83. B, P 0.83 · R 0.75. C, P 0.90 · R 0.75. Or D, P 0.83 · R 0.90.",
+   "key": "b258df2b",
+   "say": "Check 37. The gate flags eighteen windows, and fifteen are real. There were twenty real incident windows. What are the precision and the recall? A, precision nought point seven five, recall nought point eight three. B, precision nought point eight three, recall nought point seven five. C, precision nought point nine, recall nought point seven five. Or D, precision nought point eight three, recall nought point nine.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -4237,8 +4237,8 @@
    "after": 0.6
   },
   {
-   "key": "f91d041a",
-   "say": "Check 38. A question has 4 gold chunks; 3 are in the top 30, and the first one is at rank 2. Recall@30 and reciprocal rank?",
+   "key": "69dd4c61",
+   "say": "Check 38. A question has four gold chunks. Three are in the top thirty, and the first one is at rank two. What are the recall at thirty, and the reciprocal rank?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -4377,8 +4377,8 @@
    "after": 0
   },
   {
-   "key": "75c43c48",
-   "say": "Check 40. Your judge reports 95% faithfulness. An interviewer asks: \"so 5% hallucination?\" What do you say?",
+   "key": "4bf2a12a",
+   "say": "Check 40. Your judge reports ninety five percent faithfulness. An interviewer asks: so, five percent hallucination? What do you say?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -4475,8 +4475,8 @@
    "after": 0.6
   },
   {
-   "key": "295a68ca",
-   "say": "Check 41. Why must a dead-letter queue exist at all, if you already retry? A, To store successful records. B, A poison message fails every retry; without a DLQ it blocks its whole partition (head-of-line blocking). C, Kafka requires one. Or D, To speed up retries.",
+   "key": "f1f4c1fd",
+   "say": "Check 41. Why must a dead-letter queue exist at all, if you already retry? A, To store successful records. B, A poison message fails every retry, and without a dead letter queue it blocks its whole partition: head of line blocking. C, Kafka requires one. Or D, To speed up retries.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -4580,8 +4580,8 @@
    "after": 0
   },
   {
-   "key": "919a0f71",
-   "say": "Check 42. At 1 TB a day, what's the first bottleneck, and what's the first change to storage?",
+   "key": "1b9155cb",
+   "say": "Check 42. At a terabyte a day, what's the first bottleneck, and what's the first change to storage?",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3

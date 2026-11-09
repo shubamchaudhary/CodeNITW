@@ -58,6 +58,7 @@ export const p10: Scene[] = [
     topic: "failures",
     q: "Why must a dead-letter queue exist at all, if you already retry?",
     options: ["To store successful records", "A poison message fails every retry; without a DLQ it blocks its whole partition (head-of-line blocking)", "Kafka requires one", "To speed up retries"],
+    oSay: ["To store successful records", "A poison message fails every retry, and without a dead letter queue it blocks its whole partition: head of line blocking", "Kafka requires one", "To speed up retries"],
     answer: 1,
     a: "Retries fix transient errors. A poison message fails every time; retried forever it blocks everything behind it. The DLQ parks it, the session fails loudly, and the partition moves on.",
     aSay: "B. Retries only fix transient errors. A poison message fails every time, and retried forever it blocks everything behind it in the partition. The dead letter queue parks it, the session fails loudly with a reason, and the partition moves on.",
@@ -108,6 +109,7 @@ export const p10: Scene[] = [
   check({
     topic: "scaling",
     q: "At 1 TB a day, what's the first bottleneck, and what's the first change to storage?",
+    say: "At a terabyte a day, what's the first bottleneck, and what's the first change to storage?",
     a: "Parsing CPU (then Postgres writes): add an ingest fleet with more partitions and COPY. Storage: per-session tables become partitions by tenant, then day.",
     aSay: "Parsing CPU first, then Postgres writes. So a separate ingest fleet, more partitions, autoscaling on lag, and COPY. And the per session tables become partitions, by tenant, then by day.",
   }),

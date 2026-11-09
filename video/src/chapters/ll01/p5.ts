@@ -138,6 +138,7 @@ WHERE  id = :documentId
     topic: "the finalizer",
     q: "When exactly are a chunk's embeddings created?",
     options: ["Inside the part's ingest transaction", "When the first question is asked", "After the finalizer's claim, by EMBED_BATCH items on the enrichment lane", "By a nightly batch job"],
+    oSay: ["Inside the part's ingest transaction", "When the first question is asked", "After the finalizer's claim, by embed batch items on the enrichment lane", "By a nightly batch job"],
     answer: 2,
     a: "After every part has committed and one caller wins the finalize claim: it publishes EMBED_BATCH items, and the enrichment lane writes the vectors into the NULL embedding column.",
     aSay: "C. After every part has committed and one caller wins the finalize claim. The winner publishes embed batch items, and the enrichment lane fills in the embedding column, which was NULL until then.",
@@ -145,6 +146,7 @@ WHERE  id = :documentId
   check({
     topic: "the finalizer",
     q: "Why must total_parts be saved before part 0 is sent?",
+    say: "Why must total parts be saved before part zero is sent?",
     a: "So the target exists before any part can finish: the claim compares parsed_parts with total_parts, and a missing or late target could let a file be declared done early (or never).",
     aSay: "So the target exists before any part can finish. The claim compares parsed parts with total parts. If the target were written late, a fast part could see the wrong target, and the file could be declared done too early, or never.",
   }),
@@ -230,6 +232,7 @@ WHERE  id = :documentId
   check({
     topic: "lanes",
     q: "A call returns 429. Why not just sleep the lane for 60 seconds?",
+    say: "A call returns four two nine. Why not just sleep the lane for sixty seconds?",
     a: "The lane would stall its whole partition, and long blocking risks max.poll.interval and a rebalance. Instead the item goes to retry.60s with notBefore, and only the retry thread waits.",
     aSay: "Sleeping would stall the whole partition behind one item, and long blocking risks blowing the poll interval and triggering a rebalance. Instead, the item goes to the sixty second retry topic with a not before time, and only the retry thread waits.",
   }),

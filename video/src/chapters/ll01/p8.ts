@@ -83,7 +83,9 @@ export const p8: Scene[] = [
   check({
     topic: "per-session tables",
     q: "On a shared table, why does raising ef_search barely help a small session?",
+    say: "On a shared table, why does raising ef search barely help a small session?",
     options: ["ef_search only affects index builds", "The walk ignores the filter, so the extra candidates mostly belong to other sessions and are filtered out afterwards", "Small sessions have no embeddings", "HNSW caps results at 10"],
+    oSay: ["ef search only affects index builds", "The walk ignores the filter, so the extra candidates mostly belong to other sessions and are filtered out afterwards", "Small sessions have no embeddings", "H N S W caps results at ten"],
     answer: 1,
     a: "Post-filtering: the walk doesn't know the WHERE clause. More candidates are mostly other sessions' vectors, removed after the walk: 10× ef_search moved recall from 0.068 to 0.244.",
     aSay: "B. It's post filtering. The walk doesn't know about the where clause, so the extra candidates are mostly other sessions' vectors, and they're thrown away after the walk. Ten times the ef search moved recall from nought point oh six eight to only nought point two four.",
@@ -188,6 +190,7 @@ export const p8: Scene[] = [
     topic: "the alternatives",
     q: "Which alternative is closest to a table per session, and when would you switch to it?",
     options: ["A separate vector DB, at any scale", "LIST partitions per session (or tenant, then day), once table count makes the catalog and planning slow", "The iterative scan, immediately", "One shared table with a bigger ef_search"],
+    oSay: ["A separate vector database, at any scale", "List partitions per session, or per tenant then day, once the table count makes the catalog and planning slow", "The iterative scan, immediately", "One shared table with a bigger ef search"],
     answer: 1,
     a: "LIST (or HASH) partitions: the same isolation and recall, with pruning. Switch at thousands of tenants, when tens of thousands of tables slow planning; only the table-name resolution changes.",
     aSay: "B. List partitions. The same isolation and recall, with partition pruning. You'd switch at thousands of tenants, when tens of thousands of tables start to slow the planner, and only the table name resolution changes.",
@@ -195,6 +198,7 @@ export const p8: Scene[] = [
   check({
     topic: "the alternatives",
     q: "\"Why not a dedicated vector database?\" Give two arguments.",
+    say: "Why not a dedicated vector database? Give two arguments.",
     a: "1) It's a second store: two writes per chunk that can drift, no shared transaction, so the idempotent single-transaction write breaks. 2) No joins with metrics, findings and line ranges, which every answer needs.",
     aSay: "Two arguments. One: it's a second store, so every chunk needs two writes that can drift apart, with no shared transaction, and the idempotent single transaction write breaks. Two: no joins with the metrics, the findings and the line ranges, which every answer needs. And the measured bottlenecks were parsing and writes, never vector search.",
   }),
