@@ -114,18 +114,29 @@ export default function LecturePlayer({ id, autoPlay = false }) {
   // the video frame, and the frame clock can lag the audio (more on a busy
   // page), so a pause rewound the voice and resuming repeated a syllable. The
   // narration's own clock is sampled while it plays, and on pause the frame is
-  // moved to the last sample (at most one sampling interval behind).
+  // moved to the last sample (at most one sampling interval behind). The
+  // sampling runs only while the lecture plays: an open but paused lecture
+  // costs nothing.
   useEffect(() => {
     const p = player.current;
     if (!p || !timeline) return undefined;
     let heard = null;
     let settleUntil = 0; // after a seek the audio needs a moment to follow
-    const sample = setInterval(() => {
-      if (performance.now() < settleUntil) return;
-      const a = [...(wrap.current?.querySelectorAll("audio") ?? [])].find((x) => !x.paused && /lecture\.mp3/.test(x.src));
-      if (a) heard = a.currentTime;
-    }, 15);
+    let sample = null;
+    const stopSampling = () => {
+      clearInterval(sample);
+      sample = null;
+    };
+    const onPlay = () => {
+      if (sample) return;
+      sample = setInterval(() => {
+        if (performance.now() < settleUntil) return;
+        const a = [...(wrap.current?.querySelectorAll("audio") ?? [])].find((x) => !x.paused && /lecture\.mp3/.test(x.src));
+        if (a) heard = a.currentTime;
+      }, 15);
+    };
     const onPause = () => {
+      stopSampling();
       if (heard == null) return;
       const f = Math.round(heard * FPS);
       heard = null;
@@ -135,11 +146,17 @@ export default function LecturePlayer({ id, autoPlay = false }) {
       heard = null;
       settleUntil = performance.now() + 250;
     };
+    p.addEventListener("play", onPlay);
     p.addEventListener("pause", onPause);
+    p.addEventListener("ended", stopSampling);
     p.addEventListener("seeked", onSeek);
+    // "Watch" may have started it before these listeners were added.
+    if (p.isPlaying()) onPlay();
     return () => {
-      clearInterval(sample);
+      stopSampling();
+      p.removeEventListener("play", onPlay);
       p.removeEventListener("pause", onPause);
+      p.removeEventListener("ended", stopSampling);
       p.removeEventListener("seeked", onSeek);
     };
   }, [sections, timeline]);

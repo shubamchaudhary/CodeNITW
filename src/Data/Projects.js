@@ -9,7 +9,7 @@
 
 export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
-  { key: "loglens", label: "LogLens" },
+  { key: "loglens", label: "DeepLogLens" },
   { key: "invops", label: "Inventory Ops Agent" },
   { key: "kafka", label: "Kafka" },
 ];
@@ -112,9 +112,9 @@ export const PROJECT_TOPICS = [
   {
     id: "LL-01",
     section: "loglens",
-    sectionLabel: "LogLens",
-    title: "LogLens, end to end",
-    summary: "The whole project in one place, in the lecture's order: every decision, every number and how to derive it, the gaps, resume defence, pitches and the follow-ups.",
+    sectionLabel: "DeepLogLens",
+    title: "DeepLogLens, end to end",
+    summary: "The architecture as your resume states it, taught slowly: the Kafka pointers, the chunk table and its content-fingerprint upserts, embeddings and enrichment, the evals, per-session tables, and the alternatives behind every decision.",
   },
   // A previous job's LLM inventory-operations agent: its architecture and the
   // data-management layer built there, from the team's code documentation.

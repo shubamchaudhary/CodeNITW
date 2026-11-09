@@ -1,0 +1,278 @@
+import type { Scene } from "../../lib/types.ts";
+import { B, sec } from "./h.ts";
+import { check } from "./k.ts";
+
+// Part 3 (consumer side): delivery semantics and the consumer's steps; what
+// lands in the tables (chunk table, metrics, part markers) and the content
+// fingerprint key.
+export const p3: Scene[] = [
+  // ------------------------------------------------------------ 9
+  sec("9", "The consumer, and offsets after durable writes", "Topic nine. The other side of the parts topic. How a consumer reads a part, and the one ordering rule that decides whether you lose data or duplicate it."),
+  {
+    kind: "compare",
+    title: "When do you commit the offset?",
+    cols: [
+      { title: "Commit, then process", icon: "⏩", tone: "red", items: ["crash after the commit", "the record is never seen again", "at-most-once: work lost"] },
+      { title: "Process, then commit", icon: "🔁", tone: "amber", items: ["crash after the write, before the commit", "Kafka redelivers the record", "at-least-once: possible duplicates"] },
+      { title: "At-least-once + idempotent write ✓", icon: "🎯", tone: "green", items: ["redelivery is allowed to happen", "applying it twice changes nothing", "exactly-once effects"] },
+    ],
+    footer: "offsets commit after durable writes, and the writes are safe to repeat",
+    beats: B(
+      "Every consumer has to choose when it commits the offset. Commit first, then process: if you crash after the commit, the record is never seen again. That's at most once. Work is lost.",
+      { say: "Process first, then commit: if you crash after writing but before committing, Kafka redelivers the record. That's at least once. Nothing is lost, but you may see it twice.", term: { word: "At-least-once", meaning: "never lost, maybe delivered twice" } },
+      { say: "So DeepLogLens takes at least once, and makes the write safe to apply twice. That combination gives you exactly once effects.", term: { word: "Exactly-once effect", meaning: "at-least-once + a write safe to repeat" } },
+      { say: "That's your resume line, word for word. Offsets commit after durable writes, and idempotent upserts turn at least once delivery into exactly once effects.", tone: "key" },
+    ),
+  },
+  {
+    kind: "trap",
+    myth: "\"Kafka gives me exactly-once delivery.\"",
+    truth: "Say exactly-once effects. Delivery over a network is at-least-once.",
+    why: "a sender can't tell a lost message from a slow one, so it retries, and retries duplicate. Kafka's own exactly-once covers Kafka-to-Kafka inside a Kafka transaction, and our effect is a Postgres write.",
+    beats: B(
+      "A trap to avoid in the interview. Never say Kafka gives you exactly once delivery.",
+      { say: "Say exactly once effects. Delivery over a network is at least once.", tone: "key" },
+      "Because a sender can't tell a lost message from a slow one, so it retries, and retries duplicate. Kafka's own exactly once feature covers Kafka to Kafka, inside a Kafka transaction. Our effect is a Postgres write, which can't join that transaction.",
+    ),
+  },
+  {
+    kind: "bullets",
+    title: "The consumer's settings, and why",
+    items: [
+      { icon: "✋", text: "enable-auto-commit = false · ack-mode = MANUAL", sub: "the offset moves only when the code says so: after the commit" },
+      { icon: "1️⃣", text: "max.poll.records = 1", sub: "one record per poll: a slow record can't hold 499 others hostage" },
+      { icon: "⏳", text: "max.poll.interval.ms = 900,000 (15 min)", sub: "how long one record may take before the group assumes the consumer died" },
+      { icon: "🧵", text: "concurrency = 3 locally, 2 in production", sub: "threads in the group ingest-part-workers, over 6 partitions" },
+    ],
+    beats: B(
+      "The consumer's settings. Auto commit is off, and the ack mode is manual. The offset only moves when the code says so, and the code says so after the database commit.",
+      "Max poll records is one. One record per poll, so one slow record can never hold four hundred and ninety nine others hostage. That setting came from a real incident: with the default of five hundred, slow records blew the poll interval and the group kept rebalancing, re delivering the same records forever.",
+      "The max poll interval is fifteen minutes: how long one record may take before the group decides this consumer is dead and gives its partitions away.",
+      "And three threads locally, two in production, in the group ingest part workers, sharing six partitions.",
+    ),
+  },
+  {
+    kind: "bullets",
+    title: "One part, from poll to ack",
+    firstItemStep: 1,
+    items: [
+      { icon: "⚡", text: "Poll one part, then the fast path: already done?", sub: "part 3 of 205, offset 41 · SELECT from ingest_parts (document_id, part_idx) · if yes, skip the read" },
+      { icon: "🌐", text: "Ranged GET, outside any transaction", sub: "Range: bytes=15728922-21004116 · lines capped at 64K chars · NUL bytes replaced" },
+      { icon: "🪟", text: "Chunk into 60 s windows, run 8 parsers, apply local hard rules", sub: "≤ 2,000 lines or 512 KB per chunk · compute each chunk's SHA-256 fingerprint" },
+      { icon: "🧾", text: "ONE short transaction: the idempotent upserts", sub: "chunks · metrics for new chunks only · part marker · parsed_parts counter" },
+      { icon: "✅", text: "Acknowledge: the offset commits", sub: "only after COMMIT returned · then tryFinalize()" },
+    ],
+    beats: B(
+      "Now one part, from poll to acknowledgement. Five steps.",
+      { say: "Poll one part request: part three of two hundred and five, at offset forty one on partition four. Then the fast path. A cheap select on the part markers table: has this document and part index already been processed? If yes, skip everything. Don't even read the slice. Redeliveries and replays cost one query.", tone: "key" },
+      "Then the ranged GET, outside any transaction. Only this part's five megabytes come over the network. Lines are capped at sixty four thousand characters, and NUL bytes are replaced, because Postgres text can't store them.",
+      "Chunk the lines into sixty second windows, at most two thousand lines or five hundred and twelve kilobytes each. Run the eight parsers on each window, apply the local hard rules, and compute each chunk's S H A two fifty six fingerprint. Still no transaction.",
+      { say: "Then one short transaction, which does all the writes as idempotent upserts. Chunks, metrics for the new chunks only, the part marker, and the parsed parts counter.", tone: "key" },
+      { say: "And only after the commit returns, acknowledge. That's when the offset commits. Then try to finalize, which we'll meet in topic fifteen.", tone: "key" },
+    ),
+  },
+  {
+    kind: "big",
+    tone: "idea",
+    lead: "The rule behind the order",
+    text: "Slow I/O outside the transaction. One short transaction. Then the ack.",
+    after: "a transaction held across a network call holds a pool connection for minutes",
+    beats: B(
+      "Notice the rule behind that order.",
+      { say: "Slow I O outside the transaction. One short transaction for the writes. Then the ack.", tone: "key" },
+      "Version one learned this the hard way: a transaction wrapped around a minutes long embedding job held one of the pool's few connections the whole time, and the pool ran dry. Short transactions keep the pool free.",
+    ),
+  },
+  check({
+    topic: "offsets",
+    q: "The worker commits to Postgres, then crashes before acknowledging. What does Kafka do, and why is that fine?",
+    options: ["Nothing: the offset was auto-committed", "It redelivers the part; the upserts make the second application change nothing", "It deletes the record", "It sends it to the DLQ"],
+    answer: 1,
+    a: "It redelivers (the offset never committed). That's at-least-once, and the idempotent upserts make the second application a no-op: exactly-once effects.",
+    aSay: "B. The offset never committed, so Kafka redelivers the part. That's at least once, and it's fine, because the upserts are idempotent: applying the part a second time changes nothing.",
+  }),
+
+  // ------------------------------------------------------------ 10
+  sec("10", "What lands in the tables", "Topic ten. Exactly what a part writes, table by table, column by column. Starting with the most important table in the system."),
+  {
+    kind: "custom",
+    name: "dlltable",
+    props: {
+      title: "The chunk table: one per session",
+      name: "log_chunks_s_7f3a91c2_…",
+      sub: "created with the session",
+      cols: [
+        { n: "chunk_id", t: "CHAR(64)", k: "PK", note: "The primary key: a SHA-256 fingerprint of the chunk, hex encoded. Computed from document_id, line_start and the content itself. Same bytes in, same key out." },
+        { n: "document_id", t: "UUID", note: "Which uploaded file the window came from. A session can hold several documents." },
+        { n: "time_bucket", t: "TIMESTAMPTZ", k: "IDX", note: "The minute this window covers. A B-tree index serves time-range lookups: 0.03 ms for a 10-minute range." },
+        { n: "line_start", t: "INTEGER", note: "First line, in the ORIGINAL file's numbering: slice line + firstLineNumber − 1." },
+        { n: "line_end", t: "INTEGER", note: "Last line. With line_start, a citation resolves to exact log lines." },
+        { n: "content", t: "TEXT", note: "The raw lines of the window. At most 2,000 lines or 512 KB; a busy minute becomes several chunks with the same bucket." },
+        { n: "is_anomalous", t: "BOOLEAN", note: "Set by the local hard rules at insert; the finalizer adds the session-wide statistical flags later." },
+        { n: "embedding", t: "vector(768)", k: "IDX", note: "NULL at insert. The enrichment lane fills it later. HNSW index: m = 16, ef_construction = 64, cosine distance." },
+        { n: "content_tsv", t: "tsvector GENERATED … STORED", k: "GEN", note: "to_tsvector('simple', content), computed once at insert. GIN index for full-text search." },
+        { n: "created_at", t: "TIMESTAMPTZ", note: "When the row was written." },
+      ],
+      sample: [
+        { c: "chunk_id", v: "9f2c41d7…e41a" },
+        { c: "document_id", v: "2b9d…" },
+        { c: "time_bucket", v: "2026-09-29 09:31" },
+        { c: "line_start", v: "3401" },
+        { c: "line_end", v: "4610" },
+        { c: "content", v: "09:31:02 ERROR [pay] 503 …" },
+        { c: "is_anomalous", v: "true" },
+        { c: "embedding", v: "NULL (for now)" },
+      ],
+      foot: "three indexes per table: HNSW on embedding · GIN on content_tsv · B-tree on time_bucket",
+    },
+    beats: B(
+      "This is the chunk table. One of these is created for every session, named log chunks s, then the session's U U I D. Ten columns. Watch the first one most closely.",
+      { say: "Chunk ID. The primary key. It's not a random U U I D. It's a S H A two fifty six fingerprint of the chunk, hex encoded, computed from the document ID, the first line number, and the content itself. Same bytes in, same key out. That one choice is what makes the insert idempotent.", tone: "key" },
+      "Document ID: which uploaded file the window came from, because a session can hold several.",
+      "Time bucket: the minute this window covers. A B tree index serves time range lookups, in three hundredths of a millisecond for a ten minute range.",
+      "Line start: the first line, in the original file's numbering. The slice's line, plus the first line number from the message, minus one.",
+      "Line end: the last line. Together, they turn a citation into exact log lines.",
+      "Content: the raw lines of the window. At most two thousand lines or five hundred and twelve kilobytes, so a very busy minute becomes several chunks with the same time bucket.",
+      "Is anomalous: set by the local hard rules at insert. The finalizer adds the session wide statistical flags later.",
+      { say: "Embedding: a seven hundred and sixty eight dimensional vector. It's NULL when the row is inserted. The enrichment lane fills it in later, which is topic seventeen. It has an H N S W index for cosine distance.", tone: "key" },
+      { say: "Content T S V: a generated column. Postgres computes the full text vector once, at insert, and stores it. A gin index sits on it. Storing it matters: computing it per query took over a second; stored, about twenty milliseconds.", term: { word: "Generated column", meaning: "computed by Postgres at insert, stored" } },
+      "Created at: when the row was written.",
+      "Here's one real row. The fingerprint, the file, the minute, lines three thousand four hundred and one to four thousand six hundred and ten, the content, flagged anomalous, and no embedding yet.",
+      { say: "So three indexes on every chunk table: H N S W on the embedding, gin on the text vector, and a B tree on the time bucket. Per session, H N S W and gin indexed chunk tables. That's your resume phrase.", tone: "key" },
+    ),
+  },
+  {
+    kind: "custom",
+    name: "dlltable",
+    props: {
+      title: "log_metrics: exact numbers, one row per minute and metric",
+      name: "log_metrics",
+      sub: "shared · keyed by session",
+      cols: [
+        { n: "session_id", t: "UUID", k: "PK", note: "Part 1 of the composite key: which investigation." },
+        { n: "time_bucket", t: "TIMESTAMPTZ", k: "PK", note: "Part 2: the minute." },
+        { n: "category", t: "TEXT", k: "PK", note: "Part 3: API, DATABASE, ERRORS, PERFORMANCE, AUTH, LIFECYCLE, TRAFFIC, DEPENDENCY." },
+        { n: "metric", t: "TEXT", k: "PK", note: "Part 4: e.g. api_5xx, sql_timeouts, errors, p95 latency." },
+        { n: "count", t: "BIGINT", note: "How many: added up when two chunks of the same minute contribute (a busy minute, or a minute two parts share)." },
+        { n: "sum_ms / avg_ms", t: "BIGINT / DOUBLE", note: "Latency totals, also additive." },
+        { n: "p95_ms", t: "DOUBLE", note: "The window's p95 latency; on a merge it keeps the larger value." },
+      ],
+      sample: [
+        { c: "session_id", v: "7f3a…" },
+        { c: "time_bucket", v: "09:31" },
+        { c: "category", v: "API" },
+        { c: "metric", v: "api_5xx" },
+        { c: "count", v: "212" },
+      ],
+      foot: "\"how many 503s between 09:30 and 09:40?\" is SQL here: an index scan in 0.18 ms, no LLM",
+    },
+    beats: B(
+      "The second table a part writes: log metrics. The exact numbers. One shared table, with a composite primary key of four columns.",
+      "Session ID.",
+      "The minute.",
+      "The category. API, database, errors, performance, auth, lifecycle, traffic, dependency.",
+      "And the metric itself. API five xx, SQL timeouts, and so on. Those four together are the key.",
+      { say: "Count. Notice this one is additive. If two chunks contribute to the same minute, a very busy minute, the counts add up. So this upsert, on its own, is not safe to repeat. Remember that. It's exactly why the next topic matters.", tone: "key" },
+      "Sum and average milliseconds, also additive.",
+      "And p ninety five, which keeps the larger value on a merge.",
+      "One row: session, nine thirty one, API, five xx, two hundred and twelve.",
+      { say: "And this is why counts never come from the LLM. How many five oh threes between nine thirty and nine forty is a SQL query on this table. An index scan, in under a fifth of a millisecond.", tone: "key" },
+    ),
+  },
+  {
+    kind: "bullets",
+    title: "The two bookkeeping tables",
+    items: [
+      { icon: "🧷", text: "ingest_parts (document_id, part_idx) PRIMARY KEY", sub: "one row per finished part · the fast path reads it before any I/O · inserted ON CONFLICT DO NOTHING" },
+      { icon: "📄", text: "documents: total_parts, parsed_parts, processing_status", sub: "total saved by the splitter before part 0 · parsed_parts += 1 only when the part row was new" },
+    ],
+    beats: B(
+      "And two bookkeeping tables. Ingest parts: one row per finished part, keyed by the natural key, document ID and part index. The fast path reads it before doing any I O, and it's written with insert, on conflict do nothing.",
+      { say: "And the documents row, with total parts and parsed parts. Total parts was saved by the splitter before part zero went out. Parsed parts goes up by one, only when the part's row was new. Another idempotent upsert, keyed by a natural key.", tone: "key" },
+    ),
+  },
+  check({
+    topic: "the tables",
+    q: "A chunk row is inserted. Which of its columns is still empty, and who fills it?",
+    options: ["content_tsv, filled by a nightly job", "embedding, filled later by the enrichment lane", "line_end, filled by the finalizer", "chunk_id, filled by Postgres"],
+    answer: 1,
+    a: "embedding (vector(768)) is NULL at insert; the enrichment lane writes it later. content_tsv is generated by Postgres at insert, and chunk_id is computed by the worker.",
+    aSay: "B. The embedding. It's NULL at insert, and the enrichment lane writes it later. The text vector is generated by Postgres at insert time, and the chunk ID is computed by the worker before the insert.",
+  }),
+  check({
+    topic: "the tables",
+    q: "Why is the log_metrics upsert, on its own, not safe to repeat?",
+    a: "It's additive: ON CONFLICT it does count = count + new. Applying the same part twice would double the counts, so it must only run for chunks that are new.",
+    aSay: "Because it's additive. On conflict it adds the new count to the old one, so applying the same part twice would double every count. It must only run for chunks that are genuinely new.",
+  }),
+
+  // ------------------------------------------------------------ 10b: the fingerprint
+  {
+    kind: "big",
+    tone: "idea",
+    lead: "The key idea",
+    text: "chunk_id = SHA-256( document_id || line_start || content )",
+    after: "a deterministic key: any delivery of the same part computes the same ids",
+    beats: B(
+      "So here's the key idea of the whole ingest design.",
+      { say: "The chunk ID is the S H A two fifty six of the document ID, the first line number, and the content. Concatenated, then hashed.", tone: "key" },
+      { say: "It's deterministic. Any delivery of the same part, on any worker, after any restart, computes exactly the same IDs. A random U U I D would mint new IDs on every delivery, and the database couldn't tell a duplicate from a new row.", tone: "key" },
+    ),
+  },
+  {
+    kind: "custom",
+    name: "dllfp",
+    beats: B(
+      "Let's watch it work. Here's one chunk: the nine thirty one window, lines three thousand four hundred and one to four thousand six hundred and ten.",
+      "The worker hashes the document ID, the line start, and the content, and gets a sixty four character fingerprint. That's the primary key.",
+      { say: "First delivery. Insert, on conflict on chunk ID, do nothing, returning chunk ID. The row is new, so it's inserted, and returning hands back its ID. One new row.", term: { word: "RETURNING", meaning: "Postgres hands back the rows the statement actually wrote" } },
+      { say: "Now the metrics. They're computed for every chunk, but they're only added for the IDs that returning handed back. This chunk is new, so its two hundred and twelve five xx responses are added.", tone: "key" },
+      { say: "Now the crash, and the redelivery. The same bytes arrive. Same hash, same key. The insert hits the primary key, does nothing, and returning hands back an empty list. So no metrics are added. Still one row. Still two hundred and twelve, not four hundred and twenty four.", tone: "key" },
+      { say: "That's the whole idea in one line. Same bytes, same key, same row, counted once.", tone: "key" },
+    ),
+  },
+  {
+    kind: "compare",
+    title: "Three ways to key a chunk",
+    cols: [
+      { title: "Random UUID", icon: "🎲", tone: "red", items: ["a redelivery mints new ids", "the DB can't spot the duplicate", "needs a separate dedupe table"] },
+      { title: "Position: (document_id, line_start)", icon: "📍", tone: "amber", items: ["also deterministic, and smaller", "but the id says nothing about the bytes", "different content at the same position looks \"already stored\""] },
+      { title: "Content fingerprint ✓", icon: "🧬", tone: "green", items: ["deterministic: same bytes, same key", "binds the id to the exact evidence", "citations become tamper-evident"] },
+    ],
+    footer: "same idea as git's object ids: the name of a thing is the hash of the thing",
+    beats: B(
+      "Now defend the choice against two alternatives. A random U U I D: every redelivery mints new IDs, the database can't recognise the duplicate, and you'd need a separate deduplication table keyed on the delivery.",
+      "A positional key, document ID and line start. Honestly, that's also deterministic, and it's smaller. But the ID says nothing about the bytes. If a re ingest produced different content at the same position, say after a parser change, it would look already stored, and you'd silently keep the stale row.",
+      { say: "The content fingerprint. Deterministic like the positional key, but it also binds the ID to the exact evidence. A citation points at a chunk ID, and that ID is the hash of the cited bytes, so citations are tamper evident. For a system whose whole promise is grounded, cited answers, that's the argument.", tone: "key" },
+      { say: "And the technical similarity to name: it's the same idea as git's object IDs. The name of a thing is the hash of the thing. Content addressing.", term: { word: "Content addressing", meaning: "the key is the hash of the content" } },
+    ),
+  },
+  {
+    kind: "bullets",
+    title: "The follow-ups on the fingerprint",
+    items: [
+      { icon: "💥", text: "\"Collisions?\"", sub: "SHA-256: a 1-in-2^128 birthday bound. You'd need ~2^128 chunks before a collision is likely" },
+      { icon: "⏱", text: "\"Isn't hashing slow?\"", sub: "~500 MB/s per core: a 5 MB part hashes in about 10 ms, next to a ~2.5 s parse" },
+      { icon: "🪞", text: "\"Two identical windows?\"", sub: "every line carries its timestamp, so two minutes never match; document_id and line_start are in the hash anyway" },
+      { icon: "📏", text: "\"Why 64 hex characters?\"", sub: "readable in logs and SQL; BYTEA(32) halves it if storage ever matters" },
+    ],
+    beats: B(
+      "Four follow ups you should expect on the fingerprint. Collisions? S H A two fifty six has a birthday bound of one in two to the one twenty eight. You'd need around two to the one twenty eight chunks before a collision is even likely. That's not a real risk.",
+      "Isn't hashing slow? About five hundred megabytes a second per core. A five megabyte part hashes in about ten milliseconds, next to a parse that takes a couple of seconds.",
+      "Couldn't two windows be identical? Every log line carries its own timestamp, so two different minutes never have the same bytes. And the document ID and line start are inside the hash anyway, so even identical text in two files stays two rows.",
+      "Why sixty four hex characters? Readable in logs and SQL. If storage ever mattered, thirty two bytes as bytea would halve it.",
+    ),
+  },
+  check({
+    topic: "the fingerprint",
+    q: "A part is redelivered. Walk the chunk insert: what does the database do, and what does RETURNING give back?",
+    a: "Each chunk's SHA-256 key is the same as before, so INSERT … ON CONFLICT (chunk_id) DO NOTHING inserts nothing and RETURNING is empty: no metrics are added.",
+    aSay: "The worker recomputes the same S H A two fifty six keys, so every insert hits the primary key and does nothing. Returning comes back empty, so no metrics are added. The database is exactly as it was.",
+  }),
+  check({
+    topic: "the fingerprint",
+    q: "An interviewer asks: \"why not just key chunks by (document_id, line_start)?\" Give your argument.",
+    a: "That's deterministic too, but it says nothing about the bytes. The fingerprint binds the id to the exact evidence: a changed re-ingest can't hide behind an old key, and citations are tamper-evident.",
+    aSay: "Position is deterministic too, and smaller, and I'd say so. But it says nothing about the bytes. The fingerprint binds the ID to the exact evidence, so a re ingest that produced different content can't hide behind an old key, and every citation is tamper evident. For a grounded, cited system, that's worth thirty two bytes.",
+  }),
+];
