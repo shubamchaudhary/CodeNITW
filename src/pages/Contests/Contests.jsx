@@ -154,7 +154,7 @@ function AlertsButton({ alerts, signedIn }) {
   let label;
   let title;
   if (signedIn && status === "on") {
-    look = "text-success-fg bg-success-subtle ring-1 ring-success hover:bg-surface-hover";
+    look = "text-accent-fg bg-accent-subtle ring-1 ring-accent hover:bg-surface-hover";
     label = "✓ Reminders on";
     title = `Emails go to ${email}. Click to turn them off.`;
   } else if (signedIn && status === "pending") {

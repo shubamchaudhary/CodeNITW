@@ -1071,7 +1071,7 @@ function LearntButton({ learnt, onClick }) {
 // A round tick: filled green when done, an empty ring when not.
 function CheckCircle({ done, className = "w-4 h-4" }) {
   return done ? (
-    <svg className={`${className} text-success shrink-0`} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg className={`${className} text-accent shrink-0`} viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <circle cx="8" cy="8" r="7.5" fill="currentColor" />
       <path d="M4.8 8.2l2.1 2.1 4.3-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -1451,7 +1451,7 @@ function ContentsPanel({ toc, activeId, activeIndex, onJump, accent, topicKeys, 
                 on
                   ? `${accent?.text || "text-fg"} font-semibold`
                   : done
-                  ? "text-success-fg"
+                  ? "text-accent-fg"
                   : depth === 0
                   ? "text-fg-muted hover:text-fg"
                   : "text-fg-subtle hover:text-fg"

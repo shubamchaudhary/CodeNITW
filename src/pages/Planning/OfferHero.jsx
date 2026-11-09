@@ -36,7 +36,7 @@ export default function OfferHero({ onTour, onSignIn }) {
       <ul className="mt-6 pt-5 border-t border-line grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">
         {OFFERS.map((o) => (
           <li key={o} className="flex items-center gap-2.5 text-[14px] text-fg-muted">
-            <svg className="w-4 h-4 shrink-0 text-success" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <svg className="w-4 h-4 shrink-0 text-accent" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3.5 8.5l3 3 6-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             {o}

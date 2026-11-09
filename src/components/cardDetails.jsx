@@ -65,7 +65,7 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
             </h4>
             <button
               onClick={copyPrompt}
-              className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md border transition-all ${copied ? "bg-success-subtle text-success-fg border-line " : "bg-surface-hover text-fg-muted border-line hover:bg-surface-hover hover:text-fg hover:border-line-strong"}`}
+              className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md border transition-all ${copied ? "bg-accent-subtle text-accent-fg border-line " : "bg-surface-hover text-fg-muted border-line hover:bg-surface-hover hover:text-fg hover:border-line-strong"}`}
             >
               {copied ? (
                 <>
@@ -117,7 +117,7 @@ export function InterviewCardDetail({ item, note, onNoteChange }) {
         />
         <div className="flex items-center justify-between mt-2 min-h-[16px]">
           {localNote ? (
-            <p className="text-[11px] text-success-fg flex items-center gap-1.5">
+            <p className="text-[11px] text-accent-fg flex items-center gap-1.5">
               <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
               Notes saved
             </p>
@@ -152,8 +152,8 @@ export function CopyButton({ value, label = "Copy", title, className = "" }) {
       title={title || `Copy "${value}"`}
       className={`inline-flex items-center gap-1 text-[12px] font-semibold px-2.5 py-1 rounded-md border transition-all ${
         copied
-          ? "bg-success-subtle border-line text-success-fg "
-          : "bg-canvas border-line text-fg-muted hover:border-success hover:text-success-fg "
+          ? "bg-accent-subtle border-line text-accent-fg "
+          : "bg-canvas border-line text-fg-muted hover:border-accent hover:text-accent-fg "
       } ${className}`}
     >
       {copied ? (
@@ -195,14 +195,14 @@ export function CoreStackTopicDetail({ topic, note, checkedDays }) {
       <ResourceList
         resources={topic.resources}
         duration={topic.duration}
-        barClass="bg-success"
+        barClass="bg-accent"
         linkHover="hover:border-line-strong hover:text-fg "
       />
 
       {owner && (
         <QuestionList
           questions={topic.questions}
-          barClass="bg-success"
+          barClass="bg-accent"
           title={topic.asked ? "Asked in interviews" : "Interview questions"}
           prompt={topic.asked ? "answers are in the notes" : "answer cold, before watching"}
         />
@@ -215,8 +215,8 @@ export function CoreStackTopicDetail({ topic, note, checkedDays }) {
         checkedDays={checkedDays}
         accent={{
           panel: "border-line bg-surface-subtle",
-          bar: "bg-success",
-          badge: "bg-success-subtle text-success-fg border-line",
+          bar: "bg-accent",
+          badge: "bg-accent-subtle text-accent-fg border-line",
           button: "",
         }}
       />
@@ -557,7 +557,7 @@ export function DsaProblemDetail({ problem, note, onNoteChange, isStarred, onTog
           </button>
         )}
         {solvedDays != null && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-success-subtle text-success-fg font-semibold whitespace-nowrap">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent-subtle text-accent-fg font-semibold whitespace-nowrap">
             ✓ solved {solvedDays === 0 ? "today" : `${solvedDays}d ago`}
           </span>
         )}

@@ -444,8 +444,8 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             {isComplete ? (
               <>
-                <svg className="w-10 h-10 text-success-fg mb-1" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                <span className="text-sm font-semibold text-success-fg">Complete!</span>
+                <svg className="w-10 h-10 text-accent-fg mb-1" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span className="text-sm font-semibold text-accent-fg">Complete!</span>
               </>
             ) : (
               <>
@@ -499,7 +499,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
               </div>
               <button
                 onClick={onDismiss}
-                className="px-5 py-2 rounded-lg bg-success text-white text-sm font-semibold hover:opacity-90 transition-colors"
+                className="px-5 py-2 rounded-lg bg-accent text-white text-sm font-semibold hover:opacity-90 transition-colors"
               >
                 Done
               </button>
@@ -629,7 +629,7 @@ function DayCard({
             onClick={(e) => { e.stopPropagation(); if (canComplete && !parentAutoComplete) onToggleComplete(); }}
             disabled={!canComplete || parentAutoComplete}
             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-              complete ? "bg-success border-success " : "border-line-strong hover:border-success "
+              complete ? "bg-accent border-accent " : "border-line-strong hover:border-accent "
             } ${(!canComplete || parentAutoComplete) ? "opacity-50 cursor-not-allowed" : ""}`}
             title={parentAutoComplete ? "Complete all sub-tasks to finish" : undefined}
           >
@@ -643,7 +643,7 @@ function DayCard({
             {hasSubs && (
               <p className="text-[10px] text-fg-subtle">
                 {subDone}/{subs.length} sub-tasks{totalMin > 0 ? ` · ${fmt(totalMin)}` : ""}
-                {daySec > 0 && <span className="text-success-fg font-semibold"> · {fmtSpent(daySec)} spent</span>}
+                {daySec > 0 && <span className="text-accent-fg font-semibold"> · {fmtSpent(daySec)} spent</span>}
                 {overallSec > 0 && <span> · {fmtSpent(overallSec)} total</span>}
               </p>
             )}
@@ -651,7 +651,7 @@ function DayCard({
 
           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
             {!hasSubs && daySec > 0 && (
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-success-subtle text-success-fg" title={`Time spent ${dayLabel}`}>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-accent-subtle text-accent-fg" title={`Time spent ${dayLabel}`}>
                 {fmtSpent(daySec)}
               </span>
             )}
@@ -733,7 +733,7 @@ function DayCard({
                   <span className="flex items-center gap-1.5 text-fg-subtle">
                     <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                     {daySec > 0 ? (
-                      <span><b className="font-semibold text-success-fg">{fmtSpent(daySec)}</b> spent {dayLabel}</span>
+                      <span><b className="font-semibold text-accent-fg">{fmtSpent(daySec)}</b> spent {dayLabel}</span>
                     ) : (
                       <span>No time spent {dayLabel}</span>
                     )}
@@ -772,7 +772,7 @@ function DayCard({
                             onClick={() => onToggleSubItem(item.uid, s.uid)}
                             disabled={!canComplete}
                             className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all shrink-0 ${
-                              s.completed ? "bg-success border-success" : "border-line-strong "
+                              s.completed ? "bg-accent border-accent" : "border-line-strong "
                             } ${!canComplete ? "opacity-50" : ""}`}
                           >
                             {s.completed && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
@@ -781,7 +781,7 @@ function DayCard({
 
                           <div className="flex items-center gap-1.5 shrink-0">
                             {subSec(s.uid) > 0 && (
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-success-subtle text-success-fg" title={`Time spent ${dayLabel}`}>
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-accent-subtle text-accent-fg" title={`Time spent ${dayLabel}`}>
                                 {fmtSpent(subSec(s.uid))}
                               </span>
                             )}
@@ -957,9 +957,9 @@ function TimeSpent({ rows, dayLabel, canEdit, onSetTime }) {
                 onClick={() => { setVal(String(Math.round(r.sec / 60))); setEditing(r.target); }}
                 disabled={!canEdit || r.live}
                 title={r.live ? "Timer running" : canEdit ? "Correct the time (minutes, 0 removes it)" : undefined}
-                className="flex items-center gap-1 text-xs font-semibold tabular-nums text-success-fg enabled:hover:text-fg transition-colors shrink-0"
+                className="flex items-center gap-1 text-xs font-semibold tabular-nums text-accent-fg enabled:hover:text-fg transition-colors shrink-0"
               >
-                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />}
+                {r.live && <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />}
                 {fmtSpent(r.sec)}
               </button>
             )}
@@ -1097,7 +1097,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd(coreStackPlanItem(t))}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-success hover:opacity-90 "}`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-accent-subtle cursor-default" : "border-line hover:border-success hover:opacity-90 "}`}
                     >
                       {showPriority && <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border ${CORE_STACK_PRIORITY_CONFIG[t.priority].cls}`}>{t.priority}</span>}
                       <span className="flex-1 text-sm text-fg-muted truncate">{t.title}</span>
@@ -1119,7 +1119,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd(aiStackPlanItem(t))}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-accent-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
                     >
                       <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border bg-brand-subtle text-brand-fg border-line">{t.id}</span>
                       <span className="flex-1 text-sm text-fg-muted truncate">{t.title}</span>
@@ -1141,7 +1141,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     <button
                       disabled={added}
                       onClick={() => onAdd({ uid: uid(), source: "dsa", refId: p.id, title: p.title, meta: p.topic, link: p.link, estimatedMinutes: 25 })}
-                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-success-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-left transition-all ${added ? "border-line bg-accent-subtle cursor-default" : "border-line hover:border-line-strong hover:bg-surface-hover "}`}
                     >
                       <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 ${DSA_DIFFICULTY_CONFIG[p.difficulty]}`}>{p.difficulty}</span>
                       <span className="flex-1 text-sm text-fg-muted truncate">{p.title}</span>

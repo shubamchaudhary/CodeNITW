@@ -311,7 +311,7 @@ function BankNav({ group, groupKey, current, done, onPick }) {
           </span>
         </div>
         <div className="mt-2.5 h-1.5 rounded-full bg-surface-hover overflow-hidden">
-          <div className="h-full rounded-full bg-success transition-[width] duration-300" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
+          <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${total ? (n / total) * 100 : 0}%` }} />
         </div>
       </div>
 
@@ -348,14 +348,14 @@ function BankNav({ group, groupKey, current, done, onPick }) {
                           onClick={() => onPick(m)}
                           className={`w-full flex items-start gap-2.5 pl-3 pr-2 py-[7px] rounded-lg text-left transition-colors ${
                             active
-                              ? "bg-success-subtle "
+                              ? "bg-accent-subtle "
                               : "hover:bg-surface-hover "
                           }`}
                         >
                           <DoneCircle done={complete} className="w-[17px] h-[17px] mt-[1px]" />
                           <span
                             className={`flex-1 text-[14px] leading-snug ${
-                              active ? "text-success-fg font-medium " : "text-fg-muted "
+                              active ? "text-accent-fg font-medium " : "text-fg-muted "
                             }`}
                           >
                             {m.title}
@@ -495,7 +495,7 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
         className="relative min-w-0 px-5 sm:px-10 lg:px-16 py-8 lg:py-12"
       >
         <header className="mb-8">
-          <p className="text-[13px] font-semibold text-success-fg">{module.tech.label}</p>
+          <p className="text-[13px] font-semibold text-accent-fg">{module.tech.label}</p>
           <h1 className="mt-1.5 text-[30px] sm:text-[34px] leading-tight font-semibold tracking-tight text-fg">
             {module.title}
           </h1>
@@ -539,23 +539,23 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
           {next ? (
             <button
               onClick={() => onGo(next)}
-              className="group w-full flex items-center gap-5 rounded-lg px-6 py-5 text-left border border-line bg-success-subtle hover:border-line hover:opacity-90 transition-colors"
+              className="group w-full flex items-center gap-5 rounded-lg px-6 py-5 text-left border border-line bg-accent-subtle hover:border-line hover:opacity-90 transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-[12px] font-semibold text-success-fg">
+                <p className="text-[12px] font-semibold text-accent-fg">
                   Up next{next.tech.key !== module.tech.key ? ` · ${next.tech.label}` : ""}
                 </p>
                 <p className="mt-1 text-[20px] font-semibold tracking-tight text-fg truncate">{next.title}</p>
                 <p className="mt-0.5 text-[13px] text-fg-subtle">{next.questions.length} questions</p>
               </div>
-              <span className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-success text-white group-hover:translate-x-0.5 transition-transform">
+              <span className="shrink-0 w-11 h-11 rounded-full flex items-center justify-center bg-accent text-white group-hover:translate-x-0.5 transition-transform">
                 <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
                   <path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
             </button>
           ) : (
-            <p className="text-center text-[15px] font-semibold text-success-fg">That's the last module of this bank.</p>
+            <p className="text-center text-[15px] font-semibold text-accent-fg">That's the last module of this bank.</p>
           )}
           {prev && (
             <button
@@ -601,7 +601,7 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
   return (
     <section className={`${last ? "" : "wb-line mb-10 pb-10 border-b border-line "}`} id={`q-${q.id}`} style={{ scrollMarginTop: 24 }}>
       <div className="flex items-start gap-3.5 mb-4">
-        <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-lg bg-success-subtle text-success-fg text-[16px] font-semibold flex items-center justify-center tabular-nums">
+        <span className="shrink-0 min-w-[2.5rem] h-10 px-2 rounded-lg bg-accent-subtle text-accent-fg text-[16px] font-semibold flex items-center justify-center tabular-nums">
           Q{q.number}
         </span>
         <h2 className="flex-1 min-w-0 pt-1 text-[21px] sm:text-[22px] leading-snug font-semibold tracking-tight text-fg">
@@ -621,8 +621,8 @@ const QuestionBlock = memo(function QuestionBlock({ q, last, isDone, colorMode, 
             title={isDone ? "Done — click to mark not done" : "Mark this question done"}
             className={`h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-semibold border transition-colors ${
               isDone
-                ? "bg-success border-success text-white"
-                : "border-line-strong text-fg-muted hover:border-success hover:text-success-fg "
+                ? "bg-accent border-accent text-white"
+                : "border-line-strong text-fg-muted hover:border-accent hover:text-accent-fg "
             }`}
           >
             <DoneCircle done={isDone} className="w-4 h-4" onColor="text-white" />
@@ -664,8 +664,8 @@ const ExerciseBlock = memo(function ExerciseBlock({ q, last, isDone, colorMode, 
             title={isDone ? "Solved — click to mark not done" : "Mark this exercise done"}
             className={`shrink-0 mt-1 h-8 pl-2 pr-3 rounded-full flex items-center gap-1.5 text-[12.5px] font-semibold border transition-colors ${
               isDone
-                ? "bg-success border-success text-white"
-                : "border-line-strong text-fg-muted hover:border-success hover:text-success-fg "
+                ? "bg-accent border-accent text-white"
+                : "border-line-strong text-fg-muted hover:border-accent hover:text-accent-fg "
             }`}
           >
             <DoneCircle done={isDone} className="w-4 h-4" onColor="text-white" />
@@ -856,7 +856,7 @@ function Swatch({ color, onPick }) {
   );
 }
 
-function DoneCircle({ done, className = "w-4 h-4", onColor = "text-success-fg" }) {
+function DoneCircle({ done, className = "w-4 h-4", onColor = "text-accent-fg" }) {
   return done ? (
     <svg className={`${className} ${onColor} shrink-0`} viewBox="0 0 20 20" fill="none">
       <circle cx="10" cy="10" r="9" fill="currentColor" className={onColor === "text-white" ? "opacity-25" : ""} />

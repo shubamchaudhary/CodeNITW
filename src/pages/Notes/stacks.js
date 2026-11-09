@@ -62,7 +62,7 @@ export const STACKS = {
     // The design system's neutral accent: ink buttons, the orange accent only
     // for focus and progress.
     accent: {
-      text: "text-success-fg",
+      text: "text-accent-fg",
       bar: "from-accent to-accent",
       button: "bg-primary text-on-primary hover:bg-primary-hover",
       ring: "focus:ring-focus focus:border-transparent",
