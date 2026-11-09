@@ -50,8 +50,8 @@ export const PROJECT_TOPICS = [
     parts: [0],
     section: "ipp",
     sectionLabel: "InterviewPlanPrep",
-    title: "Architecture & decisions",
-    summary: "The whole site, verified against the code: local-first sync, git-style notes, contests and reminders, the planner, security, and the follow-ups.",
+    title: "InterviewPlanPrep, end to end",
+    summary: "This site as a signed-in student uses it, every resume line defended: the React shell, the offline-first store, highlights and pinned notes, git-style notes with compare-and-swap and three-way merge, the planner and its timer, contests and reminders.",
   },
   {
     id: "IPP-02",

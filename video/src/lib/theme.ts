@@ -59,6 +59,20 @@ const THEMES: Record<string, Partial<typeof C>> = {
     grad2: "#ffd08a",
   },
 };
+// InterviewPlanPrep: the site's dark canvas and its violet brand.
+THEMES.ipp = {
+  bg: "#0a0a0b",
+  bg2: "#111113",
+  card: "#131316",
+  card2: "#18181c",
+  line: "#2a2a31",
+  blue: "#8b5cf6",
+  purple: "#c084fc",
+  glow1: "#8b5cf6",
+  glow2: "#38d996",
+  soft: "#1e1530",
+  grad2: "#c4b5fd",
+};
 export const applyTheme = (name?: string) => {
   Object.assign(C, BASE, (name && THEMES[name]) || {});
 };

@@ -66,6 +66,7 @@ export type Scene = Base &
         notes?: string[]; // one line per step, shown beside the image
         focus?: [number, number, number][]; // per step: x%, y%, zoom
         gif?: boolean;
+        frame?: string; // colour behind the picture (default white): a dark screenshot wants a dark frame
       }
     | { kind: "big"; tone: "idea" | "myth" | "interview"; lead?: string; text: string; after?: string }
     | {
