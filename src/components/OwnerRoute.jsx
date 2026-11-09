@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { Dna } from "react-loader-spinner";
+import PageSkeleton from "./PageSkeleton";
 
 // The single account allowed to see owner-only pages (job tracker etc.).
 // Everyone else is bounced to the app home exactly like an unknown URL, so
@@ -24,13 +24,8 @@ export default function OwnerRoute() {
     return unsubscribe;
   }, []);
 
-  if (checking) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Dna visible={true} height="300" width="300" ariaLabel="dna-loading" />
-      </div>
-    );
-  }
+  // The same placeholder every page shows while it loads.
+  if (checking) return <PageSkeleton />;
   // Same destination as the catch-all "*" route — a non-owner hitting this URL
   // sees exactly what they'd see for any nonexistent page.
   return isOwner(user) ? <Outlet /> : <Navigate to="/core-stack" replace />;

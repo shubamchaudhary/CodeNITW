@@ -3,7 +3,7 @@ import PageSkeleton from "../../components/PageSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
-import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
+import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG, DSA_PROBLEMS } from "../../Data/DSAPrep";
 import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF, LIGHT_LIFT, LIGHT_BUTTON } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { Icon } from "../../components/ui";
@@ -76,7 +76,7 @@ const DSAPrep = () => {
 
   const handleImportPlan = useCallback(() => {
     if (!requireAuth("Your imported progress is saved to your account.")) return;
-    const n = migratePersonalPlanProgress();
+    const n = migratePersonalPlanProgress(DSA_PROBLEMS);
     setSolved(loadJSON(KEYS.DSA_COMPLETED, {}));
     setStarred(loadJSON(KEYS.DSA_STARRED, {}));
     setBannerHidden(true);

@@ -44,8 +44,7 @@
 //
 // See firestore.rules for the server side of both.
 
-import { collection, doc, onSnapshot, setDoc, getDoc, deleteField, FieldPath } from "firebase/firestore";
-import { db } from "../firebase";
+import { loadFirestore } from "./firestore";
 import { KEYS, loadJSON, applyRemote, subscribe, setActiveUid, changedIds } from "./planStore";
 import { merge3, mergeById } from "./merge3";
 import { recordNotKept, recordNow } from "./noteHistory";
@@ -135,17 +134,22 @@ const PUSH_DEBOUNCE_MS = 800;
 const RETRY_MIN_MS = 1000;
 const RETRY_MAX_MS = 30000;
 
+// The Firestore SDK, once startCloudSync (or fetchIPCompletions) has loaded
+// it. Everything below that touches the database runs after that: listeners
+// attach once it's in, and pushes wait for their first server snapshot.
+let fs = null;
+
 function userDocRef(uid) {
-  return doc(db, "userProgress", uid);
+  return fs.doc(fs.db, "userProgress", uid);
 }
 const NOTES = "notes";
 const DATA = "data";
 const noteDocId = (key, id) => `${key}~${encodeURIComponent(id)}`;
 function noteDocRef(uid, key, id) {
-  return doc(db, "userProgress", uid, NOTES, noteDocId(key, id));
+  return fs.doc(fs.db, "userProgress", uid, NOTES, noteDocId(key, id));
 }
 function dataDocRef(uid, key) {
-  return doc(db, "userProgress", uid, DATA, key);
+  return fs.doc(fs.db, "userProgress", uid, DATA, key);
 }
 
 const isMap = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
@@ -378,7 +382,7 @@ function buildView(main, dataDocs, noteDocs) {
 // One note as the cloud has it now — its own document, else the main copy —
 // in the same one-document shape, for settleNotes(…, [[key, id]]).
 async function fetchNoteView(uid, key, id) {
-  const [own, main] = await Promise.all([getDoc(noteDocRef(uid, key, id)), getDoc(userDocRef(uid))]);
+  const [own, main] = await Promise.all([fs.getDoc(noteDocRef(uid, key, id)), fs.getDoc(userDocRef(uid))]);
   const notes = new Map(own.exists() ? [[own.id, own.data()]] : []);
   return buildView(main.exists() ? main.data() || {} : {}, new Map(), notes);
 }
@@ -422,7 +426,7 @@ async function doPush(uid) {
   }
   for (const w of writes) {
     const { data, fields, sent } = plainWrite(journal, w.keys, w.where);
-    await setDoc(w.ref, data, { mergeFields: fields });
+    await fs.setDoc(w.ref, data, { mergeFields: fields });
     if (currentUid !== uid) return;
     const j = loadJournal(uid);
     for (const key of w.keys) {
@@ -459,7 +463,7 @@ function plainWrite(journal, keys, where) {
     let o = data;
     for (const part of path.slice(0, -1)) o = o[part] || (o[part] = {});
     o[path[path.length - 1]] = value;
-    fields.push(new FieldPath(...path));
+    fields.push(new fs.FieldPath(...path));
   };
   const sent = {};
   put(["updatedAt"], Date.now());
@@ -475,7 +479,7 @@ function plainWrite(journal, keys, where) {
       continue;
     }
     for (const id of ids) {
-      put([...at, id], local[id] === undefined ? deleteField() : local[id]);
+      put([...at, id], local[id] === undefined ? fs.deleteField() : local[id]);
       put([...meta, id], pending[id]); // kept after a delete: a tombstone
     }
   }
@@ -512,7 +516,7 @@ async function pushNote(uid, key, id) {
     updatedAt: Date.now(),
   };
   try {
-    await setDoc(noteDocRef(uid, key, id), note);
+    await fs.setDoc(noteDocRef(uid, key, id), note);
   } catch (err) {
     if (err?.code !== "permission-denied") throw err;
     // Refused: the head moved on. Fetch it and decide, exactly as a snapshot would.
@@ -865,8 +869,33 @@ export function startCloudSync(uid) {
     console.error("[cloudSync] listener failed:", err);
     setStatus("error", err?.code || "");
   };
-  const unsubs = [
-    onSnapshot(
+  // The listeners attach once the SDK has loaded; stopping before then
+  // cancels them. A failed load (offline) is retried, more slowly each time.
+  let cancelled = false;
+  unsubscribeSnapshot = () => {
+    cancelled = true;
+  };
+  const attach = (attempt = 0) =>
+    loadFirestore().then(
+      (sdk) => {
+        if (cancelled || currentUid !== uid) return;
+        fs = sdk;
+        const unsubs = listen(uid, opts, failed);
+        unsubscribeSnapshot = () => unsubs.forEach((u) => u());
+      },
+      (err) => {
+        if (cancelled || currentUid !== uid) return;
+        failed(err);
+        setTimeout(() => !cancelled && currentUid === uid && attach(attempt + 1), Math.min(RETRY_MAX_MS, RETRY_MIN_MS * 2 ** attempt));
+      }
+    );
+  attach();
+}
+
+// One listener per place the account lives (see startCloudSync).
+function listen(uid, opts, failed) {
+  return [
+    fs.onSnapshot(
       userDocRef(uid),
       opts,
       (snap) => {
@@ -885,8 +914,8 @@ export function startCloudSync(uid) {
       [DATA, "data"],
       [NOTES, "notes"],
     ].map(([name, slot]) =>
-      onSnapshot(
-        collection(db, "userProgress", uid, name),
+      fs.onSnapshot(
+        fs.collection(fs.db, "userProgress", uid, name),
         opts,
         (snap) => {
           if (currentUid !== uid) return;
@@ -909,7 +938,6 @@ export function startCloudSync(uid) {
       )
     ),
   ];
-  unsubscribeSnapshot = () => unsubs.forEach((u) => u());
 }
 
 // A snapshot arrived from one of the three places: reconcile the whole picture.
@@ -924,7 +952,7 @@ function onCloud(uid) {
     // Fresh account → create its main document (the rules for a note's first
     // save look there), then seed the cloud from whatever this account has
     // locally.
-    setDoc(userDocRef(uid), { updatedAt: Date.now() }, { merge: true }).catch((err) =>
+    fs.setDoc(userDocRef(uid), { updatedAt: Date.now() }, { merge: true }).catch((err) =>
       console.error("[cloudSync] creating the progress document failed:", err)
     );
     for (const key of SYNC_KEYS) {
@@ -989,7 +1017,8 @@ export async function fetchIPCompletions(uid) {
   if (!uid) return {};
   try {
     const key = KEYS.IP_COMPLETED;
-    const [main, own] = await Promise.all([getDoc(userDocRef(uid)), getDoc(dataDocRef(uid, key)).catch(() => null)]);
+    fs ??= await loadFirestore();
+    const [main, own] = await Promise.all([fs.getDoc(userDocRef(uid)), fs.getDoc(dataDocRef(uid, key)).catch(() => null)]);
     const view = buildView(main.exists() ? main.data() || {} : {}, new Map(own?.exists() ? [[key, own.data()]] : []), new Map());
     return view[key] || {};
   } catch (err) {

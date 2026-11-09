@@ -8,10 +8,17 @@
     <meta name="theme-color" content="#ffffff" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts load without blocking the first paint: text shows at once in
+         the fallback font and swaps to Geist when it arrives. -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" />
+    </noscript>
     <meta
       name="description"
       content="InterviewPlanPrep — plan and prep for SDE interviews: core Java and Spring, DSA, a daily plan and a job tracker."

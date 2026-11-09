@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { CATEGORY_CONFIG, PRIORITY_CONFIG } from "../../Data/JobHuntPlan";
-import { InterviewCardDetail } from "../../components/cardDetails";
+import { InterviewCardDetail } from "../../components/InterviewCardDetail";
 import { GLASS } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import {

@@ -3,12 +3,10 @@
 // SAME completion + notes stores as the prep pages, so ticking a planned card or
 // writing notes there stays in sync with the real page (and vice-versa).
 
-import { DSA_PROBLEMS } from "./DSAPrep";
-import { CORE_STACK_TOPICS } from "./CoreStack";
-import { AI_STACK_TOPICS } from "./AIStack";
 import { getAuthState, requestSignIn, isSandbox } from "./authGate";
 
-export { DSA_PROBLEMS, CORE_STACK_TOPICS, AI_STACK_TOPICS };
+// The content catalogues and lookups by id live in ./catalog, so this store
+// (loaded by the app shell) doesn't carry them.
 
 export const KEYS = {
   IP_COMPLETED: "InterviewPrepCompleted",
@@ -198,20 +196,8 @@ export function applyRemote(data) {
   });
 }
 
-// (The retired Topics page's cards live in ./interviewCards.)
-const DSA_BY_ID = Object.fromEntries(DSA_PROBLEMS.map((p) => [p.id, p]));
-const CS_BY_ID = Object.fromEntries(CORE_STACK_TOPICS.map((t) => [t.id, t]));
-const AI_BY_ID = Object.fromEntries(AI_STACK_TOPICS.map((t) => [t.id, t]));
-
-export function getDsaProblem(id) {
-  return DSA_BY_ID[id] || null;
-}
-export function getCoreStackTopic(id) {
-  return CS_BY_ID[id] || null;
-}
-export function getAIStackTopic(id) {
-  return AI_BY_ID[id] || null;
-}
+// (The retired Topics page's cards live in ./interviewCards; lookups by id
+// for DSA, Core Stack and AI Stack are in ./catalog.)
 
 // ─── Completion + notes accessors keyed by source ─────────────────────────────
 // "interview" is the legacy Topics page: its store stays readable so days that
@@ -423,11 +409,13 @@ export function dismissPersonalPlanImport() {
   saveJSON(MIGRATED_FLAG, true);
 }
 
-export function migratePersonalPlanProgress() {
+// `problems`: the DSA problem list, passed in by the DSA page so this store
+// doesn't load it.
+export function migratePersonalPlanProgress(problems) {
   const oldSolved = rawGet(LEGACY_SOLVED_KEY) || {};
   const oldStarred = rawGet(LEGACY_STARRED_KEY) || {};
   const byTitle = {};
-  DSA_PROBLEMS.forEach((p) => {
+  problems.forEach((p) => {
     byTitle[p.title] = p.id;
   });
 

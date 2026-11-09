@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Player } from "@remotion/player";
 import { Lecture } from "../../../video/src/Lecture.tsx";
 import { buildTimeline, FPS } from "../../../video/src/lib/timeline.ts";
+import { openNarration } from "./narration.js";
 
 // The chapter as a narrated, animated lecture, drawn live in the page from the
 // same scenes the MP4 is rendered from (video/). Narration and images are
-// served from public/lectures/<chapter>/.
+// served from public/lectures/<chapter>/; the narration is streamed a window
+// at a time (narration.js) and played by this component, not by Remotion.
 // "CH-04" → video/src/chapters/ch04.ts + video/data/ch04/timings.json, and
 // "JAVA-01" → java01.ts, each a separate chunk loaded on demand.
 const SCRIPTS = import.meta.glob("../../../video/src/chapters/[a-z]*[0-9].ts");
@@ -44,6 +46,11 @@ function Poster({ chapter }) {
 // Slower and faster than normal, in YouTube-like small steps.
 const RATES = [0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2];
 const SKIP_S = 10;
+// The picture is moved to the voice when they drift further apart than this,
+// to LEAD_FRAMES ahead of it: the Player resumes a render after the move.
+const DRIFT_FRAMES = 4;
+const LEAD_FRAMES = 2;
+const VOLUME_KEY = "lecture-volume";
 
 // Styled like Remotion's own control buttons (white icon, no chrome).
 const ctrlButton = { appearance: "none", background: "none", border: "none", padding: "0 4px", color: "white", cursor: "pointer", display: "inline-flex", alignItems: "center", height: 25 };
@@ -61,6 +68,80 @@ const SkipIcon = ({ back }) => (
   </svg>
 );
 
+// A speaker, with sound waves or crossed out.
+const SpeakerIcon = ({ silent }) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" />
+    {silent ? (
+      <path d="M16 9.5l5 5m0-5l-5 5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+    ) : (
+      <path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+    )}
+  </svg>
+);
+
+// Mute and volume for the narration element. The Player itself stays muted,
+// so it never starts an audio context of its own for the picture to wait on.
+// The setting is remembered on this device.
+function VolumeControl({ audio }) {
+  const [state, setState] = useState(() => ({ volume: audio.volume, muted: audio.muted }));
+  useEffect(() => {
+    const update = () => {
+      setState({ volume: audio.volume, muted: audio.muted });
+      try {
+        localStorage.setItem(VOLUME_KEY, JSON.stringify({ volume: audio.volume, muted: audio.muted }));
+      } catch {
+        // storage unavailable: the setting just isn't remembered
+      }
+    };
+    audio.addEventListener("volumechange", update);
+    return () => audio.removeEventListener("volumechange", update);
+  }, [audio]);
+  const silent = state.muted || state.volume === 0;
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <button
+        type="button"
+        style={ctrlButton}
+        onClick={() => {
+          if (silent && audio.volume === 0) audio.volume = 1;
+          audio.muted = !silent;
+        }}
+        title={silent ? "Unmute" : "Mute"}
+        aria-label={silent ? "Unmute" : "Mute"}
+      >
+        <SpeakerIcon silent={silent} />
+      </button>
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.05"
+        value={silent ? 0 : state.volume}
+        onChange={(e) => {
+          audio.volume = Number(e.target.value);
+          audio.muted = audio.volume === 0;
+        }}
+        aria-label="Volume"
+        className="hidden sm:block"
+        style={{ width: 64, margin: "0 6px 0 2px", accentColor: "white", cursor: "pointer" }}
+      />
+    </span>
+  );
+}
+
+const restoreVolume = (audio) => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(VOLUME_KEY) || "null");
+    if (saved && Number.isFinite(saved.volume)) {
+      audio.volume = Math.min(1, Math.max(0, saved.volume));
+      audio.muted = !!saved.muted;
+    }
+  } catch {
+    // nothing saved, or storage unavailable
+  }
+};
+
 // The lecture body: the player and its section chips. The card around it
 // (TopicLead) mounts this only when "Watch" is clicked.
 export default function LecturePlayer({ id, autoPlay = false }) {
@@ -71,6 +152,8 @@ export default function LecturePlayer({ id, autoPlay = false }) {
   const wrap = useRef(null);
   // Arrow keys seek only while the lecture is "in hand": clicked last, or full screen.
   const active = useRef(autoPlay);
+  // The speed chosen in the Player's menu, for the narration to match.
+  const rate = useRef(1);
 
   useEffect(() => {
     let live = true;
@@ -82,17 +165,30 @@ export default function LecturePlayer({ id, autoPlay = false }) {
     };
   }, [id]);
 
+  // The narration lives as long as this lecture is open.
+  const [narration, setNarration] = useState(null);
+  useEffect(() => {
+    if (!data) return undefined;
+    const n = openNarration(`/lectures/${data.chapter.id}/lecture.mp3`);
+    restoreVolume(n.audio);
+    setNarration(n);
+    return () => {
+      n.destroy();
+      setNarration(null);
+    };
+  }, [data]);
+
   const timeline = useMemo(() => data && buildTimeline(data.chapter, data.timings), [data]);
   const sections = useMemo(
     () => (timeline ? timeline.scenes.filter((s) => s.scene.kind === "section").map((s) => ({ from: s.from, num: s.scene.num, title: s.scene.title })) : []),
     [timeline],
   );
-  const inputProps = useMemo(() => data && { ...data, assetBase: "/lectures/" }, [data]);
+  const inputProps = useMemo(() => data && narration && { ...data, assetBase: "/lectures/", narration }, [data, narration]);
 
   // Opened with "Watch": start playing as soon as it has loaded.
   useEffect(() => {
-    if (autoPlay && timeline) player.current?.play();
-  }, [autoPlay, timeline]);
+    if (autoPlay && timeline && narration) player.current?.play();
+  }, [autoPlay, timeline, narration]);
 
   // Highlight the section being played.
   useEffect(() => {
@@ -108,58 +204,115 @@ export default function LecturePlayer({ id, autoPlay = false }) {
     };
     p.addEventListener("frameupdate", onFrame);
     return () => p.removeEventListener("frameupdate", onFrame);
-  }, [sections, timeline]);
+    // The Player mounts once the narration is ready.
+  }, [sections, timeline, narration]);
 
-  // Resume where the voice stopped. On pause Remotion seeks the narration to
-  // the video frame, and the frame clock can lag the audio (more on a busy
-  // page), so a pause rewound the voice and resuming repeated a syllable. The
-  // narration's own clock is sampled while it plays, and on pause the frame is
-  // moved to the last sample (at most one sampling interval behind). The
-  // sampling runs only while the lecture plays: an open but paused lecture
-  // costs nothing.
+  // The voice leads and the picture follows. Two clocks run here: the
+  // narration's (the audio hardware's) and the Player's (frames counted from
+  // the wall clock). Moving the voice to match the picture is what is heard
+  // as a jump back, so the voice moves only when the listener moves it (seek
+  // bar, chips, skip, arrows). Everything else moves the picture: it starts
+  // and stops with the voice, waits while the voice loads
+  // (WaitForNarration in Lecture.tsx), and is put back on the voice whenever
+  // the two drift more than DRIFT_FRAMES apart.
   useEffect(() => {
     const p = player.current;
-    if (!p || !timeline) return undefined;
-    let heard = null;
-    let settleUntil = 0; // after a seek the audio needs a moment to follow
-    let sample = null;
-    const stopSampling = () => {
-      clearInterval(sample);
-      sample = null;
-    };
+    const a = narration?.audio;
+    if (!p || !a || !timeline) return undefined;
+    const frameOf = (s) => Math.max(0, Math.min(timeline.total - 1, Math.round(s * FPS)));
+    // seekTo() on a playing Player pauses it, seeks, and resumes on the next
+    // render. For the follower's own corrections that pause isn't the
+    // listener's, so the voice keeps going through it.
+    let correcting = false;
+    let settleUntil = 0;
+    // What the voice was last told to do. Its play and pause events arrive a
+    // moment after the call (the seek bar pauses and resumes within one
+    // click), so an event counts only if the element is still in that state
+    // and wasn't told to be.
+    let told = "pause";
     const onPlay = () => {
-      if (sample) return;
-      sample = setInterval(() => {
-        if (performance.now() < settleUntil) return;
-        const a = [...(wrap.current?.querySelectorAll("audio") ?? [])].find((x) => !x.paused && /lecture\.mp3/.test(x.src));
-        if (a) heard = a.currentTime;
-      }, 15);
+      // Pausing put the picture on the voice, and seeking moved both, so they
+      // agree here; only a picture somewhere else entirely moves the voice.
+      const at = p.getCurrentFrame() / FPS;
+      if (Math.abs(a.currentTime - at) > 0.5) a.currentTime = at;
+      told = "play";
+      a.play().catch((e) => {
+        // Not allowed to make sound before a click: wait for the play button.
+        if (e?.name === "NotAllowedError") p.pause();
+      });
     };
     const onPause = () => {
-      stopSampling();
-      if (heard == null) return;
-      const f = Math.round(heard * FPS);
-      heard = null;
-      if (f > p.getCurrentFrame() && f < timeline.total) p.seekTo(f);
+      if (correcting) return;
+      told = "pause";
+      a.pause();
+      // Stop the picture on the word the voice stopped on.
+      if (!a.seeking && a.readyState >= 2) {
+        const f = frameOf(a.currentTime);
+        if (f !== p.getCurrentFrame()) p.seekTo(f);
+      }
     };
-    const onSeek = () => {
-      heard = null;
-      settleUntil = performance.now() + 250;
+    // A seek by the listener moves the voice; the small corrections below
+    // (and the one on pause) leave it alone.
+    const onSeeked = (e) => {
+      const at = e.detail.frame / FPS;
+      if (Math.abs(a.currentTime - at) > 0.25) a.currentTime = at;
     };
+    // Both: loading a source resets playbackRate to defaultPlaybackRate.
+    const setRate = (r) => {
+      a.defaultPlaybackRate = r;
+      a.playbackRate = r;
+    };
+    const onRate = (e) => {
+      rate.current = e.detail.playbackRate;
+      setRate(rate.current);
+    };
+    const onEnded = () => {
+      told = "pause";
+      a.pause();
+    };
+    const onFrame = (e) => {
+      if (!p.isPlaying() || a.paused || a.seeking || a.readyState < 3 || performance.now() < settleUntil) return;
+      // A frame is shown for its whole length: compare its middle.
+      if (Math.abs(e.detail.frame + 0.5 - a.currentTime * FPS) <= DRIFT_FRAMES) return;
+      correcting = true;
+      try {
+        p.seekTo(frameOf(a.currentTime + LEAD_FRAMES / FPS));
+      } finally {
+        correcting = false;
+      }
+      // Let the Player resume before measuring again.
+      settleUntil = performance.now() + 500;
+    };
+    // The voice paused or started without being told to (media keys, a
+    // headset unplugged): the Player follows.
+    const onVoicePause = () => {
+      if (a.paused && told === "play" && !a.ended && p.isPlaying()) p.pause();
+    };
+    const onVoicePlay = () => {
+      if (!a.paused && told === "pause" && !p.isPlaying()) p.play();
+    };
+    setRate(rate.current);
     p.addEventListener("play", onPlay);
     p.addEventListener("pause", onPause);
-    p.addEventListener("ended", stopSampling);
-    p.addEventListener("seeked", onSeek);
+    p.addEventListener("seeked", onSeeked);
+    p.addEventListener("ratechange", onRate);
+    p.addEventListener("ended", onEnded);
+    p.addEventListener("frameupdate", onFrame);
+    a.addEventListener("pause", onVoicePause);
+    a.addEventListener("play", onVoicePlay);
     // "Watch" may have started it before these listeners were added.
     if (p.isPlaying()) onPlay();
     return () => {
-      stopSampling();
       p.removeEventListener("play", onPlay);
       p.removeEventListener("pause", onPause);
-      p.removeEventListener("ended", stopSampling);
-      p.removeEventListener("seeked", onSeek);
+      p.removeEventListener("seeked", onSeeked);
+      p.removeEventListener("ratechange", onRate);
+      p.removeEventListener("ended", onEnded);
+      p.removeEventListener("frameupdate", onFrame);
+      a.removeEventListener("pause", onVoicePause);
+      a.removeEventListener("play", onVoicePlay);
     };
-  }, [sections, timeline]);
+  }, [narration, timeline]);
 
   const skip = useCallback(
     (seconds) => {
@@ -200,9 +353,10 @@ export default function LecturePlayer({ id, autoPlay = false }) {
         <button type="button" style={ctrlButton} onClick={() => skip(SKIP_S)} title="Forward 10 seconds (→)" aria-label="Forward 10 seconds">
           <SkipIcon />
         </button>
+        {narration && <VolumeControl audio={narration.audio} />}
       </>
     ),
-    [skip],
+    [skip, narration],
   );
 
   const jump = (from) => {
@@ -214,7 +368,7 @@ export default function LecturePlayer({ id, autoPlay = false }) {
     <div ref={wrap}>
       {failed ? (
         <p className="px-4 py-6 text-[14px] text-fg-subtle">The lecture could not be loaded. Reload the page to try again.</p>
-      ) : !data ? (
+      ) : !inputProps ? (
         <div className="aspect-video w-full bg-[#0c1018] animate-pulse" />
       ) : (
         <Player
@@ -231,7 +385,8 @@ export default function LecturePlayer({ id, autoPlay = false }) {
           doubleClickToFullscreen
           allowFullscreen
           spaceKeyToPlayOrPause
-          showVolumeControls
+          initiallyMuted
+          showVolumeControls={false}
           showPlaybackRateControl={RATES}
           renderCustomControls={renderSkip}
           showPosterWhenUnplayed
