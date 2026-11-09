@@ -495,7 +495,7 @@ export default function SiteTour() {
           }}
         >
           <span
-            className={`absolute -left-4 -top-4 h-8 w-8 rounded-full bg-brand-subtle transition-transform duration-150 ${cursor.down ? "scale-100" : "scale-0"}`}
+            className={`absolute -left-4 -top-4 h-8 w-8 rounded-full bg-accent-subtle transition-transform duration-150 ${cursor.down ? "scale-100" : "scale-0"}`}
           />
           <svg width="22" height="26" viewBox="0 0 22 26" className="relative drop-shadow-[0_2px_4px_rgba(0,0,0,0.45)]">
             <path d="M2 2l17 11.5-7.6 1.4 4.4 8.3-3 1.6-4.4-8.4L2 21.6z" fill="white" stroke="#111827" strokeWidth="1.6" strokeLinejoin="round" />
@@ -528,7 +528,7 @@ export default function SiteTour() {
                   <div
                     className={`h-full transition-all duration-500 ${
                       phase === "end" || (phase === "play" && i < chapter) ? "w-full" : phase === "play" && i === chapter ? "w-1/2 animate-pulse" : "w-0"
-                    } bg-brand`}
+                    } bg-accent`}
                   />
                 </div>
               ))}
@@ -536,19 +536,19 @@ export default function SiteTour() {
             {/* The closing message is large, so its buttons go underneath. */}
             <div className={`flex gap-3 ${phase === "end" ? "flex-col" : "items-start"}`}>
               <div className="flex-1 min-w-0">
-                <div className="text-[11px] font-semibold text-brand-fg">
+                <div className="text-[11px] font-semibold text-accent-fg">
                   {phase === "prep" ? "Getting your tour ready" : phase === "end" ? "Tour complete" : `Tour · ${CHAPTERS[chapter]}`}
                 </div>
                 <div className={`mt-0.5 font-medium text-fg ${phase === "end" ? "text-[22px] sm:text-[28px] leading-tight font-semibold" : "text-sm"}`}>
                   {phase === "play" ? null : phase === "prep" ? (
                     <span className="inline-flex items-center gap-2 text-fg-subtle">
-                      <span className="h-4 w-4 rounded-full border-2 border-line border-t-brand animate-spin" />
+                      <span className="h-4 w-4 rounded-full border-2 border-line border-t-accent animate-spin" />
                       Loading every page first, so nothing waits.
                     </span>
                   ) : (
                     <>
                       {caption}
-                      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-brand animate-[caret_1s_steps(1)_infinite]" />
+                      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-accent animate-[caret_1s_steps(1)_infinite]" />
                     </>
                   )}
                 </div>
@@ -632,7 +632,7 @@ function CaptionBubble({ spot, text, full }) {
       }}
     >
       {text}
-      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-brand animate-[caret_1s_steps(1)_infinite]" />
+      <span className="inline-block w-[2px] h-[1em] ml-0.5 align-[-0.15em] bg-accent animate-[caret_1s_steps(1)_infinite]" />
     </div>
   );
 }

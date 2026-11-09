@@ -266,7 +266,7 @@ function JobCard({ company, aside, children, drag, dimmed }) {
             <span className="font-semibold text-fg">{company.name}</span>
             {company.pay && <span className="text-[11px] font-semibold text-fg-subtle">₹{company.pay} LPA</span>}
             {company.careers && (
-              <a href={company.careers} target="_blank" rel="noreferrer" draggable={false} className="text-brand-fg hover:text-fg" title="Careers page">
+              <a href={company.careers} target="_blank" rel="noreferrer" draggable={false} className="text-accent-fg hover:text-fg" title="Careers page">
                 <HiOutlineExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
@@ -364,7 +364,7 @@ function Section({ stage, title, count, hint, onAdd, drop, dropState, children }
   const t = TONES[stage];
   const outline =
     dropState === "over"
-      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-focus bg-brand-subtle"
+      ? "outline outline-2 outline-dashed outline-offset-[6px] outline-focus bg-accent-subtle"
       : dropState === "ready"
       ? "outline outline-2 outline-dashed outline-offset-[6px] outline-line-strong"
       : "";

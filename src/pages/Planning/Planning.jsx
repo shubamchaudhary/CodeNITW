@@ -327,12 +327,12 @@ function CalendarPicker({ current, today, planDays, onSelect, onClose }) {
                 isSel
                   ? "bg-primary text-on-primary "
                   : isT
-                  ? "ring-2 ring-focus text-brand-fg "
+                  ? "ring-2 ring-focus text-accent-fg "
                   : "text-fg-muted hover:bg-surface-hover "
               }`}
             >
               {d}
-              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand" />}
+              {has && !isSel && <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent" />}
             </button>
           );
         })}
@@ -450,7 +450,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
             ) : (
               <>
                 <span className="text-3xl sm:text-4xl font-mono font-semibold text-fg tabular-nums">{fmtClock(remaining)}</span>
-                <span className={`text-xs font-semibold mt-1 ${isWork ? "text-brand-fg" : "text-success-fg"}`}>
+                <span className={`text-xs font-semibold mt-1 ${isWork ? "text-accent-fg" : "text-success-fg"}`}>
                   {isPaused ? "Paused" : isWork ? "Focus" : "Break"}
                 </span>
                 <span className="text-[10px] text-fg-subtle mt-0.5">
@@ -469,7 +469,7 @@ function PomodoroTimer({ pomo, onPause, onResume, onStop, onDismiss, onExtend })
               <span
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  done ? "bg-brand" : active ? "bg-brand animate-pulse" : "bg-line-strong"
+                  done ? "bg-accent" : active ? "bg-accent animate-pulse" : "bg-line-strong"
                 }`}
               />
             );
@@ -617,7 +617,7 @@ function DayCard({
       onDragEnd={onDragEnd}
       className={`transition-opacity ${isDragging ? "opacity-30" : ""}`}
     >
-      {isOver && !isDragging && <div className="h-0.5 bg-brand rounded-full mb-1 -mt-0.5" />}
+      {isOver && !isDragging && <div className="h-0.5 bg-accent rounded-full mb-1 -mt-0.5" />}
       <div className={`rounded-lg ${GLASS_ROW} overflow-hidden ${complete ? "opacity-75" : ""}`}>
         <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 cursor-pointer select-none" onClick={onToggleOpen}>
           <span className="hidden sm:flex text-line-strong cursor-grab active:cursor-grabbing shrink-0" onMouseDown={(e) => e.stopPropagation()}>
@@ -676,7 +676,7 @@ function DayCard({
                 ) : (
                   <button
                     onClick={() => { setTimeVal(String(item.estimatedMinutes || 25)); setEditingTime(true); }}
-                    className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md text-fg-subtle hover:text-fg transition-colors"
+                    className="flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap text-fg-subtle hover:text-fg transition-colors"
                     title="Set time estimate"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
@@ -694,7 +694,7 @@ function DayCard({
                         ? "bg-primary text-on-primary animate-pulse"
                         : pomoActive
                         ? "bg-surface-hover text-fg-subtle cursor-not-allowed"
-                        : "bg-brand-subtle text-brand-fg hover:bg-surface-hover "
+                        : "bg-accent-subtle text-accent-fg hover:bg-surface-hover "
                     }`}
                     title={pomoActive && !isThisPomo ? "Stop current session first" : "Start focus"}
                   >
@@ -753,7 +753,7 @@ function DayCard({
                       <button
                         type="submit"
                         disabled={!(parseInt(logVal) > 0)}
-                        className="px-2.5 py-1 rounded-lg bg-brand-subtle text-brand-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-accent-subtle text-accent-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
                         title={`Add time you spent on this card ${dayLabel} without the timer`}
                       >
                         Log time
@@ -799,7 +799,7 @@ function DayCard({
                             ) : (
                               <button
                                 onClick={() => { setSubTimeVal(String(s.estimatedMinutes || 25)); setEditingSubTime(s.uid); }}
-                                className="text-[10px] font-semibold px-1 py-0.5 rounded text-fg-subtle hover:text-fg transition-colors flex items-center gap-0.5"
+                                className="text-[10px] font-semibold px-1 py-0.5 rounded whitespace-nowrap text-fg-subtle hover:text-fg transition-colors flex items-center gap-0.5"
                               >
                                 <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                                 {s.estimatedMinutes ? fmt(s.estimatedMinutes) : "set"}
@@ -813,7 +813,7 @@ function DayCard({
                                 className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
                                   pomoActive
                                     ? "bg-surface-hover text-fg-subtle cursor-not-allowed"
-                                    : "bg-brand-subtle text-brand-fg hover:bg-surface-hover "
+                                    : "bg-accent-subtle text-accent-fg hover:bg-surface-hover "
                                 }`}
                                 title={pomoActive ? "Stop current session first" : "Start focus"}
                               >
@@ -857,7 +857,7 @@ function DayCard({
                     <button
                       onClick={() => { if (subInput.trim()) { onAddSubItem(item.uid, subInput.trim(), parseInt(subTimeInput) || 25); setSubInput(""); } }}
                       disabled={!subInput.trim()}
-                      className="px-3 py-1.5 rounded-lg bg-brand-subtle text-brand-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-accent-subtle text-accent-fg text-xs font-semibold disabled:opacity-40 hover:bg-surface-hover transition-colors"
                     >
                       +
                     </button>
@@ -1215,7 +1215,7 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
                     placeholder="min"
                     title="Minutes"
                   />
-                  <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-brand-subtle text-brand-fg text-sm font-semibold disabled:opacity-40">+</button>
+                  <button onClick={addSub} disabled={!subInput.trim()} className="px-3 py-1.5 rounded-lg bg-accent-subtle text-accent-fg text-sm font-semibold disabled:opacity-40">+</button>
                 </div>
                 {hasSubs && (
                   <p className="text-[10px] text-fg-subtle mt-1">Time is set per sub-task. Timer runs on each sub-task individually.</p>
@@ -1655,7 +1655,7 @@ const Planning = () => {
                 <div className="relative w-12 h-12">
                   <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
                     <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" className="text-line-strong" strokeWidth="4" />
-                    <circle cx="24" cy="24" r="19" fill="none" stroke="var(--brand)" strokeWidth="4" strokeLinecap="round"
+                    <circle cx="24" cy="24" r="19" fill="none" stroke="var(--accent)" strokeWidth="4" strokeLinecap="round"
                       strokeDasharray={`${2 * Math.PI * 19}`}
                       strokeDashoffset={`${2 * Math.PI * 19 * (1 - pct / 100)}`}
                       style={{ transition: "stroke-dashoffset 0.5s ease" }} />
@@ -1693,7 +1693,7 @@ const Planning = () => {
           {(totalPlanned > 0 || totalDone > 0) && (
             <div className="px-2 mb-3">
               <div className={`rounded-lg ${GLASS} px-4 py-2.5 flex items-center gap-3`}>
-                <svg className="w-4 h-4 text-brand-fg shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                <svg className="w-4 h-4 text-accent-fg shrink-0" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="font-semibold text-fg-muted">{totalPlanned > 0 ? `${fmt(totalPlanned)} planned` : "Nothing planned"}</span>
@@ -1701,7 +1701,7 @@ const Planning = () => {
                   </div>
                   <div className="h-1.5 rounded-full bg-surface-hover overflow-hidden">
                     <motion.div
-                      className="h-full rounded-full bg-brand"
+                      className="h-full rounded-full bg-accent"
                       initial={{ width: 0 }}
                       animate={{ width: `${totalPlanned ? Math.min(100, (totalDone / totalPlanned) * 100) : 0}%` }}
                       transition={{ duration: 0.5 }}
@@ -1790,7 +1790,7 @@ const Planning = () => {
               <button
                 data-tour="open-picker"
                 onClick={() => setPickerOpen(true)}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-line-strong text-brand-fg font-semibold text-sm bg-canvas hover:bg-surface-hover transition-all"
+                className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-dashed border-line-strong text-accent-fg font-semibold text-sm bg-canvas hover:bg-surface-hover transition-all"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 Add to {isToday ? "today's" : "this day's"} plan

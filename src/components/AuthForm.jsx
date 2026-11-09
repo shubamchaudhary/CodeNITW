@@ -103,7 +103,7 @@ export default function AuthForm({ mode, onModeChange, onDone, autoFocus = true 
 
   const input =
     "w-full h-11 px-3.5 rounded-lg text-[15px] bg-canvas text-fg placeholder:text-fg-subtle border border-line-strong focus:outline-none focus:border-focus focus:ring-2 focus:ring-focus transition";
-  const link = "font-semibold text-brand-fg hover:underline";
+  const link = "font-semibold text-accent-fg hover:underline";
 
   return (
     <div>

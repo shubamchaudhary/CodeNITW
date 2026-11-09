@@ -86,8 +86,8 @@ export default function ResizableSide({ footerHeight, prefKey, className = "", c
           <span
             className={`rounded-full transition-colors ${
               closed
-                ? "w-1 h-14 bg-line-strong group-hover:bg-brand"
-                : "w-0.5 h-full bg-transparent group-hover:bg-brand"
+                ? "w-1 h-14 bg-line-strong group-hover:bg-accent"
+                : "w-0.5 h-full bg-transparent group-hover:bg-accent"
             }`}
           />
         </div>

@@ -59,11 +59,11 @@ export const STACKS = {
     summary: (topic) => topic.why,
     planItem: coreStackPlanItem,
     daysSinceDone: coreStackDaysSinceChecked,
-    // The design system's neutral accent: ink buttons, the brand violet only
+    // The design system's neutral accent: ink buttons, the orange accent only
     // for focus and progress.
     accent: {
       text: "text-success-fg",
-      bar: "from-brand to-brand",
+      bar: "from-accent to-accent",
       button: "bg-primary text-on-primary hover:bg-primary-hover",
       ring: "focus:ring-focus focus:border-transparent",
       chip: "hover:border-line-strong hover:text-fg",
@@ -117,7 +117,7 @@ export const STACKS = {
     })),
     filters: null,
     matchFilter: () => true,
-    tag: (topic) => ({ label: topic.id, cls: "text-sky-500 dark:text-sky-400" }),
+    tag: (topic) => ({ label: topic.id, cls: "text-accent-fg" }),
     eyebrow: (topic) => topic.sectionLabel,
     summary: (topic) => topic.summary || "",
     planItem: projectPlanItem,
@@ -125,11 +125,11 @@ export const STACKS = {
     // Chapters can be filled from .md files named after them (StackNav).
     importable: true,
     accent: {
-      text: "text-sky-600 dark:text-sky-400",
-      bar: "from-sky-500 to-indigo-400",
-      button: "bg-gradient-to-br from-sky-500 to-indigo-500 shadow-sky-500/30",
-      ring: "focus:ring-sky-400/40 focus:border-sky-400",
-      chip: "hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-300",
+      text: "text-accent-fg",
+      bar: "from-orange-500 to-amber-400",
+      button: "bg-gradient-to-br from-orange-500 to-amber-500 shadow-orange-500/30",
+      ring: "focus:ring-orange-400/40 focus:border-orange-400",
+      chip: "hover:border-orange-400 hover:text-orange-600 dark:hover:text-orange-300",
     },
   },
 };

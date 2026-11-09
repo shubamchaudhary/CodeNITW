@@ -73,7 +73,7 @@ export function Segmented({ options, value, onChange, size = "md", className = "
 export function ProgressBar({ value, className = "", title }) {
   return (
     <div className={`h-1 rounded-full bg-surface-hover overflow-hidden ${className}`} title={title}>
-      <div className="h-full rounded-full bg-brand transition-[width] duration-300" style={{ width: `${Math.round(value * 1000) / 10}%` }} />
+      <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${Math.round(value * 1000) / 10}%` }} />
     </div>
   );
 }

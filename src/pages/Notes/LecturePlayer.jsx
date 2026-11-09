@@ -22,7 +22,7 @@ const LOAD = (id) => {
 // Sized in container units (cqw), so it scales with the player.
 // A chapter with a theme (video/src/lib/theme.ts) gets the matching poster.
 const POSTER = {
-  default: { bg: "radial-gradient(120% 90% at 50% 35%, #121826, #0c1018)", text: "#eef2f8", accent: "#5b9cff", bar: "linear-gradient(90deg, #5b9cff, #a78bfa)", muted: "#93a0b8", head: undefined },
+  default: { bg: "radial-gradient(120% 90% at 50% 35%, #121826, #0c1018)", text: "#eef2f8", accent: "#fb923c", bar: "linear-gradient(90deg, #f97316, #fbbf24)", muted: "#93a0b8", head: undefined },
   loglens: { bg: "radial-gradient(120% 90% at 50% 35%, #12161b, #0b0d10)", text: "#ece8df", accent: "#ffa23e", bar: "linear-gradient(90deg, #ffa23e, #5fd3d0)", muted: "#a3abb6", head: '"JetBrains Mono", ui-monospace, monospace' },
 };
 
@@ -248,7 +248,7 @@ export default function LecturePlayer({ id, autoPlay = false }) {
               type="button"
               onClick={() => jump(s.from)}
               className={`rounded-full border px-2.5 py-1 text-[12px] leading-4 transition-colors ${
-                i === section ? "border-brand bg-brand-subtle text-fg" : "border-line text-fg-muted hover:text-fg hover:bg-surface-hover"
+                i === section ? "border-accent bg-accent-subtle text-fg" : "border-line text-fg-muted hover:text-fg hover:bg-surface-hover"
               }`}
             >
               <span className="font-mono tabular-nums text-fg-subtle mr-1">{s.num}</span>

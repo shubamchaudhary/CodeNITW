@@ -205,7 +205,7 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
         href={o.url}
         target="_blank"
         rel="noreferrer"
-        className="text-sm font-semibold leading-snug text-brand-fg hover:underline line-clamp-2"
+        className="text-sm font-semibold leading-snug text-accent-fg hover:underline line-clamp-2"
         title={o.title}
       >
         {o.title}
@@ -450,7 +450,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
             <span className="mr-2">
               {loading ? "Refreshing…" : error ? `Refresh failed (${error})` : loadedAt ? `Loaded ${minutesAgo(loadedAt)}` : ""}
               {!loading && (
-                <button onClick={refresh} className="ml-1.5 font-semibold text-brand-fg hover:underline">
+                <button onClick={refresh} className="ml-1.5 font-semibold text-accent-fg hover:underline">
                   Refresh
                 </button>
               )}
@@ -530,7 +530,7 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
           ))}
         </select>
         {hiddenCount > 0 && (
-          <button onClick={onUnhideAll} className="text-xs font-semibold text-brand-fg hover:underline">
+          <button onClick={onUnhideAll} className="text-xs font-semibold text-accent-fg hover:underline">
             Bring back {hiddenCount} skipped
           </button>
         )}

@@ -271,7 +271,7 @@ export default function Contests() {
           {data.status === "error" && (
             <div className={`rounded-lg ${CARD} px-5 py-10 text-center`}>
               <p className="text-[14px] text-fg-muted">Couldn't load contests right now.</p>
-              <button onClick={() => load(true)} className="mt-3 text-[13px] font-semibold text-brand-fg hover:underline">
+              <button onClick={() => load(true)} className="mt-3 text-[13px] font-semibold text-accent-fg hover:underline">
                 Try again
               </button>
             </div>
@@ -298,7 +298,7 @@ export default function Contests() {
                     className="border-t border-line px-3 sm:px-4 py-1.5 sm:grid sm:grid-cols-[5.5rem_1fr] sm:gap-2"
                   >
                     <div className="px-2 pt-3 pb-0.5 sm:pb-3 flex sm:block items-baseline gap-2">
-                      <p className="text-[11px] font-semibold text-brand-fg">
+                      <p className="text-[11px] font-semibold text-accent-fg">
                         {word === "Today" || word === "Tomorrow" ? word : weekdayShort(day.start)}
                       </p>
                       <p className="text-[13px] sm:text-[22px] sm:leading-tight font-semibold text-fg">
@@ -393,7 +393,7 @@ function ContestRow({ contest: c, now }) {
         </p>
       </div>
       <span
-        className={`hidden sm:inline-block shrink-0 font-mono text-[12px] tabular-nums ${soon ? "text-brand-fg font-medium" : "text-fg-subtle"}`}
+        className={`hidden sm:inline-block shrink-0 font-mono text-[12px] tabular-nums ${soon ? "text-accent-fg font-medium" : "text-fg-subtle"}`}
       >
         {countdown(left)}
       </span>

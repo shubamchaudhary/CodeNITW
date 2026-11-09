@@ -83,7 +83,7 @@ const CompanyCard = memo(function CompanyCard({ company, entry, expanded, onTogg
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-brand-fg hover:text-fg"
+                className="text-accent-fg hover:text-fg"
                 title="Careers page"
               >
                 <HiOutlineExternalLink />
@@ -333,7 +333,7 @@ export default function CompaniesTab({ allCompanies, companies, patchCompany, ad
       {filtered.length > limit && (
         <button
           onClick={() => setLimit((l) => l + PAGE_SIZE)}
-          className={`w-full mt-3 py-3 text-sm font-semibold text-brand-fg hover:bg-surface-hover ${GLASS} rounded-lg`}
+          className={`w-full mt-3 py-3 text-sm font-semibold text-accent-fg hover:bg-surface-hover ${GLASS} rounded-lg`}
         >
           Show {Math.min(PAGE_SIZE, filtered.length - limit)} more ({filtered.length - limit} remaining)
         </button>

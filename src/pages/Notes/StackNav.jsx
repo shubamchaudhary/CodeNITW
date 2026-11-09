@@ -123,7 +123,7 @@ export default function StackNav({ stack, activeId, completed, planned, onPick }
                             {t.title}
                           </span>
                           {planned.has(t.id) && (
-                            <span title="On today's plan" className="mt-[7px] w-1.5 h-1.5 rounded-full bg-brand shrink-0" />
+                            <span title="On today's plan" className="mt-[7px] w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
                           )}
                           {tag && <PriorityTag tag={tag} className="mt-px" />}
                         </button>

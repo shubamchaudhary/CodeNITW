@@ -19,7 +19,14 @@
   --brand: #7c3aed;
   --brand-fg: #6d28d9;
   --brand-subtle: #f5f3ff;
-  --focus: var(--brand);
+  /* Orange for everything that is a line or a pointer: progress bars and
+     rings, today/live markers, drop lines, links, focus rings and the caret.
+     Violet (brand) stays for the logo and the tag colours. */
+  --accent: #ea580c;
+  --accent-fg: #c2410c;
+  --accent-subtle: #fff7ed;
+  --accent-tint: rgba(234, 88, 12, 0.18);
+  --focus: var(--accent);
   --success: #16a34a;
   --success-fg: #15803d;
   --success-subtle: #f0fdf4;
@@ -50,6 +57,10 @@
   --brand: #8b5cf6;
   --brand-fg: #a78bfa;
   --brand-subtle: #1e1530;
+  --accent: #f97316;
+  --accent-fg: #fb923c;
+  --accent-subtle: #2a1709;
+  --accent-tint: rgba(249, 115, 22, 0.22);
   --success: #22c55e;
   --success-fg: #4ade80;
   --success-subtle: #0f2417;

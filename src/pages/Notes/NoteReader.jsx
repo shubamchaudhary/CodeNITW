@@ -244,7 +244,9 @@ export default function NoteReader({
       if (!article) return;
       const rect = article.getBoundingClientRect();
       const span = rect.height - (window.innerHeight - navTop);
-      setProgress(span > 0 ? Math.min(1, Math.max(0, (navTop - rect.top) / span)) : 1);
+      // A note that fits on screen is read once it's on screen; no note has
+      // nothing to read.
+      setProgress(span > 0 ? Math.min(1, Math.max(0, (navTop - rect.top) / span)) : isEmpty ? 0 : 1);
 
       let current = 0;
       for (const el of article.querySelectorAll("section[data-sec]")) {
@@ -266,7 +268,7 @@ export default function NoteReader({
       window.removeEventListener("resize", onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [navTop, sections.length]);
+  }, [navTop, sections.length, isEmpty]);
 
   // ── Personal notes: find each passage, paint it, place its margin marker ──
   const placeNotes = useCallback(() => {

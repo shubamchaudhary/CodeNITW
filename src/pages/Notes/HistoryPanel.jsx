@@ -99,7 +99,7 @@ export default function HistoryPanel({ notesKey, noteId, current, previewId, onP
               {state.code === "permission-denied"
                 ? "Version history isn't switched on for this account yet."
                 : "Couldn't load the history."}{" "}
-              <button onClick={load} className="font-semibold text-brand-fg hover:underline">
+              <button onClick={load} className="font-semibold text-accent-fg hover:underline">
                 Try again
               </button>
             </div>
@@ -123,7 +123,7 @@ export default function HistoryPanel({ notesKey, noteId, current, previewId, onP
                     key={r.id}
                     onClick={() => onPreview(isCurrent ? null : r)}
                     className={`w-full text-left rounded-lg px-3 py-2.5 mb-1 transition-colors ${
-                      selected ? "bg-brand-subtle ring-1 ring-focus " : "hover:bg-surface-hover "
+                      selected ? "bg-accent-subtle ring-1 ring-focus " : "hover:bg-surface-hover "
                     }`}
                   >
                     <div className="flex items-center gap-2">
