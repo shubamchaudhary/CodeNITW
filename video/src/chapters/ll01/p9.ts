@@ -86,7 +86,9 @@ export const p9: Scene[] = [
   check({
     topic: "gate evals",
     q: "The gate flags 18 windows; 15 are real. There were 20 real incident windows. Precision, recall?",
+    say: "The gate flags eighteen windows, and fifteen are real. There were twenty real incident windows. What are the precision and the recall?",
     options: ["P 0.75 · R 0.83", "P 0.83 · R 0.75", "P 0.90 · R 0.75", "P 0.83 · R 0.90"],
+    oSay: ["precision nought point seven five, recall nought point eight three", "precision nought point eight three, recall nought point seven five", "precision nought point nine, recall nought point seven five", "precision nought point eight three, recall nought point nine"],
     answer: 1,
     a: "Precision = 15 / 18 = 0.83 (of what you flagged, how much was real). Recall = 15 / 20 = 0.75 (of what was real, how much you caught). F1 ≈ 0.79.",
     aSay: "B. Precision is fifteen over eighteen, nought point eight three: of what you flagged, how much was real. Recall is fifteen over twenty, nought point seven five: of what was real, how much you caught. F one comes out at about nought point seven nine.",
@@ -170,6 +172,7 @@ export const p9: Scene[] = [
   check({
     topic: "retrieval evals",
     q: "A question has 4 gold chunks; 3 are in the top 30, and the first one is at rank 2. Recall@30 and reciprocal rank?",
+    say: "A question has four gold chunks. Three are in the top thirty, and the first one is at rank two. What are the recall at thirty, and the reciprocal rank?",
     a: "recall@30 = 3 / 4 = 0.75. Reciprocal rank = 1 / 2 = 0.5 (ranks counted from 1 here). MRR is that, averaged over all questions.",
     aSay: "Recall at thirty is three over four, nought point seven five. The reciprocal rank is one over two, a half, counting ranks from one. M R R is that value, averaged over every question.",
   }),
@@ -255,6 +258,7 @@ export const p9: Scene[] = [
   check({
     topic: "the judge",
     q: "Your judge reports 95% faithfulness. An interviewer asks: \"so 5% hallucination?\" What do you say?",
+    say: "Your judge reports ninety five percent faithfulness. An interviewer asks: so, five percent hallucination? What do you say?",
     a: "Only if the judge agrees with humans. I'd show its Cohen's kappa against ~40 human labels; at κ ≥ 0.6 the total is trustworthy, below it the judge prompt needs fixing first.",
     aSay: "Only if the judge agrees with humans. I'd calibrate it against about forty human labels and report Cohen's kappa. At nought point six or above, I trust the total. Below that, I fix the judge before I quote its number.",
   }),
