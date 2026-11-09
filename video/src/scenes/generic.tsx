@@ -268,7 +268,7 @@ export const ImageScene = ({ s, t }: P<"image">) => {
   return (
     <>
       {s.title && <SceneTitle text={s.title} frame={f} />}
-      <Abs x={box.x} y={box.y} w={box.w} h={box.h} style={{ ...rise(f, 4), borderRadius: 22, overflow: "hidden", background: "#ffffff", boxShadow: "0 18px 50px rgba(0,0,0,0.45)" }}>
+      <Abs x={box.x} y={box.y} w={box.w} h={box.h} style={{ ...rise(f, 4), borderRadius: 22, overflow: "hidden", background: s.frame ?? "#ffffff", boxShadow: "0 18px 50px rgba(0,0,0,0.45)" }}>
         <div style={{ position: "absolute", inset: 18, transform: `scale(${z})`, transformOrigin: `${fx}% ${fy}%` }}>
           {s.gif ? (
             <Gif src={asset(s.src)} width={box.w - 36} height={box.h - 36} fit="contain" />

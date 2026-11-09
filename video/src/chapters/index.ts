@@ -20,6 +20,7 @@ import { spring08 } from "./spring08.ts";
 import { spring11 } from "./spring11.ts";
 import { ll01 } from "./ll01.ts";
 import { ioa01 } from "./ioa01.ts";
+import { ipp01 } from "./ipp01.ts";
 import type { Chapter } from "../lib/types.ts";
 
-export const CHAPTERS: Chapter[] = [ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch12, java01, java04, spring15, spring09, spring23, spring10, spring08, spring11, ll01, ioa01];
+export const CHAPTERS: Chapter[] = [ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch12, java01, java04, spring15, spring09, spring23, spring10, spring08, spring11, ll01, ioa01, ipp01];

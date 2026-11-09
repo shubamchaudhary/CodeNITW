@@ -1,0 +1,1986 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "6b874c46",
+   "say": "InterviewPlanPrep. The interview prep platform on your resume, the one you built and still run. This one is mostly frontend, so we'll keep it short. But every line on the resume gets defended, hard.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87c2d049",
+   "say": "Here's how each topic goes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec41339f",
+   "say": "First, what the student actually sees. A real screen from the site, the way a signed in student sees it. Nothing owner only.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "839a3121",
+   "say": "Then the mechanism behind that screen. The code path, step by step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02f3477d",
+   "say": "Then what else you could have done, and why you didn't.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae11431f",
+   "say": "Then the attack. The sceptical question an interviewer asks about that exact resume line, and the answer that shuts it down.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6d2cd0cc",
+   "say": "And then a check. A question, a few seconds to think, and you answer out loud before the answer appears.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ddf7107d",
+   "say": "Topic one. What the site is, and your resume, read as a map of this lecture.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "394717a4",
+   "say": "This is what a student opens. One React app with five pages: Core Stack, DSA, Planning, Jobs and Contests.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e21072c",
+   "say": "The home page is the planner. Plan the day, time it, see what's done.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e1ebb36",
+   "say": "Anyone can browse every page without an account. The moment you try to change something, tick a problem, write a note, plan a day, the site asks you to sign in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ccd5bca1",
+   "say": "And once you're signed in, everything you do is saved on the device first, and synced to your account, so the same progress shows up on your laptop and your phone.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5a6c9c41",
+   "say": "Bullet one says what it is. An interview prep platform serving two hundred and fifty plus students. Topic eleven covers exactly where that number comes from.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3025ad76",
+   "say": "Covering DSA. A tracker of the most asked problems, grouped by pattern. Topic four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e1b6965d",
+   "say": "Java and Spring Boot. That's Core Stack: a topic list, what to watch, and your own notes on every topic. Topics five to seven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "348aa2a9",
+   "say": "A job tracker, and upcoming coding contests. Topics nine and ten.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c0da24a",
+   "say": "Bullets two and three are the engineering. A day planner with drag and drop tasks, and a Pomodoro timer. Topic eight.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "259f6b81",
+   "say": "Upcoming contests fetched from the clist dot by API, with cached results, and email reminders before each contest. Topics nine and ten.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ad61edf",
+   "say": "Git style notes. An append only version history, restore, and a three way merge for edits made on two devices at once. Topics six and seven. This is the part interviewers dig into, so we go slowest there.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0a88498e",
+   "say": "And an offline first DSA tracker that saves to a local cache and syncs to Firestore. Topic four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8dd24762",
+   "say": "If you remember one sentence from this lecture, make it this one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b80574d3",
+   "say": "The browser owns the data it shows. Firestore keeps every device in step.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "16b4af28",
+   "say": "And the server only does what a browser can't be trusted with. Secrets, other people's email addresses, and anything that has to run on a schedule.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d708ae50",
+   "say": "Check 1. A guest opens the DSA page and ticks a problem. What happens? A, The tick is saved locally and synced later. B, The tick is refused, the sign-in prompt opens, and the box un-ticks. C, The tick is sent to Firestore under an anonymous account. Or D, Nothing: the checkbox is disabled for guests.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7aa88539",
+   "say": "B. Guests can read everything but change nothing. The store refuses the write, the sign in prompt opens, and the page re reads its data, so the tick visibly undoes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82027328",
+   "say": "Topic two. The whole system, on one board. Five boxes, and one rule for which box does what.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0c7b401",
+   "say": "One. The app itself. A React single page app, built with Vite, served as static files from Vercel's CDN. Every page is its own chunk.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b604c4df",
+   "say": "Two. Every page reads and writes a small store over local storage. Synchronously. Nothing on screen ever waits for the network.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ac29a53c",
+   "say": "Three. A sync engine, running in the background, pushes changes to Firestore and listens for changes from your other devices.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fca23ad5",
+   "say": "Four. Firebase Auth. Email and password, or Google. It issues an ID token, a signed J W T, and the Firestore SDK attaches it to every request automatically.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f9db6b3",
+   "say": "Five. Vercel serverless functions, running on Node dot js. The contest list, reminder sign ups, email links. The browser calls them with its ID token as a bearer token.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8586b7c5",
+   "say": "And six. Vercel Cron calls the reminder job about every fifteen minutes, and the functions talk to the outside world: clist dot by for contests, and Gmail over S M T P for email.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3c0839d",
+   "say": "Why each piece. React with Vite: every page is its own bundle, and the dev server serves native ES modules, so a change shows instantly. The project started on Create React App and moved to Vite in December twenty twenty three.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f99c8bc",
+   "say": "Firebase: sign in without running an auth server, and a database with real time listeners, an offline cache, and security rules per user.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2c878633",
+   "say": "Vercel: the CDN, the functions and the cron jobs live in the same repo as the app, on a free plan that suits bursty student traffic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b8d7a497",
+   "say": "Tailwind: every colour is a token in a CSS variable, so dark mode is one class on the root, not a dark variant on every element.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d9e8c6af",
+   "say": "So there's no server to patch and no database to run. The hard engineering is in the browser and in the security rules. That's what the rest of this lecture is about.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7037e1c0",
+   "say": "Here's the first attack.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "14a59494",
+   "say": "Your resume says Node dot js. Where is the Node?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "90237a24",
+   "say": "Your answer. Every file in the A P I folder is a Node dot js serverless function. A standard web request comes in, a response goes out. Inside, firebase admin talks to the server only collections, and Nodemailer sends email over S M T P. And in development, a small Vite plugin runs the same files inside the dev server, so there's one code path for local and production.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "42572f11",
+   "say": "Check 2. Why does the reminder email job have to run on the server, not in the browser?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "864b4f48",
+   "say": "Three reasons. It needs secrets, the Gmail app password and the cron secret. It needs other people's email addresses, which no browser may read. And it has to run on a schedule, when nobody has the site open.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cfedad3f",
+   "say": "Topic three. The React shell. How pages load, and where their data lives.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37f372a6",
+   "say": "React Router six, on the client. The planner is the home page: the root path redirects to slash planning.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "90bb46d6",
+   "say": "Core Stack is a topic list, and every topic has its own full page for its notes, under slash notes, slash core stack, slash the topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3977c5f9",
+   "say": "Then the DSA tracker, the contests page, and the job tracker's pipeline board.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e3499e55",
+   "say": "Sign in, sign up and forgot password are three routes over one form component, with errors shown inline, next to the field that's wrong.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a79921f",
+   "say": "And any unknown URL lands on Core Stack, so a student never sees a blank page.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d2c0c8c6",
+   "say": "Every page is a dynamic import, so Vite's production build, which is Rollup, splits it into its own chunk. Opening the planner downloads the planner, not the notes page's markdown renderer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "103d13f6",
+   "say": "The wrapper keeps one promise per page. Call preload twice and you get the same download. When it lands, it remembers the component.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8106a889",
+   "say": "React dot lazy wraps that same promise, and Suspense shows a skeleton of placeholder cards while a chunk is on its way, so the footer doesn't jump.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf05a6c0",
+   "say": "Here's the detail worth saying in an interview. A plain React dot lazy suspends once, even if the chunk already arrived, which flashes the skeleton for a frame. So the page picks, once per mount, the real component if it's loaded, and the lazy one only if it isn't.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5bab308e",
+   "say": "And preload is exposed, so the site tour can load every page before it starts, and the tour never shows a loading state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "adee01a8",
+   "say": "Now the data. There's no Redux. The store is a plain module: load JSON and save JSON over local storage. Synchronous. A tick is on screen and on disk in the same frame.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05f439e8",
+   "say": "Every key is prefixed with the signed in user's ID. U, the uid, then the key. So two accounts on one shared browser can never read each other's cached data.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37abc0e1",
+   "say": "Every save emits an event with the key, and an info object that says where the change came from. A local save, with exactly which entries changed. Data from the cloud. Another tab. Or an account switch. Pages subscribe to the keys they show, and re read.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e9804d0f",
+   "say": "Another tab writing the same key fires the browser's storage event, so every open tab stays consistent for free.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8cb8a23",
+   "say": "And a guest's write is refused at the store. The sign in prompt opens, and the page re reads, so the change visibly doesn't stick.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "769e9c70",
+   "say": "So the first design question. Why no state library?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51d38c2a",
+   "say": "Because the data has to live in local storage anyway, to survive a reload and to work offline. A second copy in Redux would just be one more thing to keep in step.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bc6a1ea6",
+   "say": "With Redux, you'd hold a global copy in memory, then still persist it to disk, still sync it across tabs, and now you have two sources of truth. With this store, local storage is the truth, events say what changed, the storage event covers other tabs, and pages re read what they show.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c74975ee",
+   "say": "The cost is discipline. A page has to subscribe to every key it displays, or it shows stale data. That's a rule you can state, and check in review.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "32faffdf",
+   "say": "Check 3. Why does the lazy page wrapper pick the loaded component when it can, instead of always using React lazy?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f8a47685",
+   "say": "Because React lazy suspends once, even when the chunk has already arrived, and that flashes the loading skeleton for a frame. Picking the loaded component means a preloaded page renders straight away.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84705d2d",
+   "say": "Topic four. The offline first DSA tracker. What happens between a tick and Firestore.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "755e39ce",
+   "say": "Here's the DSA tracker. The most asked problems, grouped by pattern. The problem list is static data, shipped inside the page's own chunk, so browsing needs no API at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87b8b404",
+   "say": "When a student ticks a problem, the tick is saved on this device first. Instantly. With the time it was solved, so the page can say solved three days ago.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61371867",
+   "say": "The solved count, the ring, the per pattern bars, all of them read the local store. None of them waits on a network call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c74bb37",
+   "say": "And Firestore gets the change in the background. That's what offline first means in the resume line: saves progress to a local cache, and syncs it to Firestore.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b1e0cef5",
+   "say": "Let's follow one tick, from the click to Firestore.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1968852",
+   "say": "The page calls save JSON. Local storage is updated. That's the only thing the click waits for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25743439",
+   "say": "The store emits an event saying exactly which entry changed. Two sum.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1bfe58ab",
+   "say": "The sync engine writes that entry into a pending journal, in local storage too, with the time it was edited. So the change is recorded as owed to the cloud before anything leaves the device.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "63742068",
+   "say": "After eight hundred milliseconds with no further changes, it pushes the entry and its edit time to Firestore. Ten quick ticks become one write.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c3e9fe7c",
+   "say": "Firestore's snapshot listener on your other devices delivers it, and their stores update.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "850b44e8",
+   "say": "And if you're offline, nothing is lost. The journal keeps it. The browser's online event pushes it the moment you're back. And a failed push retries with backoff, one second, doubling, up to thirty seconds.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2a19c391",
+   "say": "Now the hard question. Two devices change data while apart. Who wins? First, the unit of merging is the entry, not the document. A tick on problem A on the phone and a tick on problem B on the laptop both survive.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "309b1247",
+   "say": "For the same entry, the newer edit wins, by its edit time. Edit times are stored beside the values, in a meta map.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59a4a993",
+   "say": "Deletes are tombstones. A deleted entry keeps its edit time, so an older copy on another device can't bring it back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c3186872",
+   "say": "Device clocks drift, so the cloud only counts as having gone back in time when it's more than five minutes older. Two slightly wrong clocks can't flip a value back and forth forever.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f500de5",
+   "say": "And after a reload, nothing is pushed until the first server snapshot has arrived and been merged. A device that's been asleep for a week can't overwrite this morning's edits from your laptop.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a7d6e581",
+   "say": "And the alternatives, so you can say you chose this deliberately. One. Read Firestore directly. Every screen waits on the network, and there's no local truth to show offline.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0fdabc8",
+   "say": "Two. Rely only on Firestore's offline cache. It is used: a persistent IndexedDB cache with a multi tab manager. But on its own, the last write to a field wins, whoever wrote it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93a0bb71",
+   "say": "Three. CRDTs. They merge without conflicts, but they add metadata per entry and a library to own, for ticks and stars.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69a969ec",
+   "say": "So, the store plus a journal. Instant UI, it works offline, and per entry newer wins with tombstones.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fce814f4",
+   "say": "And the line to say if they ask why both a journal and Firestore's queue. Firestore's queue delivers the writes it has been handed. The journal records what changed, and when, which the merge rules need, and it covers the window before a write is handed over: the debounce, a crash, a refresh.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bba605ce",
+   "say": "And here's the attack on this line.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ff8a152",
+   "say": "Offline first? Does your app even load without internet?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "49d20e2a",
+   "say": "Your answer. Offline first is about where the data lives. Every read and every write goes to the local cache first, and Firestore is synced behind it. Once the page is open, you can lose the network for a day, keep ticking and writing, and it all syncs when you're back. The app shell itself comes from the CDN, and caching it with a service worker is the natural next step, a single file on top of a data layer that's already offline.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f0a529b2",
+   "say": "Check 4. Your laptop ticked problem A at ten o'clock. Your phone, offline, un-ticked problem A at five past ten, then came online at eleven. What does the account end up with? A, Ticked, because the laptop pushed first. B, Un-ticked, because the phone's edit to that entry is newer. C, Ticked, because deletes never sync. Or D, A conflict the user must resolve.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c2d38d83",
+   "say": "B. Un-ticked. For each entry, the newer edit wins by its edit time, not by who reached the server first. The un-tick was edited at five past ten, so it beats the ten o'clock tick.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45416781",
+   "say": "Topic five. The notes page. The biggest piece of frontend in the app.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e37b9a0",
+   "say": "This is a Core Stack topic, the way a student sees it. What to watch first, then their own notes, written in markdown. Any section opens in place for editing, from the pen in its margin.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b1b98a0",
+   "say": "The yellow line is a highlight. Select text, pick a colour, and it's saved as a mark tag, inside the markdown itself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "62d5dc3b",
+   "say": "The dotted underline with the bubble is a personal note, pinned to that exact passage. And here's the trick: a personal note never touches the markdown at all.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "936de945",
+   "say": "And on the right, the note's own contents, with a learnt tick per section, so a student can see what's left.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "66375938",
+   "say": "How does a highlight on the screen become a mark tag in the markdown? First, every block the renderer outputs, a paragraph, a list item, a table cell, carries the start and end offsets of the markdown that produced it. They come from the markdown syntax tree's positions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "03c7d1f2",
+   "say": "When you select text, the selection is traced back to its block, and to which copy of that text it is inside the block, because the same words can appear twice. Then the same copy is found in the block's source.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6010cf86",
+   "say": "That span of the source is wrapped in a mark tag with the colour's class. Inline code is literal text, so a code span is wrapped whole, never inside.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e581828",
+   "say": "And the result is just more note text. So a highlight syncs, versions and merges exactly like any other edit. No second system.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "abba0c6a",
+   "say": "Personal notes work differently, because they can sit on code, on a table cell, on a hidden answer, places you can't put a mark tag. So a personal note is anchored to the rendered text: the quoted passage, plus forty characters of context on each side, plus which occurrence it was and how many there were.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1bcf88e0",
+   "say": "After the note is edited, the passage is found again by its text. If it appears more than once, the copy with the most surviving context wins.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8437bd68",
+   "say": "It's painted with the CSS Custom Highlight A P I. The browser highlights a range directly. No spans are inserted, so React's DOM is never touched, and a re render can't wipe the highlight.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c67c441e",
+   "say": "And if the passage was edited away, the note is not pinned to some other copy. A wrong pin is worse than none.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2aaf8337",
+   "say": "The alternatives. Anchor by markdown offsets: every edit above the note shifts it, and rendered only text, like a folded answer, has no offset to use.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33f43543",
+   "say": "Wrap the passage in spans in the DOM: React re renders and wipes them, and they break inside syntax highlighted code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75413b9f",
+   "say": "Text quote plus context survives edits elsewhere in the note. It's the same idea as the W3C web annotation text quote selector.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcbf5c2d",
+   "say": "So the rule you say out loud. A highlight belongs to the note's text, so it lives in the markdown. A personal note belongs to the passage you read, so it lives beside it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "54f97b36",
+   "say": "Check 5. Why are personal notes painted with the CSS custom highlight API, instead of wrapping the passage in a span?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d42fc7bb",
+   "say": "Because inserting spans mutates the DOM that React owns, so the next re-render wipes them, and they break inside syntax highlighted code. The highlight A P I paints a range without changing the DOM at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b99cb675",
+   "say": "Topic six. Git style notes, part one. Why a note can't be silently overwritten.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88a770d3",
+   "say": "Start with the bug this design exists for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20039794",
+   "say": "The phone has been offline since yesterday. Meanwhile, on the laptop, you wrote three paragraphs. Now the phone comes online and saves a one word typo fix. With last writer wins, the phone's whole copy replaces the note, and the three paragraphs are gone.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b0c42072",
+   "say": "Last writer wins is fine for a tick. The worst case is one wrong tick. For a long note, it silently loses work. So notes get a different model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f658e57a",
+   "say": "Here's the model. Each note has a revision number in its own Firestore document. Both devices start from revision seven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ac4aaf16",
+   "say": "The laptop saves. It says: my edit is based on seven, and this is eight. The head is seven, so it's accepted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf115aee",
+   "say": "Now the phone saves. Also based on seven, also claiming eight.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "419e47f1",
+   "say": "Refused. The head is now eight, not seven. The phone's edit was built on an old version.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9d71e9f0",
+   "say": "So the phone fetches the head, revision eight, and decides like git. Different lines? Merge them. That's topic seven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3501eb1b",
+   "say": "And it saves the result based on eight, as nine. Accepted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb058109",
+   "say": "That's compare and swap, enforced by the server. A stale device, or a buggy one, cannot overwrite a newer version.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9d519964",
+   "say": "And here's where the check lives. Not in the client. In Firestore's security rules. Only the signed in owner can read or write their notes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "697035ce",
+   "say": "A note document may hold exactly these fields, and nothing else.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "35baba0d",
+   "say": "The new revision must be exactly the base plus one. No skipping.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b336a54e",
+   "say": "And the line that matters. The base the client claims must equal the revision stored right now. If another device moved the head, this is false, and the write is refused.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6f648490",
+   "say": "The question an interviewer will ask next. Why put the check in the rules, and not just in the client?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0869cc0",
+   "say": "Because checking and writing have to be one atomic step.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8062175c",
+   "say": "If the client checks, two devices can both read revision seven, both pass the check, and both write. And a buggy or old client might skip the check entirely. The rules are evaluated with the write itself, so one wins and the other is refused, for every client, of any version.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a626c359",
+   "say": "Name it. It's optimistic locking, like an update where version equals the one you read. Or git refusing a push that isn't a fast forward.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "baeef3ff",
+   "say": "Check 6. A note's head is revision twelve. A device saves with base eleven and rev twelve. What do the rules do? A, Accept it, because rev is base plus one. B, Refuse it, because the base must equal the stored head, twelve. C, Accept it, and bump the head to thirteen. Or D, Refuse it, because rev must be two above base.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "def17ad4",
+   "say": "B. Refused. Rev equals base plus one, so that part passes. But the base, eleven, isn't the stored head, twelve. The edit was built on an old version, so the device has to fetch the head and merge.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c23a256e",
+   "say": "Topic seven. Git style notes, part two. The three way merge, the history, and restore.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58a50038",
+   "say": "When a save is refused, or a snapshot shows the head moved, the device has four cases. First, the cloud's copy hasn't moved since our edit began. That's a fast forward. Ours wins.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c88de30c",
+   "say": "Second, both sides ended up identical. Nothing to merge.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4cfc2b1d",
+   "say": "Third, both changed, but different lines. A three way merge against the common base, saved as the next revision, and a small toast tells you both sets of changes were merged.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d12a86b5",
+   "say": "Fourth, both changed the same lines. Nothing is guessed. The cloud's head stands, our edit goes into the history as not kept, and a toast says exactly that. Nothing is lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ddf8a6c5",
+   "say": "Here's the merge, like git merge file, on lines. The base is revision seven, the version both devices started from.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af989cec",
+   "say": "The phone changed line two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13890fc6",
+   "say": "The laptop changed line four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6184107a",
+   "say": "The two changes don't overlap, so both apply. A, B two, C, D two.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe515815",
+   "say": "The rule is simple. Changes that don't overlap both apply. Overlapping changes are a conflict, unless both sides made exactly the same change, which is taken once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08c87dcd",
+   "say": "And how merge three works. First, trim the lines that are the same at the start and at the end of all three versions. A long note with one small edit only diffs a few lines.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "abcb2c63",
+   "say": "Then diff base to ours, and base to theirs, with a longest common subsequence table. Each diff becomes a list of hunks: replace base lines from s to e with these lines.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "811b428e",
+   "say": "Sort all the hunks by position, and apply them. Two hunks collide if their base ranges overlap, or both insert at the same point.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "280eecf4",
+   "say": "And a guard. The table is n times m cells. Above four million cells, it doesn't diff at all, it treats it as a conflict, so a pathological note can't freeze the tab.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9b7afe22",
+   "say": "Now the history. Every change becomes a revision, a full snapshot of the text and the personal notes, with the time and the device, under the note's own history collection.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "63be8c87",
+   "say": "Append only, enforced by the rules. A revision may be created and read. Never updated, never deleted. No device and no bug can rewrite history.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c4f6d8d0",
+   "say": "Typing is grouped, so a revision isn't every keystroke. One after twenty seconds of pause, and at least one every two minutes while you keep typing. A highlight or a restore is a revision straight away.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "349d4f18",
+   "say": "Each revision is fingerprinted with a fast fifty three bit hash, so an identical version isn't stored twice. And the document ID is time dash device, so a retried write lands on the same document, not a duplicate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "721da7f2",
+   "say": "And restore writes the old version back as the newest one. It becomes a new revision itself. It's git revert, not git reset. Nothing after it is lost.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ed1efdec",
+   "say": "And the attack on this bullet.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "238b328e",
+   "say": "Why not real time collaboration, like Google Docs? Why not operational transforms, or CRDTs?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "71f9b4f1",
+   "say": "Your answer. Because the workload is one person on a few devices, editing in bursts, rarely at the same moment. Character level merging would add metadata to every character and a library to own. Git's model is enough, it's explainable to a student in one sentence, and with the history, nothing is ever lost. If two people edited one note live, I'd move to a CRDT like Yjs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f35e27ac",
+   "say": "Check 7. The base is A, B, C. The phone saves A, X, C. The laptop already saved A, Y, C. What happens to the phone's edit?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "48a88816",
+   "say": "Both sides replaced line two with different text. That's a conflict, and nothing is guessed. The laptop's version stays as the head, the phone's version is saved in the history as not kept, and a toast tells the student, so they can restore it if they want.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08dbb712",
+   "say": "Topic eight. The day planner. Drag and drop tasks, and a Pomodoro timer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4bf07d95",
+   "say": "This is the planner, with a focus session running. A day is a list of tasks. A task can link to a Core Stack topic or a DSA problem, or be your own text. And ticking a linked task ticks the real topic, because both pages write the same completion store.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c914852e",
+   "say": "Cards are reordered by dragging. Native HTML five drag and drop. No library.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fffcab2b",
+   "say": "Any task can start a Pomodoro timer: focus sessions with short breaks in between, sized to the task's estimate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e73057ba",
+   "say": "And the time you focus is logged per task, per day. So the page can show planned against focused, and where the day actually went.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "851dc8fb",
+   "say": "Here's all of it. Each card is draggable. On drag start, remember which index is moving.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d61d2f83",
+   "say": "On drag over, prevent the default, which is what tells the browser a drop is allowed here, and remember the index under the cursor, to draw the drop line.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "582cf61d",
+   "say": "On drop, copy the list, splice the card out of its old position, and splice it into the new one. Immutable, so React sees a new array.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da756cd7",
+   "say": "And persist it. That's a save JSON, so a reorder is saved locally and synced to your other devices like any other edit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ca342b15",
+   "say": "The alternatives. React beautiful D N D was the classic, and it's no longer maintained. A big dependency for one list.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "417f1ae2",
+   "say": "D N D kit is the modern choice. It has touch and keyboard sensors, so it's what I'd pick if reordering had to work on phones.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e3d33e5",
+   "say": "Native HTML five drag and drop costs zero kilobytes, and it's exactly right for a short vertical list with a mouse.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b5bf96c",
+   "say": "So the argument. The job is reordering a handful of cards on a desktop, and the platform already does that. A library would be weight without a reason.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "294e3e2d",
+   "say": "Now the timer, and the bug that shaped it. Browsers throttle timers in background tabs. After a few minutes hidden, set interval fires about once a minute. So a timer that counts ticks loses most of the time you spent in another tab.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "20f32f58",
+   "say": "So the timer stores an anchor: the moment its remaining time was last exact. Whenever it's read, it works out how much real time has passed since the anchor, and walks through any focus and break sessions that finished meanwhile. The same catch up runs when you reopen the page.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f4f83ee",
+   "say": "It's saved on events, not every second. While running, it's stored rewound to its start, with the anchor moved back, so it only needs writing on start, pause, resume, extend, finish and stop. Sync traffic stays tiny.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30ea22b9",
+   "say": "It's synced as one whole value, not per field, because a session, its time left and its anchor only make sense together. So the timer follows the account to every tab and device.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e19d0578",
+   "say": "And time is never logged twice. Each timer has an ID and a count of seconds already logged, so when two tabs both see it stop, only the seconds not yet logged are added.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5d6edd8a",
+   "say": "Here's the catch up, simplified. Whole seconds since the anchor. The new anchor keeps the leftover fraction of a second, so the count never drifts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd3eca13",
+   "say": "If the time passed is less than what's left in this session, just subtract it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eca824f6",
+   "say": "Otherwise this session ended. Carry the rest into the next session, focus, then break, then focus, until the time runs out, or the last session ends and the timer is complete.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1dc83996",
+   "say": "So whether the tab was hidden for ten seconds or two hours, one call puts the timer exactly where real time says it should be.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c0a2ce07",
+   "say": "Check 8. A twenty five minute focus session is started, then the tab is hidden for twenty minutes. Why does the timer still show five minutes left when you come back?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1e39d1ec",
+   "say": "Because it doesn't count ticks. On every read it computes the real time passed since its anchor, from the wall clock. So the browser throttling timers in a hidden tab can't lose any time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c4bc90de",
+   "say": "Topic nine. Upcoming coding contests, fetched from the clist dot by API, with cached results.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eed488e2",
+   "say": "The contests page. LeetCode, Codeforces and CodeChef in one list, the next one big at the top, with a countdown.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "39ef61bd",
+   "say": "Every time is shown in the student's own time zone, grouped by day.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b325a0d7",
+   "say": "And one button turns on email reminders. That's topic ten.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e6f4e1c",
+   "say": "Where the list comes from. clist dot by first. One query covers all three hosts for the next thirty days. The API key lives only in the server's environment.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "10e0e6b1",
+   "say": "If there's no key, or clist fails, each platform's own API is asked directly, in parallel, with promise all settled and eight second timeouts. So one slow platform can't hold up the others.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "54b7c773",
+   "say": "Everything is normalised to one shape: an ID, the platform, name, URL, start time and duration. Future contests only, at most six hours long, de duplicated and sorted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b64f2e8",
+   "say": "And two bugs worth telling as a story. The old contest API this replaced filtered out contests of ninety minutes or less, and every LeetCode contest lasts exactly ninety minutes, so LeetCode never showed. And clist's times carry no time zone marker, so they were read as local time. The parser now appends a Z when it's missing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "67e22ea7",
+   "say": "And the cached results. Four layers, each for a different reason. One. The browser reuses one fetch promise for a minute, so moving between pages doesn't refetch.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e1e96cd",
+   "say": "Two. Vercel's edge. Cache control, s max age three hundred, stale while revalidate one day. Every visitor gets an instant answer, and the edge refreshes in the background, so nobody ever waits on a cold start.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b96287ed",
+   "say": "Three. The function's own memory. A warm instance skips Firestore entirely.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b6192d0d",
+   "say": "Four. A shared copy in Firestore, fresh for ten minutes. It's shared by every serverless instance and by the reminder job. And it's kept per platform: if CodeChef fails, its last good contests stay, and it's retried after sixty seconds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7a814375",
+   "say": "And one rule on top. An empty answer caused by failures is sent with no store. An outage is never cached.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd68ed86",
+   "say": "And the attack on this line.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ce1de73",
+   "say": "Four caches for a contest list? Isn't that over engineering?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3c0d9926",
+   "say": "Your answer. Each layer removes a different cost. The browser cache stops refetching on every page. The edge hides cold starts from every visitor. Memory saves Firestore reads inside a warm instance. And the Firestore copy is the only one the reminder job can share, because serverless instances don't share memory and the job doesn't go through the CDN. It also means the platforms are asked at most once per ten minutes, however many students there are.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "521b0400",
+   "say": "Check 9. clist.by works, but CodeChef's data in it is missing this time. What does a student see? A, An error page. B, Only LeetCode and Codeforces, until CodeChef comes back. C, The last known CodeChef contests, with fresh LeetCode and Codeforces. Or D, An empty list, cached for a day.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9b95d411",
+   "say": "C. The cache is kept per platform. CodeChef's last good list stays, the others refresh, and CodeChef is retried after sixty seconds. And an empty result is never cached.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "139dfdc1",
+   "say": "Topic ten. Email reminders before each contest. A day before, and an hour before.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "005726fa",
+   "say": "Turning reminders on. The button calls the alerts function, with the student's Firebase ID token as a bearer token.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61c7e75c",
+   "say": "The function verifies the token with firebase admin, and takes the email address from the verified token. Never from the request body.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "308ce3ff",
+   "say": "It stores the subscriber, with their time zone, in a collection only the server can reach.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2bdbe0ff",
+   "say": "A Google account's email is already verified. An email and password account gets a confirmation email first, at most one every ten minutes, and receives nothing until it's confirmed. Double opt in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "677f9011",
+   "say": "So nobody can subscribe someone else's address. That's the security point to make.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fb100040",
+   "say": "Scheduling, on a free plan. Vercel's Hobby plan runs each cron job at most once a day, at some minute within its hour.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a59ccfe0",
+   "say": "So vercel dot json declares ninety six daily jobs. Four per hour. Together, they call the reminder job about every fifteen minutes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bb8d194f",
+   "say": "And a GitHub Actions workflow calls the same endpoint every ten minutes, as a backup, because GitHub's schedule is best effort and can skip runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a75471b9",
+   "say": "Because a run can start late, each reminder is a window, not an instant. The day reminder is due from twenty four hours and five minutes before, until three hours before. The hour reminder, from sixty five minutes until two minutes before.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6848926",
+   "say": "And each reminder's key includes the contest's start time and the kind. So if a contest is rescheduled, students are reminded again, at the new time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d5e6784a",
+   "say": "And the part interviewers love. Claim before send. For each due reminder, a Firestore transaction reads who it was already sent to.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fa30557",
+   "say": "It keeps the subscribers not in that list, and writes them in, before any email is sent. If two runs overlap, the transaction lets only one of them claim each person.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "01f48056",
+   "say": "Then each person gets one email per run, with all their due reminders, in their own time zone, over one pooled S M T P connection.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "85a00d11",
+   "say": "If a send fails, that person's claims are released, deleted from the list, so the next run retries them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "90da4b20",
+   "say": "So overlapping runs, retries and late subscribers are all safe. Never a duplicate. At worst, one skipped email.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d97176a2",
+   "say": "One trap to avoid.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04da3670",
+   "say": "Don't say exactly once. Say never a duplicate, and at worst one skipped email.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a56bd2ec",
+   "say": "Because the claim is written before the send. If the function dies between the claim and the send, that person is claimed but never emailed. That's the trade off, chosen on purpose. For a reminder, a missed email is better than spam, and saying it this precisely is what convinces an interviewer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba26a4cf",
+   "say": "Four email details worth naming. Nodemailer over Gmail S M T P, with an app password. A reputable sender without owning a domain, good for about five hundred recipients a day.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6975579",
+   "say": "One click unsubscribe headers, from RFC eighty fifty eight, so mail apps show their own unsubscribe button.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70d40b59",
+   "say": "Every link in the email is signed with H MAC SHA two fifty six, and checked in constant time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2dd7144b",
+   "say": "And opening a link only shows a page with a button. The change happens on the POST. Because mail providers and security scanners open every link in an email to check it, and a GET that acted would unsubscribe people on the scanner's visit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "43f0b308",
+   "say": "Check 10. Two reminder runs overlap, and both find the same contest due for Asha. Why does she get one email, not two?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9d4350b4",
+   "say": "Because each run claims her inside a Firestore transaction on the sent to list, before sending anything. Only one transaction can add her. The other one sees her already claimed, and skips her.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6892b8c4",
+   "say": "Topic eleven. Your resume, defended line by line. Say each claim with its evidence.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af9076f3",
+   "say": "The first thing an interviewer will poke at is the number.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b7c907c4",
+   "say": "Serving two hundred and fifty plus students. How do you know?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c986cb46",
+   "say": "Your answer. Two sources. Firebase Auth's account list, which counts real accounts. And my own first party analytics: every sign in is recorded against the verified account from its ID token, my own devices are excluded, and a nightly email sums it up. So it's distinct people, not page views. And no raw IP is ever stored: the IP only feeds a hash that changes every day. Before the interview, open the Authentication tab, so you can say today's exact number.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "78162e6c",
+   "say": "And the job tracker, the one feature we haven't opened yet. Every job link moves through stages: to apply, asked for a referral, applied, and finally closed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d83bbb0",
+   "say": "On a desktop, a card, or one job inside it, is dragged to another stage, with the same native drag and drop as the planner.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d19a66e3",
+   "say": "And a link left untouched for forty five days is erased automatically, while live applications, an online assessment, an interview, an offer, stay. The company list is a large dataset, so it's its own chunk, downloaded only when someone opens the tracker.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04ad1ba7",
+   "say": "Bullet one. Say it with the evidence.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "54d15869",
+   "say": "Two hundred and fifty plus: accounts in Firebase Auth, and first party analytics counting sign ins per verified account.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "458a7681",
+   "say": "DSA: a tracker of the most asked problems by pattern, and it's offline first.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d4567e0",
+   "say": "Java and Spring Boot: Core Stack. A topic list, a reading list per topic, and your own notes, versioned like git.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9db33b5",
+   "say": "A job tracker and contests: a pipeline board for applications, and every upcoming contest, with email reminders.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0bef89bb",
+   "say": "Bullet two.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4ca6ae40",
+   "say": "Drag and drop: native HTML five handlers and one splice, saved and synced like any other edit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9acd4838",
+   "say": "Pomodoro: it counts by the wall clock from an anchor, so a hidden tab loses no time, and the timer is synced across devices.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a861a8b",
+   "say": "clist dot by first, each platform's own API as the fallback, and times fixed to UTC.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b89dd493",
+   "say": "Cached results: the browser, the edge with stale while revalidate, function memory, and a shared Firestore copy kept per platform.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcf27265",
+   "say": "Reminders: ninety six daily cron jobs, and a transaction that claims each person before sending. Never a duplicate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b0b5b01",
+   "say": "Bullet three. The one they'll push hardest on.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0ba6cac2",
+   "say": "Every save names the revision it was built on, and the Firestore rules accept it only if that base is still the head. Compare and swap, enforced by the server.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2ad3e0b6",
+   "say": "A refused save merges like git. A line level three way merge, and if both edited the same lines, the head stays and our edit is saved in the history.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a1950a92",
+   "say": "The history is full snapshots, and the rules allow only create and read. Restore adds the old version on top, like git revert.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "987b44e7",
+   "say": "And offline first: local storage is the truth for the UI, and a pending journal syncs it per entry, with the newer edit winning.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df42d928",
+   "say": "And the tech line, because they'll ask what each word means.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a5d43344",
+   "say": "React eighteen with hooks, React Router six, Vite, which it moved to from Create React App in December twenty twenty three, and Tailwind with colour tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0cbc969c",
+   "say": "Node dot js: every file in the A P I folder is a serverless function, and firebase admin and Nodemailer run there.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf5db6ae",
+   "say": "Firebase Auth, with email and password or Google, and Firestore, with security rules per user and an offline cache.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50c386c0",
+   "say": "And Vercel: the CDN, the functions and the cron jobs, all from one repo. The first commit was October the twenty sixth, twenty twenty three, and it's still running.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22dd09d9",
+   "say": "And the hardest follow up, the scale question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf5e7714",
+   "say": "What breaks first if this grows a hundred times?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6729b61c",
+   "say": "Your answer, in order. First, Gmail's sending cap of about five hundred recipients a day: move to a transactional email service with a domain. Second, the reminder job sending one by one inside a function's time limit: batch the sends, or put them on a queue. Third, note history grows forever: add pruning or compaction. And fourth, local storage's five megabytes per site, for a student with a lot of notes: move the local store to IndexedDB. The sync model doesn't change.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "82d4efac",
+   "say": "Rapid fire. The truth for the U I?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd158e34",
+   "say": "Local storage, namespaced by the user's ID.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fcdc4546",
+   "say": "Push debounce, and retry?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0f1e59e",
+   "say": "Eight hundred milliseconds of quiet. Backoff from one second, doubling to thirty.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00588ecf",
+   "say": "Clock skew guard?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b30bbfd0",
+   "say": "Five minutes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c2a9927",
+   "say": "Where is a note conflict checked?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "beadbe79",
+   "say": "In the Firestore rules. The base must equal the stored revision, and the new revision is base plus one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "96a502e5",
+   "say": "Same line edits on two devices?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4257679",
+   "say": "The head stands, and ours goes into the history as not kept.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b5978d9",
+   "say": "History's rules?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6265596",
+   "say": "Create and read only. Restore is a new revision on top.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55d8cfdb",
+   "say": "Personal notes are anchored how?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "99ac3f33",
+   "say": "By the quote, plus forty characters of context, and painted with the CSS highlight A P I.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93d50b14",
+   "say": "Why is the timer accurate?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d9803a28",
+   "say": "A wall clock anchor, not counting set interval ticks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "762832ca",
+   "say": "The four contest caches?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e5f0ecf",
+   "say": "Browser for a minute. The edge for five, with stale while revalidate. Function memory. And Firestore for ten minutes, per platform.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13126ede",
+   "say": "Duplicate email guard?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3152136a",
+   "say": "A transaction claims each person before sending, and releases them if the send fails.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "049c43a4",
+   "say": "And finally, the thirty second pitch. Say it with me.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "21802fb3",
+   "say": "InterviewPlanPrep is an interview prep platform I built and still run. A day planner with a Pomodoro timer, Java and Spring Boot notes, a DSA tracker, and contest reminders.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a33fea4f",
+   "say": "It's a React app on Vercel, with Firebase Auth and Firestore, and Node dot js functions and cron jobs for the server side.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a50db70",
+   "say": "The interesting part is the data layer. Every edit is saved locally first and synced in the background, so it works offline.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3650ff3",
+   "say": "And notes are versioned like git. A stale device can't overwrite a newer version, edits from two devices merge line by line, and the history is append only.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a4d13a49",
+   "say": "Check 11. An interviewer says: so your notes are just last writer wins, with extra steps? Answer in two sentences.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ecd1a916",
+   "say": "No. Every save names its base revision, and the Firestore rules refuse it unless that base is still the head, so a stale device can't overwrite anything. A refused save is merged line by line, and if both sides changed the same lines, nothing is lost, because the other edit is kept in an append only history.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e69e017",
+   "say": "That's the whole site.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05b00f5c",
+   "say": "The browser owns the data. Firestore keeps every device in step. And the server does only what a browser can't be trusted with.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "da725e97",
+   "say": "Every line on your resume now maps to a mechanism you can draw on a whiteboard. Go and defend it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}
