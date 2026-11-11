@@ -46,6 +46,11 @@ export const AI_STACK_SECTIONS = [
     "key": "F",
     "label": "Part 6 · Advanced",
     "chip": "Advanced"
+  },
+  {
+    "key": "L",
+    "label": "Part 7 · LangChain and LangGraph in depth",
+    "chip": "Frameworks"
   }
 ];
 
@@ -1575,6 +1580,268 @@ export const AI_STACK_TOPICS = [
       "posts": 0,
       "items": 12
     }
+  },
+  {
+    "id": "CH-13",
+    "section": "L",
+    "sectionLabel": "Part 7 · LangChain and LangGraph in depth",
+    "priority": "P1",
+    "title": "Chapter 13 — LangChain in depth: models, tools, agents and middleware",
+    "why": "LangChain is on most GenAI job descriptions and resumes, so interviewers go past “I used it”: what the packages are since version 1, the Runnable interface, how a tool's schema is built, structured output strategies, what create_agent builds, middleware order, memory, streaming and tracing, and when not to use the framework at all.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "explain the v1 package layout, write a prompt | model | parser chain, a typed tool with ToolRuntime, structured output, a create_agent agent with a checkpointer and two middleware, and argue when to skip the framework.",
+      "tooDeep": "every integration's options; LCEL internals; legacy chain classes."
+    },
+    "know": [
+      "Packages: langchain-core (messages, Runnables, tools), provider packages (langchain-openai, langchain-anthropic…), langchain (create_agent, middleware), langgraph (the runtime underneath), langchain-classic (old chains), LangSmith (tracing and evals, a service).",
+      "init_chat_model(\"provider:model\") gives one interface everywhere: invoke, stream, batch and their async versions; messages are System, Human, AI (text and tool_calls) and Tool (result, linked by tool_call_id).",
+      "Everything runnable is a Runnable; `prompt | model | parser` (LCEL) gets streaming, batching, async and tracing for free. Use it for short fixed pipelines; use LangGraph for loops and branches.",
+      "Structured output: model.with_structured_output(Schema) for one call; create_agent(response_format=Schema) puts the result in result[\"structured_response\"], using ProviderStrategy (native) or ToolStrategy (a tool the model must call, with handle_errors retries).",
+      "@tool builds the schema from the name, the docstring (the description the model reads) and the type hints; a `runtime: ToolRuntime` parameter is injected and hidden, giving state, context (user id), store, stream_writer and tool_call_id.",
+      "create_agent builds the model → tools → model loop as a LangGraph graph, so it gets checkpointed threads, streaming and interrupts; it replaced create_react_agent and AgentExecutor.",
+      "Middleware order for [m1, m2, m3]: before_* m1→m3, wrap_* nested with m1 outermost, after_* m3→m1. Built-ins: Summarization, HumanInTheLoop, PII, ModelCallLimit, ToolCallLimit, ModelFallback, ModelRetry, LLMToolSelector.",
+      "Memory: short-term = the thread's messages saved by a checkpointer under thread_id (trim or summarise); long-term = a store with namespaces, reached by tools through runtime.store.",
+      "stream_mode: messages (tokens), updates (each step), values (whole state), custom (tool progress via stream_writer); LangSmith traces every model and tool call with tokens, cost and latency."
+    ],
+    "resources": [
+      {
+        "id": "CH-13-r1",
+        "kind": "video",
+        "title": "LangChain v1 Middleware: Building Safe, Reliable & Controllable AI Agents",
+        "source": "Vaibhav Arora",
+        "url": "https://www.youtube.com/watch?v=ecqPrHBCY2s",
+        "minutes": 39,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r2",
+        "kind": "video",
+        "title": "LangChain vs LangGraph: A Tale of Two Frameworks",
+        "source": "IBM Technology",
+        "url": "https://www.youtube.com/watch?v=qAF1NjEVHhY",
+        "minutes": 10,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r3",
+        "kind": "video",
+        "title": "Deep Agents or LangGraph? The LangChain agentic ecosystem explained",
+        "source": "Edward Donner",
+        "url": "https://www.youtube.com/watch?v=6VquSiCBVJs",
+        "minutes": 15,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r4",
+        "kind": "video",
+        "title": "Observability and Evals for AI Agents: A Simple Breakdown",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=FDVdLrloFOw",
+        "minutes": 15,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r5",
+        "kind": "doc",
+        "title": "LangChain overview (v1)",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langchain/overview",
+        "minutes": 15,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r6",
+        "kind": "doc",
+        "title": "Tools",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langchain/tools",
+        "minutes": 20,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r7",
+        "kind": "doc",
+        "title": "Structured output",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langchain/structured-output",
+        "minutes": 15,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "CH-13-r8",
+        "kind": "doc",
+        "title": "Middleware",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langchain/middleware",
+        "minutes": 25,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 154,
+    "duration": "≈2h 34m",
+    "questions": [
+      "What is LangChain today, and what changed in version 1?",
+      "LangChain vs LangGraph: what's the difference, and when do you use each?",
+      "What is LCEL, and is it still worth using?",
+      "How does the model know how to call your tool? What makes a good tool?",
+      "How do you get reliable structured output in LangChain?",
+      "What does create_agent build, and what do you get for free?",
+      "Middleware: what hooks exist, and in what order do [m1, m2, m3] run?",
+      "A conversation loops through 40 tool calls, leaks an email into traces, and dies when the provider has an outage. Which middleware?",
+      "How does memory work in a LangChain agent?",
+      "How would you stream an agent's answer and its progress to a web UI?",
+      "Would you use LangChain in production?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 11
+    }
+  },
+  {
+    "id": "CH-14",
+    "section": "L",
+    "sectionLabel": "Part 7 · LangChain and LangGraph in depth",
+    "priority": "P1",
+    "title": "Chapter 14 — LangGraph in depth: state, super-steps, checkpoints and interrupts",
+    "why": "LangGraph is how teams build agents whose steps they control, and interviews probe whether you understand the runtime, not just the diagram: reducers and parallel writes, super-steps, Send, checkpoints and threads, interrupt and resume (and why the node re-runs), retries and crash recovery, memory, streaming, subgraphs and multi-agent designs, and how it runs in production.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "write a graph with typed state, reducers, a conditional edge and a capped loop; explain super-steps, Send, checkpoints, threads and time travel; implement an approval with interrupt and Command(resume); and describe a production setup.",
+      "tooDeep": "Pregel internals; the Agent Server's API; every checkpointer backend."
+    },
+    "know": [
+      "State is a typed schema; nodes return partial updates; each key's reducer merges them: none = overwrite, operator.add = concatenate, add_messages = append or replace by id. Two parallel writes to a key without a reducer raise InvalidUpdateError.",
+      "Edges: add_edge (always), add_conditional_edges with a router returning node names, or a node returning Command(update=..., goto=...). compile() returns a runnable app.",
+      "Super-steps: all scheduled nodes run in parallel on the state as it was; updates merge at the end of the round; a checkpoint is saved; edges pick the next round. Fan-in waits for every branch.",
+      "Send(\"node\", input) from a router fans out a run-time number of parallel tasks (map-reduce); results merge through an appending reducer.",
+      "A checkpointer saves state after every super-step under a thread_id; get_state, get_state_history, update_state and checkpoint_id give replay and forking (time travel); durability sync/async/exit trades safety for speed.",
+      "interrupt(payload) pauses and saves; Command(resume=value) continues the same thread; the node re-runs from its first line on resume, so side effects go after the interrupt or must be idempotent.",
+      "recursion_limit caps super-steps (raises GraphRecursionError; recent versions default very high, so set your own); prefer a counter in state or RemainingSteps for a graceful exit.",
+      "Retry policies per node; resume after a crash by invoking with None on the same thread; side effects need idempotency or @task.",
+      "Memory: thread state (short-term) and a Store with namespaces (long-term) via runtime.store; per-run settings via context_schema and runtime.context.",
+      "Stream modes: values, updates, messages, custom, debug; subgraphs=True includes nested events. Subgraphs as nodes; supervisor vs handoffs (Command.PARENT); functional API with @entrypoint and @task."
+    ],
+    "resources": [
+      {
+        "id": "CH-14-r1",
+        "kind": "video",
+        "title": "LangGraph Explained for Beginners",
+        "source": "KodeKloud",
+        "url": "https://www.youtube.com/watch?v=cUfLrn3TM3M",
+        "minutes": 13,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r2",
+        "kind": "video",
+        "title": "LangGraph - Controllability with Map Reduce",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=JQznvlSatPQ",
+        "minutes": 9,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r3",
+        "kind": "video",
+        "title": "Persistence in LangGraph | Time Travel in LangGraph | CampusX",
+        "source": "CampusX",
+        "url": "https://www.youtube.com/watch?v=_IPP7_Bi8uA",
+        "minutes": 58,
+        "note": "Persistence, threads and time travel, in depth."
+      },
+      {
+        "id": "CH-14-r4",
+        "kind": "video",
+        "title": "LangGraph interrupt: Making it easier to build human-in-the-loop agents",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=6t7YJcEFUIY",
+        "minutes": 8,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r5",
+        "kind": "video",
+        "title": "Streaming in LangGraph | CampusX",
+        "source": "CampusX",
+        "url": "https://www.youtube.com/watch?v=D1PcZaeQ2eg",
+        "minutes": 25,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r6",
+        "kind": "video",
+        "title": "Hierarchical multi-agent systems with LangGraph",
+        "source": "LangChain",
+        "url": "https://www.youtube.com/watch?v=B_0TNuYi56w",
+        "minutes": 12,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r7",
+        "kind": "video",
+        "title": "Langgraph checkpointers with Postgres - Let's give memory to our AI Agent",
+        "source": "Amitav Roy",
+        "url": "https://www.youtube.com/watch?v=N4VUnYRA3BY",
+        "minutes": 10,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r8",
+        "kind": "doc",
+        "title": "Graph API overview",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langgraph/graph-api",
+        "minutes": 30,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r9",
+        "kind": "doc",
+        "title": "Persistence",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langgraph/persistence",
+        "minutes": 20,
+        "estimate": true,
+        "note": ""
+      },
+      {
+        "id": "CH-14-r10",
+        "kind": "doc",
+        "title": "Interrupts",
+        "source": "docs.langchain.com",
+        "url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+        "minutes": 15,
+        "estimate": true,
+        "note": ""
+      }
+    ],
+    "minutes": 200,
+    "duration": "≈3h 20m",
+    "questions": [
+      "Why LangGraph instead of a plain agent loop, or plain Python?",
+      "What is a reducer, and what happens when two parallel nodes write the same key?",
+      "Explain super-steps.",
+      "How do you run a step once per item when the number of items is only known at run time?",
+      "What is a checkpoint, and what is a thread?",
+      "How does interrupt work, and what is the trap?",
+      "A run's rewrite-and-retrieve loop ran 40 times on one strange question. How do you stop that?",
+      "The server crashes mid-run. What happens, and what can go wrong?",
+      "Short-term vs long-term memory in LangGraph?",
+      "Supervisor or handoffs for a multi-agent system — and should it be multi-agent at all?",
+      "How do you run a LangGraph agent in production?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 11
+    }
   }
 ];
 
@@ -1587,10 +1854,10 @@ export const AI_STACK_PRIORITY_CONFIG = {
   P3: { label: "P3", blurb: "Differentiators. Skip under time pressure", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300 border-slate-500/30" },
 };
 
-export const AI_STACK_TOTAL = 13;
+export const AI_STACK_TOTAL = 15;
 
-export const AI_STACK_PRIORITY_COUNTS = {"P0":9,"P1":3,"P2":1,"P3":0};
+export const AI_STACK_PRIORITY_COUNTS = {"P0":9,"P1":5,"P2":1,"P3":0};
 
-export const AI_STACK_SECTION_COUNTS = {"S":1,"B":1,"R":3,"A":3,"E":2,"D":2,"F":1};
+export const AI_STACK_SECTION_COUNTS = {"S":1,"B":1,"R":3,"A":3,"E":2,"D":2,"F":1,"L":2};
 
-export const AI_STACK_MINUTES = 2050;
+export const AI_STACK_MINUTES = 2404;

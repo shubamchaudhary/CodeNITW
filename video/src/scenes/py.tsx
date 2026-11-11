@@ -9,14 +9,14 @@ import { Abs, card, Chip } from "./ui.tsx";
 import { at } from "./custom3.tsx";
 import type { CP } from "./secui.tsx";
 
-const Title = ({ text, f, sub }: { text: string; f: number; sub?: string }) => (
+export const Title = ({ text, f, sub }: { text: string; f: number; sub?: string }) => (
   <Abs x={80} y={124} w={1240} style={rise(f, 2)}>
     <div style={{ fontFamily: C.head, fontSize: text.length > 44 ? 40 : 46, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.15 }}>{text}</div>
     {sub && <div style={{ fontSize: 26, color: C.muted, marginTop: 6 }}>{sub}</div>}
   </Abs>
 );
 
-const Note = ({ text, f, start, y = 820, color }: { text: string; f: number; start: number; y?: number; color?: string }) => (
+export const Note = ({ text, f, start, y = 820, color }: { text: string; f: number; start: number; y?: number; color?: string }) => (
   <Abs x={80} y={y} w={1760} style={{ display: "flex", justifyContent: "center", ...rise(f, start, 16) }}>
     <div style={{ ...card(color ?? C.amber), padding: "16px 34px", fontSize: text.length > 90 ? 28 : 32, fontWeight: 700, lineHeight: 1.3, maxWidth: 1700, textAlign: "center" }}>{text}</div>
   </Abs>
@@ -26,9 +26,11 @@ const Note = ({ text, f, start, y = 820, color }: { text: string; f: number; sta
 
 // Name tags on the left point at objects on the right; each step is a new
 // state of the program. A tag pointing nowhere ("to" empty) is drawn crossed.
+type NObj = { id: string; text: string; tone?: string; sub?: string; gone?: boolean; col?: 0 | 1 };
 type NState = {
   tags: { name: string; to: string; tone?: string }[];
-  objs: { id: string; text: string; tone?: string; sub?: string; gone?: boolean }[];
+  objs: NObj[];
+  links?: { from: string; to: string; tone?: string }[]; // object → object (col 0 → col 1): what's inside
   note?: string;
 };
 export const PyNames = ({ t, props }: CP) => {
@@ -38,40 +40,60 @@ export const PyNames = ({ t, props }: CP) => {
   const since = at(t, Math.min(t.step, p.steps.length - 1));
   const top = 290;
   const room = 500;
+  const two = s.objs.some((o) => o.col === 1);
+  const cols = [s.objs.filter((o) => o.col !== 1), s.objs.filter((o) => o.col === 1)];
   const th = Math.min(96, Math.floor(room / Math.max(1, s.tags.length)));
-  const oh = Math.min(150, Math.floor(room / Math.max(1, s.objs.length)));
+  const ohOf = (c: number) => Math.min(150, Math.floor(room / Math.max(1, cols[c].length)));
   const tagY = (i: number) => top + i * th + (room - th * s.tags.length) / 2;
-  const objY = (i: number) => top + i * oh + (room - oh * s.objs.length) / 2;
-  const tagX = 150;
-  const tagW = 380;
-  const objX = 860;
-  const objW = 900;
+  const tagX = two ? 80 : 150;
+  const tagW = two ? 340 : 380;
+  const colX = two ? [640, 1300] : [860, 0];
+  const colW = two ? [520, 540] : [900, 0];
+  const place = (id: string) => {
+    for (const c of [0, 1]) {
+      const j = cols[c].findIndex((o) => o.id === id);
+      if (j >= 0) {
+        const oh = ohOf(c);
+        return { c, j, x: colX[c], w: colW[c], y: top + j * oh + (room - oh * cols[c].length) / 2, h: oh - 24 };
+      }
+    }
+    return null;
+  };
+  const arrow = (key: string, x1: number, y1: number, x2: number, y2: number, col: string, start: number) => {
+    const pr = ease(f, start, 18);
+    const a = Math.atan2(y2 - y1, x2 - x1);
+    return (
+      <g key={key}>
+        <line x1={x1} y1={y1} x2={lerp(x1, x2, pr)} y2={lerp(y1, y2, pr)} stroke={col} strokeWidth={4} strokeLinecap="round" />
+        {pr > 0.95 && <polygon points={`${x2},${y2} ${x2 - 18 * Math.cos(a - 0.42)},${y2 - 18 * Math.sin(a - 0.42)} ${x2 - 18 * Math.cos(a + 0.42)},${y2 - 18 * Math.sin(a + 0.42)}`} fill={col} />}
+      </g>
+    );
+  };
   return (
     <>
       <Title text={p.title} f={f} sub={p.sub} />
       <Abs x={tagX} y={240} w={tagW} style={{ fontSize: 24, fontWeight: 800, color: C.muted, letterSpacing: 2, ...rise(f, 4) }}>
         NAMES
       </Abs>
-      <Abs x={objX} y={240} w={objW} style={{ fontSize: 24, fontWeight: 800, color: C.muted, letterSpacing: 2, ...rise(f, 4) }}>
-        OBJECTS IN MEMORY
+      <Abs x={colX[0]} y={240} w={colW[0]} style={{ fontSize: 24, fontWeight: 800, color: C.muted, letterSpacing: 2, ...rise(f, 4) }}>
+        {two ? "OBJECTS" : "OBJECTS IN MEMORY"}
       </Abs>
+      {two && (
+        <Abs x={colX[1]} y={240} w={colW[1]} style={{ fontSize: 24, fontWeight: 800, color: C.muted, letterSpacing: 2, ...rise(f, 4) }}>
+          THE OBJECTS INSIDE THEM
+        </Abs>
+      )}
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
         {s.tags.map((tg, i) => {
-          const j = s.objs.findIndex((o) => o.id === tg.to);
-          if (j < 0) return null;
-          const x1 = tagX + tagW;
-          const y1 = tagY(i) + (th - 14) / 2;
-          const x2 = objX - 8;
-          const y2 = objY(j) + (oh - 24) / 2;
-          const pr = ease(f, since + 4 + i * 3, 18);
-          const col = tone(tg.tone ?? "blue");
-          const a = Math.atan2(y2 - y1, x2 - x1);
-          return (
-            <g key={`${tg.name}-${i}`}>
-              <line x1={x1} y1={y1} x2={lerp(x1, x2, pr)} y2={lerp(y1, y2, pr)} stroke={col} strokeWidth={4} strokeLinecap="round" />
-              {pr > 0.95 && <polygon points={`${x2},${y2} ${x2 - 18 * Math.cos(a - 0.42)},${y2 - 18 * Math.sin(a - 0.42)} ${x2 - 18 * Math.cos(a + 0.42)},${y2 - 18 * Math.sin(a + 0.42)}`} fill={col} />}
-            </g>
-          );
+          const o = place(tg.to);
+          if (!o) return null;
+          return arrow(`${tg.name}-${i}`, tagX + tagW, tagY(i) + (th - 14) / 2, o.x - 8, o.y + o.h / 2, tone(tg.tone ?? "blue"), since + 4 + i * 3);
+        })}
+        {(s.links ?? []).map((l, i) => {
+          const a = place(l.from);
+          const b = place(l.to);
+          if (!a || !b) return null;
+          return arrow(`l${i}`, a.x + a.w, a.y + a.h / 2, b.x - 8, b.y + b.h / 2, tone(l.tone ?? "muted"), since + 10 + i * 3);
         })}
       </svg>
       {s.tags.map((tg, i) => (
@@ -79,12 +101,16 @@ export const PyNames = ({ t, props }: CP) => {
           <span style={{ fontFamily: MONO, fontSize: tg.name.length > 18 ? 22 : 27, fontWeight: 700, opacity: tg.to ? 1 : 0.5, textDecoration: tg.to ? undefined : "line-through" }}>{tg.name}</span>
         </Abs>
       ))}
-      {s.objs.map((o, i) => (
-        <Abs key={`o${i}`} x={objX} y={objY(i)} w={objW} h={oh - 24} style={{ ...card(o.gone ? C.red : o.tone ? tone(o.tone) : undefined), display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 28px", boxSizing: "border-box", opacity: o.gone ? 0.45 : 1, ...rise(f, since + 2 + i * 3, 14) }}>
-          <div style={{ fontFamily: MONO, fontSize: o.text.length > 44 ? 23 : o.text.length > 30 ? 26 : 30, fontWeight: 600, lineHeight: 1.25, textDecoration: o.gone ? "line-through" : undefined }}>{o.text}</div>
-          {o.sub && <div style={{ fontSize: 22, color: C.muted, marginTop: 6 }}>{o.sub}</div>}
-        </Abs>
-      ))}
+      {s.objs.map((o, i) => {
+        const pl = place(o.id)!;
+        const big = pl.w > 600;
+        return (
+          <Abs key={`o${i}`} x={pl.x} y={pl.y} w={pl.w} h={pl.h} style={{ ...card(o.gone ? C.red : o.tone ? tone(o.tone) : undefined), display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 24px", boxSizing: "border-box", opacity: o.gone ? 0.45 : 1, ...rise(f, since + 2 + i * 3, 14) }}>
+            <div style={{ fontFamily: MONO, fontSize: o.text.length > 44 || (!big && o.text.length > 26) ? 23 : o.text.length > 30 ? 26 : 30, fontWeight: 600, lineHeight: 1.25, textDecoration: o.gone ? "line-through" : undefined }}>{o.text}</div>
+            {o.sub && pl.h > 70 && <div style={{ fontSize: 21, color: C.muted, marginTop: 4 }}>{o.sub}</div>}
+          </Abs>
+        );
+      })}
       {s.note && <Note text={s.note} f={f} start={since + 16} />}
     </>
   );

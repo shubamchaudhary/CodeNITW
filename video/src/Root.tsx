@@ -15,6 +15,8 @@ import ch09Timings from "../data/ch09/timings.json";
 import ch10Timings from "../data/ch10/timings.json";
 import ch11Timings from "../data/ch11/timings.json";
 import ch12Timings from "../data/ch12/timings.json";
+import ch13Timings from "../data/ch13/timings.json";
+import ch14Timings from "../data/ch14/timings.json";
 import java01Timings from "../data/java01/timings.json";
 import java04Timings from "../data/java04/timings.json";
 import spring15Timings from "../data/spring15/timings.json";
@@ -29,7 +31,7 @@ import ipp01Timings from "../data/ipp01/timings.json";
 import py01Timings from "../data/py01/timings.json";
 import fa01Timings from "../data/fa01/timings.json";
 
-const TIMINGS: Record<string, Record<string, Timing>> = { ch01: ch01Timings as Record<string, Timing>, ch02: ch02Timings as Record<string, Timing>, ch03: ch03Timings as Record<string, Timing>, ch04: ch04Timings as Record<string, Timing>, ch05: ch05Timings as Record<string, Timing>, ch06: ch06Timings as Record<string, Timing>, ch07: ch07Timings as Record<string, Timing>, ch08: ch08Timings as Record<string, Timing>, ch09: ch09Timings as Record<string, Timing>, ch10: ch10Timings as Record<string, Timing>, ch11: ch11Timings as Record<string, Timing>, ch12: ch12Timings as Record<string, Timing>, java01: java01Timings as Record<string, Timing>, java04: java04Timings as Record<string, Timing>, spring15: spring15Timings as Record<string, Timing>, spring09: spring09Timings as Record<string, Timing>, spring23: spring23Timings as Record<string, Timing>, spring10: spring10Timings as Record<string, Timing>, spring08: spring08Timings as Record<string, Timing>, spring11: spring11Timings as Record<string, Timing>, ll01: ll01Timings as Record<string, Timing>, ioa01: ioa01Timings as Record<string, Timing>, ipp01: ipp01Timings as Record<string, Timing>, py01: py01Timings as Record<string, Timing>, fa01: fa01Timings as Record<string, Timing> };
+const TIMINGS: Record<string, Record<string, Timing>> = { ch01: ch01Timings as Record<string, Timing>, ch02: ch02Timings as Record<string, Timing>, ch03: ch03Timings as Record<string, Timing>, ch04: ch04Timings as Record<string, Timing>, ch05: ch05Timings as Record<string, Timing>, ch06: ch06Timings as Record<string, Timing>, ch07: ch07Timings as Record<string, Timing>, ch08: ch08Timings as Record<string, Timing>, ch09: ch09Timings as Record<string, Timing>, ch10: ch10Timings as Record<string, Timing>, ch11: ch11Timings as Record<string, Timing>, ch12: ch12Timings as Record<string, Timing>, ch13: ch13Timings as Record<string, Timing>, ch14: ch14Timings as Record<string, Timing>, java01: java01Timings as Record<string, Timing>, java04: java04Timings as Record<string, Timing>, spring15: spring15Timings as Record<string, Timing>, spring09: spring09Timings as Record<string, Timing>, spring23: spring23Timings as Record<string, Timing>, spring10: spring10Timings as Record<string, Timing>, spring08: spring08Timings as Record<string, Timing>, spring11: spring11Timings as Record<string, Timing>, ll01: ll01Timings as Record<string, Timing>, ioa01: ioa01Timings as Record<string, Timing>, ipp01: ipp01Timings as Record<string, Timing>, py01: py01Timings as Record<string, Timing>, fa01: fa01Timings as Record<string, Timing> };
 
 export const Root = () => (
   <>

@@ -1,0 +1,831 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "27533002",
+   "say": "Chapter fourteen. LangGraph, in depth. Chapters five to seven used LangGraph to build agents that remember and wait for approvals. Now we take the runtime itself apart, topic by topic, because that's what interviews probe: not the diagram, but how it actually runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "275fe900",
+   "say": "Topic one. Why LangGraph exists.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c0fdb41",
+   "say": "An agent loop lets the model decide every step. That's flexible, and it's also the problem. The model can skip the policy search, call tools in the wrong order, or loop forever.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91c5f8a8",
+   "say": "Many real systems need some steps fixed by you. Always classify first. Always check permissions before a refund. Always ask a human before sending money. LangGraph lets you write that workflow as a graph: nodes are steps, edges say what runs next, and a typed state carries everything the run knows. The model still decides wherever you let it. And the runtime adds what long-running AI work needs: the state saved after every step, pausing for a human, streaming, and replay.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bca2bdcb",
+   "say": "And they aren't rivals. Create agent compiles to a LangGraph graph, and a whole agent can be a single node inside a bigger graph.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "091d71b5",
+   "say": "LangChain versus LangGraph. When do you reach for LangGraph?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "634f1b0f",
+   "say": "When you need to control the steps: a fixed order, parallel branches, approvals at chosen points, several agents. And when you need what the runtime gives: state saved after every step, pause and resume, streaming, replay.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b07344fe",
+   "say": "Topic two. State, and reducers. This is the topic interviewers dig into most, so we'll go slowly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "99dd2181",
+   "say": "The state is the run's shared whiteboard: a typed schema, usually a TypedDict. A Pydantic model or a dataclass works too.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fae2a661",
+   "say": "Each key can carry a reducer, attached with Annotated. A reducer is the rule for merging a new value into the old one. Add messages appends new messages, and replaces a message that has the same id. Operator dot add concatenates lists.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91cbeafb",
+   "say": "A key with no reducer is simply overwritten by the newest value. And here's the rule that matters: a node never edits the state. It returns a partial update, a dict with only the keys it changed, and LangGraph merges it in, key by key, using the reducers.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1f10f9de",
+   "say": "Let's watch it. The state has sources, with operator dot add, and tries and answer, with no reducer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af840109",
+   "say": "The retrieve node returns sources: faq. The reducer appends it, so sources now holds both files. Nothing is lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fedf7e70",
+   "say": "The rewrite node returns tries: two. No reducer, so two simply replaces one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ea4010c",
+   "say": "Now two nodes running in parallel both write sources. Because sources has a reducer, both updates are merged in, and both results are kept.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36cd05e6",
+   "say": "But two parallel nodes writing answer, which has no reducer: LangGraph can't choose a winner, and it raises an invalid update error. That's the interview question: two parallel nodes write the same key, what happens? With a reducer, both merge. Without one, an error. The fix is a reducer, or a separate key per node.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "aeb137e5",
+   "say": "Some design rules. Store facts and ids, not formatted prompts or whole documents, because the state is saved after every step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f88b7b5",
+   "say": "Give each key one writer where you can.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "693ae0f2",
+   "say": "Declare narrower input and output schemas, so callers send only a question and get back only the answer, while the working keys stay private.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4acb940",
+   "say": "And for chat graphs, MessagesState is a ready-made state with one messages key using add messages. Subclass it to add your own fields.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "78ab1b34",
+   "say": "Topic three. Nodes and edges.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37960909",
+   "say": "A node is a plain function. It takes the state, and returns a partial update. Classify writes only the ticket key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0a6f7540",
+   "say": "A router is a small function that reads the state and returns the name of the next node.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "418f8a19",
+   "say": "Then you build the graph. Add the nodes. A normal edge from start to classify always goes there. A conditional edge from classify calls the router, and the list says which nodes it may return. Then both branches go to end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f41bba3",
+   "say": "And compile checks the graph, no dangling nodes, and returns an app with the same invoke, stream and batch as any Runnable.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "614b264c",
+   "say": "Drawn, it's a subway map. Start, classify, and a switch: billing goes to refunds, anything else to answer, and both end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a18e4844",
+   "say": "There's a second way to route. A node can return a Command, with an update and a goto. It changes the state and chooses the next node in one move. Use it when the node that does the work also knows where to go, like a triage step handing off to a specialist.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4b366173",
+   "say": "Topic four. How a graph actually runs: super-steps. If you understand this one picture, half the LangGraph interview questions answer themselves.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1af1542c",
+   "say": "LangGraph runs in rounds called super-steps, an idea from Google's Pregel system. Round one: the plan node runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "819ebff0",
+   "say": "Its edges point to three search nodes, so round two runs all three in parallel. They all read the state as it was at the start of the round. None of them sees another's update during the round.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b185799b",
+   "say": "At the end of every round, all the updates are merged through the reducers, a checkpoint is saved, and the edges decide what runs next. A fast node that finished early just waits for the round to end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b1d9c5b",
+   "say": "Round three: combine. It has three incoming edges, and it runs once, after all three searches have finished. That's fan-in. And it explains three interview answers at once: why parallel nodes can't see each other's writes, why a parallel write needs a reducer, and why a crash loses at most the current round.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "91f6171d",
+   "say": "Loops are where graphs go wrong: one strange question, and a rewrite and retrieve loop runs forty times. The first brake is a counter in the state that the router checks, with a fallback route when it runs out.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "07136e6e",
+   "say": "Remaining steps is a managed value you can put in the state, so a node knows how many rounds are left and can finish gracefully.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "03a63ff4",
+   "say": "The recursion limit, set in the config, is the last-resort backstop. It caps the number of super-steps and raises graph recursion error. The old default was twenty five; recent versions default to a very high number, so set your own.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f438a6e2",
+   "say": "And a budget on tokens, cost and time for the whole run, because a loop that never errors can still be expensive.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7d884936",
+   "say": "Check 1. Search web and search docs run in the same super-step. Can search docs read the sources that search web just wrote? A, yes, immediately. B, no, updates merge at the end of the round. C, only with a reducer. Or D, only if search web finished first.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "31f801d3",
+   "say": "B. No. Every node in a super-step reads the state as it was at the start of the round. Updates are merged, and saved, only when the round ends. The next round sees them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25b7c092",
+   "say": "Topic five. Fan-out when you only know the number of tasks at run time: Send.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "32af317c",
+   "say": "Sometimes you can't draw the fan-out in advance. A search returns thirty seven documents, and next time twelve, and you want to summarise each one in parallel.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d136724e",
+   "say": "So a router returns a list of Send objects, one per document. Each Send names the node to run, and gives that copy its own small input: just its document. All thirty seven copies run in parallel in the next super-step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a7d2d410",
+   "say": "Each copy writes into a key with an appending reducer, so the summaries add up instead of overwriting each other, and combine runs once, after all of them. That's map-reduce. In an interview, add: cap the fan-out for rate limits and cost, and decide what one failed copy means for the whole run.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1c6eb7f7",
+   "say": "The state has the documents, and summaries with operator dot add.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "100df7f0",
+   "say": "The router returns one Send per document.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89443fd8",
+   "say": "Summarise receives only its own input, a dict with one document, not the whole state, and returns a one-item list.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "54a741c7",
+   "say": "Wire the router as a conditional edge, and an edge from summarise to combine. The reducer collects every copy's result.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0e861cad",
+   "say": "Topic six. Persistence: checkpoints and threads. Everything after this topic depends on it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "197af675",
+   "say": "Compile with a checkpointer, and LangGraph saves a checkpoint after every super-step: a snapshot of the state, plus what runs next. A thread is one line of these, named by a thread id: one conversation, one ticket, one job.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f7ded340",
+   "say": "Invoke again with the same thread id, and the run continues from the latest snapshot. That's how a conversation remembers. Get state returns it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "727bd733",
+   "say": "Get state history lists every checkpoint. Pass an older checkpoint's id, and you replay from there: the later steps run again, model calls included.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0583b82d",
+   "say": "Or call update state to write a corrected state at that point, and run on: a fork. This is called time travel, and it's a real debugging tool: change one step of a bad run, and see what would have happened.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "08474537",
+   "say": "In-memory saver for development, which is gone on restart, and SQLite or Postgres savers for real use. The thread id goes in the config, under configurable.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48afd263",
+   "say": "Two calls with the same thread id: the second question, and the second item, makes sense, because the first exchange is in the saved state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "387f121c",
+   "say": "And durability trades safety for speed. Sync saves each step before going on, async saves in the background, and exit saves only when the run ends. For anything that touches money, sync.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7923037a",
+   "say": "Topic seven. Interrupts: pausing a run for a human, possibly for hours, and resuming exactly where it stopped.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b28c72ba",
+   "say": "The reviewer app starts a run on thread forty two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca86e78b",
+   "say": "The approve node calls interrupt, with the details a human should see: the order and the amount. LangGraph saves the run and returns the payload under the interrupt key. The run is now paused, and the server can even restart.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9fdd77c2",
+   "say": "Hours later, the app invokes the same thread with a Command, resume, and the human's decision. LangGraph loads the thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6fee8306",
+   "say": "And here's the part interviewers check. The paused node runs again, from its first line. This time, interrupt doesn't pause. It returns the resume value. So anything written before the interrupt in that node runs twice.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cefc8aff",
+   "say": "So: this node emails the manager, then interrupts. On resume, the node runs from the top, and the manager gets a second email.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "896182ff",
+   "say": "Side effects belong after the interrupt, like the refund here, which runs once, or in a separate node, and they should be idempotent anyway. If a node has several interrupts, keep them in the same order every time, because they're matched by position.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50782061",
+   "say": "And the calls: invoke pauses and returns the interrupt payload, and invoke with Command resume continues the same thread. A checkpointer is required, because the paused run has to be stored somewhere.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "915bb51d",
+   "say": "Out loud.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "81c318e9",
+   "say": "Inside a node, interrupt with a payload saves the run, and returns the payload to the caller: what the human needs to see.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "544d5051",
+   "say": "The caller resumes the same thread with Command, resume, and the human's decision, and interrupt returns that value inside the node.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d243dbef",
+   "say": "On resume, the node re-runs from its first line, so side effects go after the interrupt, and are idempotent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a806e87",
+   "say": "It needs a checkpointer, and the pause can last hours, across restarts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ffb85e6",
+   "say": "And a create agent agent gets the same behaviour through the human in the loop middleware.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a361cd81",
+   "say": "Topic eight. When things fail: retries, crashes, and side effects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e67477b1",
+   "say": "Transient errors, like a rate limit or a timeout, are handled with a retry policy on the node: max attempts, with backoff.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb1ab606",
+   "say": "A crash: with a durable checkpointer, invoke the same thread with None as the input, and the run continues from the last checkpoint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "818bc1e9",
+   "say": "If the crash happened mid-round, nodes in that round that had already finished aren't re-run, because their writes were saved.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd3b5bbd",
+   "say": "But the node that was running does re-run. So a side effect it had already done, a charge, an email, happens again. Protect those with an idempotency key, or wrap the work in an at task, whose result is saved and reused instead of redone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb79ffdb",
+   "say": "And node caching can skip a node entirely when its inputs were seen recently. Retries for the transient, checkpoints for the crash, idempotency for the side effects.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c4aabf65",
+   "say": "Check 2. A node charges a card, then crashes before returning. You resume the thread. What happens, and how do you prevent the problem?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "eb78e02d",
+   "say": "The node re-runs from its start, so the card is charged twice. Pass an idempotency key to the payment provider, so the second charge is recognised and ignored, or wrap the charge in a task so its result is saved, and keep side effects in their own small node.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "155cb2cf",
+   "say": "Topic nine. Memory: short-term and long-term, and per-run settings.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c7c86c5",
+   "say": "Short-term memory is simply the thread's state, kept by the checkpointer: the conversation and the working data of one thread. As it grows, trim or summarise old messages.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "869f1569",
+   "say": "Long-term memory is a store, passed to compile. Items live under namespaces, like users, then the user's id, with put, get, and search by meaning if the store has an embedding index. It's shared across threads, so what the agent learnt about a user last week is there today. Nodes reach it through runtime dot store.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9d4a4ca5",
+   "say": "And per-run settings that aren't state, like the user id or which model to use, go in a context schema. You pass context when you invoke, and nodes read runtime dot context. State changes as the run goes; context doesn't.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "352b47f7",
+   "say": "Topic ten. Streaming a graph run.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36049107",
+   "say": "Values streams the whole state after each super-step. Updates streams each node's update, tagged with the node's name: perfect for progress lines in a UI.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5e992a9e",
+   "say": "Messages streams LLM tokens from any node, with metadata saying which node produced them, so you can show only the final answer's tokens, not the classifier's.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8332e89f",
+   "say": "Custom streams whatever a node sends through the stream writer, and debug streams everything. Pass a list for several modes, and subgraphs equals true to include events from inside subgraphs. Then forward them to the browser as server-sent events.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c6d78a89",
+   "say": "Topic eleven. Subgraphs, multi-agent designs, and the functional API.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "81f907af",
+   "say": "A compiled graph can be a node in another graph: a subgraph. If they share state keys, add it directly. If not, call it inside a node and translate the state in and out. Subgraphs let a team own and test one piece. Multi-agent systems are built from them. The supervisor pattern: one coordinator decides which specialist works next, and collects their results.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b130ecc",
+   "say": "It's the easier pattern to control, trace and evaluate, because every decision goes through one place.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3189cc45",
+   "say": "The alternative is handoffs, sometimes called a swarm: agents pass control to each other directly, with a Command whose graph is the parent. Fewer hops, harder to reason about. And the senior answer: split into several agents only when the parts need different tools or instructions, or can run in parallel. Otherwise one agent with good tools is cheaper and easier to evaluate.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cd9d5794",
+   "say": "The functional API writes the same workflows as ordinary Python. A task is a unit of work whose result is saved, so on resume it isn't redone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70636778",
+   "say": "An entrypoint is the workflow: a normal function that calls tasks. Calling a task returns a future, so you can start many in parallel and collect their results.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88878012",
+   "say": "Checkpointing, interrupts and streaming all still work. Use it when the workflow is mostly linear code. Use the graph API when you want the structure to be explicit and visible, which, for a team and for an interview whiteboard, is usually the point.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "aae9050f",
+   "say": "Topic twelve. Running LangGraph in production, and the design answer that pulls the chapter together.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "242c8711",
+   "say": "The client calls your API, which streams over server-sent events, either your own FastAPI app or LangGraph's Agent Server. The graph is compiled once, at startup. It holds no state itself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02beee3e",
+   "say": "The state lives in Postgres: checkpoints and the store. So any server instance can continue any thread, even after a restart. Thread ids are issued by your system and tied to the user, so nobody can resume someone else's thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6694fc25",
+   "say": "Every model call has a timeout and sits inside a token and cost budget, and every run is traced. The Agent Server adds background runs, queues, cron jobs, and handling for double-texting: a user sending a new message while the last run is still going.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9f89bc61",
+   "say": "To finish, a design question you can now answer completely. Design a refund agent with LangGraph.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b4efdced",
+   "say": "The state: messages with add messages, the order, the amount, the human's decision, and a tries counter. Small and factual.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2bfc3a9b",
+   "say": "The nodes: classify the request, fetch the order with a tool, check it against the policy, then an approval node that interrupts when the amount is over the limit, then issue the refund, and reply.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f28aa249",
+   "say": "Conditional edges route on the policy outcome, with a tries counter and a recursion limit as brakes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c593b81d",
+   "say": "A Postgres checkpointer with one thread per conversation, so the pause can last hours. And the refund is idempotent, and placed after the interrupt.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "becbc096",
+   "say": "Stream updates and tokens over server-sent events, trace every run, and evaluate whole trajectories, not only final answers. Every topic of this chapter, in one answer.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "290713ef",
+   "say": "Rapid fire. A node returns tries equals two. What happens to the other keys?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0fd2abf",
+   "say": "Nothing. Updates are partial.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70858c65",
+   "say": "Two parallel writes to a key with no reducer?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9f56f89",
+   "say": "Invalid update error.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08f862b8",
+   "say": "When is a checkpoint saved?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "435a7396",
+   "say": "After every super-step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e196202d",
+   "say": "How do you resume after an interrupt?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca1d2c47",
+   "say": "Invoke with Command resume, on the same thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9623952e",
+   "say": "What runs again on resume?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd37c018",
+   "say": "The interrupted node, from its first line.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bfe4671a",
+   "say": "Fan-out over a list you only know at run time?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f9a5ab2",
+   "say": "Send, plus an appending reducer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1424f073",
+   "say": "Resume after a crash?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec7ed309",
+   "say": "Invoke with None, on the same thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "116bde72",
+   "say": "That's the framework layer. Chapter thirteen: LangChain's models, Runnables, tools, create agent and middleware.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb20589a",
+   "say": "And this chapter: LangGraph's state and reducers, super-steps, checkpoints, interrupts, and production.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2f303c5",
+   "say": "The notes and the interview drill below have every answer written out. Say them out loud, especially the reducer, super-step and interrupt answers. Those are the ones that separate people who've used LangGraph from people who've read about it. Good luck.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}

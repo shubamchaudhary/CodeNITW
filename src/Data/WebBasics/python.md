@@ -1,5 +1,28 @@
 ## Python basics and the data model
 
+**The idea: a variable is a name tied to an object, not a box holding a value.**
+
+`a = [1, 2]` creates a list object somewhere in memory and ties the name `a` to it. `b = a` copies nothing: it ties a second name to the **same** object. So there are only two things that can happen in a program:
+
+- **Changing an object** (`b.append(3)`): every name pointing at it sees the change.
+- **Moving a name** (`b = [9]`): only that name now points somewhere else; the object is untouched.
+
+![Names on the left are tied to objects on the right; b = [9] moves the name b](/docs-img/py-01/names.jpg)
+
+Every object has an **identity** (`id()`), a **type** and a **value**, and everything is an object, functions and classes included. From that one picture:
+
+| Question | Answer in one line |
+|---|---|
+| Passing an argument | The parameter is a new name for the caller's object: mutation shows, rebinding doesn't ("pass by object reference") |
+| Mutable vs immutable | Immutable objects (int, str, tuple) can't change, so a "change" builds a new object; mutable ones (list, dict, set) change in place |
+| `is` vs `==` | `is`: the same object? `==`: an equal value? Use `is` only for `None`, `True`, `False` and sentinels |
+| Copies | Assignment shares everything; a shallow copy makes a new outer container with the **same** inner objects; `deepcopy` copies all the way down |
+| Mutable default argument | Defaults are evaluated once, when `def` runs, so a `[]` default is shared by every call |
+
+![A shallow copy is a new outer list pointing at the same inner rows](/docs-img/py-01/shallow.jpg)
+
+How the code runs: CPython parses your source, compiles it to **bytecode** (cached as `.pyc`), and a loop in C, the Python virtual machine, executes it one instruction at a time, checking types as it goes. No JIT by default, which is why pure-Python loops are slow and NumPy (C) is fast.
+
 ### py01 | How is Python different from Java? | asked=2
 
 | | Python | Java |
@@ -391,6 +414,27 @@ Other implementations and speed-ups:
 Each `a + b` dispatches dynamically on types at runtime, which is the main reason pure-Python loops are slow.
 
 ## Built-in data structures
+
+**The idea: four containers, but only two machines inside them.**
+
+![list, tuple, dict and set side by side](/docs-img/py-01/containers.jpg)
+
+- An **array of pointers** (list, tuple) answers *"what is at position i?"* instantly, but has to scan to answer *"is x in here?"*.
+- A **hash table** (dict, set) answers *"is this key here?"* instantly: `hash(key)` picks a slot, so there is nothing to scan.
+
+A list holds pointers to objects that live elsewhere, so one list can hold an int, a string and `None`. It keeps spare capacity: most `append`s just fill the next slot, and when it's full it moves to a bigger block (amortised O(1)). Inserting or popping at the **front** shifts every pointer: O(n), so use `collections.deque` for queues.
+
+![A list: len, capacity, and pointers to objects](/docs-img/py-01/list.jpg)
+
+A dict hashes the key, takes it modulo the table size to pick a slot, and on a **collision** probes other slots (open addressing). A lookup repeats the same steps and confirms the key with `==`. That's why keys must be **hashable** and their hash must never change (no lists as keys), why `a == b` must imply `hash(a) == hash(b)`, and why lookups are O(1) on average. Dicts keep insertion order (guaranteed since 3.7).
+
+![A dict as a hash table: hash, slot, and a collision probing on](/docs-img/py-01/hash.jpg)
+
+Slicing is `seq[start:stop:step]`: start included, stop excluded, negative indexes count from the end, a slice of a list is a new (shallow) list, and slices never raise `IndexError`.
+
+![s[1:4] picks indexes 1, 2 and 3](/docs-img/py-01/slice.jpg)
+
+**Comprehensions** build a list, dict or set in one expression; a **generator expression** `(…)` hands items over one at a time, so `sum(x * x for x in big)` uses constant memory.
 
 ### py08 | What is the difference between a list and a tuple? | asked=5
 
@@ -987,6 +1031,28 @@ Python sorts by comparing whatever `key` returns, and tuples compare item by ite
 
 
 ## Functions and scope
+
+**The idea: three facts about functions, which together make a decorator.**
+
+1. **A function is an object**: you can pass it, return it, store it.
+2. **A function can be defined inside another function**: a new one is made each time the outer one runs.
+3. **The inner function remembers the outer function's variables**, even after the outer one has returned. That's a **closure**.
+
+A decorator is all three at once: a function that takes a function, defines a wrapper around it, and returns the wrapper. `@timed` above `def answer` is only shorthand for `answer = timed(answer)`.
+
+![After @timed, the name answer points at the wrapper; the original lives in its closure](/docs-img/py-01/decorated.jpg)
+
+**Name lookup (LEGB)**: Python looks a name up in the **L**ocal scope, then **E**nclosing functions, then the **G**lobal (module) scope, then **B**uilt-ins, and raises `NameError` if it's nowhere. Assigning to a name anywhere in a function makes it local for the whole function; `global` and `nonlocal` change that.
+
+![The four nested scopes and the order they are searched](/docs-img/py-01/legb.jpg)
+
+Closures capture **variables, not values** ("late binding"): lambdas made in a loop all see the loop variable's final value, unless you freeze it with a default argument (`lambda i=i: …`) or `functools.partial`.
+
+Stacked decorators wrap from the bottom up: the one nearest `def` is innermost, the top one runs first on the way in.
+
+![Stacked decorators as layers of an onion](/docs-img/py-01/onion.jpg)
+
+Always use `functools.wraps` in a wrapper (it keeps the name, docstring and `__wrapped__`), pass `*args, **kwargs` through, and re-raise exceptions rather than swallowing them. A decorator with arguments needs one more level: `@retry(3)` calls `retry(3)`, which returns the decorator.
 
 ### py17 | What are *args and **kwargs? | asked=3
 
@@ -1706,6 +1772,21 @@ Python's sort only takes a `key`. When the order depends on comparing two items 
 
 ## Iterators and generators
 
+**The idea: every `for` loop runs on two calls, `iter()` and `next()`.**
+
+`for x in items` first calls `iter(items)`, which returns an **iterator**: a small object that remembers a position. Then the loop calls `next()` on it until it raises `StopIteration`.
+
+![An iterator hands over one value per next() and raises StopIteration at the end](/docs-img/py-01/iterator.jpg)
+
+- An **iterable** (list, str, dict, file, range) has `__iter__` and gives a **fresh** iterator each time, so it can be looped over again and again.
+- An **iterator** has `__next__`, remembers where it is, and is **used up** after one pass (`map`, `zip`, `filter`, generators and files are iterators).
+
+A **generator function** is any function containing `yield`. Calling it runs **nothing**: it returns a generator object. Each `next()` runs the body to the next `yield`, hands out the value and **pauses with its local state saved**; the next call resumes right after the `yield`.
+
+![The caller and a generator taking turns: next(), yield, pause, resume](/docs-img/py-01/generator.jpg)
+
+Why it matters: generators use constant memory, compute lazily, can be infinite, and chain into pipelines (read lines → filter → batch → save) that process a 20 GB file with one line in memory. The price: one pass, no `len()`, no indexing. `async def` with `yield` is an **async generator**, consumed with `async for`: the shape behind streaming LLM tokens.
+
 ### py24 | What is the difference between an iterable and an iterator? | asked=4
 
 - **Iterable**: anything you can loop over. It has `__iter__()` that returns an iterator. Lists, tuples, strings, dicts, sets, files, ranges.
@@ -2113,6 +2194,23 @@ def first_over(limit):
 
 
 ## Object-oriented Python
+
+**The idea: `obj.attr` is looked up along one chain.**
+
+![rex.speak() is looked up in the instance, then the class, then its bases, then object](/docs-img/py-01/lookup.jpg)
+
+Python looks in the instance's own `__dict__`, then its class, then the base classes in **MRO** order, and finally `object`; nothing found means `AttributeError`. Most class questions are this chain in disguise:
+
+- **`self`** is just the first parameter: `a.deposit(10)` is `Account.deposit(a, 10)`.
+- **Class attributes** live on the class and are shared; a mutable class attribute (`members = []`) is shared by every instance. Put per-object state on `self` in `__init__`.
+- **`__new__`** creates the object, **`__init__`** fills it in.
+- **`@classmethod`** gets the class (alternative constructors), **`@staticmethod`** gets nothing, a plain method gets the instance.
+- **`@property`** puts a method behind attribute syntax, so you start with plain attributes and add logic later.
+- **Inheritance**: with multiple bases, the MRO (C3 linearisation) puts children before parents and keeps the bases' order; `super()` means *the next class in the MRO*, not "my parent".
+
+![The diamond: D(B, C), with B and C both inheriting from A; the MRO is D, B, C, A, object](/docs-img/py-01/diamond.jpg)
+
+**Dunder methods** (`__len__`, `__eq__`, `__hash__`, `__add__`, `__iter__`, `__enter__`, `__call__`…) are how your classes plug into Python's syntax. **Duck typing** checks behaviour at runtime, **ABCs** enforce an interface, **Protocols** describe one structurally for type checkers. **dataclass** for internal data, **Pydantic** when data crosses a boundary.
 
 ### py28 | How do classes work in Python (self, instance vs class attributes)?
 
@@ -3063,6 +3161,21 @@ class Config:
 
 ## Errors and context managers
 
+**The idea: some code must run whatever happens, and `finally` is where it goes.**
+
+![try, except, else and finally, and when each one runs](/docs-img/py-01/try.jpg)
+
+- `try`: the code that might fail.
+- `except SomeError`: runs only if that error was raised. Catch the **narrowest** error you can handle; never a bare `except:`.
+- `else`: runs only if nothing was raised (keeps the code that depends on success out of the `try`).
+- `finally`: runs **always**, after success, a handled error, an unhandled one, or a `return`.
+
+Custom exceptions inherit from `Exception`, ideally under one base class for your app, and carry the data a handler needs; use `raise … from e` to keep the cause. Python prefers **EAFP** (try it and handle the exception) to **LBYL** (check first), which can race.
+
+A **context manager** is `try/finally` made reusable: `with` calls `__enter__`, runs the body, and **always** calls `__exit__`, even on error. With `@contextmanager`, the code before `yield` is the setup and the code after it, inside a `finally`, is the cleanup.
+
+![with: __enter__, the body, then __exit__ always](/docs-img/py-01/with.jpg)
+
 ### py40 | How does exception handling work (try, except, else, finally)? | asked=4
 
 ```python
@@ -3404,6 +3517,29 @@ def temporarily(settings, key, value):
 
 
 ## Concurrency: GIL, threads, processes and asyncio
+
+**The idea: waiting and working are different problems.**
+
+![Three 1-second calls: 3 s one after another, about 1 s when they wait together](/docs-img/py-01/waiting.jpg)
+
+- **Waiting** (network, disk, databases, LLM APIs) can overlap almost for free: **threads** or **asyncio**.
+- **Working** (computation on the CPU) only gets faster with more cores in parallel: **processes**.
+
+**The GIL** lets one thread execute Python bytecode at a time (it protects CPython's reference counts). It is released while a thread waits on I/O and inside many C extensions, so threads still help I/O-bound work, but CPU-bound threads just take turns. Python 3.13 added an optional free-threaded build.
+
+![Two CPU-bound threads taking turns under the GIL](/docs-img/py-01/gil.jpg)
+
+| Work | Use |
+|---|---|
+| Many concurrent waits (thousands of API calls, connections) | **asyncio**: one thread, an event loop |
+| Waits with blocking libraries | **threads** (`ThreadPoolExecutor`) |
+| CPU-bound | **processes** (`ProcessPoolExecutor`) |
+
+**asyncio**: an event loop runs one task at a time; at each `await` on I/O the task parks and the loop runs another ready task; when the I/O completes, the task resumes after its `await`. It's cooperative, so **one blocking call** (`time.sleep`, `requests`, heavy CPU) freezes every task; offload it with `await asyncio.to_thread(fn)`.
+
+![The event loop: running, ready and waiting tasks](/docs-img/py-01/loop.jpg)
+
+Awaiting coroutines one by one runs them **sequentially**; `gather`, `create_task` or a `TaskGroup` run them **concurrently**; an `asyncio.Semaphore` caps how many run at once. The GIL does **not** make your code thread-safe: `count += 1` is read, add, write; guard shared state with a `Lock` or pass work through a `queue.Queue`.
 
 ### py43 | What is the GIL? | asked=5
 
@@ -3769,6 +3905,20 @@ LLM and HTTP APIs rate-limit you, and gathering 1,000 calls would open 1,000 con
 
 ## Memory, modules and tooling
 
+**The idea: every object counts the references pointing at it.**
+
+![A big dict's reference count going up, down, and to zero](/docs-img/py-01/refcount.jpg)
+
+CPython frees an object **the moment its reference count reaches zero**. The one thing counting can't handle is a **cycle** (A points to B, B points to A, nothing else points to either), so a generational **cycle collector** (`gc`) finds and frees such groups. Small objects come from pymalloc's pools, and freed memory isn't always returned to the OS.
+
+![Two nodes referring to each other: only the cycle collector can free them](/docs-img/py-01/cycle.jpg)
+
+In Python, a "memory leak" is a reference you forgot: an unbounded cache, a module-level list that grows per request, a closure holding a big object, `lru_cache` on a method. Find it with `tracemalloc` snapshots; fix it with bounded caches, generators and `__slots__`.
+
+**Modules and packages**: a module is a `.py` file, a package is a folder of them; imports run a module once and cache it in `sys.modules`. `if __name__ == "__main__":` runs only when the file is executed, not imported. A **circular import** fails when one module asks for a name from another that's still half-executed: move shared code to a third module or import inside the function.
+
+**Tooling**: a venv per project, dependencies declared in `pyproject.toml` and pinned in a lock file (pip-tools, Poetry, uv); ruff to lint, black or ruff to format, mypy or pyright to type-check, all run by pre-commit and CI.
+
 ### py49 | How does memory management and garbage collection work in Python? | asked=10
 
 CPython uses two mechanisms:
@@ -3910,6 +4060,21 @@ strict = true
 The Zen of Python (`import this`) captures the philosophy: "Readability counts", "Explicit is better than implicit", "There should be one obvious way to do it".
 
 ## Type hints and Pydantic
+
+**The idea: hints describe; tools and Pydantic check.**
+
+![Type hints are read by mypy before running and by Pydantic at runtime; Python itself ignores them](/docs-img/py-01/hints.jpg)
+
+A type hint (`def top_k(scores: dict[str, float], k: int = 3) -> list[str]`) is stored in `__annotations__` and **not enforced** by Python. It's read by:
+
+- **mypy / pyright**, which catch mistakes before the code runs, in the editor and CI;
+- **Pydantic and FastAPI**, which read the same hints **at runtime** to validate and convert real data.
+
+**Pydantic** turns a class of typed fields into a validator: `model_validate` checks required fields, types and constraints (`Field(ge=0, le=1)`), converts safe cases (`"0.9"` → `0.9`), and raises a `ValidationError` listing every problem. Use it wherever data **crosses a boundary**: request bodies, settings, and LLM output.
+
+For LLM JSON: put the schema in the prompt (or use structured output), validate the reply with `model_validate_json`, and on failure send the error back and ask again, a bounded number of times.
+
+![Validating an LLM's JSON, with a bounded repair loop](/docs-img/py-01/llm-json.jpg)
 
 ### py54 | How do type hints work in Python, and are they enforced? | asked=1
 
@@ -4138,6 +4303,15 @@ Points to know:
 - Log failures: a rising validation-failure rate is an early sign that a prompt or model change broke something.
 
 ## Testing
+
+**The idea: a test names what it needs, and pytest builds it, runs the test, and cleans up.**
+
+![pytest runs the fixture up to its yield, calls the test, then runs the teardown](/docs-img/py-01/pytest.jpg)
+
+- Tests are plain functions with plain `assert`; pytest shows what differed.
+- **Fixtures** provide what a test asks for by parameter name; code after `yield` is the teardown; `scope="session"` builds something expensive once; shared fixtures live in `conftest.py`.
+- **`@pytest.mark.parametrize`** runs one test over a table of cases; **`pytest.raises`** checks that an error is raised.
+- **Mocking**: `unittest.mock.patch` (or pytest's `monkeypatch`) replaces a name for the duration of a test. **Patch where the name is looked up**, not where it's defined. Better still, pass dependencies in and hand the code a fake (a Protocol makes that type-safe): no patching needed.
 
 ### py56 | How do you test Python code with pytest (fixtures, parametrize)? | asked=1
 
@@ -4395,6 +4569,26 @@ A `Mock` accepts any call and records it. `return_value` sets what a call gives 
 
 
 ## Classic Python coding questions
+
+**The idea: a handful of tools solves most coding rounds.**
+
+| Tool | For |
+|---|---|
+| `dict`, `Counter`, `defaultdict` | count, group and look up in O(1): two sum, anagrams, word frequency |
+| `set` | "seen before?": duplicates, visited nodes |
+| two pointers, sliding window | arrays and strings in one pass |
+| `heapq` | top k, k-th largest, merging sorted streams |
+| `deque` | BFS, queues, fixed-size windows |
+
+A **sliding window** keeps a left and a right edge: grow the right edge while the rule holds, move the left edge when it breaks, and track the best window. One pass: O(n).
+
+![A sliding window over "abcabcbb": the longest run without repeats](/docs-img/py-01/window.jpg)
+
+An **LRU cache** keeps keys in order of use and evicts the least recently used when full. O(1) `get` and `put` need a hash map (find a key) **and** a doubly linked list (move a key to the end, drop the oldest): `OrderedDict` is both.
+
+![LRU: every use moves a key to the recent end; a full cache evicts from the old end](/docs-img/py-01/lru.jpg)
+
+The rest of the module's favourites reuse earlier modules: predict-the-output gotchas (modules 1, 3 and 4), streaming a huge file with a generator and a `Counter`, and fetching many URLs with one shared client, a semaphore, timeouts and retries (module 7).
 
 ### py62 | Predict the output: the Python gotchas interviewers like
 

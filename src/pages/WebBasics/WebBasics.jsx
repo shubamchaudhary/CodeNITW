@@ -51,7 +51,7 @@ const banks = {};
 function loadBank(tech) {
   if (!banks[tech.key]) {
     banks[tech.key] = tech.load().then((m) =>
-      parseQuestionBank(m.default).map((mod) => ({ ...mod, slug: slug(mod.title), tech }))
+      parseQuestionBank(m.default).map((mod, i) => ({ ...mod, index: i + 1, slug: slug(mod.title), tech }))
     );
   }
   return banks[tech.key];
@@ -507,9 +507,23 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
           </p>
           {askedSource && <p className="mt-1 text-[12.5px] text-fg-subtle">{askedSource}</p>}
           {hasLecture("webbasics", TECH_LECTURES[module.tech.key], true) && (
-            <LectureCard id={TECH_LECTURES[module.tech.key]} minutes={lectureMinutes("webbasics", TECH_LECTURES[module.tech.key])} />
+            <LectureCard
+              id={TECH_LECTURES[module.tech.key]}
+              minutes={lectureMinutes("webbasics", TECH_LECTURES[module.tech.key])}
+              section={String(module.index)}
+              sectionLabel={`Module ${module.index}`}
+            />
           )}
         </header>
+
+        {/* The idea the module hangs on, before its questions: the same
+            pictures and words as the lecture's part for this module. */}
+        {module.theory && (
+          <section className="wb-theory mb-12 pb-10 border-b border-line" id="theory" style={{ scrollMarginTop: 24 }}>
+            <p className="mb-3 text-[12.5px] font-semibold uppercase tracking-wide text-accent-fg">The idea</p>
+            <Answer qid={`theory-${module.slug}`} source={module.theory} colorMode={colorMode} />
+          </section>
+        )}
 
         {qs.map((q, i) =>
           q.kind ? (

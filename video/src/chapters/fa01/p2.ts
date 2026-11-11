@@ -1,261 +1,366 @@
 import type { Scene } from "../../lib/types.ts";
-import { asked, B, check, custom, sec } from "./h.ts";
+import { B, check, custom, q, sec } from "./h.ts";
 
-// Part 2: async def vs def (and the blocking call that freezes everyone),
-// lifespan and shared clients, streaming tokens, and long jobs.
+// Part 2: module 5 (async), module 6 (structure and lifecycle) and module 7
+// (security).
 export const p2: Scene[] = [
-  // ------------------------------------------------------------ 4
-  sec("4", "async def vs def, and the call that freezes everyone", "Topic four. Async def versus def. The most important FastAPI question for GenAI roles, because getting it wrong doesn't fail a test. It makes the whole server stall under load."),
-  asked(
-    "When do you write a route with async def, and when with plain def?",
-    "async def runs on the event loop · def runs in a threadpool · never block inside async def",
-    "The question, as it's usually asked.",
-    { say: "When do you write a route with async def, and when with plain def?", tone: "ask" },
-    "The answer hinges on one fact about where each kind runs. Let's watch three versions of the same route.",
-  ),
+  // ================================================================ module 5
+  sec("5", "Async in FastAPI", "Module five. Async in FastAPI. Three questions about the single most common way to make a FastAPI service slow: blocking the event loop."),
   custom(
-    "pylanes",
+    "pyloop",
     {
-      title: "async def + a blocking SDK call",
-      sub: "async def ask(): reply = openai_sync.chat(...)  # no await",
-      max: 9,
-      rows: [
-        { label: "Request 1", step: 0, bars: [{ s: 0, e: 4, kind: "block", text: "blocking LLM call: loop held" }] },
-        { label: "Request 2", step: 0, bars: [{ s: 0, e: 4, kind: "frozen", text: "can't even start" }, { s: 4, e: 8, kind: "block" }] },
-        { label: "Health check", step: 0, bars: [{ s: 0, e: 8, kind: "frozen", text: "times out: the pod gets restarted" }] },
-      ],
-      note: { step: 1, text: "Inside async def, every call must be awaited or moved off the loop. One blocking call stalls every request in the process." },
-    },
-    B(
-      { say: "Version one, the disaster. The route is async def, but inside it calls a synchronous LLM SDK, with no await. That call holds the event loop for four seconds. Request two can't even start. And the health check times out, so your orchestrator decides the pod is dead and restarts it, mid traffic.", tone: "key" },
-      "So the rule. Inside async def, every slow call must be awaited, or moved off the loop. One blocking call stalls every request in that process.",
-    ),
-  ),
-  custom(
-    "pylanes",
-    {
-      title: "Two correct versions",
-      sub: "plain def runs in a threadpool · async def with an awaited async client shares the loop",
-      max: 6,
-      rows: [
-        { label: "def → threadpool: req 1", step: 0, bars: [{ s: 0, e: 4, kind: "wait", text: "in worker thread 1" }] },
-        { label: "def → threadpool: req 2", step: 0, bars: [{ s: 0.1, e: 4.1, kind: "wait", text: "in worker thread 2" }], done: "fine, up to ~40 threads" },
-        { label: "async + await: req 1", step: 1, bars: [{ s: 0, e: 0.1, kind: "run" }, { s: 0.1, e: 4, kind: "wait", text: "await client.chat(...)" }] },
-        { label: "async + await: req 2", step: 1, bars: [{ s: 0.1, e: 0.2, kind: "run" }, { s: 0.2, e: 4.1, kind: "wait", text: "await client.chat(...)" }], done: "fine, thousands" },
+      title: "The idea: async def runs on the loop, def runs in a thread pool",
+      sub: "one Uvicorn worker",
+      runLabel: "EVENT LOOP",
+      steps: [
+        { running: "async def ask()", ready: ["async def health()", "async def list_docs()"], waiting: [], note: "async def routes run directly on the event loop: they must await, never block" },
+        { running: "async def health()", ready: ["async def list_docs()"], waiting: ["ask: await llm()"], note: "while ask awaits the model, the loop serves other requests" },
+        { running: "async def list_docs()", ready: [], waiting: ["ask: await llm()", "def report(): in a thread"], note: "a plain def route is sent to a thread pool (40 threads by default), so blocking code there can't freeze the loop" },
       ],
     },
     B(
-      { say: "Version two: write the route as plain def. FastAPI runs plain def routes in a threadpool, so the blocking call blocks a worker thread, not the event loop. That works, up to the size of the pool, which is forty threads by default.", tone: "key" },
-      "Version three: keep async def, and use an async client, awaited. Each request pauses at the await, and the loop serves the others. That scales to thousands of concurrent requests in one process.",
+      "Here's the idea of this module. Each Uvicorn worker has one event loop. A route defined with async def runs directly on that loop. So it must await its I/O, and never block.",
+      "While ask awaits the model's reply, the loop is free to serve the health check, and every other request.",
+      { say: "A route defined with plain def is treated differently. FastAPI runs it in a thread pool, forty threads by default, so the blocking code inside it can't freeze the loop. That one difference decides the next three answers.", tone: "key" },
     ),
   ),
+
+  // ---- Q16
+  q(16, 1, "What is the difference between async def and def routes in FastAPI?", "where each one runs, and how to choose", "Question sixteen. What's the difference between async def and def routes in FastAPI?", "Where each one runs, and the rule for choosing."),
   {
     kind: "compare",
-    title: "Which to write",
+    title: "async def vs def",
     cols: [
-      { title: "async def", icon: "🔀", tone: "green", items: ["you await async libraries: httpx, the async OpenAI client, asyncpg", "best for many slow LLM calls", "NEVER: requests, time.sleep, a sync SDK, heavy CPU"] },
-      { title: "def", icon: "🧵", tone: "cyan", items: ["you call blocking libraries", "FastAPI runs it in the threadpool for you", "fine at moderate concurrency"] },
-      { title: "neither: offload", icon: "📤", tone: "amber", items: ["CPU work (embedding locally, parsing PDFs)", "a process pool, or a worker queue (topic 7)", "keeps the API responsive"] },
+      { title: "async def", tone: "green", items: ["Runs on the event loop", "Use when everything inside is async: await httpx, asyncpg, redis.asyncio", "Thousands of concurrent waits, cheaply", "One blocking call stalls the whole worker"] },
+      { title: "def", tone: "blue", items: ["Runs in a thread pool (40 threads)", "Use with blocking libraries: requests, a sync DB driver, a sync SDK", "Safe, but limited by the pool size", "The 41st slow request waits for a free thread"] },
     ],
-    footer: "Stuck with a blocking library inside async def? await run_in_threadpool(fn, ...) or await asyncio.to_thread(fn, ...).",
+    footer: "Async libraries inside → async def. Blocking libraries inside → def (or to_thread).",
     beats: B(
-      "So which to write. Async def when you await async libraries: httpx, the async OpenAI or Anthropic clients, asyncpg. That's the best choice for many slow LLM calls. And inside it, never requests, never time dot sleep, never a synchronous SDK, never heavy CPU.",
-      "Plain def when you have to call blocking libraries. FastAPI puts it in the threadpool for you. Fine at moderate concurrency.",
-      "And CPU heavy work, like running an embedding model locally or parsing PDFs, should leave the request path entirely: a process pool, or a worker queue, which is topic seven.",
-      { say: "And if you're stuck with one blocking call inside async def, await run in threadpool, or asyncio dot to thread. The blocking part moves to a thread and the loop stays free.", tone: "key" },
+      "An async def route runs on the event loop. Use it when everything inside is async: an async HTTP client, an async database driver, async Redis. Then one worker can handle thousands of concurrent requests that are waiting. But one blocking call inside it stalls the whole worker.",
+      "A def route runs in the thread pool. Use it when you call blocking libraries, like requests, a synchronous database driver, or a synchronous SDK. It's safe, but limited by the pool: with forty threads, the forty first slow request waits for a thread to free up.",
+      { say: "So the rule: if the libraries inside are async, async def. If they're blocking, plain def, or await them with to thread. The worst choice is async def with blocking calls inside.", tone: "key" },
+    ),
+  },
+
+  // ---- Q17
+  q(17, null, "What happens if you call blocking code inside an async endpoint, and how do you fix it?", "the whole worker freezes; four fixes", "Question seventeen. What happens if you call blocking code inside an async endpoint, and how do you fix it?", "What the symptom looks like in production, and the fixes."),
+  custom(
+    "pylanes",
+    {
+      title: "One blocking call in async def: everyone on that worker waits",
+      sub: "a sync LLM SDK call takes 3 s inside async def",
+      max: 4,
+      rows: [
+        { label: "/ask (sync SDK)", step: 0, bars: [{ s: 0, e: 3, kind: "block", text: "client.complete() blocks" }] },
+        { label: "/health", step: 1, bars: [{ s: 0.2, e: 3, kind: "frozen", text: "stuck" }, { s: 3, e: 3.1, kind: "run" }] },
+        { label: "/docs", step: 1, bars: [{ s: 0.5, e: 3, kind: "frozen", text: "stuck" }, { s: 3.1, e: 3.3, kind: "run" }] },
+        { label: "fixed: await to_thread()", step: 2, bars: [{ s: 0, e: 3, kind: "wait", text: "in a thread; loop free" }] },
+      ],
+      note: { step: 2, text: "Fixes: an async client · plain def · await asyncio.to_thread(fn) · a process pool or queue for CPU work", tone: "green" },
+    },
+    B(
+      "Here's an async def route calling a synchronous LLM SDK, which takes three seconds. That call never awaits, so the event loop can't switch to anything else.",
+      "So every other request on that worker, even the health check, is stuck for three seconds. In production, the symptom is latency spiking across all endpoints together, and health checks failing under load, even though CPU is low.",
+      { say: "The fixes. Use the async version of the client. Or make the route a plain def. Or await asyncio dot to thread on the blocking call. And for heavy CPU work, a process pool, or a job queue with separate workers.", tone: "key" },
+    ),
+  ),
+
+  // ---- Q18
+  q(18, null, "How do you call external APIs efficiently from FastAPI?", "one shared async client, timeouts, limits, concurrency", "Question eighteen. How do you call external APIs efficiently from FastAPI?", "One shared client created at startup, timeouts everywhere, and calls made concurrently but capped."),
+  {
+    kind: "code",
+    title: "One shared AsyncClient, made at startup",
+    lang: "python",
+    code: `@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.http = httpx.AsyncClient(
+        timeout=httpx.Timeout(10, connect=3),
+        limits=httpx.Limits(max_connections=100),
+    )
+    yield
+    await app.state.http.aclose()
+
+async def enrich(ids, http):
+    sem = asyncio.Semaphore(10)
+    async def one(i):
+        async with sem:
+            return (await http.get(f"/items/{i}")).json()
+    return await asyncio.gather(*(one(i) for i in ids))`,
+    highlight: [[1, 8], [10, 15]],
+    beats: B(
+      "One shared async client for the whole app, created at startup in the lifespan and closed at shutdown, so connections are pooled and reused. With a timeout on every call, and a limit on connections. Creating a new client per request means a new TCP and TLS handshake every time.",
+      { say: "And independent calls run concurrently, with gather or a TaskGroup, capped by a semaphore. Plus retries with backoff on transient errors, and a circuit breaker if a dependency is down, so you fail fast instead of piling up waiting requests.", tone: "key" },
     ),
   },
   check({
-    topic: "async routes",
-    q: "Under load, the service's p99 latency explodes and health checks fail, but CPU is at 10%. The code has async def routes calling requests.post(LLM_URL). What's happening, and what are two fixes?",
-    say: "Under load, the service's tail latency explodes and health checks fail, but CPU is at ten percent. The code has async def routes calling requests dot post to the LLM. What's happening, and what are two fixes?",
-    a: "requests.post blocks the event loop, so every request (and the health check) waits behind whichever call is in progress. Fix: an async client awaited (httpx.AsyncClient), or make the route plain def / wrap the call in asyncio.to_thread.",
-    aSay: "Requests dot post is blocking, so inside async def it holds the event loop, and every other request, including the health check, waits behind whichever LLM call is in progress. Low CPU is the giveaway: nothing is computing, everything is queued. Fixes: switch to an async client and await it, like httpx async client, or make the route a plain def so it runs in the threadpool, or wrap the call in asyncio dot to thread.",
-    hold: 12,
+    topic: "blocking",
+    q: "An async def route calls requests.get(). Under load, /health starts timing out. Why?",
+    say: "An async def route calls requests dot get. Under load, the health check starts timing out. Why?",
+    a: "requests is blocking: inside async def it stalls the event loop, so every request on that worker waits, health checks included. Use httpx.AsyncClient, def, or to_thread.",
+    aSay: "Because requests is blocking. Inside async def, it stalls the event loop, so every request on that worker waits, health checks included. Use an async client like httpx, make the route a plain def, or await to thread.",
   }),
 
-  // ------------------------------------------------------------ 5
-  sec("5", "Lifespan: create expensive things once", "Topic five. Lifespan. What to create once when the app starts, and why creating an HTTP client per request is a quiet performance bug."),
+  // ================================================================ module 6
+  sec("6", "Application structure and lifecycle", "Module six. Application structure and lifecycle. How a bigger app is organised, what happens at startup and shutdown, middleware, and errors."),
+  custom(
+    "pypipe",
+    {
+      title: "The idea: an app has a lifecycle, and requests pass through layers",
+      stages: [
+        { name: "Lifespan start", icon: "🚀", sub: "pools, clients, models" },
+        { name: "Middleware", icon: "🧅", sub: "every request" },
+        { name: "Router", icon: "🗂️", sub: "prefix, tags, deps" },
+        { name: "Route", icon: "🐍", sub: "service → repository" },
+        { name: "Lifespan end", icon: "🛑", sub: "close everything" },
+      ],
+      steps: [
+        { at: 0, text: "Once, before serving: open the DB pool, create the HTTP client, load models. If this fails, the app doesn't start." },
+        { at: [1, 2, 3], text: "Then, for every request: through the middleware, to a router, to the route, which calls a service and a repository." },
+        { at: 2, text: "Routers group routes by domain, each with its own prefix, tags and shared dependencies." },
+        { at: 4, text: "Once, on shutdown: close pools and clients gracefully, after in-flight requests finish." },
+      ],
+    },
+    B(
+      "Here's the idea of the module. An app has a lifecycle. Once, before it serves anything, the lifespan opens database pools, creates shared clients, and loads models.",
+      "Then every request passes through layers: middleware, then a router, then the route, which calls a service and a repository.",
+      "Routers are how a big app is split up: one per domain, each with its own prefix and dependencies.",
+      { say: "And once, on shutdown, the lifespan closes everything gracefully. Lifespan, middleware, routers, errors: the four questions of this module.", tone: "key" },
+    ),
+  ),
+
+  // ---- Q19
+  q(19, 3, "How do you structure a larger FastAPI application (APIRouter)?", "routers per domain, and layers inside each", "Question nineteen, asked in three write-ups. How do you structure a larger FastAPI application?", "Routers to split the app, a layout by domain, and layers inside each domain."),
   {
     kind: "code",
-    title: "The lifespan: startup, yield, shutdown",
+    title: "Routers by domain, layers inside",
     lang: "python",
-    code: `from contextlib import asynccontextmanager
+    code: `src/
+  main.py                 # app = FastAPI(lifespan=…); include_router(...)
+  core/config.py, db.py   # settings, engine, session dependency
+  chat/router.py          # HTTP only: params, status codes
+  chat/service.py         # business logic, no FastAPI imports
+  chat/repository.py      # database queries
+  chat/schemas.py         # Pydantic in/out models
+  documents/…             # the same shape per domain
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.state.http = httpx.AsyncClient(timeout=30)     # one connection pool
-    app.state.llm = LLMClient(http=app.state.http)
-    app.state.embedder = load_embedding_model()         # big: load once
-    yield                                              # the app serves here
-    await app.state.http.aclose()                      # graceful shutdown
-
-app = FastAPI(lifespan=lifespan)`,
-    highlight: [[3, 4], [5, 7], [8, 8], [9, 9], [11, 11]],
+router = APIRouter(prefix="/chat", tags=["chat"],
+                   dependencies=[Depends(get_current_user)])
+app.include_router(router)`,
+    highlight: [[1, 8], [10, 12]],
     beats: B(
-      "The lifespan is an async context manager, like the timer from the Python lecture, handed to the app.",
-      "Code before the yield runs once, at startup: create one HTTP client with its connection pool, the LLM client on top of it, and load the embedding model, which can take seconds and gigabytes.",
-      "At the yield, the app starts serving requests.",
-      "Code after the yield runs at shutdown: close the client so connections end cleanly.",
-      "Hand it to the app. This replaced the old on startup and on shutdown events.",
+      "Organise by domain: a folder per area, like chat and documents, each with the same shape. A router that does HTTP only: parameters, status codes. A service with the business logic, which doesn't import FastAPI, so it's easy to test. A repository for database queries. And schemas for the Pydantic models. It's the same layering as controller, service, repository in Spring.",
+      { say: "Each domain's APIRouter has a prefix, tags for the docs, and shared dependencies, like requiring a logged-in user. Main dot py creates the app with its lifespan, and includes each router.", tone: "key" },
     ),
   },
+
+  // ---- Q20
+  q(20, null, "What are lifespan events, and what should run at startup and shutdown?", "one async context manager around the app's whole life", "Question twenty. What are lifespan events, and what should run at startup and shutdown?", "The shape, and what belongs in it."),
   {
-    kind: "trap",
-    myth: "Creating a new HTTP client inside each request is cleaner.",
-    truth: "Every new client opens new TCP and TLS connections: tens of milliseconds per call, and sockets that pile up.",
-    why: "One shared client per process reuses its connection pool. Create it in lifespan; hand it out with a dependency.",
+    kind: "code",
+    title: "lifespan: before the yield is startup, after it is shutdown",
+    lang: "python",
+    code: `@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.db = create_async_engine(settings.database_url)
+    app.state.http = httpx.AsyncClient(timeout=10)
+    app.state.embedder = load_embedding_model()     # once, not per request
+    yield                                           # the app serves here
+    await app.state.http.aclose()
+    await app.state.db.dispose()
+
+app = FastAPI(lifespan=lifespan)`,
+    highlight: [[1, 5], [6, 6], [7, 10]],
     beats: B(
-      "And the quiet bug it prevents.",
-      { say: "Creating a new HTTP client per request looks clean, but each new client opens new TCP and TLS connections to the model provider. That's tens of milliseconds per call, and under load, thousands of sockets.", tone: "key" },
-      "One shared client per process reuses its connection pool. Create it in the lifespan, and hand it to routes with a dependency, like the get LLM function we wrote in topic three.",
+      "The lifespan is an async context manager around the app's whole life. Code before the yield runs once at startup: connection pools, shared HTTP clients, and anything slow to build, like loading an embedding model. Loading a model per request is a classic mistake.",
+      "The app serves requests while the lifespan sits at the yield.",
+      { say: "Code after the yield runs at shutdown: close clients and pools. It replaces the old on event startup and shutdown decorators. Store the objects on app dot state, and hand them out with dependencies.", tone: "key" },
+    ),
+  },
+
+  // ---- Q21
+  q(21, 4, "How does middleware work in FastAPI?", "wraps every request; order; middleware vs dependencies", "Question twenty one, asked in four write-ups. How does middleware work in FastAPI?", "What it wraps, the order layers run in, and when to use a dependency instead."),
+  custom(
+    "pyonion",
+    {
+      title: "Middleware wraps every request, like an onion",
+      sub: "app.add_middleware(…): the last one added is the outermost",
+      core: "your routes",
+      layers: [
+        { name: "timing", does: "added first: innermost, nearest the route", tone: "amber" },
+        { name: "request_id", does: "tags the request and the response with an id", tone: "cyan" },
+        { name: "CORS", does: "added last: outermost, sees the request first", tone: "green" },
+      ],
+      call: "a request goes in: CORS → request_id → timing → route",
+      back: "the response comes out: timing → request_id → CORS",
+    },
+    B(
+      "Middleware wraps every request and response. It runs code before the request reaches the routes, and after the response is produced. And like stacked decorators, the order matters.",
+      "Timing was added first, so it sits nearest the routes.",
+      "Request id goes around it: it tags each request and response with an id, for the logs.",
+      "CORS was added last, so it's the outermost layer, and sees the request first. With add middleware, the last one added is the outermost.",
+      { say: "A request goes in through the layers to the route, and the response comes back out in reverse. Use middleware for cross-cutting concerns that apply to everything: logging, timing, request ids, CORS, compression, security headers.", tone: "key" },
+    ),
+  ),
+  {
+    kind: "code",
+    title: "A timing middleware, and when to use a dependency instead",
+    lang: "python",
+    code: `@app.middleware("http")
+async def timing(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)          # the rest of the app
+    response.headers["X-Process-Time"] = f"{time.perf_counter() - start:.3f}"
+    return response
+
+# middleware: every request, no access to route params or Depends
+# dependency: per route or router, typed, injectable, testable
+#   → auth and permissions belong in dependencies`,
+    highlight: [[1, 6], [8, 10]],
+    beats: B(
+      "A function middleware receives the request and call next. Await call next to run the rest of the app, then change the response, here adding a timing header.",
+      { say: "Middleware versus dependencies. Middleware runs for every request, but it can't see route parameters, and can't use Depends. Dependencies attach to specific routes or routers, are typed, and are easy to override in tests. So authentication and permissions belong in dependencies, and truly global concerns in middleware.", tone: "key" },
+    ),
+  },
+
+  // ---- Q22
+  q(22, null, "How do you handle errors in FastAPI (HTTPException and custom exception handlers)?", "domain errors mapped to one consistent error contract", "Question twenty two. How do you handle errors in FastAPI?", "HTTPException for the simple case, and custom handlers for a clean design."),
+  {
+    kind: "code",
+    title: "Domain errors in the service, HTTP in one handler",
+    lang: "python",
+    code: `class AppError(Exception): status = 500; code = "internal"
+class NotFound(AppError): status = 404; code = "not_found"
+class ProviderBusy(AppError): status = 503; code = "llm_busy"
+
+@app.exception_handler(AppError)
+async def on_app_error(request: Request, exc: AppError):
+    return JSONResponse(
+        {"error": exc.code, "message": str(exc),
+         "request_id": request.state.request_id},
+        status_code=exc.status)
+
+# in a service: raise ProviderBusy("model overloaded, retry soon")`,
+    highlight: [[1, 3], [5, 10], [12, 12]],
+    beats: B(
+      "HTTPException is fine for simple cases in a route. For a clean design, the service layer raises domain errors, like not found or provider busy, without knowing anything about HTTP.",
+      "One exception handler turns all of them into a consistent JSON error contract: an error code, a message, and the request id, so support can find it in the logs.",
+      { say: "Services stay framework-agnostic and testable. And never return stack traces or SQL errors to clients: log them with the request id, and send a generic 500.", tone: "key" },
     ),
   },
   check({
     topic: "lifespan",
-    q: "Where should each go: (1) loading a 400 MB embedding model, (2) the current user's database session, (3) the httpx client to the LLM provider?",
-    say: "Where should each one go? One: loading a four hundred megabyte embedding model. Two: the current user's database session. Three: the httpx client to the LLM provider.",
-    a: "(1) lifespan, once. (2) a yield dependency, per request. (3) lifespan, shared, handed out through a dependency.",
-    aSay: "One, the lifespan, loaded once at startup. Two, a yield dependency, because a session belongs to one request and must be closed after it. Three, the lifespan as well, one shared client per process, handed to routes through a dependency.",
+    q: "Where should a 2 GB embedding model be loaded in a FastAPI app, and why not in the route?",
+    say: "Where should a two gigabyte embedding model be loaded in a FastAPI app, and why not in the route?",
+    a: "In the lifespan, once at startup (stored on app.state, handed out by a dependency). In the route it would reload on every request: seconds of latency and memory churn.",
+    aSay: "In the lifespan, once at startup, stored on app dot state and handed out with a dependency. Loading it in the route would reload it on every request, costing seconds of latency and a lot of memory churn.",
+  }),
+  check({
+    topic: "middleware",
+    q: "app.add_middleware(A) then app.add_middleware(B). Which sees the request first?",
+    say: "You add middleware A, then middleware B. Which one sees the request first?",
+    a: "B: the last one added is the outermost layer, so it sees the request first and the response last.",
+    aSay: "B. The last middleware added is the outermost layer, so it sees the request first, and the response last.",
   }),
 
-  // ------------------------------------------------------------ 6
-  sec("6", "Streaming tokens to the user", "Topic six. Streaming. Every chat UI shows the answer as it's generated. Two write-ups asked how to stream LLM tokens from FastAPI, and the follow-ups are where people struggle."),
+  // ================================================================ module 7
+  sec("7", "Security", "Module seven. Security. JWT authentication was asked in four write-ups, and role checks and API keys follow from it."),
   {
     kind: "seq",
-    title: "POST /chat: tokens flow as they're made",
+    title: "The idea: log in once, then send a signed token with every request",
     actors: [
-      { id: "b", name: "Browser", icon: "🧑‍💻" },
-      { id: "api", name: "FastAPI", icon: "⚡", tone: "amber" },
-      { id: "llm", name: "LLM provider", icon: "🤖", tone: "green" },
+      { id: "c", name: "Client", icon: "📱" },
+      { id: "a", name: "POST /token", icon: "🔑", tone: "amber" },
+      { id: "r", name: "GET /chats", icon: "🛡️", tone: "green" },
     ],
     msgs: [
-      { from: "b", to: "api", label: "POST /chat", step: 0 },
-      { from: "api", to: "llm", label: "stream=True", step: 1 },
-      { from: "llm", to: "api", label: "\"Our\" \"refund\" …", step: 2, tone: "green", dash: true },
-      { from: "api", to: "b", label: "data: Our ⏎⏎  data: refund ⏎⏎", step: 3, tone: "amber", dash: true },
-      { from: "api", to: "b", label: "data: [DONE]", step: 4 },
+      { from: "c", to: "a", label: "username + password", step: 0 },
+      { from: "a", to: "c", label: "check the hash; sign a JWT {sub, exp}", step: 0, tone: "amber" },
+      { from: "c", to: "r", label: "Authorization: Bearer <jwt>", step: 1 },
+      { from: "r", to: "c", label: "verify signature + expiry → user, no DB lookup needed", step: 2, tone: "green" },
     ],
-    note: { step: 5, text: "The user sees the first words in ~300 ms instead of waiting 8 s for the whole answer." },
     beats: B(
-      "The flow. The browser posts a message to the chat endpoint.",
-      "FastAPI calls the model with streaming turned on.",
-      "The model sends back small chunks of text as it generates them.",
-      { say: "And FastAPI forwards each chunk to the browser immediately, in server sent events format: a line starting with data, then a blank line. One HTTP response, held open, written in pieces.", tone: "key", term: { word: "SSE", meaning: "server-sent events: one long HTTP response the server writes in pieces" } },
-      "At the end, a done marker, so the client knows the answer is complete.",
-      "The point is the first words. The user sees them in about three hundred milliseconds, instead of staring at a spinner for eight seconds.",
+      "Here's the idea. The client logs in once, sending a username and password. The server checks the password against its stored hash, and signs a token, a JWT, saying who the user is and when the token expires.",
+      "Then every request carries that token, in the Authorization header, as a bearer token.",
+      { say: "The server verifies the signature and the expiry, and knows who the user is, without a database lookup for the session. That's what makes JWTs stateless.", tone: "key" },
     ),
   },
+
+  // ---- Q23
+  q(23, 4, "How do you implement JWT authentication in FastAPI?", "OAuth2PasswordBearer, a get_current_user dependency, and the security points", "Question twenty three, asked in four write-ups. How do you implement JWT authentication in FastAPI?", "The code shape, and then the security points, which are what interviewers are listening for."),
   {
     kind: "code",
-    title: "StreamingResponse with an async generator",
+    title: "A get_current_user dependency",
     lang: "python",
-    code: `@app.post("/chat")
-async def chat(body: ChatIn, request: Request, llm = Depends(get_llm)):
-    async def events():
-        try:
-            async for token in llm.stream(body.messages):
-                if await request.is_disconnected():
-                    break                              # stop paying for tokens
-                yield f"data: {json.dumps({'t': token})}\\n\\n"
-            yield "data: [DONE]\\n\\n"
-        finally:
-            await llm.close_stream()                    # cancel upstream too
+    code: `oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
-    return StreamingResponse(events(), media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})`,
-    highlight: [[3, 5], [8, 9], [6, 7], [10, 11], [13, 14]],
+def create_token(user_id: str) -> str:
+    exp = datetime.now(timezone.utc) + timedelta(minutes=15)
+    return jwt.encode({"sub": user_id, "exp": exp}, SECRET, algorithm="HS256")
+
+async def get_current_user(token: str = Depends(oauth2_scheme),
+                           db=Depends(get_db)) -> User:
+    try:
+        payload = jwt.decode(token, SECRET, algorithms=["HS256"])  # checks exp
+    except jwt.InvalidTokenError:
+        raise HTTPException(401, "invalid or expired token",
+                            headers={"WWW-Authenticate": "Bearer"})
+    return await users.get(db, payload["sub"])`,
+    highlight: [[1, 1], [3, 5], [7, 14]],
     beats: B(
-      "The code is the async generator from the Python lecture. An inner async def with yield. It loops over the model's stream with async for.",
-      "Each token is yielded as one server sent event: data, a little JSON, and a blank line. Then a done marker.",
-      { say: "Now the follow-up that separates people. What if the user closes the tab halfway? Without a check, you keep reading the model's stream to the end, and you keep paying for tokens nobody will see. So check whether the client disconnected, and stop.", tone: "key" },
-      "And in a finally, close the upstream stream, so the provider stops generating too. When the client goes away, Starlette also cancels the generator, and finally is what makes the cleanup reliable either way.",
-      { say: "Return a streaming response with the event stream media type. And the two headers matter in production: no cache, and X accel buffering no, which tells an Nginx proxy not to buffer. A buffering proxy is the classic reason streaming works locally and arrives all at once in production.", tone: "key" },
+      "OAuth2 password bearer reads the bearer token from the Authorization header, and makes the Authorize button work in the docs.",
+      "Creating a token: the user id as the subject, a short expiry, signed with a secret.",
+      { say: "And the dependency: decode and verify the token, which checks the signature and the expiry, and pin the allowed algorithms. On failure, a 401. On success, load the user. Then any route that needs a user just depends on get current user.", tone: "key" },
     ),
   },
   {
-    kind: "compare",
-    title: "SSE or WebSocket?",
-    cols: [
-      { title: "SSE (StreamingResponse)", icon: "📡", tone: "green", items: ["server → client only", "plain HTTP: auth headers, proxies, retries just work", "the default for LLM answers"] },
-      { title: "WebSocket", icon: "🔌", tone: "cyan", items: ["both directions, any time", "voice, live collaboration, 'stop generating' mid-stream", "stateful connections: harder to scale and balance"] },
+    kind: "bullets",
+    title: "The security points to say",
+    items: [
+      { icon: "🔒", text: "Hash passwords with bcrypt or Argon2", sub: "slow and salted; never store or log plain passwords" },
+      { icon: "⏱️", text: "Short-lived access tokens + refresh tokens", sub: "a JWT can't be revoked before it expires, so keep it short" },
+      { icon: "👁️", text: "A JWT is signed, not encrypted", sub: "anyone can read the payload: no secrets in it" },
+      { icon: "🧾", text: "Pin the algorithm; check exp, and aud/iss if used", sub: "never accept alg=none; HTTPS everywhere" },
     ],
     beats: B(
-      "And the comparison they'll ask for. Server sent events go one way, server to client, over plain HTTP, so authentication headers, proxies and retries just work. For streaming an LLM answer, it's the default.",
-      { say: "A WebSocket goes both ways at any time. You pick it when the client must talk during the stream: voice, live collaboration, or a stop button that interrupts generation. The cost is stateful connections, which are harder to scale and load balance.", tone: "key" },
-    ),
-  },
-  check({
-    topic: "streaming",
-    q: "Streaming works on your laptop, but in production the whole answer arrives at once after 8 s. Name the most likely cause and the fix.",
-    say: "Streaming works on your laptop, but in production the whole answer arrives at once after eight seconds. What's the most likely cause, and the fix?",
-    a: "A proxy in between (Nginx, a load balancer, a CDN) is buffering the response. Disable buffering for that route: X-Accel-Buffering: no, proxy_buffering off, and Cache-Control: no-cache.",
-    aSay: "A proxy in between, Nginx, a load balancer or a CDN, is buffering the response and only forwarding it when it's complete. Turn buffering off for that route: the X accel buffering no header, proxy buffering off in Nginx, and cache control no cache.",
-  }),
-  {
-    kind: "sayit",
-    q: "How do you stream LLM tokens from FastAPI?",
-    lines: [
-      "Call the model with streaming on and iterate it in an async generator.",
-      "Yield each token as a server-sent event and return a StreamingResponse with text/event-stream.",
-      "Stop on client disconnect and close the upstream stream, so you stop paying for tokens.",
-      "Disable proxy buffering; use a WebSocket only if the client must talk mid-stream.",
-    ],
-    beats: B(
-      { say: "Model answer. How do you stream LLM tokens from FastAPI?", tone: "ask" },
-      "I call the model with streaming on, and iterate its chunks inside an async generator.",
-      "Each token is yielded as a server sent event, and the route returns a streaming response with the text event stream media type.",
-      "If the client disconnects, I stop and close the upstream stream, so we stop paying for tokens.",
-      { say: "In production, I disable proxy buffering. And I'd use a WebSocket only if the client needs to talk during the stream.", tone: "key" },
+      "Hash passwords with bcrypt or Argon2, which are slow and salted on purpose. Never store or log a plain password.",
+      "Keep access tokens short-lived, minutes, with refresh tokens to get new ones. A JWT can't be revoked before it expires without extra state, like a deny list, so short expiry is your main control.",
+      "A JWT is signed, not encrypted. Anyone holding it can read the payload. So never put secrets in it.",
+      { say: "And verify properly: pin the algorithm, check expiry, and audience and issuer if you use them. Never accept the algorithm none. And HTTPS everywhere, because a stolen token is a stolen session.", tone: "key" },
     ),
   },
 
-  // ------------------------------------------------------------ 7
-  sec("7", "Long jobs: don't make the request wait", "Topic seven. Long jobs. Someone uploads five hundred PDFs to embed. That takes twenty minutes. What does the API do?"),
-  custom(
-    "pypipe",
-    {
-      title: "POST /ingest: accept now, work later",
-      stages: [
-        { name: "POST /ingest", icon: "📥", sub: "files saved to storage" },
-        { name: "Queue", icon: "📬", sub: "Redis / SQS: job 812" },
-        { name: "Worker", icon: "🛠️", sub: "Celery / Arq: parse, chunk, embed" },
-        { name: "Vector DB", icon: "🗄️", sub: "chunks + embeddings" },
-        { name: "GET /jobs/812", icon: "🔎", sub: "status, progress" },
-      ],
-      steps: [
-        { at: 0, text: "The API saves the files and returns at once: 202 Accepted, with a job id. No request waits 20 minutes." },
-        { at: 1, text: "The job goes onto a queue, which survives API restarts and deploys." },
-        { at: 2, text: "Separate worker processes take jobs, with retries and their own CPU, so the API stays fast." },
-        { at: 3, text: "Results land in the vector store; progress is written as the worker goes." },
-        { at: 4, back: true, text: "The client polls GET /jobs/{id} (or gets a webhook, or an SSE progress stream) until it's done." },
-      ],
-    },
-    B(
-      { say: "The pattern. The ingest endpoint saves the files and returns at once, with status two oh two, accepted, and a job id. No HTTP request ever waits twenty minutes.", tone: "key" },
-      "The job goes onto a queue, like Redis or SQS, which survives restarts and deploys of the API.",
-      "Separate worker processes, with Celery or Arq, take jobs off the queue: parse, chunk, embed, with retries. They use their own CPU, so the API stays responsive.",
-      "Results go into the vector database, and the worker writes progress as it goes.",
-      "The client polls a status endpoint with the job id, or receives a webhook, or a progress stream, until the job is done.",
-    ),
-  ),
+  // ---- Q24
+  q(24, null, "How do you implement role-based access and API keys?", "a dependency factory for roles; APIKeyHeader for services", "Question twenty four. How do you implement role-based access and API keys?", "Both are dependencies. Roles use a factory; API keys use a header scheme."),
   {
-    kind: "compare",
-    title: "BackgroundTasks vs a real queue",
-    cols: [
-      { title: "BackgroundTasks", icon: "⏱️", tone: "cyan", items: ["runs after the response, in the same process", "lost if the process restarts", "no retries, no progress, shares the API's CPU", "for small things: an email, a log, a cache warm-up"] },
-      { title: "Queue + workers", icon: "🏭", tone: "green", items: ["durable: survives restarts and deploys", "retries, progress, scale workers separately", "Celery, RQ, Arq, Dramatiq; Redis, SQS, RabbitMQ", "for ingestion, batch embedding, evals"] },
-    ],
+    kind: "code",
+    title: "Roles with a dependency factory; API keys with a header",
+    lang: "python",
+    code: `def require_role(*roles: str):
+    async def checker(user: User = Depends(get_current_user)) -> User:
+        if user.role not in roles:
+            raise HTTPException(403, "not allowed")
+        return user
+    return checker
+
+@app.delete("/docs/{id}")
+async def delete_doc(id: int, user=Depends(require_role("admin"))): ...
+
+api_key = APIKeyHeader(name="X-API-Key")
+async def verify_key(key: str = Depends(api_key)):
+    if not secrets.compare_digest(hash_key(key), STORED_HASH):
+        raise HTTPException(401, "bad API key")`,
+    highlight: [[1, 6], [8, 9], [11, 14]],
     beats: B(
-      "FastAPI has a built-in option, BackgroundTasks, and the question is when it's enough. It runs a function after the response is sent, in the same process. If that process restarts, the work is lost. No retries, no progress, and it competes with your requests for CPU. Good for small things: sending an email, writing a log.",
-      { say: "For anything long or important, a queue with workers: durable across restarts, with retries, progress, and workers you scale separately from the API. Ingestion, batch embedding and evaluation runs belong here.", tone: "key" },
+      "Role-based access is a dependency factory: a function that takes the allowed roles, and returns a dependency that checks the current user's role. A closure, just like a decorator with arguments.",
+      "So a route says depends on require role admin. 401 means we don't know who you are; 403 means we know, and you're not allowed.",
+      { say: "API keys, for service-to-service or partner access, use APIKeyHeader. Store only a hash of each key, compare in constant time with secrets dot compare digest, and support rotation. These security classes also show lock icons in the docs.", tone: "key" },
     ),
   },
   check({
-    topic: "long jobs",
-    q: "A teammate embeds uploaded PDFs with BackgroundTasks. A deploy restarts the pods mid-way. What happens, and what would you change?",
-    say: "A teammate embeds uploaded PDFs using BackgroundTasks. A deploy restarts the pods halfway through. What happens, and what would you change?",
-    a: "The in-progress work is simply lost: background tasks live in the process's memory, with no record and no retry. Use a durable queue with workers, a job id (202) and a status endpoint.",
-    aSay: "The work in progress is lost. Background tasks live only in that process's memory, so there's no record that they existed and nothing retries them. I'd move it to a durable queue with worker processes, return two oh two with a job id, and expose a status endpoint.",
+    topic: "JWT",
+    q: "Can you put a user's email and plan inside a JWT payload? Their password? Why?",
+    say: "Can you put a user's email and plan inside a JWT payload? What about their password? Why?",
+    a: "Email/plan: fine if it's OK for the client to read them. Password: never. A JWT is signed (tamper-proof), not encrypted (anyone can base64-decode it).",
+    aSay: "The email and plan are fine, as long as it's acceptable for the client to read them. The password, never. A JWT is signed, so it can't be tampered with, but it isn't encrypted, so anyone can decode and read it.",
   }),
 ];

@@ -1,293 +1,444 @@
 import type { Scene } from "../../lib/types.ts";
-import { B, check, custom, sec } from "./h.ts";
+import { B, check, custom, q, sec } from "./h.ts";
 
-// Part 4: memory management, type hints and Pydantic for LLM output, the LRU
-// cache coding round, then the rapid-fire drill, the pitch and the close.
+// Part 4: module 7 (concurrency: the GIL, threads, processes, asyncio) and
+// module 8 (memory, modules and tooling).
 export const p4: Scene[] = [
-  // ------------------------------------------------------------ 9
-  sec("9", "Memory and garbage collection", "Topic nine. Memory management and garbage collection. Ten write-ups asked it, usually as: how does Python free memory, and how would you find a leak?"),
+  // ================================================================ module 7
+  sec("7", "Concurrency: GIL, threads, processes and asyncio", "Module seven. Concurrency. The GIL, threads, processes and asyncio. Threads versus processes versus asyncio was asked in thirteen write-ups, and for GenAI roles it matters even more, because AI services spend most of their time waiting on models."),
   custom(
-    "pynames",
+    "pylanes",
     {
-      title: "Reference counting",
-      sub: "every object counts the references to it",
-      steps: [
-        { tags: [{ name: "a = Embedding(...)", to: "E" }], objs: [{ id: "E", text: "Embedding  · refs: 1" }] },
-        { tags: [{ name: "a", to: "E" }, { name: "b = a", to: "E", tone: "amber" }], objs: [{ id: "E", text: "Embedding  · refs: 2" }] },
-        { tags: [{ name: "del a", to: "" }, { name: "b", to: "E", tone: "amber" }], objs: [{ id: "E", text: "Embedding  · refs: 1" }] },
-        { tags: [{ name: "b = None", to: "", tone: "amber" }], objs: [{ id: "E", text: "Embedding  · refs: 0", gone: true, sub: "freed immediately" }], note: "Count hits zero → freed at once. No pause, no waiting for a collector." },
+      title: "The idea: waiting and working are different problems",
+      sub: "three calls that each wait 1 s on the network",
+      max: 3.4,
+      rows: [
+        { label: "one after another", step: 0, bars: [{ s: 0, e: 1, kind: "wait", text: "call 1" }, { s: 1, e: 2, kind: "wait", text: "call 2" }, { s: 2, e: 3, kind: "wait", text: "call 3" }], done: "3 s" },
+        { label: "call 1", step: 1, bars: [{ s: 0, e: 1, kind: "wait" }] },
+        { label: "call 2", step: 1, bars: [{ s: 0.05, e: 1.05, kind: "wait" }] },
+        { label: "call 3", step: 1, bars: [{ s: 0.1, e: 1.1, kind: "wait" }], done: "≈ 1 s" },
       ],
+      note: { step: 2, text: "Waiting overlaps for free (threads, asyncio). Working in parallel needs more cores (processes).", tone: "amber" },
     },
     B(
-      "CPython's main mechanism is reference counting. Every object keeps a count of how many references point to it. Create an embedding object and name it a: one reference.",
-      "B equals a: two references to the same object, as we saw in topic one.",
-      "Del a deletes the name, not the object. The count drops to one.",
-      { say: "Set b to None, and the count hits zero. The object is freed right then. No pause, no waiting for a collector. That's why most Python memory is released immediately.", tone: "key", term: { word: "Reference counting", meaning: "free an object the moment nothing refers to it" } },
+      "Here's the idea that sorts out this whole module. Three calls to a model API, each waiting one second on the network. One after another, that's three seconds, and the CPU is idle almost the whole time.",
+      "Start all three, and let them wait at the same time, and it's about one second. Overlapping the waiting is called concurrency.",
+      { say: "So there are two different problems. Waiting, on networks, disks, databases and models, which overlaps cheaply. And working, actual computation on the CPU, which only goes faster with more cores working in parallel. Threads and asyncio solve the first. Processes solve the second.", tone: "key" },
+    ),
+  ),
+
+  // ---- Q46 (py43)
+  q(46, 5, "What is the GIL?", "what it is, why it exists, when it's released, and where it's going", "Question forty six, asked in five write-ups. What is the GIL?", "What it is, why it exists, when it's released, and what's changing."),
+  custom(
+    "pylanes",
+    {
+      title: "The GIL: one thread runs Python bytecode at a time",
+      sub: "two threads, CPU-heavy work",
+      max: 4,
+      legend: false,
+      rows: [
+        { label: "thread 1", step: 0, bars: [{ s: 0, e: 0.5, kind: "run" }, { s: 0.5, e: 1, kind: "frozen" }, { s: 1, e: 1.5, kind: "run" }, { s: 1.5, e: 2, kind: "frozen" }, { s: 2, e: 2.5, kind: "run" }, { s: 2.5, e: 3, kind: "frozen" }, { s: 3, e: 3.5, kind: "run" }] },
+        { label: "thread 2", step: 0, bars: [{ s: 0, e: 0.5, kind: "frozen" }, { s: 0.5, e: 1, kind: "run" }, { s: 1, e: 1.5, kind: "frozen" }, { s: 1.5, e: 2, kind: "run" }, { s: 2, e: 2.5, kind: "frozen" }, { s: 2.5, e: 3, kind: "run" }, { s: 3, e: 3.5, kind: "frozen" }, { s: 3.5, e: 4, kind: "run" }], done: "no faster" },
+      ],
+      note: { step: 1, text: "Released while a thread waits on I/O, and inside C code like NumPy, so I/O-bound threads still overlap", tone: "amber" },
+    },
+    B(
+      "The GIL, the global interpreter lock, is a lock inside CPython that lets only one thread execute Python bytecode at a time. Two threads doing heavy computation just take turns holding it, so together they're no faster than one. Sometimes slower.",
+      { say: "But it's released whenever a thread waits on I/O, like a network call or a file read, and inside many C extensions, like NumPy. So threads still help a lot for I/O-bound work. They just don't give you parallel Python computation.", tone: "key" },
     ),
   ),
   {
-    kind: "bullets",
-    title: "Where reference counting isn't enough",
-    firstItemStep: 1,
-    items: [
-      { icon: "🔄", text: "Cycles: a → b → a keep each other's count above zero", sub: "a node and its parent; a conversation and its messages pointing back" },
-      { icon: "🧹", text: "The cyclic garbage collector finds unreachable cycles", sub: "the gc module; generations 0, 1, 2: young objects checked most often" },
-      { icon: "📦", text: "Small objects come from pools (pymalloc)", sub: "freed memory is often reused by Python, not returned to the OS" },
+    kind: "sayit",
+    q: "What is the GIL?",
+    lines: [
+      "A lock in CPython: one thread executes Python bytecode at a time.",
+      "It exists because reference counting isn't thread-safe; one lock is simple and fast for single-threaded code.",
+      "It's released during I/O and in many C extensions, so I/O-bound threads overlap fine.",
+      "CPU-bound work needs processes (or C extensions) to use several cores.",
+      "Python 3.13 added an optional free-threaded build without the GIL (PEP 703).",
     ],
     beats: B(
-      "But reference counting has one gap.",
-      "Cycles. If a points to b and b points back to a, both counts stay above zero even when nothing else can reach them. Think of a conversation object whose messages each point back to the conversation.",
-      { say: "So CPython also runs a cyclic garbage collector, the gc module, which periodically finds groups of objects that only reference each other and frees them. It uses generations: young objects are checked most often, because most objects die young.", tone: "key" },
-      "And one detail that explains confusing graphs: small objects come from memory pools, so freed memory is usually reused by Python rather than handed back to the operating system. A process's memory can stay high even after you free things.",
+      { say: "And the full answer.", tone: "ask" },
+      "The GIL is a lock in CPython that lets only one thread execute Python bytecode at a time.",
+      "It exists because CPython's reference counting isn't thread-safe. One big lock was the simple solution, and it keeps single-threaded code fast.",
+      "It's released during I/O and inside many C extensions, so I/O-bound threads overlap just fine.",
+      "For CPU-bound work, you use processes, or C extensions, to get real parallelism across cores.",
+      { say: "And it's changing. Python three thirteen added an optional free-threaded build without the GIL, from PEP seven oh three, though it isn't the default yet.", tone: "key" },
+    ),
+  },
+
+  // ---- Q47 (py44)
+  q(47, 13, "When do you use threading vs multiprocessing vs asyncio?", "the kind of work decides: waiting or computing, and how much", "Question forty seven, asked in thirteen write-ups. When do you use threading, versus multiprocessing, versus asyncio?", "The kind of work decides. Is it waiting or computing, and how many things at once?"),
+  {
+    kind: "compare",
+    title: "Pick by the kind of work",
+    cols: [
+      { title: "threading", icon: "🧵", tone: "blue", items: ["I/O-bound, moderate concurrency", "Works with blocking libraries", "Shared memory: needs locks", "Tens to hundreds of threads"] },
+      { title: "asyncio", icon: "🔁", tone: "green", items: ["I/O-bound, high concurrency", "One thread, an event loop", "Needs async libraries (httpx, asyncpg)", "Thousands of connections"] },
+      { title: "multiprocessing", icon: "🏭", tone: "amber", items: ["CPU-bound work", "Separate processes, each with its own GIL", "Real parallelism on all cores", "Data is pickled between them"] },
+    ],
+    footer: "Waiting on many things → asyncio · waiting with blocking libraries → threads · computing → processes",
+    beats: B(
+      "Threading, for I/O-bound work at moderate concurrency, and especially when the libraries you need are blocking ones. Threads share memory, which is convenient, and dangerous, so you need locks. And each thread costs real memory, so tens or hundreds, not tens of thousands.",
+      "Asyncio, for I/O-bound work at high concurrency. One thread, running an event loop, can juggle thousands of connections, because a waiting task costs almost nothing. But it needs async libraries all the way down: httpx instead of requests, asyncpg instead of a blocking driver.",
+      "Multiprocessing, for CPU-bound work. Separate processes, each with its own interpreter and its own GIL, so they really do run in parallel on all your cores. The cost: they don't share memory, so data is pickled and copied between them.",
+      { say: "So the rule. Waiting on many things: asyncio. Waiting, with blocking libraries: threads. Computing: processes. In a GenAI service, calling a model a thousand times is asyncio. Parsing PDFs or running a local embedding model on the CPU is processes.", tone: "key" },
     ),
   },
   {
-    kind: "compare",
-    title: "Memory leaks in GenAI services, and the fix",
-    cols: [
-      { title: "The leak", icon: "💧", tone: "red", items: ["a module-level dict caching every prompt → answer", "keeping every response, embedding or chunk in a list", "@lru_cache on a method: it holds self forever", "tasks or callbacks you never cancel"] },
-      { title: "The fix", icon: "🔧", tone: "green", items: ["a bounded cache (maxsize, TTL) or Redis", "generators and batches: stream, don't hoard", "cache on a function of plain values, or per instance", "TaskGroup, timeouts, cancel on disconnect"] },
+    kind: "sayit",
+    q: "Threading vs multiprocessing vs asyncio?",
+    lines: [
+      "First I ask: is the work waiting on I/O, or using the CPU?",
+      "CPU-bound: multiprocessing (ProcessPoolExecutor), because the GIL stops threads computing in parallel.",
+      "I/O-bound with many connections: asyncio, one thread and an event loop.",
+      "I/O-bound with blocking libraries: threads (ThreadPoolExecutor).",
+      "Mixed: an async service that sends CPU work to a process pool or a worker queue.",
     ],
-    footer: "Find it: tracemalloc snapshots (compare two), objgraph, memray. In Python, a leak is almost always 'something still points to it'.",
     beats: B(
-      "So how do Python services actually leak? Almost always, something still points to the data. A module level dict that caches every prompt and answer, forever. A list that keeps every response or embedding. A cache decorator on a method, which keeps self alive. And background tasks nobody cancels.",
-      "The fixes match: a bounded cache, with a max size or a time to live, or an external cache like Redis. Generators and batches instead of hoarding. Caching functions of plain values. And structured tasks with timeouts.",
-      { say: "To find one: tracemalloc, take two snapshots a few minutes apart and compare them, or tools like memray. And remember the sentence: in Python, a leak almost always means something still points to it.", tone: "key" },
+      { say: "Here's the answer to say.", tone: "ask" },
+      "First I ask what kind of work it is: is it waiting on I/O, or using the CPU?",
+      "If it's CPU-bound, I use multiprocessing, usually a process pool executor, because the GIL stops threads computing in parallel.",
+      "If it's I/O-bound with many concurrent connections, like calling an LLM API for thousands of requests, I use asyncio: one thread and an event loop.",
+      "If it's I/O-bound but the library only has a blocking API, I use a thread pool.",
+      { say: "And for mixed work, which is most real services, an async web server that hands CPU-heavy jobs to a process pool, or to a queue with separate workers.", tone: "key" },
+    ),
+  },
+
+  // ---- Q48 (py45)
+  q(48, null, "How do you make threaded code thread-safe in Python?", "the GIL doesn't make your code safe; locks, queues, and not sharing", "Question forty eight. How do you make threaded code thread-safe in Python?", "Start by killing the myth that the GIL makes your code safe, then give the tools."),
+  {
+    kind: "code",
+    title: "count += 1 is three steps, and a thread can switch between them",
+    lang: "python",
+    code: `count = 0
+def work():
+    global count
+    for _ in range(100_000):
+        count += 1        # read, add, write: not atomic
+
+# two threads → often less than 200,000
+
+lock = threading.Lock()
+def work():
+    global count
+    for _ in range(100_000):
+        with lock:        # one thread at a time in here
+            count += 1`,
+    highlight: [[1, 7], [9, 14]],
+    beats: B(
+      "The myth: the GIL makes my code thread-safe. It doesn't. The GIL protects the interpreter's own internals, not your logic. Count plus equals one is really three steps: read count, add one, write it back. A thread can be switched out between them, two threads read the same old value, and an update is lost.",
+      { say: "The tools. A lock around the critical section, used with with, so it's always released. Better still, don't share: pass work through a queue dot Queue, which is thread-safe, or give each thread its own data and combine at the end. And immutable data is always safe to share.", tone: "key" },
+    ),
+  },
+
+  // ---- Q49 (py46)
+  q(49, 3, "How does asyncio work (event loop, coroutines, await)?", "coroutines, the loop, and what await gives up", "Question forty nine, asked in three write-ups. How does asyncio work? The event loop, coroutines, and await.", "What a coroutine is, what the event loop does, and what happens at an await."),
+  custom(
+    "pyloop",
+    {
+      title: "The event loop runs one task until it awaits",
+      sub: "three tasks, each calling a model",
+      steps: [
+        { running: "task A", ready: ["task B", "task C"], waiting: [], note: "the loop picks a ready task and runs it" },
+        { running: "task B", ready: ["task C"], waiting: ["A: await llm()"], note: "A reaches await: it parks on its network call and hands control back" },
+        { running: "task C", ready: [], waiting: ["A: await llm()", "B: await llm()"] },
+        { running: undefined, ready: [], waiting: ["A: await llm()", "B: await llm()", "C: await llm()"], note: "all three requests are in flight at once, on one thread" },
+        { running: "task A", ready: ["task B"], waiting: ["C: await llm()"], note: "a reply arrives: that task becomes ready and resumes after its await" },
+        { running: undefined, ready: [], waiting: [], done: ["task A", "task B", "task C"], note: "total time ≈ the slowest call, not the sum" },
+      ],
+    },
+    B(
+      "Asyncio runs on one thread, with an event loop. The loop keeps a queue of tasks that are ready to run, and it runs one of them. Task A.",
+      "A runs until it reaches an await on something slow, like a call to the model. At that point, A gives control back to the loop, and parks, waiting for its network reply. The loop picks the next ready task, B.",
+      "B also reaches its await, and parks. Then C runs.",
+      "Now all three requests are in flight at the same time, and the loop is idle, waiting for the operating system to say a reply has arrived. One thread, three calls in progress.",
+      "When A's reply comes in, A becomes ready again, and resumes exactly after its await.",
+      { say: "So the total time is about the slowest call, not the sum of all of them. The key words: a coroutine is a function defined with async def. Calling it creates a coroutine object, without running it. Await pauses the coroutine and hands control to the loop. And it's cooperative: a task only gives up control at an await.", tone: "key" },
+    ),
+  ),
+  {
+    kind: "sayit",
+    q: "How does asyncio work?",
+    lines: [
+      "One thread runs an event loop that schedules tasks.",
+      "async def defines a coroutine; calling it makes a coroutine object, awaiting it runs it.",
+      "At await, the coroutine pauses and the loop runs another ready task.",
+      "When the I/O completes, the waiting task resumes right after its await.",
+      "Cooperative: a task that never awaits, or blocks, freezes everything.",
+    ],
+    beats: B(
+      { say: "Out loud.", tone: "ask" },
+      "Asyncio runs an event loop on a single thread, and the loop schedules tasks.",
+      "Async def defines a coroutine function. Calling it returns a coroutine object, and awaiting it, or wrapping it in a task, is what runs it.",
+      "At each await, the coroutine pauses, and the loop runs another task that's ready.",
+      "When the I/O it was waiting on completes, the task becomes ready, and resumes right after its await.",
+      { say: "It's cooperative multitasking. So a task that does heavy computation, or calls a blocking function, without awaiting, freezes every other task on the loop.", tone: "key" },
+    ),
+  },
+
+  // ---- Q50 (py47)
+  q(50, null, "What is the difference between awaiting coroutines directly, gather, create_task and TaskGroup?", "sequential versus concurrent, and who cleans up on failure", "Question fifty. What's the difference between awaiting coroutines directly, gather, create task, and TaskGroup?", "Which of these actually run at the same time, and what happens when one of them fails."),
+  {
+    kind: "code",
+    title: "Only tasks run concurrently",
+    lang: "python",
+    code: `a = await fetch(1)            # one after another:
+b = await fetch(2)            # 2 calls = 2× the time
+
+a, b = await asyncio.gather(fetch(1), fetch(2))   # together
+
+t = asyncio.create_task(fetch(1))   # starts now, in the background
+...                                 # do other work
+a = await t
+
+async with asyncio.TaskGroup() as tg:     # 3.11+: structured
+    ta = tg.create_task(fetch(1))
+    tb = tg.create_task(fetch(2))
+# here both are done; if one failed, the other was cancelled`,
+    highlight: [[1, 2], [4, 4], [6, 8], [10, 13]],
+    beats: B(
+      "Awaiting coroutines one after another runs them one after another. The second fetch doesn't start until the first is finished. This is the most common async mistake: code that looks async, and runs sequentially.",
+      "Gather schedules them all as tasks, runs them concurrently, and returns the results in the order you passed them. By default, if one raises, gather raises, but the others keep running.",
+      "Create task starts a coroutine in the background, right now, and gives you a handle to await later. Keep a reference to it, or it can be garbage collected.",
+      { say: "And TaskGroup, from Python three eleven, is the structured way. Every task created in the block is awaited when the block ends, and if one fails, the others are cancelled, and the errors are raised together. For new code, TaskGroup is the one to reach for.", tone: "key" },
+    ),
+  },
+
+  // ---- Q51 (py48)
+  q(51, null, "How do you limit concurrency in asyncio, and how do you call blocking code from async code?", "a semaphore, and to_thread for blocking calls", "Question fifty one. How do you limit concurrency in asyncio, and how do you call blocking code from async code?", "Two tools: one to stay under a rate limit, one to keep the loop free."),
+  custom(
+    "pyloop",
+    {
+      title: "One blocking call freezes the whole loop",
+      sub: "time.sleep(), requests.get(), a sync SDK, heavy CPU",
+      steps: [
+        { running: "A: requests.get()", ready: ["task B", "task C", "health check"], waiting: [], blocked: true, note: "a blocking call never awaits, so the loop can't switch: everything else waits" },
+        { running: "task B", ready: ["task C", "health check"], waiting: ["A: await to_thread(…)"], note: "await asyncio.to_thread(fn): the blocking call runs in a thread, the loop stays free" },
+      ],
+    },
+    B(
+      "First, blocking code. If a task calls something blocking, like time dot sleep, requests dot get, a synchronous SDK, or heavy computation, it never awaits, so the loop can't switch. Every other task, even a health check, is stuck until it returns.",
+      { say: "The fix: await asyncio dot to thread, passing the blocking function. It runs in a worker thread, and the task awaits it, so the loop stays free. For CPU-heavy work, use run in executor with a process pool. Better still, use an async library in the first place.", tone: "key" },
+    ),
+  ),
+  {
+    kind: "code",
+    title: "A semaphore: at most N calls in flight",
+    lang: "python",
+    code: `sem = asyncio.Semaphore(10)        # at most 10 at once
+
+async def ask(q):
+    async with sem:                # wait here if 10 are running
+        return await llm.complete(q)
+
+async def ask_all(questions):
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(ask(q)) for q in questions]
+    return [t.result() for t in tasks]`,
+    highlight: [[1, 1], [3, 5], [7, 10]],
+    beats: B(
+      "Second, limiting concurrency. Fire off a thousand tasks with gather, and you send a thousand requests at once, and the provider rate-limits you. A semaphore is a counter of free slots. Here, ten.",
+      "Each call does async with the semaphore. If ten are already running, it waits for a slot, without blocking the loop.",
+      { say: "So you can start a task for every question, and still never have more than ten calls in flight. Semaphore plus TaskGroup is the pattern for calling a model API at scale.", tone: "key" },
     ),
   },
   check({
-    topic: "memory",
-    q: "A service keeps CACHE = {} at module level and stores every prompt → answer in it. Memory grows all day. Is the garbage collector broken?",
-    say: "A service keeps a module level dict called cache, and stores every prompt and its answer in it. Memory grows all day. Is the garbage collector broken?",
-    a: "No: every entry is still referenced by the dict, so nothing is garbage. Bound it (an LRU with maxsize, a TTL) or move it to Redis.",
-    aSay: "No. Every entry is still referenced by the dict, which lives as long as the module, so none of it is garbage. The collector is doing its job. Bound the cache, with an LRU and a max size or a time to live, or move it out to Redis. Which happens to be our coding question in topic eleven.",
+    topic: "concurrency",
+    q: "You must resize 50,000 images on an 8-core machine. threads, asyncio or processes?",
+    say: "You must resize fifty thousand images on an eight core machine. Threads, asyncio, or processes?",
+    options: ["Threads", "asyncio", "Processes", "It doesn't matter"],
+    oSay: ["threads", "asyncio", "processes", "it doesn't matter"],
+    answer: 2,
+    a: "Processes. Resizing is CPU-bound; the GIL lets only one thread compute Python at a time, so a ProcessPoolExecutor uses all 8 cores.",
+    aSay: "C. Processes. Resizing images is CPU work, and the GIL lets only one thread run Python at a time. A process pool gives each core its own interpreter, so all eight work in parallel.",
   }),
+  check({
+    topic: "asyncio",
+    q: "for q in questions: answers.append(await ask(q)). Are the calls concurrent?",
+    say: "For each question, you append await ask of q. Are the calls concurrent?",
+    a: "No: each await finishes before the next call starts. Create tasks (TaskGroup or gather) to run them together.",
+    aSay: "No. Each await finishes before the loop moves to the next question, so they run one by one. Create tasks, with a TaskGroup or gather, to run them together, with a semaphore to cap them.",
+  }),
+
+  // ================================================================ module 8
+  sec("8", "Memory, modules and tooling", "Module eight. Memory, modules and tooling. Memory and garbage collection was asked in ten write-ups, and it all starts from one number every object carries."),
+  custom(
+    "pynames",
+    {
+      title: "The idea: every object counts its references",
+      steps: [
+        { tags: [{ name: "a", to: "O" }], objs: [{ id: "O", text: "{…} a big dict", sub: "refcount = 1" }] },
+        { tags: [{ name: "a", to: "O" }, { name: "b = a", to: "O", tone: "amber" }, { name: "cache[k] = a", to: "O", tone: "cyan" }], objs: [{ id: "O", text: "{…} a big dict", sub: "refcount = 3" }] },
+        { tags: [{ name: "a  (del a)", to: "" }, { name: "b = None", to: "" }, { name: "cache[k] = a", to: "O", tone: "cyan" }], objs: [{ id: "O", text: "{…} a big dict", sub: "refcount = 1: still alive" }], note: "the cache still holds it, so it can't be freed" },
+        { tags: [{ name: "a  (del a)", to: "" }, { name: "b = None", to: "" }, { name: "cache.clear()", to: "" }], objs: [{ id: "O", text: "{…} a big dict", sub: "refcount = 0", gone: true }], note: "the count hits zero: freed immediately" },
+      ],
+    },
+    B(
+      "Here's the idea. Every object in CPython carries a count of how many references point at it. A equals a big dict: count one.",
+      "B equals a, and storing it in a cache: count three.",
+      "Delete a, and set b to None. The count drops to one. But the cache still holds it, so it stays alive.",
+      { say: "Clear the cache, the count hits zero, and the object is freed at that exact moment. That's reference counting, and it's how CPython frees most memory: immediately, and predictably.", tone: "key" },
+    ),
+  ),
+
+  // ---- Q52 (py49)
+  q(52, 10, "How does memory management and garbage collection work in Python?", "reference counting, the cycle collector, the allocator, and leaks", "Question fifty two, asked in ten write-ups. How does memory management and garbage collection work in Python?", "Reference counting, the cycle collector, how the allocator behaves, and what leaks look like in Python."),
+  {
+    kind: "flow",
+    title: "Reference counting can't free a cycle",
+    cols: 3,
+    rows: 2,
+    nodeW: 380,
+    nodeH: 130,
+    nodes: [
+      { id: "n", label: "your code\n(no names left)", c: 0, r: 0, tone: "red" },
+      { id: "a", label: "node A\nrefcount 1", c: 1, r: 0, tone: "amber" },
+      { id: "b", label: "node B\nrefcount 1", c: 2, r: 0, tone: "amber" },
+      { id: "g", label: "cycle collector (gc)\nfinds groups unreachable from outside, frees them", c: 1, r: 1, tone: "green", w: 760 },
+    ],
+    edges: [
+      { from: "a", to: "b", label: "a.next = b", bend: 40 },
+      { from: "b", to: "a", label: "b.prev = a", bend: 40 },
+    ],
+    show: [["n", "a", "b"], ["g"]],
+    beats: B(
+      "Reference counting has one blind spot: cycles. Node A points at B, and B points back at A. Your code drops its names, so nothing outside can reach them, but each still has a count of one, because of the other. They'd never be freed.",
+      { say: "So CPython adds a cycle collector, the gc module. Every so often, it looks for groups of container objects that are only reachable from each other, and frees them. It's generational: new objects are checked often, objects that survive are checked less, because most objects die young.", tone: "key" },
+    ),
+  },
+  {
+    kind: "bullets",
+    title: "What else to say about Python memory",
+    items: [
+      { icon: "🧱", text: "Small objects come from pymalloc's pools", sub: "freed memory is reused by Python, not always handed back to the OS: the process can stay big" },
+      { icon: "🕳️", text: "Leaks are references you forgot", sub: "unbounded caches, growing globals, closures holding big objects, lru_cache on methods" },
+      { icon: "🔎", text: "Find them with tracemalloc", sub: "compare snapshots; objgraph to see who holds a reference" },
+      { icon: "🪶", text: "Use less", sub: "generators, __slots__, bounded caches, del big objects early" },
+    ],
+    beats: B(
+      "Small objects are allocated from pools by Python's own allocator, pymalloc. Freed memory is reused by Python, but isn't always returned to the operating system, so a process can stay large after a spike.",
+      "Python leaks aren't lost pointers, as in C. They're references you forgot about: an unbounded cache, a global list that grows on every request, a closure holding a big object, or LRU cache on a method.",
+      "To find them, tracemalloc takes snapshots of where memory was allocated, and you compare two of them.",
+      { say: "And to use less: generators instead of lists, dunder slots for many small objects, caches with a size limit, and dropping big objects as soon as you're done.", tone: "key" },
+    ),
+  },
   {
     kind: "sayit",
     q: "How does Python manage memory?",
     lines: [
-      "CPython counts references: an object is freed the moment its count hits zero.",
-      "A cyclic garbage collector, with generations, frees cycles that refcounting can't.",
-      "Small objects come from pools, so freed memory is often reused rather than returned to the OS.",
-      "Leaks are references kept alive: unbounded caches, lists, unclosed tasks. I find them with tracemalloc.",
+      "Every object has a reference count; when it hits zero, it's freed immediately.",
+      "A generational cycle collector frees groups of objects that only reference each other.",
+      "Small objects come from pymalloc pools; memory isn't always returned to the OS.",
+      "Leaks are forgotten references: unbounded caches, globals, closures.",
+      "I'd find them with tracemalloc snapshots, and fix with bounded caches and generators.",
     ],
     beats: B(
-      { say: "Model answer. How does Python manage memory?", tone: "ask" },
-      "CPython counts references to every object, and frees an object the moment its count reaches zero.",
-      "A cyclic garbage collector, organised in generations, frees groups of objects that only reference each other, which reference counting can't catch.",
-      "Small objects are allocated from pools, so freed memory is often reused by Python rather than returned to the operating system.",
-      { say: "And leaks are references kept alive by mistake: unbounded caches, growing lists, tasks never cancelled. I find them by comparing tracemalloc snapshots.", tone: "key" },
+      { say: "Put together, as an answer.", tone: "ask" },
+      "CPython uses reference counting: every object counts its references, and it's freed the moment the count reaches zero.",
+      "On top of that, a generational cycle collector frees groups of objects that only reference each other.",
+      "Small objects come from pymalloc's pools, and freed memory isn't always returned to the operating system.",
+      "In practice, leaks in Python are forgotten references: unbounded caches, growing globals, closures holding big objects.",
+      { say: "I'd find one with tracemalloc snapshots, and fix it with bounded caches, generators, and not keeping state around longer than needed.", tone: "key" },
     ),
   },
 
-  // ------------------------------------------------------------ 10
-  sec("10", "Type hints and Pydantic: trusting the model's JSON", "Topic ten. Type hints and Pydantic. For GenAI roles this one is asked as: the model returned JSON. How do you make sure it's what you expect?"),
-  {
-    kind: "trap",
-    myth: "Type hints are checked when the code runs.",
-    truth: "Python ignores them at runtime. Tools read them: mypy or pyright before you run, Pydantic and FastAPI while you run.",
-    why: "def f(x: int) happily accepts a string. Hints are documentation a machine can check, nothing more.",
-    beats: B(
-      "First, a misunderstanding that interviewers probe.",
-      { say: "Python itself ignores type hints at runtime. A function annotated to take an int will accept a string without complaint. What reads the hints are tools: mypy or pyright before you run, and libraries like Pydantic and FastAPI while you run.", tone: "key" },
-      "So hints are documentation a machine can check. Pydantic is what turns them into actual runtime validation.",
-    ),
-  },
+  // ---- Q53 (py50)
+  q(53, 1, "What is the difference between a module and a package, and what does if __name__ == \"__main__\" do?", "files, folders, and running versus importing", "Question fifty three. What's the difference between a module and a package, and what does if dunder name equals dunder main do?", "Files and folders, and the difference between running a file and importing it."),
   {
     kind: "code",
-    title: "Structured output: validate, and ask again on failure",
+    title: "A module is a file; a package is a folder of them",
     lang: "python",
-    code: `from pydantic import BaseModel, Field, ValidationError
+    code: `app/
+    __init__.py        # makes app a (regular) package
+    models.py          # the module app.models
+    api/__init__.py    # a subpackage: app.api
 
-class Answer(BaseModel):
-    answer: str
-    sources: list[str]
-    confidence: float = Field(ge=0, le=1)
+# models.py
+def main(): ...
 
-def ask_structured(question, tries=3):
-    prompt = build_prompt(question, schema=Answer.model_json_schema())
-    for _ in range(tries):
-        raw = call_llm(prompt)
-        try:
-            return Answer.model_validate_json(raw)
-        except ValidationError as e:
-            prompt += f"\\nYour JSON was invalid: {e}. Return only valid JSON."
-    raise LLMError("no valid answer")`,
-    highlight: [[3, 6], [9, 9], [11, 13], [14, 15], [16, 16]],
+if __name__ == "__main__":     # True only when run directly:
+    main()                     #   python -m app.models
+                               # imported → __name__ == "app.models"`,
+    highlight: [[1, 4], [6, 11]],
     beats: B(
-      "Here's the pattern every GenAI team writes. Declare the shape you expect as a Pydantic model: an answer string, a list of source ids, and a confidence between zero and one. The Field adds the range check.",
-      "Put the model's JSON schema into the prompt, so the LLM knows the exact shape you want.",
-      { say: "Call the model, and parse its reply with model validate json. That one call parses the JSON, checks every field and type, converts what it safely can, and returns a real typed object.", tone: "key" },
-      "If validation fails, don't crash and don't guess. Feed the error message back to the model and ask again. Models are good at fixing their own JSON when told exactly what was wrong.",
-      "After a few tries, raise a clear error. Many providers now offer a structured output mode too, but you still validate: it's your boundary.",
+      "A module is a single dot py file. A package is a folder of modules, usually with a dunder init dot py, which runs when the package is first imported. Imports are cached in sys dot modules, so a module's top-level code runs only once.",
+      { say: "Every module has a dunder name. When you run the file directly, it's set to dunder main. When it's imported, it's the module's import path. So code under if name equals main runs when you execute the file, but not when another module imports it. That's where a script's entry point, or a quick manual test, goes.", tone: "key" },
     ),
   },
-  custom(
-    "pypipe",
-    {
-      title: "The model's output crosses a boundary",
-      stages: [
-        { name: "LLM reply", icon: "🤖", sub: "just text" },
-        { name: "parse JSON", icon: "🧩", sub: "is it JSON at all?" },
-        { name: "validate", icon: "🛡️", sub: "Pydantic: fields, types, ranges" },
-        { name: "your code", icon: "✅", sub: "a typed Answer object" },
-      ],
-      steps: [
-        { at: 0, text: "Whatever the prompt said, the model returns text. Treat it like user input: untrusted." },
-        { at: [1, 2], text: "One call, model_validate_json, parses and validates: missing field, wrong type, confidence 1.7 → ValidationError." },
-        { at: 0, fail: true, text: "On failure, the error goes back to the model as a correction, and you ask again (a bounded number of times)." },
-        { at: 3, back: true, text: "Past the boundary, your code only ever sees a valid Answer: answer.confidence is a float between 0 and 1. No defensive checks scattered everywhere." },
-      ],
-    },
-    B(
-      "The way to think about it in an interview: the model's output crosses a boundary into your system. Whatever your prompt said, what comes back is text. Treat it like user input. Untrusted.",
-      "Parsing and validation happen in one place, at the boundary. A missing field, a wrong type, a confidence of one point seven: each becomes a validation error.",
-      "On failure, the error goes back to the model as a correction, and you ask again, a bounded number of times.",
-      { say: "And past the boundary, your code only ever sees a valid answer object. No defensive checks scattered across the codebase. That sentence, validate at the boundary, is the answer interviewers are listening for.", tone: "key" },
-    ),
-  ),
-  check({
-    topic: "Pydantic",
-    q: "Why validate the LLM's JSON with Pydantic instead of json.loads and reading the keys?",
-    say: "Why validate the model's JSON with Pydantic, instead of just json dot loads and reading the keys you need?",
-    a: "json.loads only checks it's JSON. Pydantic checks the shape: required fields, types, ranges, with a precise error you can send back to the model, and gives the rest of the code a typed object.",
-    aSay: "Json dot loads only tells you it's valid JSON. It says nothing about the shape. Pydantic checks required fields, types and ranges, converts safe cases, and gives a precise error message, which you can send back to the model to fix. And the rest of your code gets a typed object, instead of dicts that might be missing keys.",
-  }),
 
-  // ------------------------------------------------------------ 11
-  sec("11", "Coding round: an LRU cache for LLM answers", "Topic eleven. A coding question six write-ups asked: implement an LRU cache. In AskDocs, it's the bounded cache that fixes our memory leak."),
+  // ---- Q54 (py51)
+  q(54, null, "What causes circular imports, and how do you fix them?", "two modules importing each other at the top, half-initialised", "Question fifty four. What causes circular imports, and how do you fix them?", "Why it fails, which is about half-finished modules, and the fixes, best first."),
   {
-    kind: "code",
-    title: "LRU cache: O(1) get and put",
-    lang: "python",
-    code: `from collections import OrderedDict
-
-class LRUCache:
-    def __init__(self, capacity: int):
-        self.capacity = capacity
-        self.data = OrderedDict()            # oldest first, newest last
-
-    def get(self, key):
-        if key not in self.data:
-            return None
-        self.data.move_to_end(key)           # just used → newest
-        return self.data[key]
-
-    def put(self, key, value):
-        self.data[key] = value
-        self.data.move_to_end(key)
-        if len(self.data) > self.capacity:
-            self.data.popitem(last=False)    # evict the least recently used`,
-    highlight: [[1, 6], [8, 12], [11, 11], [14, 16], [17, 18]],
+    kind: "flow",
+    title: "a imports b, b imports a: one of them is half-built",
+    cols: 2,
+    rows: 2,
+    nodeW: 560,
+    nodeH: 140,
+    nodes: [
+      { id: "a", label: "models.py\nfrom services import notify", c: 0, r: 0, tone: "amber" },
+      { id: "b", label: "services.py\nfrom models import User", c: 1, r: 0, tone: "amber" },
+      { id: "e", label: "ImportError: cannot import name 'User'\nmodels is still half-executed", c: 0, r: 1, tone: "red", w: 760 },
+      { id: "f", label: "fix: move shared code to a third module,\nimport inside the function, or import the module", c: 1, r: 1, tone: "green", w: 760 },
+    ],
+    edges: [
+      { from: "a", to: "b", label: "1. imports", bend: 40 },
+      { from: "b", to: "a", label: "2. imports back", bend: 40 },
+    ],
+    show: [["a", "b"], ["e"], ["f"]],
     beats: B(
-      "Least recently used: when the cache is full, throw out the entry that was used longest ago. The neat Python answer uses an ordered dict, which keeps keys in order, oldest first, and can move a key to the end in constant time.",
-      "Get: if the key isn't there, return None.",
-      { say: "If it is, move it to the end, because it was just used, which makes it the newest. Then return it.", tone: "key" },
-      "Put: store the value, and move the key to the end, since it's the newest now.",
-      { say: "If that pushed us over capacity, pop item with last equals false removes the oldest entry, the least recently used. Both operations are constant time.", tone: "key" },
+      "Models imports services at the top. Python starts running services, which imports models back.",
+      "But models is only half executed: it stopped at its first line to import services. So user doesn't exist yet, and you get cannot import name. The circle itself is legal. Reaching for a name that isn't defined yet is what fails.",
+      { say: "The fixes, best first. Move the shared pieces into a third module that both import. Or import inside the function that needs it, so it happens at call time. Or import the module rather than the name. And for type hints only, use if TYPE CHECKING.", tone: "key" },
     ),
   },
+
+  // ---- Q55 (py52)
+  q(55, null, "How do virtual environments and dependency management work (venv, pip, pyproject, Poetry, uv)?", "isolation, declaring dependencies, and locking them", "Question fifty five. How do virtual environments and dependency management work?", "Three jobs: isolate, declare, and lock."),
   {
     kind: "bullets",
-    title: "What the interviewer asks next",
-    firstItemStep: 1,
+    title: "Isolate, declare, lock",
     items: [
-      { icon: "🔗", text: "\"Without OrderedDict?\" A dict + a doubly linked list", sub: "the dict finds the node in O(1); the list moves and evicts it in O(1)" },
-      { icon: "🧰", text: "\"In real code?\" @functools.lru_cache(maxsize=1024)", sub: "for pure functions of hashable arguments" },
-      { icon: "🌐", text: "\"For LLM answers across servers?\" Redis, with a TTL", sub: "key on a normalised prompt + model + temperature" },
-      { icon: "🧵", text: "\"Thread-safe?\" A lock around get and put", sub: "or one cache per async event loop" },
+      { icon: "📦", text: "venv: an isolated environment per project", sub: "its own python and site-packages: python -m venv .venv" },
+      { icon: "📝", text: "pyproject.toml: declare what you depend on", sub: "the standard project file; requirements.txt is the older list" },
+      { icon: "🔒", text: "A lock file pins every exact version", sub: "including dependencies of dependencies: same install everywhere" },
+      { icon: "⚡", text: "Tools: pip + pip-tools, Poetry, or uv", sub: "uv is a very fast, all-in-one installer, resolver and lock" },
     ],
     beats: B(
-      "And the follow-ups, which is where the interview is really decided.",
-      "Without an ordered dict? A plain dict plus a doubly linked list. The dict finds the node in constant time, and the list moves it to the front or evicts the tail in constant time.",
-      "In real code? Functools lru cache, with a max size, for pure functions with hashable arguments.",
-      { say: "For LLM answers shared across several servers? Redis, with a time to live, keyed on the normalised prompt, the model name and the temperature, since the same prompt to a different model is a different answer.", tone: "key" },
-      "And thread safety? Put a lock around get and put, because two threads can interleave a move and an evict.",
+      "A virtual environment isolates each project's packages: its own python and its own site packages folder, so two projects can need different versions of the same library.",
+      "Pyproject dot toml is the standard file where a project declares its dependencies, usually with version ranges. Requirements dot txt is the older, simpler list.",
+      "A lock file pins every exact version, including the dependencies of your dependencies, so your laptop, CI and production install exactly the same thing.",
+      { say: "And the tools. Pip with pip tools, Poetry, or uv, which is a very fast all-in-one replacement written in Rust. In a Docker image, you install from the lock file.", tone: "key" },
+    ),
+  },
+
+  // ---- Q56 (py53)
+  q(56, null, "What tools keep Python code quality high (PEP 8, ruff, black, mypy)?", "style, lint, format, types, and running them automatically", "Question fifty six. What tools keep Python code quality high?", "One tool per job, and how you make sure they always run."),
+  {
+    kind: "bullets",
+    title: "One tool per job, run automatically",
+    items: [
+      { icon: "📏", text: "PEP 8: the style guide", sub: "naming, spacing, line length: what the tools enforce" },
+      { icon: "🧹", text: "ruff: linter (and formatter)", sub: "unused imports, bugs, style: replaces flake8, isort and more; very fast" },
+      { icon: "🎨", text: "black / ruff format: formatting", sub: "no style debates in code review" },
+      { icon: "🔍", text: "mypy / pyright: static type checking", sub: "catches wrong types before running" },
+      { icon: "🤖", text: "pre-commit + CI run them all", sub: "with pytest and coverage, on every commit and pull request" },
+    ],
+    beats: B(
+      "PEP 8 is the style guide: naming, spacing, line length. The tools enforce it.",
+      "Ruff is a linter, written in Rust and very fast. It catches unused imports, likely bugs and style problems, and replaces a whole set of older tools.",
+      "Black, or ruff format, formats the code automatically, so nobody argues about style in reviews.",
+      "Mypy or pyright check the type hints statically, before the code runs.",
+      { say: "And pre-commit hooks plus CI run all of them, with pytest, on every commit and pull request. The point is that nobody has to remember.", tone: "key" },
     ),
   },
   check({
-    topic: "LRU",
-    q: "Capacity 2. put(a), put(b), get(a), put(c). Which key gets evicted?",
-    say: "Capacity two. Put a, put b, get a, then put c. Which key gets evicted?",
-    options: ["a", "b", "c", "none"],
-    answer: 1,
-    a: "b. get(a) made a the most recently used, so b is the least recently used when c arrives.",
-    aSay: "B, the key b. Getting a moved it to the newest position, so when c arrives and the cache is over capacity, b is the one used longest ago.",
+    topic: "memory",
+    q: "A FastAPI service's memory grows with every request and never drops. What's the most likely Python cause?",
+    say: "A FastAPI service's memory grows with every request, and never drops. What's the most likely Python cause?",
+    a: "A reference that keeps growing: an unbounded cache or a module-level list/dict that gets a new entry per request. Find it with tracemalloc; bound it or remove it.",
+    aSay: "A reference that keeps growing. Usually an unbounded cache, or a module level list or dict that gets a new entry on every request, so nothing can ever reach a reference count of zero. Find it with tracemalloc snapshots, then bound it or remove it.",
   }),
-
-  // ------------------------------------------------------------ finale
-  {
-    kind: "drill",
-    items: [
-      { q: "A mutable default argument is created…", a: "once, when def runs; use None" },
-      { q: "copy() vs deepcopy()?", a: "new outer container vs copies all the way down" },
-      { q: "is vs ==?", a: "same object vs equal value; is only for None" },
-      { q: "Why can't a list be a dict key?", a: "it can change, so its hash could change" },
-      { q: "Closure in a loop sees…", a: "the variable's last value; bind with a default" },
-      { q: "Stacked decorators apply…", a: "bottom up; the top one runs first" },
-      { q: "Why functools.wraps?", a: "keeps name, docstring, signature" },
-      { q: "Generator memory for 2M chunks?", a: "one item (or one batch) at a time" },
-      { q: "GIL released during…", a: "I/O waits (and in many C libraries)" },
-      { q: "1,000 LLM calls?", a: "asyncio + semaphore + timeouts + backoff" },
-      { q: "Blocking call in async code?", a: "await asyncio.to_thread(fn)" },
-      { q: "Validate LLM JSON with…", a: "Pydantic: model_validate_json at the boundary" },
-    ],
-    beats: B(
-      { say: "Rapid fire. Answer each one before I do. A mutable default argument is created when?", hold: 3 },
-      "Once, when def runs. Use None as the default.",
-      { say: "Copy versus deep copy?", hold: 3 },
-      "Copy makes a new outer container. Deep copy copies all the way down.",
-      { say: "Is versus double equals?", hold: 3 },
-      "Same object versus equal value. Use is only for None.",
-      { say: "Why can't a list be a dict key?", hold: 3 },
-      "Because it can change, so its hash could change.",
-      { say: "A closure created in a loop sees what?", hold: 3 },
-      "The variable's last value. Bind it with a default argument.",
-      { say: "Stacked decorators apply in which order?", hold: 3 },
-      "Bottom up. And the top one runs first.",
-      { say: "Why functools wraps?", hold: 3 },
-      "It keeps the original's name, docstring and signature.",
-      { say: "Memory for two million chunks with a generator?", hold: 3 },
-      "One item, or one batch, at a time.",
-      { say: "The GIL is released during what?", hold: 3 },
-      "I O waits, and inside many C libraries.",
-      { say: "A thousand LLM calls?", hold: 3 },
-      "Asyncio, a semaphore, timeouts, and backoff.",
-      { say: "A blocking call inside async code?", hold: 3 },
-      "Await asyncio dot to thread.",
-      { say: "Validate the model's JSON with?", hold: 3 },
-      "Pydantic. Model validate json, at the boundary.",
-    ),
-  },
-  {
-    kind: "sayit",
-    q: "\"Tell me about the Python behind a GenAI service you'd build.\"",
-    lines: [
-      "Model calls are I/O-bound, so the service is async: one shared httpx client, a semaphore per provider, timeouts on every call.",
-      "Transient failures go through a retry decorator: backoff with jitter, only rate limits and timeouts.",
-      "Large corpora are read with generators and embedded in batches, so memory stays flat.",
-      "CPU-heavy parsing runs in a process pool, off the event loop.",
-      "Everything the model returns is validated with Pydantic at the boundary, and answers are cached in a bounded LRU or Redis.",
-    ],
-    beats: B(
-      { say: "And to finish, the open question that ties it all together. Tell me about the Python behind a GenAI service you'd build. Here's an answer that touches every topic.", tone: "ask" },
-      "Model calls are I O bound, so the service is async: one shared HTTP client, a semaphore per provider, and a timeout on every call.",
-      "Transient failures go through a retry decorator, with exponential backoff and jitter, retrying only rate limits and timeouts.",
-      "Large corpora are read with generators and embedded in batches, so memory stays flat whatever the size.",
-      "CPU heavy parsing runs in a process pool, off the event loop.",
-      { say: "And everything the model returns is validated with Pydantic at the boundary, with answers cached in a bounded LRU, or Redis across servers.", tone: "key" },
-    ),
-  },
-  {
-    kind: "big",
-    tone: "idea",
-    lead: "That's the Python",
-    text: "Names point to objects. Functions wrap functions. Generators wait to be asked. Await steps aside.",
-    after: "next: the FastAPI lecture puts AskDocs behind an API",
-    beats: B(
-      "That's the Python.",
-      { say: "Four sentences carry most of it. Names point to objects. Functions wrap functions. Generators wait to be asked. And await steps aside.", tone: "key" },
-      "In the FastAPI lecture, we put AskDocs behind an API: streaming tokens, dependencies, and the async mistakes that freeze a server. See you there.",
-    ),
-  },
 ];
+

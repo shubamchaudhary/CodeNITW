@@ -748,5 +748,103 @@ export const AI_STACK_ASKED = {
         "a": "**stdio**: the server runs as a local subprocess of the host — simple, no network exposure, ideal for local tools (files, a local database, CLIs). **Streamable HTTP**: the server runs remotely as a service — shared by many clients, centrally managed and updated, but it needs authentication and authorisation, TLS, and the usual web-service hardening."
       }
     ]
+  },
+  "CH-13": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "What is LangChain today, and what changed in version 1?",
+        "a": "A library for building LLM applications and agents on one interface across providers. Version 1 (October 2025) centred it on `create_agent`, middleware and structured output, built on LangGraph as the runtime; provider integrations are separate packages; the old chains (`LLMChain`, `RetrievalQA`, `AgentExecutor`) moved to `langchain-classic`. Answering with 2023-era “chains for everything” signals you haven't used it recently."
+      },
+      {
+        "q": "LangChain vs LangGraph: what's the difference, and when do you use each?",
+        "a": "LangGraph is the low-level runtime: state, a graph of nodes and edges, checkpoints, interrupts, streaming. LangChain sits on top: models, tools, messages, and `create_agent`, which compiles the standard tool-calling loop into a LangGraph graph. Use `create_agent` when the model should drive a standard loop; use LangGraph directly when you must fix the steps yourself: a mandatory classify → retrieve → grade order, parallel branches, approvals at chosen points, several agents."
+      },
+      {
+        "q": "What is LCEL, and is it still worth using?",
+        "a": "The pipe syntax that composes Runnables: `prompt | model | parser`. Every Runnable has invoke, stream, batch and async versions, so the whole chain streams, batches and traces for free. Still good for short fixed pipelines (a prompt, a model, a parser; a two-step RAG chain). For loops, branches, state or retries across steps, a LangGraph graph is clearer and easier to debug."
+      },
+      {
+        "q": "How does the model know how to call your tool? What makes a good tool?",
+        "a": "`@tool` turns the function into a schema: its name, its docstring as the description, and a JSON schema of the arguments from the type hints (Literal → enum, defaults → optional). That schema is all the model sees, so the docstring is a prompt: what it does, when to use it, what it returns. Good tools: few and clearly named, one job each, arguments the model can fill reliably (ids, enums), small results, errors returned as readable text, and permission checks in code. Values the model must not choose (the user id) come from `ToolRuntime`, hidden from the schema."
+      },
+      {
+        "q": "How do you get reliable structured output in LangChain?",
+        "a": "For one call, `model.with_structured_output(PydanticModel)`. In an agent, `create_agent(..., response_format=Schema)`; the validated object is in `result[\"structured_response\"]`. LangChain picks `ProviderStrategy` (the provider's native structured output) when supported, else `ToolStrategy` (the schema as a tool the model must call), whose `handle_errors` feeds validation errors back for another try. Still validate at the boundary and log the failure rate."
+      },
+      {
+        "q": "What does create_agent build, and what do you get for free?",
+        "a": "A LangGraph graph: a model node, a tools node, and an edge that loops back while the model's reply contains tool calls, ending when it answers without them. Because it's a graph you get: a checkpointer for per-thread memory, streaming of tokens and steps, interrupts (human approval), `context_schema` for per-run data, and middleware hooks around every model and tool call."
+      },
+      {
+        "q": "Middleware: what hooks exist, and in what order do [m1, m2, m3] run?",
+        "a": "Node-style hooks `before_agent`, `before_model`, `after_model`, `after_agent` (can update state or jump) and wrap-style `wrap_model_call`, `wrap_tool_call` (modify, retry, skip, fall back). `before_*` run m1 → m3, `wrap_*` nest with m1 outermost, `after_*` run m3 → m1. Put logging and retries first (outermost), guards that must run right before the model (PII masking) last."
+      },
+      {
+        "q": "A conversation loops through 40 tool calls, leaks an email into traces, and dies when the provider has an outage. Which middleware?",
+        "a": "`ModelCallLimitMiddleware` / `ToolCallLimitMiddleware` to cap the loop; `PIIMiddleware` to mask or block emails and card numbers; `ModelRetryMiddleware` and `ModelFallbackMiddleware` for the outage; and `SummarizationMiddleware` if long threads are slow and expensive. Then trace and alert on how often each fires — a fallback rate jumping is a signal."
+      },
+      {
+        "q": "How does memory work in a LangChain agent?",
+        "a": "Short-term: the conversation is the agent's state, saved by a checkpointer (`InMemorySaver` in development, `PostgresSaver` in production) under a `thread_id`; calling again with the same id continues the conversation. Long threads need trimming or `SummarizationMiddleware`. Long-term facts about a user go in a store under a namespace like (\"users\", user_id), read and written by tools via `runtime.store`."
+      },
+      {
+        "q": "How would you stream an agent's answer and its progress to a web UI?",
+        "a": "Run `agent.stream(..., stream_mode=[\"messages\", \"updates\"])`: `messages` yields tokens for the typing effect, `updates` yields each step (\"called search_orders\") for progress lines, and tools can emit `custom` events through `runtime.stream_writer`. Forward them from a FastAPI endpoint as Server-Sent Events, and stop when the client disconnects."
+      },
+      {
+        "q": "Would you use LangChain in production?",
+        "a": "Selectively. Yes for agents: one interface across providers, solved tools and structured output, middleware for production controls, LangGraph persistence underneath, LangSmith tracing. The costs are layers to debug and API churn. So: pin versions, keep prompts and business logic in my own modules, write tools as plain testable functions, trace everything — and skip the framework for single calls, where the SDK plus Pydantic and a retry is simpler."
+      }
+    ]
+  },
+  "CH-14": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Why LangGraph instead of a plain agent loop, or plain Python?",
+        "a": "A loop lets the model decide every step; some systems need steps you guarantee (classify first, check permissions before a refund, ask a human before paying). LangGraph makes those steps an explicit graph and adds what plain code doesn't give you: state saved after every step (resume, continue conversations), pausing for a human, streaming every step, and replaying or forking a run. The model can still decide at the points you choose."
+      },
+      {
+        "q": "What is a reducer, and what happens when two parallel nodes write the same key?",
+        "a": "A reducer says how a node's update merges into a state key: none → overwrite, `operator.add` → concatenate lists, `add_messages` → append, or replace a message with the same id. Parallel nodes in one super-step both write; with a reducer both updates are merged, without one LangGraph can't choose and raises `InvalidUpdateError`. Fix: add a reducer or give each node its own key."
+      },
+      {
+        "q": "Explain super-steps.",
+        "a": "LangGraph runs in rounds. In each, every scheduled node runs (in parallel if several), all reading the state as it was at the start of the round; none sees the others' updates. At the end, updates are merged through the reducers and a checkpoint is saved; then the edges choose the next round. That's why a fan-in node waits for all branches, and why a crash loses at most the current round."
+      },
+      {
+        "q": "How do you run a step once per item when the number of items is only known at run time?",
+        "a": "A router returns a list of `Send(\"node\", {...})`, one per item, each with its own small input. The copies run in parallel in the next super-step and write into a key with an appending reducer (`operator.add`); a following node combines them. That's map-reduce. Cap the fan-out for rate limits and cost, and decide what a single failure does."
+      },
+      {
+        "q": "What is a checkpoint, and what is a thread?",
+        "a": "A checkpoint is a saved snapshot of the state, plus what runs next, written by the checkpointer after every super-step. A thread is a sequence of runs sharing that state, named by `thread_id` — one conversation, ticket or job. Same thread id → the run continues from the latest checkpoint. They enable memory, interrupts, crash recovery and time travel (`get_state_history`, replay from a `checkpoint_id`, fork with `update_state`)."
+      },
+      {
+        "q": "How does interrupt work, and what is the trap?",
+        "a": "`interrupt(payload)` in a node saves the run and returns the payload to the caller; later `invoke(Command(resume=value), config)` on the same thread continues, and `interrupt` returns `value`. The trap: the node re-runs from its first line on resume, so code before the interrupt runs twice. Put side effects after it (or in another node), make them idempotent, keep multiple interrupts in a fixed order, and always use a checkpointer."
+      },
+      {
+        "q": "A run's rewrite-and-retrieve loop ran 40 times on one strange question. How do you stop that?",
+        "a": "Brakes at several levels: a `tries` counter in the state that the router checks, with a fallback route when it runs out (or the `RemainingSteps` managed value); a `recursion_limit` in the config as a backstop (it raises `GraphRecursionError`; recent versions default very high, so set your own); and a token, cost and time budget for the whole run."
+      },
+      {
+        "q": "The server crashes mid-run. What happens, and what can go wrong?",
+        "a": "With a durable checkpointer (Postgres), invoke the same thread with `None` and the run resumes from the last checkpoint; nodes that finished in the interrupted super-step aren't re-run. What can go wrong: the node that was running re-runs, so a side effect it already did (a charge, an email) happens twice. Make those idempotent (an idempotency key) or wrap them in `@task` so the result is saved; use retry policies for transient errors."
+      },
+      {
+        "q": "Short-term vs long-term memory in LangGraph?",
+        "a": "Short-term is the thread's state, saved by the checkpointer — the conversation and working data of one thread, trimmed or summarised as it grows. Long-term is a Store passed to `compile(store=...)`: items under namespaces like (\"users\", user_id), with put/get and optional semantic search, shared across threads and read in nodes through `runtime.store`. Per-run settings (user id, model choice) go in `context_schema`, not in state."
+      },
+      {
+        "q": "Supervisor or handoffs for a multi-agent system — and should it be multi-agent at all?",
+        "a": "Supervisor: a coordinator routes to specialist agents (often subgraphs) and collects results — easier to control, trace and evaluate. Handoffs/swarm: agents pass control directly with `Command(goto=..., graph=Command.PARENT)` — fewer hops, harder to reason about. And split only when parts need different tools or instructions or can run in parallel; otherwise one agent with good tools is cheaper and easier to evaluate."
+      },
+      {
+        "q": "How do you run a LangGraph agent in production?",
+        "a": "Compile the graph once at startup; Postgres checkpointer and store so any instance can continue any thread; thread ids issued by my system and tied to the user; serve it from FastAPI streaming SSE (or the Agent Server, which adds background runs, queues and double-texting handling); caps on loops, tokens, cost and tool timeouts; LangSmith or OpenTelemetry tracing; and evals on whole trajectories before each release."
+      }
+    ]
   }
 };

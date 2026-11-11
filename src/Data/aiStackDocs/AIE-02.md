@@ -11,7 +11,7 @@ This first page is about the round that opens almost every AI engineer interview
 
 ## 0. The journey, and the words you will meet
 
-If you are new to all of this, good: the stack is written for you. It reads like a book of twelve chapters. Each one solves a concrete problem well, then ends with a new problem that the solution cannot handle, and the next chapter starts there. Every new word is explained properly the first time it matters.
+If you are new to all of this, good: the stack is written for you. It reads like a book of twelve chapters, plus two closing chapters that take LangChain and LangGraph apart in depth. Each one solves a concrete problem well, then ends with a new problem that the solution cannot handle, and the next chapter starts there. Every new word is explained properly the first time it matters.
 
 The first half builds assistants and agents:
 
@@ -141,4 +141,4 @@ Behavioural rounds for AI roles ask the usual questions with an AI twist. Prepar
 
 Each story: the situation, what you did, the result with a number, what you learned.
 
-The twelve chapters build the knowledge behind each of those answers. Chapter 1 starts where you would: in your first week as an AI engineer, with a plain chat model and three awkward questions about it.
+The chapters build the knowledge behind each of those answers. Chapter 1 starts where you would: in your first week as an AI engineer, with a plain chat model and three awkward questions about it.
