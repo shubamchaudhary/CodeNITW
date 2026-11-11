@@ -1,0 +1,2819 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "98d7e6e0",
+   "say": "Node dot js, topic by topic. This lecture follows the Node page exactly: twelve modules, every question, in the page's order and with its numbers. Each module starts with its idea as a picture, then the questions, then a check.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "947e0fa2",
+   "say": "Module one. Basics and architecture. Ten questions, all answered by one picture of what's inside Node.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e80497a",
+   "say": "Here's the idea of Node. Your JavaScript runs on one thread, inside V8, Google's engine, which compiles it and manages memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "14b7f08e",
+   "say": "When you read a file or open a socket, you call Node's APIs, which are bindings into C plus plus. They hand the work to libuv, a C library that runs the event loop and does asynchronous I/O.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26de1f69",
+   "say": "For network sockets, libuv asks the operating system to watch them, with epoll, kqueue or IOCP, so no thread waits at all. For things the OS can't do asynchronously, like file reads, DNS lookups, crypto and compression, libuv uses a small thread pool, four threads by default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de40c1ff",
+   "say": "When the work finishes, libuv queues your callback, and the event loop runs it back on the one JavaScript thread. So Node is single-threaded for your code, and multi-threaded underneath. That sentence answers half this module.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5e1c5f41",
+   "say": "Question 1. What is Node.js, and when should (and shouldn't) you use it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c09698bc",
+   "say": "A JavaScript runtime outside the browser: V8 plus libuv plus a standard library",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "10071e01",
+   "say": "Great for I/O-heavy work: APIs, real-time apps, BFFs, streaming, tooling",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82c7736e",
+   "say": "Not for CPU-heavy work on the main thread (video encoding, big number crunching) without worker threads",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ac66e0d0",
+   "say": "Question 2. How is JavaScript in Node different from JavaScript in the browser?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e9ae2345",
+   "say": "No DOM or window; instead fs, http, process, Buffer, streams",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ad1338d",
+   "say": "Module systems: CommonJS and ES modules; you control the Node version",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b2e36dd",
+   "say": "Full system access: files, network, processes; no sandbox",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a981f698",
+   "say": "Question 3. What are V8 and libuv, and what does each one do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e7d69669",
+   "say": "V8: Google's JavaScript engine: parses, JIT-compiles and runs JS, manages the heap and GC",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be7d3993",
+   "say": "libuv: C library for the event loop, async I/O, the thread pool, timers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5543137",
+   "say": "Node glues them together with C++ bindings and the core modules",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8931c08d",
+   "say": "Question 4. Is Node.js single-threaded?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "467807ef",
+   "say": "Your JavaScript runs on one main thread, with one event loop",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "035cb51f",
+   "say": "But libuv's thread pool and the OS handle I/O in parallel",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ed4a2e7",
+   "say": "And you can add threads (worker_threads) or processes (cluster) yourself",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "38f8459f",
+   "say": "Question 5. How does Node handle thousands of concurrent requests with one thread?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b6a00e63",
+   "say": "Each request does a little JavaScript, then waits on I/O (database, network)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "921f3dc8",
+   "say": "Waiting doesn't occupy the thread: the OS watches thousands of sockets at once",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "18833369",
+   "say": "When data arrives, the callback runs: the thread is only busy while computing",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "01242568",
+   "say": "Question 6. What is the difference between blocking and non-blocking I/O?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "35e0d7a3",
+   "say": "Blocking: the thread waits until the operation finishes (fs.readFileSync)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f13dd5e2",
+   "say": "Non-blocking: start the operation, carry on, get a callback or promise later",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e97b6e66",
+   "say": "In a server, one blocking call stalls every request: use the async APIs",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9cf1bb42",
+   "say": "Compare with Spring's classic model. Every request gets a thread, and while the database query runs, that thread just waits. A thousand slow requests need a thousand threads, each with its own stack.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e60f4176",
+   "say": "Node does each request's tiny bit of work on one thread, and while they all wait on the database, the thread is free for the others. When the replies come back, it finishes each one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b8d470ff",
+   "say": "So Node shines when requests mostly wait, and suffers when they compute, because computing blocks everyone. And mention that Java twenty one's virtual threads give Spring much of the same benefit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6199788d",
+   "say": "Question 7. How is Node's model different from Java Spring's thread-per-request model?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d96d41c5",
+   "say": "Spring MVC: one thread per request, blocking calls; simple code, threads are the limit",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4dfcf6d",
+   "say": "Node: one event loop, non-blocking calls; huge concurrency for I/O, but CPU work blocks all",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2bbafec2",
+   "say": "Spring WebFlux is reactive like Node; Java 21 virtual threads make blocking cheap again",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "29254f23",
+   "say": "Question 8. What is the reactor pattern in Node.js?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "894274a9",
+   "say": "One loop waits for I/O events (the demultiplexer: epoll, kqueue, IOCP)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52e80ffd",
+   "say": "Each event is dispatched to its registered handler (your callback)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5259897",
+   "say": "Handlers must be quick and non-blocking so the loop can keep reacting",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bae846e4",
+   "say": "Question 9. What are Node's important global objects?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "13be9a8e",
+   "say": "process, Buffer, globalThis (global), console",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1a42d378",
+   "say": "Timers: setTimeout, setInterval, setImmediate, queueMicrotask",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3cb3b5b4",
+   "say": "Web-standard: fetch, URL, AbortController, TextEncoder, structuredClone; __dirname only in CommonJS",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5f4a2a00",
+   "say": "Question 10. What is the process object used for?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1c00acfd",
+   "say": "process.env (config), process.argv (CLI arguments), process.exit(code)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "171da251",
+   "say": "Signals and lifecycle: process.on(\"SIGTERM\"), uncaughtException, unhandledRejection",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5748949f",
+   "say": "Info: process.memoryUsage(), cpuUsage(), pid, platform, version; nextTick",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "10a8da3a",
+   "say": "Check 1. A Node API reads a fifty megabyte file with read file sync, inside a request handler. What happens to the other requests?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5384e67d",
+   "say": "They all wait. The sync call blocks the one JavaScript thread until the whole file is read. Use the async version, or better, a stream.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f75e2c55",
+   "say": "Module two. The event loop. Five questions, and the most technical module of the page. It starts with the loop's phases.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a119f0ba",
+   "say": "Here's the idea of the module. Node's event loop goes round in phases. First, timers: callbacks of set timeouts and intervals whose time is up.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c027202c",
+   "say": "Then pending callbacks: a few system callbacks deferred from the last round, like some TCP errors.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6c8be67",
+   "say": "Then the poll phase, the heart of the loop. It runs I/O callbacks, like a file read or an incoming request. If nothing else is due, the loop waits here for new events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d227adff",
+   "say": "Then check: set immediate callbacks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3a728b8a",
+   "say": "Then close callbacks, like a socket's close event, and around again to timers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83c09fb2",
+   "say": "And between every single callback, in any phase, Node drains two queues: first everything queued with process dot next tick, then all promise microtasks. Phases for the big callbacks, and those two queues in between. That's the whole model.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "57b2a552",
+   "say": "Question 11. What are the phases of Node's event loop?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6badbf11",
+   "say": "timers → pending callbacks → idle/prepare → poll (I/O) → check (setImmediate) → close callbacks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ffed610",
+   "say": "Each phase has a queue of callbacks; the loop runs them, then moves on",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "42edb460",
+   "say": "nextTick and promise microtasks run between callbacks, not as a phase",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7d40a01c",
+   "say": "Question 12. What's the difference between process next tick, promise microtasks, set immediate, and set timeout zero?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "476252c4",
+   "say": "nextTick: runs right after the current operation, before promise microtasks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa78cd68",
+   "say": "Promise callbacks: right after the nextTick queue",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d9faa49",
+   "say": "setImmediate: the check phase, after I/O in this turn",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "deca4744",
+   "say": "setTimeout(fn, 0): the timers phase (at least 1 ms); vs setImmediate the order is random at the top level, but setImmediate wins inside an I/O callback",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "13ead5dc",
+   "say": "Let's predict one. The script logs A, schedules a timeout B, an immediate C, a promise D, and a next tick E, and logs F. A and F print first: synchronous code always finishes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d32c4fc",
+   "say": "The script is done, so the next tick queue runs. E.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a71b52e9",
+   "say": "Then promise microtasks. D.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fbfe6d12",
+   "say": "Then the event loop proper. Timers, B, and the check phase, C. One honest caveat: at the top level of a script, a zero timeout and an immediate can come in either order, depending on how fast the loop starts. Inside an I/O callback, set immediate always comes first. So: A, F, E, D, then B and C.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7fea33b",
+   "say": "Question 13. Predict the output of mixed nextTick, promises and timers.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2101726b",
+   "say": "1. synchronous code; 2. all nextTicks; 3. all promise microtasks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee86c3b1",
+   "say": "4. timers phase (setTimeout); 5. check phase (setImmediate)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02daa28a",
+   "say": "Recursive nextTick can starve the loop: I/O never gets a turn",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "775d8064",
+   "say": "Question 14. What does \"don't block the event loop\" mean, and how do you avoid it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "45dd45a9",
+   "say": "Every request shares one thread: a 200 ms computation adds 200 ms to everyone",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e2e7bfc",
+   "say": "Culprits: sync fs/crypto, big JSON.parse/stringify, heavy regex (ReDoS), large loops",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0222f18",
+   "say": "Fixes: async APIs, streams, chunk work with setImmediate, worker_threads, or a job queue",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "54feb1b9",
+   "say": "Question 15. How do you detect that the event loop is blocked or lagging?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ead6c524",
+   "say": "Measure event-loop delay: perf_hooks.monitorEventLoopDelay() (p99), or a timer's lateness",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ad63ac7",
+   "say": "Event-loop utilisation (performance.eventLoopUtilization), APM tools, clinic.js doctor",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cff830b3",
+   "say": "Find the cause with a CPU profile (--cpu-prof, clinic flame) and alert on lag",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "daefc147",
+   "say": "Check 2. A resolved promise logs P in its then, and process next tick logs N. Which prints first?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "93b8f485",
+   "say": "N. Node drains the next tick queue before the promise microtask queue.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d14ae27d",
+   "say": "Module three. Modules and npm. Six questions about how code is loaded and how dependencies are managed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c74f45ac",
+   "say": "Here's the idea: what require does. First it resolves the name to a file: a core module, a relative path, trying dot j s, dot json and index files, or a package in node modules, searching up the folders.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4cb533a",
+   "say": "Then it checks the cache. If the module was loaded before, it returns the same exports straight away. That's why a module is effectively a singleton.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45a90360",
+   "say": "Otherwise it wraps the file's code in a function. That wrapper is where exports, require, module, double underscore filename and dirname come from. They're parameters, not globals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21253ecb",
+   "say": "It runs the code, synchronously, once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98763fa6",
+   "say": "And it caches and returns module dot exports. Resolve, cache, wrap, run, return.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6baa8c57",
+   "say": "Question 16. How does require() work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c34df333",
+   "say": "Resolve the path → check require.cache → wrap the code in a function → run it → return module.exports",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ff6d33c0",
+   "say": "Synchronous, and cached: a second require returns the same object",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2622dbad",
+   "say": "Circular requires get a partially-filled exports object",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ca578d69",
+   "say": "Question 17. What is the difference between module.exports and exports?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0bf7b753",
+   "say": "exports starts as a reference to module.exports; require returns module.exports",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "54b66040",
+   "say": "exports.add = … works (it mutates the shared object)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "531eb49c",
+   "say": "exports = { add } breaks the link and exports nothing; assign module.exports instead",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f290ec5c",
+   "say": "Question 18. How do you use ES modules in Node, and how do they interoperate with CommonJS?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6f31a90a",
+   "say": "Use .mjs, or \"type\": \"module\" in package.json; import / export; top-level await",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b68a4f91",
+   "say": "ESM can import CommonJS (module.exports becomes the default export)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "693ea57f",
+   "say": "CommonJS loads ESM with await import(); newer Node versions can require() ESM without top-level await",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "150408e4",
+   "say": "No __dirname in ESM: use import.meta.dirname or import.meta.url",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ad404763",
+   "say": "Question 19. What is in package.json, and what is the difference between dependencies, devDependencies and peerDependencies?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6368b55e",
+   "say": "name, version, scripts, main/exports, type, engines, and the dependency lists",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04ff76d9",
+   "say": "dependencies: needed at runtime; devDependencies: only to build and test",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9184cb98",
+   "say": "peerDependencies: a plugin says “I need the host's copy”, e.g. a React library needs react",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "87712597",
+   "say": "Question 20. How do semantic versioning and package-lock.json work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "054b427c",
+   "say": "MAJOR.MINOR.PATCH: breaking . features . fixes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27daa7c4",
+   "say": "^1.2.3 allows 1.x updates; ~1.2.3 allows 1.2.x only",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b418c9d",
+   "say": "package-lock.json pins the exact tree; commit it, and install in CI with npm ci",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "21fca5d3",
+   "say": "Question 21. What is the difference between npm and npx?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a84251ab",
+   "say": "npm installs and manages packages and runs scripts",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d65211e5",
+   "say": "npx runs a package's binary without installing it globally (npx create-vite)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "35a66c2f",
+   "say": "It uses the local node_modules/.bin first, then downloads if needed",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "aa40f1e6",
+   "say": "Module four. Async patterns and events. Four questions on Node's own conventions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17ae042a",
+   "say": "Question 22. What is the error-first callback convention?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a3e3bd62",
+   "say": "Node callbacks are called as callback(err, result)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "441c8b81",
+   "say": "Check err first and return; otherwise use the result",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91690c48",
+   "say": "Always call the callback exactly once, and asynchronously",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d83d9e43",
+   "say": "Question 23. How do you convert callback APIs to promises in Node (util.promisify)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e3e21eab",
+   "say": "util.promisify(fn) turns an error-first callback function into one that returns a promise",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ddc02096",
+   "say": "Most core modules already have promise versions: fs/promises, timers/promises, stream/promises",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5cd56325",
+   "say": "Then use async/await everywhere",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8269dfb9",
+   "say": "Question 24. What is the EventEmitter, and how does it work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "706542d5",
+   "say": "The base of streams, servers and sockets: on(event, fn), once, emit, off",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "625ecf63",
+   "say": "emit calls listeners synchronously, in the order they were added",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e574eb28",
+   "say": "An 'error' event with no listener crashes the process; too many listeners warns of a leak",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "38bf22f9",
+   "say": "Question 25. How do you limit concurrency when running many async operations?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1fa55a6c",
+   "say": "Promise.all on 10,000 items starts 10,000 requests at once: rate limits, memory, sockets",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0a37cda",
+   "say": "Run in batches, or a pool of N workers pulling from a queue",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "459cf329",
+   "say": "Libraries: p-limit, p-queue; or for await over a stream",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "68286333",
+   "say": "Module five. Buffers and streams. Six questions about handling data too big, or too continuous, to hold in memory at once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24a902c1",
+   "say": "Here's the idea. A stream moves data in chunks. A two gigabyte file is read sixty four kilobytes at a time, never all at once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20341bb8",
+   "say": "Each chunk can be transformed as it passes, here compressed with gzip.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c4c9169",
+   "say": "And written out, here to an HTTP response going to a slow phone. Memory stays at a few chunks, however big the file.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "01784dc9",
+   "say": "And when the client is slower than the disk, the writable's buffer fills up, write returns false, and the readable is paused until the writable emits drain. That's backpressure: the pipeline runs at the speed of its slowest part, instead of piling data up in memory.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "257b2161",
+   "say": "Question 26. What is a Buffer?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d9557fcf",
+   "say": "A fixed-size chunk of raw binary memory, outside the V8 heap (a Uint8Array subclass)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b8443e5",
+   "say": "For files, sockets, images, crypto: anything that isn't text",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "631f5fd0",
+   "say": "Convert with Buffer.from(\"hi\", \"utf8\") and buf.toString(\"base64\")",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e8d0aaae",
+   "say": "Question 27. What are streams, and why use them?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bcf674c3",
+   "say": "Process data piece by piece as it arrives, instead of loading it all",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c538b84",
+   "say": "Constant memory for huge files; start sending before you've finished reading",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a90569ed",
+   "say": "Composable: read → transform → write; HTTP requests and responses are streams",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "72ec3f1c",
+   "say": "Question 28. What are the four types of streams?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "58219407",
+   "say": "Readable: a source (fs.createReadStream, an incoming request)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b6c9a4b",
+   "say": "Writable: a destination (fs.createWriteStream, the response)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04f8b6c8",
+   "say": "Duplex: both, independently (a TCP socket); Transform: a duplex that changes data (gzip, crypto)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "058d447e",
+   "say": "Question 29. What is backpressure, and how does Node handle it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "366240d0",
+   "say": "The consumer is slower than the producer: unchecked, data piles up in memory",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c6fb328",
+   "say": "write() returns false when the buffer passes highWaterMark; stop writing until 'drain'",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "382abd98",
+   "say": "pipe() and pipeline() do this for you",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4a87cfd8",
+   "say": "Question 30. Why is pipeline() better than pipe()?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d0a8ce8c",
+   "say": "pipe() doesn't forward errors or destroy the other streams when one fails: leaks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d9c44b5",
+   "say": "pipeline() connects them, handles errors and cleanup for every stream, and tells you when it's done",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f98750ce",
+   "say": "Use the promise version: await pipeline(src, transform, dest)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "925e4c47",
+   "say": "Question 31. What is the difference between fs.readFile and fs.createReadStream?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4e609b03",
+   "say": "readFile loads the whole file into memory, then gives it to you",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f54a357b",
+   "say": "createReadStream gives you chunks as they're read: constant memory",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dac5a620",
+   "say": "readFile for small files (config); streams for big files or sending to clients",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "146a28cd",
+   "say": "Check 3. An endpoint serves one gigabyte video files using read file. What goes wrong under load, and what's the fix?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7a54c525",
+   "say": "Every request loads a whole gigabyte into memory before sending a byte, so a few concurrent requests run the server out of memory. Stream it instead, with pipeline from a read stream to the response.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d1d5037",
+   "say": "Module six. Files and HTTP. Five questions, from the fs module to Express.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c12a1e8d",
+   "say": "Question 32. What are the three styles of fs API, and which should you use?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f6798c48",
+   "say": "Callbacks: fs.readFile(path, cb); Sync: fs.readFileSync(path); Promises: fs/promises",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b78b364",
+   "say": "Use fs/promises with async/await in servers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0793d21c",
+   "say": "Sync only at startup or in CLI scripts, never in a request handler",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "eba2017f",
+   "say": "Question 33. What is the path module for?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "73ff4deb",
+   "say": "Building file paths that work on every OS: path.join, path.resolve",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ed7bbf0",
+   "say": "Pieces of a path: basename, dirname, extname, parse",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b87df5b",
+   "say": "Never concatenate paths with \"/\"; resolve user input carefully (path traversal)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d6aa9b81",
+   "say": "Question 34. How do you create an HTTP server with the core http module?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fd75c21a",
+   "say": "http.createServer((req, res) => { … }).listen(3000)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71af940b",
+   "say": "You parse the URL, method and body yourself; res.writeHead, res.end",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe553817",
+   "say": "Fine for learning; frameworks add routing, parsing and middleware",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1a371b5f",
+   "say": "Question 35. What is Express, and why use it over plain http?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e4732044",
+   "say": "A minimal web framework on top of http",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e9b249b",
+   "say": "Routing, middleware, body parsing, req/res helpers, a huge ecosystem",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "422c46d4",
+   "say": "Express 5 handles rejected promises in async handlers; alternatives: Fastify, NestJS, Hono",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c26a9fe4",
+   "say": "Question 36. What is the difference between req.params, req.query and req.body?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "50bce876",
+   "say": "req.params: route parameters: /users/:id → req.params.id",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce703399",
+   "say": "req.query: the query string: ?page=2 → req.query.page (always strings)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b881af31",
+   "say": "req.body: the parsed request body, only with a parser like express.json()",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "935c7695",
+   "say": "Module seven. Express middleware and APIs. Six questions, and one picture: a request walking down a chain of functions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95eed442",
+   "say": "Here's the idea. In Express, a request walks down a chain of middleware functions, in the order you registered them. Each one gets the request, the response, and next. It can change them, end the response, or call next to pass the request along.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae283233",
+   "say": "So order matters. The JSON body parser must come before any route that reads req dot body.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6743757",
+   "say": "An auth middleware either attaches the user and calls next, or replies four oh one and stops. Nothing after it runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cc2f06bb",
+   "say": "The matching route handler sends the response.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ac21da8",
+   "say": "And an error anywhere, passed to next, or thrown, skips straight to the error handler, the one with four arguments, registered last. Chain, order, next, and a final error handler: that's Express.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "25185042",
+   "say": "Question 37. What is middleware in Express, and what does next() do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3b056870",
+   "say": "A function (req, res, next) that runs during the request–response cycle",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea2a713a",
+   "say": "next() passes control to the next matching middleware; next(err) jumps to error handlers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae560125",
+   "say": "If it neither responds nor calls next, the request hangs",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f4edbbe4",
+   "say": "Question 38. Why does the order of middleware matter, and what is the difference between app.use and app.get?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cb976b29",
+   "say": "Middleware runs in registration order: parsers, auth and logging must come before routes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e87a6b67",
+   "say": "app.use(path, fn): any method, matches path prefixes: for middleware",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ac9f028",
+   "say": "app.get(path, fn): only GET, exact route match: for handlers",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d9f8b60e",
+   "say": "Question 39. How do you handle errors in Express, including async errors?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "eb935551",
+   "say": "An error-handling middleware with four arguments (err, req, res, next), registered last",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45c98bef",
+   "say": "Express 4: async handlers must catch and call next(err) (or use a wrapper); Express 5 catches rejected promises itself",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1a8cb48",
+   "say": "Map errors to status codes; never leak stack traces in production",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "856fd43d",
+   "say": "Question 40. How do you organise routes with express.Router?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "748061c1",
+   "say": "A mini-app per resource: const router = express.Router(); router.get(\"/\", …)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e082b6c",
+   "say": "Mount it with a prefix: app.use(\"/api/users\", usersRouter)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93faa4da",
+   "say": "Router-level middleware (auth for one area); layers: route → controller → service → repository",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3a90406c",
+   "say": "Question 41. What are the key principles of a good REST API in Node?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "926526ed",
+   "say": "Resources as nouns, HTTP methods as verbs, correct status codes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fbf62f51",
+   "say": "Validate input at the edge (Zod, Joi); a consistent error format",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c211e3b1",
+   "say": "Pagination, filtering, versioning; idempotent PUT/DELETE; docs with OpenAPI",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "037b7a02",
+   "say": "Question 42. How do you handle CORS in an Express app?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "16479fe5",
+   "say": "Browsers block cross-origin reads unless the server sends Access-Control-Allow-* headers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b17552c0",
+   "say": "Use the cors middleware with an allow-list of origins, not \"*\" with credentials",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e8e66e6",
+   "say": "Preflight OPTIONS requests must be answered too; CORS doesn't protect the server itself",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ea8b17d5",
+   "say": "Module eight. Errors and the process lifecycle. Four questions about failing well and shutting down cleanly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1647db0e",
+   "say": "Question 43. What is the difference between operational errors and programmer errors?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "66e7902e",
+   "say": "Operational: expected failures of a correct program: timeouts, 404s, invalid input, DB down",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "664b3f86",
+   "say": "Programmer errors: bugs: undefined is not a function, wrong arguments",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6cae6232",
+   "say": "Handle operational errors (retry, report, respond); for bugs, log and restart",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6ee75b1d",
+   "say": "Question 44. What should you do on uncaughtException and unhandledRejection?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0881344b",
+   "say": "Log the error with as much context as possible",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7a200c06",
+   "say": "Then exit (process.exit(1)) and let the process manager restart you: the state may be corrupt",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ddab4b9e",
+   "say": "Since Node 15, an unhandled rejection already crashes the process by default",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "118c3005",
+   "say": "Graceful shutdown, step by step. Kubernetes or Docker sends SIGTERM, and waits a grace period, thirty seconds by default, before killing the process outright.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eaf2d0b0",
+   "say": "First, stop taking new work: server dot close stops new connections, and the readiness probe starts failing so the load balancer stops sending traffic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d419e52",
+   "say": "Then let the requests and jobs already in progress finish.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e37fd03",
+   "say": "Then close resources: the database pool, Redis, queue consumers, and flush the logs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2f418f5",
+   "say": "And exit with code zero, with a safety timer that forces the exit if something hangs. Without this, every deploy cuts off requests mid-flight.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fc9c28d1",
+   "say": "Question 45. How do you implement graceful shutdown?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bfb0f5c1",
+   "say": "process.on(\"SIGTERM\") (and SIGINT): stop accepting, fail readiness",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cfe1d6aa",
+   "say": "server.close() and wait for in-flight work; close the DB, Redis and consumers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33c8e39e",
+   "say": "process.exit(0), with a force-exit timeout as a backstop",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f648457d",
+   "say": "Question 46. How should you do logging in a Node service?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "07a76a59",
+   "say": "Structured JSON logs with a fast logger (pino), to stdout; the platform collects them",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70b41fb7",
+   "say": "Levels; a request id on every line (AsyncLocalStorage); no secrets or personal data",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3a4f07a",
+   "say": "console.log is synchronous to terminals and unstructured: not for production",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "85ec91f9",
+   "say": "Check 4. On an uncaught exception, a teammate logs the error and lets the server keep running. Why is that risky?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e3f34a84",
+   "say": "Because after an unexpected exception, the process may be in an unknown state: half-finished work, leaked connections, broken assumptions. Log it, exit, and let the process manager start a clean one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9c6849a",
+   "say": "Module nine. Scaling and performance. Eight questions about using more than one core, and about memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5204eb16",
+   "say": "Here's the idea. Cluster runs several copies of your server process, one per core. They share the same port, and connections are spread across them. Today that job is often done by PM2, or simply more container replicas.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ea26e18",
+   "say": "Worker threads run JavaScript on other threads in the same process, each with its own event loop. They talk by messages, or shared memory. They're for CPU-heavy work, so the main thread stays free.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b2a1086",
+   "say": "And child process starts a completely separate program, like ffmpeg or a Python script, and talks to it through standard input and output. More copies of the server, more threads for computing, or another program.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "34ee4976",
+   "say": "Question 47. What is the cluster module?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9d0e8620",
+   "say": "The primary process forks workers (one per core); each is a full copy of the app",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd749335",
+   "say": "They share the server port; connections are distributed (round-robin on Linux)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49a4fcc7",
+   "say": "No shared memory: sessions and caches go to Redis; in containers prefer replicas",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "44d46cb4",
+   "say": "Question 48. What are worker_threads, and when should you use them?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "560cc4e6",
+   "say": "Real threads running JavaScript, each with its own event loop and heap",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6089a959",
+   "say": "For CPU-bound work that would block the main loop: image resizing, PDF parsing, hashing",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94f00ebb",
+   "say": "Use a pool (piscina); not for I/O, which is already async",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "169af186",
+   "say": "Question 49. What is the difference between cluster, worker_threads and child_process?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "60a2b7e9",
+   "say": "cluster: processes running your server, to scale HTTP across cores",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3b36e11",
+   "say": "worker_threads: threads inside one process, for CPU-heavy JavaScript",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8871d5ae",
+   "say": "child_process: any external program, separate memory, communicate via stdio/IPC",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "aac8866d",
+   "say": "Question 50. What is the difference between spawn, exec, execFile and fork?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a4eaee67",
+   "say": "spawn: start a command, stream its output: long-running or big output",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d9b17219",
+   "say": "exec: runs in a shell, buffers the whole output: small commands; beware shell injection",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca798724",
+   "say": "execFile: like exec without a shell (safer); fork: spawn a Node script with an IPC channel",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0c4e94a4",
+   "say": "Question 51. What causes memory leaks in Node, and how do you find them?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7d950a97",
+   "say": "Unbounded caches and global arrays; listeners never removed; closures holding big objects; timers never cleared",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e3cd9253",
+   "say": "Symptoms: heap grows request after request, then GC thrash and an out-of-memory crash",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be9b0bc9",
+   "say": "Find: heap snapshots in Chrome DevTools (--inspect), compare two; clinic heapprofiler",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e6e9cac4",
+   "say": "Question 52. How does garbage collection work in V8 (Node)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fa604a87",
+   "say": "Generational: new objects in the young generation, collected often and fast (Scavenge)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b269260d",
+   "say": "Survivors are promoted to the old generation, collected by mark-sweep-compact, mostly concurrently",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbd21a39",
+   "say": "Heap limit set by --max-old-space-size; containers should set it to fit the memory limit",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cee06704",
+   "say": "Question 53. How do you improve the performance of a Node.js API?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a7e51214",
+   "say": "Measure first: latency percentiles, event-loop lag, a CPU profile",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a7fa61b",
+   "say": "Never block the loop; parallelise independent I/O; connection pools and keep-alive",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16e6b0b0",
+   "say": "Cache, paginate, stream, compress; fix slow queries and N+1; use all cores",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe21b2df",
+   "say": "Question 54. How do you add caching to a Node application?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8fed635c",
+   "say": "In-process: an LRU (lru-cache) for small, per-instance data",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f71a6177",
+   "say": "Shared: Redis with TTLs, cache-aside (read → miss → load → set); invalidate on writes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0654c791",
+   "say": "HTTP caching: Cache-Control, ETag; a CDN for public content; prevent stampedes",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "74b28735",
+   "say": "Check 5. Password hashing makes the login endpoint slow, and stalls other requests. Cluster or worker threads?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d6c75a03",
+   "say": "Move the CPU work off the event loop: the async bcrypt API runs in libuv's thread pool, or use worker threads. Cluster only adds more processes, and each one's loop would still stall during hashing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f4cbaeb",
+   "say": "Module ten. Security and configuration. Five questions, from secrets to password hashing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2abf62d",
+   "say": "Question 55. How do you manage configuration and secrets (env vars, dotenv, NODE_ENV)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e3465de7",
+   "say": "Config from environment variables (12-factor); .env files only for local development, never committed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "adb623b5",
+   "say": "Validate config at startup (Zod) and fail fast if something is missing",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "511cc4a3",
+   "say": "Secrets from a secret manager in production; NODE_ENV=production enables framework optimisations",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9eeada01",
+   "say": "JWT in a Node API, in one picture. The client logs in with an email and password. The server checks the password against the stored hash, and signs a token with the user's id and a short expiry.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89f2c68d",
+   "say": "Then every request carries the token in the authorization header.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ec16733",
+   "say": "An auth middleware verifies the signature and expiry, and attaches the user to the request, or replies four oh one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb0929da",
+   "say": "And the points to say: a JWT is signed, not encrypted, so no secrets inside. Keep access tokens short-lived, with a refresh token in an HttpOnly cookie. Pin the algorithm when verifying. And have a way to rotate the signing secret.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c7685d42",
+   "say": "Question 56. How does JWT authentication work in a Node API?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f07b27a5",
+   "say": "On login, sign a token { sub, exp } with a secret or private key",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94001215",
+   "say": "Clients send it as a Bearer token; middleware verifies it and sets req.user",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7939bf41",
+   "say": "Short expiry plus refresh tokens; revocation needs a deny-list or short lifetimes",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dc39e395",
+   "say": "Question 57. How do you store passwords securely?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5ac9be5a",
+   "say": "Never plain text, never fast hashes (MD5, SHA-256 alone)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "09e921e1",
+   "say": "Slow, salted password hashes: bcrypt, scrypt or Argon2id (the salt is built in)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4aeb9614",
+   "say": "Compare with the library's verify (constant time); rate-limit login attempts",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1d05e7dc",
+   "say": "Question 58. What are the most important security practices for a Node/Express API?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "094078b8",
+   "say": "Validate all input; parameterised queries (no SQL/NoSQL injection)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "85ac8017",
+   "say": "helmet for headers, a tight CORS allow-list, rate limiting, body size limits",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95f08263",
+   "say": "Authorise every request; secrets out of code; npm audit and updated dependencies",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b23e55ad",
+   "say": "Don't leak stack traces; HTTPS; log security events",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ef918410",
+   "say": "Question 59. What does the crypto module provide?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cfef208d",
+   "say": "Hashing (createHash), HMACs (createHmac) for signatures and webhooks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9fee98c",
+   "say": "Random values: randomBytes, randomUUID; password hashing: scrypt, pbkdf2",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84cb86ae",
+   "say": "Encryption (createCipheriv with AES-GCM), key pairs, sign/verify; timingSafeEqual",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c9ac3612",
+   "say": "Module eleven. Testing and debugging. Two questions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3a295b4",
+   "say": "Question 60. How do you test a Node.js API?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4ecb2aeb",
+   "say": "Unit tests for services with Vitest, Jest or node:test; mock only the edges",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b9c2e97",
+   "say": "Integration tests through HTTP with supertest against the real app",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad147673",
+   "say": "A real database in Docker (Testcontainers); mock external APIs (nock, MSW); run in CI",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3909fd74",
+   "say": "Question 61. How do you debug and profile a Node.js application?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4fbc24dd",
+   "say": "node --inspect, then Chrome DevTools or VS Code: breakpoints, stepping",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "592a1f33",
+   "say": "CPU: --cpu-prof or clinic flame for flame graphs; memory: heap snapshots",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "34641057",
+   "say": "Production: structured logs, metrics, tracing (OpenTelemetry), event-loop lag",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6cdb68c5",
+   "say": "Module twelve. Data, real-time and production. Sixteen questions from building real Node services, starting with databases.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1c04af8",
+   "say": "Question 62. Why do you need a database connection pool?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0928463a",
+   "say": "Opening a connection is slow (TCP, TLS, auth); a pool keeps some open and reuses them",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24e4adf5",
+   "say": "It also caps how many connections hit the database",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4936981f",
+   "say": "Size it to the DB's limit divided by your instances; release connections in finally",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4ce30355",
+   "say": "Question 63. ORM or raw SQL in Node (Prisma, Sequelize, TypeORM, Drizzle, Knex)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "81b61d7a",
+   "say": "ORM (Prisma, TypeORM): types, migrations, relations; risk of hidden N+1 and slow queries",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1eb847f1",
+   "say": "Query builders (Knex, Drizzle): close to SQL, still typed and composable",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50f85979",
+   "say": "Raw SQL for complex, performance-critical queries; always parameterised",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3ee156ba",
+   "say": "Question 64. What is the difference between session-based and token-based (JWT) authentication?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "aadfb0a5",
+   "say": "Session: the server stores the session (Redis); the client holds an id in an HttpOnly cookie",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea82bf54",
+   "say": "JWT: the client holds a signed token; the server stores nothing per user",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f79d15c6",
+   "say": "Sessions are easy to revoke; JWTs scale statelessly but are hard to revoke early",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0ce22d16",
+   "say": "OAuth for login with Google. Your app redirects the browser to Google, with its client id, the scopes it wants, a random state value, and a PKCE code challenge.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64e4c98c",
+   "say": "The user signs in at Google, and consents. Google redirects back to your app with a short-lived authorization code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c149ca1c",
+   "say": "Your server exchanges that code, with its client secret and the PKCE verifier, directly with Google, and receives an access token, and an ID token that says who the user is.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d8e822bb",
+   "say": "Your app never sees the user's password. Check the state value to stop CSRF, verify the ID token, and then create your own session or token for the user.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "246e55f5",
+   "say": "Question 65. How does OAuth 2.0 / \"Login with Google\" work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b153c81c",
+   "say": "Authorisation code flow with PKCE: redirect to Google → user consents → code comes back",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f923e545",
+   "say": "The server exchanges the code for tokens (OpenID Connect adds the ID token: who the user is)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "567643fd",
+   "say": "Validate state and the ID token; then create your own session; libraries: passport, openid-client",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "969b45e8",
+   "say": "Question 66. How do you implement rate limiting?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "97c894a8",
+   "say": "A counter per client (IP, user, API key) per time window",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6f02d68",
+   "say": "Algorithms: fixed window, sliding window, token bucket (allows short bursts)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a8649ad6",
+   "say": "Store counters in Redis so all instances share them; respond 429 with Retry-After; or at the gateway",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ebc2e7c2",
+   "say": "Question 67. How do you handle file uploads in Node?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c923e4e3",
+   "say": "multipart/form-data parsed with multer or busboy, streamed, not buffered",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b3fea6b",
+   "say": "Limit size and type; check content, not just the extension; store outside the web root",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08581eb1",
+   "say": "Large files: pre-signed URLs so the client uploads straight to S3",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ce7d06ef",
+   "say": "Question 68. How do WebSockets work in Node, and when do you use them?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "26894bf1",
+   "say": "An HTTP upgrade to a persistent, two-way connection (ws, Socket.IO)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e6a2c68",
+   "say": "For chat, multiplayer, live collaboration: frequent messages both ways",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4018a2e",
+   "say": "Several instances: sticky sessions plus a Redis pub/sub adapter; heartbeats; authenticate on connect",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bd1eaf28",
+   "say": "Four ways to push updates. Polling: the client asks every few seconds. Simple, but wasteful and delayed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "15f9b970",
+   "say": "Long polling: the server holds each request open until it has something, then the client asks again. Near real time, on plain HTTP.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88d56253",
+   "say": "Server-Sent Events: one HTTP response that stays open, with the server writing events into it. One direction only, with automatic reconnect. Perfect for notifications and streaming LLM tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68db8f6e",
+   "say": "And WebSockets: a persistent, two-way connection. For chat, games and collaboration, where the client talks a lot too. Pick the simplest one that gives you the direction and latency you need.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3c34f91b",
+   "say": "Question 69. What is the difference between polling, long polling, Server-Sent Events and WebSockets?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f31326e3",
+   "say": "Polling: repeated requests; long polling: a held request per message",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2dd074a6",
+   "say": "SSE: one long response, server → client, plain HTTP, auto-reconnect",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d89358f",
+   "say": "WebSockets: full-duplex over one connection; choose by direction and frequency",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "141a5acf",
+   "say": "Question 70. How do you run background jobs in Node?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ba92d5d4",
+   "say": "Not in the request: enqueue a job and return 202",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "432398f8",
+   "say": "A queue with workers: BullMQ (Redis), RabbitMQ, SQS; retries with backoff, dead-letter queues",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41c5ac04",
+   "say": "Idempotent jobs; scheduled jobs with repeatable jobs or a scheduler, not setInterval on every instance",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0d2d47f8",
+   "say": "Question 71. How do Node microservices communicate (HTTP vs messaging, Kafka)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a51de3dd",
+   "say": "Synchronous: HTTP/REST or gRPC when you need an answer now; adds coupling and latency",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17204b1d",
+   "say": "Asynchronous: messages and events (Kafka, RabbitMQ) for decoupling and spikes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0347b30",
+   "say": "Kafka: a durable, partitioned log with consumer groups; design for at-least-once and idempotency",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3961b0d6",
+   "say": "Question 72. How do you make outbound HTTP calls resilient (timeouts, retries, circuit breakers)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c4716228",
+   "say": "A timeout on every call (AbortSignal.timeout); fetch has none by default",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9cc56bc3",
+   "say": "Retries only for transient errors, with exponential backoff and jitter; idempotency keys",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0aaea6b7",
+   "say": "A circuit breaker (opossum) to fail fast when a dependency is down; keep-alive connection pools",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1e7c420b",
+   "say": "Question 73. How do you containerise a Node app well (Docker best practices)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5ee02c96",
+   "say": "Multi-stage build; npm ci --omit=dev; a slim or distroless base; copy package files first for caching",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3589286",
+   "say": "Run as non-root; node directly (not npm start) so signals arrive; handle SIGTERM",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd48c04a",
+   "say": ".dockerignore; set memory limits and --max-old-space-size; health checks",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f813d390",
+   "say": "Question 74. Why use TypeScript for Node backends, and how do you run it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9ae21d88",
+   "say": "Types catch bugs before runtime, make refactors safe, and document APIs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70415123",
+   "say": "Compile with tsc (or esbuild/tsup) to JavaScript for production",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b94b0b72",
+   "say": "Development: tsx or ts-node; recent Node versions can run .ts directly by stripping types",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0d82f281",
+   "say": "Question 75. What is NestJS, and why might a Spring developer like it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d2d61b1e",
+   "say": "An opinionated Node framework built on Express or Fastify, in TypeScript",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "31756c4a",
+   "say": "Modules, controllers, providers, dependency injection, decorators: very Spring-like",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2c65330",
+   "say": "Built-in pipes (validation), guards (auth), interceptors; good for large teams",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "831e394c",
+   "say": "Question 76. REST vs GraphQL in Node: when would you choose each?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3c967c59",
+   "say": "REST: simple, cacheable over HTTP, great tooling: the default for most APIs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "66339622",
+   "say": "GraphQL: clients ask for exactly the fields they need; one endpoint; great for many different frontends",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dc6fb24c",
+   "say": "GraphQL costs: N+1 (use DataLoader), harder caching, query cost limits",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "40f5704a",
+   "say": "Question 77. What are Node.js release lines and LTS, and which version should you run?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "66fb1ca0",
+   "say": "A new major every six months; even-numbered majors become LTS (long-term support)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0a94ca0",
+   "say": "Active LTS, then maintenance, about 30 months in total",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c4a9fa8",
+   "say": "Run the current Active LTS in production; odd versions are for trying new features",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8c6d5c1a",
+   "say": "Check 6. Your Node container cuts off requests on every deploy. Name two fixes in the Dockerfile or the runtime.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5b57a706",
+   "say": "Start the app with node directly, not npm start, so the SIGTERM signal actually reaches your process. And handle SIGTERM with a graceful shutdown: stop accepting, finish in-flight requests, close connections, then exit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8cc92832",
+   "say": "A last rapid-fire round. Is Node single-threaded?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0863d86",
+   "say": "Your JavaScript is. Libuv and the operating system aren't.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fab839ef",
+   "say": "Next tick, or a promise callback: which runs first?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eae5333b",
+   "say": "Next tick.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9a1c9ce1",
+   "say": "What runs file system and crypto work off the main thread?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d936675",
+   "say": "Libuv's thread pool.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ff702aea",
+   "say": "What is backpressure?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49321219",
+   "say": "A consumer slower than the producer. Write returns false until drain.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b737fdcd",
+   "say": "The Express error handler's signature?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e1a18e8",
+   "say": "Error, request, response, next, registered last.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e60c1b01",
+   "say": "CPU-heavy work in Node goes where?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e95894f",
+   "say": "To worker threads, or a job queue.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19aef985",
+   "say": "That's the whole Node page. Each module page has a watch card that starts this lecture at that module.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c25c3e34",
+   "say": "Read the module's theory first, then the answers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea327b9c",
+   "say": "And build a tiny Express API end to end: middleware in the right order, an error handler, one streamed download, and a graceful shutdown. Being able to explain your own small service is the best preparation there is. Good luck.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}

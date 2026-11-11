@@ -1,5 +1,19 @@
 ## Basics and architecture
 
+**The idea: your JavaScript runs on one thread; libuv and the operating system do the waiting.**
+
+![Your JS runs in V8 on one thread; Node's APIs hand I/O to libuv, which uses the OS or a thread pool](/docs-img/nd-01/architecture.jpg)
+
+- **V8** compiles and runs JavaScript and manages its memory.
+- **libuv** runs the event loop and asynchronous I/O: network sockets are watched by the OS (epoll, kqueue, IOCP) with no thread waiting; file system, DNS lookups, crypto and zlib use a **thread pool** (4 threads by default).
+- When I/O finishes, its callback is queued and the event loop runs it on the JavaScript thread.
+
+So Node is single-threaded **for your code** and handles thousands of connections because waiting costs nothing. The catch: CPU work blocks everyone. Use non-blocking APIs (`fs/promises`, never `readFileSync` in a request).
+
+![Spring's thread per request vs Node's one event loop, for requests that mostly wait](/docs-img/nd-01/spring-vs-node.jpg)
+
+Compared with Spring MVC's thread-per-request model: Node overlaps waits on one thread (the **reactor pattern**), Spring parks a thread per waiting request (Java 21 virtual threads make that cheap again). Node fits APIs, real-time apps, streaming and BFFs; not CPU-heavy work on the main thread. The `process` object gives env vars, arguments, signals, memory usage and exit codes.
+
 ### nd01 | What is Node.js, and when should (and shouldn't) you use it?
 
 **Node.js** is a **JavaScript runtime** that runs JS outside the browser. It's built on Google's **V8** engine (which executes JS) and **libuv** (a C library for async I/O, the event loop and the thread pool). It's not a language and not a framework.
@@ -190,6 +204,26 @@ Exit codes: `0` means success, anything else means failure, and orchestrators (K
 
 ## The event loop
 
+**The idea: the loop goes round six phases, and drains two small queues between every callback.**
+
+![timers → pending → idle → poll → check → close](/docs-img/nd-01/phases.jpg)
+
+| Phase | Runs |
+|---|---|
+| timers | expired `setTimeout` / `setInterval` |
+| pending callbacks | some deferred system callbacks |
+| poll | I/O callbacks; waits here for events |
+| check | `setImmediate` |
+| close callbacks | `close` events |
+
+Between callbacks: first **all `process.nextTick`** callbacks, then **all promise microtasks**.
+
+![Predicting A, F, E, D, B, C](/docs-img/nd-01/predict.jpg)
+
+Order: synchronous code → nextTick → promises → timers → check. `setTimeout(0)` vs `setImmediate` is unpredictable at the top level, but inside an I/O callback `setImmediate` always wins. Recursive `nextTick` can starve I/O.
+
+**Don't block the loop**: big `JSON.parse`, sync fs/crypto, heavy regex and long loops delay every request. Detect lag with `perf_hooks.monitorEventLoopDelay()`, find the cause with a CPU profile, and move CPU work to `worker_threads` or a job queue.
+
 ### nd11 | What are the phases of Node's event loop?
 
 Each iteration (**tick**) of libuv's loop goes through these phases in order. Each phase has a FIFO queue of callbacks:
@@ -361,6 +395,16 @@ Use loop lag as an **alert metric** and for **load shedding** (return 503 when t
 
 ## Modules and npm
 
+**The idea: `require` resolves, caches, wraps, runs, and returns `module.exports`, once.**
+
+![require: resolve the path, check the cache, wrap, run, return module.exports](/docs-img/nd-01/require.jpg)
+
+- Modules are cached, so every `require` of the same file returns the same object (a singleton). The wrapper function is where `exports`, `require`, `module`, `__filename` and `__dirname` come from.
+- `exports.x = …` works; `exports = …` breaks the link: assign `module.exports` instead.
+- **ES modules**: `.mjs` or `"type": "module"`; ESM can import CommonJS; CommonJS loads ESM with `import()` (newer Node can `require` it); `import.meta.dirname` replaces `__dirname`.
+- `dependencies` (runtime), `devDependencies` (build and test), `peerDependencies` (the host provides it).
+- **Semver** `MAJOR.MINOR.PATCH`; `^` allows minor updates, `~` only patches; commit `package-lock.json` and use `npm ci` in CI. `npx` runs a package's binary without a global install.
+
 ### nd16 | How does require() work?
 
 `require("x")` loads a CommonJS module **synchronously**:
@@ -486,6 +530,13 @@ Other package managers: **pnpm** (content-addressed store, fast, disk-efficient,
 
 ## Async patterns and events
 
+**The idea: Node's conventions for async results and events.**
+
+- **Error-first callbacks**: `callback(err, result)`; check `err` first, call the callback exactly once.
+- **Promisify**: `util.promisify(fn)`, or the built-in promise APIs (`fs/promises`, `timers/promises`, `stream/promises`), then `async`/`await`.
+- **EventEmitter**: `on`, `once`, `emit`, `off`; listeners run synchronously in order; an unhandled `'error'` event crashes the process; the "possible memory leak" warning means listeners are piling up.
+- **Concurrency limits**: `Promise.all` over 10,000 items starts 10,000 operations at once. Use a pool of N workers pulling from a queue (`p-limit`, `p-queue`).
+
 ### nd22 | What is the error-first callback convention?
 
 Node's classic async APIs pass the callback **an error as the first argument**, and the result after it:
@@ -596,6 +647,15 @@ await Promise.all(urls.map((u) => limit(() => fetchJson(u))));
 For very large or long-running jobs, use a **queue** (BullMQ on Redis, SQS, Kafka) with workers instead of in-process loops.
 
 ## Buffers and streams
+
+**The idea: move data in chunks, at the speed of the slowest part.**
+
+![A readable file stream, gzip transform and HTTP response, with backpressure](/docs-img/nd-01/streams.jpg)
+
+- A **Buffer** is raw binary memory (outside the V8 heap) for files, sockets and crypto.
+- **Streams** process data piece by piece: constant memory, and output starts before input ends. Four kinds: Readable, Writable, Duplex (both), Transform (changes data).
+- **Backpressure**: when the consumer is slower, `write()` returns `false`; stop until `'drain'`. `pipe()` handles it but not errors; **`pipeline()`** handles both and cleans up every stream: `await pipeline(src, transform, dest)`.
+- `fs.readFile` loads a whole file into memory; `fs.createReadStream` streams it. Use streams for big files and for sending files to clients.
 
 ### nd26 | What is a Buffer?
 
@@ -743,6 +803,13 @@ Readable streams are **async iterable**, so `for await (const chunk of stream)` 
 
 ## Files and HTTP
 
+**The idea: Node's building blocks for files and servers, and Express on top.**
+
+- fs comes in three styles: callbacks, sync, and promises (`fs/promises`). Use promises in servers; sync only at startup or in scripts.
+- `path.join` / `path.resolve` build portable paths; never trust user input in paths (path traversal).
+- The core `http` module gives you `(req, res)` and nothing else: you parse URLs and bodies yourself.
+- **Express** adds routing, middleware, body parsing and helpers. `req.params` (route `:id`), `req.query` (`?page=2`, strings), `req.body` (needs `express.json()`).
+
 ### nd32 | What are the three styles of fs API, and which should you use?
 
 ```js
@@ -875,6 +942,17 @@ app.post("/users", express.json(), (req, res) => {
 Everything here is **untrusted user input**: validate and convert types (`Number(req.query.page)`, a Zod/Joi schema). `req.body` is `undefined` without `express.json()` / `express.urlencoded()`.
 
 ## Express middleware and APIs
+
+**The idea: a request walks a chain of middleware, in the order you registered it.**
+
+![helmet/cors → express.json → auth → route handler, and errors jump to the error handler](/docs-img/nd-01/express.jpg)
+
+- Middleware is `(req, res, next)`: change the request, end the response, or call `next()`. Forgetting both hangs the request.
+- Order matters: parsers and auth before routes. `app.use` matches any method and path prefixes; `app.get` matches GET and the exact route.
+- **Errors**: `next(err)` (or throwing, which Express 5 catches for async handlers too) skips to the error handler `(err, req, res, next)`, registered last.
+- Organise with `express.Router()` per resource, mounted with a prefix; keep route → controller → service → repository.
+- Good REST: nouns and HTTP verbs, correct status codes, validated input, consistent errors, pagination, versioning, OpenAPI docs.
+- **CORS**: the `cors` middleware with an allow-list; it protects browsers' users, not your server.
 
 ### nd37 | What is middleware in Express, and what does next() do?
 
@@ -1053,6 +1131,16 @@ Remember:
 
 ## Errors and process lifecycle
 
+**The idea: handle the expected errors, crash cleanly on the unexpected, and shut down gracefully.**
+
+- **Operational errors** (timeouts, invalid input, a database down) are expected: handle them. **Programmer errors** (bugs) leave the process in an unknown state.
+- On `uncaughtException` / `unhandledRejection`: log, then exit and let the process manager restart you.
+
+![SIGTERM → stop accepting → finish in-flight → close resources → exit](/docs-img/nd-01/shutdown.jpg)
+
+- **Graceful shutdown** on SIGTERM: stop accepting (`server.close()`, fail readiness), finish in-flight work, close the DB pool, Redis and consumers, exit, with a force-exit timeout.
+- **Logging**: structured JSON (pino) to stdout, levels, a request id on every line, no secrets.
+
 ### nd43 | What is the difference between operational errors and programmer errors?
 
 - **Operational errors**: **expected runtime problems** in correct code: the network is down, the DB times out, a file isn't found, invalid user input, a downstream 500, out of disk.
@@ -1168,6 +1256,14 @@ Don'ts:
 Pair logs with **metrics** (Prometheus: latency, error rate, event loop lag) and **tracing** (OpenTelemetry) for full observability.
 
 ## Scaling and performance
+
+**The idea: three ways to use more than one CPU core.**
+
+![cluster (processes running your server), worker_threads (threads for CPU work), child_process (other programs)](/docs-img/nd-01/scaling.jpg)
+
+- `child_process`: `spawn` streams output, `exec` buffers it through a shell (injection risk), `execFile` skips the shell, `fork` starts a Node script with IPC.
+- **Memory leaks**: unbounded caches, listeners never removed, closures holding big objects; find them with heap snapshots (`--inspect`). V8's GC is generational; set `--max-old-space-size` to fit the container.
+- **Performance**: measure (percentiles, event-loop lag, CPU profiles), never block the loop, parallelise independent I/O, pools and keep-alive, caching (LRU in process, Redis shared, HTTP caching), pagination, streaming.
 
 ### nd47 | What is the cluster module?
 
@@ -1345,6 +1441,17 @@ Concerns to mention: **invalidation** (TTL vs explicit delete), **stampede** (ma
 
 ## Security and configuration
 
+**The idea: config from the environment, passwords never stored, and every input distrusted.**
+
+- Config from env vars, validated at startup; `.env` only locally; secrets from a secret manager.
+
+![JWT: login signs a short-lived token; each request is verified by middleware](/docs-img/nd-01/jwt.jpg)
+
+- **JWT**: signed, not encrypted; short-lived access token, refresh token in an HttpOnly cookie; pin the algorithm.
+- **Passwords**: bcrypt, scrypt or Argon2id (slow, salted); rate-limit logins.
+- **Practices**: validate input, parameterised queries, `helmet`, a CORS allow-list, rate limits, body size limits, authorisation on every route, dependency audits, no stack traces to clients.
+- `crypto`: hashes, HMACs (webhook signatures), `randomUUID`, AES-GCM encryption, `timingSafeEqual`.
+
 ### nd55 | How do you manage configuration and secrets (env vars, dotenv, NODE_ENV)?
 
 Follow the **12-factor** rule: keep config in the **environment**, not in code.
@@ -1477,6 +1584,11 @@ Rules: use `randomBytes`/`randomUUID`, never `Math.random()`, for anything secur
 
 ## Testing and debugging
 
+**The idea: test through the HTTP layer with real dependencies where it matters, and debug with the inspector.**
+
+- Unit tests (Vitest, Jest, `node:test`) for services; integration tests with **supertest** against the real app; a real database in Docker (Testcontainers); external APIs mocked (nock, MSW).
+- Debug with `node --inspect` and Chrome DevTools or VS Code; CPU profiles (`--cpu-prof`, clinic flame) and heap snapshots; in production, logs, metrics and OpenTelemetry traces.
+
 ### nd60 | How do you test a Node.js API?
 
 Test levels:
@@ -1539,6 +1651,22 @@ npx clinic flame -- node app.js
 
 
 ## Data, real-time and production
+
+**The idea: the pieces every real Node service ends up with.**
+
+- **Connection pools** reuse slow-to-open DB connections and cap them. ORMs (Prisma) for productivity, query builders (Drizzle, Knex) for control, raw SQL for hot paths; always parameterised.
+- **Sessions vs JWT**: server-stored sessions are easy to revoke; JWTs are stateless but hard to revoke early.
+
+![OAuth 2.0 authorisation code flow with PKCE](/docs-img/nd-01/oauth.jpg)
+
+- **Rate limiting** with shared counters in Redis (429 + `Retry-After`); **uploads** streamed with size and type limits, or pre-signed URLs straight to S3.
+
+![Polling, long polling, SSE and WebSockets](/docs-img/nd-01/realtime.jpg)
+
+- **Background jobs** on a queue (BullMQ) with retries and idempotency; **microservices** talk by HTTP/gRPC (sync) or Kafka/RabbitMQ (async, at-least-once).
+- **Resilient calls**: timeouts, retries with backoff for transient errors, circuit breakers.
+- **Docker**: multi-stage, `npm ci --omit=dev`, non-root, `node` as the entrypoint so SIGTERM arrives.
+- TypeScript for safety; NestJS for Spring-like structure; REST by default, GraphQL for many varied clients; run the **Active LTS** Node version.
 
 ### nd62 | Why do you need a database connection pool?
 

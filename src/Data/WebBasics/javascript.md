@@ -1,5 +1,22 @@
 ## Types, values and coercion
 
+**The idea: seven primitives, everything else is an object, and operators convert values for you.**
+
+![Primitives are copied, objects are shared](/docs-img/js-01/types.jpg)
+
+- **Primitives**: `string`, `number`, `bigint`, `boolean`, `undefined`, `null`, `symbol`. Immutable, compared by value, copied on assignment.
+- **Objects**: everything else (plain objects, arrays, functions, dates, maps). Mutable; assignment and arguments share the **same** object. JavaScript always passes by value, but for an object that value is a reference.
+- **Coercion**: when an operator needs another type, JavaScript converts:
+
+| Operation | Rule | Example |
+|---|---|---|
+| `+` with a string on either side | concatenate | `1 + 2 + "3"` → `"33"` |
+| `-`, `*`, `/` | convert to numbers | `"6" - 1` → `5` |
+| `==` | convert to a common type first | `"5" == 5` → `true` |
+| `if`, `&&`, `\|\|`, `!` | test truthiness | falsy: `false 0 -0 0n "" null undefined NaN` |
+
+Use `===` (no conversion); `x == null` is the one common exception (null or undefined). `??` replaces only `null`/`undefined` (keeps `0` and `""`, unlike `||`), and `?.` stops at a missing link instead of throwing. Numbers are 64-bit floats, so `0.1 + 0.2 !== 0.3`: compare with a tolerance, keep money in integer cents.
+
 ### js01 | What are the data types in JavaScript?
 
 JavaScript has **8 types**: seven **primitives** and one **object** type. JavaScript is **dynamically typed**: the type belongs to the value, not the variable, so one variable can hold a number now and a string later.
@@ -250,6 +267,24 @@ new Boolean(false) ? 1 : 2; // 1, because objects are always truthy
 ```
 
 ## Variables, scope and hoisting
+
+**The idea: scopes nest, and the engine sets every scope up before running its first line.**
+
+![Scopes nest; a name is looked up from the inside out](/docs-img/js-01/scope.jpg)
+
+A name is looked up in the innermost scope first, then outward (the **scope chain**). The chain is **lexical**: fixed by where the code is written. `let` and `const` are block-scoped; `var` is function-scoped and leaks out of blocks.
+
+Before a scope runs, its declarations are registered (**hoisting**):
+
+![What hoisting does to var, let/const and function declarations](/docs-img/js-01/hoisting.jpg)
+
+| Declaration | Before its line |
+|---|---|
+| `var x` | exists, `undefined` |
+| `let` / `const` / `class` | exists, uninitialised: touching it throws (**TDZ**) |
+| `function f() {}` | exists, the whole function: callable early |
+
+Each function call gets an **execution context** (its variables, scope chain and `this`), pushed on the single **call stack**. Strict mode (automatic in modules and classes) turns silent mistakes into errors. `const` makes the binding constant, not the object.
 
 ### js13 | What are the differences between var, let and const?
 
@@ -505,6 +540,21 @@ globalThis.setTimeout === setTimeout; // true everywhere
 ```
 
 ## Functions
+
+**The idea: functions are values.**
+
+You can store, pass and return functions, so functions that take or return functions (**higher-order** functions) are everywhere: `map`, `setTimeout`, `debounce`, `memoize`, `compose`. Combined with closures (module 4), that's how these utilities remember state between calls.
+
+- **Arrow functions** have no own `this` or `arguments` and can't be used with `new`: ideal for callbacks, wrong for object methods that need `this`.
+- **Rest** collects (`function f(...args)`), **spread** expands (`f(...list)`, `[...a, ...b]`, `{ ...obj }`).
+- **Pure functions** return the same output for the same input and change nothing outside: easy to test and cache.
+- **Currying** turns `f(a, b, c)` into `f(a)(b)(c)`; **partial application** fixes some arguments now.
+
+**Debounce vs throttle**, the classic pair:
+
+![Debounce fires once after the events stop; throttle fires at most once per interval](/docs-img/js-01/debounce.jpg)
+
+Debounce for search-as-you-type and autosave; throttle for scroll and mousemove. Both keep `this` and the arguments with `fn.apply(this, args)`.
 
 ### js24 | What are first-class and higher-order functions?
 
@@ -795,6 +845,16 @@ Both rely on **closures** to keep `timer`/`last` between calls.
 
 ## Closures
 
+**The idea: a function keeps the scope it was created in.**
+
+![After makeCounter returns, its scope lives on inside the returned function](/docs-img/js-01/closure.jpg)
+
+When an inner function outlives the function that created it, the variables it uses stay alive with it. That gives you **private state** (counters, the module pattern), **function factories**, and **memory between calls** (debounce, memoize, once).
+
+The classic puzzle: `setTimeout` in a `for` loop prints `3 3 3` with `var` (one shared variable, read after the loop ends) and `0 1 2` with `let` (a new binding per iteration).
+
+Pitfalls: a closure keeps its whole scope alive (memory), and it sees values from when it was created (the stale closures of React hooks).
+
 ### js35 | What is a closure?
 
 A **closure** is a function **together with the variables from the scope it was created in**. The function keeps access to those variables even after the outer function has returned.
@@ -896,6 +956,17 @@ useEffect(() => {
 
 ## The this keyword
 
+**The idea: `this` is decided by how a function is called, except in arrow functions.**
+
+![The four calling rules in priority order, and arrows](/docs-img/js-01/this.jpg)
+
+1. `new Foo()` → the new object.
+2. `f.call(o)`, `f.apply(o, args)`, `f.bind(o)` → `o`.
+3. `obj.method()` → `obj`.
+4. Plain `f()` → `undefined` in strict mode (the global object otherwise).
+
+Arrow functions ignore all four and use the `this` of the surrounding code. `this` gets "lost" when a method is passed as a callback (`setTimeout(user.greet)`): it's later called plainly. Fix with an arrow wrapper, `bind`, or class-field arrow methods. `call` and `apply` invoke now (arguments listed vs as an array); `bind` returns a new function.
+
 ### js39 | How is `this` determined in JavaScript?
 
 `this` is set by **how a function is called**, not where it is defined (except for arrow functions). Check these rules in order of precedence:
@@ -996,6 +1067,17 @@ class Counter {
 This is also why old React class components needed `this.handleClick = this.handleClick.bind(this)` in the constructor.
 
 ## Objects
+
+**The idea: objects are shared by reference, so copying, comparing and locking them need care.**
+
+![A shallow copy shares nested objects; structuredClone copies everything](/docs-img/js-01/copy.jpg)
+
+- **Copying**: `{ ...obj }` and `Object.assign` are shallow; `structuredClone` is deep (no functions); `JSON.parse(JSON.stringify(x))` loses dates, `undefined`, functions, Maps, and fails on cycles.
+- **Checking a property**: `Object.hasOwn(obj, "k")` (own only), `"k" in obj` (inherited too).
+- **Looping**: `for...in` over keys (inherited ones too), `for...of` over values of iterables.
+- **Locking**: `preventExtensions` (no new keys) < `seal` (no add/delete) < `freeze` (nothing changes); all shallow.
+- **Map vs object**: Map for keys of any type, frequent changes, `size`, no prototype keys. **WeakMap/WeakSet** hold object keys weakly, so they don't block garbage collection.
+- **Symbols** are unique keys; well-known ones customise behaviour (`Symbol.iterator`).
 
 ### js43 | What are the ways to create objects in JavaScript?
 
@@ -1294,6 +1376,14 @@ Pitfalls:
 
 ## Prototypes and classes
 
+**The idea: a missing property is looked up along a chain of prototype links.**
+
+![rex → Dog.prototype → Animal.prototype → Object.prototype → null](/docs-img/js-01/prototype.jpg)
+
+Every object has a hidden `[[Prototype]]` link (`Object.getPrototypeOf(obj)`, or the old `__proto__`). A function's `prototype` property is the object that instances made with `new` will link to, so `new Foo().__proto__ === Foo.prototype`. Methods live once on the prototype and are shared.
+
+`new Foo()` creates an object linked to `Foo.prototype`, calls `Foo` with `this` set to it, and returns it. **Classes** are syntax over this, plus real extras: they must be called with `new`, run in strict mode, have `#private` fields and `static` members. `extends` links the prototypes; call `super()` before using `this`. `Object.create(proto)` sets up inheritance; `Object.assign` just copies properties.
+
 ### js55 | How does prototypal inheritance work?
 
 Every object has a hidden link, `[[Prototype]]`, to another object (or `null`). When you read a property that the object doesn't have, the engine looks it up **along this chain**: object → its prototype → that prototype's prototype → … → `Object.prototype` → `null`. This is the **prototype chain**.
@@ -1464,6 +1554,16 @@ Use `create` for prototype-based inheritance; use `assign` (or spread) for mergi
 
 ## Arrays
 
+**The idea: know which methods return a new array and which change the original.**
+
+| Returns a new array (or value) | Changes the array in place |
+|---|---|
+| `map`, `filter`, `slice`, `concat`, `flat`, `flatMap` | `push`, `pop`, `shift`, `unshift`, `splice` |
+| `toSorted`, `toReversed`, `toSpliced`, `with` | `sort`, `reverse`, `fill` |
+| `reduce`, `find`, `some`, `every`, `includes` (values) | |
+
+`forEach` is for side effects (returns `undefined`); `map` transforms; `filter` keeps; `reduce` folds into one value. `sort()` without a comparator sorts as **strings** (`[10, 9, 1]` → `[1, 10, 9]`): use `sort((a, b) => a - b)`. Common tricks: `[...new Set(arr)]` to dedupe, `arr.flat(Infinity)`, `arr.at(-1)`, `Object.groupBy`.
+
 ### js62 | What is the difference between map, forEach, filter and reduce?
 
 | Method | Returns | Use for |
@@ -1603,6 +1703,22 @@ Math.max(...nums);   // for huge arrays, use reduce instead (argument-count limi
 ```
 
 ## Asynchronous JavaScript
+
+**The idea: one call stack, plus queues that wait for it to be empty.**
+
+![The call stack, the runtime's APIs, the microtask queue and the task queue](/docs-img/js-01/event-loop.jpg)
+
+Your code runs on one thread. Timers, network and I/O are handed to the runtime (browser or Node); when they finish, their callbacks are queued. The **event loop** repeats:
+
+1. Run the current task until the call stack is empty.
+2. Run **all microtasks** (promise callbacks, `queueMicrotask`), including ones added meanwhile.
+3. Render if needed (browsers), then take **one task** (a timer, an event) and repeat.
+
+So synchronous code first, then every microtask, then the next task: `console.log` → `.then` → `setTimeout(…, 0)`.
+
+![A promise is pending, then fulfilled or rejected, once](/docs-img/js-01/promise.jpg)
+
+A **promise** settles once; `.then` returns a new promise, so chains flatten callback hell, and one `.catch` handles every step. `async/await` is promise syntax: `await` pauses the function, not the thread. Run independent work in parallel with `Promise.all` (fails fast), `allSettled` (all outcomes), `race` (first to settle) or `any` (first success); `await` in `forEach` does **not** wait. Promises can't be cancelled; abort the work with `AbortController`.
 
 ### js67 | How can JavaScript be asynchronous if it is single-threaded?
 
@@ -2044,6 +2160,20 @@ Related: **Service Workers** are a different kind. They're a network proxy for o
 
 ## Browser and DOM basics
 
+**The idea: the page is a tree, and events travel through it.**
+
+![An event goes down (capturing), reaches the target, then bubbles back up](/docs-img/js-01/propagation.jpg)
+
+Because events bubble, one listener on a parent can handle all its children (**event delegation**: `e.target.closest("li")`). `preventDefault` stops the browser's default action; `stopPropagation` stops the event's journey.
+
+- Scripts: plain `<script>` blocks parsing; `async` runs when downloaded (any order); `defer` runs in order after parsing.
+- `DOMContentLoaded` (HTML parsed) fires before `load` (everything, images included).
+- Storage: cookies are sent to the server (can be `HttpOnly`); `localStorage` persists; `sessionStorage` is per tab. Never keep tokens where scripts can read them if XSS is possible.
+- **Same-origin policy** blocks reading other origins' responses unless the server allows it with **CORS** headers.
+- `fetch` only rejects on network failure: check `res.ok` for 404/500.
+- **XSS**: never insert untrusted HTML; use `textContent`, sanitise, add a CSP.
+- **Reflow** (layout) is expensive: batch DOM reads and writes, animate `transform` and `opacity`.
+
 ### js83 | What is the DOM, and what is the difference between window and document?
 
 The **DOM** (Document Object Model) is the browser's **tree of objects** representing the HTML page. JS reads and changes the page through it.
@@ -2269,6 +2399,16 @@ Tips: animate `transform`/`opacity`, batch DOM changes (`DocumentFragment`, or c
 
 ## Modules, memory and the runtime
 
+**The idea: code is loaded as modules, run by a JIT compiler, and freed by a garbage collector.**
+
+- **ES Modules** (`import`/`export`): static, asynchronous, live bindings; enable tree shaking and top-level `await`. **CommonJS** (`require`): synchronous, dynamic, Node's original.
+- `import()` loads code on demand (code splitting); **tree shaking** drops unused exports.
+- **Garbage collection**: whatever is unreachable from the roots is freed (mark-and-sweep, so cycles are fine); V8 is generational. Leaks are references you forgot: listeners, timers, detached DOM nodes, growing caches.
+- **Errors**: throw `Error` objects (with stacks), extend them for custom types, keep the original with `{ cause }`.
+- **Polyfills** add missing APIs at runtime; **transpilers** (Babel) rewrite new syntax at build time.
+
+![V8: parse, Ignition bytecode, profile, optimise hot code, deoptimise on surprises](/docs-img/js-01/v8.jpg)
+
 ### js94 | What is the difference between ES Modules and CommonJS?
 
 | | CommonJS (CJS) | ES Modules (ESM) |
@@ -2423,6 +2563,17 @@ Optimisations worth knowing:
 Practical tips: initialise every property in the constructor, keep functions monomorphic (the same argument types), avoid `delete` on hot objects. JS is "interpreted" in the sense that there's no compile step for you, but it's JIT-compiled under the hood.
 
 ## Classic implementations
+
+**The idea: four utilities interviewers ask you to write live, each built from earlier modules.**
+
+| Write | Built from |
+|---|---|
+| Deep clone | recursion over objects and arrays, a `WeakMap` of already-copied objects for cycles, special cases (Date, Map) |
+| Flatten | recursion (or a stack) with a depth counter |
+| Retry with backoff | `async`/`await` in a loop, `delay = base * 2 ** attempt` (capped) plus jitter, rethrow the last error |
+| Event emitter | a `Map` of event → set of listeners; `on` returns an unsubscribe; `once` removes itself |
+
+Say the edge cases out loud: cycles and special objects for clone, depth for flatten, which errors are worth retrying, and copying the listener list before emitting (a listener may remove itself).
 
 ### js101 | Implement a deep clone function.
 

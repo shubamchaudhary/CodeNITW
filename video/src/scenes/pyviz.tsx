@@ -167,7 +167,7 @@ export const PyList = ({ t, props }: CP) => {
 type SStep = { find?: string; hit?: number; note?: string };
 export const PyScope = ({ t, props }: CP) => {
   const f = t.frame;
-  const p = props as { title: string; sub?: string; layers: { name: string; vars: string[]; tone?: string }[]; steps: SStep[] };
+  const p = props as { title: string; sub?: string; layers: { name: string; vars: string[]; tone?: string }[]; steps: SStep[]; letters?: string[] };
   const si = cur(t, p.steps);
   const s = p.steps[si];
   const st = at(t, si);
@@ -210,7 +210,7 @@ export const PyScope = ({ t, props }: CP) => {
           const hit = target !== null && done && i === target;
           return (
             <div key={i} style={{ ...card(hit ? C.green : visited ? C.amber : undefined), padding: "14px 22px", marginBottom: 12, fontSize: 27, fontWeight: 700, display: "flex", justifyContent: "space-between", opacity: enter(f, 6 + k * 4, 12) }}>
-              <span>{["L", "E", "G", "B"][k] ?? ""} · {ly.name}</span>
+              <span>{(p.letters ?? ["L", "E", "G", "B"])[k] ?? ""} · {ly.name}</span>
               <span style={{ color: hit ? C.green : visited ? C.amber : C.faint }}>{hit ? "found" : visited && target !== null ? "not here" : ""}</span>
             </div>
           );
@@ -236,7 +236,8 @@ export const PyTape = ({ t, props }: CP) => {
   const st = at(t, si);
   const cells = s.cells ?? p.cells;
   const n = Math.max(...p.steps.map((x) => (x.cells ?? p.cells).length), p.cells.length);
-  const cw = Math.min(150, Math.floor(1600 / n));
+  const longest = Math.max(...p.steps.flatMap((x) => (x.cells ?? p.cells).map((c) => c.length)));
+  const cw = Math.min(longest > 4 ? Math.max(150, longest * 17 + 40) : 150, Math.floor(1600 / n));
   const x0 = 80 + (1760 - cw * n) / 2;
   const y = 410;
   const h = 120;
@@ -259,7 +260,7 @@ export const PyTape = ({ t, props }: CP) => {
                 {i}
               </Abs>
             )}
-            <Abs key={`${si}-${c}`} x={x0 + i * cw} y={y} w={cw - 10} h={h} style={{ ...card(col), background: on ? `${C.blue}26` : C.card, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: MONO, fontSize: c.length > 4 ? 26 : 40, fontWeight: 700, borderRadius: 14, opacity: s.stop ? 0.45 : 1, ...rise(f, (s.cells ? st : 4) + i * 2, 12) }}>
+            <Abs key={`${si}-${c}`} x={x0 + i * cw} y={y} w={cw - 10} h={h} style={{ ...card(col), background: on ? `${C.blue}26` : C.card, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: MONO, fontSize: longest > 4 ? 26 : 40, fontWeight: 700, borderRadius: 14, opacity: s.stop ? 0.45 : 1, ...rise(f, (s.cells ? st : 4) + i * 2, 12) }}>
               {c}
             </Abs>
             {p.neg && (
