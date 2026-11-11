@@ -1,5 +1,20 @@
 ## React fundamentals
 
+**The idea: UI = f(state).**
+
+![State and props go into your component; React turns its output into DOM changes](/docs-img/re-01/ui-f-state.jpg)
+
+A component is a function: given props and state, it returns a **description** of the UI (JSX, compiled to `jsx(type, props)` calls that return plain objects called **elements**). React compares the new description with the previous one and applies only the differences to the DOM. When data changes, React calls your function again: you describe *what* the screen should look like, not *how* to change it.
+
+- **Props** come from the parent and are read-only; **state** is owned by the component and changed with its setter.
+- Data flows **down** through props; changes flow **up** through callbacks. Siblings that share data get it from their closest common parent (**lifting state up**).
+- `props.children` makes wrapper components (Card, Modal) that don't need to know their content.
+- Conditional rendering: `cond ? <A/> : <B/>` or `cond && <A/>` (careful: `0 && …` renders `0`).
+
+**Keys** tell React which list item is which between renders. State and DOM stick to the key, so index keys break when items are inserted or reordered:
+
+![With index keys, inserting at the front moves state to the wrong row](/docs-img/re-01/keys.jpg)
+
 ### re01 | What is React, and why use it?
 
 React is a **JavaScript library for building user interfaces** out of **components**. It handles the view layer only; routing, data fetching and so on come from other libraries or a framework like Next.js.
@@ -227,6 +242,17 @@ Classes are still needed for one thing: **error boundaries** (`componentDidCatch
 
 ## State and events
 
+**The idea: each render sees a snapshot of state; setters schedule the next render.**
+
+![Three setCount(count + 1) calls in one handler all read the same snapshot](/docs-img/re-01/snapshot.jpg)
+
+- `useState` gives the current value for **this** render. Calling the setter doesn't change that variable: it queues an update and schedules a re-render, so `console.log` right after shows the old value.
+- When the next value depends on the previous one, use the **updater form**: `setCount(c => c + 1)`.
+- Updates in the same event are **batched** into one render (everywhere since React 18).
+- Never mutate state: React compares by reference, so a mutated object looks unchanged. Create new ones: `{ ...user, name }`, `[...items, item]`.
+- Events are camelCase props taking a function (`onClick={handle}`), wrapped in cross-browser **SyntheticEvents** and delegated from the root.
+- **Controlled** inputs take their value from state; **uncontrolled** ones keep it in the DOM (read with a ref or `FormData`). Big forms: React Hook Form + Zod.
+
 ### re11 | How does useState work?
 
 `useState` adds a piece of state to a function component. It returns the **current value** and a **setter**.
@@ -408,6 +434,21 @@ For larger forms, use **React Hook Form** (uncontrolled inputs, few re-renders) 
 
 ## Rendering and reconciliation
 
+**The idea: a render is triggered, React renders (computes), then commits (changes the DOM).**
+
+![Trigger → render phase → commit phase → effects](/docs-img/re-01/render-commit.jpg)
+
+- **Triggers**: the component's state changes, its parent re-renders (children re-render by default), or a context it reads changes.
+- **Render phase**: call components, diff the result. Must be pure; can be paused or discarded (concurrent rendering, StrictMode's double render).
+- **Commit phase**: apply DOM changes, attach refs, run layout effects; then the browser paints and `useEffect` runs.
+- Rendering is not the same as changing the DOM: a re-render can change nothing on screen.
+
+**Reconciliation** keeps diffing fast with two rules:
+
+![A different element type throws the subtree away; the same type and key keep the component](/docs-img/re-01/diffing.jpg)
+
+So changing a component's `key` is a deliberate way to reset it (`<Form key={userId} />`). **Fiber** splits rendering into interruptible units of work. `React.memo` skips a re-render when props are shallowly equal, which only helps if the props are actually stable.
+
 ### re18 | What triggers a re-render in React?
 
 A component re-renders when:
@@ -571,6 +612,28 @@ function List({ users }) {
 Use it for components that are **expensive to render** and often get the same props. Wrapping everything adds comparison overhead and noise. (The React Compiler can memoise automatically.)
 
 ## Hooks
+
+**The idea: React identifies hooks by the order they are called.**
+
+![Hooks are stored as slots in call order; a conditional hook shifts every slot after it](/docs-img/re-01/hooks-order.jpg)
+
+Hence the **rules of hooks**: call them only at the top level of components and custom hooks, never in conditions, loops or after an early return.
+
+**Effects** synchronise with something outside React: start, and clean up.
+
+![On mount the effect runs; when deps change the old cleanup runs, then the new effect; on unmount the cleanup](/docs-img/re-01/effects.jpg)
+
+| Dependency array | Effect runs |
+|---|---|
+| none | after every render |
+| `[]` | once after mount (cleanup on unmount) |
+| `[a, b]` | when `a` or `b` changed |
+
+- `useLayoutEffect` runs before paint (measuring the DOM); `useEffect` after.
+- **Stale closures**: a callback from an old render keeps old values. Fix with correct deps, updater functions or a ref.
+- Fetching in an effect: guard against races with an `AbortController` or an ignore flag in the cleanup (or use TanStack Query).
+- You **don't** need an effect to derive values (compute in render) or to respond to events (use the handler).
+- `useRef`: a mutable box that doesn't cause renders (DOM nodes, timer ids). `useMemo`/`useCallback`: remember values and functions, mostly to keep props stable for memoised children. `useReducer`: complex related state. **Custom hooks** share stateful logic.
 
 ### re26 | What are hooks, and why were they introduced?
 
@@ -997,6 +1060,22 @@ The `use` prefix is required so the linter can enforce the rules of hooks. Custo
 
 ## Context and state management
 
+**The idea: context skips the components in between, but re-renders every component that reads it.**
+
+![A provider at the top; only the components that read the context get it](/docs-img/re-01/context.jpg)
+
+Use Context for values many components need that change rarely (theme, user, locale). Pitfalls: every consumer re-renders when the value changes, and a new object as `value` changes every render. Memoise the value, split contexts, or use a store with selectors.
+
+| State | Where it lives |
+|---|---|
+| Used by one component | local `useState` |
+| Shared by siblings | lift it to the common parent |
+| App-wide, rarely changing | Context |
+| Large, frequently changing client state | a store: Zustand, Redux Toolkit |
+| Data from the server | TanStack Query (a cache, not app state) |
+
+![Redux: dispatch an action, a pure reducer returns new state, subscribers update](/docs-img/re-01/redux.jpg)
+
 ### re41 | What is the Context API, and when should you use it?
 
 Context passes data **through the tree without threading props through every level** (prop drilling).
@@ -1103,6 +1182,17 @@ Async logic goes in **thunks** (`createAsyncThunk`) or **RTK Query** (data fetch
 
 ## Patterns
 
+**The idea: ways to share behaviour between components, most now replaced by hooks.**
+
+| Pattern | What it is | Today |
+|---|---|---|
+| Higher-order component | `withAuth(Page)`: a function that wraps a component | mostly custom hooks |
+| Render props | a function prop that returns UI | mostly custom hooks |
+| Error boundary | catches render errors in its children, shows a fallback | still a class (or react-error-boundary) |
+| Portal | `createPortal(ui, document.body)`: render elsewhere in the DOM | modals, tooltips |
+
+Error boundaries don't catch errors in event handlers or async code. Portal events still bubble through the React tree.
+
 ### re45 | What are higher-order components (HOCs)?
 
 A **HOC** is a function that **takes a component and returns a new, enhanced component**: the higher-order-function idea applied to components.
@@ -1208,6 +1298,13 @@ Behaviour to know:
 - Remember accessibility for modals: focus management and the Escape key.
 
 ## Performance
+
+**The idea: measure first, then do less work, fewer times, with less code.**
+
+1. **Measure**: the React DevTools Profiler, Lighthouse, real-user metrics.
+2. **Fewer re-renders**: keep state close to where it's used, `React.memo` with stable props, split contexts.
+3. **Less work per render**: virtualise long lists (render only the visible rows), move heavy work out of render, `useTransition` / `useDeferredValue` so typing stays responsive while a heavy update renders in the background.
+4. **Less code**: route-level code splitting with `React.lazy` and `<Suspense>`, lighter dependencies, optimised images.
 
 ### re49 | How do you optimise a React app's performance?
 
@@ -1327,6 +1424,19 @@ function Results({ query }) {
 React renders the urgent update first and works on the transition in the background, **abandoning it** if newer input arrives. Unlike debouncing, there's no fixed delay: on a fast device it's near instant. Transitions also stop Suspense from replacing visible content with a fallback during navigation.
 
 ## Modern React (18 and 19) and rendering strategies
+
+**The idea: decide where and when the HTML is made.**
+
+![CSR, SSR, SSG and ISR side by side](/docs-img/re-01/rendering.jpg)
+
+Server-made HTML is shown immediately and then **hydrated**: React renders again in the browser and attaches to the existing DOM. Both renders must match, or you get a hydration mismatch (times, random numbers, `window` checks).
+
+![Hydration: server HTML, painted, JS loads, hydrateRoot attaches](/docs-img/re-01/hydration.jpg)
+
+- **Concurrent rendering** (React 18): renders can be interrupted for urgent updates; powers transitions and Suspense.
+- **Server Components**: run only on the server, can read data directly, ship no JavaScript; `'use client'` components handle state and events.
+- **Suspense**: a component that isn't ready suspends; the nearest boundary shows a fallback.
+- **React 19**: Actions (`<form action>`, `useActionState`, `useFormStatus`), `useOptimistic`, `use()`, `ref` as a prop, document metadata.
 
 ### re53 | What is concurrent rendering in React 18?
 
@@ -1475,6 +1585,16 @@ Works with: `React.lazy`, `use(promise)`, Suspense-enabled libraries (TanStack Q
 Don't create a new promise on every render without caching it: that's an endless suspend loop.
 
 ## Routing, testing and the rest
+
+**The idea: the rest of a React developer's toolkit.**
+
+- **Routing**: the router watches the URL (History API) and renders the matching route; the server must serve `index.html` for every app URL. Protected routes redirect to login, but the API must still check every request.
+- **Testing**: Vitest/Jest with React Testing Library, querying by role like a user; MSW to mock the network; Playwright for end-to-end flows.
+- **Lifecycles → hooks**: mount = `useEffect(…, [])`, update = effect with deps, unmount = cleanup.
+- Never define a component inside another: it's a new type every render, so it remounts and loses state.
+- **Server state vs client state**: remote data needs caching, deduplication, refetching and invalidation: TanStack Query.
+- **XSS**: JSX escapes text; danger is `dangerouslySetInnerHTML` and `javascript:` URLs.
+- **Debugging**: React DevTools (props, state, Profiler), error boundaries and monitoring in production.
 
 ### re59 | How does client-side routing work in a single-page app?
 
@@ -1703,6 +1823,20 @@ Also: keep auth tokens in HttpOnly cookies (XSS can't read them), and add a Cont
 
 
 ## Practical React
+
+**The idea: the journey of one state update.**
+
+![setCount(5): queue the update, schedule, render, commit, run effects](/docs-img/re-01/setstate.jpg)
+
+Practical rules that follow from it:
+
+- Components must be **pure**: no side effects while rendering.
+- **"Too many re-renders"**: calling a setter during render (`onClick={setOpen(true)}` instead of `onClick={() => setOpen(true)}`), or an effect that sets state it depends on.
+- An effect callback can't be `async` (it must return a cleanup or nothing): define an async function inside and guard against late results.
+- **Prop drilling**: fix with composition first, then Context or a store.
+- Infinite scroll: an `IntersectionObserver` on a sentinel, cursor pagination, virtualisation.
+- Auth in an SPA: prefer HttpOnly cookies; avoid long-lived tokens in `localStorage`.
+- Tooling: TypeScript props interfaces, Vite for development (native ES modules, fast HMR), Next.js when you need SSR/SEO, feature-based folders, accessible semantic HTML.
 
 ### re67 | What does it mean that components must be pure?
 

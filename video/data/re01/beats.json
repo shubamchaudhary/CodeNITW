@@ -1,0 +1,2924 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "bd669f53",
+   "say": "React, topic by topic. Like the other lectures, this one follows the React page exactly: ten modules, every question, in the page's order and with its numbers. Each module starts with the idea it hangs on, as a picture, then the questions, then a check.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d9a77129",
+   "say": "Module one. React fundamentals. Ten questions, and one idea behind all of them: the UI is a function of the state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b6c50b7",
+   "say": "Here's the idea of React. Your data lives in state and props, and you never reach into the DOM yourself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b78e8749",
+   "say": "A component is a function. Given the data, it returns a description of what the UI should look like, written in JSX.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c02406b",
+   "say": "React compares that description with the previous one, and works out what actually changed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da7956d7",
+   "say": "Then it applies just those changes to the real DOM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a803501c",
+   "say": "And when the data changes, React simply calls your function again. You describe the result, not the steps to get there. That's what declarative means, and nearly every React question is a detail of this loop.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1ac1b4d5",
+   "say": "Question 1. What is React, and why use it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "61d27b56",
+   "say": "A JavaScript library for building user interfaces from components",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0981929c",
+   "say": "Declarative: describe the UI for the current state; React updates the DOM",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0c71ef2",
+   "say": "Reusable components, one-way data flow, a huge ecosystem, React Native for mobile",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f73339d8",
+   "say": "Question 2. What is JSX, and what does it compile to?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f710ef54",
+   "say": "A syntax extension that lets you write HTML-like markup in JavaScript",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa797768",
+   "say": "It compiles to function calls: <h1 className=\"x\">Hi</h1> → jsx(\"h1\", { className: \"x\", children: \"Hi\" })",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "daf62bea",
+   "say": "Those calls return plain objects: React elements. Expressions go in { }",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7d417fa5",
+   "say": "Question 3. What is the difference between a React element, a component and a node?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "641757af",
+   "say": "Component: a function (or class) that returns UI",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d7b330ea",
+   "say": "Element: the plain object describing what to render, e.g. what <Button /> creates",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5341804c",
+   "say": "Node: anything renderable: elements, strings, numbers, arrays, null",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "67fe3ea2",
+   "say": "Question 4. What is the difference between props and state?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "277bac99",
+   "say": "Props: inputs passed in by the parent; read-only for the child",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "29d5a85a",
+   "say": "State: data the component owns and changes over time, with a setter",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f6b06138",
+   "say": "Changing either causes a re-render; derive what you can instead of storing it",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "caf896c5",
+   "say": "Question 5. What is one-way data flow, and what does \"lifting state up\" mean?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "60bb375b",
+   "say": "Data flows down through props; changes flow up through callbacks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "657ee9ba",
+   "say": "Two siblings that need the same data: move the state to their closest common parent",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "219d59e5",
+   "say": "The parent passes the value down and a setter (or handler) to change it",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9dcc80b7",
+   "say": "Question 6. How does composition work with props.children?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "83b36ee5",
+   "say": "Whatever you put between a component's tags arrives as props.children",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af253527",
+   "say": "Build wrappers (Card, Modal, Layout) that don't need to know their content",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a35076a3",
+   "say": "Prefer composition to inheritance; slots can also be named props (header, footer)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f03313f0",
+   "say": "Question 7. What are fragments, and how do you render conditionally?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bb321a87",
+   "say": "<>…</> groups elements without adding an extra DOM node",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "44ceec06",
+   "say": "Conditional: if/else before return, the ternary a ? b : c, or cond && <X />",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52abdb15",
+   "say": "Careful with and: if count is zero, React renders a zero on the screen. Use count greater than zero.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "21d42788",
+   "say": "Keys, in one picture. Three people in a list, keyed by their index, zero, one and two. Ana's row has an input where the user has half-typed a note.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1a8b7fca",
+   "say": "Now insert Zoe at the front. With index keys, Zoe gets key zero. React matches by key, so it thinks item zero just changed its text, and that a new item three appeared at the end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a35ec5ae",
+   "say": "So Ana's half-typed note, which belonged to key zero, now shows on Zoe's row. Component state and DOM stick to the key, not to the data. That's why keys must be stable ids, like the user's id, never the index, when the list can reorder.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b5e3a5b3",
+   "say": "Question 8. Why are keys needed in lists?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d62421c3",
+   "say": "They tell React which item is which between renders",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "becd4cc4",
+   "say": "So it can keep, move or remove the right DOM nodes and component state",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0819ca9",
+   "say": "Unique among siblings and stable: an id from your data",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c121eed8",
+   "say": "Question 9. What goes wrong when you use the array index as the key?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6642e947",
+   "say": "Insert, delete or reorder, and every index after that point changes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae378254",
+   "say": "State and inputs attach to the wrong rows; extra re-renders and DOM updates",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "394e13f2",
+   "say": "Index keys are fine only for static lists that never reorder",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9daed930",
+   "say": "Question 10. What is the difference between function and class components?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c1f81871",
+   "say": "Function components: plain functions with hooks: the modern standard",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e1a1cd39",
+   "say": "Class components: this.state, setState, lifecycle methods (componentDidMount…)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7150764b",
+   "say": "Classes are still needed for error boundaries; otherwise write functions",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f82ebf4b",
+   "say": "Check 1. A todo list lets users reorder items, and uses the index as the key. What bug appears?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "28a08078",
+   "say": "After a reorder, each row's state, like a checked box or typed text, stays with the position, not the todo, so it shows up on the wrong item. Use the todo's id as the key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e19645e2",
+   "say": "Module two. State and events. Seven questions, and one surprise behind most of them: state is a snapshot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4491bb7a",
+   "say": "Here's the idea of the module. When a component renders, useState gives it the current value. Count is a plain constant for that whole render: a snapshot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43a9949f",
+   "say": "So inside the click handler, count is zero, every time you read it. Three calls to set count with count plus one all ask for one. And the log prints zero, because setting state doesn't change this render's variable. It schedules a new render.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2cf4f6bf",
+   "say": "When the next value depends on the previous one, pass an updater function instead: c, arrow, c plus one. React queues them, and runs each on the latest value, so three of them give three. State is a snapshot per render, and setters schedule the next one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "27769062",
+   "say": "Question 11. How does useState work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3ce6fa2b",
+   "say": "const [value, setValue] = useState(initial): React stores the value for this component",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b2fdcbc",
+   "say": "Calling the setter schedules a re-render with the new value",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc3d7b63",
+   "say": "React matches state to the component by call order (hence the rules of hooks)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2c4b5860",
+   "say": "useState(() => expensive()) runs the initialiser only once",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ae5bedd8",
+   "say": "Question 12. Why does console.log show the old value right after setState?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "695691b9",
+   "say": "The setter doesn't change the current render's variable: it's a snapshot",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51acf927",
+   "say": "It schedules a re-render; the new value arrives in the next render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00c0f333",
+   "say": "Use the value you just computed, or read it in the next render or an effect",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6b1f6d1a",
+   "say": "Question 13. What is batching in React?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "68eeba7e",
+   "say": "Several state updates in the same event are grouped into one re-render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebec1ad8",
+   "say": "Since React 18, automatic everywhere: timeouts, promises, native events too",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fb66842",
+   "say": "flushSync forces an immediate update when you really need it (rare)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4331110e",
+   "say": "Question 14. Why must you never mutate state directly?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4525d3f0",
+   "say": "React compares by reference (Object.is): a mutated object looks unchanged, so no re-render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9faa3e03",
+   "say": "Mutation also breaks memo, effects' dependencies and concurrent rendering",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25427029",
+   "say": "Create new objects and arrays: { ...user, name }, [...items, item], items.map / filter",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cd513197",
+   "say": "Question 15. How do events work in React (SyntheticEvent)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4ca27257",
+   "say": "Handlers are props in camelCase: onClick={handle}, passing the function, not calling it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4f89910",
+   "say": "React wraps native events in a SyntheticEvent with the same interface across browsers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "926d1897",
+   "say": "React attaches listeners at the root and delegates (since 17, the root container, not document)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "941bdbdb",
+   "say": "Question 16. What is the difference between controlled and uncontrolled components?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "337fce31",
+   "say": "Controlled: the input's value comes from state and changes through onChange",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8fd126e1",
+   "say": "Uncontrolled: the DOM keeps the value; read it with a ref or FormData when needed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f759526",
+   "say": "Controlled for instant validation and dependent fields; uncontrolled for simple forms and files",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "65f530a3",
+   "say": "Question 17. How do you handle forms in React?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "dfd19c36",
+   "say": "Controlled inputs with state, or uncontrolled with FormData on submit",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d08e932c",
+   "say": "onSubmit with event.preventDefault() (or React 19 form actions)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cfec72c",
+   "say": "Larger forms: React Hook Form plus a schema validator like Zod",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6431de72",
+   "say": "Check 2. Count is five. You call set count with count plus one, twice. What is count after the re-render?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "87711cdc",
+   "say": "Six. Both calls read the same snapshot, five, and ask for six. Use the updater form twice to get seven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d954922",
+   "say": "Module three. Rendering and reconciliation. Eight questions about what React does between your setState and the pixels changing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8917b472",
+   "say": "Here's the idea of the module. Something triggers a render: a state update, the parent re-rendering, or a context value changing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19c90dc6",
+   "say": "Then the render phase. React calls your components to get new elements, and compares them with the previous ones. This phase must be pure, because React may pause it, or throw the result away.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c693ed72",
+   "say": "Then the commit phase. React applies only the necessary changes to the DOM, all at once, and this part is never interrupted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "758c1f2e",
+   "say": "Then effects. Layout effects run before the browser paints, and ordinary effects run after.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "72de5d92",
+   "say": "And the distinction interviewers look for: rendering is not the same as updating the DOM. A component can re-render, produce the same output, and nothing on screen changes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8662ab05",
+   "say": "Question 18. What triggers a re-render in React?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9cbdfac0",
+   "say": "Its own state changes (to a different value by Object.is)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f59486c",
+   "say": "Its parent re-renders: children re-render by default, even with the same props",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "773377f3",
+   "say": "A context it reads changes value",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f1f9366a",
+   "say": "Props changing is not a trigger by itself: the parent rendering is",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "95ac630f",
+   "say": "Question 19. What are the render and commit phases?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6e6042b0",
+   "say": "Render: call components, build the new tree, diff it; pure, interruptible",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02673867",
+   "say": "Commit: apply DOM changes, attach refs, run layout effects; synchronous",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ac2bf65",
+   "say": "Then the browser paints, and passive effects (useEffect) run",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "642fdaf0",
+   "say": "Question 20. What is the virtual DOM, and how does it help?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a79dd375",
+   "say": "A lightweight tree of plain objects describing the UI (the elements)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3523fa73",
+   "say": "React diffs the new tree against the old one and updates only what changed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0aad0ea1",
+   "say": "The win is the declarative model with reasonable updates, not raw speed over hand-written DOM code",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9faaefc1",
+   "say": "Reconciliation is how React compares the trees, and it uses two rules to keep it fast. Rule one: compare elements at the same position by type.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aec4de8c",
+   "say": "If the type changed, a div became a section, React throws away the whole subtree and builds a new one. Every component inside loses its state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "72b491b5",
+   "say": "Rule two: among siblings, keys identify elements. Same type and same key means the same component, just update its props, even if it moved. That's why keys matter, and why changing a key is a deliberate way to reset a component.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c0bfaf0e",
+   "say": "Question 21. What is reconciliation, and what are the diffing rules?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4b9cda74",
+   "say": "Comparing the new element tree with the old one to find the changes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e68405d",
+   "say": "Different type at a position → unmount the old subtree, mount a new one",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df5fc88f",
+   "say": "Same type → keep the instance, update props; children matched by key",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d067f8e",
+   "say": "That makes diffing O(n) instead of the general O(n³)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "650d8c05",
+   "say": "Question 22. How do you reset a component's state with key?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "72e041fc",
+   "say": "Give it a key that changes when it should start fresh: <Form key={userId} />",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f35091af",
+   "say": "A new key means a new component instance: all its state is reset",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "42b6c5fa",
+   "say": "Cleaner than effects that copy props into state",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6201d906",
+   "say": "Question 23. What is React Fiber?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "327d55fb",
+   "say": "React's reconciliation engine since React 16",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "614b74fd",
+   "say": "Rendering is split into small units of work that can be paused, resumed or dropped",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4091674",
+   "say": "That enables priorities and concurrent rendering (transitions, Suspense)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "726ada85",
+   "say": "Question 24. What does React.StrictMode do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6c306d85",
+   "say": "Development-only checks; nothing changes in production",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82ca0e07",
+   "say": "Renders components twice and runs effects mount → unmount → mount, to expose impure code and missing cleanups",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3c87b26",
+   "say": "Warns about deprecated APIs",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cbac9c80",
+   "say": "Question 25. What is React.memo?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d51d77b2",
+   "say": "Wraps a component so it skips re-rendering when its props are shallowly equal",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "85648208",
+   "say": "Useless if you pass new objects or functions every render: pair it with useMemo / useCallback",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3db6d15b",
+   "say": "Use it for expensive components that often receive the same props",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e191b68f",
+   "say": "Check 3. A parent re-renders, and its child receives exactly the same props. Does the child re-render?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7c3173c0",
+   "say": "Yes, by default. Children re-render whenever their parent does. Only React memo, with props that are actually stable, lets it skip.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "39e6fa51",
+   "say": "Module four. Hooks. Fifteen questions, the biggest module, and the one interviews dig into hardest. It starts with why hooks have rules at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae990ecd",
+   "say": "Here's the idea behind hooks. React doesn't know your hooks by name. It stores them in a list for each component, in the order they're called. Name is slot zero, the effect is slot one, age is slot two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3e26a023",
+   "say": "On the next render, the same calls come in the same order, so each one gets its own slot back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f37e2c7c",
+   "say": "Now put the effect inside an if, and skip it once. Age is now the second call, so it reads slot one, the effect's slot. Everything after the skipped hook is shifted. That's why the rules of hooks exist: call them at the top level, in the same order, every render.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "81af2a9d",
+   "say": "Question 26. What are hooks, and why were they introduced?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cf5a1428",
+   "say": "Functions (useState, useEffect…) that let function components use state and React features",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b83ae293",
+   "say": "They replaced classes' problems: logic split across lifecycles, this, wrapper hell from HOCs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0501078b",
+   "say": "Custom hooks let you reuse stateful logic between components",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "07f60c21",
+   "say": "Question 27. What are the rules of hooks, and why do they exist?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fd493881",
+   "say": "Only call hooks at the top level: never in conditions, loops or after an early return",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1709d3e",
+   "say": "Only call them from components or other hooks",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9b93a91",
+   "say": "React identifies hooks by call order; the ESLint plugin enforces both rules",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "421f2143",
+   "say": "Question 28. What is useEffect for?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7c85b5d0",
+   "say": "Synchronising with something outside React: subscriptions, timers, the DOM, network",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fcec5cf",
+   "say": "Runs after the commit and paint; returns an optional cleanup",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36d39189",
+   "say": "Not for computing values from props or state, and not for handling events",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9d4696ba",
+   "say": "Effects on a timeline. On mount, the component renders, React commits and the browser paints, and then the effect runs: subscribe to room a.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f923fce",
+   "say": "The component re-renders, but room id is still a. The dependency array hasn't changed, so the effect is skipped.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3a55b599",
+   "say": "Room id changes to b. First the previous effect's cleanup runs, unsubscribe from a, and then the new effect, subscribe to b.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c3bbb597",
+   "say": "And on unmount, the last cleanup runs. So an effect is a pair: start syncing with something, and stop. The dependency array decides when to stop and restart.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d69734f9",
+   "say": "Question 29. How does the dependency array of useEffect work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "510bc6d4",
+   "say": "No array: runs after every render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcf87049",
+   "say": "[]: runs once after mount (cleanup on unmount)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c916522b",
+   "say": "[a, b]: runs when a or b changed (compared with Object.is)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55e1523e",
+   "say": "List every reactive value the effect reads; the linter checks it",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a249736f",
+   "say": "Question 30. Why does useEffect need a cleanup function?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1c024c0e",
+   "say": "To undo what the effect started: unsubscribe, clear timers, abort fetches, remove listeners",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f331a3a7",
+   "say": "It runs before the effect re-runs and on unmount",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a90aad89",
+   "say": "Without it: leaks, duplicate subscriptions, setState on unmounted components",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d85be6c7",
+   "say": "Question 31. What is the difference between useEffect and useLayoutEffect?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3e9d8153",
+   "say": "useEffect: after the browser paints; doesn't block the screen; the default",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0ef9e3c",
+   "say": "useLayoutEffect: after the DOM update but before paint; blocks painting",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a028e848",
+   "say": "Use the layout one only to measure the DOM and fix layout before the user sees a flicker",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9fe1934d",
+   "say": "Question 32. What is a stale closure in React, and how do you fix it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c694a41d",
+   "say": "A function created in an old render keeps that render's state values",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1cb24ca2",
+   "say": "e.g. setInterval in an effect with [] keeps reading count = 0 forever",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f6bc3156",
+   "say": "Fixes: correct dependencies, the updater form setCount(c => c + 1), or a ref for the latest value",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "958fa6be",
+   "say": "Question 33. How do you fetch data in an effect correctly, including race conditions?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "26235cda",
+   "say": "Fetch in the effect, keyed on its inputs; track loading and error state",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "373f8555",
+   "say": "Race: an old, slower response arrives after a newer one and overwrites it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fdbe2f8b",
+   "say": "Fix: an ignore flag or AbortController in the cleanup; or use TanStack Query",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3ba844ae",
+   "say": "Question 34. When don't you need an effect?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0713f088",
+   "say": "Deriving values from props or state: compute them during render (or useMemo)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1fa2b0ff",
+   "say": "Reacting to a user action: do it in the event handler",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43cecacf",
+   "say": "Resetting state when a prop changes: use a key",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f98ddabf",
+   "say": "Effects are for syncing with outside systems only",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7e50b2c",
+   "say": "Question 35. What is useRef used for?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "60ff1948",
+   "say": "A mutable box ({ current }) that survives renders without causing them",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3bd7f60e",
+   "say": "Holding DOM nodes: inputRef.current.focus()",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83a77774",
+   "say": "Holding values that shouldn't trigger renders: timer ids, the previous value, the latest callback",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5131e2a2",
+   "say": "Question 36. How do you pass a ref to a child component (forwardRef, and ref as a prop in React 19)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4a0fd157",
+   "say": "Before React 19: wrap the child in forwardRef((props, ref) => …)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e7a805e",
+   "say": "React 19: ref is a normal prop for function components; forwardRef isn't needed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7787b1b5",
+   "say": "useImperativeHandle exposes a limited API instead of the raw DOM node",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "85a4957c",
+   "say": "Question 37. What do useMemo and useCallback do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d0923982",
+   "say": "useMemo(fn, deps): remembers a computed value until deps change",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bca65e5d",
+   "say": "useCallback(fn, deps): remembers a function instance (useMemo returning a function)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84fbc797",
+   "say": "Uses: skip expensive work, and keep props stable for memoised children or effect deps",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a65e0935",
+   "say": "Question 38. When should you NOT use useMemo and useCallback?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1d1b2ec2",
+   "say": "Cheap calculations: the memo bookkeeping costs more than it saves",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1eb3acc1",
+   "say": "When the child isn't memoised: a stable callback changes nothing",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9547f673",
+   "say": "Measure first with the Profiler; the React Compiler automates much of this",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "48202131",
+   "say": "Question 39. When should you use useReducer instead of useState?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "88028fb2",
+   "say": "Several related values updated together, or the next state depends on complex rules",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b238060e",
+   "say": "Logic goes into a pure reducer(state, action) you can test on its own",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "03fb624c",
+   "say": "dispatch is stable, so it's easy to pass down (often with context)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2297b7cf",
+   "say": "Question 40. What are custom hooks? Give an example.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2d73112a",
+   "say": "A function whose name starts with use and calls other hooks: reusable stateful logic",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ee31a26",
+   "say": "Each component that calls it gets its own state",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f088a269",
+   "say": "Examples: useFetch, useDebounce, useLocalStorage, useOnline",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ddd0327b",
+   "say": "Check 4. An effect with an empty dependency array starts a set interval, and returns nothing. What's missing, and what goes wrong in strict mode?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "05e9104d",
+   "say": "A cleanup that clears the interval. Strict mode mounts the component twice in development, so you'd get two intervals running, and both keep running after the component unmounts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5bf1b798",
+   "say": "Module five. Context and state management. Four questions about where state should live.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad1d61d5",
+   "say": "Here's the idea. A provider near the top holds a value, the theme. Layout and sidebar don't care about it, so they don't need it passed through their props.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e95fea2",
+   "say": "Deep down, any component that calls use context with that context reads the value directly. No prop drilling.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d599be2c",
+   "say": "The cost: when the value changes, every component reading that context re-renders. And if the value is an object created fresh on every render of the provider, that's every time the provider renders. So split contexts by how often they change, memoise the value, or reach for a store with selectors.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "292f8570",
+   "say": "Question 41. What is the Context API, and when should you use it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7cf0dad5",
+   "say": "createContext + a Provider + useContext: share a value with a whole subtree",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd4267dc",
+   "say": "For data many components need and that changes rarely: theme, user, locale, feature flags",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c96a3d72",
+   "say": "Not a state manager by itself: it only passes values down",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4bcad007",
+   "say": "Question 42. What are the pitfalls of Context, and how do you avoid unnecessary re-renders?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "076de19e",
+   "say": "Every consumer re-renders whenever the value changes, even if it uses one field",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d74d6f4",
+   "say": "A new object as value each render ({ user, setUser }) re-renders consumers every time",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d4f9907",
+   "say": "Fixes: useMemo the value, split state and dispatch contexts, split by topic, or a store with selectors",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "78e7733e",
+   "say": "Question 43. How do you choose between local state, Context, and an external store like Redux or Zustand?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ff5c685e",
+   "say": "Local state first; lift it up when siblings share it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce6a64a5",
+   "say": "Context for rarely-changing app-wide values",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f8c86a1",
+   "say": "A store (Zustand, Redux Toolkit) for big, frequently changing shared client state with selectors",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c23abbd",
+   "say": "Server data belongs in a server-state library (TanStack Query), not in any of these",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4ecb1595",
+   "say": "And Redux, the classic external store. A component dispatches an action, a plain object describing what happened.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75e53249",
+   "say": "The store hands the current state and the action to a reducer, a pure function that returns a new state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df62dc0c",
+   "say": "The store keeps the new state, and notifies its subscribers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d3dfe4ec",
+   "say": "And components re-render only when the slice they select actually changed. That one-way loop makes every change traceable, which is what Redux DevTools' time travel is built on. Today you'd write it with Redux Toolkit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4c369b9b",
+   "say": "Question 44. What is Redux, and how does its data flow work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "892a0a1e",
+   "say": "A predictable store: the whole client state in one place, changed only by actions",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0025bb40",
+   "say": "dispatch(action) → reducer(state, action) → new state → subscribed components update",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "834a58b8",
+   "say": "Redux Toolkit (createSlice, Immer, RTK Query) is the modern way; DevTools give time travel",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d24e9093",
+   "say": "Module six. Patterns. Four questions about ways to share behaviour and structure between components.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd60249f",
+   "say": "Question 45. What are higher-order components (HOCs)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5bce2f97",
+   "say": "A function that takes a component and returns a new one with extra behaviour: withAuth(Page)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d7693f57",
+   "say": "Like decorators for components",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f84d97b",
+   "say": "Mostly replaced by hooks: they hide where props come from and nest into wrapper hell",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c30a577c",
+   "say": "Question 46. What are render props?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d11a0438",
+   "say": "A prop whose value is a function that returns UI: <Mouse render={(pos) => <Dot {...pos} />} />",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "553df850",
+   "say": "The component owns the logic; the caller decides what to render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a09dc279",
+   "say": "Also largely replaced by custom hooks",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "007ca091",
+   "say": "Question 47. What are error boundaries?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e4e3d4b9",
+   "say": "Components that catch errors thrown while rendering their children and show a fallback",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89ce2e84",
+   "say": "Class components with getDerivedStateFromError / componentDidCatch (or react-error-boundary)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f1dbcfe",
+   "say": "They don't catch errors in event handlers, async code or the boundary itself",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "91e17a73",
+   "say": "Question 48. What are portals?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "482274da",
+   "say": "createPortal(children, domNode): render into a different DOM node, e.g. document.body",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d8c0b72",
+   "say": "For modals, tooltips and dropdowns that must escape overflow: hidden and z-index",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b137a00",
+   "say": "Events still bubble through the React tree, not the DOM tree",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9ce1b406",
+   "say": "Module seven. Performance. Four questions, and one rule: measure first, then fix the thing you measured.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e391cff8",
+   "say": "Question 49. How do you optimise a React app's performance?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c615898d",
+   "say": "Measure with the React DevTools Profiler and Lighthouse before changing anything",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad9802d3",
+   "say": "Fewer re-renders: keep state local, memo plus stable props, split contexts",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a82293e5",
+   "say": "Less work: virtualise long lists, defer non-urgent updates, avoid heavy work in render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "917179fe",
+   "say": "Less code: code splitting, lazy loading, smaller dependencies, optimised images",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "74a4933a",
+   "say": "Question 50. How do code splitting, React.lazy and Suspense work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6f9b4e9f",
+   "say": "lazy(() => import(\"./Chart\")) loads the component's code only when it's first rendered",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30faccfa",
+   "say": "<Suspense fallback={<Spinner />}> shows the fallback while it loads",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e61cf019",
+   "say": "Split by route first: the biggest win for the least effort",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e615fe80",
+   "say": "Question 51. What is list virtualisation?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cadb3c4c",
+   "say": "Render only the rows in view (plus a buffer), not all 10,000",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "63dc4ba4",
+   "say": "Spacers keep the scroll height right; rows are swapped as you scroll",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e25cc085",
+   "say": "Libraries: TanStack Virtual, react-window",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f846fc11",
+   "say": "Question 52. What are useTransition and useDeferredValue?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "227d0459",
+   "say": "useTransition: mark a state update as non-urgent; typing stays responsive while the heavy update renders",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f308603",
+   "say": "useDeferredValue: a lagging copy of a value; render the expensive part with it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7964f77d",
+   "say": "Both rely on concurrent rendering: urgent updates interrupt the slow one",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f5420019",
+   "say": "Check 5. Typing in a filter box is laggy, because a five thousand row table re-renders on every keystroke. Name two fixes.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3cf39da0",
+   "say": "Virtualise the table, so only the visible rows render. And render the table from a deferred copy of the filter, with use deferred value, or a transition, so typing stays urgent. Memoising rows helps too.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "efa1a591",
+   "say": "Module eight. Modern React, eighteen and nineteen, and where the HTML gets made. Six questions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9a82397e",
+   "say": "Here's the idea. Client-side rendering makes the HTML in the browser, after the JavaScript loads. The first response is an empty page. Fine for apps behind a login.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa8e8ce2",
+   "say": "Server-side rendering makes the HTML on the server, for every request. A fast, real first paint, and fresh data. Good for personalised pages that need SEO.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6daf98ae",
+   "say": "Static generation makes it once, at build time, and serves it from a CDN. The fastest, for content that rarely changes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1dc7da7d",
+   "say": "And incremental static regeneration is static pages that are rebuilt in the background, every so many seconds, or on demand.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1752957a",
+   "say": "And the three server options share one step: hydration, which turns the server's HTML into a working React app.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fc6754f8",
+   "say": "Question 53. What is concurrent rendering in React 18?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "72db5c4a",
+   "say": "React can prepare a render in the background and interrupt it for something more urgent",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a757a3ea",
+   "say": "Enabled by createRoot; used by transitions, useDeferredValue and Suspense",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af0c4178",
+   "say": "Rendering must be pure, because a render can be started and thrown away",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fd4f7709",
+   "say": "Question 54. What are CSR, SSR, SSG and ISR?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "832d701c",
+   "say": "CSR: HTML built in the browser; SSR: on the server per request",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5a98ee1",
+   "say": "SSG: at build time; ISR: static, regenerated periodically or on demand",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c77774e3",
+   "say": "Choose by freshness, SEO, personalisation and cost",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "40fdeeae",
+   "say": "Hydration, step by step. The server runs your components and sends real HTML.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f7fe38b",
+   "say": "The browser paints it right away. The user can see the content, but nothing is interactive yet.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d40927cf",
+   "say": "Then the JavaScript arrives, with the same components.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b52fb85f",
+   "say": "React renders again in the browser, and instead of creating DOM, it attaches event handlers to the DOM that's already there. That's hydration.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "612d2942",
+   "say": "Which is why the two renders must match. Using the current time, a random number, or checking window during render gives a different result in the browser, and React reports a hydration mismatch.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2da5b666",
+   "say": "Question 55. What is hydration?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e3f6d0c7",
+   "say": "Making server-rendered HTML interactive by attaching React to it in the browser",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4dcfd844",
+   "say": "The client render must produce the same markup, or you get a mismatch",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2de66f20",
+   "say": "Selective hydration with Suspense lets parts become interactive independently",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e1cd51e1",
+   "say": "Question 56. What are React Server Components?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3fda7daf",
+   "say": "Components that run only on the server: they can read the database directly, and ship no JS",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d505be3a",
+   "say": "Client components ('use client') handle state, effects and events",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "237842fa",
+   "say": "Server components can render client components and pass them serialisable props",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6017996e",
+   "say": "Question 57. What is new in React 19?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "65faeac4",
+   "say": "Actions: async functions in transitions and <form action={fn}>; useActionState, useFormStatus",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec6406b3",
+   "say": "useOptimistic for optimistic UI; use() to read promises and context",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca49d971",
+   "say": "ref as a normal prop; document metadata in components; Server Components stable",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "afbe54c6",
+   "say": "Question 58. How does Suspense work for data fetching?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "144ea4ee",
+   "say": "A component that isn't ready suspends (a supporting library or use(promise) throws a promise)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1531ca61",
+   "say": "The nearest <Suspense> shows its fallback until the data is ready, then retries",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf2059f0",
+   "say": "Lets you place loading states declaratively and stream server HTML in pieces",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b7d5c14e",
+   "say": "Check 6. A server-rendered component shows the current time, from new date. What happens when the page loads?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "84454d4a",
+   "say": "A hydration mismatch. The server rendered one time, the browser renders a different one. Render the time only after mount, in an effect, or mark that one node to suppress the warning.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b46ff8a",
+   "say": "Module nine. Routing, testing and the rest. Eight questions that round out a React developer's toolkit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f54642fc",
+   "say": "Question 59. How does client-side routing work in a single-page app?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ca0af7c0",
+   "say": "The router listens to URL changes (the History API) instead of letting the browser reload",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c161ee35",
+   "say": "<Link> calls history.pushState; the router renders the matching route's component",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98ab8360",
+   "say": "The server must return index.html for every app URL (a fallback), or refreshes 404",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ca3adf47",
+   "say": "Question 60. How do you implement protected routes?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0e63bf77",
+   "say": "A wrapper route checks the user; if not logged in, <Navigate to=\"/login\" replace />",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e113823d",
+   "say": "Remember where they were going and send them back after login",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b8c23a95",
+   "say": "It's only UX: the API must check authorisation on every request",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "59083d8b",
+   "say": "Question 61. How do you test React applications?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "eee64900",
+   "say": "Unit and component tests: Vitest or Jest with React Testing Library",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d674ede",
+   "say": "Test behaviour like a user: getByRole, userEvent, findBy for async; not internal state",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4bd0ad56",
+   "say": "Mock the network with MSW; end-to-end flows with Playwright or Cypress",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "21e79d14",
+   "say": "Question 62. How do class lifecycle methods map to hooks?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "98373f61",
+   "say": "componentDidMount → useEffect(…, [])",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "606706cf",
+   "say": "componentDidUpdate → useEffect with dependencies",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd7988f7",
+   "say": "componentWillUnmount → the effect's cleanup; shouldComponentUpdate → React.memo",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e124a0f6",
+   "say": "Think in synchronisation, not lifecycle moments",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e3da91d7",
+   "say": "Question 63. Why shouldn't you define a component inside another component?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3868bc69",
+   "say": "It's a new function on every render, so React sees a new type each time",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6da72389",
+   "say": "It unmounts and remounts the child on every render: state lost, inputs lose focus",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db7e84d5",
+   "say": "Define components at the top level; pass data through props",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b8f2ee22",
+   "say": "Question 64. What is the difference between server state and client state, and why use TanStack Query?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4f6fad67",
+   "say": "Client state: owned by the UI (open modal, form input). Server state: a cached copy of remote data",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b897e68",
+   "say": "Server state needs caching, deduplication, refetching, invalidation, retries, loading and error states",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5de705ec",
+   "say": "TanStack Query does all of that: useQuery(['user', id], fetchUser), mutations with invalidation",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d92a0638",
+   "say": "Question 65. How does React protect against XSS, and where can it still happen?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9b3bc245",
+   "say": "Text in JSX is escaped automatically: a <script> in a string renders as text",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37abac6b",
+   "say": "Still dangerous: dangerouslySetInnerHTML (sanitise with DOMPurify) and javascript: URLs in href",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0642bfd5",
+   "say": "Also server-rendered state injected into HTML, and third-party scripts",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "337daf21",
+   "say": "Question 66. How do you debug a React application?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "90e50244",
+   "say": "React DevTools: inspect props, state and hooks; the Profiler for slow renders",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45447eac",
+   "say": "Browser DevTools: breakpoints, network, console; StrictMode warnings",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6df8354f",
+   "say": "Error boundaries plus monitoring (Sentry) in production; source maps",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "96adc064",
+   "say": "Module ten. Practical React. Fourteen questions from real projects, starting with the full journey of a setState call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21149ff3",
+   "say": "Here's the full journey of a state update, which is question seventy one, and a favourite. First, the update is queued on that component's hook. If the new value is the same as the old one, React can bail out entirely.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d006664c",
+   "say": "Then React schedules a render. Updates from the same event are batched into one, and transitions get lower priority than typing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ff726acc",
+   "say": "Then the render. React calls your component again, and this time use state returns five. Its children re-render too, and React diffs the new elements against the old.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d7a186c",
+   "say": "Then the commit. DOM changes are applied, refs are attached, layout effects run, and the browser paints.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83de9d84",
+   "say": "Finally, effects whose dependencies changed run their cleanup, then run again. Queue, schedule, render, commit, effects.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "23f4407d",
+   "say": "Question 67. What does it mean that components must be pure?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "48e82e5c",
+   "say": "Same props and state → same JSX; no side effects while rendering",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e2dd2eb",
+   "say": "Don't mutate props, state or outside variables, fetch or subscribe during render",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25e9a769",
+   "say": "React may render twice, pause or discard a render: impure code breaks",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5e32ccc7",
+   "say": "Question 68. What is prop drilling, and how do you avoid it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6f15920d",
+   "say": "Passing props through many layers that don't use them, just to reach a deep child",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b13136bb",
+   "say": "Fixes: composition (pass components as children), Context, or a store",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6de3f682",
+   "say": "A few levels of props is fine and explicit",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bacb606c",
+   "say": "Question 69. What causes \"Too many re-renders\" and infinite effect loops?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9eb53e8f",
+   "say": "Calling a setter during render: onClick={setOpen(true)} instead of onClick={() => setOpen(true)}",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "095f3c91",
+   "say": "An effect that sets state it depends on, with no condition",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ca0175a",
+   "say": "Dependencies that are new every render (objects, arrays, inline functions)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "94581d59",
+   "say": "Question 70. Why can't the useEffect callback be async, and how do you use async code inside it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e39fd146",
+   "say": "An async function returns a promise, but an effect must return nothing or a cleanup function",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ec7a5b5",
+   "say": "Define an async function inside the effect and call it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33492bbd",
+   "say": "Use a flag or AbortController so a late result can't update after cleanup",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9052fe8f",
+   "say": "Question 71. What is the full flow when a useState setter is called?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "98352db2",
+   "say": "Queue the update → schedule (batch, priority) → render (call the component, diff)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f88aabeb",
+   "say": "→ commit (DOM, refs, layout effects) → paint → passive effects (cleanup, then run)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ac25e3c",
+   "say": "Same value → React can skip the re-render",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4eab0655",
+   "say": "Question 72. How do you implement infinite scroll in React?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f7fa0f6a",
+   "say": "An IntersectionObserver on a sentinel element at the bottom of the list",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a0e0494",
+   "say": "When it becomes visible, fetch the next page (cursor-based), guard against duplicate loads",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30ffbfc0",
+   "say": "useInfiniteQuery handles pages; virtualise once the list gets long",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8a5e66ff",
+   "say": "Question 73. How do you handle authentication in a React SPA?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cf4caa8f",
+   "say": "Prefer an HttpOnly, Secure cookie session (scripts can't read it); or short-lived tokens in memory plus a refresh cookie",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "167604d3",
+   "say": "Avoid long-lived tokens in localStorage: any XSS can steal them",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88abca6c",
+   "say": "Keep the user in context; protected routes; the server checks every request",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "57544605",
+   "say": "Question 74. How do you type React components with TypeScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3fa5ddde",
+   "say": "Type props with an interface: function Button({ label }: ButtonProps)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ddef5b4",
+   "say": "children: React.ReactNode; events: React.ChangeEvent<HTMLInputElement>",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0711ceb8",
+   "say": "useState<User | null>(null); generic components; ComponentProps<\"button\"> to extend native props",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "17acaf41",
+   "say": "Question 75. What are the main ways to style React components?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c56c4924",
+   "say": "Plain CSS / CSS Modules (scoped class names)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b66df84",
+   "say": "Utility-first: Tailwind",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1466ab94",
+   "say": "CSS-in-JS: styled-components, Emotion (runtime cost; awkward with Server Components)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "06144b5b",
+   "say": "Component libraries: MUI, shadcn/ui, Radix primitives",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0acd8e18",
+   "say": "Question 76. What is Vite, and why is it faster than older setups like Create React App?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7fe57974",
+   "say": "Dev server serves native ES modules: no full bundle before starting",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25e12afa",
+   "say": "Pre-bundles dependencies with esbuild; instant hot module replacement",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df1caf23",
+   "say": "Production build with Rollup; Create React App is deprecated",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1e5727c8",
+   "say": "Question 77. What is Next.js, and when would you choose it over plain React?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c19172e2",
+   "say": "A React framework: file-based routing, SSR/SSG/ISR, Server Components, API routes, image optimisation",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edac0abf",
+   "say": "Choose it for SEO, fast first loads, content sites, full-stack apps",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad81ee94",
+   "say": "Plain React plus Vite for dashboards and apps behind a login",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1e7e8b42",
+   "say": "Question 78. What is the compound component pattern?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bffe7370",
+   "say": "Components that work together sharing implicit state: <Tabs><Tabs.List/><Tabs.Panel/></Tabs>",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "62990f7f",
+   "say": "The parent holds state in context; the children read it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be56e3a2",
+   "say": "A flexible, readable API for UI kits (Radix, Headless UI)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f27e027c",
+   "say": "Question 79. What are the basics of accessibility (a11y) in React?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9264eea2",
+   "say": "Semantic HTML first: button, label, nav, headings, alt text",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ef5d481",
+   "say": "Keyboard support and visible focus; manage focus in modals",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "729c48d5",
+   "say": "ARIA only when needed (aria-label, aria-expanded); htmlFor; test with axe and a screen reader",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "24e91cf7",
+   "say": "Question 80. How would you structure a medium-to-large React project?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e7b71871",
+   "say": "Group by feature: features/cart/{components, hooks, api, types}",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "907ef040",
+   "say": "Shared UI components, lib/ for utilities, one API layer",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a7439213",
+   "say": "Absolute imports, clear boundaries, tests next to the code",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "41854eeb",
+   "say": "Check 7. A button has on click equals set open true, called directly. It crashes with too many re-renders. Why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3824f820",
+   "say": "Because set open true runs during render, which triggers another render, which runs it again, forever. Pass a function instead: an arrow that calls set open.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ff1c1ac",
+   "say": "A last rapid-fire round. UI equals f of what?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57612b3f",
+   "say": "Of the state, and props.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d371ba3",
+   "say": "Why not use the index as a key?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0aa93d0",
+   "say": "Because reordering attaches state to the wrong rows.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2436d1e0",
+   "say": "What does console log show right after set state?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "139ec1ee",
+   "say": "The old value. State is a snapshot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4869331",
+   "say": "Why can't a hook go inside an if?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8245b7e",
+   "say": "Because React matches hooks by their call order.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f677840",
+   "say": "Use effect versus use layout effect?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e657896",
+   "say": "After paint, versus before paint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a71cc083",
+   "say": "Does a child re-render when its parent does?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5492b1e",
+   "say": "Yes, unless it's memoised and its props are stable.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "169fe174",
+   "say": "That's the whole React page. Each module page has a watch card that starts this lecture at that module.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c25c3e34",
+   "say": "Read the module's theory first, then the answers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c595d07d",
+   "say": "And build the small things yourself: a custom hook, a debounced search, an effect that fetches and cleans up. Interviewers love asking you to write those live. Good luck.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}

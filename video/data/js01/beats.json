@@ -1,0 +1,3736 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "4fcaab13",
+   "say": "JavaScript, topic by topic. This lecture follows the JavaScript page exactly: twelve modules, in the same order, and every question in each module, with the same numbers. Each module starts with the one idea it hangs on, as a picture. Then the questions, answered point by point. And a check, where you answer before I do.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e2ff644",
+   "say": "Module one. Types, values and coercion. Twelve questions, and most of them are about one thing: JavaScript quietly converting values from one type to another.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "633d576f",
+   "say": "Here's the idea. JavaScript has seven primitive types: string, number, bigint, boolean, undefined, null, and symbol. Primitives are immutable, and they're copied when you assign them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d471e5f0",
+   "say": "Everything else is an object: plain objects, arrays, functions, dates, maps. Objects are mutable, and assigning one shares the same object, exactly like Python's names and objects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e312122",
+   "say": "And coercion is the source of the famous weirdness. When an operator needs a different type than it got, JavaScript converts the value for you, by a fixed set of rules. Learn those rules, and the trick questions become easy.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cb2ed527",
+   "say": "Question 1. What are the data types in JavaScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1b442196",
+   "say": "Seven primitives: string, number, bigint, boolean, undefined, null, symbol",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f1cc0e7",
+   "say": "Everything else is an object: arrays and functions are objects too",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf42be33",
+   "say": "Number is a sixty four bit float, so integers are exact only up to two to the fifty three, minus one. Bigint goes beyond that.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "731efd17",
+   "say": "Question 2. What is the difference between pass by value and pass by reference in JavaScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3eef834a",
+   "say": "JavaScript always passes by value",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "101f00d2",
+   "say": "For an object, the value passed is a reference: the function gets the same object",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbf3d809",
+   "say": "So mutating it is visible to the caller; reassigning the parameter is not",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "87f207d2",
+   "say": "Question 3. What is the difference between null, undefined and undeclared?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3ffc87f9",
+   "say": "undefined: declared but no value yet, a missing property, or no return value",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3eea459",
+   "say": "null: an intentional “no value”, set by you",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c2c8eaf1",
+   "say": "Undeclared: never declared; reading it throws a ReferenceError",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91d8f430",
+   "say": "And null loosely equals undefined, but they're not strictly equal.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7826f7ff",
+   "say": "Question 4. How does typeof work, and what are its quirks?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "407976c9",
+   "say": "It returns a string naming the type: \"string\", \"number\", \"object\", \"function\"…",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b56a94c6",
+   "say": "Typeof null is object: a bug from the first version that can never be fixed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e974e5f",
+   "say": "Typeof an array is object too, so use array dot is array.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7a85acac",
+   "say": "typeof on an undeclared variable returns \"undefined\" instead of throwing",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0bb17849",
+   "say": "Question 5. What's the difference between double equals and triple equals?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6e22c149",
+   "say": "Triple equals compares type and value, with no conversion.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e521b028",
+   "say": "Double equals converts both sides to a common type first, so the string five equals the number five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94e25a23",
+   "say": "Use triple equals always. The one idiom people allow is x double-equals null, which catches both null and undefined.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5c41457e",
+   "say": "Question 6. What are truthy and falsy values?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6e2422e2",
+   "say": "There are exactly eight falsy values: false, zero, minus zero, the bigint zero, the empty string, null, undefined, and NaN.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "18f786d2",
+   "say": "Everything else is truthy, including the string zero, the string false, an empty array and an empty object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c63cac8",
+   "say": "if, &&, || and ! all test truthiness, not true or false",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6f5439a5",
+   "say": "Question 7. What is NaN, and what is the difference between isNaN and Number.isNaN?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b61c7023",
+   "say": "NaN is a number value meaning “not a valid number”: 0 / 0, Number(\"abc\")",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c3ecfa1",
+   "say": "It's the only value not equal to itself: NaN === NaN is false",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db59edbd",
+   "say": "The global is NaN converts its argument first, so is NaN of the string abc is true. Number dot is NaN doesn't convert, so it's false.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f908807c",
+   "say": "Use Number.isNaN (or Object.is(x, NaN))",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c387f2f6",
+   "say": "Question 8. What does one plus two plus the string three evaluate to, and how does plus coerce?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e05f1ffa",
+   "say": "\"33\": left to right, 1 + 2 is 3, then 3 + \"3\" is the string \"33\"",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1f379d9",
+   "say": "+ with a string on either side concatenates; otherwise it adds numbers",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8375aec8",
+   "say": "Minus, times and divide always convert to numbers, so the string six minus one is five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48b7046d",
+   "say": "And objects are first converted to primitives, which is why an empty array plus an empty object gives the string object Object.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6d38fe8d",
+   "say": "Question 9. Why is point one plus point two not equal to point three?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "94e6c889",
+   "say": "Numbers are binary floating point (IEEE 754); 0.1 and 0.2 have no exact binary form",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fbdbf325",
+   "say": "Their sum is 0.30000000000000004",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88a3b569",
+   "say": "Compare with a tolerance, using number dot epsilon. And for money, store integer cents.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a1e840cc",
+   "say": "Question 10. What are the nullish coalescing and optional chaining operators?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3ff1b6a3",
+   "say": "Nullish coalescing gives b only when a is null or undefined, so zero and the empty string are kept.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0ab37ce",
+   "say": "Or would replace zero and the empty string as well, which is a classic bug with counts and prices.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd8c6dbf",
+   "say": "Optional chaining, user, question dot, address, question dot, city, stops and returns undefined if anything along the way is missing, instead of throwing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "11de4467",
+   "say": "Question 11. How does short-circuit evaluation work with and, and or?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0d846a1d",
+   "say": "A and B: if a is falsy, return a, and b is never evaluated. Otherwise return b.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5411700",
+   "say": "A or B: if a is truthy, return a. Otherwise return b.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26e01d05",
+   "say": "They return one of the operands, not a boolean: used for defaults and guards",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4719239b",
+   "say": "Question 12. How can \"abc\".length work if a string is a primitive?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ce6122dc",
+   "say": "When you read a property on a primitive, JavaScript wraps it in a temporary object (String)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a34bede",
+   "say": "The property is read from that wrapper, and the wrapper is thrown away",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93335cce",
+   "say": "So methods work, but you can't add properties to a primitive that stick",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "43926a69",
+   "say": "Check 1. What do these give: an empty array plus an empty array, the string five times the string two, and the string five plus two?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d9af134e",
+   "say": "An empty string, because both arrays become empty strings. Ten, because times converts to numbers. And the string fifty two, because plus with a string concatenates.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a25e3003",
+   "say": "Module two. Variables, scope and hoisting. Eleven questions, all explained by what the engine does before your code runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51ae0bf7",
+   "say": "Here's the idea. Scopes nest. The global scope, a module's scope, each function's scope, and, for let and const, each block in curly braces.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c74619a1",
+   "say": "When you use a name, the engine looks in the innermost scope first.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c0986b1",
+   "say": "Then outward, scope by scope, until it finds it. That's the scope chain, and it's fixed by where the code is written, which is called lexical scope.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f0dcfc6d",
+   "say": "Not found anywhere: a reference error. Closures, shadowing and most scope questions come from this picture.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7cf7a53",
+   "say": "Question 13. What are the differences between var, let and const?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "86c83db1",
+   "say": "var: function-scoped, hoisted as undefined, can be redeclared, global var becomes a window property",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dae6cc52",
+   "say": "let: block-scoped, in the TDZ until its line runs, can be reassigned",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26cd2918",
+   "say": "const: like let, but must be initialised and can't be reassigned",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60d75729",
+   "say": "Default to const, use let when you must reassign, avoid var",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5a977e0f",
+   "say": "Question 14. Does const make a value immutable?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a81f909b",
+   "say": "No: const makes the binding constant, not the value",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9183e25e",
+   "say": "A const object can still be changed. Setting user dot name works. Assigning a new object to user throws.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57f7fd32",
+   "say": "For immutability, use Object.freeze (shallow) or immutable update patterns",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b1c8537c",
+   "say": "Question 15. What is scope, and what are global, function and block scope?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f68f52bb",
+   "say": "Scope: the region of code where a name is visible",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68a29068",
+   "say": "Global: visible everywhere; function: inside the function; block: inside { } for let and const",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "44bf6651",
+   "say": "Modules have their own scope too: top-level names in a module aren't global",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bb244f74",
+   "say": "Question 16. What is the scope chain, and what is variable shadowing?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "233177bb",
+   "say": "Scope chain: the inner-to-outer list of scopes searched for a name",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b6eb35fa",
+   "say": "It's lexical: decided by where code is written, not where it's called",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c5e5765f",
+   "say": "Shadowing: an inner variable with the same name hides the outer one inside that scope",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bab51568",
+   "say": "Now hoisting. Before any line of a scope runs, the engine registers every declaration in it. That's called hoisting, although nothing actually moves.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4fa44238",
+   "say": "A var is created and set to undefined, so reading it early gives undefined. A function declaration is created with its whole body, so you can call it before the line where it's written.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0105c9d",
+   "say": "Let and const are created too, but left uninitialised. Touching them before their line throws a reference error. That gap, from the start of the scope to the declaration, is the temporal dead zone.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "870304eb",
+   "say": "Question 17. What is hoisting?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2df592da",
+   "say": "Declarations are registered when a scope is set up, before its code runs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "18d7f60a",
+   "say": "var → undefined; function declarations → the whole function; let, const, class → uninitialised (TDZ)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2354e41c",
+   "say": "Nothing moves: it's the creation phase of the execution context",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b1e6b7b9",
+   "say": "Question 18. What is the Temporal Dead Zone (TDZ)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e16e1aa8",
+   "say": "The time between entering a scope and the let/const line running",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a50ae78",
+   "say": "Touching the variable in that window throws ReferenceError, even typeof",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1601440",
+   "say": "It catches use-before-declare bugs that var would hide",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "82ea6bc5",
+   "say": "Question 19. What is the difference between a function declaration and a function expression?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5b39d4c5",
+   "say": "Declaration: function add() {}: hoisted whole, callable before its line",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3367de77",
+   "say": "Expression: const add = function () {} (or an arrow): follows the variable's rules",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c63795ce",
+   "say": "Expressions can be anonymous, passed around, and used as IIFEs",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "285783c8",
+   "say": "Question 20. What is an execution context?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9b06050a",
+   "say": "The environment a piece of code runs in: its variables, scope chain and this",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d30b496",
+   "say": "One global context, plus a new one for every function call",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c84ea381",
+   "say": "Created in two phases: creation (hoisting, this) then execution",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "26f2c340",
+   "say": "Question 21. What is the call stack?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "035c9ab2",
+   "say": "The stack of execution contexts: a call pushes one, a return pops it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4724def0",
+   "say": "JavaScript has one call stack: it runs one thing at a time",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e51e4689",
+   "say": "Infinite recursion overflows it: RangeError: Maximum call stack size exceeded",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "877ae086",
+   "say": "Question 22. What is strict mode?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "551471d3",
+   "say": "\"use strict\" (automatic in modules and classes) turns silent mistakes into errors",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51f38fcd",
+   "say": "Assigning an undeclared variable throws instead of creating a global",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d681008a",
+   "say": "this is undefined in plain function calls instead of the global object",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6bb66ceb",
+   "say": "Question 23. Why are global variables a problem, and what is globalThis?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6037720b",
+   "say": "Any code can change them: name clashes, hidden coupling, hard tests, memory kept forever",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50d0a972",
+   "say": "Use modules and pass values explicitly",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65e973de",
+   "say": "globalThis is the global object everywhere: window in browsers, global in Node",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "031d9137",
+   "say": "Check 2. Console log a, then var a equals one. Console log b, then let b equals two. What happens on each log?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3f6e1eba",
+   "say": "The first logs undefined, because var is hoisted and set to undefined. The second throws a reference error, because b is in the temporal dead zone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cac9a4c9",
+   "say": "Module three. Functions. Eleven questions, from arrow functions to debounce and throttle, which you'll often be asked to write.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "086b6e2e",
+   "say": "Here's the idea of the module: in JavaScript, functions are values.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57510164",
+   "say": "You can store them in variables, pass them as arguments, and return them from other functions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40d5d52a",
+   "say": "So you can write functions that take or return functions. Map, debounce, memoize and compose are all just that.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77e5f16f",
+   "say": "And a function returned from another remembers the variables where it was made. That's closures, the next module, and it's what makes debounce and memoize work.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9faf6b99",
+   "say": "Question 24. What are first-class and higher-order functions?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0eb4fcd7",
+   "say": "First-class: functions are values you can assign, pass and return",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "255017ae",
+   "say": "Higher-order: a function that takes a function or returns one",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a9f44a52",
+   "say": "Examples: map, filter, setTimeout, addEventListener, debounce",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2aae0e8b",
+   "say": "Question 25. How are arrow functions different from regular functions?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3ef195d4",
+   "say": "No own this: they use the this of the surrounding code (lexical this)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "86172f69",
+   "say": "No arguments object, can't be used with new, no prototype",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e1c25e3f",
+   "say": "Short syntax, implicit return for a single expression",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa77c093",
+   "say": "Great for callbacks; not for object methods that need this",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "14a0b328",
+   "say": "Question 26. What is a callback function?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d5df039d",
+   "say": "A function passed to another function, to be called later",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71cf62e8",
+   "say": "Synchronous (array.map) or asynchronous (setTimeout, an event listener)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19e446f8",
+   "say": "Nested async callbacks lead to callback hell: promises fix that (module 9)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3558c0a0",
+   "say": "Question 27. What is an IIFE, and why doesn't function foo, then parentheses, work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "540c2c23",
+   "say": "An Immediately Invoked Function Expression: (function () { … })()",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f922bcb",
+   "say": "It creates a private scope right away: the pre-module way to avoid globals",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cabdeefd",
+   "say": "At the start of a statement, function is parsed as a declaration, and a declaration can't be called: the parentheses make it an expression",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1a352db6",
+   "say": "Question 28. What are default parameters, rest parameters and the arguments object?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "453648a2",
+   "say": "Default parameters: b equals two is used when b is undefined.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "976fc358",
+   "say": "Rest parameters, dot dot dot nums, collect the remaining arguments into a real array.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce973e24",
+   "say": "arguments: an old array-like object of all arguments; not in arrow functions; prefer rest",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4bfb8e56",
+   "say": "Question 29. What is the difference between the spread operator and rest parameters?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9f37ced6",
+   "say": "Same three dots, opposite jobs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a90baea2",
+   "say": "Spread expands a collection into items: max of dot dot dot nums, or copying arrays and objects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ff367d56",
+   "say": "Rest collects: function f(...args), const [first, ...others] = list",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cfb065b0",
+   "say": "Question 30. What is a pure function, and what are side effects?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1ce9e07a",
+   "say": "Pure: same inputs → same output, and changes nothing outside itself",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c52ff53",
+   "say": "Side effects: mutating arguments or globals, I/O, network, DOM, logging, Date.now()",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d602cb1",
+   "say": "Pure functions are easy to test, cache and reason about; push effects to the edges",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "81488799",
+   "say": "Question 31. What are currying and partial application?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "89d17390",
+   "say": "Currying: f(a, b, c) becomes f(a)(b)(c): one argument at a time",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d793984e",
+   "say": "Partial application: fix some arguments now, get a function for the rest",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "38266829",
+   "say": "Uses: reusable specialised functions, like a logger fixed to one module",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8bd469fc",
+   "say": "Question 32. What are compose and pipe?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a69dbb9c",
+   "say": "Combine functions into one: the output of each feeds the next",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa8b8bee",
+   "say": "compose(f, g)(x) = f(g(x)): right to left",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dca625a1",
+   "say": "pipe(f, g)(x) = g(f(x)): left to right, easier to read",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1add7f06",
+   "say": "Question 33. What is memoization? Implement it.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1a663d26",
+   "say": "Cache a function's results by its arguments, so repeat calls are instant",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1041f93b",
+   "say": "Only for pure functions; the cache key must capture all the arguments",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4eef2d2b",
+   "say": "Bound the cache (an LRU) or it becomes a memory leak",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f01c96b7",
+   "say": "Debounce and throttle both limit how often a function runs. Here are ten keystrokes in two seconds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30f6be73",
+   "say": "Debounce waits until the events stop for, say, three hundred milliseconds, then runs once. Every new event restarts the timer. Ten keystrokes, one search request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a6c00d8",
+   "say": "Throttle runs at most once per interval, say every five hundred milliseconds, no matter how many events arrive. A steady trickle of calls.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23803282",
+   "say": "So debounce for search as you type, the end of a resize, or autosave. Throttle for scroll and mousemove handlers, where you want regular updates, but not hundreds a second.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e12e4bb9",
+   "say": "Question 34. What are debouncing and throttling? Implement both.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6b070f29",
+   "say": "Debounce: clear the pending timer on every call, start a new one",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6578056c",
+   "say": "Throttle: run, then ignore calls until the interval has passed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30120deb",
+   "say": "Keep this and the arguments with fn.apply(this, args)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f9509c8c",
+   "say": "Check 3. A search box sends a request on every keystroke. Debounce or throttle, and why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "40d22661",
+   "say": "Debounce. You want one request after the user pauses typing, not a steady stream of requests while they're still typing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93d5c2e3",
+   "say": "Module four. Closures. Only four questions, but closures are behind debounce, memoize, private state, and half the predict-the-output puzzles.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "363b0d51",
+   "say": "Here's the idea. Make counter declares count, and returns an inner function that increments it. After make counter returns, you'd expect count to be gone. But the inner function still refers to it, so the scope stays alive. A function plus the scope it was born in is a closure.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1b3d4084",
+   "say": "Call c1 twice, and count is two. The state lives in the closure, and nothing outside can touch it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a858df6",
+   "say": "Call make counter again, and you get a brand new scope, with its own count. That's how closures give you private state.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "27d21b4c",
+   "say": "Question 35. What is a closure?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b6290225",
+   "say": "A function together with the variables of the scope where it was created",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "32a9c0b8",
+   "say": "It can read and change them even after that outer function has returned",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24707ba7",
+   "say": "Every function in JavaScript is a closure; it matters when a function outlives its scope",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "42853858",
+   "say": "Question 36. What does this print, and why: setTimeout inside a for loop with var vs let?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0d75d79f",
+   "say": "With var: 3, 3, 3. There's one i for the whole loop, and the callbacks run after the loop ends",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3803e614",
+   "say": "With let: 0, 1, 2. let makes a new binding of i for each iteration",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "97dcf341",
+   "say": "Pre-ES6 fix: an IIFE (or bind) to capture each value",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2448e62a",
+   "say": "Question 37. What are practical uses of closures?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2a7718ba",
+   "say": "Private state: counters, the module pattern, factory functions",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9fbc98d9",
+   "say": "Function factories and partial application: makeMultiplier(2)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c4580452",
+   "say": "Remembering state between calls: debounce, throttle, memoize, once",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24af1506",
+   "say": "Event handlers and callbacks that need values from where they were set up",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9345138c",
+   "say": "Question 38. What are the pitfalls of closures?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ce10ff90",
+   "say": "Memory: a closure keeps its whole scope alive, big objects included",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "29216a0a",
+   "say": "Stale values: a callback sees the variable from when it was created (React's stale closures)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1a015a59",
+   "say": "Loop capture with var: every callback shares one variable",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1e6c4fed",
+   "say": "Module five. The this keyword. Four questions, and one rule decides all of them: this is set by how a function is called, not where it's written. Except for arrow functions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46575590",
+   "say": "Here are the rules, in priority order. Called with new: this is the brand new object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef65be07",
+   "say": "Called with call, apply or bind: this is whatever you passed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa7d7e8e",
+   "say": "Called as a method, obj dot method: this is the object before the dot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c98e87b9",
+   "say": "Called plainly, just f: this is undefined in strict mode, or the global object in sloppy mode.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9bbc391e",
+   "say": "And arrow functions ignore all four rules. They have no this of their own: they use the this of the code around them, at the moment they were created. So the question is never where was this function written, but how was it called.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fafde32f",
+   "say": "Question 39. How is this determined in JavaScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9972be50",
+   "say": "By how the function is called: new → explicit binding → method call → plain call",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a1cfc07a",
+   "say": "Arrow functions use the surrounding this (lexical)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "312b84a6",
+   "say": "In event listeners (regular functions), this is the element; in classes, methods follow the same rules",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "caf54a10",
+   "say": "Question 40. What is the difference between call, apply and bind?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6c07b727",
+   "say": "call(thisArg, a, b): calls now, arguments one by one",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ef2f030",
+   "say": "apply(thisArg, [a, b]): calls now, arguments as an array",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "038eef36",
+   "say": "bind(thisArg, a): doesn't call; returns a new function with this (and arguments) fixed",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d81cd4c4",
+   "say": "Question 41. Implement Function.prototype.bind.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5e8ffd02",
+   "say": "Return a function that calls the original with the fixed this and arguments",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8353db35",
+   "say": "Merge the pre-set arguments with the ones given later",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "727c127e",
+   "say": "A full version also handles being called with new",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ed0369b7",
+   "say": "Question 42. Why does this get lost in callbacks, and how do you fix it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b7134564",
+   "say": "Passing obj.method as a callback passes the function alone: it's later called plainly",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "452b60fa",
+   "say": "So set timeout with user dot greet calls greet with no object, and this is undefined.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4ee02d0",
+   "say": "Fixes: an arrow wrapper () => user.greet(), user.greet.bind(user), or class fields with arrows",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7b5ab69",
+   "say": "Check 4. Const f equals obj dot get name. Then you call f. In strict mode, what is this inside get name?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "dcd79b7a",
+   "say": "Undefined. F is called plainly, so the method has been detached from obj, and there's no object before the dot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9f299b0",
+   "say": "Module six. Objects. Twelve questions about creating, reading, copying, locking and serialising them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0781861",
+   "say": "Question 43. What are the ways to create objects in JavaScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "054d0855",
+   "say": "Object literals { }: the everyday way",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "134350dd",
+   "say": "Constructor functions or classes with new",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05cad06e",
+   "say": "Object.create(proto) to choose the prototype; factory functions that return objects",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "14e058ec",
+   "say": "Question 44. What is the difference between dot and bracket notation?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "845498bb",
+   "say": "obj.name: the key is a fixed, valid identifier",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2be3a44",
+   "say": "obj[key]: the key is computed, or has spaces or dashes: obj[\"first-name\"]",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e834f417",
+   "say": "Brackets also take symbols and numbers (converted to strings)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4a5fe634",
+   "say": "Question 45. How do you check whether an object has a property?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6a4d5f62",
+   "say": "The in operator checks own and inherited properties.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48b0970b",
+   "say": "Object dot has own checks only the object's own properties.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d25e5a11",
+   "say": "obj.key !== undefined fails when the value is undefined on purpose",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2d9785a5",
+   "say": "Question 46. What is the difference between for in, and for of?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bfefd9f2",
+   "say": "for...in loops over enumerable keys, inherited ones included: for objects",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30ac5580",
+   "say": "for...of loops over values of an iterable: arrays, strings, Maps, Sets",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4093696f",
+   "say": "Don't use for...in on arrays: string keys, possible extra properties",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d7970516",
+   "say": "Question 47. What is destructuring?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "43fdb609",
+   "say": "Pull properties out into variables, with defaults, like name and age from user.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1e33559",
+   "say": "Arrays destructure by position, and you can rename while destructuring.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d271c91",
+   "say": "Works in parameters too: function f({ id, title })",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "77d37da4",
+   "say": "Copying. Spread, or object dot assign, makes a new top-level object, but nested objects are shared. Change shallow dot address dot city, and user's city changes too.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9f8d0b3",
+   "say": "Structured clone copies all the way down, including maps, sets and dates, and even circular references. It can't copy functions or DOM nodes. And the old trick, JSON stringify then parse, loses dates, undefined, and functions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d0f7752f",
+   "say": "Question 48. What is the difference between a shallow copy and a deep copy?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5f24fd69",
+   "say": "Shallow: a new outer object, nested objects shared ({ ...obj }, Object.assign, [...arr])",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e178512c",
+   "say": "Deep: everything copied recursively (structuredClone, or a custom clone)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "690954e7",
+   "say": "JSON.parse(JSON.stringify(x)) drops functions, undefined, Dates, Maps and fails on cycles",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4018e9fb",
+   "say": "Question 49. What is the difference between Object.freeze, Object.seal and Object.preventExtensions?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f41ba65f",
+   "say": "preventExtensions: no new properties",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d28119d6",
+   "say": "seal: no new properties, no deleting; existing ones can still change",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89d72cf6",
+   "say": "freeze: nothing can change at all; all three are shallow",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "78d377bd",
+   "say": "Question 50. What are getters, setters and property descriptors?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d31be7b3",
+   "say": "get / set run functions when a property is read or assigned: computed values, validation",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7510df50",
+   "say": "Every property has a descriptor: value, writable, enumerable, configurable (or get/set)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f262585",
+   "say": "Object.defineProperty sets them; freeze works by setting writable and configurable to false",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "319291a5",
+   "say": "Question 51. When should you use a Map instead of an object?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a2d5f78c",
+   "say": "Keys of any type (objects, numbers), not only strings and symbols",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "423d817e",
+   "say": "Frequent adds and deletes, a size property, insertion-order iteration",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec1e0e4a",
+   "say": "No accidental keys from the prototype (\"constructor\", \"__proto__\")",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec49316f",
+   "say": "Plain objects stay best for fixed records and JSON",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "167663ca",
+   "say": "Question 52. What are WeakMap and WeakSet?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3b332af6",
+   "say": "Keys must be objects, held weakly: they don't stop garbage collection",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68033882",
+   "say": "When the key object is gone, the entry disappears",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1f4abcd",
+   "say": "Not iterable, no size: used for metadata or caches attached to objects without leaks",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "35593e3b",
+   "say": "Question 53. What are Symbols used for?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c1c6baaf",
+   "say": "Unique, unguessable property keys: no clash with other code's properties",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "985c625d",
+   "say": "Well-known symbols customise built-in behaviour: Symbol.iterator, Symbol.toPrimitive",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b5a5948",
+   "say": "Skipped by for...in, Object.keys and JSON.stringify",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0cfb0c50",
+   "say": "Question 54. What do JSON.stringify and JSON.parse do, and what are their pitfalls?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "efa49c00",
+   "say": "stringify: value → JSON text; parse: text → value",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0c11e15",
+   "say": "Lost: undefined, functions, symbols; Dates become strings; Map and Set become {}",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "97ceae27",
+   "say": "Throws on circular references and BigInt; parse throws on invalid JSON (wrap it in try)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4367e466",
+   "say": "Extras: a replacer and spacing for stringify, a reviver for parse, toJSON on objects",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a05bb9a2",
+   "say": "Module seven. Prototypes and classes. Seven questions on JavaScript's own kind of inheritance, which classes are only a nicer syntax for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a1429dea",
+   "say": "Here's the idea. Every object has a hidden link to another object, its prototype. Rex has its own property, name.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95fcfefd",
+   "say": "Ask for rex dot bark: it isn't on rex, so the engine follows the link to Dog dot prototype, and finds it there.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcf7fba1",
+   "say": "Rex dot eat goes one step further, to Animal dot prototype. And to string comes from Object dot prototype, whose link is null, the end of the chain. That's prototypal inheritance: objects delegating to other objects. Classes build exactly this chain.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b6ef14c0",
+   "say": "Question 55. How does prototypal inheritance work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5e6b4101",
+   "say": "Each object has a [[Prototype]] link to another object",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd5ea6c6",
+   "say": "A missing property is looked up along that chain until null",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e8bdc74",
+   "say": "Methods live once on the prototype and are shared by every instance",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6e7b9118",
+   "say": "Question 56. What's the difference between dunder proto, and prototype?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "745abf74",
+   "say": "Dunder proto, or better, object dot get prototype of, is an object's own link to its prototype.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19c2a5fe",
+   "say": "Foo dot prototype is a property of a constructor function: the object that instances created with new Foo will link to.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e5a19f8",
+   "say": "So an instance's proto is its constructor's prototype.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b130a600",
+   "say": "Question 57. What does the new keyword do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "793d94d5",
+   "say": "Creates an empty object, linked to Constructor.prototype",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0062c97c",
+   "say": "Calls the constructor with this set to that object",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be46a74c",
+   "say": "Returns the object (unless the constructor returns another object)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "52628c84",
+   "say": "Question 58. How do ES6 classes compare with constructor functions?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6bcdc409",
+   "say": "Classes are mostly syntax over constructor functions and prototypes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e17c65f4",
+   "say": "Differences: must be called with new, strict mode, not hoisted usably (TDZ), methods non-enumerable",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7301d867",
+   "say": "Plus real features: private #fields, static blocks, cleaner extends/super",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f1698fb5",
+   "say": "Question 59. How does inheritance work with extends and super?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4cd4f36e",
+   "say": "class Dog extends Animal links Dog.prototype to Animal.prototype",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46cdbda8",
+   "say": "In the constructor, call super(...) before using this",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e3e60d42",
+   "say": "super.method() calls the parent's version of an overridden method",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "342bfd37",
+   "say": "Question 60. What are static members and private fields in classes?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "387ca3bc",
+   "say": "static: belongs to the class itself: Math-style helpers, factories, counters",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0ae642a",
+   "say": "#field: truly private, enforced by the language, not just a convention",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65e73759",
+   "say": "#method() too; check with #field in obj",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9b151761",
+   "say": "Question 61. What is the difference between Object.create and Object.assign?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "73fcacfe",
+   "say": "Object.create(proto): a new empty object whose prototype is proto",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "deada130",
+   "say": "Object.assign(target, ...sources): copies own enumerable properties into target",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b494811",
+   "say": "create sets up inheritance; assign copies data (shallowly)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f03c834f",
+   "say": "Check 5. You create two Dog instances. Does each one get its own copy of bark, defined as a class method?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5b92ee00",
+   "say": "No. Bark lives once on Dog dot prototype, and both instances find it by following their prototype link.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f67f927",
+   "say": "Module eight. Arrays. Five questions: the array methods, writing them yourself, and the ones that quietly change the original.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f80d1adf",
+   "say": "Question 62. What is the difference between map, forEach, filter and reduce?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f8322fa3",
+   "say": "forEach: runs a function per item, returns undefined: for side effects",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e848836d",
+   "say": "map: returns a new array of the same length, each item transformed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ba5efe7",
+   "say": "filter: returns a new array of the items that pass a test",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58340d4d",
+   "say": "reduce: folds the array into one value: sums, objects, groupings",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2276e7b9",
+   "say": "Question 63. Implement polyfills for map, filter and reduce.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b67d44e6",
+   "say": "Loop over this, call the callback with (item, index, array)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "47a00e40",
+   "say": "Skip holes in sparse arrays (i in this) and pass thisArg along",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1be966d7",
+   "say": "reduce: with no initial value, start from the first item; empty and no initial value → TypeError",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "195e4774",
+   "say": "Question 64. What is the difference between slice and splice, and which array methods mutate?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f9c5d81c",
+   "say": "slice(start, end): returns a copy of a part; doesn't change the array",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1a9c5c68",
+   "say": "splice(start, count, ...items): removes and inserts in place; returns the removed items",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2218cb39",
+   "say": "Mutating: push, pop, shift, unshift, splice, sort, reverse, fill",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "671ae8d0",
+   "say": "Copying versions: toSorted, toReversed, toSpliced, with (ES2023)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "13fd3a17",
+   "say": "Question 65. What are the pitfalls of Array.prototype.sort?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fc250f01",
+   "say": "Without a comparator it sorts as strings: [10, 9, 1].sort() → [1, 10, 9]",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1a9b935",
+   "say": "Numbers: sort((a, b) => a - b)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37d38d9a",
+   "say": "It sorts in place (use toSorted for a copy); it is stable since ES2019",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3e11ccf1",
+   "say": "Question 66. What are common array tricks (dedupe, flatten, checks)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a541f8f6",
+   "say": "Dedupe: [...new Set(arr)]",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b20f38ba",
+   "say": "Flatten: arr.flat(Infinity), or flatMap to map and flatten one level",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eaedd8b4",
+   "say": "Checks: Array.isArray, some, every, includes (finds NaN; indexOf doesn't)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d2e7069",
+   "say": "Last item: arr.at(-1); group: Object.groupBy(arr, fn)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "340df835",
+   "say": "Module nine. Asynchronous JavaScript. Sixteen questions, the biggest module, and the one interviewers spend the most time on. It all rests on the event loop, so we start there.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58947a58",
+   "say": "Here's the idea, in one example. JavaScript runs on a single call stack. The script logs one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43cab0ae",
+   "say": "Set timeout doesn't wait. It hands a timer to the runtime, the browser or Node, and returns immediately.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d9eb307",
+   "say": "When the timer fires, its callback doesn't run. It joins the task queue, sometimes called the macrotask queue, and waits for the stack to be empty.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7627eaa",
+   "say": "Then a promise that's already resolved. Its then callback goes to a different queue: the microtask queue.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ced78615",
+   "say": "The script carries on and logs four. Synchronous code always finishes first.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3397944c",
+   "say": "Now the stack is empty, so the event loop takes over. First, it runs every microtask, until that queue is empty. Three.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a75a8c8e",
+   "say": "Only then does it take one task from the task queue. Two. Then microtasks again, then the browser may render, and around it goes. So the output is one, four, three, two. Stack first, then all microtasks, then one task. That rule answers most predict-the-output questions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "27a83cf5",
+   "say": "Question 67. How can JavaScript be asynchronous if it is single-threaded?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "11496a2e",
+   "say": "Your JavaScript runs on one thread, but the runtime (browser, Node) is multi-threaded",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c32b6a5",
+   "say": "Timers, network and file I/O happen outside the stack, in the runtime",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d8c5a32",
+   "say": "When they finish, callbacks are queued, and the event loop runs them when the stack is empty",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3e8e6ba4",
+   "say": "Question 68. What is callback hell, and how do promises solve it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "22687b85",
+   "say": "Nested callbacks for sequential async steps: a pyramid, with errors handled at every level",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ff1d7a7",
+   "say": "Promises return a value you can chain: .then().then(), one .catch for all errors",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2a1880f",
+   "say": "async/await then makes it read like synchronous code",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "221249f9",
+   "say": "A promise is an object standing for a result that isn't there yet. It starts pending.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f93dc9d1",
+   "say": "It settles exactly once: fulfilled with a value, which runs the then callbacks, or rejected with an error, which runs the catch callbacks. Throwing inside the executor rejects it too.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3a632530",
+   "say": "And settled is final. Calling resolve or reject again does nothing. Attaching a then to a promise that's already settled still works: the callback just runs as a microtask.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d8ec0b8e",
+   "say": "Question 69. What is a Promise, and what are its states?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b38d9d8f",
+   "say": "An object for a value that will be available later",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77d5496a",
+   "say": "States: pending, then fulfilled (with a value) or rejected (with a reason)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "81f44cf5",
+   "say": "Settles once; callbacks always run asynchronously, as microtasks",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1491c295",
+   "say": "Question 70. How does promise chaining work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3f8edece",
+   "say": ".then returns a new promise, resolved with whatever the callback returns",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a571c98",
+   "say": "Return a promise and the chain waits for it; throw and the chain rejects",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f12b5b1",
+   "say": "A rejection skips .then steps until the next .catch; .finally runs either way",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "71edd35c",
+   "say": "Question 71. What is the difference between Promise.all, allSettled, race and any?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2f102993",
+   "say": "all: every value, in order; rejects as soon as one rejects",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c664ec5",
+   "say": "allSettled: waits for all, gives each one's status and value or reason",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19c41790",
+   "say": "race: settles like the first to settle, success or failure",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdf696b2",
+   "say": "any: the first to fulfil; rejects (AggregateError) only if all reject",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "eeda59ae",
+   "say": "Question 72. Does Promise.all cancel the other promises when one fails? How do you cancel a fetch?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "67435b4c",
+   "say": "No: the others keep running; Promise.all just stops waiting for them",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d06847bc",
+   "say": "Promises themselves can't be cancelled",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e327feec",
+   "say": "Cancel the underlying work with AbortController: fetch(url, { signal }), then controller.abort()",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "322c1be2",
+   "say": "AbortSignal.timeout(5000) gives a fetch a timeout",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1661eaa1",
+   "say": "Question 73. What is async/await, and how does it work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e4c629f4",
+   "say": "An async function always returns a promise",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb255999",
+   "say": "await pauses that function until the promise settles, without blocking the thread",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64b28f3b",
+   "say": "The rest of the function continues as a microtask; it's promises with nicer syntax",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "20b29d00",
+   "say": "Question 74. How do you handle errors in async code?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "29f4da1a",
+   "say": "async/await: try / catch / finally around the awaits",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc5cdeb0",
+   "say": "Promises: .catch at the end of the chain",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce231056",
+   "say": "Unhandled rejections: log them (unhandledrejection event, process.on in Node)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b37cd5d1",
+   "say": "Don't forget to await: an un-awaited promise's error escapes your try",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "de0c20c4",
+   "say": "Question 75. How do you run async operations sequentially vs in parallel?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5f238e95",
+   "say": "Sequential: await one after another (when each needs the previous result)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fab7d7b9",
+   "say": "Parallel: start them all, then await Promise.all([...])",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee2e813e",
+   "say": "await inside forEach does NOT wait: use for...of for sequence, map + Promise.all for parallel",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f487dd4",
+   "say": "Many items: a concurrency limit (a pool of N at a time)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "05c051e5",
+   "say": "Question 76. Implement Promise.all.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f383da3c",
+   "say": "Return a new promise; keep results by index, count how many are done",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f3f402d",
+   "say": "Resolve when all are done; reject on the first rejection",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "960afa1e",
+   "say": "Wrap each item in Promise.resolve (plain values allowed); an empty list resolves to []",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a976c619",
+   "say": "Question 77. How do you convert a callback-based function into a promise?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "70ad9119",
+   "say": "Wrap it in new Promise and call resolve or reject from the callback",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84cd7578",
+   "say": "Node-style (err, result) callbacks: util.promisify does it for you",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "684ba6cd",
+   "say": "Many APIs already have promise versions: fs/promises, timers/promises",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5a7abece",
+   "say": "Question 78. How does the event loop work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "53cdc045",
+   "say": "Run the current task until the call stack is empty",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ea2f635",
+   "say": "Run all microtasks (promise callbacks, queueMicrotask), including new ones added meanwhile",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7306b009",
+   "say": "Let the browser render if needed, then take the next task (timer, event, message)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ee793c3c",
+   "say": "A long task blocks everything: no clicks, no rendering",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f39c2c88",
+   "say": "Question 79. What is the difference between microtasks and macrotasks? Predict the output.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7a6b7d27",
+   "say": "Microtasks: promise callbacks, queueMicrotask, MutationObserver: all run before the next task",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b80c5cd1",
+   "say": "Macrotasks: setTimeout, setInterval, events, I/O: one per turn of the loop",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c87d51a",
+   "say": "Output here: start, end, promise, timeout",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0df1b7e6",
+   "say": "Question 80. Why isn't set timeout with zero immediate, and why do timers drift?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ab70e046",
+   "say": "0 means “as soon as possible after the current task and all microtasks”, not now",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0b267b1",
+   "say": "Browsers clamp nested timers to about 4ms, and background tabs throttle them",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc212945",
+   "say": "A busy stack delays every timer: they're a minimum, not a promise",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1fe0c40f",
+   "say": "For accurate intervals, compute from Date.now / performance.now; for animation, requestAnimationFrame",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4270de23",
+   "say": "Question 81. What are iterators and generators?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "10721778",
+   "say": "Iterator: an object with next() returning { value, done }",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43b15d31",
+   "say": "Iterable: has [Symbol.iterator]: what for...of, spread and destructuring use",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f910735d",
+   "say": "Generator: function* that pauses at each yield: lazy sequences, custom iterables",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "737bf904",
+   "say": "Async generators with for await...of: streams and paginated APIs",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f8c70653",
+   "say": "Question 82. What are Web Workers?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f2451a78",
+   "say": "Real background threads in the browser for CPU-heavy work",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5d3aa95",
+   "say": "No DOM access; they talk to the page with postMessage (data is copied or transferred)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79030d85",
+   "say": "Use for parsing, image processing, crypto: anything that would freeze the UI",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8f46099c",
+   "say": "Check 6. Set timeout A with zero, queue microtask B, a resolved promise then C, and console log D. In what order do they run? A, D, A, B, C. B, D, B, C, A. C, B, C, D, A. Or D, A, B, C, D.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c057def4",
+   "say": "B. D, then B, then C, then A. Synchronous code first, then every microtask in the order they were queued, and only then the timer's task.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21f9ba82",
+   "say": "Check 7. You write ids dot for each, with an async callback that awaits save. Then you log all saved. What's wrong?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5aa260ce",
+   "say": "For each ignores the promises the callbacks return, so all saved is logged before any save finishes, and errors go unhandled. Use for of with await for a sequence, or await promise dot all over map for parallel.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cc6194b4",
+   "say": "Module ten. Browser and DOM basics. Eleven questions about what happens around your JavaScript in a web page.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75b33be0",
+   "say": "Here's the idea of the module. The page is a tree of elements, and when you click an li, the event doesn't just happen on the li.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75969033",
+   "say": "First it travels down from the window to the target. That's the capturing phase, and only listeners registered with capture true run on the way down.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8e9e652a",
+   "say": "Then it reaches the target, and bubbles back up through every ancestor, running ordinary listeners on the way. That's why a single listener on the list can handle clicks on all its items. Event delegation.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "77027975",
+   "say": "Question 83. What is the DOM, and what is the difference between window and document?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c1c01a83",
+   "say": "DOM: the browser's live tree of objects for the page, which JavaScript reads and changes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "619a530d",
+   "say": "window: the global object for the tab: timers, location, storage, history",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "718ab576",
+   "say": "document: the page itself, window.document: the root of the DOM tree",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "289d337a",
+   "say": "Question 84. How does event propagation work (capturing, target, bubbling)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3fc6dc7f",
+   "say": "Capturing: window down to the target's parent; listeners with { capture: true }",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bfac8b3c",
+   "say": "Target: listeners on the element itself",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a9ab25f8",
+   "say": "Bubbling: back up to window: the default; some events don't bubble (focus, mouseenter)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "309ee30b",
+   "say": "Question 85. What is event delegation?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fe60ecf8",
+   "say": "One listener on a parent handles events from all its children, thanks to bubbling",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ed47c00c",
+   "say": "Find the real target with event.target.closest(\"li\")",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c35c5cc2",
+   "say": "Fewer listeners, and it works for children added later",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3ac709ce",
+   "say": "Question 86. What is the difference between preventDefault and stopPropagation?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "1eee5813",
+   "say": "preventDefault: stop the browser's default action (submitting, following a link)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c29b8d02",
+   "say": "stopPropagation: stop the event travelling to other elements",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ff19faf",
+   "say": "They're independent; stopImmediatePropagation also stops other listeners on the same element",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "188242a8",
+   "say": "Question 87. What's the difference between a plain script tag, script async, and script defer?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0eb820d5",
+   "say": "Plain: parsing stops while the script downloads and runs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70852913",
+   "say": "async: downloads in parallel, runs as soon as it arrives, in any order",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3650737e",
+   "say": "defer: downloads in parallel, runs in order after parsing, before DOMContentLoaded",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "11b67d44",
+   "say": "Modules (type=\"module\") are deferred by default",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f3b9795f",
+   "say": "Question 88. What is the difference between DOMContentLoaded and load?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "84b99adb",
+   "say": "DOMContentLoaded: the HTML is parsed and deferred scripts have run",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5defdef",
+   "say": "load: everything is loaded, images, styles and iframes included",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05f70fee",
+   "say": "Most setup code only needs DOMContentLoaded",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7d621bb5",
+   "say": "Question 89. What are the differences between cookies, localStorage and sessionStorage?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "066dc5c9",
+   "say": "Cookies: small (~4 KB), sent with every request to the server, can be HttpOnly and Secure",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ba49aac",
+   "say": "localStorage: ~5 MB, per origin, stays until cleared; sessionStorage: per tab, cleared when it closes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "109a5c58",
+   "say": "Storage is readable by any script on the page: never put tokens there if XSS is a risk",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f9e8fb9d",
+   "say": "Question 90. What are the same-origin policy and CORS?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "95901ff4",
+   "say": "Same origin = same scheme, host and port; scripts can't read responses from other origins",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e341aed",
+   "say": "CORS: the server opts in with headers like Access-Control-Allow-Origin",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb113c4b",
+   "say": "Non-simple requests send a preflight OPTIONS first; the browser enforces it, not the server",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fabc0a11",
+   "say": "Question 91. How does fetch work, and why doesn't it reject on a 404?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "88ce2df8",
+   "say": "fetch returns a promise of a Response; read the body with await res.json()",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aab39a61",
+   "say": "It rejects only on network failure; a 404 or 500 is still a response",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ce61cfe",
+   "say": "Check res.ok (status 200–299) and throw yourself; no timeout by default: use AbortSignal",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c1f2c3d5",
+   "say": "Question 92. What is XSS, and how do you prevent it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ade20412",
+   "say": "Cross-site scripting: attacker-controlled input runs as script in your page",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d2da3c75",
+   "say": "Prevent: escape output, use textContent instead of innerHTML, sanitise HTML (DOMPurify)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da7f5616",
+   "say": "Defence in depth: a Content Security Policy, and HttpOnly cookies so scripts can't read sessions",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e4c52b2d",
+   "say": "Question 93. What are reflow and repaint?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2e6472b5",
+   "say": "Reflow (layout): recomputing sizes and positions; repaint: redrawing pixels",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf3302b9",
+   "say": "Reading layout (offsetHeight) right after writing styles forces a synchronous reflow",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "47758624",
+   "say": "Batch reads then writes; animate transform and opacity, which skip layout",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1dd5a567",
+   "say": "Check 8. You await fetch of a missing API path inside a try, with show error in the catch. The server returns four oh four. Does show error run?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "66621d82",
+   "say": "No. Fetch only rejects when the network fails. A four oh four is a normal response, so check res dot ok, and throw yourself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6405dc3",
+   "say": "Module eleven. Modules, memory and the runtime. Seven questions about how code is loaded, how memory is freed, and how the engine runs it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e50061ab",
+   "say": "Question 94. What is the difference between ES Modules and CommonJS?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "10d9847c",
+   "say": "ESM: import / export, static, async loading, live bindings; the standard (browsers and Node)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00a012d0",
+   "say": "CommonJS: require / module.exports, synchronous, dynamic, values copied; Node's original",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "855cf816",
+   "say": "ESM's static shape enables tree shaking and top-level await",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b2d48af7",
+   "say": "Question 95. What are dynamic imports and tree shaking?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5a33ddc8",
+   "say": "import(\"./chart.js\") loads a module on demand and returns a promise: code splitting",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c3d9683",
+   "say": "Tree shaking: the bundler drops exports nothing imports",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a0bfb43",
+   "say": "It needs static ESM imports and side-effect-free modules",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d90d10a2",
+   "say": "Question 96. How does garbage collection work in JavaScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4fda908d",
+   "say": "Reachability: anything reachable from the roots (globals, the stack) stays; the rest is freed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c4927479",
+   "say": "Mark-and-sweep: mark everything reachable, sweep the rest; cycles are no problem",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0380452",
+   "say": "V8 is generational: a fast young generation for short-lived objects, an old one collected less often",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ddcc07a5",
+   "say": "Question 97. What are common causes of memory leaks in JavaScript?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e8fb2c3d",
+   "say": "Forgotten timers and event listeners still referencing big objects",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f27e4e74",
+   "say": "Detached DOM nodes kept in variables; growing global caches",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d50f4f0",
+   "say": "Closures holding large data longer than needed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "19503117",
+   "say": "Find them: DevTools heap snapshots, compare before and after",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f59a3723",
+   "say": "Question 98. How does error handling work in JavaScript (error types, finally, custom errors)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "951906fd",
+   "say": "Built-ins: Error, TypeError, ReferenceError, RangeError, SyntaxError",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8b3417b",
+   "say": "try / catch / finally; finally always runs",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c2131d5",
+   "say": "Custom: class NotFoundError extends Error, with a name; pass { cause } to keep the original",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c83d447",
+   "say": "Throw Error objects, never strings: they carry a stack trace",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "476da335",
+   "say": "Question 99. What is a polyfill, and how is it different from transpiling (Babel)?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "aada884f",
+   "say": "Polyfill: code that adds a missing API at runtime (Promise.allSettled for old browsers)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "492dc9cc",
+   "say": "Transpiling: rewrites new syntax into old syntax at build time (optional chaining, classes)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49e29ad1",
+   "say": "Syntax can't be polyfilled; APIs can't be transpiled: modern builds use both",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4be07156",
+   "say": "And the last question in this module: how does an engine like V8 run your code? First it parses the source into a syntax tree, lazily, so functions that are never called are barely parsed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8bbeea57",
+   "say": "Ignition, an interpreter, turns that into bytecode and starts running it right away, so pages start fast.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8a6bdd69",
+   "say": "While it runs, V8 profiles it: which functions are hot, and what types they actually receive.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d8db4f9",
+   "say": "Hot functions go to the optimising compilers, TurboFan and friends, which produce fast machine code, specialised for the types seen so far.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e2a05a5",
+   "say": "And if a new type shows up that breaks the assumption, V8 deoptimises, back to bytecode. That's the reason for advice like: keep object shapes consistent, and don't mix types in hot code.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7d315182",
+   "say": "Question 100. How does a JavaScript engine like V8 run your code?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "052f40e0",
+   "say": "Parse to an AST → Ignition bytecode → profile → JIT-compile hot code (TurboFan)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbfcf060",
+   "say": "Optimised code assumes the types and object shapes it has seen (hidden classes, inline caches)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7504dd91",
+   "say": "Surprises cause deoptimisation; the GC and the event loop run alongside",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "832cfc76",
+   "say": "Module twelve. The classic implementations: four functions you may be asked to write from scratch.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6c2cf48",
+   "say": "Question 101. Implement a deep clone function.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f73900bd",
+   "say": "Primitives and functions: return as is",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91f6e74f",
+   "say": "Arrays and objects: create an empty one and clone each value recursively",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ea470d6",
+   "say": "Track already-cloned objects in a WeakMap to handle cycles; mention structuredClone",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fef4c012",
+   "say": "Question 102. Implement array flatten without using flat().",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d8dfa7a7",
+   "say": "Recursive: for each item, if it's an array, flatten it into the result",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cdadd11",
+   "say": "Support a depth parameter: stop recursing at depth 0",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4ca8996",
+   "say": "Iterative version with a stack avoids deep recursion",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ae326f42",
+   "say": "Question 103. Implement a retry with exponential backoff for an async function.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bcb3b2ae",
+   "say": "Loop up to N attempts; return on success",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ce95b73",
+   "say": "On failure, wait base × 2^attempt (capped) plus random jitter, then try again",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c673b1b1",
+   "say": "Retry only transient errors; rethrow the last error when out of attempts",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e0dc4df7",
+   "say": "Question 104. Implement a simple event emitter (pub/sub).",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cdc85cbb",
+   "say": "A Map from event name to a list of listeners",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d04b75d",
+   "say": "on adds (and returns an unsubscribe), emit calls each with the arguments, off removes",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1659586f",
+   "say": "once wraps the listener so it removes itself after the first call",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3d8aa14b",
+   "say": "Check 9. Your deep clone recurses forever on an object that refers to itself. What's the fix?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9bcd4910",
+   "say": "Keep a weak map from each original object to its copy. When you meet an object you've already cloned, return its copy instead of recursing again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a72cc22",
+   "say": "A last rapid-fire round. Typeof null?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d77828a",
+   "say": "Object. A bug from the first version.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4729499e",
+   "say": "An empty array plus an empty object?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e708173",
+   "say": "The string, object Object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "898ff875",
+   "say": "Using a let variable before its line?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e80f9376",
+   "say": "A reference error. The temporal dead zone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b1c7a86",
+   "say": "This, inside an arrow function?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad5dd20b",
+   "say": "The this of the surrounding code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b6a4678",
+   "say": "A promise callback or set timeout zero: which runs first?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b5555f23",
+   "say": "The promise callback. Microtasks run before the next task.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a27cbd7c",
+   "say": "Does fetch reject on a five hundred?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "399cd16b",
+   "say": "No. Check res dot ok.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79a418c8",
+   "say": "That's the whole JavaScript page. Each module page has a watch card that starts this lecture at that module.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c25c3e34",
+   "say": "Read the module's theory first, then the answers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f249321",
+   "say": "And write the implementations yourself, without looking: debounce, throttle, bind, promise all, deep clone, and the event emitter. Interviewers ask you to write them, and writing them once is what makes them stick. Good luck.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}
