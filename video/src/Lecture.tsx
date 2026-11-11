@@ -12,11 +12,12 @@ import { Sections } from "./lib/sections.ts";
 // and passes this handle: the picture then follows the voice instead of
 // carrying an <Audio> of its own. Renders leave it out.
 type Narration = { waiting: () => boolean; subscribe: (f: () => void) => () => void };
-type Props = { chapter: Chapter; timings: Record<string, Timing>; assetBase?: string; narration?: Narration };
+// `clean` leaves the captions out (stills for the notes).
+type Props = { chapter: Chapter; timings: Record<string, Timing>; assetBase?: string; narration?: Narration; clean?: boolean };
 
-export const Lecture = ({ chapter, timings, assetBase, narration }: Props) => (
+export const Lecture = ({ chapter, timings, assetBase, narration, clean }: Props) => (
   <AssetBase.Provider value={assetBase ?? null}>
-    <LectureBody chapter={chapter} timings={timings} narration={narration} />
+    <LectureBody chapter={chapter} timings={timings} narration={narration} clean={clean} />
   </AssetBase.Provider>
 );
 
@@ -43,7 +44,7 @@ const WaitForNarration = ({ narration }: { narration: Narration }) => {
   return null;
 };
 
-const LectureBody = ({ chapter, timings, narration }: Props) => {
+const LectureBody = ({ chapter, timings, narration, clean }: Props) => {
   applyTheme(chapter.theme);
   const frame = useCurrentFrame();
   const asset = useAsset();
@@ -63,7 +64,7 @@ const LectureBody = ({ chapter, timings, narration }: Props) => {
       {/* Every line, mixed onto one track at its place (scripts/mix-audio.ts). */}
       {narration ? <WaitForNarration narration={narration} /> : <Audio src={asset(`${chapter.id}/lecture.mp3`)} />}
       <Header chapter={chapter} sc={current} frame={frame} />
-      <Captions sc={current} frame={frame - current.from} />
+      {!clean && <Captions sc={current} frame={frame - current.from} />}
       <Progress scenes={scenes} total={total} frame={frame} />
     </AbsoluteFill>
     </Sections.Provider>
