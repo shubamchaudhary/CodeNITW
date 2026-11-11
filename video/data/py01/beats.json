@@ -1,0 +1,2266 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "f8008d81",
+   "say": "Python for GenAI interviews. Not a tour of the language. We'll go through the Python questions that interviewers for AI and backend roles actually ask, and we'll learn each one the way it sticks: by watching a real bug happen, and then fixing it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fc1c10d4",
+   "say": "Every topic follows the same four steps, so you always know where you are.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e98e8cc4",
+   "say": "First, a bug. A real one, the kind that ships in chatbots and retrieval pipelines every week.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca32aed2",
+   "say": "Then what Python is really doing underneath. A picture first, then the code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2654ef11",
+   "say": "Then the interview question, and an answer you can actually say out loud.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4cb1c35c",
+   "say": "And then a check. When the timer ring appears, pause the lecture if you need to, and answer out loud before I do. That pause is what moves this from your screen into your head.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "acf2efa6",
+   "say": "One app runs through the whole lecture. Call it AskDocs: an assistant that answers questions from a company's documents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6f2340e",
+   "say": "It has a chat function that sends the conversation to an LLM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae5ab664",
+   "say": "It has two million document chunks to turn into embeddings, which is far more than you want in memory at once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca81430c",
+   "say": "It calls a model API that is flaky, and it calls it a thousand times.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ced01158",
+   "say": "And it gets JSON back from the model, which it has to decide whether to trust. Every Python topic today shows up as a problem in this app.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0c5a59d",
+   "say": "Before we start, where the questions come from. These are counts from four hundred and fifty six real interview write-ups that mention Python.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74f77ed8",
+   "say": "Decorators come first. Seventeen write-ups asked them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "238c88a7",
+   "say": "Generators and yield, sixteen.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13e14132",
+   "say": "Threads versus processes versus asyncio, thirteen.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ede4c1e3",
+   "say": "Comprehensions, eleven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04f41229",
+   "say": "Memory and garbage collection, ten.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "89ddabef",
+   "say": "So those five get the most time today. Then we'll add what GenAI interviews pile on top: calling a model concurrently, retrying it safely, and validating what it returns.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "abf79e00",
+   "say": "Topic one. Names point to objects. It sounds basic, but it explains half the Python gotchas interviewers love, starting with a chatbot that leaks one user's question into another user's chat.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "348bfe54",
+   "say": "Here's the bug. A small function that asks the model a question, with the conversation history as an optional argument.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f79ee333",
+   "say": "The history defaults to an empty list. That looks harmless. If you don't pass a history, you start fresh. Right?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1762b96",
+   "say": "The function appends the new question to the history, and sends the history to the model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a78bdcf2",
+   "say": "User A asks about the refund policy. Then user B, a different person, asks how to reset a password.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c797378f",
+   "say": "And user B's request goes to the model with both questions in it. User A's question leaked into user B's chat. Let's see why.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "012c4d2f",
+   "say": "Here's the picture. On the left, names. On the right, objects in memory. When Python runs the def line, once, it evaluates the default, makes one empty list, and stores it on the function.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "982e1bfb",
+   "say": "First call. The name history points at that list, and the function appends A's question to it. It changes the list in place.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23b810b8",
+   "say": "Second call. History points at the same list again, which still holds A's question. Python never made a new one. Every call that doesn't pass its own history shares this single list.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d4366cfb",
+   "say": "So here's the belief most people carry in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3bbc8737",
+   "say": "The truth: a default argument is evaluated once, when the def line runs, and then stored on the function object.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1687f4cc",
+   "say": "So if that default is mutable, a list, a dict, a set, it's shared by every call that leaves it out. In a server handling many users, that's a privacy bug.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a8301eb4",
+   "say": "The fix is a pattern you'll write for the rest of your career. The default becomes None, which is immutable and safe to share.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b194ea98",
+   "say": "And inside the function, if history is None, you make a new list. That line runs on every call, so every call gets its own list.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a3830e46",
+   "say": "That bug is one case of the most asked basic question: mutable versus immutable. On the immutable side: numbers, strings, tuples, frozen sets, bytes, and None.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db7619f2",
+   "say": "On the mutable side: lists, dicts, sets, and most objects you define yourself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edf750f4",
+   "say": "Here's what it actually means. With an immutable object, anything that looks like a change builds a new object, and the name moves to it. With a mutable object, the change happens in place, and every name pointing at that object sees it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bfcb288a",
+   "say": "Now the second most common version of this bug. AskDocs keeps a base prompt: a list holding one dict, the system message. Every request starts from it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70413585",
+   "say": "First attempt: messages equals base. That doesn't copy anything. It's a second name for the same list. Append the user's question to messages, and the base prompt now contains it too, for every future request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8fcce5b",
+   "say": "Second attempt: base dot copy. That's a shallow copy. You get a new list, but the dict inside is still the same dict. Change the system message's content in your copy, and you've changed the base.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "90accbd1",
+   "say": "Third attempt: deep copy, from the copy module. It copies all the way down: a new list and a new dict inside. Now the two are independent. It's safe, but slower, so you use it when you'll change the nested parts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3568e13",
+   "say": "One more question from this family, asked a lot because it's short. Is versus double equals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "32663628",
+   "say": "Double equals compares values. It calls the object's equality method. The word is checks identity: are these two names pointing at the very same object?",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "304d271d",
+   "say": "So you use is only for singletons, mostly None. And beware: Python caches small integers and some short strings, so is can appear to work in a quick test and then fail in production with bigger values.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "78a0e057",
+   "say": "Check 1. Messages equals base dot copy. Then you change the content of the first message in messages to: be detailed. What happens to base? A, nothing, copy made it independent. B, base's system message changes too. C, a type error, lists can't be copied. Or D, base becomes empty.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "59f6f28f",
+   "say": "B. Base changes too. Copy is shallow. You got a new list, but the first element of both lists is the same dict object, so changing that dict shows up through both names. To change nested things safely, use deep copy.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce6dc6f2",
+   "say": "So, the interview question. What's the difference between mutable and immutable types, and why does it matter? Here's how I'd say it.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "936abae2",
+   "say": "In Python, names are references to objects, and assignment never copies.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d12287d5",
+   "say": "Immutable objects, like ints, strings and tuples, can't change. Anything that looks like a change builds a new object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "faf03bfa",
+   "say": "Mutable objects, like lists, dicts and sets, change in place, and the change is visible through every name that points at them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb794c9b",
+   "say": "It matters for default arguments, for state shared between requests in a server, and for copying.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0cbe0f49",
+   "say": "And only hashable values, which in practice means immutable ones, can be dict keys or set members. Which is our next topic.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8dbe4a8d",
+   "say": "Topic two. Lists, tuples, dicts and sets, and the comprehensions that build them. Eleven write-ups asked about comprehensions alone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b8d313d9",
+   "say": "Four containers, and each has its job. A list: ordered and mutable. Appending is constant time, but checking whether something is in a list scans it, so that's linear. In AskDocs, the retrieved chunks in rank order are a list.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37d67e03",
+   "say": "A tuple: ordered and immutable. Because it can't change, it's hashable if its items are. It's a fixed record, like a document id and chunk number pair, used as a key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4763c7c8",
+   "say": "A dict: a hash table from keys to values. Lookup is constant time on average, and since Python three point seven it keeps insertion order. A cache from prompt to answer is a dict.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1596b011",
+   "say": "A set: unique items, no order, constant-time membership. The chunk ids you've already sent to the model are a set.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c236352b",
+   "say": "The classic performance bug: checking membership in a list inside a loop. That's n times n. Switch the list to a set and each check is constant time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "66c37eb6",
+   "say": "One level deeper, because dict internals come up. How does a dict find a key without scanning?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2977e025",
+   "say": "It hashes the key into a number, turns that into a slot in an array, and jumps straight there.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7fa0c33d",
+   "say": "The rule that makes it work: equal keys must have equal hashes. Otherwise you'd look in the wrong slot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a85f0bd9",
+   "say": "And so a key's hash must never change while it's in the dict. That's the real reason a list can't be a key, but a tuple can.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1b6a35c9",
+   "say": "When two keys land in the same slot, Python probes for another one, and it grows the table when it's about two thirds full. So lookups are constant time on average.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0b0ef39",
+   "say": "Check 2. You want to cache answers by the pair of user id and question. Why can you use a tuple as the dict key, but not a list?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bd5599c7",
+   "say": "Because a dict finds a key by its hash, and that hash must never change while the key is stored. A tuple of hashable values is immutable, so its hash is stable. A list can be changed in place, which would change its hash and lose the entry, so Python refuses to hash lists at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e18d033c",
+   "say": "Now comprehensions. Retrieval gives AskDocs a list of chunks, each with text and a score.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b73eb9f2",
+   "say": "A list comprehension transforms and filters in one expression: the text of every chunk whose score is above zero point seven five. Read it left to right as: give me this, for each chunk, if this condition holds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "acb3706a",
+   "say": "The same shape with curly braces and a colon builds a dict: chunk id to score.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e3fe4bc",
+   "say": "Curly braces without the colon build a set: the unique documents the chunks came from.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba4bf07a",
+   "say": "And with round brackets you get a generator expression, which builds no collection at all. It hands values to sum one at a time. Keep that one in mind; it's the bridge to generators in topic five.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "08843ac6",
+   "say": "And a trap interviewers like to check for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cacc2148",
+   "say": "Comprehensions are for building a new collection from one loop, maybe with a filter. If you're calling a function for its side effects, like sending emails, or nesting three loops, write a normal loop.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8baa5fa2",
+   "say": "They are slightly faster than appending in a loop, because the loop runs in optimized bytecode. But readability wins. Three nested fors on one line will get flagged in a code review.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "484175a4",
+   "say": "Check 3. Retrieval returned chunk ids with duplicates: seven, three, seven, nine, three. Remove the duplicates but keep the order they were first seen in. Can you do it in one line?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "07579bba",
+   "say": "List of dict dot from keys of the ids. That gives seven, three, nine. Dict keys are unique, and dicts keep insertion order, so the first time you see each id is the place it keeps. A set would remove duplicates too, but it doesn't keep any order.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f529da6",
+   "say": "Topic three. Functions. How to forward any arguments to an LLM client, and a closure bug that makes an agent call the wrong tool.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0cf20df",
+   "say": "Every LLM wrapper you'll ever write needs this. A function that takes a prompt, plus anything else the caller wants to pass through to the client.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eacee810",
+   "say": "In the definition, star args packs extra positional arguments into a tuple, and double star kwargs packs extra keyword arguments into a dict. The names args and kwargs are only convention; the stars do the work.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cadd51f4",
+   "say": "In the call, the stars do the opposite. They unpack the tuple and the dict back into separate arguments. So the wrapper doesn't need to know every option the client supports.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "56f1de37",
+   "say": "Call it with temperature and max tokens, and inside, kwargs is a dict holding exactly those two. That's the whole trick, and it's the backbone of every decorator, which is topic four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00edf9fc",
+   "say": "Now the closure bug. An agent builds one small function per tool, in a loop: search, calculator, weather.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c72c8564",
+   "say": "Each lambda calls run tool with the loop variable name, and the user's query.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "174fa818",
+   "say": "Then the agent picks the first tool, search, and calls it. And it runs weather. Every tool in the list runs weather. Why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5ffbd35c",
+   "say": "Here's the wrong belief.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "92927b05",
+   "say": "A closure remembers the variable, not its value. The value is looked up when the function runs. By then the loop is over, and name holds its last value, weather.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5e91d6f8",
+   "say": "The fix: bind the value now. Give the lambda a default argument, name equals name, which is evaluated when the lambda is created. Or use functools dot partial with the tool name.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ca0b84e",
+   "say": "Why does the lambda find name at all? Because of the lookup order, called LEGB.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9039dd76",
+   "say": "Python looks in the local scope first, inside the current function.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df7f35a0",
+   "say": "Then the enclosing functions around it. That's where a closure finds its variables. It keeps a reference to that scope's variable, which is exactly why it sees the variable's latest value.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f03012b3",
+   "say": "Then the module's globals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "99ba213c",
+   "say": "Then the built-ins. To assign to an enclosing variable instead of making a new local, you declare it nonlocal, and global for a module variable.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "63e582d4",
+   "say": "Check 4. F s is a list of lambdas, lambda returning i, for i in range three. What do you get if you call each of them? A, zero, one, two. B, two, two, two. C, three, three, three. Or D, a name error.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4729bb04",
+   "say": "B. Two, two, two. Each lambda looks up i when it's called, and by then the loop has finished with i equal to two. It's the same late binding as the tools bug.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5aea0d92",
+   "say": "Topic four. Decorators. The single most asked Python question in those write-ups. We'll build the one GenAI teams write first: a retry around a flaky model call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84dd2cbb",
+   "say": "The question usually comes in this form.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8cb9023a",
+   "say": "Write a decorator that retries a flaky LLM call.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bdb07d5a",
+   "say": "To answer it well you need: what a decorator really is, why wraps matters, how a decorator takes arguments, and which errors are worth retrying at all. Let's build it up.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ced41b5e",
+   "say": "Here's the picture to hold on to. A decorator is gift wrapping.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57a64085",
+   "say": "The gift is your original function, call LLM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d7e7ee0b",
+   "say": "The wrapping paper is a new function, usually called wrapper, that takes any arguments with star args and double star kwargs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b17540a",
+   "say": "Writing at retry above the def is only shorthand. It means: call LLM equals retry of call LLM. The name now points at the wrapped version.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "30702858",
+   "say": "So whoever calls it touches the wrapper first. The wrapper can do something before, call the original, and do something after.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "774d6823",
+   "say": "In one sentence: a decorator takes a function and returns a new function that wraps it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "128026fc",
+   "say": "Let's write the simplest useful one: a timer for model calls.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aff765ea",
+   "say": "The decorator is a function that takes a function, fn.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0458b6e",
+   "say": "Inside, it defines wrapper, which accepts any arguments, so it can wrap any function.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1b015c1d",
+   "say": "Wrapper notes the time, then calls the original with the same arguments, and returns its result.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1102b3c8",
+   "say": "In a finally block it logs how long it took. Finally means we log even when the call raises.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c68faf9b",
+   "say": "Then the decorator returns wrapper. Not calls it. Returns it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "01e7a11a",
+   "say": "And this line, functools dot wraps, copies the original's name, docstring and signature onto the wrapper. Without it, every decorated function calls itself wrapper in your logs and stack traces, and tools that read signatures, like FastAPI, see the wrong parameters.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a5c849ec",
+   "say": "Put at timed above call LLM, and every call is timed, without touching the function's own code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9716f79",
+   "say": "Now stack three of them, which is what real code looks like: timed, then retry three times, then cache, written above call LLM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "99b562cd",
+   "say": "Decorators apply from the bottom up. The one nearest the def wraps the function first. Cache is the innermost layer: if it has a saved answer, it returns it without calling the model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c1e4541",
+   "say": "Retry wraps that. On a transient error, it waits and calls the inside again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "acaf2828",
+   "say": "Timed wraps everything, so it's the outermost. Applied last, but it runs first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4249d5c8",
+   "say": "So a call goes in through timed, then retry, then cache, reaches the real function, and the result comes back out the same way. Which means timed measures all the retry attempts together, not one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba2ef681",
+   "say": "Now the actual interview answer. A retry decorator that takes arguments needs three levels. The outer function takes the settings: how many times, the base delay, and which exceptions count as transient.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "561b8b11",
+   "say": "It returns the real decorator, which takes the function.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "663cb4c3",
+   "say": "Which defines the wrapper, which tries the call in a loop.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9851713d",
+   "say": "And notice what it catches. Only the transient errors: rate limits and timeouts. A bad request, or an invalid API key, will fail the same way every time, so retrying it just wastes money and time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "08690fc0",
+   "say": "On the last attempt it re-raises, so the caller sees the real error instead of a silent None.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ffe762b9",
+   "say": "Between attempts, exponential backoff: the base delay times two to the attempt number, so half a second, one, two. Plus a little random jitter, so a thousand clients that failed together don't all retry in the same millisecond.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "43eaab1b",
+   "say": "At retry with times four: that call runs first and returns the decorator, which then wraps call LLM. That's why there are three levels.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9a4dc3a9",
+   "say": "Check 5. At timed is written above at retry with times three. The model fails twice, then succeeds. What does timed report? A, only the successful attempt. B, all three attempts plus the waits between them. C, nothing, retry swallows it. Or D, the first failed attempt.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2b7a3916",
+   "say": "B. All three attempts plus the backoff waits. Timed is the outer layer, so everything retry does, every attempt and every sleep, happens inside timed's measurement. If you wanted per attempt timing, you'd put timed below retry.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c065a733",
+   "say": "Two follow-ups interviewers like to add.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "967ff81e",
+   "say": "First: what happens if you put a logging decorator on a recursive function? Every recursive call is logged, because inside the function, its own name now refers to the decorated version. A Nutanix interview asked exactly this.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c58a313c",
+   "say": "Second: name decorators you use. functools cache and lru cache, property, classmethod, and in FastAPI, app dot get, which is a decorator that registers your function as a route.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb7d7ccb",
+   "say": "Say it with me. What is a decorator, and how would you write one for retries?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "23448279",
+   "say": "A decorator is a callable that takes a function and returns a wrapped one. The at syntax just means f equals d of f.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71bbe8e5",
+   "say": "The wrapper takes star args and double star kwargs, does work around the call, and returns the result.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "290c7ac9",
+   "say": "functools dot wraps keeps the original's name, docstring and signature.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "562dbaa9",
+   "say": "With arguments, it's three levels: retry of times returns the decorator, which returns the wrapper.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d697a56",
+   "say": "For LLM calls, I'd retry only transient errors, rate limits and timeouts, with exponential backoff and jitter, and re-raise after the last attempt.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "99c34ffa",
+   "say": "Topic five. Generators and yield. Sixteen write-ups asked about them, and in GenAI they're everywhere: reading huge corpora, batching for embeddings, and streaming tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce2ae22d",
+   "say": "Here's the GenAI version of the generator question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f89254f",
+   "say": "You need embeddings for two million chunks, stored in a forty gigabyte J S O N lines file. How do you read it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6b1d28bd",
+   "say": "The answer they want: not into a list. With a generator, in batches, in constant memory. Let's see why.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb29bb8d",
+   "say": "Two ways to write it, and they look almost the same. On the left, a list comprehension. On the right, the same expression with round brackets: a generator.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "95ef4816",
+   "say": "The list reads every line and parses all two million chunks before the first one is used. Memory climbs the whole time, and with forty gigabytes, the process dies before it starts working.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c339af6",
+   "say": "The generator produces one chunk, hands it over, and waits. The next chunk is only read when someone asks for it. Memory stays flat, no matter how big the file is.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "415b085e",
+   "say": "Same loop body, same final result. One holds everything at once; the other holds one item.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd489459",
+   "say": "Here's the real pipeline. A function with yield in it is a generator function. Calling it doesn't run it; it returns a generator object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe843bf6",
+   "say": "Each time the loop asks for the next item, the function runs until the next yield, hands that value over, and pauses right there, with all its local variables kept. The next request resumes from the same line.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "86abaede",
+   "say": "A second generator groups items into batches of a size. It pulls from the first one lazily, and yields a list of two hundred and fifty six at a time. In Python three twelve, itertools dot batched does this for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c2bf909",
+   "say": "And the loop at the bottom pulls batches through the whole pipeline and sends each one to the embedding API. At any moment, memory holds one batch, not two million chunks.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "43dabcf4",
+   "say": "The vocabulary interviewers check, because it's easy to mix up.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d27bf03f",
+   "say": "An iterable is anything you can loop over: a list, a dict, a file, a range. It has a dunder iter method.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16e21982",
+   "say": "An iterator is the cursor that does the looping. It has a dunder next method, and raises StopIteration when it runs out.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "497275cf",
+   "say": "A for loop calls iter once, to get an iterator, then calls next until StopIteration. That's all a for loop is.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33eacb35",
+   "say": "And a generator is simply an iterator you write as a function with yield. Python writes the dunder iter and dunder next for you.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9d780f45",
+   "say": "And the bug that comes with them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0165110e",
+   "say": "A generator can be consumed once. After the first full loop it's exhausted, and a second loop simply gets nothing. No error. Just an empty result.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b8a8baf2",
+   "say": "Classic case: you count the chunks with one loop, then try to embed them with a second. The second does nothing. If you need the items twice, keep a list, or call the generator function again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b6a3823",
+   "say": "So the short comparison. Return ends the function. It sends one value, once, and the function's local state is gone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a1d67a2c",
+   "say": "Yield pauses it. It sends many values, one per request, and keeps the state between them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "78940f05",
+   "say": "And streaming tokens from an LLM is the same idea, made async: async for token in stream pulls one token at a time as the model produces it. We'll serve exactly that from FastAPI in the next lecture.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "09ce688c",
+   "say": "Check 6. Sum of x squared for x in range ten to the eight, written with round brackets, versus with square brackets inside sum. Which can run on a laptop, and why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f382a6f2",
+   "say": "The one with round brackets. It's a generator expression, so sum receives one value at a time and memory stays constant. The square bracket version builds a list of a hundred million integers first, which is several gigabytes, before sum adds anything.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3b1beb9",
+   "say": "Model answer. What is a generator, and when would you use one?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cd13af24",
+   "say": "A function containing yield returns a generator, which is a lazy iterator.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "573bcccf",
+   "say": "Each call to next runs it to the next yield, hands over that value, and pauses with its local state kept.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "731bdd1d",
+   "say": "Values are produced on demand, so memory stays constant however big the input is.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4879ac3e",
+   "say": "I use them for large files, for batching inputs to an embedding API, and for pipelines of lazy steps.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "29402d79",
+   "say": "They can be consumed only once. And async generators do the same thing for streams, like tokens coming from an LLM.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e081b3f4",
+   "say": "Topic six. Classes, the Python way. How to swap one model provider for another, and when to use a dataclass versus a Pydantic model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c93b73b0",
+   "say": "AskDocs should work with a hosted model in production and a local model in tests. So we describe what a model must do, not what it is. A Protocol says: anything with a complete method that takes a string and returns a string.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1521da0",
+   "say": "The two providers don't inherit from anything. They just have a complete method with the right shape. That's duck typing: if it walks like a duck and quacks like a duck, Python treats it as a duck. The Protocol only lets a type checker verify it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "82e5990b",
+   "say": "And the answer function accepts any chat model. Swapping providers is now a one line change where the app starts. If you want a check at runtime instead, an abstract base class with abstractmethod refuses to instantiate a subclass that forgot a method.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c535d5c0",
+   "say": "A very common question: dict, dataclass, or Pydantic? A plain dict declares nothing, so a typo in a key fails late, somewhere far away. Fine for one-off JSON.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "873982cc",
+   "say": "A dataclass writes the init, repr and equality methods from your field list. But it does not check types at runtime. Pass a string where an int belongs, and it just stores the string.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af760921",
+   "say": "A Pydantic model validates and converts at runtime, and gives clear errors on bad data.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79bd6b14",
+   "say": "So the rule: trusted data inside your own code, a dataclass. Data crossing a boundary, an HTTP request, a config file, or anything an LLM produced, a Pydantic model.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b6d28c09",
+   "say": "Dunder methods, short for double underscore, are how your classes plug into Python's syntax. Name a few with a use, and you've answered the question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4865f12d",
+   "say": "Dunder repr: what you see in logs and in the debugger. Without it you get an address, not your data.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61bd32bb",
+   "say": "Dunder eq and dunder hash: equality, and using objects as dict keys. Define both together, or neither.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c308f414",
+   "say": "Dunder len, iter and getitem make an object behave like a collection, so you can loop over a conversation's messages.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "29fe06ed",
+   "say": "Dunder enter and exit make an object work with the with statement. That's the next topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "468592cc",
+   "say": "And dunder call lets you call an object like a function, which is handy for a configured tool or model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "730018e7",
+   "say": "Check 7. The model returns J S O N where score is the string zero point nine, and sources is null. You load it into a dataclass, and into a Pydantic model where score is a float and sources is a list of strings. What happens in each?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "642bb20f",
+   "say": "The dataclass stores it as it is: a string score and a None for sources, and something fails later, far away. Pydantic converts the string zero point nine into the float, and raises a validation error for sources being null, right at the boundary, where you can still do something about it, like asking the model again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dc01da7a",
+   "say": "Topic seven. Errors and context managers. How to fail in a way the rest of the app can handle, and how to guarantee cleanup even when things go wrong.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f726154",
+   "say": "Start with your own exceptions, in a small hierarchy. One base class, LLM error, and specific ones beneath it. Callers can catch the specific case they can fix, or the base class to catch all of them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b0a437a3",
+   "say": "The try block holds only the call that can fail. Keep it small, so you don't accidentally catch an error from somewhere else.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c4493d8",
+   "say": "Each except handles one failure differently. A rate limit falls back to another model. A prompt that's too long gets truncated and sent again.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eb58d5c0",
+   "say": "The else block runs only if nothing was raised. Here it caches the reply. Putting that line inside try would also catch errors from the cache itself, which you didn't mean to handle.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "afdd670b",
+   "say": "And finally always runs: success, failure, even a return inside try. That's where you record metrics or release resources.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5f4d6a17",
+   "say": "Two styles come up by name. Look before you leap: check that the key exists, then use it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "88c40117",
+   "say": "Easier to ask forgiveness than permission: just use it, and handle the KeyError. That's the Pythonic default. It's also safer around files and network calls, because the world can change between your check and your action.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "158901c4",
+   "say": "Context managers. The with statement guarantees that cleanup runs, however the block ends. The quickest way to write one is the contextmanager decorator on a generator.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3b7704d",
+   "say": "Code before yield is the setup. The yield is where the body of the with block runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0fe7216e",
+   "say": "Code after yield, in a finally, is the cleanup. It runs even if the body raises. Without the try finally, an exception would skip your cleanup, which is the most common mistake here.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0c6fd3c1",
+   "say": "And using it reads naturally: with timer retrieval, do the search.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "864097aa",
+   "say": "The same idea in async code is async with. An async HTTP client closes its connections when the block ends. As a class, you'd write dunder enter and dunder exit, or their async versions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cefa0425",
+   "say": "Check 8. A function has try with return the string try, and a finally that prints the word finally. What does calling it print, and what does it return?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "aec67450",
+   "say": "It prints finally, and returns try. The finally block always runs, even when the try block returns, just before the function actually leaves. That's why it's the right place for cleanup.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9dad13a7",
+   "say": "Topic eight. Concurrency. Thirteen write-ups asked threads versus processes, and for GenAI roles this is the big one, because almost all your time is spent waiting for a model to answer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cfe7dd39",
+   "say": "Here's the question in its GenAI form.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "280a7f97",
+   "say": "You must send a thousand prompts to an LLM API. How do you do it fast, without getting rate limited?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e5dc19dc",
+   "say": "To answer it you need four ideas: why waiting is the whole problem, what the GIL does and doesn't stop, which of threads, processes or asyncio fits, and how to cap concurrency. One at a time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2372058f",
+   "say": "First, the picture. Each LLM call is a tiny bit of our work, building the request, then about two seconds of waiting for the model. Three calls, one after another: six point three seconds, and the striped parts are waiting.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6757cc7",
+   "say": "Now start all three, then wait for all three. The waits overlap. Two point four seconds for the same work.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "152f3e02",
+   "say": "During the sequential version, our CPU was idle ninety five percent of the time. Overlapping the waiting is the entire speed-up. That's what I O bound means.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "77290e28",
+   "say": "Now the GIL, which comes up in five write-ups by name.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2caaad0e",
+   "say": "The global interpreter lock lets only one thread run Python bytecode at a time. But a thread releases it while it waits for I O. So threads overlap network waits perfectly well.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1886d040",
+   "say": "What threads can't do is speed up pure Python CPU work, like counting tokens in a big loop. Libraries written in C, like NumPy, release the GIL during heavy work. And since Python three thirteen there's an optional free threaded build, but the standard build still has the GIL.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9d79543a",
+   "say": "Here's what the GIL does to CPU work. Two threads parsing two big PDFs in pure Python. They take turns holding the GIL, so the total is four seconds. No faster than doing them one after the other.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5d18b114",
+   "say": "Two processes. Each process has its own interpreter and its own GIL, so they really run on two cores at once. Two seconds.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b398f9f6",
+   "say": "So for CPU bound pure Python work, like parsing documents or tokenizing a corpus, you reach for processes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d5d20bee",
+   "say": "So which tool for which job. Asyncio: thousands of concurrent waits on a single thread. LLM calls, HTTP calls, database queries. It needs async libraries, like httpx or asyncpg.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "29aafa68",
+   "say": "Threads: tens of waits, especially with libraries that only offer blocking calls. A thread pool executor.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f9d8b5f",
+   "say": "Processes: CPU bound pure Python, like parsing PDFs or heavy preprocessing. A process pool executor. Arguments are pickled to cross between processes, so keep them small.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b6d8a833",
+   "say": "One line to remember. A thousand LLM calls: asyncio. The same calls through an SDK that can only block: threads. Parsing ten thousand PDFs: processes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8e32ed15",
+   "say": "Now how asyncio does it with one thread. Picture a restaurant with one waiter.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a500a0e9",
+   "say": "The waiter is the event loop. One thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02f6cf78",
+   "say": "Each table's order is a task, a running coroutine.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b60d913e",
+   "say": "When the waiter sends an order to the kitchen, he doesn't stand there. He walks on to the next table. That's await: the task pauses and gives the loop back.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "871b75e9",
+   "say": "When the kitchen rings because a dish is ready, the waiter picks that table back up. That's the response arriving and the task being resumed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8bd4150",
+   "say": "And the disaster: a waiter who stands at the kitchen door until the dish is ready. That's a blocking call inside async code, like time dot sleep or requests dot get. Every other table waits.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "20b59ef2",
+   "say": "So await is where a task politely steps aside. A blocking call never steps aside.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b1a20f6",
+   "say": "Here's that disaster on the timeline. Task two calls requests dot get, a blocking call, inside an async function. For three seconds it holds the loop. Task one's response arrived, but nobody can resume it. Task three never even started.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8b017d77",
+   "say": "The fix: use an async client and await it. Or, when a library only blocks, push the call to a thread with await asyncio dot to thread. The loop keeps serving everyone else while the thread waits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0892f28e",
+   "say": "And here's the full answer to the opening question, a coding exercise five write-ups asked. A semaphore with ten permits: at most ten calls in flight at once, however many tasks exist.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "78d836d0",
+   "say": "Each task enters the semaphore before calling. The eleventh waits until one of the ten finishes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1b642f5",
+   "say": "Every call gets a timeout, so one stuck request can't hang the whole batch. Asyncio dot timeout arrived in Python three eleven; before that, wait for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f1d9b43",
+   "say": "On a timeout or a rate limit, back off exponentially with jitter, exactly like our decorator, but with await asyncio dot sleep. Never time dot sleep in async code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77f8305f",
+   "say": "After four attempts, raise a clear error.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd81fecf",
+   "say": "The main function opens one shared client, so connections are reused, and a task group starts a task for every prompt. A thousand tasks exist, but the semaphore lets only ten talk to the API at a time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dd9bece4",
+   "say": "When the task group block ends, every task has finished, and we collect the results in order.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7401c4fc",
+   "say": "On the timeline, with a semaphore of three and six calls: the first three are in flight at once, and the next three wait for a free permit, then go.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd109b78",
+   "say": "So the semaphore turns your provider's rate limit into a number in your code. As fast as allowed, and never more than allowed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "deb00acd",
+   "say": "And a common follow-up: the four ways to run coroutines. Awaiting one runs it and waits. Two awaits in a row are sequential, which is the most common accidental slowness in async code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a212c90d",
+   "say": "Gather runs many and returns results in order. If one fails, gather raises, but the others keep running. With return exceptions true, you get the errors back as results instead.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a73ddb0b",
+   "say": "Create task starts a coroutine in the background right away. Keep a reference to it, because the loop holds only a weak one, and await or cancel it eventually.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4020e38",
+   "say": "Task group, from Python three eleven, is structured. When the block ends, every task is done. If one fails, the rest are cancelled, and the errors come out together as an exception group. For new code, it's the default choice.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bd60bd41",
+   "say": "Check 9. Which tool for each job? One: re-ranking five thousand chunks with a pure Python scoring loop. Two: five hundred calls to an embedding API with an async client. Three: twenty uploads with a library that only has blocking calls.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2dfc883b",
+   "say": "One, processes, because it's CPU bound pure Python and the GIL would serialise threads. Two, asyncio with a semaphore, because it's lots of I O waiting and you have an async client. Three, threads, a thread pool executor, or asyncio dot to thread if you're already in async code, because the library can only block.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49da8ded",
+   "say": "Check 10. Inside an async function, someone wrote time dot sleep two seconds for the backoff. Fifty tasks are running. What happens?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ef1844e4",
+   "say": "All fifty tasks freeze for two seconds, every time any task backs off, because time dot sleep blocks the event loop's only thread. Use await asyncio dot sleep, which pauses only that one task and lets the loop serve the rest.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7eac515a",
+   "say": "Model answer. When do you use threading versus multiprocessing versus asyncio?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "849709d7",
+   "say": "The GIL lets one thread run Python bytecode at a time, but it's released while a thread waits on I O.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13e72142",
+   "say": "So for I O bound work at scale, like LLM or HTTP calls, I use asyncio: one thread, thousands of concurrent awaits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "afed602e",
+   "say": "For I O with libraries that only block, threads.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fed41f63",
+   "say": "For CPU bound pure Python, processes, because each has its own interpreter and GIL, and they use every core.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "09218d40",
+   "say": "And for LLM calls specifically, I cap concurrency with a semaphore, put a timeout on every call, and retry transient errors with backoff.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9c40c080",
+   "say": "Topic nine. Memory management and garbage collection. Ten write-ups asked it, usually as: how does Python free memory, and how would you find a leak?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a50d72d2",
+   "say": "CPython's main mechanism is reference counting. Every object keeps a count of how many references point to it. Create an embedding object and name it a: one reference.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a656b14f",
+   "say": "B equals a: two references to the same object, as we saw in topic one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3baa3f03",
+   "say": "Del a deletes the name, not the object. The count drops to one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de17953b",
+   "say": "Set b to None, and the count hits zero. The object is freed right then. No pause, no waiting for a collector. That's why most Python memory is released immediately.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "60150a8e",
+   "say": "But reference counting has one gap.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4985736",
+   "say": "Cycles. If a points to b and b points back to a, both counts stay above zero even when nothing else can reach them. Think of a conversation object whose messages each point back to the conversation.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b48ef2be",
+   "say": "So CPython also runs a cyclic garbage collector, the gc module, which periodically finds groups of objects that only reference each other and frees them. It uses generations: young objects are checked most often, because most objects die young.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "da287d8f",
+   "say": "And one detail that explains confusing graphs: small objects come from memory pools, so freed memory is usually reused by Python rather than handed back to the operating system. A process's memory can stay high even after you free things.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "feeec787",
+   "say": "So how do Python services actually leak? Almost always, something still points to the data. A module level dict that caches every prompt and answer, forever. A list that keeps every response or embedding. A cache decorator on a method, which keeps self alive. And background tasks nobody cancels.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "34bd2908",
+   "say": "The fixes match: a bounded cache, with a max size or a time to live, or an external cache like Redis. Generators and batches instead of hoarding. Caching functions of plain values. And structured tasks with timeouts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4e4a8a4",
+   "say": "To find one: tracemalloc, take two snapshots a few minutes apart and compare them, or tools like memray. And remember the sentence: in Python, a leak almost always means something still points to it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ae10879b",
+   "say": "Check 11. A service keeps a module level dict called cache, and stores every prompt and its answer in it. Memory grows all day. Is the garbage collector broken?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "94acccfe",
+   "say": "No. Every entry is still referenced by the dict, which lives as long as the module, so none of it is garbage. The collector is doing its job. Bound the cache, with an LRU and a max size or a time to live, or move it out to Redis. Which happens to be our coding question in topic eleven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c09c7774",
+   "say": "Model answer. How does Python manage memory?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3270fbc6",
+   "say": "CPython counts references to every object, and frees an object the moment its count reaches zero.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d322d23",
+   "say": "A cyclic garbage collector, organised in generations, frees groups of objects that only reference each other, which reference counting can't catch.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7a6a8f72",
+   "say": "Small objects are allocated from pools, so freed memory is often reused by Python rather than returned to the operating system.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "56f7171e",
+   "say": "And leaks are references kept alive by mistake: unbounded caches, growing lists, tasks never cancelled. I find them by comparing tracemalloc snapshots.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "97574a3e",
+   "say": "Topic ten. Type hints and Pydantic. For GenAI roles this one is asked as: the model returned JSON. How do you make sure it's what you expect?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4729e53d",
+   "say": "First, a misunderstanding that interviewers probe.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36e5a7e5",
+   "say": "Python itself ignores type hints at runtime. A function annotated to take an int will accept a string without complaint. What reads the hints are tools: mypy or pyright before you run, and libraries like Pydantic and FastAPI while you run.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7696308a",
+   "say": "So hints are documentation a machine can check. Pydantic is what turns them into actual runtime validation.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75dbc603",
+   "say": "Here's the pattern every GenAI team writes. Declare the shape you expect as a Pydantic model: an answer string, a list of source ids, and a confidence between zero and one. The Field adds the range check.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "308c3a6c",
+   "say": "Put the model's JSON schema into the prompt, so the LLM knows the exact shape you want.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e64d33fd",
+   "say": "Call the model, and parse its reply with model validate json. That one call parses the JSON, checks every field and type, converts what it safely can, and returns a real typed object.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "67ed4a27",
+   "say": "If validation fails, don't crash and don't guess. Feed the error message back to the model and ask again. Models are good at fixing their own JSON when told exactly what was wrong.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b937d8c0",
+   "say": "After a few tries, raise a clear error. Many providers now offer a structured output mode too, but you still validate: it's your boundary.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c509f0b",
+   "say": "The way to think about it in an interview: the model's output crosses a boundary into your system. Whatever your prompt said, what comes back is text. Treat it like user input. Untrusted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "779b24de",
+   "say": "Parsing and validation happen in one place, at the boundary. A missing field, a wrong type, a confidence of one point seven: each becomes a validation error.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57c2ff7d",
+   "say": "On failure, the error goes back to the model as a correction, and you ask again, a bounded number of times.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aaa627c8",
+   "say": "And past the boundary, your code only ever sees a valid answer object. No defensive checks scattered across the codebase. That sentence, validate at the boundary, is the answer interviewers are listening for.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "46b4c637",
+   "say": "Check 12. Why validate the model's JSON with Pydantic, instead of just json dot loads and reading the keys you need?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fb4c68c6",
+   "say": "Json dot loads only tells you it's valid JSON. It says nothing about the shape. Pydantic checks required fields, types and ranges, converts safe cases, and gives a precise error message, which you can send back to the model to fix. And the rest of your code gets a typed object, instead of dicts that might be missing keys.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "780080c3",
+   "say": "Topic eleven. A coding question six write-ups asked: implement an LRU cache. In AskDocs, it's the bounded cache that fixes our memory leak.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "39c41653",
+   "say": "Least recently used: when the cache is full, throw out the entry that was used longest ago. The neat Python answer uses an ordered dict, which keeps keys in order, oldest first, and can move a key to the end in constant time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93455775",
+   "say": "Get: if the key isn't there, return None.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3da2b098",
+   "say": "If it is, move it to the end, because it was just used, which makes it the newest. Then return it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2daf1ae0",
+   "say": "Put: store the value, and move the key to the end, since it's the newest now.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c56214cb",
+   "say": "If that pushed us over capacity, pop item with last equals false removes the oldest entry, the least recently used. Both operations are constant time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bb090592",
+   "say": "And the follow-ups, which is where the interview is really decided.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6cd1672",
+   "say": "Without an ordered dict? A plain dict plus a doubly linked list. The dict finds the node in constant time, and the list moves it to the front or evicts the tail in constant time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d4f55e2",
+   "say": "In real code? Functools lru cache, with a max size, for pure functions with hashable arguments.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83caf0a8",
+   "say": "For LLM answers shared across several servers? Redis, with a time to live, keyed on the normalised prompt, the model name and the temperature, since the same prompt to a different model is a different answer.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e21da57c",
+   "say": "And thread safety? Put a lock around get and put, because two threads can interleave a move and an evict.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36c27599",
+   "say": "Check 13. Capacity two. Put a, put b, get a, then put c. Which key gets evicted? A, a. B, b. C, c. Or D, none.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f7913eb5",
+   "say": "B, the key b. Getting a moved it to the newest position, so when c arrives and the cache is over capacity, b is the one used longest ago.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9db143b3",
+   "say": "Rapid fire. Answer each one before I do. A mutable default argument is created when?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b570fe8",
+   "say": "Once, when def runs. Use None as the default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7a14ee4",
+   "say": "Copy versus deep copy?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60eb4857",
+   "say": "Copy makes a new outer container. Deep copy copies all the way down.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65b650f2",
+   "say": "Is versus double equals?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3acf3b55",
+   "say": "Same object versus equal value. Use is only for None.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1512578b",
+   "say": "Why can't a list be a dict key?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0708dea7",
+   "say": "Because it can change, so its hash could change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91253b6c",
+   "say": "A closure created in a loop sees what?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d73fae5e",
+   "say": "The variable's last value. Bind it with a default argument.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "117cc005",
+   "say": "Stacked decorators apply in which order?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be40cbfe",
+   "say": "Bottom up. And the top one runs first.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6a8544c",
+   "say": "Why functools wraps?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16dae285",
+   "say": "It keeps the original's name, docstring and signature.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55665236",
+   "say": "Memory for two million chunks with a generator?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a1f45bee",
+   "say": "One item, or one batch, at a time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41081ed5",
+   "say": "The GIL is released during what?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "adcbad2f",
+   "say": "I O waits, and inside many C libraries.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36d6caab",
+   "say": "A thousand LLM calls?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a6970867",
+   "say": "Asyncio, a semaphore, timeouts, and backoff.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a022992f",
+   "say": "A blocking call inside async code?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "adf7f1d7",
+   "say": "Await asyncio dot to thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "864d5224",
+   "say": "Validate the model's JSON with?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "451a139a",
+   "say": "Pydantic. Model validate json, at the boundary.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "608e5033",
+   "say": "And to finish, the open question that ties it all together. Tell me about the Python behind a GenAI service you'd build. Here's an answer that touches every topic.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cb33a7e9",
+   "say": "Model calls are I O bound, so the service is async: one shared HTTP client, a semaphore per provider, and a timeout on every call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "004c29a4",
+   "say": "Transient failures go through a retry decorator, with exponential backoff and jitter, retrying only rate limits and timeouts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4249da0",
+   "say": "Large corpora are read with generators and embedded in batches, so memory stays flat whatever the size.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f2086bb",
+   "say": "CPU heavy parsing runs in a process pool, off the event loop.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f912a84f",
+   "say": "And everything the model returns is validated with Pydantic at the boundary, with answers cached in a bounded LRU, or Redis across servers.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "80f4ba7f",
+   "say": "That's the Python.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c1dfdda",
+   "say": "Four sentences carry most of it. Names point to objects. Functions wrap functions. Generators wait to be asked. And await steps aside.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ccbea493",
+   "say": "In the FastAPI lecture, we put AskDocs behind an API: streaming tokens, dependencies, and the async mistakes that freeze a server. See you there.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}

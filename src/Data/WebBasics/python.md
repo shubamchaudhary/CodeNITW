@@ -1558,6 +1558,44 @@ def trace(fn):
 `{v!r}` formats with `repr`, so strings get their quotes. The recursive `fact(n - 1)` looks up the name `fact`, which is now the wrapper, so every level is traced, and inner calls finish first. For timing, take `time.perf_counter()` before and after. In a real service you'd call `logger.info(...)` from the `logging` module instead of appending to a list.
 
 
+### py65 | Write a retry decorator for a flaky LLM API call. Which errors do you retry, and how long do you wait?
+
+A retry decorator wraps the call in a loop; the interview is decided by **what** you retry and **how** you wait.
+
+```python
+import functools, random, time
+
+class RateLimitError(Exception): ...
+class BadRequestError(Exception): ...
+
+def retry(times=4, base=0.5, cap=8.0, on=(RateLimitError, TimeoutError, ConnectionError)):
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            for attempt in range(times):
+                try:
+                    return fn(*args, **kwargs)
+                except on:
+                    if attempt == times - 1:
+                        raise                                  # the caller sees the real error
+                    delay = min(cap, base * 2 ** attempt)      # 0.5, 1, 2, 4 … capped
+                    time.sleep(delay + random.uniform(0, delay / 4))   # jitter
+        return wrapper
+    return decorator
+
+@retry(times=4)
+def call_llm(prompt: str) -> str: ...
+```
+
+What to say:
+- **Retry only transient errors**: rate limits (429), timeouts, dropped connections, 5xx from the provider. A 400 (bad request), 401 (bad key) or a context-length error fails the same way every time: retrying wastes money and latency.
+- **Exponential backoff with a cap**, plus **jitter**, so a thousand clients that failed together don't retry in the same millisecond.
+- If the provider sends **`Retry-After`**, wait that long instead.
+- **Re-raise** after the last attempt; never return `None` silently.
+- In **async** code, the same shape with `async def wrapper` and `await asyncio.sleep(...)`; never `time.sleep`.
+- Retries multiply load: keep a **total time budget** (a deadline) and cap concurrency with a semaphore, or a provider outage turns into a retry storm.
+- Libraries do this for you (`tenacity`, the OpenAI/Anthropic SDKs' `max_retries`); know them, and know what they do.
+
 ### py22 | What are lambda functions, and how do map, filter and reduce compare with comprehensions? | asked=1
 
 A `lambda` is a small **anonymous function limited to a single expression**:
@@ -4069,6 +4107,36 @@ class User(BaseModel):
 Pydantic is a dataclass that **validates**: it converts what it safely can (`"31"` → 31), and otherwise raises one `ValidationError` listing every problem. A validator either returns the cleaned value or raises `ValueError`. FastAPI request bodies are Pydantic models, and so are LLM structured outputs (`User.model_json_schema()` is the JSON schema you hand the model). Unlike a plain class, a `[]` default is safe here because Pydantic copies it for each instance.
 
 
+### py64 | The LLM returned JSON. How do you make sure it has the shape you expect, and what do you do when it doesn't?
+
+Treat model output like user input: **untrusted**. Declare the shape as a Pydantic model and validate at the boundary; on failure, send the error back to the model and ask again, a bounded number of times.
+
+```python
+from pydantic import BaseModel, Field, ValidationError
+
+class Answer(BaseModel):
+    answer: str
+    sources: list[str]
+    confidence: float = Field(ge=0, le=1)
+
+def ask_structured(question: str, tries: int = 3) -> Answer:
+    prompt = build_prompt(question, schema=Answer.model_json_schema())   # show the model the shape
+    for _ in range(tries):
+        raw = call_llm(prompt)
+        try:
+            return Answer.model_validate_json(raw)     # parse + validate + convert in one step
+        except ValidationError as e:
+            prompt += f"\nYour JSON was invalid: {e}. Return only JSON matching the schema."
+    raise ValueError("model never returned valid JSON")
+```
+
+Points to know:
+- `json.loads` only proves it's JSON; Pydantic checks **required fields, types and ranges**, converts safe cases (`"0.9"` → `0.9`), and gives a precise error you can feed back.
+- Past the boundary the rest of the code gets a **typed object**, not a dict that may be missing keys.
+- Provider **structured-output / JSON modes** and tool calling make valid JSON far more likely; still validate, because the schema can't express every rule (cross-field checks, allowed source ids).
+- Use `model_validator` for rules across fields, and keep `extra="forbid"` if unexpected keys should fail.
+- Log failures: a rising validation-failure rate is an early sign that a prompt or model change broke something.
+
 ## Testing
 
 ### py56 | How do you test Python code with pytest (fixtures, parametrize)? | asked=1
@@ -5094,6 +5162,36 @@ class LRUCache:
 
 An `OrderedDict` is a hash map plus a doubly linked list, the same thing as Java's `LinkedHashMap` in access order. The "end" is the most recent and the front is the oldest. If they ban `OrderedDict`, build it from a dict of key → node plus your own doubly linked list with sentinel head and tail nodes.
 
+
+### py67 | How would you cache LLM responses? What makes a good cache key?
+
+Caching saves money and latency for repeated questions, but a wrong key returns a wrong answer.
+
+```python
+import hashlib, json
+
+def cache_key(model: str, messages: list[dict], temperature: float, **params) -> str:
+    payload = json.dumps(
+        {"model": model, "messages": messages, "temperature": temperature, **params},
+        sort_keys=True, separators=(",", ":"),          # stable: same input → same string
+    )
+    return "llm:" + hashlib.sha256(payload.encode()).hexdigest()
+
+async def cached_complete(client, redis, **req):
+    key = cache_key(**req)
+    if (hit := await redis.get(key)) is not None:
+        return json.loads(hit)
+    reply = await client.complete(**req)
+    await redis.set(key, json.dumps(reply), ex=24 * 3600)   # TTL: answers go stale
+    return reply
+```
+
+What to say:
+- The key must include **everything that changes the answer**: model (and version), the full messages including the system prompt, temperature and other sampling parameters, tool definitions. Serialise it stably (`sort_keys`) and hash it.
+- Cache only **deterministic-enough** calls (temperature 0, or where any good answer is acceptable). Never cache across users when the prompt contains private data, unless the user id is in the key.
+- **In one process**: `functools.lru_cache(maxsize=...)` for a pure function of hashable arguments, or your own bounded LRU. **Across servers**: Redis with a TTL.
+- A **semantic cache** (embed the question, reuse an answer whose question is very similar) catches paraphrases, but needs a similarity threshold and evaluation, because "similar question" can still need a different answer.
+- Unbounded dict caches are the classic Python memory leak: always bound by size or time.
 
 ### py59 | Write a word-frequency counter for a large file. | asked=1
 

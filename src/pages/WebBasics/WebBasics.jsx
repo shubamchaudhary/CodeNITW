@@ -15,6 +15,9 @@ import { buildTextIndex, anchorFromRange, locate, rangeFor, caretFromPoint, pain
 
 // The Python exercises' editor and runner, fetched with the first exercise.
 const Exercise = lazy(() => import("./python/Exercise"));
+// The tech's narrated lecture, as the same closed card the notes pages use.
+import { LectureCard } from "../Notes/LectureCard";
+import { hasLecture, lectureMinutes, TECH_LECTURES } from "../Notes/lectures";
 
 // The question banks (JS · React · Node, Python · FastAPI), read like a Core
 // Stack topic: the left column lists every module of every bank in the group,
@@ -503,6 +506,9 @@ function ModuleReader({ module, askedSource, done, highlights, notes, onSaveNote
             {qs.length - nExercises} questions{nExercises ? ` · ${nExercises} coding exercise${nExercises === 1 ? "" : "s"}` : ""} · {nDone}/{qs.length} done
           </p>
           {askedSource && <p className="mt-1 text-[12.5px] text-fg-subtle">{askedSource}</p>}
+          {hasLecture("webbasics", TECH_LECTURES[module.tech.key], true) && (
+            <LectureCard id={TECH_LECTURES[module.tech.key]} minutes={lectureMinutes("webbasics", TECH_LECTURES[module.tech.key])} />
+          )}
         </header>
 
         {qs.map((q, i) =>
