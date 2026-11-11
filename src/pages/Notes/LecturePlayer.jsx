@@ -144,7 +144,8 @@ const restoreVolume = (audio) => {
 
 // The lecture body: the player and its section chips. The card around it
 // (TopicLead) mounts this only when "Watch" is clicked.
-export default function LecturePlayer({ id, autoPlay = false }) {
+// `startSection` (a section's number, e.g. "4") opens it at that section.
+export default function LecturePlayer({ id, autoPlay = false, startSection = null }) {
   const [data, setData] = useState(null);
   const [failed, setFailed] = useState(false);
   const [section, setSection] = useState(-1);
@@ -185,10 +186,14 @@ export default function LecturePlayer({ id, autoPlay = false }) {
   );
   const inputProps = useMemo(() => data && narration && { ...data, assetBase: "/lectures/", narration }, [data, narration]);
 
-  // Opened with "Watch": start playing as soon as it has loaded.
+  // Opened with "Watch": start playing as soon as it has loaded, at the
+  // asked-for section if there is one.
   useEffect(() => {
-    if (autoPlay && timeline && narration) player.current?.play();
-  }, [autoPlay, timeline, narration]);
+    if (!timeline || !narration) return;
+    const from = startSection != null ? sections.find((s) => s.num === String(startSection))?.from : null;
+    if (from != null) player.current?.seekTo(from);
+    if (autoPlay) player.current?.play();
+  }, [autoPlay, timeline, narration, sections, startSection]);
 
   // Highlight the section being played.
   useEffect(() => {

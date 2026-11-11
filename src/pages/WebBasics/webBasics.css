@@ -31,3 +31,13 @@
   display: table;
   width: 100%;
 }
+
+/* The module's theory: its diagrams are lecture stills, framed like cards. */
+.wb-theory .wmde-markdown img {
+  display: block;
+  width: 100%;
+  margin: 18px 0 8px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #0b0c0f;
+}

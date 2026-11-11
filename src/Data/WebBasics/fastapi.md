@@ -1,5 +1,23 @@
 ## FastAPI foundations
 
+**The idea: FastAPI is a thin, smart layer on top of two libraries.**
+
+![Uvicorn, Starlette, FastAPI, Pydantic and your function, as layers](/docs-img/fa-01/layers.jpg)
+
+- **Uvicorn**, an ASGI server, handles sockets and HTTP and calls the app.
+- **Starlette** is the web toolkit underneath: routing, requests and responses, middleware, WebSockets, streaming.
+- **FastAPI** reads your function's **type hints**, and **Pydantic** validates and converts the data to match them.
+
+So one signature, `async def ask(space_id: int, body: Question, debug: bool = False)`, gives you parameter parsing, validation with clear 422 errors, type conversion, JSON serialisation and interactive OpenAPI docs at `/docs`.
+
+**WSGI vs ASGI**: WSGI (Flask, classic Django) is synchronous: a worker is tied up by one request until it finishes, waiting included. ASGI is asynchronous: one worker's event loop serves other requests while one waits, and it also supports WebSockets, streaming and lifespan events.
+
+![A WSGI worker handles waits one after another; an ASGI worker overlaps them](/docs-img/fa-01/asgi.jpg)
+
+**Running it**: one Uvicorn process runs one event loop on one CPU core. Use several workers (Gunicorn or `--workers`) on a VM, or one process per container with more replicas in Kubernetes, behind a load balancer that terminates TLS.
+
+**Compared**: FastAPI for APIs and ML/LLM services; Flask for small simple apps; Django when you want an ORM, admin and auth built in.
+
 ### fa01 | What is FastAPI, and why is it popular? | asked=12
 
 **FastAPI** is a modern Python web framework for building APIs, built on two libraries:
@@ -86,6 +104,18 @@ In **Kubernetes / containers**, the usual pattern is **one Uvicorn process per c
 Interview framing: "FastAPI when the product is an **API** and concurrency or async I/O matters (AI services, gateways, microservices). Django when I need the full stack quickly (ORM, admin, auth, migrations) and a big ecosystem. Flask for small, simple services."
 
 ## Requests and responses
+
+**The idea: every request takes the same five-stage trip.**
+
+![Match the route, extract the parameters, validate, run your function, serialise the response](/docs-img/fa-01/request.jpg)
+
+1. **Match** the route by method and path.
+2. **Extract** each parameter from the right place, decided by its declaration: in the path string → path parameter; a plain type not in the path → query parameter; a Pydantic model → JSON body; `Header`, `Cookie`, `Form`, `File` for the rest.
+3. **Validate and convert** everything; any problem → **422**, and your function never runs.
+4. **Your function** returns a dict, a model, or a `Response`.
+5. **Serialise**: the return value is filtered through `response_model` (or the return annotation) and sent as JSON, 200 by default.
+
+`response_model` is also a security feature: with separate `UserIn` and `UserOut` models, internal fields like a password hash can't leak even if you return the whole database object. Set other status codes with `status_code=201` or by raising `HTTPException(404)`; a `Response` returned directly (`StreamingResponse`, `FileResponse`) skips `response_model`. Accept files as `UploadFile` (a spooled temporary file) and read big ones in chunks.
 
 ### fa05 | How do path parameters, query parameters and the request body work?
 
@@ -230,6 +260,23 @@ async def upload_avatar(file: UploadFile):                      # multipart/form
 
 ## Pydantic models in FastAPI
 
+**The idea: bad data never reaches your function.**
+
+FastAPI validates every typed parameter and model **before** calling your function. If anything is wrong, it replies **422 Unprocessable Entity** with every error and its location:
+
+```json
+{"detail": [
+  {"loc": ["body", "text"],  "msg": "String should have at least 1 character"},
+  {"loc": ["body", "top_k"], "msg": "Input should be a valid integer"}
+]}
+```
+
+So inside the route you can trust the data. Add constraints with `Field(min_length=1, le=50)`, fixed choices with `Literal`, custom rules with `@field_validator`, and your own error format with an exception handler for `RequestValidationError`.
+
+**Pydantic v2** rewrote the core in Rust (much faster) and renamed the API: `.dict()` → `.model_dump()`, `parse_obj()` → `model_validate()`, `@validator` → `@field_validator`, `orm_mode` → `from_attributes`.
+
+**pydantic-settings** loads typed config from environment variables and `.env`, so a missing or malformed setting fails at **startup**. Hand it out with `Depends(get_settings)` (cached) so tests can override it.
+
 ### fa09 | How does FastAPI use Pydantic for validation, and what happens when validation fails? | asked=1
 
 Every parameter with a type, and every Pydantic model, is **validated and converted before your function runs**. If anything is wrong, your code **never runs**: FastAPI returns **422 Unprocessable Entity** with details.
@@ -349,6 +396,18 @@ Why inject it with `Depends(get_settings)` instead of a global import: tests can
 Production: real secrets come from the platform (Kubernetes Secrets, Key Vault / Secrets Manager injected as env vars), never committed `.env` files.
 
 ## Dependency injection
+
+**The idea: a route declares what it needs, and FastAPI builds it.**
+
+![A route depends on get_current_user and get_db; those depend on the token and the settings](/docs-img/fa-01/deps.jpg)
+
+A **dependency** is a function or class that FastAPI calls before the route, injecting what it returns. Dependencies can have their own parameters and dependencies, so they form a **tree** that FastAPI resolves for each request, and a dependency used twice in one request is called **once** (pass `use_cache=False` to opt out). A dependency can stop the request by raising `HTTPException` (a 401, a 403, a 429).
+
+A dependency that **`yield`s** has setup and teardown, like a context manager: the standard way to give each request its own database session and close it afterwards.
+
+![A yield dependency: open the session, run the route, then commit or roll back and close](/docs-img/fa-01/yield.jpg)
+
+Classes with `__call__` make configurable dependencies (`Depends(RateLimiter(10))`). And because everything comes through `Depends`, tests can swap any piece with `app.dependency_overrides[get_llm] = lambda: FakeLLM()`: no monkeypatching.
 
 ### fa12 | How does dependency injection work in FastAPI (Depends)? | asked=4
 
@@ -496,6 +555,21 @@ This is the main reason to get things through `Depends` (DB sessions, settings, 
 
 ## Async in FastAPI
 
+**The idea: `async def` routes run on the event loop; `def` routes run in a thread pool.**
+
+![async def routes share the event loop; a plain def route goes to a thread](/docs-img/fa-01/loop.jpg)
+
+| Route | Runs | Use when |
+|---|---|---|
+| `async def` | on the worker's event loop | everything inside is async (`httpx.AsyncClient`, asyncpg, `redis.asyncio`) |
+| `def` | in a thread pool (40 threads by default) | you call blocking libraries (`requests`, a sync DB driver or SDK) |
+
+The worst choice is **blocking code inside `async def`**: the call never awaits, so the loop can't switch, and **every** request on that worker waits, health checks included. The symptom is latency spiking everywhere at low CPU.
+
+![A blocking call inside async def freezes every other request on the worker](/docs-img/fa-01/blocking.jpg)
+
+Fixes: an async client, a plain `def` route, `await asyncio.to_thread(fn)`, or a process pool or job queue for CPU work. For outbound calls, create **one** shared `httpx.AsyncClient` in the lifespan, with timeouts and connection limits, and run independent calls concurrently under a semaphore.
+
 ### fa16 | What is the difference between `async def` and `def` routes in FastAPI? | asked=1
 
 FastAPI supports both and treats them differently:
@@ -609,6 +683,18 @@ Mistakes to avoid:
 Add retries with backoff for idempotent calls (tenacity), circuit breakers for flaky dependencies, and pass a request id or trace headers downstream.
 
 ## Application structure and lifecycle
+
+**The idea: an app has a lifecycle, and every request passes through layers.**
+
+![Lifespan startup, then middleware, router and route for each request, then lifespan shutdown](/docs-img/fa-01/lifecycle.jpg)
+
+- **Lifespan** (an async context manager): before its `yield`, once at startup, open pools, create shared clients, load models; after it, at shutdown, close them.
+- **Middleware** wraps every request and response (logging, timing, request ids, CORS, compression). The **last one added is the outermost**, so it sees the request first and the response last.
+- **Routers** (`APIRouter`) split the app by domain, each with a prefix, tags and shared dependencies; inside each domain, a router (HTTP only), a service (business logic, no FastAPI imports) and a repository (queries).
+
+![Middleware as layers around the routes](/docs-img/fa-01/middleware.jpg)
+
+Middleware can't see route parameters or use `Depends`, so auth and permissions belong in dependencies. For errors, let services raise domain exceptions and map them to one consistent JSON error contract with `@app.exception_handler`; never return stack traces.
 
 ### fa19 | How do you structure a larger FastAPI application (APIRouter)? | asked=3
 
@@ -762,6 +848,16 @@ Also: `RequestValidationError` (422) can be customised the same way; never retur
 
 ## Security
 
+**The idea: log in once, then send a signed token with every request.**
+
+![Login returns a signed JWT; later requests send it as a Bearer token](/docs-img/fa-01/jwt.jpg)
+
+The server checks the password against a slow, salted hash (bcrypt or Argon2) and signs a **JWT** with the user id (`sub`) and an expiry (`exp`). Each request carries `Authorization: Bearer <token>`; a `get_current_user` dependency (with `OAuth2PasswordBearer`) verifies the signature and expiry, and any route that needs a user depends on it.
+
+Points to say: keep access tokens **short-lived** with refresh tokens (a JWT can't be revoked early without extra state); a JWT is **signed, not encrypted**, so no secrets in it; pin the algorithm and check `exp` (and `aud`/`iss` if used); HTTPS everywhere.
+
+**Roles** are a dependency factory, `Depends(require_role("admin"))` (401 = we don't know who you are, 403 = you're not allowed). **API keys** for services use `APIKeyHeader`; store only hashes and compare with `secrets.compare_digest`.
+
 ### fa23 | How do you implement JWT authentication in FastAPI? | asked=4
 
 The standard pattern uses FastAPI's **`OAuth2PasswordBearer`** (it reads `Authorization: Bearer <token>`, and makes the "Authorize" button work in `/docs`) plus a JWT library:
@@ -858,6 +954,18 @@ FastAPI's security classes (`OAuth2PasswordBearer`, `APIKeyHeader`, `HTTPBearer`
 
 ## Databases
 
+**The idea: one engine (with its connection pool) per app, one session per request.**
+
+![One engine and pool shared by the app; each request gets its own session](/docs-img/fa-01/db.jpg)
+
+Create the async engine (`postgresql+asyncpg://…`) once, and give each request its own `AsyncSession` from a yield dependency; never share a session between requests. In async SQLAlchemy, lazy loading doesn't happen implicitly (it raises `MissingGreenlet`), so load relationships explicitly with `selectinload` or `joinedload`.
+
+**N+1**: one query loads N rows, then touching a relationship on each row fires one more query per row. Eager-load instead: `selectinload` (one extra `IN` query, good for one-to-many) or `joinedload` (one `JOIN`, good for many-to-one).
+
+![Listing 100 chats with messages: 101 queries lazily, 2 with selectinload, 1 with joinedload](/docs-img/fa-01/n-plus-one.jpg)
+
+Then: indexes on foreign keys and filter columns (check with `EXPLAIN ANALYZE`), select only the columns you need, paginate, size the pool to what the database allows, and use Alembic for migrations.
+
 ### fa25 | How do you use SQLAlchemy (async) with FastAPI? | asked=1
 
 ```python
@@ -933,6 +1041,24 @@ Other tuning checklist:
 - **Cache** hot reads (Redis) and invalidate them on writes.
 
 ## Beyond request/response
+
+**The idea: pick the tool by how long the work takes.**
+
+![Milliseconds, seconds while streaming, after the reply, minutes](/docs-img/fa-01/time-scales.jpg)
+
+| How long | Tool |
+|---|---|
+| Milliseconds | a normal request and response |
+| Seconds, and the user should see progress | `StreamingResponse` with Server-Sent Events (LLM tokens) |
+| Small work after the reply | `BackgroundTasks`: same process, no retries, lost on restart |
+| Minutes, or must not be lost | a queue (Celery, RQ, Arq, SQS) with workers: return **202** and a job id |
+| Two-way, any time | WebSockets (behind several workers, fan out through Redis pub/sub) |
+
+**Streaming LLM answers**: return a `StreamingResponse` over an async generator that yields `data: …\n\n` lines; stop when `request.is_disconnected()` (or you keep paying for tokens); send `Cache-Control: no-cache` and `X-Accel-Buffering: no` so proxies don't buffer it.
+
+![Server-Sent Events: tokens forwarded as soon as the model produces them](/docs-img/fa-01/sse.jpg)
+
+**Shared state lives in Redis**, because you run many workers and pods: rate-limit counters (429 with `Retry-After`), caches with TTLs, and per-user **token budgets** (check before the call, record the actual usage after). Keep the whole service under the provider's limit with a semaphore per process or a shared limiter. Paginate with cursors (`WHERE id > :last`), not big offsets.
 
 ### fa27 | What are BackgroundTasks, and when should you use Celery or a queue instead? | asked=1
 
@@ -1149,6 +1275,17 @@ Points to know:
 - Status codes: the user's own limit → **429**; the provider being saturated → **503** with `Retry-After`.
 
 ## Testing, docs and deployment
+
+**The idea: production-ready means tested, documented, packaged and observable.**
+
+- **Tested**: override the edges (LLM, auth, email) with `app.dependency_overrides`; keep the core real (Postgres in Docker, a transaction rolled back per test). Use `TestClient` **as a context manager** so the lifespan runs, or httpx's `AsyncClient` with `ASGITransport` for async tests.
+- **Documented**: FastAPI generates an OpenAPI 3 schema (`/openapi.json`) from your code, with Swagger UI at `/docs` and ReDoc at `/redoc`; add summaries, examples and error responses, and generate client SDKs from it.
+- **Packaged**: a slim image, dependencies installed from the lock file in their own cached layer, a non-root user, one Uvicorn process per container, liveness and readiness endpoints, graceful shutdown, secrets from a secret manager.
+- **Fast and observable**: never block the loop, reuse pools and clients, time out every outbound call; measure p50/p95/p99 latency and error rates, and for LLM services time to first token, tokens and cost per request, with structured logs and traces carrying a request id.
+
+The design question puts the whole page together:
+
+![POST /chat, layer by layer: validate, auth and budget, retrieve, call the model, stream back](/docs-img/fa-01/chat.jpg)
 
 ### fa31 | How do you test FastAPI applications?
 

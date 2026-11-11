@@ -23,3 +23,14 @@ export const custom = (name: string, props: Record<string, unknown>, beats: Beat
 
 // FA-01's own numbered check-yourself cards (parts are evaluated in order).
 export const check = makeCheck();
+
+// A question from the page, with the page's number and how many interview
+// write-ups asked it: beat 0 reads it, beat 1 says what a good answer covers.
+export const q = (n: number, times: number | null, text: string, after: string, ask: string | Beat, cover: string | Beat): Scene => ({
+  kind: "big",
+  tone: "interview",
+  lead: `Question ${n}${times ? ` · asked ${times}× in interviews` : ""}`,
+  text,
+  after,
+  beats: B(typeof ask === "string" ? { say: ask, tone: "ask" } : ask, cover),
+});

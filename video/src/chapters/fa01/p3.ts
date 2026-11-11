@@ -1,288 +1,454 @@
 import type { Scene } from "../../lib/types.ts";
-import { B, check, custom, sec } from "./h.ts";
+import { B, check, custom, q, sec } from "./h.ts";
 
-// Part 3: errors and middleware, security and per-user limits, testing,
-// production, then the drill, the design answer and the close.
+// Part 3: module 8 (databases), module 9 (beyond request/response) and
+// module 10 (testing, docs and deployment), then the close.
 export const p3: Scene[] = [
-  // ------------------------------------------------------------ 8
-  sec("8", "Errors and middleware", "Topic eight. Errors and middleware. What the client should see when the model provider fails, and code that runs around every request."),
+  // ================================================================ module 8
+  sec("8", "Databases", "Module eight. Databases. Async SQLAlchemy, and the N plus one problem, which was asked in two write-ups."),
+  {
+    kind: "flow",
+    title: "The idea: one engine per app, one session per request",
+    cols: 3,
+    rows: 2,
+    nodeW: 440,
+    nodeH: 130,
+    nodes: [
+      { id: "e", label: "engine + connection pool\ncreated once, in the lifespan", c: 1, r: 0, tone: "amber" },
+      { id: "r1", label: "request 1\nits own AsyncSession", c: 0, r: 1 },
+      { id: "r2", label: "request 2\nits own AsyncSession", c: 1, r: 1 },
+      { id: "r3", label: "request 3\nits own AsyncSession", c: 2, r: 1 },
+    ],
+    edges: [
+      { from: "r1", to: "e", label: "borrow a connection" },
+      { from: "r2", to: "e" },
+      { from: "r3", to: "e" },
+    ],
+    show: [["e"], ["r1", "r2", "r3"]],
+    beats: B(
+      "Here's the idea. The engine, with its pool of database connections, is created once for the whole app, in the lifespan. Opening a database connection is slow, so they're kept and reused.",
+      { say: "Each request gets its own session, from a yield dependency, which borrows a connection from the pool and gives it back at the end. One engine per app, one session per request. Never share a session between requests.", tone: "key" },
+    ),
+  },
+
+  // ---- Q25
+  q(25, 1, "How do you use SQLAlchemy (async) with FastAPI?", "async engine and session, explicit loading, and the gotchas", "Question twenty five. How do you use SQLAlchemy, async, with FastAPI?", "The setup, how queries look, and the two async gotchas."),
   {
     kind: "code",
-    title: "Turn provider failures into honest HTTP answers",
+    title: "Async SQLAlchemy in a route",
     lang: "python",
-    code: `@app.exception_handler(ProviderRateLimited)
-async def provider_busy(request: Request, exc: ProviderRateLimited):
-    return JSONResponse(
-        status_code=503,                              # our upstream is busy
-        headers={"Retry-After": str(exc.retry_after)},
-        content={"error": "model_busy", "request_id": request.state.rid},
-    )
+    code: `engine = create_async_engine("postgresql+asyncpg://…", pool_size=10)
+SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
+@router.get("/chats/{id}", response_model=ChatOut)
+async def get_chat(id: int, db: AsyncSession = Depends(get_db)):
+    stmt = (select(Chat)
+            .where(Chat.id == id)
+            .options(selectinload(Chat.messages)))    # load it now
+    chat = (await db.execute(stmt)).scalar_one_or_none()
+    if chat is None:
+        raise HTTPException(404, "chat not found")
+    return chat`,
+    highlight: [[1, 2], [4, 9], [10, 12]],
+    beats: B(
+      "An async engine with an async driver, like asyncpg, and a pool. The session maker with expire on commit false, so objects stay readable after a commit without another query.",
+      "Queries use the two point oh style: build a select, then await db dot execute. And here's the first gotcha: lazy loading doesn't work implicitly in async. Touching chat dot messages later would raise an error called missing greenlet. So load relationships explicitly, with selectinload.",
+      { say: "The second gotcha: don't mix in synchronous database calls inside async routes. And use Alembic for migrations, never create all in production.", tone: "key" },
+    ),
+  },
+
+  // ---- Q26
+  q(26, 2, "How do you avoid N+1 queries and tune database access in FastAPI?", "what N+1 is, eager loading, and a tuning checklist", "Question twenty six, asked twice. How do you avoid N plus one queries, and tune database access in FastAPI?", "What N plus one looks like, the fix, and a short checklist."),
+  {
+    kind: "chart",
+    title: "N+1: listing 100 chats with their messages",
+    type: "bars",
+    labels: ["lazy: 1 + N", "selectinload", "joinedload"],
+    series: [{ name: "queries", values: [101, 2, 1], step: 0 }],
+    note: { step: 1, text: "selectinload: one extra IN query for the children (good for one-to-many) · joinedload: one JOIN (good for many-to-one)", tone: "amber" },
+    beats: B(
+      "N plus one: one query loads a hundred chats, and then reading each chat's messages fires one more query per chat. A hundred and one round trips, and it gets worse as the data grows.",
+      { say: "The fix is eager loading. Selectinload runs one extra query, with an IN list of ids, for all the children: two queries total, which suits one to many. Joinedload does it in a single join, which suits many to one. Then the checklist: indexes on foreign keys and filter columns, checked with explain analyze; select only the columns you need; paginate; and size the pool to what the database can take.", tone: "key" },
+    ),
+  },
+  check({
+    topic: "N+1",
+    q: "A page lists 50 orders and shows each order's customer name. The logs show 51 queries. What's happening, and the fix?",
+    say: "A page lists fifty orders, and shows each order's customer name. The logs show fifty one queries. What's happening, and what's the fix?",
+    a: "N+1: one query for the orders, then one lazy query per order for its customer. Eager-load: joinedload(Order.customer) (many-to-one) → 1 query.",
+    aSay: "That's N plus one. One query loads the orders, then each order lazily loads its customer, one query each. Eager load the customer, with joinedload, since it's many to one, and it becomes a single query.",
+  }),
+
+  // ================================================================ module 9
+  sec("9", "Beyond request/response", "Module nine. Beyond request and response. Background work, streaming, WebSockets, rate limits, and token budgets. This is where GenAI services live, because model calls are slow and expensive."),
+  {
+    kind: "compare",
+    title: "The idea: pick the tool by how long the work takes",
+    cols: [
+      { title: "Milliseconds", icon: "⚡", tone: "green", items: ["Normal request → response", "Validate, query, return JSON"] },
+      { title: "Seconds, live", icon: "🌊", tone: "blue", items: ["StreamingResponse / SSE", "LLM tokens as they're made"] },
+      { title: "After the reply", icon: "📨", tone: "amber", items: ["BackgroundTasks", "A quick email, an audit log"] },
+      { title: "Minutes", icon: "🏭", tone: "pink", items: ["A queue + workers", "202 + a job id; poll or notify"] },
+    ],
+    footer: "And WebSockets when both sides need to talk, any time",
+    beats: B(
+      "Here's the idea of this module: pick the tool by how long the work takes. Milliseconds: a normal request and response.",
+      "Seconds, and the user should see progress: stream the response, with Server-Sent Events. That's how LLM tokens reach a chat UI.",
+      "Small work that can happen after the reply: background tasks.",
+      "Minutes, like ingesting a big document: a queue with separate workers. Reply 202 with a job id, and let the client poll or get notified.",
+      { say: "And when both sides need to send messages at any time, a WebSocket.", tone: "key" },
+    ),
+  },
+
+  // ---- Q27
+  q(27, 1, "What are BackgroundTasks, and when should you use Celery or a queue instead?", "after the response, in the same process, no guarantees", "Question twenty seven. What are background tasks, and when should you use Celery or a queue instead?", "What background tasks really are, their limits, and when the limits matter."),
+  {
+    kind: "compare",
+    title: "BackgroundTasks vs a real queue",
+    cols: [
+      { title: "BackgroundTasks", icon: "📨", tone: "amber", items: ["Runs after the response, in the same process", "No retries, no persistence: a restart loses it", "Uses the same worker's CPU", "Quick, non-critical follow-ups"] },
+      { title: "Queue (Celery, RQ, Arq, SQS)", icon: "🏭", tone: "green", items: ["Stored in a broker; separate workers", "Retries, scheduling, monitoring", "Scales apart from the API", "Long, heavy, or must-not-lose work"] },
+    ],
+    footer: "Long job → enqueue, return 202 + job_id, client polls GET /jobs/{id}",
+    beats: B(
+      "Background tasks run a function after the response is sent, in the same process. That's all. No retries, no persistence: if the process restarts or crashes, the task is gone. And it uses the API worker's own resources. Good for quick, non-critical follow-ups: sending an email, writing an audit log.",
+      { say: "For anything long, heavy, or that must not be lost, like embedding a thousand page document, use a real queue: Celery, RQ, Arq, or a cloud queue. Jobs are stored in a broker, run by separate workers with retries, and scale apart from the API. The API enqueues the job, replies 202 with a job id, and the client polls a status endpoint.", tone: "key" },
+    ),
+  },
+
+  // ---- Q28
+  q(28, 2, "How do you stream responses (StreamingResponse, Server-Sent Events, LLM tokens)?", "an async generator, the SSE format, disconnects, and proxies", "Question twenty eight, asked twice. How do you stream responses? StreamingResponse, Server-Sent Events, and LLM tokens.", "The generator, the format, and the two production details everyone forgets."),
+  {
+    kind: "seq",
+    title: "Server-Sent Events: one request, many small messages",
+    actors: [
+      { id: "b", name: "Browser", icon: "🖥️" },
+      { id: "a", name: "FastAPI", icon: "⚡", tone: "amber" },
+      { id: "l", name: "LLM", icon: "🤖", tone: "green" },
+    ],
+    msgs: [
+      { from: "b", to: "a", label: "POST /chat/stream", step: 0 },
+      { from: "a", to: "l", label: "stream=True", step: 0, tone: "green" },
+      { from: "l", to: "a", label: "token, token, token…", step: 1, tone: "green" },
+      { from: "a", to: "b", label: "data: {\"t\": \"Hel\"}\\n\\n  data: …", step: 1, tone: "amber" },
+      { from: "a", to: "b", label: "data: [DONE]", step: 2, tone: "amber" },
+    ],
+    note: { step: 2, text: "Time to first token drops from ~8 s to ~0.5 s: the user sees words immediately", tone: "green" },
+    beats: B(
+      "The browser sends one request. FastAPI calls the model with streaming turned on.",
+      "As tokens arrive from the model, FastAPI forwards each one immediately, as a server sent event: a line starting with data, then a blank line.",
+      { say: "And a final done event. The whole answer takes just as long, but the user sees the first words in half a second instead of waiting eight. That's why every chat product streams.", tone: "key" },
+    ),
+  },
+  {
+    kind: "code",
+    title: "Stream from an async generator",
+    lang: "python",
+    code: `@app.post("/chat/stream")
+async def chat_stream(body: ChatIn, request: Request, llm=Depends(get_llm)):
+    async def events():
+        async for token in llm.stream(body.messages):
+            if await request.is_disconnected():
+                break                              # stop paying for tokens
+            yield f"data: {json.dumps({'t': token})}\\n\\n"
+        yield "data: [DONE]\\n\\n"
+    return StreamingResponse(events(), media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})`,
+    highlight: [[3, 4], [5, 6], [7, 8], [9, 10]],
+    beats: B(
+      "StreamingResponse takes an async generator, the async generator from the Python lecture. It loops over the model's stream.",
+      "Production detail one: check whether the client disconnected, and stop. Otherwise you keep generating, and paying for, tokens nobody will read.",
+      "Each token is yielded in SSE format: data, the JSON, and a blank line. Then a done marker.",
+      { say: "Production detail two: proxies like nginx buffer responses by default, which would deliver the whole stream at the end. The X Accel Buffering no header, plus no cache, turn that off. SSE is one-way and runs over plain HTTP, so it's simpler than WebSockets for token streaming.", tone: "key" },
+    ),
+  },
+
+  // ---- Q29
+  q(29, null, "How do WebSockets work in FastAPI?", "a persistent two-way connection, and scaling it", "Question twenty nine. How do WebSockets work in FastAPI?", "The endpoint shape, and the scaling problem every interviewer asks about next."),
+  {
+    kind: "code",
+    title: "A WebSocket endpoint",
+    lang: "python",
+    code: `@app.websocket("/ws/{room}")
+async def ws(websocket: WebSocket, room: str):
+    await websocket.accept()
+    await manager.join(room, websocket)
+    try:
+        while True:
+            msg = await websocket.receive_json()
+            await manager.broadcast(room, msg)     # local connections only!
+    except WebSocketDisconnect:
+        manager.leave(room, websocket)
+
+# several workers or pods: publish through Redis pub/sub,
+# each process delivers to its own connections`,
+    highlight: [[1, 4], [5, 10], [12, 13]],
+    beats: B(
+      "A WebSocket is a persistent, two-way connection: chat, live dashboards, collaborative editing. The endpoint accepts the connection, and registers it.",
+      "Then it loops, receiving messages and broadcasting them, until the client disconnects.",
+      { say: "The scaling catch: an in-memory connection manager only knows the connections on its own process. With several workers or pods, a message must go through something shared, like Redis pub sub, so every process can deliver it to its own clients. Also: authenticate on connect, and use heartbeats to detect dead connections.", tone: "key" },
+    ),
+  },
+
+  // ---- Q30
+  q(30, 3, "How do you add rate limiting, caching and pagination to a FastAPI API?", "counters in Redis, cache with TTLs, cursor pagination", "Question thirty, asked in three write-ups. How do you add rate limiting, caching and pagination?", "Three separate tools. The common thread: anything shared lives in Redis, not process memory."),
+  {
+    kind: "bullets",
+    title: "Three tools, one rule: shared state lives in Redis",
+    items: [
+      { icon: "🚦", text: "Rate limiting: a counter per user per window, in Redis", sub: "INCR + EXPIRE, or a token bucket; 429 with Retry-After" },
+      { icon: "🗃️", text: "Caching: read-through with a TTL", sub: "key by everything that changes the answer; invalidate on writes; HTTP ETag / Cache-Control too" },
+      { icon: "📄", text: "Pagination: prefer cursors over offsets", sub: "WHERE id > :last ORDER BY id LIMIT 20 stays fast; OFFSET 100000 scans and skips" },
+      { icon: "🌍", text: "Why Redis: you run many workers and pods", sub: "a counter in process memory only limits one worker" },
+    ],
+    beats: B(
+      "Rate limiting: a counter per user, or per key, per time window, stored in Redis. Increment it, set an expiry, and over the limit, reply 429 with a retry after header. A token bucket smooths out bursts. Or do it at the API gateway.",
+      "Caching: check the cache, and on a miss, compute and store it with a time to live. The key must include everything that changes the answer, and writes must invalidate it.",
+      "Pagination: prefer cursors to offsets. Where id is greater than the last id seen, order by id, limit twenty, uses the index and stays fast. Offset one hundred thousand makes the database scan and throw away a hundred thousand rows.",
+      { say: "And the common thread: you run many workers and pods, so a counter or cache in process memory only works for one of them. Anything shared lives in Redis.", tone: "key" },
+    ),
+  },
+
+  // ---- Q31 (fa35)
+  q(31, null, "How do you enforce per-user token budgets, and keep the whole service under the LLM provider's rate limit?", "two limits: per user in Redis, global with a semaphore or shared limiter", "Question thirty one. How do you enforce per-user token budgets, and keep the whole service under the LLM provider's rate limit?", "Two different limits. One per user, for fairness and cost. One global, for the provider's limit on your key."),
+  {
+    kind: "code",
+    title: "Check before, record actual usage after",
+    lang: "python",
+    code: `async def check_budget(user=Depends(get_user), redis=Depends(get_redis)):
+    used = int(await redis.get(f"tokens:{user.id}:{date.today()}") or 0)
+    if used >= user.daily_tokens:
+        raise HTTPException(429, "daily token budget used",
+                            headers={"Retry-After": "3600"})
+    return user
+
+llm_slots = asyncio.Semaphore(20)          # per process: provider limit / workers
 
 @app.post("/ask")
-async def ask(body: AskIn, user = Depends(get_user)):
-    if await budget.exhausted(user.id):
-        raise HTTPException(429, "daily token budget used")   # the user's limit
-    ...`,
-    highlight: [[1, 2], [3, 7], [9, 12]],
+async def ask(body: AskIn, user=Depends(check_budget), redis=Depends(get_redis)):
+    async with llm_slots:
+        reply = await llm.complete(body.question)
+    await redis.incrby(f"tokens:{user.id}:{date.today()}", reply.usage.total_tokens)
+    return reply`,
+    highlight: [[1, 6], [8, 8], [10, 15]],
     beats: B(
-      "Without a plan, a provider error escapes as a five hundred with a stack trace. Instead, register an exception handler for your own provider error class.",
-      { say: "It returns a clean JSON error with the right status. When the model provider is rate limiting us, that's our service being temporarily unable to serve: five oh three, with a retry after header, and the request id so support can find the logs.", tone: "key" },
-      "Compare that with the user exceeding their own daily token budget. That's four twenty nine, too many requests, raised directly with HTTP exception. Same root idea, rate limiting, but a different party is responsible, so a different status.",
+      "Per user: a dependency checks today's token count in Redis before calling the model, and replies 429 when the budget is used up. Limit tokens, not just requests: one request can cost fifty tokens, or fifty thousand.",
+      "Globally: a semaphore per process caps the calls in flight. Divide the provider's limit by the number of processes, or use a shared limiter in Redis.",
+      { say: "And record the actual usage after the call, because output length is only known at the end. For streaming, record when the stream ends, including when the client disconnects. Status codes: the user's own limit is 429; the provider being saturated is 503, with retry after.", tone: "key" },
     ),
   },
-  custom(
-    "pyonion",
-    {
-      title: "Middleware wraps every request",
-      sub: "app.add_middleware(...): the LAST one added is the OUTERMOST",
-      core: "the route",
-      layers: [
-        { name: "timing", does: "measures latency; logs route, status, tokens used", tone: "green" },
-        { name: "request_id", does: "sets request.state.rid; adds X-Request-ID to the response", tone: "amber" },
-        { name: "CORS", does: "answers browser preflights; added last so it's outermost", tone: "blue" },
-      ],
-      call: "request → CORS → request_id → timing → route",
-      back: "← response passes back out through each layer",
-    },
-    B(
-      "Middleware is the decorator onion again, around every request instead of one function.",
-      "The innermost here, timing: it measures latency and logs the route, the status and the tokens used.",
-      "Around it, request id: it gives every request an id, stores it on request state, and adds it to the response headers, so one id ties together the client error, the API log and the provider call.",
-      { say: "Outermost, CORS, so browser preflight requests are answered before anything else runs. And the rule interviewers like: with add middleware, the last one added becomes the outermost, and runs first.", tone: "key" },
-      "A request goes in through every layer to the route, and the response comes back out through each one in reverse.",
-    ),
-  ),
   check({
-    topic: "errors",
-    q: "The LLM provider is down for everyone. Should /ask return 429, 500, 503 or 504? And what if one user has burned through their own quota?",
-    say: "The LLM provider is down for everyone. Should ask return four twenty nine, five hundred, five oh three, or five oh four? And what if one user has used up their own quota?",
-    a: "Provider down or overloaded: 503 Service Unavailable, with Retry-After (504 if we gave up waiting on it). One user over their quota: 429 Too Many Requests. 500 means our own bug.",
-    aSay: "Provider down or overloaded: five oh three, service unavailable, with a retry after header. Five oh four if we timed out waiting for it. A user over their own quota: four twenty nine, too many requests. And five hundred is for our own bugs, which this isn't.",
+    topic: "background work",
+    q: "Uploading a 500-page PDF triggers chunking and embedding (≈ 4 min). BackgroundTasks or a queue?",
+    say: "Uploading a five hundred page PDF triggers chunking and embedding, about four minutes of work. Background tasks, or a queue?",
+    a: "A queue: it's long, heavy and must not be lost on a restart. Return 202 + job_id; workers process it with retries; the client polls the job status.",
+    aSay: "A queue. It's long, heavy, and must not be lost if the API restarts. Reply 202 with a job id, let separate workers process it with retries, and have the client poll the job's status.",
+  }),
+  check({
+    topic: "streaming",
+    q: "Your SSE endpoint works locally, but behind nginx the whole answer arrives at once at the end. Why?",
+    say: "Your SSE endpoint works locally, but behind nginx, the whole answer arrives at once, at the end. Why?",
+    a: "nginx buffers the response. Send X-Accel-Buffering: no (and Cache-Control: no-cache), or turn off proxy_buffering for that route.",
+    aSay: "Because nginx buffers the response before passing it on. Send the X Accel Buffering no header, with cache control no cache, or turn off proxy buffering for that route.",
   }),
 
-  // ------------------------------------------------------------ 9
-  sec("9", "Security and per-user limits", "Topic nine. Who is calling, and how much may they spend. Four write-ups asked about JWT authentication in FastAPI, and for LLM APIs, rate limits are the follow-up."),
-  {
-    kind: "code",
-    title: "JWT auth and roles, as dependencies",
-    lang: "python",
-    code: `oauth2 = OAuth2PasswordBearer(tokenUrl="token")   # reads "Authorization: Bearer ..."
-
-async def get_user(token: str = Depends(oauth2)) -> User:
-    try:
-        claims = jwt.decode(token, PUBLIC_KEY, algorithms=["RS256"],
-                            audience="askdocs")          # checks signature + exp
-    except jwt.InvalidTokenError:
-        raise HTTPException(401, "invalid token",
-                            headers={"WWW-Authenticate": "Bearer"})
-    return User(id=claims["sub"], roles=claims.get("roles", []))
-
-def require(role: str):
-    def check(user: User = Depends(get_user)) -> User:
-        if role not in user.roles:
-            raise HTTPException(403, "forbidden")
-        return user
-    return check
-
-@app.post("/ingest")
-async def ingest(files: list[UploadFile], user = Depends(require("editor"))): ...`,
-    highlight: [[1, 1], [3, 6], [7, 9], [12, 17], [19, 20]],
-    beats: B(
-      "Authentication is just a dependency. OAuth two password bearer reads the token from the authorization header and documents it in the API docs.",
-      { say: "Get user decodes the JWT, which verifies the signature and the expiry, and checks the audience, with an explicit list of allowed algorithms. Never decode without verifying.", tone: "key" },
-      "A bad or expired token raises four oh one, with the WWW authenticate header the standard expects.",
-      "Roles are a dependency factory: require of a role returns a dependency that needs the user and raises four oh three if the role is missing. A closure, from the Python lecture.",
-      "So protecting the ingest route is one parameter: Depends of require editor. Four oh one means we don't know who you are; four oh three means we know, and the answer is no.",
-    ),
-  },
+  // ================================================================ module 10
+  sec("10", "Testing, docs and deployment", "Module ten. Testing, docs and deployment. The last five questions, ending with the design question that pulls the whole lecture together."),
   {
     kind: "bullets",
-    title: "Per-user limits for an LLM API",
-    firstItemStep: 1,
+    title: "The idea: what makes a service production-ready",
     items: [
-      { icon: "🔢", text: "Limit tokens, not just requests", sub: "one request can cost 50 tokens or 50,000" },
-      { icon: "🧮", text: "Count in Redis, shared by every worker", sub: "INCRBY user:42:tokens:2026-11-11 · EXPIRE 1 day" },
-      { icon: "🪣", text: "Token bucket for bursts, a daily budget for cost", sub: "check before calling the model, record actual usage after" },
-      { icon: "🚦", text: "Over the limit: 429 with Retry-After", sub: "and a global semaphore so the provider's limit is never exceeded" },
+      { icon: "🧪", text: "Tested", sub: "dependency overrides, a real test database, the lifespan running" },
+      { icon: "📘", text: "Documented", sub: "OpenAPI from the code, so docs never drift" },
+      { icon: "📦", text: "Packaged and run well", sub: "a slim image, one process per container, health checks" },
+      { icon: "📈", text: "Fast and observable", sub: "latency, errors, tokens and cost, traced per request" },
     ],
     beats: B(
-      "Then limits. For an LLM API, three things are different.",
-      { say: "Limit tokens, not just requests. One request can cost fifty tokens or fifty thousand, so a requests per minute limit alone doesn't protect your bill.", tone: "key" },
-      "Count in Redis, not in process memory, because you run several workers and they must share one count. Increment the user's counter for today by the tokens used, with a one day expiry.",
-      "A token bucket smooths bursts, and a daily budget caps cost. Check before calling the model, and record the actual usage after, since you only know the output length at the end.",
-      "Over the limit, return four twenty nine with retry after. And separately, a global semaphore keeps the whole service under the provider's own limit.",
+      "Here's the idea of the last module: what makes a service production-ready. It's tested, with fakes for the slow and expensive parts, and the real thing where it matters.",
+      "It's documented, and in FastAPI, the documentation comes from the code itself, so it never drifts.",
+      "It's packaged and run well: a slim image, one process per container, and health checks the platform can use.",
+      { say: "And it's fast and observable: you can see latency, errors, tokens and cost, per request. One question each, then the design question.", tone: "key" },
     ),
   },
-  check({
-    topic: "auth",
-    q: "A valid token for a user without the 'editor' role calls POST /ingest. 401 or 403?",
-    say: "A valid token, for a user without the editor role, calls the ingest endpoint. Four oh one, or four oh three?",
-    options: ["401 Unauthorized", "403 Forbidden", "404 Not Found", "422 Unprocessable Entity"],
-    oSay: ["four oh one, unauthorized", "four oh three, forbidden", "four oh four, not found", "four twenty two, unprocessable entity"],
-    answer: 1,
-    a: "403. The token proved who they are (authentication passed); they just aren't allowed (authorisation failed).",
-    aSay: "B, four oh three. The token proved who they are, so authentication passed. They just aren't allowed to do this, which is an authorisation failure. Four oh one is for when we don't know who you are.",
-  }),
 
-  // ------------------------------------------------------------ 10
-  sec("10", "Testing without calling the model", "Topic ten. Testing. How do you test an LLM endpoint without paying for tokens, and without flaky answers?"),
+  // ---- Q32 (fa31)
+  q(32, null, "How do you test FastAPI applications?", "TestClient, overrides, a real database, and the lifespan", "Question thirty two. How do you test FastAPI applications?", "The client to use, what to fake, what to keep real, and one trap."),
   {
     kind: "code",
-    title: "Override the dependency, test the API for real",
+    title: "Tests: override the edges, keep the core real",
     lang: "python",
-    code: `class FakeLLM:
-    async def complete(self, prompt): return '{"answer": "30 days", "sources": ["policy.pdf"]}'
-    async def stream(self, msgs):
-        for t in ["30", " days"]: yield t
-
-def test_ask():
+    code: `@pytest.fixture
+def client():
     app.dependency_overrides[get_llm] = lambda: FakeLLM()
-    with TestClient(app) as client:            # 'with' also runs the lifespan
-        r = client.post("/ask", json={"question": "Refund window?"})
-    assert r.status_code == 200
-    assert r.json()["sources"] == ["policy.pdf"]
+    with TestClient(app) as c:          # "with" runs the lifespan
+        yield c
     app.dependency_overrides.clear()
 
-def test_bad_input():
-    with TestClient(app) as client:
-        assert client.post("/ask", json={"question": ""}).status_code == 422`,
-    highlight: [[1, 4], [7, 7], [8, 9], [10, 12], [14, 16]],
+def test_empty_question_is_422(client):
+    assert client.post("/ask", json={"text": ""}).status_code == 422
+
+async def test_ask_async():             # pytest-asyncio / anyio
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://t") as ac:
+        r = await ac.post("/ask", json={"text": "hi"})`,
+    highlight: [[1, 6], [8, 9], [11, 14]],
     beats: B(
-      "A fake model: a class with the same methods, returning fixed answers instantly. Duck typing again: it doesn't inherit from anything.",
-      { say: "Then dependency overrides: wherever a route depends on get LLM, use the fake instead. The rest of the app, validation, auth, error handling, runs for real.", tone: "key" },
-      "Test client sends real requests through the whole stack, in memory. Use it as a context manager. That also runs the lifespan, which people forget, and then wonder why app state is empty.",
-      "Assert on the status and the JSON. And clear the overrides afterwards, so the fake doesn't leak into other tests.",
-      "And test the edges: an empty question must give four twenty two. For async tests, httpx async client with an ASGI transport does the same thing with await.",
+      "A fixture overrides the edges: the LLM client, payment, email, auth. And creates a TestClient. The trap: use it as a context manager, with with. Only then does the lifespan run, so the startup objects exist.",
+      "Test the contract, including the failures: an empty question must give 422, a missing token 401, an unknown id 404.",
+      { say: "For async tests, httpx's AsyncClient with an ASGI transport. And keep the core real: a real Postgres in Docker, using Testcontainers, with each test inside a transaction that's rolled back, so tests are fast and isolated.", tone: "key" },
     ),
   },
-  check({
-    topic: "testing",
-    q: "In a test, app.state.llm is missing and the route crashes with AttributeError, though it works in production. You wrote client = TestClient(app). Why?",
-    say: "In a test, app dot state dot llm is missing, and the route crashes with an attribute error, though it works in production. You wrote client equals test client of app. Why?",
-    a: "Without 'with TestClient(app) as client:', the lifespan never runs, so nothing set app.state.llm. Use it as a context manager (or override get_llm).",
-    aSay: "Because the test client was created without the with statement, the lifespan never ran, so nothing ever set app state llm. Use test client as a context manager, or override the get LLM dependency with a fake.",
-  }),
 
-  // ------------------------------------------------------------ 11
-  sec("11", "Production: workers, timeouts, observability", "Topic eleven. Production. How you run it, how it fails safely, and what you watch on a dashboard."),
+  // ---- Q33 (fa32)
+  q(33, null, "How do the automatic API docs work, and how do you customise them?", "OpenAPI generated from your code", "Question thirty three. How do the automatic API docs work, and how do you customise them?", "Where the docs come from, and the knobs."),
   {
     kind: "bullets",
-    title: "Running FastAPI in production",
-    firstItemStep: 1,
+    title: "OpenAPI, generated from your code",
     items: [
-      { icon: "🧮", text: "Processes: one event loop each", sub: "uvicorn --workers N, or gunicorn with uvicorn workers; on Kubernetes, often 1 per pod and scale pods" },
-      { icon: "⏱️", text: "Timeouts nested: LLM call < route < proxy", sub: "30 s < 45 s < 60 s: the innermost gives up first, with a clean error" },
-      { icon: "❤️", text: "Liveness vs readiness", sub: "alive = the loop answers; ready = the model and clients are loaded" },
-      { icon: "🐳", text: "Docker: slim image, non-root, secrets from env", sub: "pydantic-settings reads them, validated at startup" },
+      { icon: "🧾", text: "/openapi.json: an OpenAPI 3 schema", sub: "built from routes, type hints, models, dependencies and security schemes" },
+      { icon: "🖱️", text: "/docs (Swagger UI) and /redoc", sub: "try requests, authorise with a token" },
+      { icon: "✍️", text: "Customise: summary, description, tags, examples, responses={404: …}", sub: "Field(description=…), json_schema_extra examples, include_in_schema=False" },
+      { icon: "🧰", text: "Generate typed client SDKs from the schema", sub: "and turn docs off or protect them in production if the API is private" },
     ],
     beats: B(
-      "Running it. Four things to say.",
-      "Processes: one event loop per process, so use several. Uvicorn with workers, or gunicorn managing uvicorn workers. On Kubernetes it's common to run one worker per pod and scale the pods instead.",
-      { say: "Timeouts, nested: the LLM call times out before the route, and the route before the proxy. Say thirty, forty five, sixty seconds. The innermost layer gives up first, so it can return a clean error instead of the proxy cutting the connection.", tone: "key" },
-      "Health checks: liveness means the event loop answers. Readiness means the model and clients are loaded, so traffic isn't sent to a pod that's still starting.",
-      "And Docker: a slim image, a non root user, secrets from environment variables, read and validated at startup by pydantic settings.",
+      "FastAPI builds an OpenAPI three schema from your routes, type hints, Pydantic models, dependencies and security schemes, served at slash openapi dot json.",
+      "On top of it, Swagger UI at slash docs, where you can try requests and authorise with a token, and ReDoc at slash redoc.",
+      "You customise it with summaries, descriptions, tags, examples, and documented error responses, and hide internal routes with include in schema false.",
+      { say: "And because the schema is standard, you can generate typed client SDKs from it. For a private API, disable or protect the docs in production.", tone: "key" },
     ),
   },
-  {
-    kind: "numbers",
-    title: "What a GenAI API dashboard shows",
-    items: [
-      { value: "TTFT", label: "Time to first token", sub: "what the user feels when streaming" },
-      { value: "p95", label: "Total latency", sub: "per route, per model" },
-      { value: "tokens", label: "In and out per request", sub: "and the cost they add up to" },
-      { value: "errors", label: "By provider and type", sub: "429s, timeouts, invalid JSON" },
-    ],
-    footer: "Every log line and trace carries the request id, so one failed answer can be followed end to end.",
-    beats: B(
-      "And what you watch. Four numbers make a GenAI API dashboard.",
-      { say: "Time to first token. When you stream, that's what the user actually feels.", tone: "key" },
-      "Total latency, at the ninety fifth percentile, per route and per model.",
-      "Tokens in and out per request, and the cost they add up to.",
-      "And errors by provider and type: rate limits, timeouts, invalid JSON from the model.",
-      { say: "All tied together by the request id from our middleware, so a single bad answer can be followed from the browser to the provider and back.", tone: "key" },
-    ),
-  },
-  check({
-    topic: "production",
-    q: "Users say the chat 'feels slow', but the average total latency is unchanged at 6 s. Which metric would you look at first, and why?",
-    say: "Users say the chat feels slow, but the average total latency is unchanged at six seconds. Which metric would you look at first, and why?",
-    a: "Time to first token (and its p95). With streaming, perceived speed is how soon words appear; something before generation (retrieval, a queue, a cold client) may have grown.",
-    aSay: "Time to first token, and its ninety fifth percentile rather than the average. With streaming, the perceived speed is how soon the first words appear. Something that happens before generation, like retrieval, waiting for a semaphore permit, or a cold connection, may have grown while the total stayed flat.",
-  }),
 
-  // ------------------------------------------------------------ finale
+  // ---- Q34 (fa33)
+  q(34, null, "How do you deploy FastAPI with Docker?", "a slim image, one process, health checks, graceful shutdown", "Question thirty four. How do you deploy FastAPI with Docker?", "The Dockerfile, then the production checklist."),
+  {
+    kind: "code",
+    title: "A slim, cache-friendly image",
+    lang: "dockerfile",
+    code: `FROM python:3.12-slim
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN pip install uv && uv sync --frozen --no-dev    # deps layer, cached
+COPY src/ ./src
+RUN useradd -m app
+USER app                                           # not root
+EXPOSE 8000
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]`,
+    highlight: [[1, 4], [5, 7], [8, 9]],
+    beats: B(
+      "A slim base image. Copy the dependency files first and install from the lock file, so that layer is cached, and only rebuilds when dependencies change.",
+      "Then the code, and run as a non-root user.",
+      { say: "One Uvicorn process per container, and scale with replicas. Then the checklist: a liveness endpoint, saying the process is up, and a readiness endpoint, saying the database and Redis are reachable. Graceful shutdown so in-flight requests finish. Config from the environment, secrets from a secret manager, never baked into the image.", tone: "key" },
+    ),
+  },
+
+  // ---- Q35 (fa34)
+  q(35, null, "How do you make a FastAPI service fast and observable in production?", "never block, reuse connections, time out everything; measure p95, TTFT and cost", "Question thirty five. How do you make a FastAPI service fast and observable in production?", "Performance habits, then what you measure. For a GenAI service, a few metrics are special."),
+  {
+    kind: "compare",
+    title: "Fast, and observable",
+    cols: [
+      { title: "Fast", icon: "⚡", tone: "green", items: ["Async all the way; never block the loop", "One pool per DB, one shared HTTP client", "Timeouts on every outbound call", "Cache, paginate, stream LLM answers"] },
+      { title: "Observable", icon: "📈", tone: "blue", items: ["Latency p50/p95/p99 per route, error rates", "LLM: time to first token, tokens in/out, cost", "Structured JSON logs with a request id", "Traces across API → vector DB → LLM (OpenTelemetry)"] },
+    ],
+    footer: "Averages hide pain: alert on p95 and error rate",
+    beats: B(
+      "Fast: async all the way, and never block the loop. One connection pool per database and one shared HTTP client, created at startup. A timeout on every outbound call, because one slow dependency without a timeout can hold every worker. And cache, paginate, and stream.",
+      { say: "Observable: latency percentiles per route, p50, p95, p99, and error rates. For an LLM service, also time to first token, tokens in and out, and cost per request. Structured JSON logs carrying a request id. And traces across the API, the vector store and the model, with OpenTelemetry, so you can see where a slow request spent its time. Averages hide pain, so alert on p95.", tone: "key" },
+    ),
+  },
+
+  // ---- Q36 (fa36)
+  q(36, null, "Design the chat endpoint of a GenAI app in FastAPI.", "every layer, in the order a request meets them", "Question thirty six, the design question. Design the chat endpoint of a GenAI app in FastAPI.", "Walk through every layer, in the order a request meets them. Every module of this lecture shows up once."),
+  custom(
+    "pypipe",
+    {
+      title: "POST /chat, layer by layer",
+      stages: [
+        { name: "Validate", icon: "🛡️", sub: "Pydantic, bounded" },
+        { name: "Auth + budget", icon: "🔑", sub: "JWT, Redis tokens" },
+        { name: "Retrieve", icon: "📚", sub: "vector store, timeout" },
+        { name: "LLM", icon: "🤖", sub: "shared client, semaphore" },
+        { name: "Stream back", icon: "🌊", sub: "SSE, disconnects" },
+      ],
+      steps: [
+        { at: 0, text: "async def route; a Pydantic body: messages, a model from an allowed set, max_tokens bounded. Bad input → 422." },
+        { at: 1, text: "get_current_user verifies the JWT; check_budget reads today's tokens in Redis → 429 when spent." },
+        { at: 2, text: "If it's RAG: async retrieval with its own timeout; CPU-heavy re-ranking off the event loop." },
+        { at: 3, text: "One async LLM client from the lifespan, a semaphore under the provider's limit, a timeout, retries on transient errors only." },
+        { at: 4, text: "StreamingResponse with SSE; stop on disconnect; afterwards record token usage and save the conversation, with the request id.", back: true },
+        { at: [0, 1, 2, 3, 4], text: "Errors: provider overloaded → 503 + Retry-After, timeout → 504. Observe TTFT, p95, tokens and cost. Scale with workers/pods; nothing per-user in process memory." },
+      ],
+    },
+    B(
+      "The route is async def, with a Pydantic body: the messages, a model from an allowed set, and max tokens with an upper bound. Bad input is a 422 before anything costs money.",
+      "Then two dependencies. Get current user verifies the JWT. Check budget reads the user's token count in Redis, and replies 429 when it's spent.",
+      "If it's retrieval augmented, retrieval runs as async calls to the vector store, with their own timeout. Any CPU-heavy step, like local re-ranking, goes off the event loop.",
+      "The model call uses one async client created in the lifespan, a semaphore to stay under the provider's limit, a timeout, and retries with backoff on transient errors only.",
+      "The answer streams back as server sent events, stopping if the client disconnects. After the stream, record the actual token usage and save the conversation, tagged with the request id.",
+      { say: "And around it: provider overloaded becomes 503 with retry after; a timeout becomes 504. Observe time to first token, p95 latency, tokens and cost. Scale with more workers or pods, keeping nothing per user in process memory. Every module of this lecture, in one endpoint.", tone: "key" },
+    ),
+  ),
+  {
+    kind: "sayit",
+    q: "Design a chat endpoint in FastAPI.",
+    lines: [
+      "async def POST /chat with a bounded Pydantic body; JWT auth and a token budget as dependencies.",
+      "Shared async clients from the lifespan; a semaphore, timeouts, retries on transient errors.",
+      "Retrieval with its own timeout; CPU work off the loop.",
+      "Stream tokens with SSE; stop on disconnect; record usage after.",
+      "503/504 mapped cleanly; TTFT, p95, tokens and cost observed; stateless workers that scale out.",
+    ],
+    beats: B(
+      { say: "Compressed into an answer you can say in forty seconds.", tone: "ask" },
+      "An async def POST chat route with a bounded Pydantic body, and JWT auth and a token budget as dependencies.",
+      "Shared async clients created in the lifespan, with a semaphore, timeouts, and retries on transient errors only.",
+      "Retrieval with its own timeout, and any CPU work kept off the event loop.",
+      "Tokens streamed with server sent events, stopping on disconnect, and usage recorded at the end.",
+      { say: "Provider errors mapped cleanly to 503 and 504; time to first token, p95, tokens and cost observed; and stateless workers that scale out. Then the interviewer picks a layer, and you go deeper.", tone: "key" },
+    ),
+  },
+
+  // ================================================================ close
   {
     kind: "drill",
     items: [
-      { q: "WSGI vs ASGI?", a: "a thread per request vs async tasks on an event loop" },
-      { q: "FastAPI is built on…", a: "Starlette (ASGI) + Pydantic + type hints" },
-      { q: "Bad request body →", a: "422, before your function runs" },
-      { q: "response_model does…", a: "validates and filters what goes out" },
-      { q: "A yield dependency is for…", a: "setup before, cleanup after: DB sessions" },
-      { q: "Plain def routes run…", a: "in a threadpool (~40 threads)" },
-      { q: "requests.get inside async def?", a: "blocks the loop: every request waits" },
-      { q: "Create the HTTP client…", a: "once, in lifespan; share it" },
-      { q: "Stream tokens with…", a: "StreamingResponse + async generator, SSE" },
-      { q: "Client disconnects mid-stream?", a: "stop and close the upstream stream" },
-      { q: "500 PDFs to embed?", a: "202 + job id + a queue and workers" },
-      { q: "Test without the real model?", a: "app.dependency_overrides" },
+      { q: "What two libraries is FastAPI built on?", a: "Starlette and Pydantic" },
+      { q: "Invalid body: what status, and does your code run?", a: "422, and no" },
+      { q: "A def route runs where?", a: "In a thread pool" },
+      { q: "requests.get() in async def does what?", a: "Blocks the event loop for every request" },
+      { q: "Where do you load a model or create clients?", a: "In the lifespan" },
+      { q: "Which middleware sees the request first?", a: "The last one added" },
+      { q: "How do you swap the LLM client in tests?", a: "app.dependency_overrides" },
     ],
     beats: B(
-      { say: "Rapid fire. Answer before I do. W S G I versus A S G I?", hold: 3 },
-      "A thread per request, versus async tasks on an event loop.",
-      { say: "FastAPI is built on what?", hold: 3 },
-      "Starlette, Pydantic, and your type hints.",
-      { say: "A bad request body gives?", hold: 3 },
-      "Four twenty two, before your function runs.",
-      { say: "What does response model do?", hold: 3 },
-      "It validates and filters what goes out.",
-      { say: "A yield dependency is for?", hold: 3 },
-      "Setup before and cleanup after. Database sessions.",
-      { say: "Plain def routes run where?", hold: 3 },
-      "In a threadpool, about forty threads by default.",
-      { say: "Requests dot get inside async def?", hold: 3 },
-      "It blocks the loop, so every request waits.",
-      { say: "Where do you create the HTTP client?", hold: 3 },
-      "Once, in the lifespan, and share it.",
-      { say: "Stream tokens with?", hold: 3 },
-      "A streaming response and an async generator, as server sent events.",
-      { say: "The client disconnects mid stream?", hold: 3 },
-      "Stop, and close the upstream stream.",
-      { say: "Five hundred PDFs to embed?", hold: 3 },
-      "Two oh two, a job id, and a queue with workers.",
-      { say: "Test without the real model?", hold: 3 },
+      { say: "A last rapid-fire round. What two libraries is FastAPI built on?", hold: 3 },
+      "Starlette and Pydantic.",
+      { say: "An invalid body arrives. What status, and does your code run?", hold: 3 },
+      "422, and no, it never runs.",
+      { say: "A plain def route runs where?", hold: 3 },
+      "In a thread pool.",
+      { say: "Requests dot get inside async def does what?", hold: 3 },
+      "It blocks the event loop, for every request on that worker.",
+      { say: "Where do you load a model, or create shared clients?", hold: 3 },
+      "In the lifespan, once at startup.",
+      { say: "Which middleware sees the request first?", hold: 3 },
+      "The last one added.",
+      { say: "How do you swap the LLM client for a fake in tests?", hold: 3 },
       "App dot dependency overrides.",
     ),
   },
   {
-    kind: "sayit",
-    q: "\"Design the chat endpoint of a GenAI app in FastAPI.\"",
-    lines: [
-      "POST /chat, async def, with a Pydantic request model and JWT auth as a dependency.",
-      "One shared async LLM client from lifespan; a semaphore and per-call timeouts.",
-      "Check the user's token budget in Redis first; record actual usage after.",
-      "Stream tokens as SSE from an async generator; stop on disconnect.",
-      "Map provider failures to 503 or 504, and log TTFT, tokens and the request id. Long ingestion goes to a queue.",
+    kind: "bullets",
+    title: "Where to go from here",
+    items: [
+      { icon: "📖", text: "Each module page starts this lecture at its own part", sub: "rewatch exactly what you need" },
+      { icon: "🧠", text: "Read the module's theory, then the answers", sub: "the same pictures and words as here" },
+      { icon: "🎤", text: "Practise the design question out loud", sub: "then go one layer deeper on each step" },
     ],
     beats: B(
-      { say: "And the design question that ties it all together. Design the chat endpoint of a GenAI app in FastAPI. Here's an answer that uses every topic.", tone: "ask" },
-      "Post chat, an async def route, with a Pydantic request model, and JWT authentication as a dependency.",
-      "One shared async LLM client created in the lifespan, a semaphore to stay under the provider's limit, and a timeout on every call.",
-      "Before calling the model, check the user's token budget in Redis, and record the actual usage afterwards.",
-      "Stream the tokens as server sent events from an async generator, and stop if the client disconnects.",
-      { say: "Map provider failures to five oh three or five oh four, and log time to first token, tokens used and the request id. Anything long, like ingestion, goes to a queue with workers.", tone: "key" },
-    ),
-  },
-  {
-    kind: "big",
-    tone: "idea",
-    lead: "That's FastAPI",
-    text: "Declare what you need. Validate at the edges. Never block the loop. Stream what the user is waiting for.",
-    after: "every question tonight is one of those four sentences, applied",
-    beats: B(
-      "That's FastAPI for GenAI.",
-      { say: "Four sentences carry it. Declare what you need, and let dependencies build it. Validate at the edges. Never block the loop. And stream what the user is waiting for.", tone: "key" },
-      "Every question in this lecture is one of those four sentences, applied. Go and answer them out loud.",
+      "That's the whole FastAPI page. Each module page has a watch card that starts this lecture at that module.",
+      "On each page, read the module's theory first, then the answers.",
+      { say: "And practise the design question out loud, then pick any layer and go one level deeper. That's exactly how the interview will go. Good luck.", tone: "key" },
     ),
   },
 ];

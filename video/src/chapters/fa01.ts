@@ -3,11 +3,12 @@ import { p1 } from "./fa01/p1.ts";
 import { p2 } from "./fa01/p2.ts";
 import { p3 } from "./fa01/p3.ts";
 
-// FA-01: FastAPI for GenAI interviews, on the /fastapi page. The AskDocs app
-// from PY-01 behind an API; slow, a check after each topic.
+// FA-01: the FastAPI page, topic by topic, on /fastapi. One section per module
+// of src/Data/WebBasics/fastapi.md (section N = module N), the questions in the
+// page's order with its numbers, a picture for each idea, a check per module.
 export const fa01: Chapter = {
   id: "fa01",
-  title: "FastAPI for GenAI interviews",
+  title: "FastAPI, topic by topic",
   label: "FastAPI",
   theme: "py",
   voice: "en-US-AndrewMultilingualNeural",

@@ -1,6 +1,8 @@
 // The owner-only question banks: JS · React · Node, and Python · FastAPI.
 // One markdown file per tech, so answers can carry tables and code. Each file
-// is a list of modules ("## Title") in learning order, each a list of
+// is a list of modules ("## Title") in learning order, each with an optional
+// theory section (whatever sits between the heading and its first question:
+// the idea the module hangs on, shown above the questions) and a list of
 // questions ("### id | Question", optionally "| asked=N" for how many real
 // interview write-ups asked it) whose body is the answer. The ids are what
 // the ticks are stored under, so never renumber them — add new ones at the end.
@@ -46,6 +48,10 @@ export function parseQuestionBank(text) {
   let mod = null;
   let q = null;
   let fence = null;
+  const theoryOf = (m) => {
+    m.theory = m.theoryLines.join("\n").trim();
+    delete m.theoryLines;
+  };
   const flush = () => {
     if (q) {
       q.answer = q.lines.join("\n").trim();
@@ -58,33 +64,37 @@ export function parseQuestionBank(text) {
 
   for (const line of text.replace(/\r/g, "").split("\n")) {
     const f = line.match(/^\s*(`{3,}|~{3,})/);
+    const into = q ? q.lines : mod?.theoryLines;
     if (fence) {
       if (f && f[1][0] === fence[0] && f[1].length >= fence.length && line.trim() === f[1]) fence = null;
-      if (q) q.lines.push(line);
+      into?.push(line);
       continue;
     }
     if (f) {
       fence = f[1];
-      if (q) q.lines.push(line);
+      into?.push(line);
       continue;
     }
     const m = line.match(/^## (.+)$/);
     if (m) {
       flush();
-      mod = { title: m[1].trim(), questions: [] };
+      if (mod?.theoryLines) theoryOf(mod);
+      mod = { title: m[1].trim(), theoryLines: [], questions: [] };
       modules.push(mod);
       continue;
     }
     const h = line.match(/^### ([\w-]+) \| (.+?)(?: \| asked=(\d+))?(?: \| (write|fix|predict))?$/);
     if (h && mod) {
       flush();
+      if (mod.theoryLines) theoryOf(mod);
       q = { id: h[1], question: h[2].trim(), asked: h[3] ? Number(h[3]) : null, kind: h[4] || null, lines: [] };
       mod.questions.push(q);
       continue;
     }
-    if (q) q.lines.push(line);
+    into?.push(line);
   }
   flush();
+  if (mod?.theoryLines) theoryOf(mod);
 
   // Questions and exercises are counted apart: Q1, Q2… and E1, E2…
   let n = 0;
