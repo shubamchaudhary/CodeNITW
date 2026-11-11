@@ -1109,6 +1109,45 @@ async def list_orders(db: DB, limit: int = Query(20, le=100), cursor: int | None
 ```
 Offset/limit is simple but slows down on deep pages and can skip or duplicate rows while data changes; cursor (keyset) pagination is stable and fast.
 
+### fa35 | How do you enforce per-user token budgets, and keep the whole service under the LLM provider's rate limit?
+
+Two different limits: **per user** (fairness and cost) and **global** (the provider's limit for your API key).
+
+```python
+# per user: tokens per day, counted in Redis so every worker shares one count
+async def check_budget(user = Depends(get_user), redis = Depends(get_redis)):
+    key = f"tokens:{user.id}:{date.today()}"
+    used = int(await redis.get(key) or 0)
+    if used >= user.daily_tokens:
+        raise HTTPException(429, "daily token budget used", headers={"Retry-After": "3600"})
+    return user
+
+async def record_usage(redis, user_id: str, tokens: int):
+    key = f"tokens:{user_id}:{date.today()}"
+    pipe = redis.pipeline()
+    pipe.incrby(key, tokens)
+    pipe.expire(key, 2 * 24 * 3600)
+    await pipe.execute()
+
+# global: never more calls in flight than the provider allows (per process)
+llm_slots = asyncio.Semaphore(20)
+
+@app.post("/ask")
+async def ask(body: AskIn, user = Depends(check_budget), redis = Depends(get_redis)):
+    async with llm_slots:
+        reply = await llm.complete(body.question)
+    await record_usage(redis, user.id, reply.usage.total_tokens)   # actual usage, known only after
+    return reply
+```
+
+Points to know:
+- **Limit tokens, not just requests**: one request can cost 50 tokens or 50,000.
+- Counters live in **Redis**, not process memory: you run several workers and pods.
+- Check **before** calling the model; record the **actual** usage after (output length is only known at the end). For streaming, record at the end of the stream, including when the client disconnects.
+- A **token bucket** (or sliding window) smooths bursts; a **daily budget** caps cost.
+- The global limit: a semaphore per process (divide the provider's limit by the number of processes), or a shared limiter in Redis; on the provider's 429, back off with jitter.
+- Status codes: the user's own limit → **429**; the provider being saturated → **503** with `Retry-After`.
+
 ## Testing, docs and deployment
 
 ### fa31 | How do you test FastAPI applications?
@@ -1232,3 +1271,20 @@ Production checklist:
 - Profiling: **py-spy** (sampling, attaches to a live process with no code changes) to find CPU hot spots and blocking calls.
 
 Golden signals to alert on: latency, traffic, errors, saturation (CPU, memory, connection pools).
+
+### fa36 | Design the chat endpoint of a GenAI app in FastAPI.
+
+A design answer that touches every layer, in the order a request meets them:
+
+1. **Route**: `POST /chat`, `async def`, a Pydantic request model (messages, model choice within an allowed set, max_tokens bounded).
+2. **Auth**: a `get_user` dependency that verifies the JWT (signature, expiry, audience); roles via a dependency factory.
+3. **Budget**: check the user's token budget in Redis before calling the model; return 429 when exhausted.
+4. **Shared clients**: one async LLM client and HTTP connection pool created in the **lifespan**, handed out with a dependency; a **semaphore** to stay under the provider's limit; a **timeout** on every call; retries with backoff on transient errors only.
+5. **Retrieval** (if RAG): async calls to the vector store, with its own timeout; CPU-heavy work (local embedding, re-ranking) off the event loop.
+6. **Streaming**: `StreamingResponse` from an async generator, SSE format, `Cache-Control: no-cache`, `X-Accel-Buffering: no`; stop and close the upstream stream when the client disconnects.
+7. **After the stream**: record actual token usage, save the conversation (or enqueue it), all with the request id.
+8. **Errors**: provider overload → 503 with `Retry-After`, provider timeout → 504, validation → 422, our bugs → 500 with a request id, never a stack trace.
+9. **Observability**: time to first token, total latency p95, tokens in/out and cost per request, error rates by provider; traces across API, vector store and provider.
+10. **Scale**: several Uvicorn workers or pods; nothing per-user in process memory (Redis for limits and sessions); long jobs (document ingestion) on a queue with workers, returning 202 and a job id.
+
+Follow-ups to expect: how you'd test it (`dependency_overrides` with a fake LLM, an empty-input 422 test, a streaming test), what happens when the provider is down for ten minutes (fail fast with 503, a fallback model, a circuit breaker), and how you'd cut cost (caching, smaller models for simple questions, shorter prompts).

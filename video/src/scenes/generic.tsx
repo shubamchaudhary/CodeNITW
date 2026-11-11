@@ -510,7 +510,8 @@ const syntaxColor = (ln: string, lang: string) => {
   const s = ln.trim();
   if (lang === "python") {
     if (s.startsWith("#")) return C.faint;
-    if (/^(def|import|return|for|if|break)\b/.test(s)) return C.purple;
+    if (s.startsWith("@")) return C.amber;
+    if (/^(async |await |def|import|from|return|for|if|elif|else|break|class|with|yield|try|except|finally|raise|while)\b/.test(s)) return C.purple;
     return C.text;
   }
   if (/^<ticket>/.test(s)) return C.cyan;

@@ -1,0 +1,1342 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "f0b4b579",
+   "say": "FastAPI for GenAI interviews. In the Python lecture we built AskDocs, an assistant that answers questions from company documents. Now we put it behind an API. Along the way we'll meet every FastAPI question that comes up for AI roles, and the async mistakes that quietly freeze a server under load.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "34651d39",
+   "say": "Here's the API, four pieces, and each one is a cluster of interview questions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e211e09",
+   "say": "Ask: a question goes in, and a validated answer comes out.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "97e6dc79",
+   "say": "Chat: the same, but the answer is streamed to the user token by token, the way every chatbot does it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6847d491",
+   "say": "Ingest: someone uploads five hundred PDFs to embed, and nobody should have to wait for that.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9280e827",
+   "say": "And on every route: who are you, and how many tokens have you used today. Same format as before: a problem, the mechanism, the interview answer, and a check where you pause and answer first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e0e52e44",
+   "say": "Topic one. What FastAPI actually is. Twelve write-ups asked some form of: what is FastAPI, and why use it over Flask or Django?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3afbe942",
+   "say": "The question you'll get first.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea4d541f",
+   "say": "Why would you build a GenAI service on FastAPI?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a5fd0ce8",
+   "say": "A good answer names what it's built on and why that fits LLM work: async for waiting on models, Pydantic for validation, streaming, and the docs it writes for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f5f2fdfb",
+   "say": "The foundation first. WSGI is the older standard interface between Python web apps and servers. Each request holds a worker thread until it's done. With an LLM call that takes twenty seconds, that's a thread doing nothing for twenty seconds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c8641123",
+   "say": "ASGI is the async successor. Requests run as tasks on an event loop, so while one request awaits the model, others keep running. It also supports WebSockets and long lived streams.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe2e5a9d",
+   "say": "And that's why it fits GenAI: these services spend most of their time waiting for a model. ASGI lets one process wait on hundreds of calls at once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "740158d5",
+   "say": "So what is FastAPI made of? It's thin, on purpose.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8965ada1",
+   "say": "Starlette underneath: the ASGI toolkit that does routing, requests, responses, middleware, WebSockets and streaming.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e015e46",
+   "say": "Pydantic for validation and serialisation. Your type hints become runtime checks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f321dae",
+   "say": "And the clever part: FastAPI reads your function's type hints when the app starts, and uses them to decide where each parameter comes from, to validate it, and to generate the OpenAPI schema and the docs page.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3b4de08b",
+   "say": "Uvicorn is the ASGI server that runs it. In production, you run several worker processes, because one process is one event loop on one core.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d13f4fb",
+   "say": "Check 1. A Flask app with four worker threads calls an LLM that takes fifteen seconds. Ten users ask at once. Roughly how long does the tenth wait, and what changes with FastAPI and async calls?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d3b51d0e",
+   "say": "About forty five seconds. Four threads serve four users at a time, so ten users need three rounds of fifteen seconds. With FastAPI and async calls, all ten requests wait on the model at the same time, on one event loop, so everyone gets an answer in about fifteen seconds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "81b6f2b4",
+   "say": "Topic two. The life of a request. What happens between a client sending JSON and your function running, which explains the four hundred and twenty two error everyone meets on day one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca633f87",
+   "say": "Follow one request through. Uvicorn reads the bytes off the socket and calls the app through ASGI.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b6644a6",
+   "say": "Middleware wraps every request: CORS headers, a request id, timing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "15aa501b",
+   "say": "The router matches the method and path to your route.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f07811d",
+   "say": "Then dependencies are resolved and every parameter is validated by Pydantic. If the input is bad, the request stops here, with a four twenty two error, and your code never runs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c02d5561",
+   "say": "Only now does your function run, with clean, typed arguments.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3614c8b",
+   "say": "And on the way out, the return value is filtered through the response model, turned into JSON, and passes back out through the middleware.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d8ffe5da",
+   "say": "Here's the ask endpoint. The input is a Pydantic model: a question between three and two thousand characters, and top k, between one and twenty, defaulting to five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a53c2c3f",
+   "say": "The output is a model too: an answer and its sources.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1350a272",
+   "say": "Now the parameters. FastAPI looks at each one's type hint and where its name appears.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "80328420",
+   "say": "Collection id appears in the path, so it's a path parameter, converted to an int. Body is a Pydantic model, so it's read from the JSON body. Debug is a simple type that's not in the path, so it's a query parameter. You never parse anything yourself.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3429c384",
+   "say": "And the return value is filtered through the response model. If your internal result also carries the raw prompt or the cost of the call, those fields never reach the client.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f7384c4",
+   "say": "A belief to correct.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1cd098d8",
+   "say": "If the body fails validation, your function doesn't run at all. FastAPI answers four twenty two, unprocessable entity, with a body that lists every bad field and the reason.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "15a856d5",
+   "say": "So validation lives in the models, written once. And the response model guards the other direction: nothing internal leaks out by accident, which matters when your internals include prompts and costs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58162271",
+   "say": "Check 2. A route reads doc id from the path as an int, and page as an int with default one. A client calls slash docs slash a b c, with page equals two. What happens? A, doc id is the string a b c inside the function. B, a four twenty two, because doc id must be an integer. C, a four oh four, no route matches. Or D, a five hundred, because converting a b c to int crashes.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e777a105",
+   "say": "B, four twenty two. The path matches the route, but validation fails on doc id, which must be an integer, before your function is ever called.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c7cf16ba",
+   "say": "Topic three. Dependency injection with Depends. Asked in four write-ups by name, and it's how every real FastAPI app shares its database session, its LLM client and its current user.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "24e19183",
+   "say": "Here's the picture. Depends is a hotel concierge.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd38184f",
+   "say": "You ask for a car. You don't build one. In FastAPI, a route parameter says: give me an LLM client, using Depends of get LLM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d856a591",
+   "say": "The concierge knows how. Get LLM is a plain function, and FastAPI calls it for you on each request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ccf5e79",
+   "say": "Some services need your room key first. Dependencies can depend on other dependencies: the current user needs the database, which needs the settings.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2c0d473e",
+   "say": "And housekeeping comes after you leave. A dependency written with yield runs its cleanup once the route is done.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3c6f549a",
+   "say": "So your route only declares what it needs. FastAPI builds it, for every request, and cleans up after.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "93dd8ce2",
+   "say": "Three dependencies AskDocs needs. First, a database session. It's opened per request, yielded to the route, and closed when the route is done, even if the route raised an exception.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f3771002",
+   "say": "Second, the current user. It depends on the bearer token and on the database, so dependencies form a tree. If the token is bad, it raises four oh one, and the route never runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f422a565",
+   "say": "Third, the LLM client, which is created once at startup and simply handed out. More on that in topic five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08482909",
+   "say": "The route declares all three. Notice get db appears twice, once directly and once inside get user. FastAPI caches a dependency per request, so both get the same session, created once. And in tests, dependency overrides swaps any of these for a fake, which is topic ten.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6f211c79",
+   "say": "Check 3. Get db is a dependency written with yield. The route raises an HTTP exception, four oh four. Does the session still close?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7ad86750",
+   "say": "Yes. The yield sits inside an async with block, and FastAPI resumes the dependency after the route finishes, even when the route raised. So the session always closes. That's exactly why yield dependencies are the way to manage sessions and connections.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcb2635a",
+   "say": "Model answer. How does dependency injection work in FastAPI?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "43549b07",
+   "say": "A route declares what it needs with Depends of a function. FastAPI calls that function for each request and passes the result in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48af0d02",
+   "say": "Dependencies can depend on other dependencies, forming a tree, and each one is cached once per request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa652c0a",
+   "say": "A dependency written with yield gives setup before the route and cleanup after it, which is how you manage database sessions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dca7d6c4",
+   "say": "Raising an HTTP exception inside a dependency stops the request, which is how authentication works.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b04d962b",
+   "say": "And in tests, app dot dependency overrides swaps any of them for a fake.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "39b440a6",
+   "say": "Topic four. Async def versus def. The most important FastAPI question for GenAI roles, because getting it wrong doesn't fail a test. It makes the whole server stall under load.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "002b8bf2",
+   "say": "The question, as it's usually asked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3282bf74",
+   "say": "When do you write a route with async def, and when with plain def?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "80a75ce0",
+   "say": "The answer hinges on one fact about where each kind runs. Let's watch three versions of the same route.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d29b74d3",
+   "say": "Version one, the disaster. The route is async def, but inside it calls a synchronous LLM SDK, with no await. That call holds the event loop for four seconds. Request two can't even start. And the health check times out, so your orchestrator decides the pod is dead and restarts it, mid traffic.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ecdd81f1",
+   "say": "So the rule. Inside async def, every slow call must be awaited, or moved off the loop. One blocking call stalls every request in that process.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ac9abb5",
+   "say": "Version two: write the route as plain def. FastAPI runs plain def routes in a threadpool, so the blocking call blocks a worker thread, not the event loop. That works, up to the size of the pool, which is forty threads by default.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a14cae7d",
+   "say": "Version three: keep async def, and use an async client, awaited. Each request pauses at the await, and the loop serves the others. That scales to thousands of concurrent requests in one process.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ccf78ac",
+   "say": "So which to write. Async def when you await async libraries: httpx, the async OpenAI or Anthropic clients, asyncpg. That's the best choice for many slow LLM calls. And inside it, never requests, never time dot sleep, never a synchronous SDK, never heavy CPU.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58d8b7ca",
+   "say": "Plain def when you have to call blocking libraries. FastAPI puts it in the threadpool for you. Fine at moderate concurrency.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2105b1b6",
+   "say": "And CPU heavy work, like running an embedding model locally or parsing PDFs, should leave the request path entirely: a process pool, or a worker queue, which is topic seven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33995f5b",
+   "say": "And if you're stuck with one blocking call inside async def, await run in threadpool, or asyncio dot to thread. The blocking part moves to a thread and the loop stays free.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f927204d",
+   "say": "Check 4. Under load, the service's tail latency explodes and health checks fail, but CPU is at ten percent. The code has async def routes calling requests dot post to the LLM. What's happening, and what are two fixes?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "24ba1579",
+   "say": "Requests dot post is blocking, so inside async def it holds the event loop, and every other request, including the health check, waits behind whichever LLM call is in progress. Low CPU is the giveaway: nothing is computing, everything is queued. Fixes: switch to an async client and await it, like httpx async client, or make the route a plain def so it runs in the threadpool, or wrap the call in asyncio dot to thread.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f60a396",
+   "say": "Topic five. Lifespan. What to create once when the app starts, and why creating an HTTP client per request is a quiet performance bug.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37fa7f02",
+   "say": "The lifespan is an async context manager, like the timer from the Python lecture, handed to the app.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21bd14b5",
+   "say": "Code before the yield runs once, at startup: create one HTTP client with its connection pool, the LLM client on top of it, and load the embedding model, which can take seconds and gigabytes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f2d27f61",
+   "say": "At the yield, the app starts serving requests.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d08dd92b",
+   "say": "Code after the yield runs at shutdown: close the client so connections end cleanly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4351e5dd",
+   "say": "Hand it to the app. This replaced the old on startup and on shutdown events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e0c8fc9",
+   "say": "And the quiet bug it prevents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5027a904",
+   "say": "Creating a new HTTP client per request looks clean, but each new client opens new TCP and TLS connections to the model provider. That's tens of milliseconds per call, and under load, thousands of sockets.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2fafecf5",
+   "say": "One shared client per process reuses its connection pool. Create it in the lifespan, and hand it to routes with a dependency, like the get LLM function we wrote in topic three.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aab8806f",
+   "say": "Check 5. Where should each one go? One: loading a four hundred megabyte embedding model. Two: the current user's database session. Three: the httpx client to the LLM provider.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fe14317d",
+   "say": "One, the lifespan, loaded once at startup. Two, a yield dependency, because a session belongs to one request and must be closed after it. Three, the lifespan as well, one shared client per process, handed to routes through a dependency.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74bcedb5",
+   "say": "Topic six. Streaming. Every chat UI shows the answer as it's generated. Two write-ups asked how to stream LLM tokens from FastAPI, and the follow-ups are where people struggle.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "541104f5",
+   "say": "The flow. The browser posts a message to the chat endpoint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7252c6b3",
+   "say": "FastAPI calls the model with streaming turned on.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ceb8adb3",
+   "say": "The model sends back small chunks of text as it generates them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf441035",
+   "say": "And FastAPI forwards each chunk to the browser immediately, in server sent events format: a line starting with data, then a blank line. One HTTP response, held open, written in pieces.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "de369641",
+   "say": "At the end, a done marker, so the client knows the answer is complete.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1f056dd9",
+   "say": "The point is the first words. The user sees them in about three hundred milliseconds, instead of staring at a spinner for eight seconds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3434ff3c",
+   "say": "The code is the async generator from the Python lecture. An inner async def with yield. It loops over the model's stream with async for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "63674505",
+   "say": "Each token is yielded as one server sent event: data, a little JSON, and a blank line. Then a done marker.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f131ea6c",
+   "say": "Now the follow-up that separates people. What if the user closes the tab halfway? Without a check, you keep reading the model's stream to the end, and you keep paying for tokens nobody will see. So check whether the client disconnected, and stop.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8d9c5038",
+   "say": "And in a finally, close the upstream stream, so the provider stops generating too. When the client goes away, Starlette also cancels the generator, and finally is what makes the cleanup reliable either way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ede7f1bd",
+   "say": "Return a streaming response with the event stream media type. And the two headers matter in production: no cache, and X accel buffering no, which tells an Nginx proxy not to buffer. A buffering proxy is the classic reason streaming works locally and arrives all at once in production.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bc9a770f",
+   "say": "And the comparison they'll ask for. Server sent events go one way, server to client, over plain HTTP, so authentication headers, proxies and retries just work. For streaming an LLM answer, it's the default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "867bcd7d",
+   "say": "A WebSocket goes both ways at any time. You pick it when the client must talk during the stream: voice, live collaboration, or a stop button that interrupts generation. The cost is stateful connections, which are harder to scale and load balance.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d99addc3",
+   "say": "Check 6. Streaming works on your laptop, but in production the whole answer arrives at once after eight seconds. What's the most likely cause, and the fix?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b78bf8dd",
+   "say": "A proxy in between, Nginx, a load balancer or a CDN, is buffering the response and only forwarding it when it's complete. Turn buffering off for that route: the X accel buffering no header, proxy buffering off in Nginx, and cache control no cache.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46c4702e",
+   "say": "Model answer. How do you stream LLM tokens from FastAPI?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3d0d0440",
+   "say": "I call the model with streaming on, and iterate its chunks inside an async generator.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a56e323",
+   "say": "Each token is yielded as a server sent event, and the route returns a streaming response with the text event stream media type.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd6986cc",
+   "say": "If the client disconnects, I stop and close the upstream stream, so we stop paying for tokens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dfc36bda",
+   "say": "In production, I disable proxy buffering. And I'd use a WebSocket only if the client needs to talk during the stream.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f811fef3",
+   "say": "Topic seven. Long jobs. Someone uploads five hundred PDFs to embed. That takes twenty minutes. What does the API do?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cc88d209",
+   "say": "The pattern. The ingest endpoint saves the files and returns at once, with status two oh two, accepted, and a job id. No HTTP request ever waits twenty minutes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7cade0e",
+   "say": "The job goes onto a queue, like Redis or SQS, which survives restarts and deploys of the API.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "02ba90bb",
+   "say": "Separate worker processes, with Celery or Arq, take jobs off the queue: parse, chunk, embed, with retries. They use their own CPU, so the API stays responsive.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4cd7f86",
+   "say": "Results go into the vector database, and the worker writes progress as it goes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7a57cf9c",
+   "say": "The client polls a status endpoint with the job id, or receives a webhook, or a progress stream, until the job is done.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a236a91d",
+   "say": "FastAPI has a built-in option, BackgroundTasks, and the question is when it's enough. It runs a function after the response is sent, in the same process. If that process restarts, the work is lost. No retries, no progress, and it competes with your requests for CPU. Good for small things: sending an email, writing a log.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0c6f7e9",
+   "say": "For anything long or important, a queue with workers: durable across restarts, with retries, progress, and workers you scale separately from the API. Ingestion, batch embedding and evaluation runs belong here.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b5154e5b",
+   "say": "Check 7. A teammate embeds uploaded PDFs using BackgroundTasks. A deploy restarts the pods halfway through. What happens, and what would you change?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "74159258",
+   "say": "The work in progress is lost. Background tasks live only in that process's memory, so there's no record that they existed and nothing retries them. I'd move it to a durable queue with worker processes, return two oh two with a job id, and expose a status endpoint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69bf4a97",
+   "say": "Topic eight. Errors and middleware. What the client should see when the model provider fails, and code that runs around every request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dce3120a",
+   "say": "Without a plan, a provider error escapes as a five hundred with a stack trace. Instead, register an exception handler for your own provider error class.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1b4beb8",
+   "say": "It returns a clean JSON error with the right status. When the model provider is rate limiting us, that's our service being temporarily unable to serve: five oh three, with a retry after header, and the request id so support can find the logs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a4cf5cf7",
+   "say": "Compare that with the user exceeding their own daily token budget. That's four twenty nine, too many requests, raised directly with HTTP exception. Same root idea, rate limiting, but a different party is responsible, so a different status.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e923da5e",
+   "say": "Middleware is the decorator onion again, around every request instead of one function.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "139010d1",
+   "say": "The innermost here, timing: it measures latency and logs the route, the status and the tokens used.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "38c4d607",
+   "say": "Around it, request id: it gives every request an id, stores it on request state, and adds it to the response headers, so one id ties together the client error, the API log and the provider call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55964feb",
+   "say": "Outermost, CORS, so browser preflight requests are answered before anything else runs. And the rule interviewers like: with add middleware, the last one added becomes the outermost, and runs first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cbbede36",
+   "say": "A request goes in through every layer to the route, and the response comes back out through each one in reverse.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca2145a5",
+   "say": "Check 8. The LLM provider is down for everyone. Should ask return four twenty nine, five hundred, five oh three, or five oh four? And what if one user has used up their own quota?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "89c1e729",
+   "say": "Provider down or overloaded: five oh three, service unavailable, with a retry after header. Five oh four if we timed out waiting for it. A user over their own quota: four twenty nine, too many requests. And five hundred is for our own bugs, which this isn't.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c3a960f4",
+   "say": "Topic nine. Who is calling, and how much may they spend. Four write-ups asked about JWT authentication in FastAPI, and for LLM APIs, rate limits are the follow-up.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2eedd46b",
+   "say": "Authentication is just a dependency. OAuth two password bearer reads the token from the authorization header and documents it in the API docs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a023ee30",
+   "say": "Get user decodes the JWT, which verifies the signature and the expiry, and checks the audience, with an explicit list of allowed algorithms. Never decode without verifying.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "83c554d6",
+   "say": "A bad or expired token raises four oh one, with the WWW authenticate header the standard expects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1881fc96",
+   "say": "Roles are a dependency factory: require of a role returns a dependency that needs the user and raises four oh three if the role is missing. A closure, from the Python lecture.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbb30e66",
+   "say": "So protecting the ingest route is one parameter: Depends of require editor. Four oh one means we don't know who you are; four oh three means we know, and the answer is no.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b974d99",
+   "say": "Then limits. For an LLM API, three things are different.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37681c2c",
+   "say": "Limit tokens, not just requests. One request can cost fifty tokens or fifty thousand, so a requests per minute limit alone doesn't protect your bill.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "43dc7015",
+   "say": "Count in Redis, not in process memory, because you run several workers and they must share one count. Increment the user's counter for today by the tokens used, with a one day expiry.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c7887bd",
+   "say": "A token bucket smooths bursts, and a daily budget caps cost. Check before calling the model, and record the actual usage after, since you only know the output length at the end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a44ac8e7",
+   "say": "Over the limit, return four twenty nine with retry after. And separately, a global semaphore keeps the whole service under the provider's own limit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce0994fe",
+   "say": "Check 9. A valid token, for a user without the editor role, calls the ingest endpoint. Four oh one, or four oh three? A, four oh one, unauthorized. B, four oh three, forbidden. C, four oh four, not found. Or D, four twenty two, unprocessable entity.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7d2e6d1f",
+   "say": "B, four oh three. The token proved who they are, so authentication passed. They just aren't allowed to do this, which is an authorisation failure. Four oh one is for when we don't know who you are.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f6a4acd",
+   "say": "Topic ten. Testing. How do you test an LLM endpoint without paying for tokens, and without flaky answers?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4da39ab",
+   "say": "A fake model: a class with the same methods, returning fixed answers instantly. Duck typing again: it doesn't inherit from anything.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "07240466",
+   "say": "Then dependency overrides: wherever a route depends on get LLM, use the fake instead. The rest of the app, validation, auth, error handling, runs for real.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ef567415",
+   "say": "Test client sends real requests through the whole stack, in memory. Use it as a context manager. That also runs the lifespan, which people forget, and then wonder why app state is empty.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e61ebeec",
+   "say": "Assert on the status and the JSON. And clear the overrides afterwards, so the fake doesn't leak into other tests.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1dcb55d7",
+   "say": "And test the edges: an empty question must give four twenty two. For async tests, httpx async client with an ASGI transport does the same thing with await.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ba1f6c34",
+   "say": "Check 10. In a test, app dot state dot llm is missing, and the route crashes with an attribute error, though it works in production. You wrote client equals test client of app. Why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f4f9f789",
+   "say": "Because the test client was created without the with statement, the lifespan never ran, so nothing ever set app state llm. Use test client as a context manager, or override the get LLM dependency with a fake.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fcb225ce",
+   "say": "Topic eleven. Production. How you run it, how it fails safely, and what you watch on a dashboard.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "971142ba",
+   "say": "Running it. Four things to say.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c37bae48",
+   "say": "Processes: one event loop per process, so use several. Uvicorn with workers, or gunicorn managing uvicorn workers. On Kubernetes it's common to run one worker per pod and scale the pods instead.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d30bc2e2",
+   "say": "Timeouts, nested: the LLM call times out before the route, and the route before the proxy. Say thirty, forty five, sixty seconds. The innermost layer gives up first, so it can return a clean error instead of the proxy cutting the connection.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6eac5ca1",
+   "say": "Health checks: liveness means the event loop answers. Readiness means the model and clients are loaded, so traffic isn't sent to a pod that's still starting.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43676e42",
+   "say": "And Docker: a slim image, a non root user, secrets from environment variables, read and validated at startup by pydantic settings.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "368029f3",
+   "say": "And what you watch. Four numbers make a GenAI API dashboard.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e39361e9",
+   "say": "Time to first token. When you stream, that's what the user actually feels.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "087b8e8b",
+   "say": "Total latency, at the ninety fifth percentile, per route and per model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbeee23f",
+   "say": "Tokens in and out per request, and the cost they add up to.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "423d7f8b",
+   "say": "And errors by provider and type: rate limits, timeouts, invalid JSON from the model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9693390",
+   "say": "All tied together by the request id from our middleware, so a single bad answer can be followed from the browser to the provider and back.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ab9e9440",
+   "say": "Check 11. Users say the chat feels slow, but the average total latency is unchanged at six seconds. Which metric would you look at first, and why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c17db5cb",
+   "say": "Time to first token, and its ninety fifth percentile rather than the average. With streaming, the perceived speed is how soon the first words appear. Something that happens before generation, like retrieval, waiting for a semaphore permit, or a cold connection, may have grown while the total stayed flat.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "153449b7",
+   "say": "Rapid fire. Answer before I do. W S G I versus A S G I?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5134be6c",
+   "say": "A thread per request, versus async tasks on an event loop.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79b5a725",
+   "say": "FastAPI is built on what?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d20f30b1",
+   "say": "Starlette, Pydantic, and your type hints.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f32199bb",
+   "say": "A bad request body gives?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cab11a58",
+   "say": "Four twenty two, before your function runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68dcc58a",
+   "say": "What does response model do?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3628c36f",
+   "say": "It validates and filters what goes out.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "91b7bdd8",
+   "say": "A yield dependency is for?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3fe86dba",
+   "say": "Setup before and cleanup after. Database sessions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ace1e47",
+   "say": "Plain def routes run where?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e127003",
+   "say": "In a threadpool, about forty threads by default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64a8a8e2",
+   "say": "Requests dot get inside async def?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0ec4601",
+   "say": "It blocks the loop, so every request waits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c54c3e49",
+   "say": "Where do you create the HTTP client?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b0479e3",
+   "say": "Once, in the lifespan, and share it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1420e056",
+   "say": "Stream tokens with?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f073290",
+   "say": "A streaming response and an async generator, as server sent events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b8cdd21",
+   "say": "The client disconnects mid stream?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "565d143e",
+   "say": "Stop, and close the upstream stream.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf205823",
+   "say": "Five hundred PDFs to embed?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa409fd1",
+   "say": "Two oh two, a job id, and a queue with workers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d3983ff6",
+   "say": "Test without the real model?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21e5a253",
+   "say": "App dot dependency overrides.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1921cb93",
+   "say": "And the design question that ties it all together. Design the chat endpoint of a GenAI app in FastAPI. Here's an answer that uses every topic.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ae6e6b5f",
+   "say": "Post chat, an async def route, with a Pydantic request model, and JWT authentication as a dependency.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9702525f",
+   "say": "One shared async LLM client created in the lifespan, a semaphore to stay under the provider's limit, and a timeout on every call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c7f59ef",
+   "say": "Before calling the model, check the user's token budget in Redis, and record the actual usage afterwards.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1df5e093",
+   "say": "Stream the tokens as server sent events from an async generator, and stop if the client disconnects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52ddd660",
+   "say": "Map provider failures to five oh three or five oh four, and log time to first token, tokens used and the request id. Anything long, like ingestion, goes to a queue with workers.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b3b32e71",
+   "say": "That's FastAPI for GenAI.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c10acc4",
+   "say": "Four sentences carry it. Declare what you need, and let dependencies build it. Validate at the edges. Never block the loop. And stream what the user is waiting for.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "948cd659",
+   "say": "Every question in this lecture is one of those four sentences, applied. Go and answer them out loud.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}

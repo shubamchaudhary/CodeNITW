@@ -1,11 +1,11 @@
-import React, { Suspense, lazy, useState } from "react";
+import React from "react";
 import { toast } from "react-toastify";
 import { readingList } from "./stacks";
 import { hasLecture, lectureMinutes } from "./lectures";
 import { DoneCircle } from "./StackNav";
+import { LectureCard } from "./LectureCard";
 import { Button, PriorityTag, Icon, buttonClass } from "../../components/ui";
 
-const LecturePlayer = lazy(() => import("./LecturePlayer"));
 
 // The top of a topic page, laid out like an article: where it sits, its title,
 // why it matters, the two things you do with a topic (finish it, plan it), and
@@ -57,31 +57,6 @@ export default function TopicLead({ stack, owner, topic, done, doneDays, planned
       {hasLecture(stack.key, topic.id, owner) && <LectureCard key={topic.id} id={topic.id} minutes={lectureMinutes(stack.key, topic.id)} />}
       {items.length > 0 && <WatchFirst items={items} />}
     </header>
-  );
-}
-
-// The lecture as a closed card: nothing of it (player, script, narration) is
-// loaded until "Watch" is clicked, so the page opens as fast as one without it.
-function LectureCard({ id, minutes }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <section className="mt-6 rounded-lg border border-line bg-canvas overflow-hidden">
-      <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 bg-surface-subtle ${open ? "border-b border-line" : ""}`}>
-        <span className="text-fg-subtle">
-          <Icon.play />
-        </span>
-        <p className="text-[15px] leading-[22px] font-semibold text-fg">Watch the lecture</p>
-        {minutes && <p className="font-mono text-[12px] tabular-nums text-fg-subtle">{minutes} min · narrated · captions</p>}
-        <Button variant={open ? "secondary" : "primary"} size="sm" className="ml-auto" onClick={() => setOpen((o) => !o)}>
-          {open ? "Close" : "Watch"}
-        </Button>
-      </div>
-      {open && (
-        <Suspense fallback={<div className="aspect-video w-full bg-[#0c1018] animate-pulse" />}>
-          <LecturePlayer id={id} autoPlay />
-        </Suspense>
-      )}
-    </section>
   );
 }
 

@@ -75,6 +75,23 @@ THEMES.ipp = {
   soft: "#1e1530",
   grad2: "#c4b5fd",
 };
+// The Python and FastAPI lectures: the site's dark canvas and its orange.
+THEMES.py = {
+  bg: "#0b0c0f",
+  bg2: "#121318",
+  card: "#15161c",
+  card2: "#1c1e25",
+  line: "#2d3039",
+  blue: "#ff8a3d",
+  amber: "#ffd166",
+  purple: "#ffc46b",
+  cyan: "#2dd4bf",
+  glow1: "#ff8a3d",
+  glow2: "#2dd4bf",
+  soft: "#2a1a0e",
+  grad2: "#ffc46b",
+  progress: "#f97316",
+};
 export const applyTheme = (name?: string) => {
   Object.assign(C, BASE, (name && THEMES[name]) || {});
 };
