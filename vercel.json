@@ -1,4 +1,10 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "*": false,
+      "main": true
+    }
+  },
   "functions": {
     "api/contest-reminders.mjs": {
       "maxDuration": 60

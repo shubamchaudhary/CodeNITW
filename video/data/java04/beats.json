@@ -2,58 +2,100 @@
  "voice": "en-US-AndrewMultilingualNeural",
  "beats": [
   {
-   "key": "f67e2d6c",
+   "key": "ceb92b3f",
    "say": "A service runs fine for three days. Its heap rises, drops at every garbage collection, rises again. But the low point keeps creeping up. Then: out of memory error, Java heap space.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "8acdfda8",
+   "key": "ba113c87",
    "say": "Restart it, and it's fine for three more days. Then it dies again.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "dcf447ec",
+   "key": "90b0da45",
    "say": "So where does memory go in Java? And who is supposed to free it?",
-   "rate": "-2%",
+   "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "38961a41",
-   "say": "Java, part four. JVM memory, and garbage collection.",
-   "rate": "+4%",
+   "key": "8fd2c2cf",
+   "say": "Java, part four. JVM memory and garbage collection. Once a Java round gets past collections, it usually lands here. We'll take the seven questions real write-ups ask, one at a time, and end each with an answer you can say.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "0e640c27",
-   "say": "Start with where values live.",
-   "rate": "+4%",
+   "key": "40e0acd5",
+   "say": "Here's the list, in the order we'll take it.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "86a207bf",
+   "key": "4d5cee8f",
+   "say": "Stack versus heap, when an object becomes garbage, and the generations.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9a5f97f",
+   "say": "Reference strengths, and what System dot gc really does.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f8dfe78",
+   "say": "The JVM's architecture, and JDK versus JRE versus JVM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9c5f557",
+   "say": "The collectors, and which one you'd pick.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0971d001",
+   "say": "And out of memory errors, which brings us back to that service dying every three days.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8aa5c6c0",
+   "say": "Question one. Stack versus heap. What lives where?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37a5641e",
    "say": "Every thread gets its own stack. Calling main pushes a frame, holding main's local variables. Here, demo: a reference to an object.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3d28e8fa",
+   "key": "cfe329d3",
    "say": "Main calls run, and a second frame goes on top. Count equals ten is stored right in the frame. But new Person creates the object on the heap, shared by every thread. P one holds its address. P two copies the address, so both point to one object.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "c33633e7",
+   "key": "789cfa8a",
    "say": "String literals go to the String pool, inside the heap. S one and S two share one pooled string. New String always makes a fresh object, so s one equals equals s three is false.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -65,30 +107,65 @@
    "after": 0.6
   },
   {
-   "key": "71d5180e",
+   "key": "e7a43359",
    "say": "And if recursion never stops, frames pile up until the stack runs out: a stack overflow error.",
-   "rate": "+12%",
+   "rate": "+4%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "94ec7290",
-   "say": "So when is an object garbage?",
-   "rate": "+4%",
+   "key": "e7c11389",
+   "say": "Said in an interview:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "ca7a1014",
+   "say": "Each thread has its own stack, a frame per method call, holding local variables: primitives, and references.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "f77b10fd",
+   "key": "a347d465",
+   "say": "Every object lives on the heap, which all threads share, and which the garbage collector manages.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f94df86",
+   "say": "A frame disappears when its method returns. An object lives as long as something can still reach it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cf7f2e7",
+   "say": "Recursion that's too deep gives a stack overflow error. A full heap gives an out of memory error.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "52c6d928",
+   "say": "Question two. When is an object eligible for garbage collection, and what are the generations?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d52b7a8",
    "say": "A equals b. Now nothing points to object one. It looks like garbage. But that's not quite how Java decides.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3e66805f",
+   "key": "167436a2",
    "say": "The JVM starts from GC roots. Local variables in live stack frames, static fields, running threads. It follows every reference from there. Whatever it reaches is live.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -100,58 +177,23 @@
    "after": 0.6
   },
   {
-   "key": "b62dacf7",
+   "key": "db078d88",
    "say": "And System dot gc is only a hint. The JVM decides when to collect.",
-   "rate": "+12%",
+   "rate": "+4%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "34874251",
-   "say": "References also come in strengths. A normal, strong reference keeps an object alive, no matter what.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "b312df4f",
-   "say": "A soft reference lets the GC take the object, but only when memory runs low. Perfect for a cache.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "650fbfdf",
-   "say": "A weak reference lets it go at the very next collection. That's how a weak hash map drops entries nobody uses.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "17ddba80",
-   "say": "And a phantom reference never returns the object. It only tells you it's gone, so you can clean up.",
-   "rate": "+12%",
-   "pitch": "-1Hz",
-   "after": 0
-  },
-  {
-   "key": "4acc3c83",
-   "say": "Now, how the heap is organised.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "9d0df1ce",
+   "key": "c95829d3",
    "say": "Most objects die young. A request creates thousands of little objects, and a few milliseconds later they're garbage. So the heap is split by age: a young generation, and an old one.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "9ca7ea93",
+   "key": "da209ebc",
    "say": "Every new object starts in Eden. Here are five: O one to O five.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -163,107 +205,303 @@
    "after": 0.6
   },
   {
-   "key": "eb607e5b",
+   "key": "cab74fe8",
    "say": "Two new objects arrive. Next minor GC: O four and O six are dead. The survivors move to survivor space one, and their ages go up. The two survivor spaces swap every time.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "379bd186",
+   "key": "b91fa2f1",
    "say": "With a threshold of three, O one and O three have now survived three collections. They're promoted to the old generation.",
-   "rate": "+10%",
+   "rate": "+4%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "312ada1e",
+   "key": "c9420963",
    "say": "The real default threshold is fifteen. And the old generation is collected less often, by a major GC, with longer pauses.",
-   "rate": "+12%",
+   "rate": "+4%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "300a626e",
+   "key": "d46a4f9b",
    "say": "How does a collector actually free memory? First, mark: everything reachable from the roots gets marked live.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "968d7dd1",
+   "key": "1627b0d2",
    "say": "Then sweep: everything unmarked is freed. But now free space is scattered in little holes. A big array might not fit anywhere.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "7cc05803",
+   "key": "24e783ca",
    "say": "So compact: slide the survivors together, leaving one free block.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3dfdbbcc",
+   "key": "16e51ba1",
    "say": "The young generation skips all that. It copies live objects out, and wipes the whole space.",
-   "rate": "+12%",
+   "rate": "+4%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "5ef7e218",
+   "key": "36d6da57",
    "say": "Class metadata lives outside the heap, in metaspace. Before Java eight, it lived in a fixed size area called perm gen, which filled up and crashed app servers. Metaspace grows as needed.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "5cae371f",
+   "key": "9523281e",
    "say": "Static fields and the string pool are not there. They're on the heap.",
-   "rate": "+12%",
+   "rate": "+4%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "e8b4fd5c",
-   "say": "Next: which collector?",
-   "rate": "+4%",
+   "key": "9d5bc801",
+   "say": "Out loud:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5c35cb56",
+   "say": "An object is eligible when no chain of references from a GC root reaches it. Roots are live stack variables, static fields, and running threads.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "7f1b92b7",
+   "key": "50f268ff",
+   "say": "Java traces from the roots rather than counting references, so cycles are collected too.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e9b4872",
+   "say": "The heap is generational, because most objects die young. New objects go into Eden.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fdf59ec4",
+   "say": "A minor GC copies the survivors between survivor spaces and ages them; long-lived ones are promoted to the old generation.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "28f6d100",
+   "say": "The old generation is collected less often, with marking and compaction, and class metadata lives outside the heap, in metaspace.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e525c58b",
+   "say": "Question three. Reference strengths, and what System dot gc actually does.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d283d6f2",
+   "say": "References also come in strengths. A normal, strong reference keeps an object alive, no matter what.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "74ed48fe",
+   "say": "A soft reference lets the GC take the object, but only when memory runs low. Perfect for a cache.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "72927ab4",
+   "say": "A weak reference lets it go at the very next collection. That's how a weak hash map drops entries nobody uses.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "609ca805",
+   "say": "And a phantom reference never returns the object. It only tells you it's gone, so you can clean up.",
+   "rate": "+4%",
+   "pitch": "-1Hz",
+   "after": 0
+  },
+  {
+   "key": "49250c3a",
+   "say": "So where would you actually use each one?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bfa99159",
+   "say": "Strong: normal references; never collected while reachable",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f9cfdfe",
+   "say": "Soft: kept until memory is short: memory-sensitive caches (but a bounded cache like Caffeine is usually better)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5d8ce091",
+   "say": "Weak: collected at the next GC: WeakHashMap keys, listeners, canonicalising maps",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2565f7ed",
+   "say": "Phantom: tells you after the object is gone: cleanup via Cleaner (instead of finalize, which is deprecated)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "45814291",
+   "say": "Question three, part two. What does System dot gc do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0191d682",
+   "say": "It's only a request: the JVM may run a full GC, or ignore it",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd9d134b",
+   "say": "-XX:+DisableExplicitGC makes it a no-op; libraries sometimes call it (direct buffers)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ca00e5d",
+   "say": "Never call it to “fix” memory: find the leak or size the heap instead",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a0cf5387",
+   "say": "Question four. Explain the JVM's architecture, and the difference between the JDK, the JRE and the JVM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fad7182a",
+   "say": "javac compiles your source to bytecode, in class files. Platform-independent instructions for the JVM, not for any CPU.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "166a3ed5",
+   "say": "Class loaders bring classes in when they're first needed. There's a hierarchy: the bootstrap loader for the core library, the platform loader, then the application loader for your classpath. Each asks its parent first, so nobody can replace java dot lang dot String with their own. Loading is followed by linking, which verifies the bytecode, and initialisation, which runs static blocks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8bb1a317",
+   "say": "The runtime data areas: the heap and metaspace are shared by all threads; each thread gets its own stack and program counter.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33634cdf",
+   "say": "And the execution engine runs the bytecode. It starts by interpreting, profiles what runs often, and the JIT compilers, C1 quickly and C2 with heavy optimisation, turn hot methods into machine code. That's why Java warms up: it gets faster after the first few thousand calls. The garbage collector is part of the engine too.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cc0f8025",
+   "say": "The JVM is the engine that runs bytecode: loading, memory, garbage collection, JIT.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1172a17b",
+   "say": "The JRE is the JVM plus the standard library: enough to run an application. Since Java eleven it's no longer shipped on its own.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de399c23",
+   "say": "And the JDK is the JRE plus the developer tools: javac, jcmd, jstack, and jlink, which builds a trimmed runtime with only the modules your app needs. That's a nice detail for container images.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0a5eb390",
+   "say": "Question five. Which garbage collectors do you know, and which would you pick?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be4e06dc",
    "say": "Every collector trades throughput against pauses. A stop the world pause freezes every application thread while the collector works.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "9e8e3aec",
+   "key": "c31ddfd9",
    "say": "Serial uses one GC thread. One long pause. Fine for tiny heaps.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "5e192165",
+   "key": "9651e826",
    "say": "Parallel uses many GC threads. Shorter pauses, the best throughput. Great for batch jobs. It was the default up to Java eight.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "176f1286",
+   "key": "9b3d1255",
    "say": "G1, the default since Java nine, splits the heap into regions, and keeps each pause near a target of two hundred milliseconds.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "376f757b",
+   "key": "808c0320",
    "say": "And ZGC does almost all its work while your app keeps running. Pauses under about a millisecond, even on huge heaps.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -275,9 +513,9 @@
    "after": 0.6
   },
   {
-   "key": "dd941bb9",
+   "key": "4a71dc06",
    "say": "Here's G1's heap. Equal regions, each one Eden, survivor, old, or humongous, for very large objects.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -289,30 +527,135 @@
    "after": 0.6
   },
   {
-   "key": "7745b7c8",
-   "say": "Back to the service that dies every three days.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
+   "key": "7b479d01",
+   "say": "So which would you pick? G1 is the default, and the right starting point for most services: balanced throughput, with a pause target you can set.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a696da0f",
+   "key": "502ea842",
+   "say": "Parallel, when only throughput matters, like a nightly batch job.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd2bb4c7",
+   "say": "ZGC, when latency matters most. Pauses stay under a millisecond even on very large heaps, and since JDK twenty three it's generational by default, which fixed its old weakness with lots of short-lived objects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e90ab09b",
+   "say": "And Shenandoah, Red Hat's low-pause collector, whose generational mode became a full feature in JDK twenty five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c71ed48",
+   "say": "And the senior part of the answer: measure first, with GC logs, before changing anything. Most memory problems are too much allocation, or a leak, not the wrong collector.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d8645b48",
+   "say": "The answer:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7baccb27",
+   "say": "Serial, one thread, for tiny heaps. Parallel, for throughput. G1, the default, region-based with a pause target. And ZGC and Shenandoah, which do almost everything concurrently, for very low pauses.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d59e059",
+   "say": "For a typical service, I'd keep G1.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4edcdd4",
+   "say": "Parallel for batch jobs, and generational ZGC for strict latency or very large heaps.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49cc4122",
+   "say": "And I'd decide from GC logs and latency percentiles, not by guessing.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d78d57e8",
+   "say": "Question six. Out of memory errors: what causes them, and what is a memory leak in a garbage-collected language?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "320c47dd",
+   "say": "First, read the message, because each out of memory error means something different. Java heap space: the heap is full, either from a leak, or because it's simply too small for the load.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ca395466",
+   "say": "GC overhead limit exceeded: the JVM spends almost all its time collecting and frees almost nothing. Usually the same cause as heap space, caught earlier.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "25004fcb",
+   "say": "Metaspace: too many classes loaded. Typically a classloader leak on hot redeploys, or a library generating proxy classes without limit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1df872e",
+   "say": "Unable to create native thread: too many threads, or the operating system's or container's limit on them. More heap won't help; less does.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0943a339",
+   "say": "And direct buffer memory: off-heap buffers, used by Netty and NIO, beyond their limit. So the message tells you where to look.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe0da17c",
    "say": "Login puts each session into a static map. Logout never removes it. A static field is a GC root.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a6faa8d7",
+   "key": "c1b5d57c",
    "say": "So every session ever created stays reachable, and the GC can never free it. The low point after each collection keeps rising, until the heap is full.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "12af7b79",
+   "key": "273282c8",
    "say": "To prove it, take a heap dump, automatically on out of memory, or live with j c m d. Open it in Eclipse MAT, and the leak suspect points straight at the map.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -324,16 +667,16 @@
    "after": 0.6
   },
   {
-   "key": "42f87cfc",
+   "key": "6fcb3b1f",
    "say": "One more trap, in Kubernetes. A pod with a one gigabyte limit, and no heap flags. The JVM takes just a quarter of it: two hundred fifty six megabytes. Out of memory, with most of the pod unused.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "9ce5769f",
+   "key": "6e6721f6",
    "say": "Set the heap to the full gigabyte instead, and the JVM still needs memory outside the heap: metaspace, thread stacks, the code cache. The pod goes over its limit, and the kernel kills it. O O M killed. Exit code one three seven.",
-   "rate": "+10%",
+   "rate": "+4%",
    "pitch": "+5Hz",
    "after": 0
   },
@@ -345,74 +688,158 @@
    "after": 0.6
   },
   {
-   "key": "fabde104",
-   "say": "Let's lock it in.",
-   "rate": "+4%",
+   "key": "5165bfff",
+   "say": "Here's how I'd answer:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "aad8aaab",
+   "say": "A leak in Java is objects you no longer need that are still reachable, so the collector isn't allowed to free them.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ad2c5f0c",
-   "say": "Stack frames hold locals, per thread. Every object lives on the shared heap.",
-   "rate": "+4%",
+   "key": "883d9777",
+   "say": "The usual causes: static maps or caches without eviction, listeners that are never removed, and thread locals left in pooled threads.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "fa0843f3",
-   "say": "Anything reachable from a GC root is live. Everything else is garbage.",
-   "rate": "+4%",
+   "key": "742b003e",
+   "say": "The symptom is the heap's floor after each collection creeping up, until it runs out.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "51c35654",
-   "say": "A minor GC copies survivors between survivor spaces, and ages them.",
-   "rate": "+4%",
+   "key": "224be907",
+   "say": "I'd take a heap dump on out of memory, open it in Eclipse MAT, find what dominates the retained heap, then remove, bound, or expire it.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "87e95e95",
-   "say": "Old enough, and they're promoted to the old generation.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "a4ccd58e",
-   "say": "G1 is the default: regions, and a pause target.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "dfd815e9",
-   "say": "And a memory leak is something still reachable, that you no longer need.",
+   "key": "be4438ed",
+   "say": "And in containers, size the heap with max RAM percentage, leaving room for memory outside the heap.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "8b49ec52",
-   "say": "Before the next part: from memory, draw Eden, the two survivor spaces, and the old generation.",
-   "rate": "+4%",
+   "key": "5d70b385",
+   "say": "Check 1. Two objects reference only each other, and nothing else references them. Are they garbage?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6651b399",
+   "say": "Yes. The collector traces from the GC roots, and no root reaches either of them, so both are collected. Cycles don't keep objects alive in Java.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "43adbcec",
-   "say": "Then walk five objects through three minor GCs, with a threshold of three, and write every age.",
+   "key": "eac766d6",
+   "say": "Check 2. A pod with a two gigabyte limit keeps getting OOM killed, exit code one three seven, but the Java heap never fills up. What's going on?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "a8c632ff",
+   "say": "The kernel killed it, because the whole process, heap plus metaspace, thread stacks, code cache and direct buffers, went over the container limit. Give the heap less, around seventy five percent with max RAM percentage, to leave headroom.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69e269e0",
+   "say": "Rapid fire. Where do objects live?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60b61bed",
+   "say": "On the heap.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a432f343",
+   "say": "What's a GC root?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2014110c",
+   "say": "Live stack variables, static fields, and running threads.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4fd77eb",
+   "say": "The default collector since Java nine?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f751a677",
+   "say": "G1.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c762b0cf",
+   "say": "Where does class metadata live?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48291a32",
+   "say": "In metaspace, in native memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "182896e3",
+   "say": "Does System dot gc force a collection?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26012003",
+   "say": "No. It's a hint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "28162593",
+   "say": "OOM killed, but the heap was fine?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "546d9b09",
+   "say": "Non-heap memory pushed the pod over its limit. That's part four.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
-  },
-  {
-   "key": "14cec785",
-   "say": "That's JVM memory. See you in part five.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
   }
  ]
 }

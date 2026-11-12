@@ -2,9 +2,9 @@
  "voice": "en-US-AndrewMultilingualNeural",
  "beats": [
   {
-   "key": "29c9fdc3",
+   "key": "53da37ac",
    "say": "Asha logs in once. For the next fifteen minutes, every request she sends, to any of your service instances, proves who she is.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -16,44 +16,79 @@
    "after": 0.6
   },
   {
-   "key": "b00a7930",
-   "say": "Spring, part twenty three. J W T.",
-   "rate": "+4%",
+   "key": "efa83d61",
+   "say": "Spring, part twenty three. JWT. This is the security topic SDE two loops actually spend time on. A real twenty twenty six loop asked every question in this lecture, in this order.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "11d55561",
-   "say": "First, what's actually inside one.",
-   "rate": "+4%",
+   "key": "7c8ab4c8",
+   "say": "Four questions.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "0d9441e7",
+   "key": "bf7a6110",
+   "say": "How a JWT works: its structure, and how it's verified.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a57e9950",
+   "say": "Where Spring validates it in the filter chain, and how you'd write the filter yourself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a6782f6",
+   "say": "Access tokens versus refresh tokens, and where each one should live.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b70eff9",
+   "say": "And the one that separates people: how do you revoke a token that's designed to need no server state?",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8be67219",
+   "say": "Question one. How does a JWT work? Its structure, and how it's verified.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbfaa6f6",
    "say": "A JSON web token is three parts, separated by dots. Each part is base sixty four URL encoded.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "72ec672e",
+   "key": "267c070b",
    "say": "The header says how it was signed: the algorithm, and a key id.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ee534339",
+   "key": "a8f7cd0c",
    "say": "The payload holds the claims. Issuer, subject, audience, expiry, a unique id, and custom claims like roles.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "1532cece",
+   "key": "b18d67b3",
    "say": "The signature is computed over the header and the payload, with a key. Now watch: change the role from user to admin, and the signature no longer matches. Rejected.",
-   "rate": "+10%",
+   "rate": "+4%",
    "pitch": "+5Hz",
    "after": 0
   },
@@ -65,23 +100,16 @@
    "after": 0.6
   },
   {
-   "key": "4408dac7",
-   "say": "So who signs, and who verifies?",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "fcd4b7b0",
+   "key": "aa364191",
    "say": "With H S two fifty six, there's one shared secret. Every service that verifies tokens also holds the secret, so it could mint tokens too. Leak it from any one service, and anyone can.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "1886ef49",
+   "key": "11dacf6e",
    "say": "With R S two fifty six, only the auth server holds the private key, and signs. Services fetch public keys from a JWKS endpoint, and can only verify. The key id in the header says which key to use.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -93,51 +121,86 @@
    "after": 0.6
   },
   {
-   "key": "9cf33370",
+   "key": "8a73ac6f",
    "say": "Two classic attacks. A token with algorithm none, and no signature, that a careless library accepts.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6b5c8e55",
+   "key": "199c6218",
    "say": "And algorithm confusion: the server expects R S two fifty six, but receives H S two fifty six, signed with the server's own public key as the secret. Pinning the algorithm stops both.",
-   "rate": "+12%",
+   "rate": "+4%",
    "pitch": "-1Hz",
    "after": 0
   },
   {
-   "key": "df2876cd",
-   "say": "Now, the question from a real SDE two loop: where in the filter chain is the token validated?",
-   "rate": "+4%",
+   "key": "0f4e4642",
+   "say": "Say it like this:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cabbc454",
+   "say": "A JWT is three base64url parts: a header, a payload of claims, and a signature, joined by dots.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "9865a211",
+   "key": "4f690f16",
+   "say": "The claims say who issued it, who it's about, for which audience, and when it expires. It's signed, not encrypted, so no secrets inside.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e04f6e8",
+   "say": "The issuer signs it, typically with a private key, and services verify it with the public key from the issuer's JWKS endpoint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "501795da",
+   "say": "Every service checks the signature with an algorithm it pins, then expiry, issuer and audience, with no database lookup. That's what makes it stateless.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "41f8e1e7",
+   "say": "Question two. Where is the JWT validated in the Spring Security filter chain, and how do you write a JWT filter?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "243d5322",
    "say": "Use Spring's resource server. Point it at your issuer, and it adds a bearer token authentication filter, which reads the authorization header.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "077708f3",
+   "key": "33d9a458",
    "say": "The JWT decoder fetches the issuer's public keys once, caches them, and checks the signature, expiry and issuer.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "98125a91",
+   "key": "e90964ec",
    "say": "A converter turns the scope claim into authorities, and the token lands in the security context holder.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "a42e8735",
+   "key": "5f2aa164",
    "say": "Then the authorization filter checks the URL rules, as usual.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -149,79 +212,86 @@
    "after": 0.6
   },
   {
-   "key": "81690873",
-   "say": "If you write your own, extend once per request filter, so it runs once per request, and read the bearer header.",
-   "rate": "+4%",
+   "key": "01ef0459",
+   "say": "Interviewers sometimes ask you to write it by hand. Extend once per request filter, so it runs exactly once per request, even across forwards.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6565316d",
-   "say": "Verify the token, build an authentication from its claims, and put it in the security context. Don't load the user from the database, or you're not stateless anymore.",
-   "rate": "+4%",
+   "key": "f66a55ce",
+   "say": "Read the authorization header. If it's a bearer token, decode it: that checks the signature, expiry, issuer and audience. Build an authentication from the claims, and put it into the security context.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "c8858ce8",
-   "say": "On a bad token, don't throw. Clear the context, and keep going. The entry point returns a clean four oh one for protected URLs, and public ones still work. Register it before the username password filter.",
+   "key": "ff9387c1",
+   "say": "If the token is invalid, reply four oh one through the entry point, and stop the chain.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce0bd8b1",
+   "say": "No header at all? Just continue, as anonymous, and let the authorisation rules decide. Register it before the username password filter. But say this too: in production I'd use Spring's resource server instead of a hand-written filter, because it already does all of this correctly.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "c00d5b45",
-   "say": "Next: why there are two tokens.",
-   "rate": "+4%",
+   "key": "b17272ba",
+   "say": "Question three. Access tokens versus refresh tokens, and where tokens should live on the client.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "bb33cbe2",
+   "key": "5722c9db",
    "say": "A stolen access token works until it expires, so it lives just fifteen minutes. A refresh token lives for days, is stored server side, and is only ever sent to the refresh endpoint.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6e453254",
+   "key": "680f8f4d",
    "say": "When the access token expires, the app sends refresh token R one, and gets a new access token, plus a new refresh token, R two.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3c5cdd71",
+   "key": "3796dec6",
    "say": "That's rotation. Every refresh token works exactly once.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "57ec334a",
+   "key": "5155be21",
    "say": "So if an attacker copied R one, and uses it again, the server sees a reused token. It revokes the whole family, and forces a fresh login.",
-   "rate": "+10%",
+   "rate": "+4%",
    "pitch": "+5Hz",
    "after": 0
   },
   {
-   "key": "30acc3b7",
+   "key": "27196a68",
    "say": "Where should the browser keep tokens? Local storage is easy. But any script on the page can read it. One XSS bug, and every token is stolen.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "12843269",
+   "key": "aa0621c4",
    "say": "Memory, a plain variable, is out of a script's easy reach, but it's lost on every reload.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "1fa8818d",
+   "key": "1aa6c496",
    "say": "An HttpOnly cookie can't be read by script at all. But the browser sends it automatically, so you need same site, or a CSRF token.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -233,37 +303,72 @@
    "after": 0.6
   },
   {
-   "key": "95378074",
-   "say": "And the question that always comes: how do you revoke one?",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
-  },
-  {
-   "key": "5b731ee6",
-   "say": "An admin bans Asha. Her token is still valid for twelve more minutes, and no service checks anywhere. That was the whole point of JWT.",
-   "rate": "-2%",
+   "key": "d8645b48",
+   "say": "The answer:",
+   "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "16ec7796",
+   "key": "4e535a27",
+   "say": "The access token is short-lived, five to fifteen minutes, sent on every call, and verified without a lookup.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "85aca684",
+   "say": "The refresh token is long-lived, only ever sent to the auth server, and tracked server-side so it can be revoked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2c57f6f",
+   "say": "Refresh tokens rotate: each works once, and reusing an old one revokes the whole family, which catches theft.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0079fe15",
+   "say": "In a browser, the access token lives in memory, and the refresh token in an HttpOnly, Secure, SameSite cookie, never local storage.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "661c6de4",
+   "say": "Question four. How do you revoke or invalidate a JWT before it expires?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d472d90f",
+   "say": "An admin bans Asha. Her token is still valid for twelve more minutes, and no service checks anywhere. That was the whole point of JWT.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0994a111",
    "say": "First, keep expiry short. Five to fifteen minutes caps the damage, with no state at all.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "393dfc74",
+   "key": "252fbaf3",
    "say": "For instant revocation, keep a denylist. Store the revoked token's j t i in Redis, with a time to live equal to its remaining life. The filter checks it on every request.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "637d503d",
+   "key": "2e7541d6",
    "say": "Or put a version number in the token, and bump the user's version to log out everywhere. And revoke the refresh token, so the session dies within one access lifetime.",
-   "rate": "+4%",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
@@ -275,74 +380,151 @@
    "after": 0.6
   },
   {
-   "key": "fabde104",
-   "say": "Let's lock it in.",
-   "rate": "+4%",
+   "key": "238eb4cf",
+   "say": "So which approach would you actually choose?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fe5b4e17",
+   "say": "Short expiry always: caps the damage with zero state",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "10421e5b",
-   "say": "A JWT is signed, not encrypted.",
-   "rate": "+4%",
+   "key": "f498cbc3",
+   "say": "Logout or ban must be instant: a denylist of jti in Redis with a TTL = the token's remaining life",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "def3f921",
-   "say": "Services verify with public keys from the JWKS endpoint.",
-   "rate": "+4%",
+   "key": "6eff8325",
+   "say": "“Log out everywhere”: a per-user token version (or issued-after time) checked against the claim",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3fef7888",
-   "say": "Spring's resource server checks it in the bearer token filter, before authorization.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "a5bbf81d",
-   "say": "Refresh tokens rotate, and reuse revokes the family.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "7decd227",
-   "say": "Keep the access token in memory, and the refresh token in an HttpOnly cookie.",
-   "rate": "+4%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "70c52a73",
-   "say": "And for instant revocation, a denylist with a time to live.",
+   "key": "51ba192c",
+   "say": "Or opaque tokens with introspection when every request must be checked live",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "c4f581b4",
-   "say": "Before your interview: from memory, write a JWT's three parts, with five claims.",
-   "rate": "+4%",
+   "key": "aa4efd7d",
+   "say": "Check 1. Can you put a user's password hash, or a card number, in a JWT's payload, if the token is signed?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "86278bc7",
+   "say": "No. A JWT is signed, not encrypted, so anyone holding it can decode the payload. The signature only stops tampering.",
+   "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "1a28348c",
-   "say": "Then draw refresh with rotation, and list three ways to revoke a token, with the cost of each.",
+   "key": "decad0f4",
+   "say": "Check 2. An admin bans a user, and their access token has twelve minutes left. What's the cheapest way to cut them off now?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e760ac5e",
+   "say": "Put the token's id on a Redis denylist, with a time to live equal to its remaining life, checked in the filter. And revoke their refresh token, so they can't get a new one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "213a2a52",
+   "say": "Rapid fire. Is a JWT encrypted?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ba2d1f0",
+   "say": "No. Signed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa820635",
+   "say": "Where do services get the public key?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51a70193",
+   "say": "From the issuer's JWKS endpoint.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d89c1b55",
+   "say": "Which filter checks the bearer token in Spring?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36504352",
+   "say": "The bearer token authentication filter, from the resource server.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5356ecb2",
+   "say": "A bad or expired token gives which status?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ac41db4",
+   "say": "Four oh one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ab38545",
+   "say": "An old refresh token is reused. What do you do?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "424a062b",
+   "say": "Revoke the whole family.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84ec5995",
+   "say": "Instant revocation?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e11f8e2e",
+   "say": "A denylist of token ids, with a time to live. That's JWT.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
-  },
-  {
-   "key": "5b43f6ee",
-   "say": "That's JWT. Next: OAuth two.",
-   "rate": "+10%",
-   "pitch": "+5Hz",
-   "after": 0
   }
  ]
 }
