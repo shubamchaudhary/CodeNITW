@@ -3,7 +3,8 @@ import PageSkeleton from "../../components/PageSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
-import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG, DSA_PROBLEMS } from "../../Data/DSAPrep";
+import { DSA_TOPICS, DSA_TOTAL, DSA_PRIORITIES, DSA_PRIORITY_CONFIG, DSA_PROBLEMS, DSA_RETIRED, DSA_ID_ALIASES } from "../../Data/DSAPrep";
+import NextProblemPicker from "./NextProblemPicker";
 import { GLASS, GLASS_PANEL, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF, LIGHT_LIFT, LIGHT_BUTTON } from "../../components/glass";
 import PageShell from "../../components/PageShell";
 import { Icon } from "../../components/ui";
@@ -16,6 +17,7 @@ import {
   setSourceNote,
   setDsaStarred,
   backfillDsaTimestamps,
+  migrateDsaAliases,
   dsaDaysSinceSolved,
   subscribe,
   hasLegacyPersonalPlanData,
@@ -52,10 +54,32 @@ const DSAPrep = () => {
     return unsubscribe;
   }, []);
 
-  // Give any older solve a timestamp so it can show an age. Never un-solves.
-  useEffect(() => { backfillDsaTimestamps(); }, []);
+  // Give any older solve a timestamp so it can show an age, and carry a solve
+  // on a re-keyed problem over to its new id. Neither ever un-solves.
+  useEffect(() => {
+    backfillDsaTimestamps();
+    if (migrateDsaAliases(DSA_ID_ALIASES)) setSolved(loadJSON(KEYS.DSA_COMPLETED, {}));
+  }, []);
 
   const [solved, setSolved] = useState(() => loadJSON(KEYS.DSA_COMPLETED, {}));
+  // Problems taken out of the set stay on the page for anyone who solved them
+  // — a re-ranking must never cost a solve. Remembered for the visit, so
+  // unticking one by mistake doesn't make it vanish before it can be re-ticked.
+  const [keptRetired, setKeptRetired] = useState(() => new Set());
+  useEffect(() => {
+    setKeptRetired((prev) => {
+      const add = DSA_RETIRED.filter((p) => solved[p.id] && !prev.has(p.id));
+      return add.length ? new Set([...prev, ...add.map((p) => p.id)]) : prev;
+    });
+  }, [solved]);
+  const allTopics = useMemo(
+    () =>
+      DSA_TOPICS.map((t) => {
+        const extra = DSA_RETIRED.filter((p) => p.topic === t.topic && keptRetired.has(p.id));
+        return extra.length ? { ...t, problems: [...t.problems, ...extra] } : t;
+      }),
+    [keptRetired]
+  );
   const [notes, setNotes] = useState(() => loadJSON(KEYS.DSA_NOTES, {}));
   const [starred, setStarred] = useState(() => loadJSON(KEYS.DSA_STARRED, {}));
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -115,11 +139,11 @@ const DSAPrep = () => {
   );
 
   const visibleTopics = useMemo(() => {
-    if (filter === "ALL") return DSA_TOPICS;
-    return DSA_TOPICS.map((t) => ({ ...t, problems: t.problems.filter(matches) })).filter(
+    if (filter === "ALL") return allTopics;
+    return allTopics.map((t) => ({ ...t, problems: t.problems.filter(matches) })).filter(
       (t) => t.problems.length
     );
-  }, [filter, matches]);
+  }, [filter, matches, allTopics]);
 
   // Header stats follow the active filter, so "Solved" and the ring always
   // describe the set you are actually looking at rather than the whole list.
@@ -230,6 +254,18 @@ const DSAPrep = () => {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16"><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
               </button>
             </motion.div>
+          )}
+
+          {/* ── Next problem picker (owner-only: it runs on the priority research) ── */}
+          {owner && (
+            <NextProblemPicker
+              solved={solved}
+              plannedToday={plannedToday}
+              today={today}
+              onAdd={(p) => togglePlannedToday(p, p.topic)}
+              onRemove={(p) => togglePlannedToday(p, p.topic)}
+              onToggleSolved={toggleSolved}
+            />
           )}
 
           {/* ── Filter ── */}
@@ -440,6 +476,16 @@ function QuestionRow({ problem, showPriority, topicName, isSolved, isStarred, is
             title={`${prio.label} — ${prio.blurb}`}
           >
             {prio.label}
+          </span>
+        )}
+
+        {/* Taken out of the set, shown only because you'd solved it */}
+        {problem.retired && (
+          <span
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md shrink-0 border border-line text-fg-subtle"
+            title={`Retired from the list (${problem.retired}) — kept here because you solved it`}
+          >
+            retired
           </span>
         )}
 
