@@ -61,7 +61,7 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
 }
 ```
 
-Correction: `WebSecurityConfigurerAdapter` was removed in Spring Security 6. You declare `SecurityFilterChain` beans. `antMatchers` became `requestMatchers`, and `authorizeRequests` became `authorizeHttpRequests`.
+Correction: `WebSecurityConfigurerAdapter` was removed in Spring Security 6. You declare `SecurityFilterChain` beans. `antMatchers` became `requestMatchers`, and `authorizeRequests` became `authorizeHttpRequests`. Spring Security 7 (with Spring Boot 4) goes further: only the lambda style shown above is accepted; the old `.and()` chaining is gone.
 
 Also asked: rules are matched top to bottom, first match wins. Put specific rules before general ones; `anyRequest()` goes last.
 

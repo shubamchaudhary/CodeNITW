@@ -226,7 +226,7 @@ Correction: "the latest Java versions use CMS." CMS no longer exists. Modern Jav
 - It collects the regions with the most garbage first (hence the name), copying their live objects into free regions. Copying compacts as it goes.
 - It aims for a pause target, `-XX:MaxGCPauseMillis` (default 200 ms), by choosing how many regions to collect in each pause.
 
-**ZGC** (`-XX:+UseZGC`): does almost everything concurrently, including moving objects, so pauses stay under about a millisecond whatever the heap size, up to terabytes. It costs some throughput and CPU. Generational since Java 21; generational is the default from Java 23. **Shenandoah** is a similar low-pause collector, built by Red Hat.
+**ZGC** (`-XX:+UseZGC`): does almost everything concurrently, including moving objects, so pauses stay under about a millisecond whatever the heap size, up to terabytes. It costs some throughput and CPU. Generational since Java 21; generational is the default from Java 23. **Shenandoah** is a similar low-pause collector, built by Red Hat; its generational mode became a full (non-experimental) feature in Java 25.
 
 Which to pick:
 - Default to G1. It balances throughput and pauses for most services.
