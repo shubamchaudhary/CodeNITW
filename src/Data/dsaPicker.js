@@ -78,10 +78,7 @@ const STARTED_MIN = 3;
 const LEVEL_GATE_MAX = 3;
 const gateFor = (count) => Math.min(LEVEL_GATE_MAX, Math.ceil(count / 2));
 
-export const LEVEL_LABEL = { 1: "Easy", 2: "Medium", 3: "harder Medium", 4: "Hard" };
-
 const DAY = 24 * 60 * 60 * 1000;
-const pct = (x) => `${Math.round(100 * x)}%`;
 
 // Per-topic state: coverage, which levels are open, and why one is locked.
 function topicStates(problems, solved) {
@@ -184,7 +181,7 @@ function topicStates(problems, solved) {
  * @param {Set}    o.todayIds   ids already on today's plan
  * @param {Set}    o.skipped    ids skipped today
  * @param {number} [o.now]
- * @returns {{ picks: Array<{problem, score, reasons: string[]}>, overall: number, states: Map }}
+ * @returns {{ picks: Array<{problem, score}>, overall: number, states: Map }}
  */
 export function rankNextProblems({ problems, solved, solvedAt = {}, todayIds = new Set(), skipped = new Set(), now = Date.now() }) {
   const { states, overall } = topicStates(problems, solved);
@@ -230,26 +227,7 @@ export function rankNextProblems({ problems, solved, solvedAt = {}, todayIds = n
     const hot = (p.recent || 0) >= 3 ? 1.1 : 1;
     const score = base * need * spread * ease * hot;
 
-    const reasons = [];
-    if (st.familyCoverage < overall - 0.08 && fam !== p.topic) {
-      reasons.push(`${fam} is behind: ${pct(st.familyCoverage)} done vs ${pct(overall)} overall`);
-    }
-    if (st.solved === 0) reasons.push(`New topic — you haven't started ${p.topic} yet`);
-    else if (st.coverage < overall - 0.08) reasons.push(`${p.topic} is behind: ${pct(st.coverage)} done vs ${pct(overall)} overall`);
-    if (unlocks) {
-      const left = st.blockedBy.need - st.blockedBy.have;
-      reasons.push(`${left} more solve${left === 1 ? "" : "s"} here open${left === 1 ? "s" : ""} the next level of ${p.topic} (e.g. ${unlocks.title})`);
-    } else if (p.level > st.minLevel && p.level === st.openUpTo && st.solved > 0) {
-      reasons.push(`${LEVEL_LABEL[p.level]} problems here just opened up — you've done the easier ones`);
-    } else if (p.level === 1 && st.solved < 3) {
-      reasons.push(`An easy way into ${p.topic}`);
-    }
-    const asked = [`${p.priority} · asked at ${p.companies} companies in the last 6 months`];
-    if (p.recent) asked.push(`${p.recent} in the last 30 days`);
-    reasons.push(asked.join(", "));
-    if (todayIds.size && !todayFamilies.get(fam)) reasons.push(`A different area from what's on today's list`);
-
-    picks.push({ problem: p, score, reasons });
+    picks.push({ problem: p, score });
   }
   picks.sort((a, b) => b.score - a.score || b.problem.importance - a.problem.importance);
   return { picks, overall, states };

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { DSA_PROBLEMS, DSA_PRIORITY_CONFIG, DSA_LIST_LABELS } from "../../Data/DSAPrep";
-import { rankNextProblems, loadSkipped, saveSkipped, familyOf, LEVEL_LABEL } from "../../Data/dsaPicker";
+import { DSA_PROBLEMS, DSA_PRIORITY_CONFIG } from "../../Data/DSAPrep";
+import { rankNextProblems, loadSkipped, saveSkipped, familyOf } from "../../Data/dsaPicker";
 import { getDsaTimestamps } from "../../Data/planStore";
 import { Icon } from "../../components/ui";
 import { LIGHT_BUTTON } from "../../components/glass";
@@ -9,14 +9,13 @@ import { LIGHT_BUTTON } from "../../components/glass";
 const BY_ID = new Map(DSA_PROBLEMS.map((p) => [p.id, p]));
 
 // "Next up": one problem at a time, chosen by the picker engine
-// (src/Data/dsaPicker.js), with the reasons it was chosen. Add puts it on
+// (src/Data/dsaPicker.js). Add puts it on
 // today's plan and the engine moves on to the next; Skip steps past it for
 // today. Today's DSA problems sit underneath.
 export default function NextProblemPicker({ solved, plannedToday, today, onAdd, onRemove, onToggleSolved }) {
   const [skipped, setSkipped] = useState(() => loadSkipped(today));
-  const [showWhyMore, setShowWhyMore] = useState(false);
 
-  const { picks, overall } = useMemo(
+  const { picks } = useMemo(
     () =>
       rankNextProblems({
         problems: DSA_PROBLEMS,
@@ -46,12 +45,7 @@ export default function NextProblemPicker({ solved, plannedToday, today, onAdd, 
   return (
     <section className="mb-5 rounded-lg bg-canvas border border-line overflow-hidden" aria-label="Next problem">
       <div className="px-4 sm:px-5 pt-4 pb-3.5">
-        <div className="flex items-center justify-between gap-3 mb-2.5">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.06em] text-fg-subtle">Next up</h2>
-          <span className="text-[11px] text-fg-subtle tabular-nums" title="Importance-weighted share of the set you've solved">
-            {Math.round(100 * overall)}% covered
-          </span>
-        </div>
+        <h2 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-fg-subtle">Next up</h2>
 
         <AnimatePresence mode="wait" initial={false}>
           {pick ? (
@@ -62,7 +56,7 @@ export default function NextProblemPicker({ solved, plannedToday, today, onAdd, 
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
             >
-              <PickCard pick={pick} expanded={showWhyMore} onToggleExpanded={() => setShowWhyMore((v) => !v)} />
+              <PickCard pick={pick} />
               <div className="mt-3.5 flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => onAdd(pick.problem)}
@@ -163,7 +157,7 @@ export default function NextProblemPicker({ solved, plannedToday, today, onAdd, 
   );
 }
 
-function PickCard({ pick, expanded, onToggleExpanded }) {
+function PickCard({ pick }) {
   const p = pick.problem;
   const prio = DSA_PRIORITY_CONFIG[p.priority];
   const diff =
@@ -172,9 +166,6 @@ function PickCard({ pick, expanded, onToggleExpanded }) {
       : p.difficulty === "Easy"
       ? "bg-success-subtle text-success-fg"
       : "bg-warning-subtle text-warning-fg";
-  // First reason is the headline; the rest fold away on small screens.
-  const [lead, ...rest] = pick.reasons;
-  const lists = (p.lists || []).map((k) => DSA_LIST_LABELS[k]).filter(Boolean);
 
   return (
     <div>
@@ -194,23 +185,7 @@ function PickCard({ pick, expanded, onToggleExpanded }) {
           {p.title}
         </a>
       </div>
-      <p className="mt-1 text-[12px] text-fg-subtle">
-        {p.topic} · {LEVEL_LABEL[p.level]} level
-        {lists.length > 0 && <> · on {lists.join(", ")}</>}
-      </p>
-      <ul className="mt-2.5 space-y-1">
-        {[lead, ...(expanded ? rest : rest.slice(0, 2))].filter(Boolean).map((r) => (
-          <li key={r} className="flex gap-2 text-[12.5px] text-fg-muted leading-snug">
-            <span className="mt-[7px] w-1 h-1 rounded-full bg-accent shrink-0" />
-            <span>{r}</span>
-          </li>
-        ))}
-      </ul>
-      {rest.length > 2 && (
-        <button onClick={onToggleExpanded} className="mt-1 ml-3 text-[11px] text-fg-subtle hover:text-fg-muted">
-          {expanded ? "less" : `+${rest.length - 2} more`}
-        </button>
-      )}
+      <p className="mt-1 text-[12px] text-fg-subtle">{p.topic}</p>
     </div>
   );
 }
