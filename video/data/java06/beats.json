@@ -1,0 +1,712 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "c36e8dcb",
+   "say": "Java, part six. Strings, immutability, equals and hash code, and singletons. These come up in nearly every core Java round, usually as quick questions, and often as live code. They're cheap to own, and embarrassing to miss.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "108fbceb",
+   "say": "These are the questions real write-ups name, in the order we'll take them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d782985a",
+   "say": "Why strings are immutable, what the string pool is, and when to use StringBuilder.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb394592",
+   "say": "How to write an immutable class, and shallow versus deep copies.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f56fd3ed",
+   "say": "The equals and hash code contract, which connects straight back to how HashMap works.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9627de09",
+   "say": "Autoboxing, and a cache that makes double equals lie.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5689eea",
+   "say": "And singletons: making one thread-safe and lazy, why volatile is needed, and three ways people break it. Each one ends with an answer you can say out loud.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a2747483",
+   "say": "Part one. Strings, and the string pool. Start with what actually happens in memory.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13fe1378",
+   "say": "String a equals hello. A string literal goes into the string pool, a table of unique strings kept on the heap.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "90ca86f7",
+   "say": "B equals hello, the same literal. The JVM finds it in the pool and reuses the same object. So a double-equals b is true.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "387c2dc7",
+   "say": "C equals new String hello. New always creates a fresh object, outside the pool. So a double-equals c is false, while a dot equals c is true. Double equals compares references. Equals compares contents. Always compare strings with equals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b82870b",
+   "say": "And c dot intern returns the pooled copy. Now, here's the key point: sharing one object between a, b, and every other hello in the program is only safe because nobody can change it. That's why strings are immutable.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "96d9a501",
+   "say": "Why are strings immutable in Java?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8579b926",
+   "say": "Give four reasons, not one: the pool, security, hashing, and thread safety.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f064b81",
+   "say": "One. The pool. One object can be shared by every part of the program, because nobody can change it under anyone else.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "816c76a0",
+   "say": "Two. Security. A string is checked, say a file path or a URL, and then used. If it could change between the check and the use, the check would mean nothing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e53f79b",
+   "say": "Three. Hashing. A string's hash code is computed once and cached inside it, and a string key can never change after it's put into a HashMap. That's why strings are the perfect map key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f4580ba",
+   "say": "Four. Thread safety for free. Immutable objects can be shared across threads with no synchronisation at all. Pool, security, hashing, threads.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fac2acf9",
+   "say": "So: String, StringBuilder, or StringBuffer. When do you use each?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e3ef41b2",
+   "say": "String: immutable; every “change” makes a new object",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4dc0fb4",
+   "say": "StringBuilder: mutable, fast, not synchronised: building strings in one thread (almost always)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57955597",
+   "say": "StringBuffer: like StringBuilder but synchronised: legacy; rarely needed",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b66b9d2",
+   "say": "+= in a loop copies the whole string each time (O(n²)); a single a + b + c is fine (the compiler optimises it)",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "38f2f6d7",
+   "say": "Out loud, it goes like this.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "20a21d33",
+   "say": "String literals are stored once in the string pool, and every use of the same literal shares that one object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d65a7d64",
+   "say": "That sharing is only safe because strings can't change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b618ed8",
+   "say": "Immutability also gives security, since a checked value can't change after the check, a cached hash code, safe map keys, and thread safety for free.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21dd4d7d",
+   "say": "So compare strings with equals, never double equals, and build strings in loops with StringBuilder.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "efa67d48",
+   "say": "Part two. Writing your own immutable class, and the difference between shallow and deep copies.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a93beadd",
+   "say": "Five rules. One: make the class final, so a subclass can't add mutable behaviour.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50f4fd37",
+   "say": "Two: all fields private and final.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a380249d",
+   "say": "Three: copy mutable inputs in the constructor. If you stored the caller's list, the caller could still change it afterwards.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e84218f",
+   "say": "Four: no setters. And five: never hand out a mutable field. Return an unmodifiable copy. Here, list dot copy of gives an unmodifiable list, so both rules three and five are covered.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "762fb990",
+   "say": "A common follow-up. A record is immutable, so everything inside it is safe, right?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d59c1e3",
+   "say": "No. A record is shallowly immutable. Its fields can't be reassigned, but if a field is a list, the list itself can still be changed by whoever else holds it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ec48c3b8",
+   "say": "The fix is the same defensive copy, in the record's compact constructor: items equals list dot copy of items.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50b59c7b",
+   "say": "Shallow versus deep copy. A shallow copy, which is what Object dot clone does by default, creates a new outer object, but its fields point at the same inner objects. Add an item through the copy's list, and the original sees it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9bfbc590",
+   "say": "A deep copy also copies the mutable objects inside. In practice, prefer a copy constructor or a static factory over clone, which is awkward and easy to get wrong. And with immutable inner objects, a shallow copy is all you ever need.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8280cb39",
+   "say": "Part three. The equals and hash code contract, which is really a question about how HashMap finds things.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "15aeb4e3",
+   "say": "The split to remember: in a HashMap, hash code picks the bucket, and equals picks the entry inside it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "02fdbf22",
+   "say": "Now a Point class that overrides equals, but not hash code. Two equal points get different default hash codes, so a lookup goes to a different bucket, and equals never even runs. Get returns null, and a HashSet happily holds duplicates.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0815f10e",
+   "say": "The fix: build equals and hash code from the same fields. Or use a record, which writes both for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c2f0cf5",
+   "say": "The contract, precisely. If two objects are equal, they must have the same hash code. That's the rule that matters.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "04d3ae9f",
+   "say": "The reverse isn't required. Two different objects may share a hash code. That's a collision, and HashMap handles it by checking equals inside the bucket.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9406eed5",
+   "say": "Equals itself must be reflexive, symmetric, transitive and consistent, and never equal to null.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87f3fa84",
+   "say": "And the other half of the trick question: override only hash code, and equal objects land in the same bucket, but the default equals compares identity, so they still never match. You need both, built from the same fields.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7f11eff8",
+   "say": "And why keys should be immutable. Put a point, one comma two, into a map as a key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d8e63945",
+   "say": "Then change its x to five. The entry still sits in the bucket for one comma two, but the key now says five comma two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "62e3a47f",
+   "say": "Look it up with the same object, and Java searches the bucket for five comma two: empty. Look it up with a fresh one comma two, and equals fails. The entry is still there, but nobody can reach it. A memory leak.",
+   "rate": "+4%",
+   "pitch": "+5Hz",
+   "after": 0
+  },
+  {
+   "key": "7ecdbfe7",
+   "say": "So map keys must be immutable: strings, records, integers, enums. Which is part one's lesson again.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3b7c5d6e",
+   "say": "Here's the answer.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3b801727",
+   "say": "Equal objects must have equal hash codes. Unequal objects may share one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d5220c86",
+   "say": "HashMap uses hash code to pick the bucket, and equals to find the entry in it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71a9a00d",
+   "say": "Override only equals, and equal objects land in different buckets, so lookups fail and sets hold duplicates.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "36103668",
+   "say": "Override only hash code, and they share a bucket, but the default identity equals still never matches.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6796180",
+   "say": "So build both from the same immutable fields, or let a record generate them.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1f64bf80",
+   "say": "Part four. Autoboxing, and the cache that makes double equals lie.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b698da8b",
+   "say": "Autoboxing converts between int and Integer automatically, using Integer dot value of. And value of keeps a cache of Integer objects from minus one twenty eight to one twenty seven. So two boxed one twenty sevens are the same object, and double equals says true.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bde57d0c",
+   "say": "One twenty eight is outside the cache, so you get two different objects, and double equals says false, while equals says true. The lesson: compare wrapper objects with equals, always.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "53fef9d9",
+   "say": "Unboxing null throws a null pointer exception. Get a missing key from a map of Integers, assign it to an int, and it blows up on a line that looks perfectly safe.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08644395",
+   "say": "And boxing in a hot loop creates an object per iteration. A Long sum in a loop of a million makes a million objects. Use the primitive long.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9af910d8",
+   "say": "Part five. Singletons. The live-coding favourite: write a thread-safe singleton, make it lazy, and explain why volatile is needed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e66bc3e7",
+   "say": "A private constructor, so nobody else can create one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16b3f203",
+   "say": "The first check happens without a lock. Once the instance exists, every call returns immediately, with no synchronisation cost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "61727665",
+   "say": "If it's null, take the lock, and check again, because another thread may have created it while we were waiting for the lock. That's why it's called double-checked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a340405",
+   "say": "And the field is volatile. Without it, this code is broken, and the reason is the question interviewers are really asking.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a0c321b9",
+   "say": "Here's why. Creating an object looks like one step, but it's three: allocate memory, run the constructor, and assign the reference to the field.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16adaef6",
+   "say": "Without volatile, the compiler or the CPU is allowed to reorder those, and publish the reference before the constructor has finished.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "934bdc7f",
+   "say": "Now thread B arrives, does the first check without a lock, sees that instance is not null, and returns it, a half-built object with empty fields. An intermittent, horrible bug.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51dbd945",
+   "say": "Volatile forbids that reordering. The write to the volatile field happens after construction, and any thread that reads it sees the fully built object. That's the happens-before guarantee, and that's the answer.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5b73164c",
+   "say": "And mention the simpler options, because interviewers like hearing them. Eager: a static final field. Class loading is thread-safe, so this is safe, just not lazy.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "28b4f063",
+   "say": "The holder idiom: a nested static class holds the instance. The JVM only loads it on the first call, so it's lazy, and still has no locks and no volatile.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26ebc3c8",
+   "say": "And an enum with a single value. It's thread-safe, and immune to reflection and serialization attacks. Effective Java recommends it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c1efe6c",
+   "say": "And in a Spring application, beans are singletons by default, managed by the container, so you rarely hand-write one at all.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dfce31f9",
+   "say": "And the follow-up: how can a singleton be broken, and how do you stop it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d1cfe892",
+   "say": "Reflection: setAccessible(true) calls the private constructor; throw if an instance already exists",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd880b6f",
+   "say": "Serialization: deserializing creates a new object; add readResolve() returning the instance",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "64f3ac06",
+   "say": "Cloning: if it's Cloneable, clone() makes a copy; don't implement Cloneable (or throw)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4957426c",
+   "say": "Several class loaders each get their own; an enum singleton defends against the first three",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d7e7cd34",
+   "say": "The answer, out loud.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "edd510d3",
+   "say": "Private constructor, and double-checked locking: check without a lock, then lock and check again before creating it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3f2b9ea",
+   "say": "The field must be volatile.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e23d0d26",
+   "say": "Because creating an object is allocate, construct, publish, and without volatile the publish can be reordered before the constructor finishes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ff2d4754",
+   "say": "Another thread could then see a half-built object. Volatile forbids that, and guarantees readers see it complete.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4286866a",
+   "say": "And I'd mention the simpler holder idiom, or an enum, which also resists reflection and serialization.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6930bd0d",
+   "say": "Check 1. Integer x equals one thousand, Integer y equals one thousand. What does x double-equals y print, and why?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7eadce1d",
+   "say": "False. Only minus one twenty eight to one twenty seven are cached, so one thousand gives two different objects, and double equals compares references. Use equals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20cccafb",
+   "say": "Check 2. A HashSet of points contains duplicates of the same point, and Point does override equals. What's missing?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "facae70a",
+   "say": "Hash code. Equal points get different default hash codes, so they land in different buckets, and equals never runs. Override hash code from the same fields, or use a record.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1c548ae",
+   "say": "Rapid fire. The literal a, double-equals new String a?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d5b19715",
+   "say": "False. Different objects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ef6a662",
+   "say": "StringBuilder or StringBuffer?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2fceadf2",
+   "say": "StringBuilder. It's unsynchronised and faster.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8dcad917",
+   "say": "Is a record deeply immutable?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60cfa2f1",
+   "say": "No. Shallowly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bb40d12a",
+   "say": "Do equal hash codes mean equal objects?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71c76752",
+   "say": "No. Collisions exist.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8eacd961",
+   "say": "Why volatile in double-checked locking?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0912b05",
+   "say": "It stops another thread from seeing a half-built object.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20adc22c",
+   "say": "The most robust singleton?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d8dd2648",
+   "say": "An enum. That's part six.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}

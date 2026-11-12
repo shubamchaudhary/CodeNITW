@@ -1,181 +1,200 @@
 import type { Chapter } from "../lib/types.ts";
+import { makeCheck } from "./checks.ts";
+import { ask, B, sayit, sec } from "./core/h.ts";
+import { old } from "./core/spring09old.ts";
+import { qa } from "./web/h.ts";
 
-// Spring Part 9 (src/Data/coreStackDocs/SPRING-09.md): the filter chain, the
-// authentication flow, where users and passwords come from, sessions vs tokens.
+// Spring Part 9 (src/Data/coreStackDocs/SPRING-09.md): Spring Security's
+// architecture, question by question; reuses core/spring09old.ts diagrams.
+const check = makeCheck();
 
 export const spring09: Chapter = {
   id: "spring09",
   label: "Spring 9",
   title: "Spring Security architecture",
+  theme: "py",
   voice: "en-US-AndrewMultilingualNeural",
+  pace: { normal: "-3%", ask: "-5%", aside: "+4%", excite: "+4%" },
   scenes: [
-    {
-      kind: "custom",
-      name: "starter",
-      beats: [
-        { say: "You add one dependency, the Spring Boot security starter, to a working API." },
-        { say: "Now every endpoint answers four oh one. A login page appears. And the log prints a generated password." },
-        { say: "You didn't touch a single controller. Everything happened in a chain of filters, sitting in front of them. That chain is what interviewers want you to draw.", tone: "key" },
-      ],
-    },
+    old("starter"),
     {
       kind: "title",
       eyebrow: "Spring · Part 9",
       title: "Spring Security architecture",
-      subtitle: "filter chain, authentication flow, users, sessions vs tokens",
-      beats: [{ say: "Spring, part nine. How Spring Security is built." }],
+      subtitle: "the filter chain, the authentication flow, users and passwords",
+      beats: B("Spring, part nine. Spring Security's architecture. The filter chain is the frame every security question hangs off, so once you can draw it, the rest of these answers fall into place."),
+    },
+    {
+      kind: "bullets",
+      title: "What interviews ask on this topic",
+      firstItemStep: 1,
+      items: [
+        { icon: "⛓️", text: "How does Spring Security work: the filter chain and the authentication flow?" },
+        { icon: "🚪", text: "Authentication vs authorization, and 401 vs 403" },
+        { icon: "👤", text: "Where do users and passwords come from: UserDetailsService and hashing" },
+        { icon: "🍪", text: "Stateful (session) vs stateless (token) authentication" },
+        { icon: "🛡️", text: "How do you secure REST APIs in a Spring Boot service?" },
+      ],
+      beats: B(
+        "Five questions, the ones real write-ups name, in this order.",
+        "How it works: the filter chain and the authentication flow.",
+        "Authentication versus authorisation, and four oh one versus four oh three.",
+        "Where users and passwords come from.",
+        "Sessions versus tokens.",
+        { say: "And the open question: how would you secure a REST API in Spring Boot.", tone: "key" },
+      ),
     },
 
-    { kind: "section", num: "1", title: "Who you are, what you may do", beats: [{ say: "First, two words people mix up." }] },
-    {
-      kind: "custom",
-      name: "doorman",
-      beats: [
-        {
-          say: "Authentication asks: who are you? Checking a password, a token, or a certificate.",
-          term: { word: "Authentication", meaning: "proving who you are" },
-        },
-        {
-          say: "Authorization asks: what may you do? Checking your roles for this URL or this method. It always comes second.",
-          term: { word: "Authorization", meaning: "deciding what you may do" },
-        },
-        { say: "And their failures. Four oh one: we don't know who you are, log in again. Four oh three: we know exactly who you are, and the answer is no. Despite its name, four oh one really means unauthenticated.", tone: "key" },
-      ],
-    },
-
-    { kind: "section", num: "2", title: "The filter chain", beats: [{ say: "Now, the chain itself." }] },
-    {
-      kind: "custom",
-      name: "chain",
-      beats: [
-        {
-          say: "A servlet filter sees every request before Spring MVC does. But Tomcat knows nothing about Spring beans. So Spring Security registers one plain servlet filter as a bridge: the delegating filter proxy.",
-          term: { word: "DelegatingFilterProxy", meaning: "servlet filter that hands off to a Spring bean" },
-        },
-        {
-          say: "It hands the request to a bean called spring security filter chain: the filter chain proxy. That proxy picks the first security filter chain whose URL pattern matches.",
-          term: { word: "SecurityFilterChain", meaning: "an ordered list of security filters for some URLs" },
-        },
-        { say: "Then the request walks the filters, in order. Load any existing context. CORS answers preflights. CSRF checks its token. Then the authentication filters, basic, bearer token or form login, read credentials and log the user in. If nobody did, an anonymous user is set." },
-        { say: "Last come the exception translation filter, and the authorization filter. Authorization runs last, because it needs to know who you are.", tone: "key" },
-        { say: "In Spring Security six, you configure this by declaring security filter chain beans. The old web security configurer adapter is gone.", tone: "aside" },
-      ],
-    },
+    // ================================================================ 1
+    sec("1", "The filter chain", "Question one. How does Spring Security work? Start with the filter chain."),
+    old("chain"),
     {
       kind: "code",
-      title: "A stateless API chain",
+      title: "A stateless API's SecurityFilterChain (Spring Security 6 and 7)",
       lang: "java",
       code: `@Bean
 SecurityFilterChain api(HttpSecurity http) throws Exception {
-  return http
-    .securityMatcher("/api/**")
-    .csrf(csrf -> csrf.disable())
-    .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
-    .authorizeHttpRequests(auth -> auth
-      .requestMatchers("/api/public/**").permitAll()
-      .requestMatchers(DELETE, "/api/**").hasRole("ADMIN")
-      .anyRequest().authenticated())
-    .httpBasic(Customizer.withDefaults())
-    .build();
+    return http
+        .securityMatcher("/api/**")
+        .csrf(csrf -> csrf.disable())                 // Bearer header only
+        .cors(Customizer.withDefaults())
+        .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/health").permitAll()
+            .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
+            .anyRequest().authenticated())             // most specific first
+        .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
+        .build();
 }`,
-      highlight: [[1, 4], [5, 6], [7, 10], [11, 12]],
-      beats: [
-        { say: "Here's a real chain for an API. Security matcher limits it to slash API." },
-        { say: "CSRF off, because tokens travel in a header. And no sessions at all: stateless." },
-        { say: "Then the rules. They're checked top to bottom, and the first match wins. So specific rules first, and any request last.", tone: "key" },
-        { say: "And finally, how users authenticate. Here, basic auth." },
-      ],
+      highlight: [[1, 4], [5, 7], [8, 11], [12, 13]],
+      beats: B(
+        "Since Spring Security six, you configure the chain by declaring security filter chain beans. The old WebSecurityConfigurerAdapter is gone, and version seven requires this lambda style. A security matcher limits a chain to some URLs, so you can have one chain for the API and another for an admin UI.",
+        "For a stateless API: CSRF off, because auth comes in a header, CORS on, and no session.",
+        "Authorisation rules are checked in order, first match wins, so put the specific rules first and any request authenticated last. Put any request first, and it swallows everything after it.",
+        { say: "And oauth two resource server with jwt adds the filter that reads and verifies bearer tokens. That's the next lecture's topic.", tone: "key" },
+      ),
     },
+    sayit("How does Spring Security work?", "Say it like this:", [
+      ["A servlet filter, DelegatingFilterProxy, hands every request to FilterChainProxy", "Spring Security is a chain of servlet filters. A delegating filter proxy, registered with Tomcat, hands every request to Spring's filter chain proxy."],
+      ["FilterChainProxy picks the first SecurityFilterChain whose matcher fits", "The filter chain proxy picks the first security filter chain whose matcher fits the request."],
+      ["Filters in order: context, CORS, CSRF, authentication, exception translation, authorization", "The request then runs through ordered filters: load the security context, CORS, CSRF, authentication, exception translation, and authorisation last."],
+      ["Authentication fills the SecurityContext; authorization checks it against the rules", "Authentication filters put the user into the security context, and the authorisation filter checks it against the rules, before the request ever reaches a controller."],
+    ]),
 
-    { kind: "section", num: "3", title: "The authentication flow", beats: [{ say: "Now, who actually checks the password?" }] },
-    {
-      kind: "custom",
-      name: "authflow",
-      beats: [
-        { say: "Asha logs in. An authentication filter reads her username and password, and wraps them in an unauthenticated token." },
-        {
-          say: "It hands the token to the authentication manager. The usual one, the provider manager, asks each of its providers: can you handle this kind of token? The DAO authentication provider says yes.",
-          term: { word: "AuthenticationManager", meaning: "asks providers to authenticate a token" },
-        },
-        {
-          say: "That provider loads Asha through the user details service: her password hash, and her roles. That's where users come from: memory, or your database.",
-          term: { word: "UserDetailsService", meaning: "loads a user by username" },
-        },
-        { say: "Then the password encoder compares the raw password with the stored hash." },
-        {
-          say: "It matches. The authenticated token goes into the security context holder, a thread local. Any code on this request thread can now ask: who is this?",
-          term: { word: "SecurityContextHolder", meaning: "holds the current user, per thread" },
-        },
-        { say: "A wrong password throws an authentication exception. The exception translation filter turns it into a four oh one. It all happens in the filter chain, so controller advice never sees it.", tone: "aside" },
-      ],
-    },
+    // ================================================================ 2
+    sec("2", "Authentication vs authorization", "Question two. Authentication versus authorisation, and four oh one versus four oh three."),
+    old("doorman", { 3: "And who actually sends those two responses?" }),
+    qa(1, "Who sends the 401 and who sends the 403 in Spring Security?", [
+      "ExceptionTranslationFilter catches security exceptions from later in the chain",
+      "Not authenticated (AuthenticationException) → AuthenticationEntryPoint → 401",
+      "Authenticated but not allowed (AccessDeniedException) → AccessDeniedHandler → 403",
+      "Customise both to return your JSON error format (ProblemDetail)",
+    ], { ask: "Follow-up: who actually sends the four oh one, and who sends the four oh three?" }),
 
-    { kind: "section", num: "4", title: "Storing passwords", beats: [{ say: "So how is that hash made?" }] },
+    // ================================================================ 3
+    sec("3", "Users and passwords", "Question three. Where do users and passwords come from? Follow one login through the chain."),
+    old("authflow", { 6: "And that stored hash: how is it made?" }),
+    old("hashing", { 3: "Here's what you actually write." }),
     {
-      kind: "custom",
-      name: "hashing",
-      beats: [
-        { say: "Two users pick the same password. With a fast hash like SHA two fifty six, they get the same hash. And attackers can test billions of guesses a second." },
-        {
-          say: "B crypt adds a random salt to every password, so equal passwords get different hashes.",
-          term: { word: "BCrypt", meaning: "salted, deliberately slow password hashing" },
-        },
-        { say: "And it's deliberately slow, with a work factor. Spring's delegating password encoder stores the algorithm as a prefix, so you can upgrade later. And you never compare hashes yourself: call matches.", tone: "key" },
-      ],
-    },
+      kind: "code",
+      title: "Users from a database, passwords hashed",
+      lang: "java",
+      code: `@Bean
+UserDetailsService users(UserRepository repo) {
+    return email -> repo.findByEmail(email)
+        .map(u -> User.withUsername(u.email())
+                      .password(u.passwordHash())     // stored hash, never plain
+                      .roles(u.role())
+                      .build())
+        .orElseThrow(() -> new UsernameNotFoundException(email));
+}
 
-    { kind: "section", num: "5", title: "Sessions or tokens", beats: [{ say: "Last: where does the logged-in state live?" }] },
-    {
-      kind: "custom",
-      name: "sessions",
-      beats: [
-        { say: "Stateful: the server keeps a session, and the browser holds a J session I D cookie. Easy to revoke, just delete the session. But many instances need a shared store, and cookies bring CSRF." },
-        {
-          say: "Stateless: the server keeps nothing. Every request carries a token, and any instance can verify it. It scales freely. But a token is hard to revoke before it expires.",
-          term: { word: "Stateless auth", meaning: "every request carries its own proof" },
-        },
-        { say: "Session creation policy stateless tells Spring Security never to create or read a session.", tone: "key" },
-        { say: "And for ownership checks, add pre authorize on service methods. It works through a proxy, so a call from inside the same class skips it.", tone: "aside" },
-      ],
+@Bean
+PasswordEncoder passwordEncoder() {
+    // "{bcrypt}$2a$10$…": the prefix lets you upgrade algorithms later
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+}`,
+      highlight: [[1, 9], [11, 15]],
+      beats: B(
+        "A user details service has one job: load a user by username, with their password hash and roles. Here, from a JPA repository. You never load or compare plain passwords yourself.",
+        { say: "And a password encoder. The delegating encoder stores a prefix like curly b crypt in front of each hash, so you can move to a stronger algorithm later, and old hashes still verify. Spring's DAO authentication provider wires these two together.", tone: "key" },
+      ),
     },
+    sayit("Where do users and passwords come from?", "The answer:", [
+      ["A UserDetailsService loads the user, hash and roles (in memory, JDBC, JPA)", "A user details service loads the user by username, with their password hash and roles, from memory, JDBC, or JPA."],
+      ["DaoAuthenticationProvider compares the raw password with the hash via a PasswordEncoder", "The DAO authentication provider uses a password encoder to compare the submitted password with that hash."],
+      ["Hashes are salted and slow: bcrypt, scrypt or Argon2, never SHA-256 alone", "Hashes must be salted and deliberately slow: bcrypt, scrypt or Argon2, never a fast hash like SHA two fifty six."],
+      ["DelegatingPasswordEncoder's {id} prefix allows algorithm upgrades", "And the delegating encoder's prefix lets you upgrade the algorithm without breaking existing users."],
+    ]),
+
+    // ================================================================ 4
+    sec("4", "Sessions or tokens", "Question four. Stateful versus stateless authentication."),
+    old("sessions"),
+    sayit("Stateful (session) vs stateless (token) authentication?", "Said in an interview:", [
+      ["Stateful: the server keeps a session; the browser holds a JSESSIONID cookie", "Stateful: the server stores a session, and the browser holds a session id cookie."],
+      ["Easy to revoke and small cookies; needs sticky sessions or a shared store (Redis) to scale", "It's easy to revoke and the cookie is small, but scaling needs sticky sessions or a shared store like Redis, and cookies need CSRF protection."],
+      ["Stateless: every request carries a signed token; any instance verifies it", "Stateless: every request carries a signed token, and any instance can verify it without a lookup."],
+      ["Scales and suits APIs and mobile; revocation is hard, so keep tokens short-lived", "That scales well and suits APIs and mobile clients, but revocation is hard, so access tokens stay short-lived."],
+    ]),
+
+    // ================================================================ 5
+    sec("5", "Securing a REST API", "Question five. The open one: how do you secure a REST API in a Spring Boot service?"),
     {
-      kind: "custom",
-      name: "recap",
-      props: {
-        items: [
-          ["🚪", "401 vs 403", "unknown vs not allowed"],
-          ["🌉", "DelegatingFilterProxy", "servlet filter to Spring bean"],
-          ["⛓️", "SecurityFilterChain", "CORS, CSRF, auth, authorization"],
-          ["🧑‍⚖️", "AuthenticationManager", "providers check tokens"],
-          ["🗂️", "UserDetailsService", "loads users + hashes"],
-          ["🧂", "BCrypt", "salted, slow hashes"],
-        ],
-      },
-      beats: [
-        { say: "Let's lock it in." },
-        { say: "Four oh one: unknown. Four oh three: known, but not allowed." },
-        { say: "The delegating filter proxy bridges Tomcat to Spring's filter chain proxy." },
-        { say: "The security filter chain runs CORS, CSRF, authentication, and authorization last." },
-        { say: "The authentication manager asks providers to check the token." },
-        { say: "The user details service loads users, and their hashes." },
-        { say: "And B crypt hashes are salted, and slow.", tone: "key" },
+      kind: "bullets",
+      title: "A checklist answer, in the order a request meets it",
+      items: [
+        { icon: "🔐", text: "HTTPS everywhere; CORS for known origins only", sub: "terminate TLS at the gateway or the app" },
+        { icon: "🎫", text: "Stateless: OAuth2 resource server verifying JWTs", sub: "signature, expiry, issuer, audience" },
+        { icon: "🚦", text: "URL rules in the chain, ownership checks in methods", sub: "@PreAuthorize(\"@orders.isOwner(#id, authentication)\")" },
+        { icon: "🧾", text: "Validate input; consistent 401/403 JSON errors", sub: "@Valid, entry point and access-denied handler" },
+        { icon: "📉", text: "Rate limits, secrets out of code, audit logs", sub: "and dependency updates" },
       ],
+      beats: B(
+        "Answer it as a checklist, in the order a request meets it. HTTPS everywhere, and CORS only for the front-end origins you know.",
+        "Stateless authentication: Spring's OAuth two resource server, verifying JWTs: signature, expiry, issuer and audience.",
+        "Authorisation at two levels. Coarse rules by URL in the filter chain, and fine-grained ownership checks on service methods, with pre authorize, enabled by enable method security. Pre authorize works through a proxy, so it doesn't fire on calls inside the same class.",
+        "Validate input with bean validation, and return consistent JSON errors for four oh one and four oh three.",
+        { say: "And around it: rate limits, secrets in a vault rather than the code, audit logs for sensitive actions, and keeping dependencies updated.", tone: "key" },
+      ),
     },
+    check({
+      topic: "filter chain",
+      q: "authorizeHttpRequests: anyRequest().authenticated() is listed before requestMatchers(\"/api/health\").permitAll(). What happens?",
+      say: "In authorize HTTP requests, any request authenticated is listed before the rule that permits slash API slash health. What happens?",
+      a: "Rules match in order and the first match wins, so /api/health requires authentication (Spring Security 6+ even fails at startup for rules after anyRequest). Put specific rules first.",
+      aSay: "Rules are checked in order, and the first match wins, so health would require authentication. Newer Spring Security versions even refuse to start with rules after any request. Put the specific rules first.",
+    }),
+    check({
+      topic: "401 vs 403",
+      q: "A valid user without the ADMIN role calls DELETE /api/orders/7. 401 or 403?",
+      say: "A valid, logged-in user without the admin role calls delete on an order. Four oh one, or four oh three?",
+      a: "403: they're authenticated (we know who they are) but not authorised. 401 means we don't know who you are.",
+      aSay: "Four oh three. We know who they are, so they're authenticated, but they're not authorised. Four oh one means we don't know who you are.",
+    }),
     {
-      kind: "custom",
-      name: "recall",
-      props: { a: "from memory: draw one request from Tomcat to the controller", b: "then draw the login path: filter, manager, provider, user details service, password encoder" },
-      beats: [
-        { say: "Before your interview: from memory, draw one request, from Tomcat, through the filter chain, to the controller." },
-        { say: "Then draw the login path. Filter, manager, provider, user details service, and password encoder.", tone: "key", hold: 3 },
+      kind: "drill",
+      items: [
+        { q: "Bridge from Tomcat to Spring Security?", a: "DelegatingFilterProxy → FilterChainProxy" },
+        { q: "Which filter runs last?", a: "AuthorizationFilter" },
+        { q: "Who loads users?", a: "UserDetailsService" },
+        { q: "Unknown user status code?", a: "401" },
+        { q: "Why does @PreAuthorize fail on self-calls?", a: "It works through a proxy" },
+        { q: "Hash for passwords?", a: "bcrypt / scrypt / Argon2" },
       ],
-    },
-    {
-      kind: "title",
-      eyebrow: "Spring · Part 9",
-      title: "That's Spring Security",
-      subtitle: "next: JWT, the token itself",
-      beats: [{ say: "That's Spring Security. Next: the JWT itself.", tone: "excite" }],
+      beats: B(
+        { say: "Rapid fire. The bridge from Tomcat into Spring Security?", hold: 3 },
+        "The delegating filter proxy, handing over to the filter chain proxy.",
+        { say: "Which filter runs last?", hold: 3 },
+        "The authorisation filter.",
+        { say: "Who loads users?", hold: 3 },
+        "The user details service.",
+        { say: "The status code for an unknown user?", hold: 3 },
+        "Four oh one.",
+        { say: "Why doesn't pre authorize fire on a call inside the same class?", hold: 3 },
+        "Because it works through a proxy, and self-calls skip it.",
+        { say: "The hash for passwords?", hold: 3 },
+        { say: "Bcrypt, scrypt or Argon2. That's Spring Security's architecture.", tone: "key" },
+      ),
     },
   ],
 };

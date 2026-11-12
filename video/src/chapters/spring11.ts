@@ -1,144 +1,165 @@
 import type { Chapter } from "../lib/types.ts";
+import { makeCheck } from "./checks.ts";
+import { ask, B, sayit, sec } from "./core/h.ts";
+import { old } from "./core/spring11old.ts";
 
-// Spring Part 11 (src/Data/coreStackDocs/SPRING-11.md): the request's path
-// through filters and interceptors, what each can see, and tenant resolution.
+// Spring Part 11 (src/Data/coreStackDocs/SPRING-11.md): filters vs
+// interceptors, and where tenant resolution goes; reuses core/spring11old.ts.
+const check = makeCheck();
 
 export const spring11: Chapter = {
   id: "spring11",
   label: "Spring 11",
   title: "Filters vs interceptors, and tenant resolution",
+  theme: "py",
   voice: "en-US-AndrewMultilingualNeural",
+  pace: { normal: "-3%", ask: "-5%", aside: "+4%", excite: "+4%" },
   scenes: [
-    {
-      kind: "custom",
-      name: "cardlist",
-      props: {
-        title: "Every request needs three things",
-        items: [
-          ["🏢", "which tenant is calling", "and no data from any other"],
-          ["🔖", "a correlation id", "on every log line"],
-          ["⏱️", "timing and audit", "for some endpoints"],
-        ],
-      },
-      beats: [
-        { say: "A multi tenant API needs a few things on every single request." },
-        { say: "Which tenant is calling, with no chance of seeing another tenant's data." },
-        { say: "A correlation id, on every log line." },
-        { say: "And timing, or an audit, for some endpoints. Each could live in a filter, an interceptor, or an aspect. Which runs first, and what can each one see?", tone: "ask" },
-      ],
-    },
+    old("cardlist"),
     {
       kind: "title",
       eyebrow: "Spring · Part 11",
       title: "Filters vs interceptors",
-      subtitle: "and where tenant resolution goes",
-      beats: [{ say: "Spring, part eleven. Filters versus interceptors." }],
+      subtitle: "which runs first, what each can see, and where tenant resolution goes",
+      beats: B("Spring, part eleven. Filters versus interceptors. It's a stock Spring question, which runs first, and which can see the controller method, often with code asked for. And the design follow-up: where does tenant resolution go?"),
     },
+    ask("Filter vs interceptor: where does each run, and which would you use?", "order, what each can see, and a rule for choosing", "Filter versus interceptor. Where does each run, and which would you use?", "Three parts to a good answer: the order they run in, what each one can see, and a rule for choosing. Let's build each part."),
 
-    { kind: "section", num: "1", title: "The order", beats: [{ say: "First, the order everything runs in." }] },
-    {
-      kind: "custom",
-      name: "pipeline2",
-      beats: [
-        { say: "Tomcat passes the request through every servlet filter. Spring Security's whole chain is one of them. Then the dispatcher servlet picks the controller method." },
-        { say: "Now Spring MVC's interceptors run their pre handle. Then the controller." },
-        { say: "Then post handle, and finally after completion." },
-        { say: "And the response unwinds back out, through the filters again.", tone: "key" },
-      ],
-    },
+    // ================================================================ 1
+    sec("1", "The order", "Part one. The order things run in."),
+    old("pipeline2", { 4: "Now, what a filter can do, and can't." }),
 
-    { kind: "section", num: "2", title: "Filters", beats: [{ say: "Now, what a filter can do." }] },
+    // ================================================================ 2
+    sec("2", "Filters and interceptors", "Part two. What each one can see."),
+    old("filterwrap", { 4: "And interceptors." }),
+    old("hooks"),
     {
-      kind: "custom",
-      name: "filterwrap",
-      beats: [
-        {
-          say: "A filter belongs to the servlet container, not to Spring MVC. It runs code before and after the rest of the chain, around one call: chain dot do filter. Here, a correlation id goes into the logging context, and is removed in finally.",
-          term: { word: "Filter", meaning: "servlet-level code around every request" },
-        },
-        { say: "It sees every request, even static files and errors. And it sees the raw request and response, so it can wrap them, for example to log a body." },
-        { say: "But it doesn't know which controller will run. And its exceptions never reach controller advice." },
-        { say: "So filters are for authentication, CORS, correlation ids, logging and rate limiting.", tone: "key" },
-      ],
-    },
+      kind: "code",
+      title: "Both, side by side",
+      lang: "java",
+      code: `@Component
+class CorrelationFilter extends OncePerRequestFilter {        // servlet level
+  protected void doFilterInternal(HttpServletRequest req,
+        HttpServletResponse res, FilterChain chain) throws … {
+    MDC.put("cid", Optional.ofNullable(req.getHeader("X-Correlation-Id"))
+                           .orElse(UUID.randomUUID().toString()));
+    try { chain.doFilter(req, res); } finally { MDC.remove("cid"); }
+  }
+}
 
-    { kind: "section", num: "3", title: "Interceptors", beats: [{ say: "Next, interceptors." }] },
-    {
-      kind: "custom",
-      name: "hooks",
-      beats: [
-        {
-          say: "A handler interceptor belongs to Spring MVC. You register it in a web MVC configurer, for chosen paths.",
-          term: { word: "HandlerInterceptor", meaning: "Spring MVC hooks around the controller" },
-        },
-        { say: "Pre handle runs before the controller, and receives the handler: the actual controller method. So it can read the method's annotations, like a custom at audited. That's what a filter can't do. Return false, and the request stops.", tone: "key" },
-        { say: "Post handle runs after the controller, but it's skipped if the controller threw. And for REST, the body is already written, so it's too late to change it." },
-        { say: "After completion always runs, even after an exception. That's the place for timing and cleanup." },
-        { say: "To change a REST body, use response body advice. And for method arguments, in any layer, use an aspect.", tone: "aside" },
-      ],
+class AuditInterceptor implements HandlerInterceptor {      // Spring MVC level
+  public boolean preHandle(HttpServletRequest req,
+        HttpServletResponse res, Object handler) {
+    if (handler instanceof HandlerMethod m && m.hasMethodAnnotation(Audited.class))
+      audit.start(req, m.getMethod().getName());
+    return true;                                // false = stop, controller never runs
+  }
+}
+// registered in a WebMvcConfigurer: registry.addInterceptor(…).addPathPatterns("/api/**")`,
+      highlight: [[1, 9], [11, 18], [19, 19]],
+      beats: B(
+        "A filter: once per request filter, at the servlet level. This one puts a correlation id into the logging context for every request, and always removes it in finally. It sees the raw request, and it wraps the whole chain.",
+        "An interceptor: a handler interceptor, at the Spring MVC level. Its pre handle receives the handler, the actual controller method, so it can read annotations, like audited. Returning false stops the request before the controller.",
+        { say: "Filters are registered as beans or with a filter registration. Interceptors are registered in a web MVC configurer, with path patterns.", tone: "key" },
+      ),
     },
+    old("choose", { 2: "So, the design question: where does tenant resolution go?" }),
     {
-      kind: "custom",
-      name: "choose",
-      beats: [
-        { say: "So the rule. Every raw request, or before security: a filter. Needs the controller method or its annotations: an interceptor. Needs method arguments, anywhere: an aspect." },
-        { say: "Auth, CORS and correlation ids go in filters. Annotation checks and per handler audit go in interceptors.", tone: "key" },
+      kind: "compare",
+      title: "Filter vs interceptor vs AOP aspect",
+      cols: [
+        { title: "Filter", tone: "blue", items: ["Servlet container, before DispatcherServlet", "Every request, raw request/response", "Auth, CORS, correlation ids, compression"] },
+        { title: "Interceptor", tone: "green", items: ["Spring MVC, around the controller", "Knows the handler method + annotations", "Per-endpoint checks, audit, timing"] },
+        { title: "AOP aspect", tone: "amber", items: ["Any Spring bean method, via a proxy", "Not tied to HTTP at all", "@Transactional, @Cacheable, @PreAuthorize"] },
       ],
+      footer: "Raw request or before security → filter · needs the handler → interceptor · business methods → aspect",
+      beats: B(
+        "Interviewers sometimes add a third option. A filter belongs to the servlet container, and runs before Spring MVC for every request.",
+        "An interceptor belongs to Spring MVC, and wraps the controller, knowing which method will run.",
+        { say: "And an AOP aspect wraps any Spring bean's methods through a proxy, with nothing to do with HTTP. That's how transactional, cacheable and pre authorize work. So: raw requests and security, a filter. Needs the handler, an interceptor. Business methods, an aspect.", tone: "key" },
+      ),
     },
+    sayit("Filter vs interceptor: where does each run, and which would you use?", "Say it like this:", [
+      ["Filters run in the servlet container, before DispatcherServlet; interceptors run inside Spring MVC", "Filters run in the servlet container, before the dispatcher servlet. Interceptors run inside Spring MVC, around the controller."],
+      ["Order: filters → DispatcherServlet → preHandle → controller → postHandle → afterCompletion", "So the order is filters, the dispatcher servlet, pre handle, the controller, post handle, after completion, and back out through the filters."],
+      ["Filters see every raw request; interceptors know the handler method and its annotations", "Filters see every raw request, including static files and errors. Interceptors know the handler method and its annotations."],
+      ["Filters for auth, CORS, correlation ids; interceptors for per-endpoint checks and timing", "So filters for authentication, CORS and correlation ids. Interceptors for per-endpoint checks, auditing and timing."],
+      ["postHandle is skipped on exceptions; afterCompletion always runs", "And a detail they like: post handle is skipped when the controller throws, while after completion always runs."],
+    ]),
 
-    { kind: "section", num: "4", title: "Tenant resolution", beats: [{ say: "Now the design question: where does tenant resolution go?", tone: "excite" }] },
+    // ================================================================ 3
+    sec("3", "Tenant resolution", "Part three. The design question: in a multi-tenant API, where does tenant resolution go?"),
+    old("tenantflow"),
     {
-      kind: "custom",
-      name: "tenantflow",
-      beats: [
-        {
-          say: "In a filter, placed right after authentication in the security chain. It reads the tenant from the signed JWT claim, checks any tenant header against it, and stores it in a thread local tenant context.",
-          term: { word: "TenantContext", meaning: "a ThreadLocal holding the current tenant" },
-        },
-        { say: "The data layer reads that context, and scopes every query to the tenant." },
-        { say: "And in finally, the filter clears it. Here's why that matters.", tone: "key" },
-        { say: "Tomcat reuses threads. Thread seven serves tenant A, and nobody clears the context. The next request on thread seven, from tenant B, still sees A. Tenant B reads tenant A's data.", tone: "excite" },
-        { say: "Async methods run on other threads, so copy the tenant with a task decorator. Kafka listeners get it from a message header. And enforce it in the database too, as defence in depth.", tone: "aside" },
-      ],
+      kind: "code",
+      title: "A tenant filter, after authentication",
+      lang: "java",
+      code: `class TenantFilter extends OncePerRequestFilter {
+  protected void doFilterInternal(HttpServletRequest req,
+        HttpServletResponse res, FilterChain chain) throws … {
+    var auth = (JwtAuthenticationToken) SecurityContextHolder
+                   .getContext().getAuthentication();
+    String tenant = auth.getToken().getClaimAsString("tenant_id");  // from the token,
+    TenantContext.set(tenant);                                       // never a header
+    try {
+      chain.doFilter(req, res);
+    } finally {
+      TenantContext.clear();                    // threads are reused
+    }
+  }
+}
+// http.addFilterAfter(new TenantFilter(), BearerTokenAuthenticationFilter.class)`,
+      highlight: [[4, 7], [8, 12], [15, 15]],
+      beats: B(
+        "The tenant comes from the verified token's claim, not from a header the client could change. Put it in a tenant context, usually a thread local.",
+        "Run the rest of the chain, and clear the context in finally, always, because Tomcat reuses threads. Forget it, and the next request on this thread runs as the previous tenant.",
+        { say: "And place the filter right after the bearer token filter in the security chain, so the token is already verified. The data layer then scopes every query by tenant, for example with a Hibernate filter or row-level security in Postgres.", tone: "key" },
+      ),
     },
+    sayit("Where does tenant resolution go?", "The answer:", [
+      ["A filter in the security chain, right after authentication", "In a filter inside the security chain, right after authentication."],
+      ["Tenant from a verified token claim, not a client-controlled header", "The tenant comes from a verified claim in the token, never from a header the client controls."],
+      ["Stored in a ThreadLocal context, cleared in finally (threads are pooled)", "It goes into a thread-local tenant context, cleared in finally, because threads are pooled."],
+      ["Every query scoped by tenant; copy the context to async threads", "Every query is scoped by that tenant, and the context is copied explicitly to async threads, which don't inherit it."],
+    ]),
+    check({
+      topic: "interceptors",
+      q: "You need to reject calls to methods annotated @AdminOnly for non-admins. Filter or interceptor, and why?",
+      say: "You need to reject calls to methods annotated admin only, for non-admins. Filter or interceptor, and why?",
+      a: "Interceptor (or method security): only it receives the HandlerMethod, so it can read the annotation. A filter runs before the handler is known.",
+      aSay: "An interceptor, or method security. Only the interceptor receives the handler method, so it can read the annotation. A filter runs before anyone knows which controller will handle the request.",
+    }),
+    check({
+      topic: "tenant",
+      q: "Requests occasionally see another tenant's data under load. What's the likely bug?",
+      say: "Under load, requests occasionally see another tenant's data. What's the likely bug?",
+      a: "The tenant ThreadLocal isn't cleared (no finally), so a pooled thread keeps the previous request's tenant. Or async work running on another thread without copying/clearing the context.",
+      aSay: "The tenant thread local isn't cleared in a finally, so a reused thread still carries the previous request's tenant. Or async work runs on another thread without the context being copied and cleared.",
+    }),
     {
-      kind: "custom",
-      name: "recap",
-      props: {
-        items: [
-          ["⛓️", "Order", "filters, dispatcher, interceptors"],
-          ["🧰", "Filter", "every raw request"],
-          ["🪝", "Interceptor", "knows the controller method"],
-          ["⏹️", "postHandle", "skipped on exceptions"],
-          ["🏢", "Tenant filter", "after auth, from the JWT"],
-          ["🧹", "finally clear()", "threads are reused"],
-        ],
-      },
-      beats: [
-        { say: "Let's lock it in." },
-        { say: "Filters run first, then the dispatcher servlet, then interceptors." },
-        { say: "A filter sees every raw request." },
-        { say: "An interceptor knows the controller method, and its annotations." },
-        { say: "Post handle is skipped on exceptions. After completion always runs." },
-        { say: "Resolve the tenant in a filter after authentication, from the JWT." },
-        { say: "And always clear the thread local, because threads are reused.", tone: "key" },
+      kind: "drill",
+      items: [
+        { q: "What runs first, filter or interceptor?", a: "The filter" },
+        { q: "Who knows the controller method?", a: "The interceptor" },
+        { q: "Skipped when the controller throws?", a: "postHandle" },
+        { q: "Always runs?", a: "afterCompletion" },
+        { q: "Where does the tenant come from?", a: "A verified token claim" },
+        { q: "Why clear the ThreadLocal?", a: "Threads are reused" },
       ],
-    },
-    {
-      kind: "custom",
-      name: "recall",
-      props: { a: "from memory: draw a request through filters, DispatcherServlet and the three hooks", b: "then place the tenant filter in the security chain, and say why it must clear the ThreadLocal" },
-      beats: [
-        { say: "Before your interview: from memory, draw a request through the filters, the dispatcher servlet, and the three interceptor hooks." },
-        { say: "Then place the tenant filter in the security chain, and say why it must clear the thread local.", tone: "key", hold: 3 },
-      ],
-    },
-    {
-      kind: "title",
-      eyebrow: "Spring · Part 11",
-      title: "That's filters and interceptors",
-      subtitle: "you're ready for the Spring round",
-      beats: [{ say: "That's filters and interceptors. Good luck in the interview.", tone: "excite" }],
+      beats: B(
+        { say: "Rapid fire. What runs first, a filter or an interceptor?", hold: 3 },
+        "The filter.",
+        { say: "Which one knows the controller method?", hold: 3 },
+        "The interceptor.",
+        { say: "Which hook is skipped when the controller throws?", hold: 3 },
+        "Post handle.",
+        { say: "Which one always runs?", hold: 3 },
+        "After completion.",
+        { say: "Where does the tenant come from?", hold: 3 },
+        "A verified claim in the token.",
+        { say: "Why clear the thread local?", hold: 3 },
+        { say: "Because threads are reused. That's filters and interceptors.", tone: "key" },
+      ),
     },
   ],
 };

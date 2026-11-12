@@ -1,131 +1,143 @@
 import type { Chapter } from "../lib/types.ts";
+import { makeCheck } from "./checks.ts";
+import { B, sayit, sec } from "./core/h.ts";
+import { old } from "./core/spring08old.ts";
+import { qa } from "./web/h.ts";
 
-// Spring Part 8 (src/Data/coreStackDocs/SPRING-08.md): the exception resolver
-// chain, advice scopes, ProblemDetail, and translating at the web edge.
+// Spring Part 8 (src/Data/coreStackDocs/SPRING-08.md): exception handling and
+// error contracts, question by question; reuses core/spring08old.ts.
+const check = makeCheck();
 
 export const spring08: Chapter = {
   id: "spring08",
   label: "Spring 8",
   title: "Exception handling: @ControllerAdvice and error contracts",
+  theme: "py",
   voice: "en-US-AndrewMultilingualNeural",
+  pace: { normal: "-3%", ask: "-5%", aside: "+4%", excite: "+4%" },
   scenes: [
-    {
-      kind: "custom",
-      name: "fivehundred",
-      beats: [
-        { say: "Get order nine nine nine. The order doesn't exist, the service throws, and with no handling, the client gets a five hundred. Maybe even a stack trace, with your class names in it." },
-        { say: "What you want is a four oh four, with a body every client can parse." },
-        { say: "Built in one place, in one shape, for the whole API.", tone: "key" },
-      ],
-    },
+    old("fivehundred"),
     {
       kind: "title",
       eyebrow: "Spring · Part 8",
       title: "Exception handling",
-      subtitle: "@ControllerAdvice, ProblemDetail, error contracts",
-      beats: [{ say: "Spring, part eight. Exception handling." }],
+      subtitle: "@ControllerAdvice, ProblemDetail, and where exceptions are translated",
+      beats: B("Spring, part eight. Exception handling. Global exception handling, and where exception translation should happen, show up in nearly every Spring write-up. It's one pattern, done well."),
+    },
+    {
+      kind: "bullets",
+      title: "What interviews ask on this topic",
+      firstItemStep: 1,
+      items: [
+        { icon: "🌐", text: "How do you implement global exception handling in Spring Boot?" },
+        { icon: "🎯", text: "@ControllerAdvice vs @RestControllerAdvice vs @ExceptionHandler: the scope of each" },
+        { icon: "🧾", text: "What should an error response look like? (ProblemDetail, RFC 9457)" },
+      ],
+      beats: B(
+        "Three questions.",
+        "How you implement global exception handling.",
+        "The three annotations, and the scope of each.",
+        { say: "And what an error response should look like. Then the design point that ties them together: which layer should know about HTTP at all.", tone: "key" },
+      ),
     },
 
-    { kind: "section", num: "1", title: "Who catches it", beats: [{ say: "First: who catches a thrown exception?" }] },
-    {
-      kind: "custom",
-      name: "resolvers",
-      beats: [
-        { say: "The controller throws. The dispatcher servlet asks a list of exception resolvers, in order, to turn it into a response." },
-        {
-          say: "First, the exception handler resolver. It looks for an exception handler method: in the controller that threw, then in controller advice classes.",
-          term: { word: "HandlerExceptionResolver", meaning: "turns a thrown exception into a response" },
-        },
-        { say: "If nothing matches, the response status resolver handles exceptions marked with at response status, or a response status exception." },
-        { say: "Then Spring's own mappings: a missing parameter is four hundred, a wrong method four oh five. And anything left falls through to the slash error page: a five hundred." },
-        { say: "And the trap. An exception thrown in a servlet filter, including Spring Security's four oh one and four oh three, happens before the dispatcher servlet. Controller advice never sees it.", tone: "key" },
-      ],
-    },
+    // ================================================================ 1
+    sec("1", "How Spring handles an exception", "Question one. How does global exception handling work? Follow one exception."),
+    old("resolvers", { 5: "So, the three annotations." }),
 
-    { kind: "section", num: "2", title: "Advice and its scope", beats: [{ say: "Now the three annotations." }] },
+    // ================================================================ 2
+    sec("2", "The three annotations", "Question two. Controller advice, rest controller advice, and exception handler: the scope of each."),
+    old("scopes", { 4: "Here's the whole thing in code." }),
     {
-      kind: "custom",
-      name: "scopes",
-      beats: [
-        { say: "An exception handler method inside a controller handles that controller's exceptions, and nothing else." },
-        {
-          say: "Put it in a class marked controller advice, and it applies to every controller. Or to the ones you pick, by package or type.",
-          term: { word: "@ControllerAdvice", meaning: "exception handlers shared across controllers" },
-        },
-        { say: "Rest controller advice is the same thing, plus response body, so return values become JSON. That's the one for REST APIs." },
-        { say: "The rules: local beats global. The most specific exception type wins. Order several advices with at order. And add one catch all for exception, returning a clean five hundred with a trace id, never a stack trace.", tone: "key" },
-      ],
+      kind: "code",
+      title: "One global handler, returning ProblemDetail",
+      lang: "java",
+      code: `@RestControllerAdvice                       // every controller, JSON
+public class ApiErrors {
+    @ExceptionHandler(OrderNotFound.class)
+    ProblemDetail notFound(OrderNotFound e) {
+        var p = ProblemDetail.forStatusAndDetail(NOT_FOUND, e.getMessage());
+        p.setProperty("orderId", e.orderId());
+        return p;
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ProblemDetail invalid(MethodArgumentNotValidException e) {
+        var p = ProblemDetail.forStatus(BAD_REQUEST);
+        p.setProperty("errors", fieldErrors(e));   // field + message
+        return p;
+    }
+    @ExceptionHandler(Exception.class)           // last resort
+    ProblemDetail unexpected(Exception e) {
+        log.error("unhandled", e);               // stack trace in logs only
+        return ProblemDetail.forStatus(500);
+    }
+}`,
+      highlight: [[1, 2], [3, 8], [9, 14], [15, 19]],
+      beats: B(
+        "One class, marked rest controller advice, applies to every controller, and writes JSON.",
+        "Each exception handler method maps one exception type to a response. A domain exception, order not found, becomes a four oh four problem detail, with a type, a message, and the order id.",
+        "Validation failures from at valid arrive as method argument not valid exception. Map them to a four hundred, with the list of field errors, so a form can show each message next to its field.",
+        { say: "And a last-resort handler for any other exception: log it with the stack trace, and return a plain five hundred. Never send a stack trace to a client. The most specific handler wins, so this one only catches what nothing else did.", tone: "key" },
+      ),
     },
+    sayit("How do you implement global exception handling in Spring Boot?", "Say it like this:", [
+      ["A @RestControllerAdvice class with @ExceptionHandler methods, one per exception type", "A rest controller advice class, with exception handler methods, one per exception type."],
+      ["Local handlers in a controller beat global ones; the most specific type wins", "A handler inside a controller beats a global one, and the most specific exception type wins."],
+      ["Return ProblemDetail (RFC 9457); validation errors as 400 with field details", "Each returns a problem detail, the standard error body, with validation errors as a four hundred listing the fields."],
+      ["A catch-all logs and returns 500; filters' exceptions never reach the advice", "A catch-all logs and returns a five hundred. And remember: exceptions thrown in filters, like Spring Security's, never reach the advice."],
+    ]),
 
-    { kind: "section", num: "3", title: "The error contract", beats: [{ say: "So what should the body look like?" }] },
-    {
-      kind: "custom",
-      name: "problem",
-      beats: [
-        {
-          say: "There's a standard: RFC nine four five seven, problem details. Type is a URI naming the kind of error. Clients switch on it, not on the message.",
-          term: { word: "ProblemDetail", meaning: "the RFC 9457 error body: type, title, status..." },
-        },
-        { say: "Title is a fixed summary for that type. Status repeats the HTTP code. Detail describes this occurrence. And instance says which request failed." },
-        { say: "Then add extensions. A trace id lets support find the exact log line, while the stack trace stays in your logs.", tone: "key" },
-        { say: "In Spring six, return a problem detail from your handler. And turn on problem details, so Spring's own errors use the same shape." },
-      ],
-    },
+    // ================================================================ 3
+    sec("3", "The error contract", "Question three. What should an error response look like?"),
+    old("problem", { 4: "One last design point: which layer should know about HTTP?" }),
+    qa(1, "Problem Details in Spring: what do you turn on?", [
+      "Return ProblemDetail from handlers (Spring 6+); content type application/problem+json",
+      "spring.mvc.problemdetails.enabled=true makes Spring's own errors (400, 404, 405, 415) use it too",
+      "Or extend ResponseEntityExceptionHandler to customise those built-in cases",
+      "Same shape everywhere, including 401/403 from the security chain (entry point, access-denied handler)",
+    ], { ask: "And the Spring side of it: what do you turn on to get problem details everywhere?" }),
 
-    { kind: "section", num: "4", title: "Translate at the edge", beats: [{ say: "Last: which layer should know about HTTP?" }] },
+    // ================================================================ 4
+    sec("4", "Translate at the edge", "And the design point that ties it together: where exception translation happens."),
+    old("translate"),
+    check({
+      topic: "advice",
+      q: "Your JWT filter throws ExpiredJwtException, but the @RestControllerAdvice handler for it never runs. Why?",
+      say: "Your JWT filter throws an expired JWT exception, but your rest controller advice handler for it never runs. Why?",
+      a: "Filters run before the DispatcherServlet, so controller advice never sees their exceptions. Handle them in the filter / AuthenticationEntryPoint (or Spring's resource server, which returns 401).",
+      aSay: "Because filters run before the dispatcher servlet, so controller advice never sees their exceptions. Handle it in the filter, or the authentication entry point, which is what Spring's resource server does.",
+    }),
+    check({
+      topic: "error codes",
+      q: "Which status for: invalid input, unknown order, duplicate email, an unexpected bug?",
+      say: "Which status code for: invalid input, an unknown order, a duplicate email, and an unexpected bug?",
+      a: "400 (or 422), 404, 409 Conflict, 500 (with a trace id, no stack trace).",
+      aSay: "Four hundred for invalid input, four oh four for the unknown order, four oh nine conflict for the duplicate email, and five hundred for the bug, with a trace id and no stack trace.",
+    }),
     {
-      kind: "custom",
-      name: "translate",
-      beats: [
-        { say: "If the service throws a response status exception, HTTP has leaked into your business layer. And when a Kafka consumer calls the same service, what does a four oh four even mean there?", tone: "ask" },
-        {
-          say: "So the service throws a domain exception: order not found. It knows nothing about HTTP. One rest controller advice, at the web edge, maps each domain exception to a status and a problem detail.",
-          tone: "key",
-          term: { word: "Domain exception", meaning: "names the business problem, no HTTP" },
-        },
-        { say: "Get the codes right. Four hundred for invalid input. Four oh four not found. Four oh nine for a conflict. Four twenty two for a broken business rule. And five hundred only for our own bugs." },
-        { say: "Validation failures throw method argument not valid exception. Map it to four hundred, with every field error listed." },
-        { say: "And make domain exceptions unchecked. No throws clauses everywhere, and transactional rolls back on them by default.", tone: "aside" },
+      kind: "drill",
+      items: [
+        { q: "@RestControllerAdvice = ?", a: "@ControllerAdvice + @ResponseBody" },
+        { q: "Local or global handler wins?", a: "Local" },
+        { q: "Standard error body?", a: "ProblemDetail, RFC 9457" },
+        { q: "Validation exception type?", a: "MethodArgumentNotValidException" },
+        { q: "Should services throw ResponseStatusException?", a: "No: domain exceptions" },
+        { q: "Do filter exceptions reach advice?", a: "No" },
       ],
-    },
-    {
-      kind: "custom",
-      name: "recap",
-      props: {
-        items: [
-          ["🪜", "Resolver chain", "handler, status, defaults, /error"],
-          ["🌐", "@RestControllerAdvice", "global handlers, JSON"],
-          ["🎯", "Most specific wins", "local beats global"],
-          ["📄", "ProblemDetail", "RFC 9457 contract"],
-          ["🧱", "Domain exceptions", "no HTTP in services"],
-          ["🚧", "Filter exceptions", "never reach advice"],
-        ],
-      },
-      beats: [
-        { say: "Let's lock it in." },
-        { say: "Resolvers run in order: handler methods, response status, Spring's defaults, then slash error." },
-        { say: "Rest controller advice holds global handlers, returning JSON." },
-        { say: "The most specific, most local handler wins." },
-        { say: "Problem details is the standard error contract." },
-        { say: "Services throw domain exceptions, with no HTTP in them." },
-        { say: "And exceptions from filters never reach controller advice.", tone: "key" },
-      ],
-    },
-    {
-      kind: "custom",
-      name: "recall",
-      props: { a: "from memory: draw the resolver chain from a throw to /error", b: "then write the five ProblemDetail fields, and a handler mapping a domain exception to 404" },
-      beats: [
-        { say: "Before your interview: from memory, draw the resolver chain, from a thrown exception, to slash error." },
-        { say: "Then write the five problem detail fields, and a handler mapping a domain exception to four oh four.", tone: "key", hold: 3 },
-      ],
-    },
-    {
-      kind: "title",
-      eyebrow: "Spring · Part 8",
-      title: "That's exception handling",
-      subtitle: "next: filters vs interceptors",
-      beats: [{ say: "That's exception handling. Next: filters versus interceptors.", tone: "excite" }],
+      beats: B(
+        { say: "Rapid fire. Rest controller advice equals?", hold: 3 },
+        "Controller advice, plus response body.",
+        { say: "Local handler or global handler: which wins?", hold: 3 },
+        "The local one, in the controller.",
+        { say: "The standard error body?", hold: 3 },
+        "Problem details, RFC ninety four fifty seven.",
+        { say: "The exception type for a failed at valid?", hold: 3 },
+        "Method argument not valid exception.",
+        { say: "Should a service throw response status exception?", hold: 3 },
+        "No. It throws domain exceptions, and the edge translates them.",
+        { say: "Do exceptions from filters reach controller advice?", hold: 3 },
+        { say: "No. That's exception handling.", tone: "key" },
+      ),
     },
   ],
 };

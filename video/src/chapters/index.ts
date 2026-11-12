@@ -14,6 +14,8 @@ import { ch13 } from "./ch13.ts";
 import { ch14 } from "./ch14.ts";
 import { java01 } from "./java01.ts";
 import { java04 } from "./java04.ts";
+import { java05 } from "./java05.ts";
+import { java06 } from "./java06.ts";
 import { spring15 } from "./spring15.ts";
 import { spring09 } from "./spring09.ts";
 import { spring23 } from "./spring23.ts";
@@ -30,4 +32,4 @@ import { re01 } from "./re01.ts";
 import { nd01 } from "./nd01.ts";
 import type { Chapter } from "../lib/types.ts";
 
-export const CHAPTERS: Chapter[] = [ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch12, ch13, ch14, java01, java04, spring15, spring09, spring23, spring10, spring08, spring11, ll01, ioa01, ipp01, py01, fa01, js01, re01, nd01];
+export const CHAPTERS: Chapter[] = [ch01, ch02, ch03, ch04, ch05, ch06, ch07, ch08, ch09, ch10, ch11, ch12, ch13, ch14, java01, java04, java05, java06, spring15, spring09, spring23, spring10, spring08, spring11, ll01, ioa01, ipp01, py01, fa01, js01, re01, nd01];

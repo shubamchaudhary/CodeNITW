@@ -1,173 +1,169 @@
 import type { Chapter } from "../lib/types.ts";
+import { makeCheck } from "./checks.ts";
+import { ask, B, sayit, sec } from "./core/h.ts";
+import { old } from "./core/spring15old.ts";
+import { qa } from "./web/h.ts";
 
-// Spring Part 15 (src/Data/coreStackDocs/SPRING-15.md): the four web attacks
-// behind every auth follow-up.
+// Spring Part 15 (src/Data/coreStackDocs/SPRING-15.md): web attacks, question
+// by question; reuses the first lecture's diagrams (core/spring15old.ts).
+const check = makeCheck();
 
 export const spring15: Chapter = {
   id: "spring15",
   label: "Spring 15",
   title: "Web attacks: SQL injection, XSS, CSRF, CORS",
+  theme: "py",
   voice: "en-US-AndrewMultilingualNeural",
+  pace: { normal: "-3%", ask: "-5%", aside: "+4%", excite: "+4%" },
   scenes: [
-    {
-      kind: "custom",
-      name: "cardlist",
-      props: {
-        title: "Four attacks behind every auth answer",
-        items: [
-          ["💉", "SQL injection", "input that becomes code"],
-          ["📜", "XSS", "the attacker's script in your page"],
-          ["🎭", "CSRF", "your browser, used against you"],
-          ["🌍", "CORS", "who may read a response"],
-        ],
-      },
-      beats: [
-        { say: "Every answer about JWTs or Spring Security draws the same follow ups. Why is a token in local storage risky? Why can a stateless API turn off CSRF? Who actually enforces CORS?" },
-        { say: "SQL injection: input that becomes code." },
-        { say: "Cross site scripting: the attacker's script, running in your page." },
-        { say: "Cross site request forgery: your own browser, used against you." },
-        { say: "And CORS: who is allowed to read a response. Let's take them one at a time.", tone: "key" },
-      ],
-    },
     {
       kind: "title",
       eyebrow: "Spring · Part 15",
       title: "Web attacks",
       subtitle: "SQL injection, XSS, CSRF and CORS",
-      beats: [{ say: "Spring, part fifteen. Web attacks." }],
+      beats: B("Spring, part fifteen. Web attacks: SQL injection, cross-site scripting, cross-site request forgery, and CORS. These are the follow-ups every JWT or Spring Security answer draws, so we'll take each interview question in turn, see the attack, then the fix, then the answer to say."),
     },
+    old("cardlist"),
 
-    { kind: "section", num: "1", title: "SQL injection", beats: [{ say: "First, the oldest one." }] },
+    // ================================================================ 1
+    sec("1", "SQL injection", "Question one. What is SQL injection, and how do prepared statements and ORMs prevent it?"),
+    old("sqlinject", { 4: "So that's the attack and the fix. Now the details interviewers push on." }),
     {
-      kind: "custom",
-      name: "sqlinject",
-      beats: [
-        { say: "A search endpoint builds its SQL by gluing the user's email into the query text." },
-        {
-          say: "Now the attacker types: quote, or, one equals one. The query becomes: email equals nothing, or one equals one. Always true. Every user comes back. The input became code. That's SQL injection.",
-          tone: "excite",
-          term: { word: "SQL injection", meaning: "user input becomes part of the query text" },
-        },
-        {
-          say: "The fix is a prepared statement. The query shape, with a question mark, is sent and parsed first. The value travels separately, as data, and is never parsed as SQL. Now the same input is just an odd email address. Zero rows.",
-          tone: "key",
-          term: { word: "Prepared statement", meaning: "query text first, values sent separately" },
-        },
-        { say: "ORMs are safe only when you use their parameters. Find by email, or J P Q L with a named parameter, is safe. Gluing input into an at query string, or a native query, is not. And a column for order by can't be a parameter, so check it against an allow list.", tone: "aside" },
-      ],
-    },
+      kind: "code",
+      title: "Where ORMs stop protecting you",
+      lang: "java",
+      code: `// safe: derived queries and bound parameters
+List<User> findByEmail(String email);
+@Query("select u from User u where u.email = :email")
+List<User> byEmail(@Param("email") String email);
 
-    { kind: "section", num: "2", title: "XSS", beats: [{ say: "Next, cross site scripting." }] },
-    {
-      kind: "custom",
-      name: "xss",
-      beats: [
-        { say: "A product page shows reviews as raw HTML." },
-        {
-          say: "An attacker posts a review containing a script tag. Now every visitor's browser runs that script, inside your site, with your site's permissions. That's cross site scripting.",
-          term: { word: "XSS", meaning: "the attacker's script runs inside your site" },
-        },
-        { say: "And the script reads the token from local storage, and sends it to the attacker. Any script on the page can read local storage. An HttpOnly cookie, though, is invisible to JavaScript, so it can't be stolen this way.", tone: "key" },
-        { say: "The fix: escape output. The angle bracket becomes ampersand l t, so the script shows as text instead of running. Templates like Thymeleaf's t h text and React do it by default. Then add a content security policy, so the browser refuses inline and foreign scripts." },
-        { say: "One correction. HttpOnly doesn't stop XSS itself. The script can still send requests from the victim's browser. It only stops the token being stolen and used elsewhere.", tone: "aside" },
-      ],
-    },
+// UNSAFE: an ORM can't protect a string you built
+em.createQuery("select u from User u where u.name = '" + name + "'");
 
-    { kind: "section", num: "3", title: "CSRF", beats: [{ say: "Now the one people mix up the most.", tone: "excite" }] },
-    {
-      kind: "custom",
-      name: "csrf",
-      beats: [
-        { say: "You're logged in to your bank. Your browser holds the bank's session cookie." },
-        {
-          say: "You visit an evil page. It holds a hidden form that posts to the bank's transfer endpoint, and submits it. Your browser attaches the bank's cookie automatically, because the request goes to the bank. The bank sees a valid session, and moves the money. That's cross site request forgery.",
-          term: { word: "CSRF", meaning: "a forged request riding your logged-in cookie" },
-        },
-        {
-          say: "The classic fix is a CSRF token. The bank puts a random token in its own pages, and demands it on every post. The evil page can't read the bank's pages, so the forged request has no token. Forbidden.",
-          term: { word: "CSRF token", meaning: "a secret the attacker's page cannot read" },
-        },
-        { say: "Same site cookies help too. With same site lax, the browser won't send the cookie on a cross site post." },
-        { say: "And here's the interview question. Why can a stateless JWT API disable CSRF? Because the token travels in an authorization header. No browser ever adds that header by itself, so a forged form arrives with no credentials at all.", tone: "key" },
-        { say: "But if you store the JWT in a cookie, the browser sends it automatically again. Then CSRF protection has to stay on.", tone: "aside" },
-      ],
+// ORDER BY and table names can't be parameters: allow-list them
+private static final Set<String> SORTABLE = Set.of("name", "createdAt");
+if (!SORTABLE.contains(sort)) throw new BadRequestException("sort");`,
+      highlight: [[1, 4], [6, 7], [9, 11]],
+      beats: B(
+        "Spring Data's derived methods and JPQL with named parameters are safe: the values are bound, never parsed.",
+        "But an ORM doesn't protect a string you built yourself. Concatenate input into create query, or into a native query, and you're back to injection, just in JPQL instead of SQL.",
+        { say: "And some parts of a query can't be parameters at all, like the column in an order by, or a table name. Map the user's choice to an allow-list. And give the app's database user only the rights it needs, so even a successful injection can't drop a table.", tone: "key" },
+      ),
     },
+    sayit("What is SQL injection, and how do you prevent it?", "Say it like this:", [
+      ["User input becomes part of the query text, so the database runs it as code", "SQL injection is user input becoming part of the query text, so the database runs data as code."],
+      ["Prepared statements send the SQL and the values separately: values are never parsed", "Prepared statements send the query shape and the values separately, so values can never be parsed as SQL."],
+      ["ORMs are safe only with parameters; never concatenate into JPQL or native queries", "ORMs are only safe when you use their parameters. Building JPQL or native query strings by concatenation is just as vulnerable."],
+      ["Allow-list identifiers (ORDER BY columns); least-privilege DB users", "Identifiers like sort columns go through an allow-list, and the database user gets least privilege."],
+    ]),
 
-    { kind: "section", num: "4", title: "CORS", beats: [{ say: "Last, CORS." }] },
+    // ================================================================ 2
+    sec("2", "XSS, and tokens in localStorage", "Question two. What is cross-site scripting, and why is storing a JWT in local storage risky?"),
+    old("xss", { 5: "So, where should a token live?" }),
     {
-      kind: "custom",
-      name: "origins",
-      beats: [
-        {
-          say: "An origin is the scheme, the host, and the port, together. App dot example and A P I dot example are different origins. So are localhost three thousand, and localhost eight thousand eighty.",
-          term: { word: "Origin", meaning: "scheme + host + port" },
-        },
-        { say: "The browser's same origin policy says: a page may send a request to another origin, but may not read the answer. CORS is how that other origin says: you may.", tone: "key" },
+      kind: "compare",
+      title: "Where a browser app can keep a token",
+      cols: [
+        { title: "localStorage", icon: "🗄️", tone: "red", items: ["Readable by any script on the page", "One XSS = every token stolen", "Survives reloads"] },
+        { title: "HttpOnly cookie", icon: "🍪", tone: "green", items: ["Script can't read it", "Sent automatically → needs CSRF/SameSite", "Secure, SameSite=Lax or Strict"] },
+        { title: "In memory", icon: "🧠", tone: "amber", items: ["Gone on reload", "Pair with a refresh token in an HttpOnly cookie", "Short-lived access token"] },
       ],
+      footer: "A common setup: short access token in memory, refresh token in an HttpOnly, Secure, SameSite cookie",
+      beats: B(
+        "Local storage is readable by any script running on the page. One XSS hole, and every logged-in user's token is sent to the attacker, and a JWT stays valid until it expires.",
+        "An HttpOnly cookie can't be read by JavaScript at all, so it can't be stolen. But because the browser sends it automatically, it brings CSRF back, which we handle next.",
+        { say: "A common setup combines them: a short-lived access token kept in memory, and the refresh token in an HttpOnly, Secure, SameSite cookie, used only to get a new access token.", tone: "key" },
+      ),
     },
+    sayit("What is XSS, and why is a JWT in localStorage risky?", "Out loud:", [
+      ["XSS = the attacker's script running in my site's origin (stored, reflected, DOM-based)", "XSS is the attacker's script running inside my site's origin, stored, reflected, or DOM-based."],
+      ["Prevent: escape output by context, avoid raw HTML sinks, add a Content-Security-Policy", "I prevent it by escaping output for its context, avoiding raw HTML sinks like innerHTML, and adding a content security policy."],
+      ["localStorage is readable by any injected script: one hole steals every token", "Local storage is readable by any injected script, so one hole steals every user's token."],
+      ["HttpOnly cookies can't be read by script (XSS can still act in the page, though)", "HttpOnly cookies can't be read by script. XSS can still act inside the page, but it can't take the token away."],
+    ]),
+
+    // ================================================================ 3
+    sec("3", "CSRF", "Question three. What is CSRF, and why can a stateless JWT API disable CSRF protection?"),
+    old("csrf", { 6: "So here's the Spring side, and the answer." }),
     {
-      kind: "custom",
-      name: "preflight",
-      beats: [
-        {
-          say: "For anything beyond a simple request, like a PUT, a JSON body, or an authorization header, the browser first sends a preflight. An options request, asking: may this origin send a PUT, with an authorization header?",
-          term: { word: "Preflight", meaning: "the browser's OPTIONS request asking permission" },
-        },
-        { say: "The server answers with access control allow origin, and the allowed methods and headers." },
-        { say: "Only then does the browser send the real request, and let the page read the response." },
-        { say: "Two traps. The preflight carries no credentials, so if you only use at cross origin, Spring Security rejects it with a four oh one first. Configure CORS in the security chain, with h t t p dot cors. And allow origin star can't be combined with credentials.", tone: "aside" },
+      kind: "code",
+      title: "CSRF in Spring Security: on by default",
+      lang: "java",
+      code: `// a browser app with session cookies: keep it (the default)
+http.csrf(Customizer.withDefaults());
+// CsrfFilter requires a token on POST, PUT, PATCH, DELETE
+
+// an API authenticated ONLY by "Authorization: Bearer ..."
+http.csrf(csrf -> csrf.disable())
+    .sessionManagement(s ->
+        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));`,
+      highlight: [[1, 3], [5, 8]],
+      beats: B(
+        "In Spring Security, CSRF protection is on by default. The CSRF filter demands a token on every state-changing method: post, put, patch and delete. Which is also why get requests must never change state.",
+        { say: "For an API authenticated only by a bearer header, you can disable it, and make the API stateless. But only if no cookie authenticates anything. The moment auth rides on a cookie, keep CSRF protection, or at least SameSite cookies.", tone: "key" },
+      ),
+    },
+    sayit("What is CSRF, and why can a stateless JWT API disable it?", "The answer:", [
+      ["CSRF tricks a logged-in browser into sending a request the user didn't intend", "CSRF tricks a logged-in browser into sending a state-changing request the user never meant to send."],
+      ["It works because browsers attach cookies automatically", "It works only because the browser attaches cookies automatically."],
+      ["Defences: a CSRF token, SameSite cookies, Origin checks; Spring has it on by default", "The defences are a CSRF token, SameSite cookies, and checking the Origin header, and Spring Security enables CSRF protection by default."],
+      ["A Bearer-header API can disable it: no browser adds that header on its own; a JWT in a cookie can't", "An API that only reads a bearer header can disable it, because no browser attaches that header by itself. If the JWT is in a cookie, it can't."],
+    ]),
+    check({
+      topic: "CSRF",
+      q: "Your API keeps the JWT in a cookie, and you disabled CSRF \"because we use JWT\". Is that safe?",
+      say: "Your API keeps the JWT in a cookie, and you disabled CSRF, because you use JWT. Is that safe?",
+      a: "No: the browser sends the cookie automatically, so a forged form post carries the token. Keep CSRF protection or SameSite=Strict/Lax, or move the token to an Authorization header.",
+      aSay: "No. The browser sends that cookie automatically, so a forged form post arrives with a valid token. Keep CSRF protection or strict SameSite cookies, or move the token into the authorization header.",
+    }),
+
+    // ================================================================ 4
+    sec("4", "CORS", "Question four. What is CORS, and who enforces it?"),
+    old("origins"),
+    old("preflight"),
+    old("notprotect"),
+    qa(1, "How do you configure CORS correctly in Spring?", [
+      "In the security chain: http.cors(withDefaults()) plus a CorsConfigurationSource bean",
+      "Otherwise the preflight (no credentials) is rejected with 401 before MVC's CORS runs",
+      "List real origins: \"*\" can't be combined with allowCredentials(true)",
+    ], { code: `http.cors(Customizer.withDefaults());\n\n@Bean CorsConfigurationSource cors() {\n  var c = new CorsConfiguration();\n  c.setAllowedOrigins(List.of("https://app.example"));\n  c.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));\n  c.setAllowedHeaders(List.of("Authorization", "Content-Type"));\n  c.setAllowCredentials(true);\n  var src = new UrlBasedCorsConfigurationSource();\n  src.registerCorsConfiguration("/**", c);\n  return src;\n}`, ask: "And the practical question: how do you configure CORS correctly in Spring?" }),
+    sayit("What is CORS, and who enforces it?", "Say it like this:", [
+      ["The browser's same-origin policy blocks reading other origins' responses", "The browser's same-origin policy lets a page send requests to another origin, but not read the responses."],
+      ["CORS: the server's headers say which origins may read them", "CORS is the server's way of saying, with response headers, which other origins may read them."],
+      ["The browser enforces it, with a preflight OPTIONS for non-simple requests", "The browser enforces it, sending a preflight options request first for anything non-simple, like a JSON body or an authorization header."],
+      ["It doesn't protect the API (curl ignores it) and isn't a CSRF defence", "It doesn't protect the API, since curl ignores it, and it isn't a CSRF defence. Authentication and authorisation protect the API."],
+    ]),
+    check({
+      topic: "CORS",
+      q: "The browser says “blocked by CORS policy”, but the same call works in Postman. Why?",
+      say: "The browser says blocked by CORS policy, but the same call works in Postman. Why?",
+      a: "CORS is enforced by browsers only. The server isn't sending an Access-Control-Allow-Origin for that origin (often the preflight got a 401 because CORS isn't configured in the security chain).",
+      aSay: "Because only browsers enforce CORS. The server isn't returning an allow-origin header for that origin. Often the preflight got a four oh one, because CORS wasn't configured in the security chain.",
+    }),
+    {
+      kind: "drill",
+      items: [
+        { q: "Fix for SQL injection?", a: "Prepared statements / bound parameters" },
+        { q: "Can ORDER BY be a parameter?", a: "No: allow-list it" },
+        { q: "Can HttpOnly stop XSS?", a: "No: it stops token theft" },
+        { q: "CSRF on by default in Spring?", a: "Yes" },
+        { q: "Who enforces CORS?", a: "The browser" },
+        { q: "Does CORS stop CSRF?", a: "No" },
       ],
-    },
-    {
-      kind: "custom",
-      name: "notprotect",
-      beats: [
-        {
-          say: "And the line interviewers love. CORS does not protect your API. Curl, Postman, or another server ignore it completely. It only tells browsers who may read a response. Authentication and authorization protect the API.",
-          tone: "key",
-          term: { word: "CORS", meaning: "the server telling browsers who may read responses" },
-        },
-        { say: "It's not a CSRF defence either. A forged form post needs no preflight. CORS only stops the evil page from reading the answer.", tone: "aside" },
-      ],
-    },
-    {
-      kind: "custom",
-      name: "recap",
-      props: {
-        items: [
-          ["💉", "SQL injection", "prepared statements"],
-          ["📜", "XSS", "escape output, CSP"],
-          ["🍪", "HttpOnly", "script can't read it"],
-          ["🎭", "CSRF", "token, SameSite, Bearer"],
-          ["🛫", "Preflight", "OPTIONS before the real call"],
-          ["🌍", "CORS", "browser-enforced, not a shield"],
-        ],
-      },
-      beats: [
-        { say: "Let's lock it in." },
-        { say: "SQL injection: send values separately, with prepared statements." },
-        { say: "XSS: escape output, and add a content security policy." },
-        { say: "Keep tokens in HttpOnly cookies, out of the attacker's script." },
-        { say: "CSRF: a token, same site cookies, or a Bearer header API." },
-        { say: "A preflight asks permission before the real call." },
-        { say: "And CORS is enforced by browsers. It is not a shield for your API.", tone: "key" },
-      ],
-    },
-    {
-      kind: "custom",
-      name: "recall",
-      props: { a: "from memory: draw the CSRF attack, then the CORS preflight", b: "then say why a Bearer-header API is safe from CSRF, and why CORS doesn't protect an API" },
-      beats: [
-        { say: "Before your interview: from memory, draw the CSRF attack, and then the CORS preflight." },
-        { say: "Then say, in one line each, why a Bearer header API is safe from CSRF, and why CORS doesn't protect an API.", tone: "key", hold: 3 },
-      ],
-    },
-    {
-      kind: "title",
-      eyebrow: "Spring · Part 15",
-      title: "That's web attacks",
-      subtitle: "next: Spring Security's filter chain",
-      beats: [{ say: "That's web attacks. Next: how Spring Security is built.", tone: "excite" }],
+      beats: B(
+        { say: "Rapid fire. The fix for SQL injection?", hold: 3 },
+        "Prepared statements: bound parameters.",
+        { say: "Can an order by column be a parameter?", hold: 3 },
+        "No. Allow-list it.",
+        { say: "Does HttpOnly stop XSS?", hold: 3 },
+        "No. It stops the token being stolen.",
+        { say: "Is CSRF protection on by default in Spring Security?", hold: 3 },
+        "Yes.",
+        { say: "Who enforces CORS?", hold: 3 },
+        "The browser.",
+        { say: "Does CORS stop CSRF?", hold: 3 },
+        { say: "No. That's web attacks.", tone: "key" },
+      ),
     },
   ],
 };

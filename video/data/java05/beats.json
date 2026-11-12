@@ -1,0 +1,474 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "7ec15c2e",
+   "say": "Java, part five. Modern Java, from seventeen to twenty five: records, sealed types, and pattern matching. Rounds ask this to check you write today's Java, not Java eight with a newer compiler.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f58acebc",
+   "say": "Four questions, from real rounds at Paytm, EPAM and others.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dac114ce",
+   "say": "What changed between the long-term support releases that you actually use.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "578d30d5",
+   "say": "Records, and when a record is the wrong choice.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb92ebdc",
+   "say": "Sealed classes, and what they give you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "deba1e06",
+   "say": "And pattern matching with switch expressions. And at the end, we'll see how the last three fit together into one idea.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "939344d1",
+   "say": "Question one. Java eight versus eleven versus seventeen versus twenty one. And now twenty five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6cf93636",
+   "say": "Java eight, twenty fourteen, the big one: lambdas, streams, Optional, the java dot time API, and default methods on interfaces. A lot of codebases still feel like this.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b3d4751",
+   "say": "Eleven: var for local variables arrived in ten, plus the new HTTP client, handy String methods like is blank, strip and lines, and running a single source file directly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "060870dd",
+   "say": "Seventeen: the release this lecture is about. Records, sealed classes, pattern matching for instanceof, switch expressions, and text blocks. It's also the minimum for Spring Boot three.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb1b3b07",
+   "say": "Twenty one: virtual threads, which is the headline, plus pattern matching for switch, record patterns, and sequenced collections, which finally give lists and ordered sets a common get first and get last.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "946d2134",
+   "say": "And twenty five, the current long-term release, from September twenty twenty five: scoped values, flexible constructor bodies that let you validate before calling super, compact source files with a simple main method, and compact object headers, which can shrink every object's header to save memory.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "10e872e3",
+   "say": "Answer it with what you use, not a list of JEPs:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "69cb6c57",
+   "say": "From eight, lambdas, streams, Optional, and java dot time, every day.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "899722b5",
+   "say": "From eleven, var, the built-in HTTP client, and the String helpers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf1b9d8b",
+   "say": "From seventeen, records for DTOs and events, sealed types, switch expressions, and text blocks for SQL and JSON.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1265d45",
+   "say": "From twenty one, virtual threads for blocking I O, and pattern matching for switch.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "159cba14",
+   "say": "Twenty five is the current long-term release, with scoped values and flexible constructors, and teams usually upgrade from one LTS to the next.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "14da5988",
+   "say": "Question two. What are records, and when is a record the wrong choice?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebf10565",
+   "say": "A record declares a class whose whole state is its components. One line, money with an amount and a currency.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5630dcc5",
+   "say": "A compact constructor is where validation and normalisation go. No parameter list, no assignments: you just check and adjust the parameters, and the fields are assigned afterwards.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce43842f",
+   "say": "Records can have methods, static factories, and implement interfaces.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20e6e82e",
+   "say": "And Java generates the rest: private final fields, the canonical constructor, accessors named after the components, without get, and equals, hash code and to string built from all the components. So records are ideal for DTOs, events, map keys and value objects.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fb3a9bfd",
+   "say": "So, when is a record the wrong choice?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "86410816",
+   "say": "JPA entities: they need a no-arg constructor, mutable state and proxies; records are final and immutable",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb369897",
+   "say": "When you need inheritance: records are final and can't extend a class (they can implement interfaces)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ed6cc0fe",
+   "say": "When state must change over time, or when you have many optional fields (a builder reads better)",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d12de2c2",
+   "say": "Remember it's shallowly immutable: copy mutable components (List.copyOf) in the compact constructor",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dc4dbc14",
+   "say": "Question three. What are sealed classes, and what do they give you?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b37bb1ca",
+   "say": "A sealed interface or class lists exactly which types may extend it, with permits. Here, a payment is a card, a UPI payment, or net banking. Nothing else.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0a63de7",
+   "say": "Each permitted subtype must say what happens next: final, which records already are, sealed again with its own list, or non-sealed to reopen it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41023b42",
+   "say": "And anyone outside that list who tries to implement Payment gets a compile error. So what do sealed types give you? A closed set of cases the compiler knows about. That's useless on its own, and powerful with the next topic.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "819c0550",
+   "say": "What do sealed classes give you, that a normal interface or an enum doesn't?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2096c65c",
+   "say": "Against a normal interface: the set is closed, so the compiler can check you've handled every case. Against an enum: each case can be a different type, carrying its own data, a card's last four digits, a UPI address.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1117aa73",
+   "say": "Question four. Pattern matching, switch expressions and text blocks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ab5316a",
+   "say": "The old way: test with instanceof, then cast, repeating the type.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ecbc667",
+   "say": "Pattern matching for instanceof tests and binds in one step. S is only in scope where the test succeeded, so you can even use it in the same condition.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68bf51a1",
+   "say": "And switch expressions: arrows instead of colons, no fall-through, so no forgotten break, several labels per case, and the whole switch returns a value. Inside a block, you return a value with yield.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ae069bf1",
+   "say": "Java twenty one brings patterns to switch. Each case matches a type, and a when guard adds a condition: card payments over a thousand rupees.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "56762c7d",
+   "say": "Record patterns take a record apart right in the case: card, with its last four and amount, bound to variables.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41b8650b",
+   "say": "And there's no default branch. Payment is sealed, so the compiler knows these three are all the cases, and checks that the switch covers them. That's called exhaustiveness.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a4d7586a",
+   "say": "Here's the payoff. Add a fourth payment type, a wallet, and every switch like this one stops compiling until it handles wallets. The compiler finds every place you forgot. Sealed types, records and pattern matching together give Java algebraic data types, and that's the senior answer to what sealed classes are for.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e02c5b10",
+   "say": "Question 2. Text blocks: what are they for?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "577e6103",
+   "say": "Multi-line string literals between \"\"\" delimiters: SQL, JSON, HTML in code",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a3a755c4",
+   "say": "Indentation is stripped based on the closing delimiter; no \\n escapes or + concatenation",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "312730c4",
+   "say": "Combine with .formatted(…) for values; never for building SQL from user input",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "42af0c95",
+   "say": "To finish, the combined answer:",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6b7a4bb0",
+   "say": "Pattern matching for instanceof tests and binds in one step, so the casts disappear.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ecce0fc3",
+   "say": "Switch expressions use arrows, can't fall through, and return a value.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6e48f60",
+   "say": "Since twenty one, switch matches on types, takes records apart with record patterns, and adds conditions with when.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cae09d7",
+   "say": "And with a sealed type, the switch is checked for exhaustiveness, so adding a new subtype breaks every switch that doesn't handle it, at compile time, not in production.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "73a9ea2f",
+   "say": "Check 1. Should a JPA entity be a record? Why, or why not?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2671b69e",
+   "say": "No. JPA needs a no-argument constructor, mutable fields, and subclass proxies for lazy loading, and records are final and immutable. Use records for DTOs and query projections instead.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "30b0b21f",
+   "say": "Check 2. Why can a switch over a sealed interface have no default branch?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8dc2bbdb",
+   "say": "Because the compiler knows the complete list of permitted subtypes, so it can prove the cases cover everything. And when a new subtype is added, every incomplete switch becomes a compile error.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbfe544a",
+   "say": "Rapid fire. The current long-term release?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f01a8ce3",
+   "say": "Java twenty five, from September twenty twenty five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4849ac5",
+   "say": "Virtual threads arrived in which version?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b5981246",
+   "say": "Java twenty one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c8f0c2e",
+   "say": "A record's accessor for amount?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7994acc",
+   "say": "Amount, with no get prefix.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c17f0aa1",
+   "say": "Can a record extend a class?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea799f22",
+   "say": "No. It can implement interfaces.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70bd167a",
+   "say": "A sealed type's permitted subtypes must be what?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b7c59c0",
+   "say": "Final, sealed, or non-sealed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "af5a24a7",
+   "say": "How do you return a value from a block inside a switch expression?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "75e66087",
+   "say": "Yield. That's part five.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}
