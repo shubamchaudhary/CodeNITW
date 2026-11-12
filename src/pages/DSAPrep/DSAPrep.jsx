@@ -261,8 +261,7 @@ const DSAPrep = () => {
             <NextProblemPicker
               solved={solved}
               plannedToday={plannedToday}
-              today={today}
-              onAdd={(p) => togglePlannedToday(p, p.topic)}
+              onAdd={(p) => !plannedToday.has(p.id) && togglePlannedToday(p, p.topic)}
               onRemove={(p) => togglePlannedToday(p, p.topic)}
               onToggleSolved={toggleSolved}
             />
