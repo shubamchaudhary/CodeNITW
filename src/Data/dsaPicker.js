@@ -78,10 +78,7 @@ const STARTED_MIN = 3;
 const LEVEL_GATE_MAX = 3;
 const gateFor = (count) => Math.min(LEVEL_GATE_MAX, Math.ceil(count / 2));
 
-export const LEVEL_LABEL = { 1: "Easy", 2: "Medium", 3: "harder Medium", 4: "Hard" };
-
 const DAY = 24 * 60 * 60 * 1000;
-const pct = (x) => `${Math.round(100 * x)}%`;
 
 // Per-topic state: coverage, which levels are open, and why one is locked.
 function topicStates(problems, solved) {
@@ -182,9 +179,9 @@ function topicStates(problems, solved) {
  * @param {object} o.solved     { id: true } — solves
  * @param {object} o.solvedAt   { id: timestampMs } — when each was solved
  * @param {Set}    o.todayIds   ids already on today's plan
- * @param {Set}    o.skipped    ids skipped today
+ * @param {Set}    o.skipped    ids sitting out after a skip
  * @param {number} [o.now]
- * @returns {{ picks: Array<{problem, score, reasons: string[]}>, overall: number, states: Map }}
+ * @returns {{ picks: Array<{problem, score}>, overall: number, states: Map }}
  */
 export function rankNextProblems({ problems, solved, solvedAt = {}, todayIds = new Set(), skipped = new Set(), now = Date.now() }) {
   const { states, overall } = topicStates(problems, solved);
@@ -230,47 +227,83 @@ export function rankNextProblems({ problems, solved, solvedAt = {}, todayIds = n
     const hot = (p.recent || 0) >= 3 ? 1.1 : 1;
     const score = base * need * spread * ease * hot;
 
-    const reasons = [];
-    if (st.familyCoverage < overall - 0.08 && fam !== p.topic) {
-      reasons.push(`${fam} is behind: ${pct(st.familyCoverage)} done vs ${pct(overall)} overall`);
-    }
-    if (st.solved === 0) reasons.push(`New topic — you haven't started ${p.topic} yet`);
-    else if (st.coverage < overall - 0.08) reasons.push(`${p.topic} is behind: ${pct(st.coverage)} done vs ${pct(overall)} overall`);
-    if (unlocks) {
-      const left = st.blockedBy.need - st.blockedBy.have;
-      reasons.push(`${left} more solve${left === 1 ? "" : "s"} here open${left === 1 ? "s" : ""} the next level of ${p.topic} (e.g. ${unlocks.title})`);
-    } else if (p.level > st.minLevel && p.level === st.openUpTo && st.solved > 0) {
-      reasons.push(`${LEVEL_LABEL[p.level]} problems here just opened up — you've done the easier ones`);
-    } else if (p.level === 1 && st.solved < 3) {
-      reasons.push(`An easy way into ${p.topic}`);
-    }
-    const asked = [`${p.priority} · asked at ${p.companies} companies in the last 6 months`];
-    if (p.recent) asked.push(`${p.recent} in the last 30 days`);
-    reasons.push(asked.join(", "));
-    if (todayIds.size && !todayFamilies.get(fam)) reasons.push(`A different area from what's on today's list`);
-
-    picks.push({ problem: p, score, reasons });
+    picks.push({ problem: p, score });
   }
   picks.sort((a, b) => b.score - a.score || b.problem.importance - a.problem.importance);
   return { picks, overall, states };
 }
 
-// ── Skips: per day, per browser — a convenience, not progress ────────────────
-const SKIP_KEY = "DSAPickerSkipped";
+// ── The queue ────────────────────────────────────────────────────────────────
+// The page shows the next QUEUE_SIZE picks at once. Adding one to today or
+// skipping it takes it out and the next best slides in at the end; the rest
+// stay where they are, so the queue never reshuffles under you.
+//
+// A skip is a "not now", not a "never": the skipped problem sits out until
+// SKIP_RETURN_AFTER more problems have gone through the queue (two batches of
+// four), then it takes the next free slot — ahead of anything newly ranked.
+export const QUEUE_SIZE = 4;
+export const SKIP_RETURN_AFTER = 2 * QUEUE_SIZE;
 
-export function loadSkipped(day) {
+/**
+ * Tops the queue up to QUEUE_SIZE: keeps every queued problem that's still
+ * open, puts back skipped problems whose wait is over, then appends the best
+ * of the rest one at a time, counting each one already queued as "planned"
+ * so the queue itself spreads across topics.
+ * @returns {string[]} problem ids, in queue order
+ */
+export function fillQueue({ problems, solved, solvedAt, todayIds, hidden, due = [], queue = [] }) {
+  const exclude = new Set([...todayIds]);
+  const open = new Set(
+    rankNextProblems({ problems, solved, solvedAt, todayIds: exclude, skipped: hidden }).picks.map((x) => x.problem.id)
+  );
+  const next = queue.filter((id) => open.has(id)).slice(0, QUEUE_SIZE);
+  for (const id of due) if (next.length < QUEUE_SIZE && open.has(id) && !next.includes(id)) next.push(id);
+  while (next.length < QUEUE_SIZE) {
+    const planned = new Set([...todayIds, ...next]);
+    const best = rankNextProblems({ problems, solved, solvedAt, todayIds: planned, skipped: hidden }).picks[0];
+    if (!best) break;
+    next.push(best.problem.id);
+  }
+  return next;
+}
+
+// Per browser, not progress: the queue's order, how many problems have gone
+// through it, and when each skip happened (in that count).
+const QUEUE_KEY = "DSAPickerQueue";
+
+export function loadQueueState() {
   try {
-    const raw = JSON.parse(localStorage.getItem(SKIP_KEY) || "null");
-    return new Set(raw && raw.day === day ? raw.ids : []);
+    const raw = JSON.parse(localStorage.getItem(QUEUE_KEY) || "null");
+    if (raw && Array.isArray(raw.queue) && typeof raw.served === "number") {
+      return { queue: raw.queue, served: raw.served, skipped: raw.skipped || {} };
+    }
   } catch (_) {
-    return new Set();
+    /* fall through to a fresh queue */
+  }
+  return { queue: [], served: 0, skipped: {} };
+}
+
+export function saveQueueState(state) {
+  try {
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(state));
+  } catch (_) {
+    /* private window / storage off: the queue just lasts this visit */
   }
 }
 
-export function saveSkipped(day, ids) {
-  try {
-    localStorage.setItem(SKIP_KEY, JSON.stringify({ day, ids: [...ids] }));
-  } catch (_) {
-    /* private window / storage off: skips just last this visit */
-  }
+// Skipped problems whose wait is over, oldest skip first.
+export function dueSkips(state) {
+  return Object.entries(state.skipped)
+    .filter(([, at]) => state.served - at >= SKIP_RETURN_AFTER)
+    .sort((a, b) => a[1] - b[1])
+    .map(([id]) => id);
+}
+
+// Skipped problems still sitting out at this point in the count.
+export function hiddenSkips(state) {
+  return new Set(
+    Object.entries(state.skipped)
+      .filter(([, at]) => state.served - at < SKIP_RETURN_AFTER)
+      .map(([id]) => id)
+  );
 }
