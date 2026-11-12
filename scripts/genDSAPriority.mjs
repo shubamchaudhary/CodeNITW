@@ -1,58 +1,81 @@
-/* Regenerates src/Data/DSAPrep.js with a frequency-derived P0–P3 priority on
-   every problem, and folds in high-frequency problems the original curation
-   dropped (it excluded Easy entirely).
+/* Regenerates src/Data/DSAPrep.js: which problems are in the set, a P0–P3
+   priority and a 0–100 `importance` on each, and an easy→hard `level` the
+   question picker (src/Data/dsaPicker.js) uses to walk a topic in order.
 
    PRIORITY IS DERIVED FROM DATA, NOT GUESSED. It blends two signals.
 
-   SIGNAL 1 — how often a problem is actually asked.
-   Source: https://github.com/krishnadey30/LeetCode-Questions-CompanyWise
-   — per-company CSVs of LeetCode company tags with a Frequency column, split
-   into 6month / 1year / 2year / alltime windows. ALL companies in the dataset
-   are used (every one of them is an SDE employer that runs DSA interviews),
-   not just the ones on this user's target roster.
-     1. Normalise Frequency within each CSV (raw scales differ per company) and
-        sum across companies, weighting recent windows higher than all-time:
-        6months x3, 1year x2, 2year x1.5, alltime x1.
-     2. Multiply by log2(1 + breadth), where breadth = how many companies tag
-        the problem. A problem asked at 60 companies is a safer use of study
-        time than one asked intensely at a single company.
-     3. Bucket by position in that ranking; the top bucket additionally requires
-        breadth, so one company's favourite cannot reach it on intensity alone.
+   SIGNAL 1 — how often a problem is asked, weighted toward RECENT asks.
+   LeetCode's company tags, as scraped into three public datasets:
+     • liquidslr/interview-company-wise-problems  (≈470 companies, refreshed
+       Oct 2026) — windows: 30 days / 3 months / 6 months / older.
+     • snehasishroy/leetcode-companywise-interview-questions (≈660 companies,
+       Aug 2026) — same windows; a second scrape, so one dataset's gaps or
+       glitches don't decide a rank.
+     • krishnadey30/LeetCode-Questions-CompanyWise (≈200 companies, 2022) —
+       the long-run record, so a classic that had a quiet half-year doesn't
+       vanish.
+   Per company and window the Frequency column is normalised to that file's
+   max (raw scales differ), then summed across companies:
+       recent = 4·(30 days) + 2.5·(3 months) + 1.5·(6 months)
+       old    = "more than six months" + the 2022 dataset
+       freq   = (0.7·recent + 0.3·old) · log2(2 + companies asking in 6 months)
+   The breadth term means a problem asked at 40 companies outranks one asked
+   intensely at one.
 
-   SIGNAL 2 — whether the problem IS a topic in its own right.
-   Source: scripts/data/patternLists.json (Blind 75 + NeetCode 150, both curated
-   for pattern coverage — each entry is the canonical representative of a
-   technique, which is why the lists are small). Solving one of these teaches a
-   whole pattern, so membership sets a FLOOR on its bucket:
-     • Blind 75      → never ranked below P1.
-     • NeetCode 150  → never ranked below P2.
-   It is a floor and not a promotion on purpose: P0 stays strictly "asked
-   constantly", which is what makes it trustworthy as a do-these-first list,
-   while a pattern anchor that is rarely asked still can't sink out of sight.
-   Each such problem also carries its pattern name (e.g. "Sliding Window") so
-   the UI can show what technique it teaches.
+   SIGNAL 2 — whether the problem is on the curated lists people prep from.
+   Blind 75 (×1.0), NeetCode 150 (×0.8), Grind 169 (×0.8), LeetCode Top
+   Interview 150 (×0.7), Striver's SDE Sheet (×0.6), LeetCode 75 (×0.5). These
+   are picked for pattern coverage, so being on several means the problem is a
+   technique in itself. Lists live in scripts/data/patternLists.json and
+   scripts/data/curatedLists.json.
 
-   Usage:
-     git clone --depth 1 https://github.com/krishnadey30/LeetCode-Questions-CompanyWise /tmp/lcq
-     node scripts/genDSAPriority.mjs /tmp/lcq
+   importance = 100 · (0.65 · freqPct + 0.35 · min(1, listWeight / 3))
+     where freqPct = 1 − ln(rank) / ln(#problems on LeetCode), rank by freq.
+   P0–P3 are cut from importance (P0 also needs 8+ companies in 6 months),
+   with floors: Blind 75 never below P1, NeetCode 150 never below P2, a
+   problem on 3+ lists never below P1.
+
+   level (1–4) is how far into a topic a problem sits: Easy = 1, Medium
+   split at the set's median acceptance rate into 2 (gentler) and 3, Hard = 4.
+
+   LeetCode Premium problems are never in the set — they're dropped here even
+   if a list or an earlier round added them.
+
+   Usage (clones are big; keep them out of the repo):
+     git clone --depth 1 https://github.com/liquidslr/interview-company-wise-problems  <dir>/liq
+     git clone --depth 1 https://github.com/snehasishroy/leetcode-companywise-interview-questions <dir>/sneh
+     git clone --depth 1 https://github.com/krishnadey30/LeetCode-Questions-CompanyWise <dir>/lcq
+     node scripts/fetchLeetCodeCatalog.mjs <dir>/catalog.json
+     node scripts/genDSAPriority.mjs <dir>            (add --dry to only print)
 */
-import { readFileSync, readdirSync, writeFileSync } from "fs";
+import { readFileSync, readdirSync, writeFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { DSA_TOPICS } from "../src/Data/DSAPrep.js";
+import * as CURRENT from "../src/Data/DSAPrep.js";
+
+// The set as it stands is the baseline: this script only ever edits it.
+const { DSA_TOPICS } = CURRENT;
+// Problems taken out in earlier runs. Kept so a solve on one is never lost:
+// the DSA page still shows (and counts) a retired problem you already solved.
+const PREV_RETIRED = CURRENT.DSA_RETIRED || [];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DIR = (process.argv[2] || "/tmp/lcq").replace(/\/$/, "") + "/";
+const DIR = (process.argv[2] || "").replace(/[\\/]$/, "");
+const DRY = process.argv.includes("--dry");
+if (!DIR || !existsSync(`${DIR}/catalog.json`)) {
+  console.error("Pass the folder holding liq/, sneh/, lcq/ and catalog.json (see header).");
+  process.exit(1);
+}
 
 const PATTERNS = JSON.parse(readFileSync(join(__dirname, "data/patternLists.json"), "utf8"));
+const CURATED = JSON.parse(readFileSync(join(__dirname, "data/curatedLists.json"), "utf8"));
 const alias = (s) => PATTERNS.aliases[s] || s;
 const BLIND75 = new Set(PATTERNS.blind75.map(alias));
 const NC150 = new Map(PATTERNS.neetcode150.map((p) => [alias(p.slug), p.pattern]));
+const CATALOG = new Map(JSON.parse(readFileSync(`${DIR}/catalog.json`, "utf8")).map((q) => [q.titleSlug, q]));
 
-// ── Problems the original curation missed ───────────────────────────────────
-// It dropped every Easy problem, which cut out the most-asked question on the
-// entire list (Two Sum, tagged at 72 of the 200 companies), and it predated the
-// pattern lists so it was missing several technique anchors. All non-premium.
+// ── Round 1 (Oct 2026): problems the original curation missed ───────────────
+// Already folded into DSAPrep.js; kept as the record of why each was added.
 // Re-running is safe: anything already present is skipped.
 const ADDITIONS = [
   // Arrays / two pointers
@@ -235,152 +258,347 @@ const ADDITIONS = [
   ["max-points-on-a-line", "Max Points on a Line", "Hard", "Math & Number Theory"],
 ];
 
-// ── Aggregate frequency across the user's target companies ──────────────────
-const files = readdirSync(DIR).filter((f) => f.endsWith(".csv"));
-if (!files.length) {
-  console.error(`No CSVs in ${DIR}. Clone the dataset first (see header).`);
-  process.exit(1);
-}
-// Every company in the dataset — they are all SDE employers running DSA
-// interviews, so restricting to one roster only threw away signal.
-const targets = new Set(files.map((f) => f.replace(/_(alltime|6months|1year|2year)\.csv$/, "")));
+// ── Round 2 (Nov 2026): high-signal problems still missing ──────────────────
+// Picked from the fresh 2026 frequency ranking and the curated lists, skipping
+// SQL, JS-only and trivial problems. Several are the Easy way into a topic
+// that had none (Sliding Window, Prefix Sums, BST, Graphs, Greedy), which the
+// picker needs so a topic can start gently.
+const ADDITIONS_R2 = [
+  // Arrays
+  ["majority-element", "Majority Element", "Easy", "Arrays and Two Pointers"],
+  ["remove-duplicates-from-sorted-array", "Remove Duplicates from Sorted Array", "Easy", "Arrays and Two Pointers"],
+  // Prefix sums
+  ["find-pivot-index", "Find Pivot Index", "Easy", "Array Manipulation and Prefix Sums"],
+  ["range-sum-query-immutable", "Range Sum Query - Immutable", "Easy", "Array Manipulation and Prefix Sums"],
+  ["contiguous-array", "Contiguous Array", "Medium", "Array Manipulation and Prefix Sums"],
+  ["shortest-subarray-with-sum-at-least-k", "Shortest Subarray with Sum at Least K", "Hard", "Array Manipulation and Prefix Sums"],
+  // Sliding window
+  ["contains-duplicate-ii", "Contains Duplicate II", "Easy", "Sliding Window"],
+  ["maximum-average-subarray-i", "Maximum Average Subarray I", "Easy", "Sliding Window"],
+  ["maximum-points-you-can-obtain-from-cards", "Maximum Points You Can Obtain from Cards", "Medium", "Sliding Window"],
+  ["count-number-of-nice-subarrays", "Count Number of Nice Subarrays", "Medium", "Sliding Window"],
+  ["longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit", "Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit", "Medium", "Sliding Window"],
+  // Strings
+  ["reverse-words-in-a-string", "Reverse Words in a String", "Medium", "String Algorithms"],
+  ["zigzag-conversion", "Zigzag Conversion", "Medium", "String Algorithms"],
+  ["valid-palindrome-ii", "Valid Palindrome II", "Easy", "String Algorithms"],
+  ["is-subsequence", "Is Subsequence", "Easy", "String Algorithms"],
+  ["ransom-note", "Ransom Note", "Easy", "String Algorithms"],
+  // Linked lists
+  ["remove-duplicates-from-sorted-list", "Remove Duplicates from Sorted List", "Easy", "Linked Lists"],
+  ["odd-even-linked-list", "Odd Even Linked List", "Medium", "Linked Lists"],
+  ["swap-nodes-in-pairs", "Swap Nodes in Pairs", "Medium", "Linked Lists"],
+  // Stack and queue
+  ["next-greater-element-i", "Next Greater Element I", "Easy", "Stack and Queue"],
+  ["remove-all-adjacent-duplicates-in-string", "Remove All Adjacent Duplicates In String", "Easy", "Stack and Queue"],
+  ["remove-all-adjacent-duplicates-in-string-ii", "Remove All Adjacent Duplicates in String II", "Medium", "Stack and Queue"],
+  ["minimum-add-to-make-parentheses-valid", "Minimum Add to Make Parentheses Valid", "Medium", "Stack and Queue"],
+  ["find-the-winner-of-the-circular-game", "Find the Winner of the Circular Game", "Medium", "Stack and Queue"],
+  // Trees
+  ["binary-tree-inorder-traversal", "Binary Tree Inorder Traversal", "Easy", "Trees - Basic and Traversal"],
+  ["path-sum", "Path Sum", "Easy", "Trees - Advanced Properties"],
+  ["binary-tree-cameras", "Binary Tree Cameras", "Hard", "Trees - Advanced Properties"],
+  // BST
+  ["convert-sorted-array-to-binary-search-tree", "Convert Sorted Array to Binary Search Tree", "Easy", "Binary Search Trees"],
+  ["search-in-a-binary-search-tree", "Search in a Binary Search Tree", "Easy", "Binary Search Trees"],
+  ["construct-binary-search-tree-from-preorder-traversal", "Construct Binary Search Tree from Preorder Traversal", "Medium", "Binary Search Trees"],
+  // Heap
+  ["sort-characters-by-frequency", "Sort Characters By Frequency", "Medium", "Heap and Priority Queue"],
+  ["find-k-pairs-with-smallest-sums", "Find K Pairs with Smallest Sums", "Medium", "Heap and Priority Queue"],
+  // Binary search
+  ["search-insert-position", "Search Insert Position", "Easy", "Binary Search"],
+  ["first-bad-version", "First Bad Version", "Easy", "Binary Search"],
+  ["minimum-number-of-days-to-make-m-bouquets", "Minimum Number of Days to Make m Bouquets", "Medium", "Binary Search"],
+  // DP
+  ["pascals-triangle", "Pascal's Triangle", "Easy", "Dynamic Programming - 1D"],
+  ["delete-and-earn", "Delete and Earn", "Medium", "Dynamic Programming - 1D"],
+  ["perfect-squares", "Perfect Squares", "Medium", "Dynamic Programming - 1D"],
+  ["triangle", "Triangle", "Medium", "Dynamic Programming - 2D"],
+  // Graphs
+  ["flood-fill", "Flood Fill", "Easy", "Graphs - Basic Traversal"],
+  ["find-if-path-exists-in-graph", "Find if Path Exists in Graph", "Easy", "Graphs - Basic Traversal"],
+  ["keys-and-rooms", "Keys and Rooms", "Medium", "Graphs - Basic Traversal"],
+  ["shortest-path-in-binary-matrix", "Shortest Path in Binary Matrix", "Medium", "Graphs - Basic Traversal"],
+  ["snakes-and-ladders", "Snakes and Ladders", "Medium", "Graphs - Basic Traversal"],
+  ["find-the-safest-path-in-a-grid", "Find the Safest Path in a Grid", "Medium", "Graphs - Shortest Path and Advanced"],
+  // Union find — replaces the two Premium-only anchors dropped below
+  ["number-of-operations-to-make-network-connected", "Number of Operations to Make Network Connected", "Medium", "Union Find"],
+  ["minimize-malware-spread", "Minimize Malware Spread", "Hard", "Union Find"],
+  // Backtracking
+  ["combinations", "Combinations", "Medium", "Backtracking"],
+  ["restore-ip-addresses", "Restore IP Addresses", "Medium", "Backtracking"],
+  // Greedy
+  ["can-place-flowers", "Can Place Flowers", "Easy", "Greedy & Intervals"],
+  ["lemonade-change", "Lemonade Change", "Easy", "Greedy & Intervals"],
+  ["largest-number", "Largest Number", "Medium", "Greedy & Intervals"],
+  // Design — recent asks, and stand-ins for the Premium-only design classics
+  ["design-authentication-manager", "Design Authentication Manager", "Medium", "Design and Implementation"],
+  ["design-memory-allocator", "Design Memory Allocator", "Medium", "Design and Implementation"],
+  // Math / bits
+  ["palindrome-number", "Palindrome Number", "Easy", "Math & Number Theory"],
+  ["add-binary", "Add Binary", "Easy", "Math & Number Theory"],
+  ["count-primes", "Count Primes", "Medium", "Math & Number Theory"],
+  ["power-of-two", "Power of Two", "Easy", "Bit Manipulation"],
+];
 
-const WINDOW_WEIGHT = { "6months": 3, "1year": 2, "2year": 1.5, alltime: 1 };
+// ── Removals (Nov 2026) ─────────────────────────────────────────────────────
+// Applied after every addition, so a removal always wins. Premium-only
+// problems are removed automatically on top of this list.
+// Ids that were the same problem under a wrong slug: a solve on the old id is
+// carried over to the new one (planStore.migrateDsaAliases) and the old entry
+// is dropped outright rather than retired.
+const ID_ALIASES = {
+  "coin-change-2": "coin-change-ii",
+};
 
+const REMOVALS = [
+  // Rarely asked anywhere in 2025–26 (outside the top ~1000 by frequency,
+  // on no curated list) — they cost a day each and almost never come up.
+  "peeking-iterator", "number-of-matching-subsequences", "find-duplicate-subtrees",
+  "longest-duplicate-substring", "number-of-dice-rolls-with-target-sum",
+  "queue-reconstruction-by-height", "sliding-puzzle", "jump-game-iii", "stream-of-characters",
+  "find-and-replace-in-string", "sum-of-distances-in-tree", "design-circular-deque",
+  "expressive-words", "stock-price-fluctuation", "range-sum-query-mutable",
+  "find-k-th-smallest-pair-distance", "longest-univalue-path", "path-with-maximum-probability",
+  "longest-path-with-different-adjacent-characters", "license-key-formatting", "my-calendar-ii",
+  "flip-string-to-monotone-increasing", "video-stitching", "course-schedule-iv",
+  "maximum-number-of-points-with-cost", "concatenated-words", "range-module",
+  "minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+  // NeetCode-150 pattern anchors that are almost never asked (rank 1500+);
+  // the patterns are still covered by Merge Intervals / Gas Station etc.
+  "detect-squares", "minimum-interval-to-include-each-query", "merge-triplets-to-form-target-triplet",
+];
+
+// ── Frequency data ──────────────────────────────────────────────────────────
 function parseCsv(text) {
   const rows = [];
-  for (const line of text.trim().split("\n").slice(1)) {
-    const parts = line.split(",");
-    if (parts.length < 6) continue;
-    const link = parts[parts.length - 1].trim();
-    const freq = parseFloat(parts[parts.length - 2]);
-    if (!link || isNaN(freq)) continue;
-    rows.push({ slug: link.replace(/\/$/, "").split("/").pop(), freq });
+  let row = [], field = "", quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; } else quoted = false;
+      } else field += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") { row.push(field); field = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field); rows.push(row); row = []; field = "";
+    } else field += c;
   }
-  return rows;
+  if (field || row.length) { row.push(field); rows.push(row); }
+  return rows.filter((r) => r.length > 1);
 }
+const slugOf = (url) => url.trim().replace(/\/$/, "").split("/").pop();
+const companyKey = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-const agg = new Map();
-for (const company of targets) {
-  for (const [win, weight] of Object.entries(WINDOW_WEIGHT)) {
-    const f = `${company}_${win}.csv`;
-    if (!files.includes(f)) continue;
-    const rows = parseCsv(readFileSync(DIR + f, "utf8"));
-    if (!rows.length) continue;
-    const max = Math.max(...rows.map((r) => r.freq));
-    if (!max) continue;
-    for (const r of rows) {
-      if (!agg.has(r.slug)) agg.set(r.slug, { score: 0, companies: new Set() });
-      const e = agg.get(r.slug);
-      e.score += (r.freq / max) * weight;
-      e.companies.add(company);
+// One 2026 dataset → Map(slug → { win: {d30,m3,m6,old: Σ normalised freq}, cos: {win: Set} }).
+function loadWindowed(dir, files, cols) {
+  const agg = new Map();
+  for (const company of readdirSync(dir)) {
+    for (const [win, file] of Object.entries(files)) {
+      const path = `${dir}/${company}/${file}`;
+      if (!existsSync(path)) continue;
+      const rows = parseCsv(readFileSync(path, "utf8"));
+      const head = rows.shift() || [];
+      const li = head.indexOf(cols.link), fi = head.indexOf(cols.freq);
+      const data = rows
+        .map((r) => ({ slug: slugOf(r[li] || ""), f: parseFloat(r[fi]) }))
+        .filter((r) => r.slug && !isNaN(r.f));
+      const max = Math.max(0, ...data.map((d) => d.f));
+      if (!max) continue;
+      for (const d of data) {
+        if (!agg.has(d.slug)) agg.set(d.slug, { win: {}, cos: {} });
+        const e = agg.get(d.slug);
+        e.win[win] = (e.win[win] || 0) + d.f / max;
+        (e.cos[win] ||= new Set()).add(companyKey(company));
+      }
     }
   }
+  return agg;
+}
+const WINDOWS = ["d30", "m3", "m6", "old"];
+const liq = loadWindowed(`${DIR}/liq`,
+  Object.fromEntries(WINDOWS.map((w, i) => [w, ["1. Thirty Days.csv", "2. Three Months.csv", "3. Six Months.csv", "4. More Than Six Months.csv"][i]])),
+  { link: "Link", freq: "Frequency" });
+const sneh = loadWindowed(`${DIR}/sneh`,
+  Object.fromEntries(WINDOWS.map((w, i) => [w, ["thirty-days.csv", "three-months.csv", "six-months.csv", "more-than-six-months.csv"][i]])),
+  { link: "URL", freq: "Frequency %" });
+
+// The 2022 dataset: flat company_window.csv files, last two columns freq + link.
+const legacy = new Map();
+{
+  const W = { "6months": 3, "1year": 2, "2year": 1.5, alltime: 1 };
+  for (const f of readdirSync(`${DIR}/lcq`)) {
+    const m = f.match(/^(.*)_(alltime|6months|1year|2year)\.csv$/);
+    if (!m) continue;
+    const rows = parseCsv(readFileSync(`${DIR}/lcq/${f}`, "utf8")).slice(1);
+    const data = rows.map((r) => ({ slug: slugOf(r[r.length - 1]), f: parseFloat(r[r.length - 2]) })).filter((r) => r.slug && !isNaN(r.f));
+    const max = Math.max(0, ...data.map((d) => d.f));
+    if (!max) continue;
+    for (const d of data) legacy.set(d.slug, (legacy.get(d.slug) || 0) + (d.f / max) * W[m[2]]);
+  }
 }
 
-const ranked = [...agg.entries()]
-  .map(([slug, e]) => ({ slug, breadth: e.companies.size, rank: e.score * Math.log2(1 + e.companies.size) }))
-  .sort((a, b) => b.rank - a.rank);
-const pos = new Map(ranked.map((r, i) => [r.slug, i + 1]));
-const breadthOf = new Map(ranked.map((r) => [r.slug, r.breadth]));
+const recentOf = (e) => (e ? 4 * (e.win.d30 || 0) + 2.5 * (e.win.m3 || 0) + 1.5 * (e.win.m6 || 0) : 0);
+const companiesIn = (slug, wins) => {
+  const s = new Set();
+  for (const d of [liq, sneh]) {
+    const e = d.get(slug);
+    if (e) for (const w of wins) for (const c of e.cos[w] || []) s.add(c);
+  }
+  return s.size;
+};
 
-// ── Merge additions into the curated topic set ──────────────────────────────
+const ALL = [...CATALOG.keys()];
+const maxBy = (fn) => Math.max(...ALL.map(fn)) || 1;
+const rLiq = (s) => recentOf(liq.get(s)), rSneh = (s) => recentOf(sneh.get(s));
+const oNew = (s) => (liq.get(s)?.win.old || 0) + (sneh.get(s)?.win.old || 0), oLegacy = (s) => legacy.get(s) || 0;
+const MX = { rLiq: maxBy(rLiq), rSneh: maxBy(rSneh), oNew: maxBy(oNew), oLegacy: maxBy(oLegacy) };
+
+const LIST_WEIGHTS = [
+  ["blind75", BLIND75, 1.0],
+  ["nc150", new Set(NC150.keys()), 0.8],
+  ["grind169", new Set(CURATED.grind169), 0.8],
+  ["ti150", new Set(CURATED.topInterview150), 0.7],
+  ["striver", new Set(CURATED.striverSDE), 0.6],
+  ["lc75", new Set(CURATED.leetcode75), 0.5],
+];
+
+const stats = new Map();
+for (const s of ALL) {
+  const recent = 0.6 * (rLiq(s) / MX.rLiq) + 0.4 * (rSneh(s) / MX.rSneh);
+  const old = 0.5 * (oNew(s) / MX.oNew) + 0.5 * (oLegacy(s) / MX.oLegacy);
+  const companies = companiesIn(s, ["d30", "m3", "m6"]);
+  const lists = LIST_WEIGHTS.filter(([, set]) => set.has(s));
+  stats.set(s, {
+    freq: (0.7 * recent + 0.3 * old) * Math.log2(2 + companies),
+    companies,
+    recent: companiesIn(s, ["d30"]),
+    lists: lists.map(([k]) => k),
+    listWeight: lists.reduce((n, [, , w]) => n + w, 0),
+  });
+}
+ALL.slice().sort((a, b) => stats.get(b).freq - stats.get(a).freq).forEach((s, i) => (stats.get(s).rank = i + 1));
+
+// ── Build the set ───────────────────────────────────────────────────────────
 const topics = DSA_TOPICS.map((t) => ({ topic: t.topic, problems: t.problems.map((p) => ({ ...p })) }));
 const byTopic = new Map(topics.map((t) => [t.topic, t]));
 const seen = new Set(topics.flatMap((t) => t.problems.map((p) => p.id)));
-
-for (const [id, title, difficulty, topic] of ADDITIONS) {
-  if (seen.has(id)) { console.warn("already present, skipping:", id); continue; }
+for (const [id, title, difficulty, topic] of [...ADDITIONS, ...ADDITIONS_R2]) {
+  if (seen.has(id)) continue;
   const t = byTopic.get(topic);
   if (!t) { console.error("unknown topic:", topic); process.exit(1); }
   t.problems.push({ id, title, link: `https://leetcode.com/problems/${id}/`, difficulty });
   seen.add(id);
 }
+const removed = [];
+const retired = new Map(PREV_RETIRED.map((p) => [p.id, p]));
+const drop = new Set(REMOVALS);
+for (const t of topics) {
+  t.problems = t.problems.filter((p) => {
+    const q = CATALOG.get(p.id);
+    const why = ID_ALIASES[p.id] ? "duplicate" : drop.has(p.id) ? "listed" : !q ? "not on LeetCode" : q.isPaidOnly ? "Premium" : null;
+    if (!why) return true;
+    removed.push(`${p.id} (${why})`);
+    if (!ID_ALIASES[p.id]) {
+      retired.set(p.id, {
+        id: p.id, title: p.title, link: p.link, difficulty: p.difficulty,
+        topic: t.topic, retired: why === "Premium" ? "Premium" : "Rarely asked",
+      });
+    }
+    return false;
+  });
+}
+// A problem added back since it was retired is live again.
+for (const t of topics) for (const p of t.problems) retired.delete(p.id);
 
-// ── Assign P0–P3 ────────────────────────────────────────────────────────────
-// Frequency decides the base bucket; being a pattern anchor then promotes it.
-const P0_MAX_POS = 55, P0_MIN_BREADTH = 22;
-const P1_MAX_POS = 190;
-const P2_MAX_POS = 600;
-
-function freqTier(id) {
-  const p = pos.get(id);
-  if (p === undefined) return 3;               // never tagged at any company
-  const b = breadthOf.get(id) || 0;
-  if (p <= P0_MAX_POS && b >= P0_MIN_BREADTH) return 0;
-  if (p <= P1_MAX_POS) return 1;
-  if (p <= P2_MAX_POS) return 2;
-  return 3;
+// ── Score, level, priority ─────────────────────────────────────────────────
+const problems = topics.flatMap((t) => t.problems);
+const LN_N = Math.log(ALL.length);
+for (const p of problems) {
+  const q = CATALOG.get(p.id), st = stats.get(p.id);
+  p.difficulty = q.difficulty;                      // LeetCode's own label wins
+  p.title = q.title;
+  const freqPct = Math.max(0, 1 - Math.log(st.rank) / LN_N);
+  p.importance = Math.round(100 * (0.65 * freqPct + 0.35 * Math.min(1, st.listWeight / 3)));
+  p.companies = st.companies;
+  if (st.recent) p.recent = st.recent; else delete p.recent;
+  if (st.lists.length) p.lists = st.lists; else delete p.lists;
+}
+// Medium is split at the set's median acceptance rate: the gentler half sits
+// at level 2, the half people get wrong more often at level 3.
+const medAc = problems.filter((p) => p.difficulty === "Medium").map((p) => CATALOG.get(p.id).acRate).sort((a, b) => a - b);
+const MEDIAN_AC = medAc[Math.floor(medAc.length / 2)];
+for (const p of problems) {
+  p.level = p.difficulty === "Easy" ? 1 : p.difficulty === "Hard" ? 4 : CATALOG.get(p.id).acRate >= MEDIAN_AC ? 2 : 3;
 }
 
-// A problem that IS a technique is worth doing even when it isn't asked often,
-// so being a pattern anchor sets a FLOOR on its bucket — it can't sink out of
-// sight. It is deliberately not a promotion: P0 stays "asked constantly", which
-// is what makes that bucket worth trusting as a do-these-first list.
-function priorityOf(id) {
-  const t = freqTier(id);
-  if (BLIND75.has(id)) return `P${Math.min(t, 1)}`;   // never below P1
-  if (NC150.has(id)) return `P${Math.min(t, 2)}`;     // never below P2
-  return `P${t}`;
-}
+// Buckets by importance order; floors keep pattern anchors visible.
+const P0_COUNT = 40, P1_UPTO = 150, P2_UPTO = 285, P0_MIN_COMPANIES = 8;
+const order = problems.slice().sort((a, b) => b.importance - a.importance || stats.get(a.id).rank - stats.get(b.id).rank);
+order.forEach((p, i) => {
+  let tier = i < P0_COUNT ? 0 : i < P1_UPTO ? 1 : i < P2_UPTO ? 2 : 3;
+  if (tier === 0 && p.companies < P0_MIN_COMPANIES) tier = 1;
+  if (BLIND75.has(p.id) || (p.lists || []).length >= 3) tier = Math.min(tier, 1);
+  if (NC150.has(p.id)) tier = Math.min(tier, 2);
+  p.priority = `P${tier}`;
+  const pattern = NC150.get(p.id);
+  if (pattern) p.pattern = pattern;
+  if (BLIND75.has(p.id)) p.core = true; else delete p.core;
+});
 
 const counts = { P0: 0, P1: 0, P2: 0, P3: 0 };
-let anchors = 0;
+const KEY_ORDER = ["id", "title", "link", "difficulty", "priority", "importance", "level", "companies", "recent", "lists", "pattern", "core"];
 for (const t of topics) {
-  for (const p of t.problems) {
-    p.priority = priorityOf(p.id);
-    // What technique this problem teaches, when it is a recognised anchor.
-    const pattern = NC150.get(p.id);
-    if (pattern) p.pattern = pattern;
-    if (BLIND75.has(p.id)) p.core = true;      // the minimal pattern-covering set
-    if (pattern || p.core) anchors += 1;
+  t.problems.sort((a, b) => a.priority.localeCompare(b.priority) || b.importance - a.importance);
+  t.problems = t.problems.map((p) => {
     counts[p.priority] += 1;
-  }
-  // Highest-priority problems first inside each topic. Within a bucket the
-  // pattern anchors come first — they teach the technique the rest of the
-  // bucket then applies — and everything else falls back to frequency rank.
-  const order = { P0: 0, P1: 1, P2: 2, P3: 3 };
-  t.problems.sort(
-    (a, b) =>
-      order[a.priority] - order[b.priority] ||
-      (b.core ? 1 : 0) - (a.core ? 1 : 0) ||
-      (NC150.has(b.id) ? 1 : 0) - (NC150.has(a.id) ? 1 : 0) ||
-      (pos.get(a.id) ?? 1e9) - (pos.get(b.id) ?? 1e9)
-  );
+    return Object.fromEntries(KEY_ORDER.filter((k) => p[k] !== undefined).map((k) => [k, p[k]]));
+  });
 }
+const total = problems.length;
 
-const total = topics.reduce((n, t) => n + t.problems.length, 0);
-console.log("companies used:", targets.size);
-console.log("problems:", total, "| pattern anchors:", anchors);
-console.log("priority distribution:", counts);
-console.log("\nP0 list:");
-topics.flatMap((t) => t.problems.filter((p) => p.priority === "P0").map((p) => ({ ...p, t: t.topic })))
-  .sort((a, b) => (pos.get(a.id) ?? 1e9) - (pos.get(b.id) ?? 1e9))
-  .forEach((p, i) => console.log(`${String(i + 1).padStart(3)}. ${p.title.slice(0, 46).padEnd(47)} ${p.difficulty.padEnd(6)} breadth=${breadthOf.get(p.id)}`));
+console.log("problems:", total, "| removed:", removed.length, "| median Medium acceptance:", MEDIAN_AC.toFixed(1));
+console.log("priority:", counts);
+console.log("levels:", [1, 2, 3, 4].map((l) => `L${l}=${problems.filter((p) => p.level === l).length}`).join(" "));
+console.log("removed:", removed.join(", "));
+for (const t of topics) {
+  const lv = [1, 2, 3, 4].map((l) => t.problems.filter((p) => p.level === l).length).join("/");
+  console.log(`  ${t.topic.padEnd(46)} ${String(t.problems.length).padStart(3)}  L1-4 ${lv}`);
+}
+if (process.argv.includes("--list")) {
+  order.forEach((p, i) => console.log(`${String(i + 1).padStart(4)} ${p.priority} imp=${String(p.importance).padStart(3)} L${p.level} co=${String(p.companies).padStart(3)} r30=${p.recent || 0} ${p.id} [${(p.lists || []).join(",")}]`));
+}
+if (DRY) process.exit(0);
 
 // ── Emit ────────────────────────────────────────────────────────────────────
-const out = `// Curated interview DSA set — ${total} problems targeting senior-SDE roles.
+const out = `// Curated interview DSA set — ${total} problems, LeetCode Premium excluded.
 //
-// \`priority\` (P0–P3) blends two measured signals, not judgement:
+// \`priority\` (P0–P3) and \`importance\` (0–100) blend two measured signals:
 //
-//   1. HOW OFTEN IT IS ASKED. Per-company LeetCode tag frequencies from
-//      https://github.com/krishnadey30/LeetCode-Questions-CompanyWise across all
-//      ${targets.size} companies in that dataset, normalised per company, weighted toward
-//      recent windows, and scaled by how many companies ask it. The top bucket
-//      also requires breadth, so one company's favourite can't reach it alone.
+//   1. HOW OFTEN IT IS ASKED, weighted toward the last 30 days / 3 / 6 months.
+//      LeetCode company tags from two 2026 scrapes (liquidslr, Oct 2026;
+//      snehasishroy, Aug 2026 — ~1,100 companies) plus the 2022
+//      krishnadey30 dataset as the long-run record, normalised per company and
+//      scaled by how many companies asked it in the last 6 months.
 //
-//   2. WHETHER IT IS A TOPIC IN ITSELF. Blind 75 and NeetCode 150 are curated
-//      for pattern coverage — each entry is the canonical representative of a
-//      technique. Membership promotes a problem a bucket and floors it (Blind 75
-//      never below P1, NeetCode 150 never below P2), because solving one teaches
-//      a whole pattern even if it is asked less often.
+//   2. WHETHER IT IS A TOPIC IN ITSELF — membership of Blind 75, NeetCode 150,
+//      Grind 169, LeetCode Top Interview 150, Striver's SDE Sheet, LeetCode 75.
 //
-// \`pattern\` names the technique a problem teaches; \`core\` marks the Blind 75
-// minimal pattern-covering set.
+// \`level\` (1–4) is how deep into its topic a problem sits (Easy → gentler
+// Medium → harder Medium → Hard); the question picker walks topics in that
+// order. \`companies\` = companies asking it in the last 6 months, \`recent\` =
+// in the last 30 days. \`pattern\` names the technique a NeetCode-150 problem
+// teaches; \`core\` marks Blind 75.
 //
 // Regenerate with scripts/genDSAPriority.mjs — edit there, not here.
 
-export const DSA_TOPICS = ${JSON.stringify(topics, null, 2)};
+export const DSA_TOPICS = ${JSON.stringify(topics, null, 2).replace(
+  // Keep each problem's \`lists\` on one line instead of one slug per line.
+  /\[\n\s+((?:"[a-z0-9]+",?\n\s+)+)\]/g,
+  (_, inner) => `[${inner.trim().split(/,?\s*\n\s*/).join(", ")}]`
+)};
 
 export const DSA_DIFFICULTY_CONFIG = {
   Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-800",
@@ -398,6 +616,24 @@ export const DSA_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Shows up regularly", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
   P3: { label: "P3", blurb: "Rounds out topic coverage", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30" },
 };
+
+// Short names for the curated lists a problem is on (\`lists\`).
+export const DSA_LIST_LABELS = {
+  blind75: "Blind 75",
+  nc150: "NeetCode 150",
+  grind169: "Grind 169",
+  ti150: "Top Interview 150",
+  striver: "Striver SDE",
+  lc75: "LeetCode 75",
+};
+
+// Problems taken out of the set. Never offered or counted for a new user, but
+// the DSA page shows any you already solved under its old topic, so a solve
+// is never lost to a re-ranking.
+export const DSA_RETIRED = ${JSON.stringify([...retired.values()], null, 2)};
+
+// Old id → current id for the same problem; a solve moves across on load.
+export const DSA_ID_ALIASES = ${JSON.stringify(ID_ALIASES)};
 
 // Flat list (id-keyed) for the Planning page picker and cross-page sync.
 export const DSA_PROBLEMS = DSA_TOPICS.flatMap((t) =>

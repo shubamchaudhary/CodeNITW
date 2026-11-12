@@ -371,6 +371,29 @@ export function backfillDsaTimestamps() {
   return changed;
 }
 
+// A problem re-keyed to its correct LeetCode slug keeps its solve: a solve
+// (and its date) on the old id is copied to the new one. The old entry is
+// left as it was, so nothing is ever deleted. Runs once per load; cheap.
+export function migrateDsaAliases(aliases) {
+  const completed = loadJSON(KEYS.DSA_COMPLETED, {});
+  const ts = loadJSON(KEYS.DSA_TIMESTAMPS, {});
+  let changed = false;
+  for (const [from, to] of Object.entries(aliases || {})) {
+    if (completed[from] && !completed[to]) {
+      completed[to] = true;
+      if (ts[from] && !ts[to]) ts[to] = ts[from];
+      changed = true;
+    }
+  }
+  if (changed) {
+    quietly(() => {
+      saveJSON(KEYS.DSA_COMPLETED, completed);
+      saveJSON(KEYS.DSA_TIMESTAMPS, ts);
+    });
+  }
+  return changed;
+}
+
 export function setSourceNote(source, id, value) {
   const key = keysFor(source).notes;
   const map = loadJSON(key, {});
