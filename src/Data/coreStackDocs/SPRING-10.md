@@ -72,7 +72,7 @@ spring.security.oauth2.client.registration.inventory:
   scope: inventory.read
 spring.security.oauth2.client.provider.inventory.token-uri: https://auth.example/oauth2/token
 ```
-A `WebClient` or `RestClient` configured with the authorized client manager adds the Bearer token, fetching and caching it automatically. The receiving service only needs `spring.security.oauth2.resourceserver.jwt.issuer-uri`.
+A `WebClient` or `RestClient` configured with the authorized client manager adds the Bearer token, fetching and caching it automatically. The receiving service only needs `spring.security.oauth2.resourceserver.jwt.issuer-uri`, plus rules on the token's scopes: Spring turns each scope into an authority with a `SCOPE_` prefix, so `.requestMatchers(GET, "/stock/**").hasAuthority("SCOPE_inventory.read")`. Give each API its own audience so a token minted for one service is rejected by another.
 
 Also asked: how does the user's identity reach a downstream service? Pass the user's own access token along (simple, if the audience allows), or use **token exchange** (RFC 8693) to swap it for a new token scoped to the downstream service. Client credentials alone says "the order service is calling", not "on behalf of Asha".
 
