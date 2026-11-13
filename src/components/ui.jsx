@@ -10,6 +10,8 @@ import React from "react";
 //   secondary — outlined: every other labelled action
 //   ghost     — no border: low-weight actions in rows and toolbars
 //   success / brand — a secondary that is switched on (done, planned)
+//   ghost-success / ghost-brand — the same, as plain coloured text (the
+//                     reading pages' Mark as done / Learnt / Add to today)
 const BUTTON_BASE =
   "inline-flex items-center justify-center gap-2 shrink-0 whitespace-nowrap rounded-md font-medium transition-colors disabled:opacity-40 disabled:pointer-events-none";
 const BUTTON_VARIANT = {
@@ -18,6 +20,8 @@ const BUTTON_VARIANT = {
   ghost: "text-fg-muted hover:text-fg hover:bg-surface-hover",
   success: "bg-success-subtle text-success-fg border border-transparent",
   brand: "bg-brand-subtle text-brand-fg border border-transparent",
+  "ghost-success": "text-success-fg hover:bg-surface-hover",
+  "ghost-brand": "text-brand-fg hover:bg-surface-hover",
 };
 const BUTTON_SIZE = {
   md: "h-8 px-3 text-[13px]",
@@ -78,11 +82,14 @@ export function ProgressBar({ value, className = "", title }) {
   );
 }
 
-// A priority (P0–P3) or chapter id: mono, boxed, coloured only by `tag.cls`.
+// A priority (P0–P3) or chapter id: plain mono text in the tag's colour —
+// no box. `tag.cls` may carry a fill and an edge for other uses; only its
+// text colours are kept here.
 export function PriorityTag({ tag, className = "" }) {
+  const textOnly = tag.cls.split(/s+/).filter((c) => !/^(dark:)?(bg-|border-)/.test(c)).join(" ");
   return (
     <span
-      className={`inline-flex items-center h-[18px] px-[5px] rounded border border-line font-mono text-[11px] font-medium leading-none tracking-[0.02em] shrink-0 ${tag.cls} ${className}`}
+      className={`inline-flex items-center h-[18px] font-mono text-[11px] font-medium leading-none tracking-[0.02em] shrink-0 ${textOnly} ${className}`}
     >
       {tag.label}
     </span>

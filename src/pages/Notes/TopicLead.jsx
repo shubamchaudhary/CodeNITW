@@ -29,7 +29,7 @@ export default function TopicLead({ stack, owner, topic, done, doneDays, planned
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <Button
-          variant={done ? "success" : "secondary"}
+          variant={done ? "ghost-success" : "ghost"}
           data-tour="mark-done"
           onClick={onToggleDone}
           title={done ? "Done — click to mark as not done" : "Mark this topic as done"}
@@ -39,7 +39,7 @@ export default function TopicLead({ stack, owner, topic, done, doneDays, planned
           {done ? (doneDays != null ? `Done · ${doneDays === 0 ? "today" : `${doneDays}d ago`}` : "Done") : "Mark as done"}
         </Button>
         <Button
-          variant={planned ? "brand" : "secondary"}
+          variant={planned ? "ghost-brand" : "ghost"}
           data-tour="add-today"
           onClick={onTogglePlanned}
           title={planned ? "On today's plan — click to remove" : "Add this topic to today's plan"}

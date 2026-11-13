@@ -31,6 +31,12 @@ nav.sticky {
 :is(button, a).border:is(.border-line, .border-line-strong) {
   box-shadow: var(--raise-sm) !important;
 }
+/* An inline chip or tag (a <span>: difficulty, category, counts) stays flat
+   with its thin line — only cards and buttons are raised. */
+span.border:is(.border-line, .border-line-strong) {
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
 .rounded-lg.border,
 .rounded-xl.border {
   border-radius: 16px !important;
@@ -54,6 +60,10 @@ button.bg-primary:active {
 .bg-surface-hover,
 .bg-surface-subtle.rounded-full {
   box-shadow: var(--inset) !important;
+}
+/* The selected topic in a topics panel: the hover grey, only just pressed. */
+.note-toc .bg-surface-hover {
+  box-shadow: var(--inset-xs) !important;
 }
 .h-1.rounded-full,
 .h-2.rounded-full {

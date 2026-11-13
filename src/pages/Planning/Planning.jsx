@@ -1634,7 +1634,7 @@ const Planning = () => {
   return (
     <PageShell>
       <div className="min-h-screen flex justify-center px-2">
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-5xl lg:[zoom:1.2]">
 
           {isGuest && !sandbox && (
             <div className="mt-6 px-2">

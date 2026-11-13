@@ -1060,7 +1060,7 @@ function LearntButton({ learnt, onClick }) {
     <button
       onClick={onClick}
       title={learnt ? "Learnt — click to mark as not learnt" : "Mark this topic as learnt"}
-      className={`note-learnt absolute z-10 top-0.5 right-0 pl-2 ${buttonClass(learnt ? "success" : "secondary", "sm")}`}
+      className={`note-learnt absolute z-10 top-0.5 right-0 pl-2 ${buttonClass(learnt ? "ghost-success" : "ghost", "sm")}`}
     >
       <CheckCircle done={learnt} className="w-4 h-4" />
       {learnt ? "Learnt" : "Mark as learnt"}

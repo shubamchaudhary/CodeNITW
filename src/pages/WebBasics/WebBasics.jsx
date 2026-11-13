@@ -213,7 +213,7 @@ export default function WebBasics({ techKey }) {
   const nav = <BankNav group={group} groupKey={tech.group} current={current} done={done} onPick={go} />;
 
   return (
-    <div className="wb-page min-h-screen bg-canvas">
+    <div className={`wb-page min-h-screen bg-canvas ${immersive ? "reading-surface" : ""}`}>
       <div className="flex">
         {!immersive && (
           <ResizableSide footerHeight={footerHeight} prefKey="webBasicsSide" className="wb-side">
@@ -221,7 +221,7 @@ export default function WebBasics({ techKey }) {
           </ResizableSide>
         )}
 
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 reading-surface bg-canvas">
           <div className={`${immersive ? "hidden" : "lg:hidden"} sticky top-0 z-30 wb-surface wb-line px-4 py-2.5 border-b border-line bg-canvas   `}>
             <select
               value={`${current.tech.key}/${current.slug}`}
@@ -351,7 +351,7 @@ function BankNav({ group, groupKey, current, done, onPick }) {
                           onClick={() => onPick(m)}
                           className={`w-full flex items-start gap-2.5 pl-3 pr-2 py-[7px] rounded-lg text-left transition-colors ${
                             active
-                              ? "bg-accent-subtle "
+                              ? "bg-surface-hover "
                               : "hover:bg-surface-hover "
                           }`}
                         >
