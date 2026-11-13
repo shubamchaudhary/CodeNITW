@@ -54,6 +54,11 @@ module.exports = {
       boxShadow: {
         xs: token("shadow-xs"),
         overlay: token("shadow-overlay"),
+        // Neumorphic relief (tokens.css): raised off the page, or pressed in.
+        raise: token("raise"),
+        "raise-sm": token("raise-sm"),
+        inset: token("inset"),
+        "inset-sm": token("inset-sm"),
       },
     },
   },

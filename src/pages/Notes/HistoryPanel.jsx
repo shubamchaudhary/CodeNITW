@@ -69,7 +69,7 @@ export default function HistoryPanel({ notesKey, noteId, current, previewId, onP
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <div className="absolute inset-0 bg-primary" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <aside className="relative w-full sm:w-[400px] h-full bg-canvas border-l border-line shadow-overlay flex flex-col">
         <div className="px-5 pt-5 pb-4 border-b border-line">
           <div className="flex items-start justify-between gap-3">

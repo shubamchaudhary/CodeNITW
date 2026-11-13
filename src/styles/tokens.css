@@ -1,24 +1,31 @@
-/* Design tokens — the InterviewPlanPrep design system (tokens.json in the
-   Design System artifact). Light is the default theme; `.dark` on <html>
-   switches every token at once. Tailwind reads these through the colour,
-   font and shadow names in tailwind.config.js (bg-canvas, text-fg-muted,
-   border-line…), so a component never spells a hex value or a `dark:` pair. */
+/* Design tokens — the InterviewPlanPrep design system. Light is the default
+   theme; `.dark` on <html> switches every token at once. Tailwind reads these
+   through the colour, font and shadow names in tailwind.config.js (bg-canvas,
+   text-fg-muted, shadow-raise…), so a component never spells a hex value or a
+   `dark:` pair.
+
+   The look is soft neumorphism: the page and its cards are the same colour,
+   and a card stands off the page by two shadows — a light one up-left and a
+   dark one down-right (--raise). Wells, tracks and fields are the reverse,
+   pressed in (--inset). Light is a cool grey, dark a graphite; orange stays
+   the accent. src/styles/neu.css applies the shadows to the shared surfaces. */
 
 :root {
-  --canvas: #ffffff;
-  --surface-subtle: #fafafa;
-  --surface-hover: #f4f4f5;
-  --line: #e4e4e7;
-  --line-strong: #d4d4d8;
-  --fg: #18181b;
-  --fg-muted: #52525b;
-  --fg-subtle: #6b6b73;
-  --primary: #18181b;
-  --primary-hover: #3f3f46;
+  --canvas: #e8eaf0;
+  --surface-subtle: #e8eaf0;
+  --surface-hover: #e0e3ea;
+  --line: #d6d9e1;
+  --line-strong: #c9cdd7;
+  --fg: #3b3f4a;
+  --fg-muted: #5f6474;
+  --fg-subtle: #7a7f8c;
+  /* The one primary button of a view is an orange pill. */
+  --primary: #ea580c;
+  --primary-hover: #f26a1b;
   --on-primary: #ffffff;
   --brand: #7c3aed;
   --brand-fg: #6d28d9;
-  --brand-subtle: #f5f3ff;
+  --brand-subtle: #ece8fb;
   /* Orange for everything that is a line or a pointer: progress bars and
      rings, today/live markers, drop lines, links, focus rings and the caret.
      Violet (brand) stays for the logo and the tag colours. */
@@ -26,49 +33,68 @@
   --accent-fg: #c2410c;
   --accent-subtle: #fff7ed;
   --accent-tint: rgba(234, 88, 12, 0.18);
+  --accent-gradient: linear-gradient(135deg, #fb923c, #ea580c);
   --focus: var(--accent);
   --success: #16a34a;
   --success-fg: #15803d;
-  --success-subtle: #f0fdf4;
+  --success-subtle: #e3f4e8;
   --warning-fg: #b45309;
-  --warning-subtle: #fffbeb;
+  --warning-subtle: #fbf1dc;
   --danger-fg: #b91c1c;
-  --danger-subtle: #fef2f2;
+  --danger-subtle: #f8e4e4;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-overlay: 0 8px 24px -6px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  /* The two shadow colours, and the shapes built from them. */
+  --neu-light: #ffffff;
+  --neu-dark: #c3c8d4;
+  --raise: 7px 7px 16px var(--neu-dark), -7px -7px 16px var(--neu-light);
+  --raise-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
+  --raise-hover: 9px 9px 20px var(--neu-dark), -9px -9px 20px var(--neu-light);
+  --inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
+  --inset-sm: inset 2px 2px 4px var(--neu-dark), inset -2px -2px 4px var(--neu-light);
+
+  --shadow-xs: var(--raise-sm);
+  --shadow-overlay: 10px 10px 28px var(--neu-dark), -8px -8px 22px var(--neu-light);
 
   --font-sans: Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 :root.dark {
-  --canvas: #0a0a0b;
-  --surface-subtle: #111113;
-  --surface-hover: #1c1c1f;
-  --line: #27272a;
-  --line-strong: #3f3f46;
-  --fg: #fafafa;
-  --fg-muted: #a1a1aa;
-  --fg-subtle: #8b8b93;
-  --primary: #fafafa;
-  --primary-hover: #e4e4e7;
-  --on-primary: #18181b;
+  --canvas: #2a2d34;
+  --surface-subtle: #2a2d34;
+  --surface-hover: #31343c;
+  --line: #353943;
+  --line-strong: #444955;
+  --fg: #e4e6eb;
+  --fg-muted: #a3a8b4;
+  --fg-subtle: #868b98;
+  --primary: #f97316;
+  --primary-hover: #fb8a3c;
+  --on-primary: #ffffff;
   --brand: #8b5cf6;
   --brand-fg: #a78bfa;
-  --brand-subtle: #1e1530;
+  --brand-subtle: #2f2a45;
   --accent: #f97316;
   --accent-fg: #fb923c;
-  --accent-subtle: #1d140d;
+  --accent-subtle: #3a2c22;
   --accent-tint: rgba(249, 115, 22, 0.22);
+  --accent-gradient: linear-gradient(135deg, #fdba74, #f97316);
   --success: #22c55e;
   --success-fg: #4ade80;
-  --success-subtle: #0f2417;
+  --success-subtle: #233a2c;
   --warning-fg: #fbbf24;
-  --warning-subtle: #261d0a;
+  --warning-subtle: #3a3222;
   --danger-fg: #f87171;
-  --danger-subtle: #2a1111;
+  --danger-subtle: #402a2c;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-overlay: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --neu-light: #363a43;
+  --neu-dark: #1d1f24;
+  --raise: 7px 7px 16px var(--neu-dark), -6px -6px 14px var(--neu-light);
+  --raise-sm: 4px 4px 9px var(--neu-dark), -3px -3px 8px var(--neu-light);
+  --raise-hover: 9px 9px 20px var(--neu-dark), -7px -7px 16px var(--neu-light);
+  --inset: inset 4px 4px 8px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
+  --inset-sm: inset 2px 2px 4px var(--neu-dark), inset -2px -2px 4px var(--neu-light);
+
+  --shadow-xs: var(--raise-sm);
+  --shadow-overlay: 10px 10px 28px var(--neu-dark), -6px -6px 18px var(--neu-light);
 }
