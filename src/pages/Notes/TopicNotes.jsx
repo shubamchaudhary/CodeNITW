@@ -668,7 +668,7 @@ export default function TopicNotes() {
   );
 
   return (
-    <div className={`min-h-screen bg-canvas ${immersive ? "reading-surface" : ""}`}>
+    <div className="min-h-screen bg-canvas">
       {immersive && (
         /* Full screen: a slim sticky bar instead of the site header */
         <div
@@ -693,7 +693,7 @@ export default function TopicNotes() {
           </ResizableSide>
         )}
 
-        <main className="flex-1 min-w-0 reading-surface bg-canvas">
+        <main className="flex-1 min-w-0">
           {!immersive && (
             <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2 border-b border-line bg-canvas">
               <button

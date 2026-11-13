@@ -4,28 +4,28 @@
    text-fg-muted, shadow-raise…), so a component never spells a hex value or a
    `dark:` pair.
 
-   The look is soft neumorphism: the page and its cards are the same colour,
-   and a card stands off the page by two shadows — a light one up-left and a
-   dark one down-right (--raise). Wells, tracks and fields are the reverse,
-   pressed in (--inset). Light is a cool grey, dark a graphite; orange stays
-   the accent. src/styles/neu.css applies the shadows to the shared surfaces. */
+   One palette for the whole site: a white page with ink text (near-black in
+   dark mode), orange as the accent. On top of it, a light neumorphic relief:
+   a card stands just off the page on a faint shadow (--raise), and wells,
+   tracks and fields are pressed in (--inset). src/styles/neu.css applies the
+   shadows to the shared surfaces. */
 
 :root {
-  --canvas: #e8eaf0;
-  --surface-subtle: #e8eaf0;
-  --surface-hover: #e0e3ea;
-  --line: #d6d9e1;
-  --line-strong: #c9cdd7;
-  --fg: #3b3f4a;
-  --fg-muted: #5f6474;
-  --fg-subtle: #7a7f8c;
+  --canvas: #ffffff;
+  --surface-subtle: #fafafa;
+  --surface-hover: #f4f4f5;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --fg: #18181b;
+  --fg-muted: #52525b;
+  --fg-subtle: #6b6b73;
   /* The one primary button of a view is an orange pill. */
   --primary: #ea580c;
   --primary-hover: #f26a1b;
   --on-primary: #ffffff;
   --brand: #7c3aed;
   --brand-fg: #6d28d9;
-  --brand-subtle: #ece8fb;
+  --brand-subtle: #f5f3ff;
   /* Orange for everything that is a line or a pointer: progress bars and
      rings, today/live markers, drop lines, links, focus rings and the caret.
      Violet (brand) stays for the logo and the tag colours. */
@@ -37,75 +37,22 @@
   --focus: var(--accent);
   --success: #16a34a;
   --success-fg: #15803d;
-  --success-subtle: #e3f4e8;
+  --success-subtle: #f0fdf4;
   --warning-fg: #b45309;
-  --warning-subtle: #fbf1dc;
+  --warning-subtle: #fffbeb;
   --danger-fg: #b91c1c;
-  --danger-subtle: #f8e4e4;
+  --danger-subtle: #fef2f2;
 
-  /* The two shadow colours (the shapes are below). */
+  /* The two shadow colours (the shapes are below). A white page has no
+     lighter shade to cast, so the light one is white and the dark one faint. */
   --neu-light: #ffffff;
-  --neu-dark: #c3c8d4;
+  --neu-dark: #dfe1e6;
 
   --font-sans: Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 :root.dark {
-  --canvas: #2a2d34;
-  --surface-subtle: #2a2d34;
-  --surface-hover: #31343c;
-  --line: #353943;
-  --line-strong: #444955;
-  --fg: #e4e6eb;
-  --fg-muted: #a3a8b4;
-  --fg-subtle: #868b98;
-  --primary: #f97316;
-  --primary-hover: #fb8a3c;
-  --on-primary: #ffffff;
-  --brand: #8b5cf6;
-  --brand-fg: #a78bfa;
-  --brand-subtle: #2f2a45;
-  --accent: #f97316;
-  --accent-fg: #fb923c;
-  --accent-subtle: #3a2c22;
-  --accent-tint: rgba(249, 115, 22, 0.22);
-  --accent-gradient: linear-gradient(135deg, #fdba74, #f97316);
-  --success: #22c55e;
-  --success-fg: #4ade80;
-  --success-subtle: #233a2c;
-  --warning-fg: #fbbf24;
-  --warning-subtle: #3a3222;
-  --danger-fg: #f87171;
-  --danger-subtle: #402a2c;
-
-  --neu-light: #363a43;
-  --neu-dark: #1d1f24;
-}
-
-/* The reading area of the reading pages (Core Stack, AI Stack, Projects, the
-   question banks — the note itself, in Read, Write and full screen) keeps the
-   old palette: a white page with ink text, or the old near-black in dark mode.
-   The header and the topics panel around it stay grey. Its shadows are a
-   faint grey, since a white page has no lighter shade to cast. */
-.reading-surface {
-  --canvas: #ffffff;
-  --surface-subtle: #fafafa;
-  --surface-hover: #f4f4f5;
-  --line: #e4e4e7;
-  --line-strong: #d4d4d8;
-  --fg: #18181b;
-  --fg-muted: #52525b;
-  --fg-subtle: #6b6b73;
-  --brand-subtle: #f5f3ff;
-  --accent-subtle: #fff7ed;
-  --success-subtle: #f0fdf4;
-  --warning-subtle: #fffbeb;
-  --danger-subtle: #fef2f2;
-  --neu-light: #ffffff;
-  --neu-dark: #dfe1e6;
-}
-:root.dark .reading-surface {
   --canvas: #0a0a0b;
   --surface-subtle: #111113;
   --surface-hover: #1c1c1f;
@@ -114,21 +61,33 @@
   --fg: #fafafa;
   --fg-muted: #a1a1aa;
   --fg-subtle: #8b8b93;
+  --primary: #f97316;
+  --primary-hover: #fb8a3c;
+  --on-primary: #ffffff;
+  --brand: #8b5cf6;
+  --brand-fg: #a78bfa;
   --brand-subtle: #1e1530;
+  --accent: #f97316;
+  --accent-fg: #fb923c;
   --accent-subtle: #1d140d;
+  --accent-tint: rgba(249, 115, 22, 0.22);
+  --accent-gradient: linear-gradient(135deg, #fdba74, #f97316);
+  --success: #22c55e;
+  --success-fg: #4ade80;
   --success-subtle: #0f2417;
+  --warning-fg: #fbbf24;
   --warning-subtle: #261d0a;
+  --danger-fg: #f87171;
   --danger-subtle: #2a1111;
+
   --neu-light: #18181b;
   --neu-dark: #000000;
 }
 
-/* The shapes, built from whichever two shadow colours are in force. They are
-   declared on every element that sets its own colours (a custom property is
-   resolved where it is declared, so redeclaring --neu-dark alone would not
-   reach them). Kept small so a card sits just off the page. */
-:root,
-.reading-surface {
+/* The shapes, built from the two shadow colours. Kept small so a card sits
+   just off the page. (A custom property is resolved where it is declared:
+   anything that redeclares --neu-* must redeclare these too.) */
+:root {
   --raise: 5px 5px 12px var(--neu-dark), -5px -5px 12px var(--neu-light);
   --raise-sm: 3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
   --raise-hover: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
