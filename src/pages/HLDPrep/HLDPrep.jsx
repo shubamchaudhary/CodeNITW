@@ -96,7 +96,7 @@ const HLDPrep = () => {
                     HLD
                   </h1>
                   <span
-                    className="inline-flex items-center h-6 px-2 rounded border border-line font-mono text-[12px] text-fg-subtle"
+                    className="inline-flex items-center h-6 font-mono text-[12px] text-fg-subtle"
                     title={HLD_EVIDENCE.summary}
                   >
                     {HLD_PROBLEMS.length} ranked for SDE2
@@ -177,7 +177,7 @@ const HLDPrep = () => {
 
 function StatPill({ label, value, sub, accent = "text-fg  " }) {
   return (
-    <div className="hidden sm:block text-right px-3 py-1.5 rounded-lg bg-canvas border border-line">
+    <div className="hidden sm:block text-right">
       <p className="text-[10px] font-semibold text-fg-subtle">{label}</p>
       <p className={`text-base font-semibold leading-tight ${accent}`}>
         {value}

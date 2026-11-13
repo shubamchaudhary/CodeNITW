@@ -452,7 +452,8 @@ export default function JobTracker() {
           })}
         </div>
 
-        {/* Tab content */}
+        {/* Tab content. Openings, Contacts and Companies are long lists, so they
+            sit in a calm area: thin lines instead of raised cards. */}
         {currentTab === "pipeline" && (
           <PipelineTab
             allCompanies={allCompanies}
@@ -463,6 +464,7 @@ export default function JobTracker() {
         )}
 
         {currentTab === "openings" && (
+          <div className="neu-calm">
           <Suspense fallback={null}>
             <OpeningsTab
               queuedUrls={queuedUrls}
@@ -474,9 +476,11 @@ export default function JobTracker() {
               removeJob={removeJob}
             />
           </Suspense>
+          </div>
         )}
 
         {currentTab === "contacts" && (
+          <div className="neu-calm">
           <Suspense fallback={null}>
           <ContactsTab
             allCompanies={allCompanies}
@@ -489,9 +493,11 @@ export default function JobTracker() {
             onDeleteContact={deleteContact}
           />
           </Suspense>
+          </div>
         )}
 
         {currentTab === "companies" && (
+          <div className="neu-calm">
           <CompaniesTab
             allCompanies={allCompanies}
             companies={state.companies}
@@ -500,6 +506,7 @@ export default function JobTracker() {
             entryOf={entryOf}
             templates={ownerData.templates}
           />
+          </div>
         )}
       </div>
     </PageShell>

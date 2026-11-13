@@ -43,17 +43,9 @@
   --danger-fg: #b91c1c;
   --danger-subtle: #f8e4e4;
 
-  /* The two shadow colours, and the shapes built from them. */
+  /* The two shadow colours (the shapes are below). */
   --neu-light: #ffffff;
   --neu-dark: #c3c8d4;
-  --raise: 7px 7px 16px var(--neu-dark), -7px -7px 16px var(--neu-light);
-  --raise-sm: 4px 4px 9px var(--neu-dark), -4px -4px 9px var(--neu-light);
-  --raise-hover: 9px 9px 20px var(--neu-dark), -9px -9px 20px var(--neu-light);
-  --inset: inset 4px 4px 8px var(--neu-dark), inset -4px -4px 8px var(--neu-light);
-  --inset-sm: inset 2px 2px 4px var(--neu-dark), inset -2px -2px 4px var(--neu-light);
-
-  --shadow-xs: var(--raise-sm);
-  --shadow-overlay: 10px 10px 28px var(--neu-dark), -8px -8px 22px var(--neu-light);
 
   --font-sans: Geist, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -89,12 +81,71 @@
 
   --neu-light: #363a43;
   --neu-dark: #1d1f24;
-  --raise: 7px 7px 16px var(--neu-dark), -6px -6px 14px var(--neu-light);
-  --raise-sm: 4px 4px 9px var(--neu-dark), -3px -3px 8px var(--neu-light);
-  --raise-hover: 9px 9px 20px var(--neu-dark), -7px -7px 16px var(--neu-light);
-  --inset: inset 4px 4px 8px var(--neu-dark), inset -3px -3px 7px var(--neu-light);
-  --inset-sm: inset 2px 2px 4px var(--neu-dark), inset -2px -2px 4px var(--neu-light);
+}
 
+/* The reading area of the reading pages (Core Stack, AI Stack, Projects, the
+   question banks — the note itself, in Read, Write and full screen) keeps the
+   old palette: a white page with ink text, or the old near-black in dark mode.
+   The header and the topics panel around it stay grey. Its shadows are a
+   faint grey, since a white page has no lighter shade to cast. */
+.reading-surface {
+  --canvas: #ffffff;
+  --surface-subtle: #fafafa;
+  --surface-hover: #f4f4f5;
+  --line: #e4e4e7;
+  --line-strong: #d4d4d8;
+  --fg: #18181b;
+  --fg-muted: #52525b;
+  --fg-subtle: #6b6b73;
+  --brand-subtle: #f5f3ff;
+  --accent-subtle: #fff7ed;
+  --success-subtle: #f0fdf4;
+  --warning-subtle: #fffbeb;
+  --danger-subtle: #fef2f2;
+  --neu-light: #ffffff;
+  --neu-dark: #dfe1e6;
+}
+:root.dark .reading-surface {
+  --canvas: #0a0a0b;
+  --surface-subtle: #111113;
+  --surface-hover: #1c1c1f;
+  --line: #27272a;
+  --line-strong: #3f3f46;
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #8b8b93;
+  --brand-subtle: #1e1530;
+  --accent-subtle: #1d140d;
+  --success-subtle: #0f2417;
+  --warning-subtle: #261d0a;
+  --danger-subtle: #2a1111;
+  --neu-light: #18181b;
+  --neu-dark: #000000;
+}
+
+/* The shapes, built from whichever two shadow colours are in force. They are
+   declared on every element that sets its own colours (a custom property is
+   resolved where it is declared, so redeclaring --neu-dark alone would not
+   reach them). Kept small so a card sits just off the page. */
+:root,
+.reading-surface {
+  --raise: 5px 5px 12px var(--neu-dark), -5px -5px 12px var(--neu-light);
+  --raise-sm: 3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
+  --raise-hover: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
+  --inset: inset 3px 3px 6px var(--neu-dark), inset -3px -3px 6px var(--neu-light);
+  --inset-sm: inset 2px 2px 4px var(--neu-dark), inset -2px -2px 4px var(--neu-light);
+  --inset-xs: inset 1px 1px 2px var(--neu-dark), inset -1px -1px 2px var(--neu-light);
+  /* The topics panel: one soft shadow off its right edge. */
+  --raise-edge: 3px 0 10px -4px var(--neu-dark);
   --shadow-xs: var(--raise-sm);
-  --shadow-overlay: 10px 10px 28px var(--neu-dark), -6px -6px 18px var(--neu-light);
+  --shadow-overlay: 8px 8px 22px var(--neu-dark), -6px -6px 18px var(--neu-light);
+}
+
+/* A calm area (the Jobs lists): cards, rows and buttons look like the old
+   flat design — a thin line instead of a raised shadow. */
+.neu-calm {
+  --raise: 0 0 0 1px var(--line);
+  --raise-sm: 0 0 0 1px var(--line);
+  --raise-hover: 0 0 0 1px var(--line-strong);
+  --inset: inset 1px 1px 3px var(--neu-dark), inset -1px -1px 3px var(--neu-light);
 }

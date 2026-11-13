@@ -537,7 +537,7 @@ export default function TopicNotes() {
   const pick = (id) => navigate(`/notes/${source}/${id}`);
 
   const textSize = (
-    <div className="flex items-center h-8 rounded-md border border-line-strong bg-canvas" title="Text size">
+    <div className="flex items-center h-8" title="Text size">
       <SmallButton
         onClick={() => updatePrefs({ fontSize: Math.max(FONT_MIN, prefs.fontSize - 1) })}
         disabled={prefs.fontSize <= FONT_MIN}
@@ -560,6 +560,7 @@ export default function TopicNotes() {
   // or "rail" (the progress strip, for when the toolbar has scrolled away).
   const fullScreenButton = (place) => (
     <Button
+      variant="ghost"
       ref={place === "toolbar" ? setToolbarFsEl : undefined}
       data-tour={place === "rail" ? undefined : "fullscreen"}
       onClick={immersive ? exitImmersive : enterImmersive}
@@ -667,7 +668,7 @@ export default function TopicNotes() {
   );
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className={`min-h-screen bg-canvas ${immersive ? "reading-surface" : ""}`}>
       {immersive && (
         /* Full screen: a slim sticky bar instead of the site header */
         <div
@@ -692,7 +693,7 @@ export default function TopicNotes() {
           </ResizableSide>
         )}
 
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 reading-surface bg-canvas">
           {!immersive && (
             <div className="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-2 border-b border-line bg-canvas">
               <button

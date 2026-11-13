@@ -72,11 +72,11 @@ export default function ResizableSide({ footerHeight, prefKey, className = "", c
       <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
         {/* Full height, so the topic list inside gets a bounded height and
             scrolls on its own (without it the list grew past the window and
-            was clipped). The list sits on a raised panel lifted off the page,
-            inset from the column's edges so its shadow has room. */}
+            was clipped). The panel runs flush to the top, left and bottom, set
+            off from the reading area by one soft shadow on its right edge. */}
         {!closed && (
-          <div className="h-full py-4 pl-4 pr-3" style={{ width }}>
-            <div className="h-full rounded-2xl bg-canvas shadow-raise overflow-hidden">{children}</div>
+          <div className="h-full bg-canvas shadow-[var(--raise-edge)] overflow-hidden" style={{ width }}>
+            {children}
           </div>
         )}
         <div
