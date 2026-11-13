@@ -3,7 +3,7 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs: IPP-01, LL-01, IOA-01).
+// except where a built-in document replaces them (Data/projectsDocs: IPP-01, LL-01, IOA-01/02, BY-00..06).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -11,6 +11,7 @@ export const PROJECT_SECTIONS = [
   { key: "ipp", label: "InterviewPlanPrep" },
   { key: "loglens", label: "DeepLogLens" },
   { key: "invops", label: "Inventory Ops Agent" },
+  { key: "byjob", label: "Blue Yonder work" },
   { key: "kafka", label: "Kafka" },
 ];
 
@@ -68,6 +69,65 @@ export const PROJECT_TOPICS = [
     sectionLabel: "Inventory Ops Agent",
     title: "Inventory Ops Agent, end to end",
     summary: "The LangGraph supervisor and its four subagents, and the data layer you built: hierarchy-aware reads, Redis-staged writes, HITL interrupts and Base + Overlay commits, with the follow-ups.",
+  },
+  {
+    id: "IOA-02",
+    section: "invops",
+    sectionLabel: "Inventory Ops Agent",
+    title: "Inventory Ops Agent: the interview story",
+    summary: "The 25-minute script: what changed, the stack and why, the problem you faced (an approval interrupt retried away), the team around you, and follow-ups IOA-01 does not cover.",
+  },
+  // The Blue Yonder resume stories, from the team's design documents, written
+  // at interview level (no internal names): what changed, the stack and why, the
+  // story to tell, one problem faced, the team, and follow-ups.
+  {
+    id: "BY-00",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "The allocation platform, end to end",
+    summary: "The system every allocation story lives in: API vs batch, the partitioner and processors, one run from reader to publisher, where each story plugs in, and the gotchas.",
+  },
+  {
+    id: "BY-01",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "Priority Allocation",
+    summary: "Ranking stores from a business measure instead of static network config: the roll-up, direction, fair share on ties, the determinism bug, the need-service contract. ~25 min.",
+  },
+  {
+    id: "BY-02",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "Lifecycle-Driven Allocation",
+    summary: "The assortment plan as the source of truth: three gates (where, when, groups), need bridges, double-gated and fail-open rollout, the load-bearing call order. ~25 min.",
+  },
+  {
+    id: "BY-03",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "Runtime Snowflake Connection Routing",
+    summary: "Standard, OAuth and sharded modes per request: flags vs properties, lazy pools, session prep, rollout, and the tenant id that leaked across pooled threads. ~25 min.",
+  },
+  {
+    id: "BY-04",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "Pack Service Integration",
+    summary: "The sync/async router for the case-pack optimizer: submit, poll, fetch, retries and fallback rules, and why a 400 never falls back. ~10 min.",
+  },
+  {
+    id: "BY-05",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "Dual APIM Support",
+    summary: "Azure APIM and Gravitee in parallel: gateway-agnostic JWT validation, one internal identity across sync, async and batch, target-aware S2S tokens. ~10 min.",
+  },
+  {
+    id: "BY-06",
+    section: "byjob",
+    sectionLabel: "Blue Yonder work",
+    title: "Internship: onboarding, import/export, Testcontainers",
+    summary: "Tenant onboarding with Key Vault credentials, ZIP-of-CSV config import/export, and the PostgreSQL Testcontainers framework gating every PR. ~10 min.",
   },
   // Checked against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as
