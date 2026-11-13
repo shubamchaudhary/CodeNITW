@@ -1290,7 +1290,7 @@ function NotePopover({ pop, note, accent, onSave, onClose, onEdit, onDelete }) {
   return (
     <div
       ref={boxRef}
-      className="note-ui absolute z-30 w-[22.5rem] max-w-[calc(100%-1.5rem)] rounded-2xl bg-white dark:bg-[#161d33] border border-amber-200 dark:border-amber-400/25 shadow-[0_18px_50px_-12px_rgba(15,23,42,0.35)] dark:shadow-[0_18px_50px_-8px_rgba(0,0,0,0.7)] p-4"
+      className="note-ui absolute z-30 w-[22.5rem] max-w-[calc(100%-1.5rem)] rounded-2xl bg-canvas shadow-overlay p-4"
       style={{ top: pop.top, left: pop.left }}
       onMouseUp={(e) => e.stopPropagation()}
     >

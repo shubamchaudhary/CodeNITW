@@ -64,18 +64,19 @@ export default function ResizableSide({ footerHeight, prefKey, className = "", c
   return (
     <aside
       data-side
-      className={`${className} hidden lg:block relative shrink-0 bg-surface-subtle border-r border-line ${
+      className={`${className} hidden lg:block relative shrink-0 ${
         dragW == null ? "transition-[width] duration-200" : ""
       }`}
       style={{ width: closed ? 14 : width }}
     >
-      <div className="sticky top-0 overflow-hidden" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
+      <div className="sticky top-0" style={{ height: `calc(100dvh - ${footerHeight}px)` }}>
         {/* Full height, so the topic list inside gets a bounded height and
             scrolls on its own (without it the list grew past the window and
-            was clipped). */}
+            was clipped). The list sits on a raised panel lifted off the page,
+            inset from the column's edges so its shadow has room. */}
         {!closed && (
-          <div className="h-full" style={{ width }}>
-            {children}
+          <div className="h-full py-4 pl-4 pr-3" style={{ width }}>
+            <div className="h-full rounded-2xl bg-canvas shadow-raise overflow-hidden">{children}</div>
           </div>
         )}
         <div

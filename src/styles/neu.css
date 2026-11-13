@@ -1,0 +1,104 @@
+/* Soft neumorphism on the shared surfaces (tokens in tokens.css).
+
+   Every page builds its cards from the same few classes (components/glass.js,
+   components/ui.jsx): a card is `border border-line`, a well or track is
+   `bg-surface-hover`, the main button is `bg-primary`. These rules give those
+   classes their relief in one place, so no page needs editing to match:
+
+   - a card, button or chip loses its 1px border and is raised instead
+     (--raise; a card on a card, or a button, gets the smaller --raise-sm);
+   - tracks, wells and fields are pressed in (--inset);
+   - orange fills (primary, progress, ticks) become a soft gradient.
+
+   The rules are marked important because the class constants in glass.js
+   already use `!shadow-none`/`!border-*` overrides to beat old page styles. */
+
+/* The header floats over the page on a soft shadow instead of a line. */
+nav.sticky {
+  border-bottom-color: transparent !important;
+  box-shadow: 0 6px 16px -8px var(--neu-dark);
+}
+
+/* Cards: raised, rounder. A card on a card gets the smaller shadow (`:where`
+   keeps that rule at the card rule's specificity, so the button, field and
+   hover rules below still outrank both). */
+.border:is(.border-line, .border-line-strong) {
+  border-color: transparent !important;
+  box-shadow: var(--raise) !important;
+}
+.border.border-line :where(.border.border-line, .border.border-line-strong),
+:is(button, a).border,
+:is(button, a).border:is(.border-line, .border-line-strong) {
+  box-shadow: var(--raise-sm) !important;
+}
+.rounded-lg.border,
+.rounded-xl.border {
+  border-radius: 16px !important;
+}
+.rounded-md.border,
+button.rounded-md {
+  border-radius: 10px !important;
+}
+
+/* Something that opens or links: lifts a little more on hover and presses in
+   on click. */
+:is(button, a).border:hover {
+  box-shadow: var(--raise-hover) !important;
+}
+:is(button, a).border:active,
+button.bg-primary:active {
+  box-shadow: var(--inset-sm) !important;
+}
+
+/* Wells and tracks (segmented controls, progress bars): pressed in. */
+.bg-surface-hover,
+.bg-surface-subtle.rounded-full {
+  box-shadow: var(--inset) !important;
+}
+.h-1.rounded-full,
+.h-2.rounded-full {
+  box-shadow: var(--inset-sm) !important;
+  background-color: var(--canvas) !important;
+}
+/* …but in the header a nav item is just text with the orange underline. */
+nav.sticky .bg-surface-hover {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+nav.sticky .border.border-line {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+@media (max-width: 1023px) {
+  nav.sticky .shadow-overlay {
+    background-color: var(--canvas) !important;
+    box-shadow: var(--shadow-overlay) !important;
+  }
+}
+
+/* Orange fills: a soft gradient. The primary button is a raised pill. The
+   html prefix outranks the !bg-none / !shadow-none in glass.js LIGHT_PRIMARY. */
+html .bg-accent {
+  background-image: var(--accent-gradient) !important;
+}
+html .bg-primary {
+  background-image: var(--accent-gradient) !important;
+  box-shadow: var(--raise-sm) !important;
+}
+html .shadow-xs {
+  box-shadow: var(--raise-sm) !important;
+}
+
+/* Fields: pressed in (:is lifts all three above the card rules). */
+:is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), textarea, select) {
+  background-color: var(--canvas) !important;
+  border-color: transparent !important;
+  box-shadow: var(--inset) !important;
+  border-radius: 12px !important;
+}
+
+/* A dashed "add" slot: a shallow well. */
+.border-dashed:is(.border, .border-2) {
+  border-color: var(--line-strong) !important;
+  box-shadow: var(--inset-sm) !important;
+}
