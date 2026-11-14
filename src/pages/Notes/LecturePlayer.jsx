@@ -10,7 +10,8 @@ import { openNarration } from "./narration.js";
 // at a time (narration.js) and played by this component, not by Remotion.
 // "CH-04" → video/src/chapters/ch04.ts + video/data/ch04/timings.json, and
 // "JAVA-01" → java01.ts, each a separate chunk loaded on demand.
-const SCRIPTS = import.meta.glob("../../../video/src/chapters/[a-z]*[0-9].ts");
+// (KFK-ALL → kfkall.ts is the one chapter whose name doesn't end in a digit.)
+const SCRIPTS = import.meta.glob(["../../../video/src/chapters/[a-z]*[0-9].ts", "../../../video/src/chapters/kfkall.ts"]);
 const TIMINGS = import.meta.glob("../../../video/data/*/timings.json", { import: "default" });
 const LOAD = (id) => {
   const ch = id.toLowerCase().replace(/[^a-z0-9]/g, "");
