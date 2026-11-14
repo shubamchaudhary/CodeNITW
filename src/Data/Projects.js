@@ -3,7 +3,7 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs: IPP-01/02, LL-01, IOA-01/02, BY-00..06, BRIK-01/02).
+// except where a built-in document replaces them (Data/projectsDocs: IPP-01/02, LL-01, IOA-01/02, BY-00..06, BRIK-01/02, KFK-ALL).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -158,6 +158,16 @@ export const PROJECT_TOPICS = [
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as
   // KFK-00. Kafka transactions were asked in none, but KFK-10 keeps them: the resume's
   // "exactly-once effects" line invites "why not Kafka transactions?".
+  // One page for all of Kafka (KFK-01..10 merged, built-in doc + lecture): kept
+  // before KFK-00 while the per-video topics are reviewed against it.
+  {
+    id: "KFK-ALL",
+    section: "kafka",
+    sectionLabel: "Kafka",
+    title: "Kafka end to end (one page)",
+    summary: "The whole of Kafka on one page, in order: the log, consumer groups and commits, the cluster (replication, KRaft, ISR, acks), the full write and read flows, failures, producer internals and idempotence, Spring Boot, retries and DLTs, and exactly-once with transactions and the outbox.",
+    resources: [],
+  },
   kafkaVideo(0, 1, "QNfIUIZQ9Vo", "Event Driven Architecture (EDA) Introduction", 30, "Events vs synchronous calls, pub/sub vs queues, and what you trade for loose coupling."),
   kafkaVideo(1, 2, "fsmhYmzU-2M", "Kafka Architecture - Part 1", 32, "Topic, partition, offset, broker."),
   kafkaVideo(2, 3, "75iKJ0sISKU", "Kafka Architecture - Part 2", 31, "Consumer groups and partition assignment."),

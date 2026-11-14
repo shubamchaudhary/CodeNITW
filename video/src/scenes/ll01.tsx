@@ -27,7 +27,23 @@ type AEdge = {
   la?: "start" | "middle" | "end";
   at?: number;
 };
-type AStep = { n?: string; t?: string; b?: string; m?: string; nodes?: string[]; edges?: string[]; all?: boolean };
+// A record moving along an edge while the step is on: label, colour, reversed,
+// start delay (frames), travel time, and whether it repeats (default) or stops
+// at the end and stays there.
+export type AMove = { e: string; t?: string; tone?: string; rev?: boolean; delay?: number; dur?: number; once?: boolean };
+type AStep = {
+  n?: string;
+  t?: string;
+  b?: string;
+  m?: string;
+  nodes?: string[];
+  edges?: string[];
+  all?: boolean;
+  moves?: AMove[]; // records travelling along edges (their edges light up too)
+  dead?: string[]; // crashed nodes: red, crossed out
+  subs?: Record<string, string>; // per-step subtitle of a node (its state now)
+  tones?: Record<string, string>; // per-step tone of a node
+};
 export type ArchProps = {
   title?: string;
   view: [number, number];
@@ -83,6 +99,28 @@ const route = (e: AEdge, byId: Record<string, ANode>): [number, number][] => {
 
 const pathOf = (pts: [number, number][]) => pts.map((pt, i) => `${i ? "L" : "M"}${pt[0]} ${pt[1]}`).join(" ");
 
+// Points of an explicit "M x y L x y ..." path.
+const parseD = (d: string): [number, number][] => {
+  const n = d.match(/-?\d+(\.\d+)?/g)?.map(Number) ?? [];
+  const pts: [number, number][] = [];
+  for (let i = 0; i + 1 < n.length; i += 2) pts.push([n[i], n[i + 1]]);
+  return pts;
+};
+// The point a fraction u along a polyline.
+const along = (pts: [number, number][], u: number): [number, number] => {
+  const seg = pts.slice(1).map((q, i) => Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]));
+  let d = Math.max(0, Math.min(1, u)) * seg.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < seg.length; i++) {
+    if (d <= seg[i] || i === seg.length - 1) {
+      const k = seg[i] ? d / seg[i] : 0;
+      return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k];
+    }
+    d -= seg[i];
+  }
+  return pts[pts.length - 1];
+};
+const toneCol = (tone?: string) => (tone === "teal" ? C.cyan : tone === "red" ? C.red : tone === "green" ? C.green : tone === "purple" ? C.purple : tone === "amber" ? C.amber : C.blue);
+
 const labelAt = (pts: [number, number][]): [number, number, "start" | "middle"] => {
   let best = 0;
   let len = -1;
@@ -105,8 +143,8 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
   const st = p.steps[Math.min(step, p.steps.length - 1)] ?? { all: true };
   const prev = p.steps[Math.min(step - 1, p.steps.length - 1)];
   const k = step === 0 ? 1 : enter(since, 0, 14);
-  const litIn = (s: AStep | undefined, kind: "nodes" | "edges", id: string) => !s || s.all || !!s[kind]?.includes(id);
-  const hot = (s: AStep | undefined, kind: "nodes" | "edges", id: string) => !!s && !s.all && !!s[kind]?.includes(id);
+  const litIn = (s: AStep | undefined, kind: "nodes" | "edges", id: string) => !s || s.all || !!s[kind]?.includes(id) || (kind === "edges" && !!s.moves?.some((m) => m.e === id));
+  const hot = (s: AStep | undefined, kind: "nodes" | "edges", id: string) => !!s && !s.all && (!!s[kind]?.includes(id) || (kind === "edges" && !!s.moves?.some((m) => m.e === id)));
   const mix = (kind: "nodes" | "edges", id: string) => {
     const now = litIn(st, kind, id) ? 1 : 0;
     const was = step === 0 ? now : litIn(prev, kind, id) ? 1 : 0;
@@ -152,7 +190,8 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
         const pts = e.d ? null : route(e, byId);
         const d = e.d ?? pathOf(pts!);
         const on = hot(st, "edges", e.id);
-        const o = lerp(0.35, 1, mix("edges", e.id)) * fadeIn(e.at ?? Math.max(byId[e.from ?? ""]?.at ?? 0, byId[e.to ?? ""]?.at ?? 0));
+        const deadEnd = !!st?.dead?.some((id) => id === e.from || id === e.to);
+        const o = (deadEnd && !on ? 0.4 : 1) * lerp(0.35, 1, mix("edges", e.id)) * fadeIn(e.at ?? Math.max(byId[e.from ?? ""]?.at ?? 0, byId[e.to ?? ""]?.at ?? 0));
         const [lx, ly, la] = e.lx != null ? [e.lx, e.ly!, e.la ?? "middle"] : pts ? labelAt(pts) : [0, 0, "middle" as const];
         return (
           <g key={e.id} opacity={o}>
@@ -166,16 +205,26 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
         );
       })}
       {p.nodes.filter((n) => seen(n.at)).map((n) => {
-        const on = hot(st, "nodes", n.id);
+        const dead = !!st?.dead?.includes(n.id);
+        const tone = st?.tones?.[n.id] ?? n.tone;
+        const on = hot(st, "nodes", n.id) || dead;
         const nh = n.h ?? NH;
-        const o = lerp(0.42, 1, mix("nodes", n.id)) * fadeIn(n.at);
-        const col = n.tone === "teal" ? C.cyan : n.tone === "red" ? C.red : n.tone === "green" ? C.green : C.blue;
-        const lines = n.s ? n.s.split("\n") : [];
+        const o = lerp(0.42, 1, dead ? 1 : mix("nodes", n.id)) * fadeIn(n.at);
+        const col = dead ? C.red : toneCol(tone);
+        const sub = st?.subs?.[n.id] ?? n.s;
+        const lines = sub ? sub.split("\n") : [];
         const blockH = tF + lines.length * sF * 1.2 + (lines.length ? 4 : 0);
         const top = n.y + (nh - blockH) / 2;
         return (
           <g key={n.id} opacity={o}>
-            <rect x={n.x} y={n.y} width={n.w} height={nh} rx={14} strokeWidth={on ? 2.4 : 1.2} fill={on ? (n.tone ? `${col}22` : C.soft) : C.card} stroke={on ? col : LINE2} />
+            <rect x={n.x} y={n.y} width={n.w} height={nh} rx={14} strokeWidth={on ? 2.4 : 1.2} fill={dead ? `${C.red}14` : on ? (tone ? `${col}22` : C.soft) : C.card} stroke={on ? col : LINE2} strokeDasharray={dead ? "6 5" : undefined} />
+            {dead && (
+              <g opacity={enter(since, 0, 12)}>
+                <path d={`M${n.x + 14} ${n.y + 14} L${n.x + n.w - 14} ${n.y + nh - 14} M${n.x + n.w - 14} ${n.y + 14} L${n.x + 14} ${n.y + nh - 14}`} stroke={C.red} strokeWidth={2.2} opacity={0.3} />
+                <rect x={n.x + n.w - 90} y={n.y - 16} width={82} height={30} rx={7} fill={C.red} />
+                <text x={n.x + n.w - 49} y={n.y + 5} textAnchor="middle" fontSize={18} fontWeight={800} fill="#fff" fontFamily="Inter">DOWN</text>
+              </g>
+            )}
             <text x={n.x + n.w / 2} y={top + tF * 0.82} textAnchor="middle" fontSize={tF} fontWeight={600} fill={C.text} fontFamily="Inter" {...fit(n.t, tF, 0.56, n.w - 16)}>
               {n.t}
             </text>
@@ -187,12 +236,41 @@ export const Board = ({ p, step, f, since, x, y, w, h }: { p: ArchProps; step: n
           </g>
         );
       })}
+      {(st?.moves ?? []).map((m, i) => {
+        const e = p.edges.find((x) => x.id === m.e);
+        if (!e || (e.from && (!byId[e.from] || !byId[e.to!]))) return null;
+        let pts = e.d ? parseD(e.d) : route(e, byId);
+        if (m.rev) pts = [...pts].reverse();
+        const dur = m.dur ?? 46;
+        const t0 = m.delay ?? i * 14;
+        const per = dur + 34;
+        const el = since - t0;
+        if (el < 0) return null;
+        const u = m.once ? Math.min(1, el / dur) : (el % per) / dur;
+        if (u > 1) return null;
+        const [px, py] = along(pts, ease(u * dur, 0, dur));
+        const col = toneCol(m.tone);
+        const fs = Math.max(20, 23 / sc);
+        const tw = m.t ? m.t.length * fs * 0.6 + 24 : 24;
+        const th = fs + 14;
+        const fade = m.once ? Math.min(1, el / 6) : Math.min(1, u * 10, (1 - u) * 10);
+        return (
+          <g key={`mv${i}`} opacity={Math.max(0, Math.min(1, fade))}>
+            <rect x={px - tw / 2} y={py - th / 2} width={tw} height={th} rx={th / 2} fill={col} stroke="#0b0d10" strokeWidth={2} />
+            {m.t && (
+              <text x={px} y={py + fs * 0.36} textAnchor="middle" fontSize={fs} fontWeight={700} fill="#0b0d10" fontFamily="Inter">
+                {m.t}
+              </text>
+            )}
+          </g>
+        );
+      })}
     </svg>
   );
 };
 
 // The step explained beside the board: number, title, text, and a measured fact.
-const Panel = ({ s, f, start, idx }: { s: AStep; f: number; start: number; idx: number }) => (
+export const Panel = ({ s, f, start, idx }: { s: AStep; f: number; start: number; idx: number }) => (
   <Abs x={1352} y={262} w={500} style={rise(f, start, 18)}>
     <div style={{ fontFamily: MONO, fontSize: 84, fontWeight: 800, lineHeight: 1, background: `linear-gradient(90deg, ${C.blue}, ${C.grad2})`, WebkitBackgroundClip: "text", color: "transparent" }}>
       {s.n ?? String(idx + 1).padStart(2, "0")}
