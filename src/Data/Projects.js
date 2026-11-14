@@ -3,7 +3,7 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs: IPP-01, LL-01, IOA-01/02, BY-00..06, BRIK-01).
+// except where a built-in document replaces them (Data/projectsDocs: IPP-01/02, LL-01, IOA-01/02, BY-00..06, BRIK-01/02).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -54,6 +54,13 @@ export const PROJECT_TOPICS = [
     sectionLabel: "InterviewPlanPrep",
     title: "InterviewPlanPrep, end to end",
     summary: "This site as a signed-in student uses it, every resume line defended: the React shell, the offline-first store, highlights and pinned notes, git-style notes with compare-and-swap and three-way merge, the planner and its timer, contests and reminders.",
+  },
+  {
+    id: "IPP-02",
+    section: "ipp",
+    sectionLabel: "InterviewPlanPrep",
+    title: "Firebase and Firestore, and how InterviewPlanPrep uses them",
+    summary: "From zero: Firebase Auth and ID tokens, documents and queries, writes and transactions, listeners and the offline cache, security rules and compare-and-swap, the admin SDK, limits and cost; each mapped to this site's code, with the answers to give.",
   },
   {
     id: "LL-01",
@@ -139,6 +146,13 @@ export const PROJECT_TOPICS = [
     sectionLabel: "Company prep: Brikby",
     title: "Brikby: the business, the workflow, the architecture",
     summary: "Lender property due diligence in India (title chain, EC, state land-record portals), what Brikby sells and at what scale, the observed stack vs the inferred pipeline, durable jobs and portal agents, evals, cost per file, and two questions to raise.",
+  },
+  {
+    id: "BRIK-02",
+    section: "brikby",
+    sectionLabel: "Company prep: Brikby",
+    title: "Your designs vs Brikby's",
+    summary: "DeepLogLens and InterviewPlanPrep next to Brikby: the decisions made the same way, the different ones and how to defend them, where your version is stronger and where theirs is, and the pitch for why they need you.",
   },
   // Checked against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as

@@ -1,0 +1,1118 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "b7f637a7",
+   "say": "Firebase and Firestore, from zero. Then exactly how InterviewPlanPrep uses each piece, in your own code. Brikby runs on the same family: Firebase Auth, Firestore listeners, and functions behind an ID token. So expect them to ask how your sync works, and how your security rules work. By the end, you'll answer both without hesitating. Slowly, one idea at a time, with a check after every topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b06fdc14",
+   "say": "Topic one. What Firebase actually is, and the one trade it makes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7781c77c",
+   "say": "Firebase is Google's backend as a service, built on Google Cloud.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b91cb8fe",
+   "say": "And here's the idea that changes everything. The browser talks to Google's database directly. There is no API server of yours in between the React app and the data.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ea87493c",
+   "say": "Which raises the obvious question. If the browser talks to the database directly, who stops user A reading user B's data? The answer is the security rules. Hold that thought until topic eight.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "53bf26de",
+   "say": "Firebase is a set of products. You use two of them. Firebase Auth, for sign in and ID tokens. And Cloud Firestore, a document database with real time listeners and an offline cache.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d3c1f64",
+   "say": "You don't use Firebase Hosting or Cloud Functions: the site and its functions live on Vercel. And you don't use Cloud Storage, because it needs the paid plan, so note screenshots are stored as compressed data URLs in Firestore itself.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3237084",
+   "say": "Two things worth knowing. Firestore is Google Cloud Firestore: the same database you'd see in the Google Cloud console. And App Check, a way to prove requests come from your real app. You don't use it yet. That's an honest gap, and we'll turn it into an answer at the end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8daafacc",
+   "say": "So, the trade, in one line. No backend to run. In exchange, the security rules become your server side authorization.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f981bf5f",
+   "say": "Here's the whole picture on one board. Your React app on the left. Inside Google: Firebase Auth, the security rules, and Firestore. Below, your Vercel functions, and the secrets and schedules only they can touch.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e8c4ea1",
+   "say": "Sign in. The app signs in with Firebase Auth and gets an ID token. A JSON web token signed by Google, valid for an hour, refreshed by the SDK on its own.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c0d1e9e",
+   "say": "Straight to the database. The Firestore SDK sends reads and writes to Google directly, with the token attached. There's no API server of yours in between.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7c06990b",
+   "say": "The rules decide. Security rules run on Google's servers, for every single request. They see who's asking, what's stored, and what the write would change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b99305e",
+   "say": "Pushed back. Listeners stream every change to the documents the app watches, from any device, in real time. No polling.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c649bf4",
+   "say": "And the server, only where it's needed. Your functions verify the ID token, and use the admin SDK, which bypasses the rules, for three things a browser can never be trusted with: secrets, other people's data, and schedules.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f409747",
+   "say": "Check 1. If the browser talks to Firestore directly, what is your server-side authorization? A, The React code. B, The security rules, run by Google on every request. C, The Vercel functions. Or D, HTTPS.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "068dac58",
+   "say": "B. The security rules. Google evaluates them on its own servers, for every read and every write, so they bind every client, well behaved or not.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50faba95",
+   "say": "Topic two. Firebase Auth, and the ID token, which is the thing every other piece trusts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9d5b595",
+   "say": "Firebase Auth gives you two tokens with two jobs. The ID token is a JSON web token, signed by Google with RS256, valid for one hour. Inside: the user id, the email, whether the email is verified, the audience, which is your project id, and the issuer, secure token dot google dot com.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d455918",
+   "say": "The refresh token is long lived. The SDK swaps it for a fresh ID token before the old one expires. You never touch it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5c6a648",
+   "say": "And the session is kept in IndexedDB, so a reload stays signed in. The function on auth state changed tells the app, at load and on every sign in or sign out, who is signed in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "180edb59",
+   "say": "The key idea: everything downstream trusts the ID token, because only Google can sign it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c3228973",
+   "say": "Here's how one of your Vercel functions trusts the browser.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "514287d8",
+   "say": "The browser signs in, with email and password, or the Google popup.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57b4192a",
+   "say": "Firebase Auth returns the ID token and the refresh token.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f87c2c4",
+   "say": "When the page calls a function, say, to turn on contest reminders, it calls get ID token, and sends it as a bearer token.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "567907b0",
+   "say": "The function calls verify ID token, with the admin SDK. It checks Google's signature against Google's public keys, the audience, the issuer and the expiry. Note one thing: it does not check revocation, unless you pass check revoked, which costs an extra call.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a4002ef8",
+   "say": "And the rule you must say out loud. The user id and the email come from the verified token. Never from the request body. That's why nobody can subscribe someone else's email to your reminders.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "98bec66c",
+   "say": "Check 2. Why can't someone subscribe another person's email to your contest reminders?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fb96fc18",
+   "say": "Because the function takes the email from the verified ID token, which only Google can sign. It never reads the email from the request body.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "68bbb744",
+   "say": "Topic three. The data model. Documents, collections, and why there are no joins.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1e6a9d8",
+   "say": "Four rules, and you have the model.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50425f3b",
+   "say": "A document is a map of fields: strings, numbers, timestamps, maps, arrays. At most one mebibyte.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7fb78881",
+   "say": "Collections hold documents, and a document can own subcollections. So paths alternate: collection, document, collection, document.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c86faf7",
+   "say": "There are no joins. You shape data around the screens that read it, and you duplicate when you must.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ab465c5",
+   "say": "And a document read is the unit of cost, and the unit of real time updates. So you design around how many documents each screen touches.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "712ab67f",
+   "say": "Here's one account in InterviewPlanPrep. The main document, user progress slash your uid, holds DSA ticks, planned days, the edit times, and the note revisions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "79cc497b",
+   "say": "Under it, a data subcollection with one document per other kind of progress, and a notes subcollection with one document per note. Why split? The one mebibyte limit. One heavy note taker would fill the main document. And a document per note gives each note its own revision number.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b3eabcbb",
+   "say": "History holds every saved version of every note. Append only, and we'll see how the rules enforce that.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9356d132",
+   "say": "And four collections at the top level that only the server can touch: subscribers, sent reminders, visits, and caches. The browser is denied all of them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65908a04",
+   "say": "Check 3. Why are notes split into their own documents?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "dcc29886",
+   "say": "Two reasons. The one mebibyte document limit: a heavy note taker would fill the main document. And so each note has its own revision number, which the compare and swap in the rules depends on.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49f2aaf0",
+   "say": "Topic four. Reading. One document, or a query, and why every query is served by an index.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7287b964",
+   "say": "Reading. Get doc reads one document, and costs one read.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb7adf4b",
+   "say": "A query filters with where, sorts with order by, and pages with limit and cursors. Every matching document costs one read.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f17069f1",
+   "say": "And every query is served by an index. Single field indexes are automatic; queries over several fields need a composite index you declare. That's why a Firestore query stays fast as a collection grows: it costs in proportion to the results, not the collection.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d0641888",
+   "say": "And count is an aggregation query. It counts without downloading the documents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8972578",
+   "say": "In your app, the browser never runs a query. It listens to the account's own documents. The server side does query: reminders select confirmed subscribers, and the job radar pages openings by time with a cursor, and uses count for totals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4b4f319",
+   "say": "Check 4. Why does a Firestore query stay fast as the collection grows?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "89de8ab9",
+   "say": "Because every query is answered from an index. Its cost and its latency scale with the number of results returned, not with the number of documents stored.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8011545b",
+   "say": "Topic five. Writing. Five ways to write, and which ones your code uses.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea93cd87",
+   "say": "Set doc replaces a whole document. With merge true, it merges into what's there. And with merge fields, it writes only the fields you list. Remember that one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f18d262",
+   "say": "Two field helpers. Delete field removes a single field. Server timestamp uses the server's clock instead of the device's.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0876421",
+   "say": "A batched write applies several writes, all or nothing. It can't read.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc1b2db4",
+   "say": "And a transaction reads, decides, and writes, all or nothing. On the client SDK it's optimistic: if a document it read changes underneath, it retries, and it only works online. On the server SDK it takes pessimistic locks on what it reads.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9aa163ba",
+   "say": "Your app uses merge fields in the browser, and a transaction on the server. Let's see both.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f0424b15",
+   "say": "In the browser, a push writes only the entries this device changed, with merge fields. One field path for the entry, two sum, and one for its edit time. So a device can never overwrite entries it didn't touch. A deleted entry is written as delete field, plus a tombstone time.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d5014472",
+   "say": "On the server, the reminder job claims before it sends. A transaction reads who has already been sent this reminder, keeps only the people who haven't, writes them in, and only those people get an email. If a send fails, the claim is released. Two overlapping runs can never both claim the same person. Never a duplicate, at worst one skipped email.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d7fc5a12",
+   "say": "Check 5. Why mergeFields instead of writing the whole map of ticks?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "e8c38a74",
+   "say": "Because a whole map write from a stale device would overwrite entries it never touched. Merge fields writes only the entries this device actually changed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ccfdfdf7",
+   "say": "Topic six. Real time listeners. The feature Brikby uses for job status, and you use for sync.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "238c6fc9",
+   "say": "On snapshot opens a stream. You get the current state first, then a new snapshot every time a document changes, from any device.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c9d64e6",
+   "say": "Every snapshot carries metadata. From cache, true, means this came from the local cache, and the server hasn't confirmed it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7e1fc959",
+   "say": "Has pending writes, true, means it includes this device's own write, which the server hasn't acknowledged yet.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c56bbf8b",
+   "say": "Billing: the first snapshot costs one read per document; after that, one read per changed document.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e69c8fe",
+   "say": "And latency compensation. Your own write fires your own listener immediately, marked pending, before the server even has it. That's why the UI feels instant.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe0dde28",
+   "say": "Now your code. The function called listen.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f228bdf",
+   "say": "Three listeners per signed in account: the main document, the data subcollection, and the notes subcollection. All with include metadata changes, so you hear when a write is confirmed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "90a87266",
+   "say": "Nothing is decided until all three have answered. A note must never be judged against the main document's older copy of it alone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "367fd822",
+   "say": "And nothing is pushed before a snapshot that came from the server. Your own comment says it best: a cached doesn't exist proves nothing. A new device with an empty cache must never mistake it for an empty account.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "eb179a59",
+   "say": "And Brikby's job status is the same mechanism. The worker writes a stage field, and every open tab is told. You can say: I use the same listener pattern for cross device sync.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f5c4e418",
+   "say": "Check 6. Why wait for a snapshot that is not from cache, before pushing anything?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "42048517",
+   "say": "Because the cache may be days old. Deciding from it could push stale data over newer data on the server. So the server's copy is merged first, and only then does anything get pushed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6da9710f",
+   "say": "Topic seven. Firestore's offline cache, and why your app keeps its own store on top of it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc36dcf5",
+   "say": "Persistent local cache. Firestore keeps its own copy in IndexedDB. Reads work offline. Writes are applied locally at once, queued, and reach the server when the network returns, even after a reload. And a write's promise resolves only when the server acknowledges it. If the rules refuse it, the SDK rolls the local change back, and the promise rejects with permission denied.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ecf992da",
+   "say": "The multiple tab manager lets several open tabs share that one cache safely.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c5602fa",
+   "say": "And the SDK is loaded on demand, in a chunk of its own. A guest never downloads it, and a signed in visit renders from the local store while it loads.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52b95cf1",
+   "say": "Here's one tick, from the click to your other device. The page, the local store, the pending journal, the sync engine, Firestore's SDK with its cache, the Firestore server, and the other device.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08fc232a",
+   "say": "Instant. The click writes the local store, synchronously. That's all the click waits for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5a5b4197",
+   "say": "Owed to the cloud. The store's event puts the entry and its edit time into the pending journal, also in local storage, before anything leaves the device. So a crash or a refresh can't lose it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a959784",
+   "say": "Batched. After eight hundred milliseconds of quiet, the engine writes only the changed entries, with merge fields, plus their edit times. Ten quick ticks become one write.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "996a13c6",
+   "say": "Queued if offline. Firestore's own cache applies the write and queues it, and it reaches the server when the network returns.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9b602ae",
+   "say": "Everywhere. The other device's listeners deliver it, and it merges per entry. The newer edit wins, and deletes are kept as tombstones so an old copy can't bring them back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d23f1fe7",
+   "say": "So why keep your own store, when Firestore already has a cache? Firestore's cache alone gives you asynchronous reads, last write to a field wins, and it only holds writes that were already handed to it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d050ffea",
+   "say": "Your store and journal give synchronous reads for an instant UI, per entry newer wins with tombstones and a five minute clock skew guard, and they cover the debounce window, a crash, and a refresh.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d9b5ec9",
+   "say": "The one line answer: each layer does a job the others can't.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0c06457c",
+   "say": "Check 7. Firestore already queues offline writes. Why does your app keep a pending journal?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "48d20053",
+   "say": "Because Firestore's queue only holds writes already handed to it, and it can't tell you what changed and when. The journal records exactly that, which per entry merging needs, and it covers the debounce window, a crash, and a refresh.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d06fcc7",
+   "say": "Topic eight. Security rules. Your server side authorization, and the part Brikby will most likely probe.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ac19ed4",
+   "say": "What a rule can see. Request dot auth is the verified token: the user id and its claims, or null for a guest.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "159a7e98",
+   "say": "Resource dot data is the document as it's stored now.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c947ba96",
+   "say": "Request dot resource dot data is the document as it would be after this write. And diff, affected keys, tells you exactly which fields the write changes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e6b21dc",
+   "say": "Get and exists read another document inside a rule. Each one is billed as a read, and there's a limit of ten per request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b82e9858",
+   "say": "Three rules about rules. Default deny: anything not matched is refused. Rules are not filters: a query that might return a document you can't read is refused whole. And the admin SDK bypasses rules entirely: it's trusted server code.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "85dd8985",
+   "say": "Your rules, in plain words.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "49cb794e",
+   "say": "Signed in as uid. You can only touch user progress slash your own uid, and below.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c080c3e",
+   "say": "A catch all at the end: every other path, allow read and write, if false. That single line is what makes subscribers, reminders, visits and caches server only.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "01246e98",
+   "say": "History revisions: create and read, only. There's no update and no delete, so history is append only, and Google enforces it, not your app.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c88e9365",
+   "say": "Note screenshots must be a string under nine hundred thousand characters, so an oversized write is never even attempted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d53618e6",
+   "say": "And notes are fast forward only. That's the next topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7acd076",
+   "say": "Check 8. A buggy client tries to delete a history revision. What happens?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "14be3d42",
+   "say": "Google refuses it. The rules allow only create and read on revisions. There's no delete, so no client, buggy or malicious, can rewrite history.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bc3fcf2b",
+   "say": "Topic nine. Compare and swap, inside the security rules. The cleverest line in your project, so let's make it unshakeable.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a694c85",
+   "say": "Here's the rule for a note's document. An update is allowed only if you're the owner, and the note is valid, and the key and id are unchanged, and one more line.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c05d48ad",
+   "say": "The base this save was built on must equal the revision stored right now. In words: I built this on revision seven, and seven is still the head. If the head has moved to eight, the save is refused.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "440cb8e0",
+   "say": "And valid note says: only these seven fields, the new revision is exactly the base plus one, and the document id matches its key. So a save can't skip revisions or smuggle in other fields.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad8de114",
+   "say": "Watch a stale phone meet the rule. The phone edited offline, on top of revision seven. Meanwhile the laptop saved revision eight.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf3435b2",
+   "say": "The phone saves: base seven, revision eight.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b390e0de",
+   "say": "The rule reads the stored revision. It's eight.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bcaecdb1",
+   "say": "So the write is refused with permission denied. And your sync code catches exactly that error code.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d3e1cf65",
+   "say": "It fetches the head, and runs a three way merge of the phone's edit and the laptop's edit, against base seven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e9e5959",
+   "say": "Then it saves again: base eight, revision nine. Accepted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cdd372b1",
+   "say": "And if both devices changed the same lines, nothing is guessed. The head stands, and the phone's version is kept in History as not kept, with a toast, so nothing is ever lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4c8edf2c",
+   "say": "Why a rule, and not a Firestore transaction? A client transaction needs to be online. Your app edits offline and syncs later.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bab2d175",
+   "say": "Why not check the version in the client, then write? Because two devices can both read revision seven, both pass the check, and both write.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b8eae4d",
+   "say": "The rule is evaluated with the write, as one atomic step, on Google's servers, for every client. And an offline write is simply judged when it finally arrives.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0ebbcc90",
+   "say": "Name it in the interview. Optimistic locking, like an update where version equals seven. Or git refusing a non fast forward push.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d3d35d19",
+   "say": "Check 9. The stored head is revision twelve. A device saves with base eleven, and revision twelve. What do the rules do?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "eb925bd4",
+   "say": "Refuse it. Revision equals base plus one holds, but the base, eleven, isn't the stored head, twelve. The edit was built on an old version, so the device fetches the head and merges.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e849494b",
+   "say": "Topic ten. The server side. The admin SDK, and why your app needs any server at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e983ee79",
+   "say": "Here's the server side, in one file. A service account, a private key kept in Vercel's environment, makes the function a trusted admin.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "766ab833",
+   "say": "Its Firestore handle bypasses the rules. That's how the reminder job can read every subscriber, which no browser ever can.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5e39b582",
+   "say": "And verified user reads the bearer token from the request and verifies it. No valid token, no user.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6b01709d",
+   "say": "Three things run on the server, and each for a reason a browser can't meet. Secrets: the Gmail app password, the clist API key, the cron secret.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c15ec75",
+   "say": "Other people's data: subscriber emails, and visit analytics.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f217fd0a",
+   "say": "Schedules: reminders must run when nobody has the site open. Ninety six daily Vercel crons, about every fifteen minutes, with a GitHub Actions backup.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cefea4ba",
+   "say": "And if they ask, why Vercel functions and not Cloud Functions? The site was already on Vercel, so the functions deploy with it, sit behind the same CDN, and cron comes free, without a paid Firebase plan. To Firestore, the admin SDK looks the same from either.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "87632a76",
+   "say": "Check 10. The browser can talk to Firestore directly. Why does your app need any server at all?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "639edc14",
+   "say": "Because three things can never be trusted to a browser: secrets, other users' data, and schedules that run when nobody has the site open.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51ff5e1f",
+   "say": "Topic eleven. The limits and the bill, and what your app does about each.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cc5bcc84",
+   "say": "Four limits, and your answer to each. One mebibyte per document: notes and other keys are split into their own documents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ba1dbc0",
+   "say": "About one sustained write per second to a single document, a soft limit: the eight hundred millisecond debounce turns ten quick ticks into one write.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8ffe6662",
+   "say": "Billing is per document read, write and delete. The free quota is fifty thousand reads and twenty thousand writes a day. Your app loads the SDK lazily and listens only to the account's own documents, so it sits well inside it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8b5168e6",
+   "say": "And the location. A database's region is chosen when it's created, and can never be moved. That's the hook for your second Brikby question: for lender data, pick an Indian region on day one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3bc95899",
+   "say": "And when not to choose Firestore at all: joins, ad hoc analytics, full text or vector search. That's exactly why DeepLogLens uses Postgres. Say that, and you sound like someone who chooses tools, not someone who only knows one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9fb2fc57",
+   "say": "Check 11. When would you not choose Firestore?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "96271429",
+   "say": "When the work is relational or analytical. Joins, ad hoc reports, full text or vector search, multi row transactions at volume. Then Postgres, or BigQuery for analytics. That's why DeepLogLens uses Postgres.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7fd730f9",
+   "say": "Topic twelve. The answers, ready to say. Four questions they're likely to ask.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "abddcd6d",
+   "say": "How does Firestore sync work in your app?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33d6e19c",
+   "say": "Every edit is written to a local store first, synchronously, and recorded in a pending journal.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "faf5b2ee",
+   "say": "After eight hundred milliseconds of quiet, only the changed entries go to Firestore, with merge fields, and their edit times.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82dae7b8",
+   "say": "Each device keeps three snapshot listeners. It merges per entry, and the newer edit wins.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f553c5f",
+   "say": "And it never pushes before it has heard from the server.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b883e3d",
+   "say": "Firestore's own IndexedDB cache sits underneath, for offline reads and queued writes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf8a88c6",
+   "say": "How do your security rules work?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1cd5fb81",
+   "say": "Each user can only touch documents under their own uid. Everything else is denied.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2aade3df",
+   "say": "Which makes subscribers and caches server only.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6c28483",
+   "say": "History is create and read only, so it's append only by construction.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20a3c378",
+   "say": "And notes are fast forward only. A save names its base revision, and the rule compares it with the stored revision in the same step as the write. So a stale device is refused, and merges instead.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c1a08c4",
+   "say": "Rapid fire. How does your server trust the browser?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4c2119a",
+   "say": "It verifies the Firebase ID token with the admin SDK, and takes the uid and the email from the token, never from the body.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8881439d",
+   "say": "What would you add?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "620496d5",
+   "say": "App Check, so only your real app can call Firestore and the functions. Check revoked on sensitive endpoints. And scheduled Firestore exports, for backups.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "394f832e",
+   "say": "How long does an ID token live?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4894ce0f",
+   "say": "One hour. The SDK refreshes it with the refresh token.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "66e27fac",
+   "say": "Does the admin SDK obey the security rules?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59434154",
+   "say": "No. It bypasses them. It's trusted server code, which is exactly why it only runs on the server.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a65817b",
+   "say": "Check 12. In two sentences: is your note sync just last-writer-wins with extra steps?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3413cc3f",
+   "say": "No. Every save names its base revision, and the rules refuse it unless that base is still the head, so a stale device can't overwrite anything. A refused save is merged line by line, and if both changed the same lines, nothing is lost: the other version is kept in an append only history.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}
