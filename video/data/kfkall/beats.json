@@ -1,0 +1,2441 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "72518c6e",
+   "say": "Kafka, end to end. One running example the whole way: an order service publishes order events, keyed by the order id, and payment, inventory, notification and analytics services read them. We'll start with a single event landing in a log, and finish with exactly-once effects across services. Every box you see is a separate machine or process, so watch what moves between them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e4b61a30",
+   "say": "Here's the map.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aab9ffd7",
+   "say": "First the log: topics, partitions, offsets, and how a key picks a partition.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bebcea5f",
+   "say": "Then reading: consumer groups and committed offsets, which decide whether a crash loses or repeats work.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98725d2b",
+   "say": "Then the cluster: replicas, the controller, in-sync replicas and acks, and the complete write and read paths.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52a77f7b",
+   "say": "Then what breaks and how it heals, the producer's insides, Spring Boot, retries and dead letter topics, and finally exactly-once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2661da10",
+   "say": "Topic one. What Kafka actually is, and the one property that makes it different from a queue.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5e771142",
+   "say": "Kafka is a distributed event streaming system. Not a classic pub sub queue. It does three things.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2c2289f5",
+   "say": "Publish. Producers write events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7a2a75b6",
+   "say": "Store. Kafka keeps them on disk, for a retention time, say seven days.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4655ae0c",
+   "say": "Subscribe. Consumers read them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf7818a8",
+   "say": "And here's the key point about store. Reading an event does not delete it. The same event can be read again and again, from the start if you like. In a normal queue, a message is gone once it's consumed. In Kafka, it stays.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9b5a6626",
+   "say": "Here's our system. The order service on the left. A topic called order events in the middle, split into three partitions. And two groups of readers on the right: a notification service with three consumers, and an analytics service with one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59159ff5",
+   "say": "A producer is an application that publishes events to Kafka. It does not know or care who will consume them. It talks to Kafka, and that's all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d432182",
+   "say": "A topic is a named category, like a folder, that events are published to. All order events go to order events. Many producers can write to the same topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4c1f0d0",
+   "say": "And watch what happens on the right: notification reads that event, and analytics reads the very same event. Two services, one stored copy. That only works because reading doesn't delete.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3df79d2d",
+   "say": "Check 1. A consumer reads an event. Is it still in Kafka afterwards?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "933d5ae4",
+   "say": "Yes. Reading does not delete it. It stays on disk until retention removes it, and any consumer can read it again, even from the very start. That's the difference from a normal queue.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a24948a8",
+   "say": "Topic two. Partitions and offsets. This is where Kafka's ordering guarantee comes from, and where it stops.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ec4fe96",
+   "say": "A topic is split into partitions. And a partition is a physical, ordered, append only log. Three words, one by one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e43eed37",
+   "say": "Physical. Events really are stored on disk. Each partition is a directory on the broker, named topic dash partition number: order events dash zero, dash one, dash two. Inside that directory are the actual data files.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ce94da8",
+   "say": "Ordered. Each event gets an increasing number called an offset. Offsets start at zero, not one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ea4bc4bc",
+   "say": "Append only. New events are only added at the end. Old events are never edited or moved. Why split a topic at all? So one topic can be spread over many machines, and read by many consumers in parallel. More partitions, more parallelism.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22309dbd",
+   "say": "Here are the three partitions as logs. Each one keeps its own next offset counter. P zero has E zero at offset zero and E three at offset one. P two has only E two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad8233c7",
+   "say": "Now E five arrives for P two. Kafka gives it P two's next offset, which is one, and appends it at the end. Nothing in the middle changes. That's append only.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7cd9156f",
+   "say": "So here's the guarantee. Inside one partition, order is guaranteed: events are written in sequence and read in increasing offset order, and Kafka never reorders a partition. E three in P zero surely happened after E zero. But across partitions there's no order guarantee at all. Offset one in P zero and offset one in P one say nothing about which happened first.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "061d04dd",
+   "say": "A small run. Three partitions, key is the order id. Produced in this order: one two three created, four five six created, seven eight nine created, then one two three paid, four five six paid, one two three shipped.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65efd269",
+   "say": "One two three and four five six both hash to P two. Seven eight nine goes to P one. Inside P two, every order's own steps are in order: created, paid, shipped.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6a999ff",
+   "say": "But a consumer reading the whole topic got all of P two first, and seven eight nine created last, even though it was produced third. Across partitions, the order broke. Need one global order for a whole topic? The only way is one partition, and then there's no parallelism. You almost never need that. You need order per key: per order, per user.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9d3542c1",
+   "say": "Check 2. What ordering does Kafka guarantee, and at what scope?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "975865ed",
+   "say": "Kafka guarantees order only within a partition, in offset order. Nothing across the topic. So if I need an order's events in sequence, every event of that order must land in the same partition.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "165bc61b",
+   "say": "Topic three, briefly. How a partition sits on disk: segments and a sparse index, so Kafka can find any offset fast.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "84591660",
+   "say": "One partition directory does not hold one giant file.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16a91e6d",
+   "say": "The log is cut into segments. When the current segment reaches segment dot bytes, one gigabyte by default, Kafka closes it and starts a new one. Each segment file is named by the first offset inside it, padded to twenty digits. Next to each log file sits an index, from offset to byte position, and a time index, from timestamp to offset.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "61bc1785",
+   "say": "To read offset fifteen hundred: pick the segment whose base offset is the largest one at or below fifteen hundred, that's the one starting at ten twenty five. Binary search its sparse index, roughly one entry every four kilobytes. Jump to that byte, scan a few records. Small segments also make deleting old data cheap: Kafka deletes whole old segments.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7953767f",
+   "say": "Topic four. Which partition does an event go to? The producer decides, and the answer is different with a key and without one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c2299d58",
+   "say": "Three cases. If the record names a partition, that's it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "213afae9",
+   "say": "With a key, the partition is murmur two of the key bytes, mod the number of partitions. Kafka's own murmur two hash, not Java's hash code. Same key, same partition, always, while the partition count stays the same. Same partition means order. So all events of one key stay in order.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "644fc5eb",
+   "say": "With no key, a correction to what many people say: the default producer is not round robin per event. Since Kafka two point four it uses a sticky partitioner. It fills one partition for a while, about a batch worth of data, sixteen kilobytes, then moves to another. Even over time, not in the short run. Why? Round robin spreads five records into three tiny batches and three sends. Sticky makes one full batch and one send. Bigger batches, fewer requests, better throughput.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82ce5eca",
+   "say": "Two things people get wrong. A partition holds many keys, not one partition per key. And adding partitions breaks the mapping, because the formula uses mod the partition count.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cece80d5",
+   "say": "Watch order one two three. Created, paid, shipped: the key hashes to P two every time, so all three land in one partition, in that order.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40ed0b1b",
+   "say": "Now someone grows the topic from three partitions to five. One two three delivered is sent. Mod five, it goes to P zero, while the older events sit in P two. Order one two three is now split across two partitions, and a consumer can see delivered before shipped. Kafka doesn't move old data. So for keyed topics, pick the partition count up front.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7bc218e3",
+   "say": "And with no key, watch: a whole run of events goes to one partition, then the producer switches. Nine small events with no key went all to P one. That's sticky.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50f6bb13",
+   "say": "Check 3. A keyed topic grows from 3 to 5 partitions. What breaks?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "cbb92c62",
+   "say": "The mapping breaks. The partition is the hash mod the partition count, so new events of an existing key can land in a different partition from its older events, and a consumer can see them out of order. Kafka doesn't move old data.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4c81648",
+   "say": "Topic five. The broker: the machine that actually holds the partitions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45ac0bf1",
+   "say": "A broker is one Kafka server, one running Kafka process. It really stores the data, as partition directories on its disk, and it serves clients: producers write to it, consumers read from it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b86035d2",
+   "say": "But a broker stores some partitions of some topics. Not everything.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "858a72fd",
+   "say": "So one broker doesn't hold all topics, and doesn't hold all partitions of a topic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5fd32426",
+   "say": "This picture shows one copy of each partition. Keeping extra copies on other brokers is replication, and that's coming in the cluster part. Say it like this: a broker is one Kafka server that stores some partitions and serves reads and writes for them; partitions of a topic are spread across brokers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c4b8f56",
+   "say": "Topic six. Consumers and consumer groups. Two rules explain almost every question about them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58dbb47d",
+   "say": "A consumer is an application that reads events from a topic. It pulls: it calls poll again and again, and Kafka returns the next events. It reads each partition in offset order.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d423ad3a",
+   "say": "A consumer group is all the consumers that share the same group dot id. Together they split the partitions of the topic, so the work is shared. Usually one group is one service: three instances of the notification service, all with group id notification service.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "99e90d58",
+   "say": "Rule one. Inside one group, a partition goes to only one consumer. The same partition is never read by two consumers of the group at the same time. One consumer can read many partitions. Why? If two instances of the same service both read P zero, both would process the same events, duplicates, and the per partition order would break.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4b069218",
+   "say": "Rule two. Different groups are fully independent, and each group gets every event. The analytics group has one consumer, so it reads all three partitions, the same events notification is reading. Inside a group, partitions are shared out, queue style. Across groups, every group gets every event, pub sub style.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c7de5fd5",
+   "say": "Three cases. Consumers equal partitions: one each.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fe3fefb6",
+   "say": "Fewer consumers: each gets two. The exact split depends on the assignment strategy, but what never changes is that each partition has exactly one owner in the group.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7695807",
+   "say": "More consumers than partitions: consumers four and five sit idle. They take over if an active one dies.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e5f8446b",
+   "say": "So the maximum useful consumers in a group is the number of partitions. Traffic doubles, and you add three more consumers to a three partition topic? Throughput doesn't move: they're idle. You have to add partitions first, and remember that remaps keys.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0f969e90",
+   "say": "Check 4. Notification has 6 instances, analytics has 1; the topic has 4 partitions. How many instances do work, and how many times is each event processed?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0a86fc70",
+   "say": "In notification, only four of the six get a partition, and two sit idle. In analytics, the single instance reads all four partitions. Groups are independent, so each event is processed twice in total: once by notification, once by analytics.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da499421",
+   "say": "Topic seven. Committed offsets: how a group remembers where it stopped, and where that memory lives.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "135561d2",
+   "say": "Each group remembers, per partition, how far it has got. That's the committed offset, stored per group, topic and partition. And the correct meaning is the next offset to read, not the last one processed. If you processed offsets zero to ninety nine, you commit one hundred.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bf07f7f0",
+   "say": "Partition ord one zero has six events. Notification read all six, so it committed six. Analytics read only two, so it committed two. Same partition, two different numbers: groups don't affect each other. Lag is log end minus committed: zero for notification, four for analytics.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9472d6f6",
+   "say": "When analytics starts again, its first event is offset two. It continues exactly where it stopped, and reads two through five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76fcb92b",
+   "say": "Where are commits stored? In Kafka itself, in an internal topic called underscore underscore consumer offsets. Fifty partitions by default, and compacted: Kafka keeps only the latest value per key, so old commits get cleaned. Each commit is a record. The key is group, topic, partition. The value is the offset.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df858998",
+   "say": "All commits of one group go to one partition of that topic: the absolute value of the group id's hash code, mod fifty. And the broker that leads that partition is the group's coordinator. It keeps an in memory map from those records: group, topic, partition to committed offset.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "73966c7d",
+   "say": "Recovery after a crash. The new consumer asks any broker: who is the coordinator for group analytics? A correction here: the consumer doesn't compute the hash itself. The broker does the math and answers: the leader of partition ten. The consumer asks that coordinator for its committed offset, gets two, and reads from two. And if a group has no committed offset yet, auto offset reset decides: latest, the default, meaning only new events, or earliest, from the beginning.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e4866d8",
+   "say": "Check 5. You processed offsets 0 to 99 and committed. What value is stored, and where does the next consumer of the group start?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "8e388e7d",
+   "say": "One hundred. The committed offset is the next offset to read, so the next consumer in that group starts at offset one hundred.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "047494a9",
+   "say": "Topic eight. Auto commit versus manual commit. When the offset moves decides whether a crash repeats work or loses it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8d24047",
+   "say": "Auto commit is the plain client's default: enable auto commit true, every five seconds. A correct fact about how it works: the commit doesn't fire on a separate timer in the middle of your work. It happens inside poll. When poll is called and five seconds have passed, it commits the offsets of the events the previous poll returned.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0d64d4ef",
+   "say": "Case one, the normal way: you process inside the poll loop. Poll returns zero to five, you process for three seconds, and crash before the next poll. The interval passed, but there was no poll, so no commit. After a restart, it reads zero to five again. Duplicates, nothing lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3341d417",
+   "say": "Case two. You hand events zero to five to another thread and keep polling. One and a half seconds later, poll runs again and auto commits six, but the worker isn't done. Then the process crashes. After a restart it starts at six. Events zero to five are lost. Auto commit is simple, but you don't control when an offset is marked done, so you can get duplicates, or with asynchronous processing, lost events.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9c196660",
+   "say": "Manual commit. Turn auto commit off.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27ab1f41",
+   "say": "Poll, process all of the records, then commit sync. It commits the position, last processed plus one, six here, and waits for Kafka to confirm.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4d54d6f",
+   "say": "Crash before commit sync, and the events are read again after the restart. Crash after, and nothing is read again. So nothing is lost, but duplicates are possible. That's at least once, and so the processing must be idempotent: running it twice has the same effect as once. For example, store the processed order id and skip it if you've already seen it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3e7737a0",
+   "say": "One more often asked detail. Commit sync blocks and retries. Commit async doesn't block and does not retry, because a retried old commit could overwrite a newer one. The common pattern: commit async inside the loop for speed, and commit sync once in the finally block before close.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "224141c8",
+   "say": "Say it like this.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3765b8e7",
+   "say": "Auto commit commits inside poll, every five seconds, for what the previous poll returned.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a04cf830",
+   "say": "If I crash before the next poll I get duplicates, and if I hand work to another thread, the commit runs ahead of the processing and I can lose events.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a2f3883",
+   "say": "With manual commit after processing, I get at least once: nothing lost, duplicates possible.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a04e929f",
+   "say": "So my consumer logic must be idempotent.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e86516bf",
+   "say": "Topic nine. Replication. Every partition is copied to several brokers, and exactly one copy is in charge.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebe59552",
+   "say": "This is the cluster board we'll use for the rest of the lecture. A producer on the left. Three brokers in the middle. Controllers and a consumer on the right. We'll follow one partition, order events P one, with replication factor three.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4a4d61db",
+   "say": "Each partition is copied to several brokers, and each copy is a replica. For every partition, one replica is the leader and the others are followers. The replication factor counts all copies, leader included. Replication factor three is one leader and two followers.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3782b476",
+   "say": "The leader handles all producer writes for the partition, and the consumer reads. It keeps the partition log and tracks how far each follower has copied. Followers do not serve producers, and by default they don't serve consumers either. Since two point four, consumers can be set to read from a nearby follower, to save cross data center traffic, but it's off by default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6432f393",
+   "say": "And the followers copy data from the leader by pulling it. They send fetch requests to the leader, just like a consumer, and stay in sync, ready to become the leader if the current one fails.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "23979c4c",
+   "say": "Two things to notice. The replicas of a partition are always on different brokers: a copy on the same machine wouldn't help when that machine dies. So the replication factor can't be more than the number of brokers. Replication factor two on a one broker cluster simply fails to create the topic. And leaders of different partitions are spread out, P zero on one broker, P one on another, so no single broker takes all the traffic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "10956073",
+   "say": "And this is why it all exists. Broker two dies. Broker one, an in sync follower, becomes the leader of P one. Broker three now fetches from it, and the producer and consumer switch to it. If the followers were in sync, nothing is lost. Say it like this: each partition has one leader replica that serves reads and writes, and follower replicas on other brokers that pull from it; if the leader's broker dies, an in sync follower takes over.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "900ce1e0",
+   "say": "Topic ten. The controller. Someone has to decide which broker holds which replica, and which one leads. And someone has to decide who that someone is.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bae8e68c",
+   "say": "That someone is the controller, a special role that manages the cluster's metadata: facts about topics, partitions, brokers and leaders. It creates and deletes topics, chooses the leader and followers of each partition, and detects broker failures with heartbeats. Each broker sends one every two seconds, and a broker silent for nine seconds is treated as dead. Then the controller picks new leaders for its partitions from the in sync followers.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6e2ca2f3",
+   "say": "Two corrections. The controller does not move data when a broker dies. It only switches leadership to a follower that already has a copy. Leader five became leader six, and the replica list stayed five, six, four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93005010",
+   "say": "And in KRaft, brokers pull the metadata. The controller does not push it to them. Brokers fetch the metadata log from the active controller and apply each change. In the quorum, they appear as observers: they copy the log, but they can't vote.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1b9f46f7",
+   "say": "One controller would be a single point of failure. So you run several, usually three. Only one is active, the Raft leader. The others are standby followers, and keep a full copy of the metadata log by fetching it. This used to live in ZooKeeper, a separate system you had to deploy and run. KRaft, Kafka Raft, builds it into Kafka itself: production ready in three point three, ZooKeeper deprecated in three point five and removed in four point oh.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db5c330e",
+   "say": "Who decides which controller is active? Not a controller of controllers, which would loop forever. The controllers vote among themselves using Raft, and a majority wins. A quorum is a majority of the voting controllers: N over two, rounded down, plus one. A decision is final only when a majority agrees.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "20797f39",
+   "say": "One controller: quorum is one, it can lose nothing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e16161ce",
+   "say": "Two controllers: quorum is two, so losing either one stops all metadata changes. Two tolerates zero failures, same as one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a11b4f06",
+   "say": "Three: quorum two, it can lose one. Four doesn't help: quorum three, it can still lose only one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7b76d5a0",
+   "say": "Five: quorum three, it can lose two. That's why controller counts are odd.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d904d10",
+   "say": "And why a majority? Any two majorities of the same group always share at least one node, so two controllers can never both be elected leader at the same time. No split brain.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5569184f",
+   "say": "Example. The metadata log is at offset ninety nine, all committed. A new record arrives, say a topic was created. The active controller appends record one hundred to its own log.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3fa3ab4d",
+   "say": "Standbys fetch from it and append one hundred. The active controller counts itself, so with three controllers, one standby confirming is enough. Two of three is a majority. It doesn't wait for both.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "13be6de0",
+   "say": "The active controller moves committed to one hundred, its high watermark. The next fetch replies tell the standbys and the brokers: committed is one hundred. Brokers apply record one hundred to their view of the cluster. In KRaft, standbys and brokers pull from the active controller, and the committed offset comes back in those fetch replies. Raft textbooks describe the leader pushing entries with heartbeats; Kafka's version is pull based.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9a34aa87",
+   "say": "And what if two of the three die? A correction: the cluster does not go fully down, and metadata is not lost. Creating a topic times out, and leader election can't happen. But existing partition leaders keep serving data: a producer with acks all still writes, a consumer still reads. The real risk is that the cluster can't react to the next failure.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "04c7b93e",
+   "say": "Check 6. 3 controllers, 2 crash. Can you create a topic? Can a producer still write to an existing one?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "2cfc8314",
+   "say": "No topic can be created: one of three isn't a majority, so nothing can be committed. But yes, the producer can still write, because partition leaders live on the brokers and keep working. Leader failover just won't happen until a majority is back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0551a932",
+   "say": "Topic eleven. In sync replicas, acks, and min insync replicas. Three settings that together decide whether an acknowledged write can ever be lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d97b1a8",
+   "say": "ISR, the in sync replicas, is the set of replicas of one partition that are caught up with the leader. The leader is always in it, and the controller stores the ISR as part of the cluster metadata.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "13816162",
+   "say": "The leader keeps appending, seven, eight, nine. Broker two keeps up. Broker three is stuck behind, a slow disk or a long garbage collection pause.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "060b37e0",
+   "say": "When is a follower in sync? The correct rule is time based, not how many messages behind. It stays in the ISR if it has fully caught up to the leader's log end at least once in the last replica lag time max, thirty seconds by default. Three messages behind for a moment is fine. Not catching up for thirty seconds is not. A slow follower is removed by the leader asking the controller; a dead one, by the controller after nine seconds without heartbeats. It rejoins once it catches up.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fbaa3019",
+   "say": "Why does the ISR matter? Only an ISR member can become the new leader. It has all committed data, so nothing acknowledged is lost on failover. Broker three, which is missing seven to nine, can never be elected.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f3a0839a",
+   "say": "The producer's acks setting decides when a write counts as done. Acks zero: fire and forget. The producer doesn't wait at all, can't even know if the write landed, and gets offset minus one back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9e0a1834",
+   "say": "Acks one: wait for the leader only. The loss case: the leader writes offset fifty, replies success, and crashes before the followers copied it. A follower becomes leader with only zero to forty nine. Offset fifty is gone, but the producer was told it succeeded.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6151caf8",
+   "say": "Acks all, the same as minus one: wait for all current ISR replicas. Safest, slower, and the default since Kafka three point oh.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9454982d",
+   "say": "The catch: all means all replicas currently in the ISR, not all replicas. If the ISR has shrunk to only the leader, acks all behaves like acks one. That's why the next setting exists.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d9b97937",
+   "say": "Min insync replicas is the minimum ISR size a partition must have to accept acks all writes. You set it per topic or per broker, and the default is one. A correction: it does not stop the ISR from shrinking, and the ISR can become empty. It only makes the leader reject acks all writes when the ISR is too small.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e89f0316",
+   "say": "Replication factor three, min insync two. Kill broker five. The ISR is six and four. Two is at least two, so acks all writes still succeed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7580a945",
+   "say": "Kill broker six. The ISR shrinks to just four, anyway. Now acks all writes are rejected with not enough replicas exception. Acks one and acks zero writes are still accepted, and reading old data works. So unavailable isn't the whole story: only acks all writes fail.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "76b17dfa",
+   "say": "Kill broker four too. The ISR is empty, there's no leader, and the partition is offline. Restart broker five: it's alive, but it was out of sync and may miss acknowledged data, so it is not made leader. The standard safe setup is replication factor three, min insync two, acks all. Lose one broker, no loss and still writing. Lose two, and writes stop instead of risking loss. And min insync equal to the replication factor would block writes on every single broker restart.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eaecbec9",
+   "say": "Check 7. RF 3, min.insync.replicas=3, acks=all. One broker restarts for a deploy. What happens to writes?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f66fabda",
+   "say": "The ISR drops to two, which is less than three, so every acks all write is rejected until that broker is back and caught up. Setting min insync equal to the replication factor means any single restart blocks writes. That's why replication factor three with min insync two is the usual choice.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d28789c",
+   "say": "Topic twelve. The complete write flow: one keyed event, from the producer's send to the acknowledgement, across three machines.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e04591d6",
+   "say": "Two terms first. Both flows turn on them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6d788f7",
+   "say": "The log end offset is the next offset to be written. A replica holding zero to five hundred ten has a log end offset of five eleven.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ea22239",
+   "say": "And the high watermark is the lowest log end offset across all the ISR replicas. Records below the high watermark are committed: every in sync replica has them. Remember the high watermark. Both flows turn on it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a955eed3",
+   "say": "Phase A, find the leader. The producer only knows a few bootstrap server addresses. It asks any one broker: for order events, which broker leads each partition? The broker answers from its own copy of the cluster metadata. A correction: it does not forward the request to the active controller. Even with two of three controllers dead, a freshly started producer still got metadata and wrote. The producer caches the answer and refreshes every five minutes, or when a broker says I am not the leader.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "02472cea",
+   "say": "Then it computes the partition itself: murmur two of order one two three, mod three, is one. The leader of P one is broker two. Like looking up the phone book once, then dialling the right person directly, instead of calling reception for every message.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23b78218",
+   "say": "Phase B, send and write. The producer doesn't send each record alone. It groups records for the same partition into a batch, waiting up to linger dot ms, five milliseconds, and sends the batch straight to broker two. Broker two appends it to the end of the P one log, and the record gets offset one oh one. Writes to disk really means writes to the operating system's page cache. Fast.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d719ea2",
+   "say": "Phase C, the followers copy, and they pull. Brokers one and three send fetch from one oh one, and get the record. Then they fetch from one oh two. And that fetch offset carries the information: asking for one oh two means I already have everything up to one oh one. No separate ack message is needed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6dbdfb18",
+   "say": "When every ISR replica has passed one oh one, the leader moves the high watermark to one oh two. Offset one oh one is now committed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2ca0600",
+   "say": "Phase D, the reply. With acks all, the leader answers the producer only after the high watermark passes the record: success, partition one, offset one oh one. With acks one, the reply would have gone right after phase B, before any follower had it. With acks zero, there's no reply at all.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "40cd0225",
+   "say": "And if broker two died between phase A and phase B? The send fails, with a connection error, or not leader for partition. The producer refreshes its metadata, learns broker one leads now, and retries the batch there automatically. Your application code sees nothing, unless the retries run out at delivery timeout, two minutes by default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d86bfa19",
+   "say": "The same thing as logs. The leader appends one oh one, so its log end offset is one oh two. The followers are still at one oh one. The high watermark, the lowest log end in the ISR, stays at one oh one. So one oh one isn't committed yet.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b44876d5",
+   "say": "Both followers fetch it. Now the lowest log end in the ISR is one oh two, the high watermark moves to one oh two, and one oh one is committed. That's the moment the acks all producer is answered. And as we'll see next, it's also the line consumers can't read past.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f3b11338",
+   "say": "Topic thirteen. The complete read flow. A consumer of notification service ends up owning P one. Seven requests, in order.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "141d5b0c",
+   "say": "Phase A. Metadata, the same as for the producer: which broker leads each partition. Then find the group coordinator: the broker that tracks this group's members and commits. The consumer just asks: who is the coordinator for notification service? The broker computes the absolute hash mod fifty, twenty three, and the leader of consumer offsets partition twenty three, broker three, is the coordinator.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "88acafac",
+   "say": "Phase B, join the group. The consumer asks the coordinator to join, the coordinator waits for all members, then gives each one its partitions. A correction on who computes the split. In the default classic protocol, one consumer is picked as group leader and computes the assignment. The coordinator only collects it and hands it out: that's the sync group step. In the newer protocol, group protocol equals consumer, the coordinator computes it. The default is still classic.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d2aa4ebf",
+   "say": "Phase C, where did the group stop? The coordinator looks up the key notification service, order events, partition one, in its map built from consumer offsets partition twenty three, and returns one hundred. One hundred means the next offset to read, so the consumer starts at one hundred, not one oh one. And this is group progress data in an ordinary internal topic on brokers, not the controllers' metadata.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1fafba5",
+   "say": "Phase D. The consumer fetches directly from the leader of the partition, broker two. The coordinator isn't in this path. Size limits per request: one megabyte per partition, fifty megabytes total, and poll returns at most five hundred records at a time. And the leader returns only records below the high watermark. Uncommitted records stay invisible, so a consumer never reads something that could vanish in a leader failover.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ff78a30c",
+   "say": "After processing one hundred to five hundred, the consumer commits five oh one, the next one to read. The coordinator writes that commit to consumer offsets partition twenty three and waits until that partition's in sync replicas have it, like acks all. The consumer has no acks setting for commits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8935d3f8",
+   "say": "Then the loop: the next fetch starts at five oh one. Notice that in both flows every data movement is a fetch. Kafka never pushes data to consumers. Pull lets each consumer set its own speed without being flooded, gives good batching, and makes replay trivial: just fetch an older offset. And with no new data? Long polling. The broker holds the request open until at least fetch min bytes of data exists, or five hundred milliseconds pass. No busy loop.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "cc945358",
+   "say": "Check 8. The consumer processed 100..500, then crashed before the commit. A new member takes over P1. Where does it start?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3e4fcc3d",
+   "say": "At one hundred. The last commit was still one hundred, so records one hundred to five hundred are processed again. Duplicates: that's at least once, and why processing should be idempotent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b101057",
+   "say": "Topic fourteen, briefly. How old data leaves: delete by time or size, or compact by key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c3fba96b",
+   "say": "The setting is cleanup policy: delete, the default, or compact. Delete by time: retention dot ms, seven days by default. A segment is deleted once its newest record is older than that, by record timestamps, not the file's creation time. Even the active segment goes once it expires; Kafka rolls a new empty one, and offsets never restart: the next record still gets the next number.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57989421",
+   "say": "Delete by size: retention bytes, and the limit is per partition, not per topic. Kafka deletes the oldest segments, but only while what remains stays at or above the limit. Limit one gigabyte, segments of six hundred, six hundred and three hundred megabytes: nothing is deleted, because removing the first would leave nine hundred, below the limit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c9cea04f",
+   "say": "Compact keeps only the latest value for each key. For topics that are current state per key, like a user's profile. Kafka's own consumer offsets topic is compacted.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "245dd120",
+   "say": "And both work by whole segment, in background threads, with no promise of when.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2394656e",
+   "say": "Five records: user one version one, user two version one, user one version two, user three, user two version two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b452d53e",
+   "say": "After compaction, only the latest per key survives: one oh two, one oh three, one oh four, in that order. Offsets don't change and order is kept, with gaps where records were removed. Survivors are never renumbered or reordered.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "80c53c5d",
+   "say": "But the active segment is never compacted. User one version three lands at one oh six, in the newer segment, so user one still appears twice. A reader of a compacted topic must take the last value per key, not assume one record per key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eafc555d",
+   "say": "Topic fifteen. Why Kafka is fast, even though it writes everything to disk. Asked in almost every Kafka interview.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "329fb59a",
+   "say": "Disk is slow when you jump around: random access. Kafka never jumps around on writes. The log is append only: no insert in the middle, no update in place. So every write lands at the end of the file. That's sequential I O, the fastest thing a disk can do. And the write doesn't even wait for the disk. Kafka hands the data to the operating system, which keeps it in RAM, the page cache, and writes it to disk later. No forced disk sync per message by default.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "973e3c38",
+   "say": "So where does durability come from? Replication, not syncing each write. With acks all, a write is confirmed only after every in sync replica has it. If one machine loses power before its flush, the other replicas still have the data. And consumers mostly read what was just written, so reads usually come straight from the page cache too.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dbba2597",
+   "say": "Reads. The normal way to send a file over the network is four copies: disk to page cache, copy into the application's memory, the JVM heap, copy back into a kernel socket buffer, then to the network card.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2e9ddc73",
+   "say": "Kafka's way: don't bring the data into my process at all. It calls sendfile, saying only: send bytes X to Y of this file to this socket. The data never enters the Kafka JVM. No copy into the heap and back, so less CPU, less memory, and less garbage collection. It works because Kafka stores batches on disk in the exact format it sends over the network. There's nothing to change on the way out. It's lost with TLS, because the data must be encrypted inside the JVM, and with old clients that need format conversion.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "224141c8",
+   "say": "Say it like this.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4be8174b",
+   "say": "Kafka is fast because writes are sequential appends into the operating system's page cache,",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "47b1b832",
+   "say": "durability comes from replication instead of a per write fsync,",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad5b7394",
+   "say": "and reads use zero copy sendfile, so data goes from the page cache to the socket without entering the JVM.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "260d17c3",
+   "say": "And on top, producers batch and compress records per partition, so there are few, large requests.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6c7ce1a8",
+   "say": "Topic sixteen. When things fail on the broker side: the controller, a partition leader, a follower, a whole broker. Each one is noticed by a specific timer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d884548",
+   "say": "The timers, all defaults. Two seconds: controller quorum fetch timeout. Standby controllers notice the active one is gone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "affbf5fb",
+   "say": "Nine seconds: broker session timeout. The controller notices a broker is gone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45aa8e32",
+   "say": "Thirty seconds: replica lag time max. A leader notices a follower is too slow.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87669c9c",
+   "say": "Forty five seconds: session timeout. The group coordinator notices a consumer is gone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fb4bb952",
+   "say": "Five minutes: max poll interval. A consumer notices it's stuck processing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "93a45fd7",
+   "say": "Brokers heartbeat every two seconds, consumers every three. Keep these in your head; every failure story below is one of them firing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d89e138c",
+   "say": "Controller one is active, two and three are standbys, and the standbys keep fetching the metadata log from it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "affeab1d",
+   "say": "Controller one crashes. In KRaft the active controller doesn't push heartbeats; the standbys keep fetching from it, and when a fetch gets no answer for two seconds, they know it's gone.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b373e90c",
+   "say": "First a pre vote: would you vote for me? That way a node that only lost its own network briefly can't disturb a healthy leader. Then the real election: controller two raises the epoch from one to two, votes for itself, and asks the others. Its own vote plus one more is two of three, a majority. Each voter gives at most one vote per epoch, so there can never be two winners.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20236507",
+   "say": "Brokers and the remaining standby now fetch from controller two. Producers and consumers never noticed: partition leaders live on brokers and kept serving. Only metadata changes paused, for about two seconds. When controller one comes back, it sees the higher epoch and joins as a standby.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f385aad7",
+   "say": "Setup: P one, replication factor three, min insync two, leader on broker two, ISR one two three, the producer on acks all. Every broker heartbeats to the controller. The controller watches brokers, not individual partitions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87edec6d",
+   "say": "Broker two crashes. The producer's sends to it fail, and it keeps retrying. After nine seconds without a heartbeat, the controller marks broker two dead.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9d2f461",
+   "say": "For every partition broker two led, the controller picks a new leader from the ISR only. ISR members have all committed records, so nothing acknowledged is lost. The replica list doesn't change, and no data is moved. Broker one fetches the change: it's the leader of P one now.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d9791c18",
+   "say": "Clients are not pushed anything. The producer finds out because its request failed. It refreshes metadata from any live broker, sees the new leader, and retries there. Broker three now fetches from broker one. A producer sent three thousand keyed records with acks all, one every ten milliseconds, while a leader was killed: three thousand acked, zero lost, and the slowest single send took eight point six seconds. That's the nine second detection window. Records were only delayed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "409fe394",
+   "say": "Two edges. No data loss holds only for committed records, which needs acks all. With acks one, records the old leader acknowledged, but the followers hadn't fetched yet, are gone after failover, although the producer got success. And if no ISR member is alive, the partition has no leader and is offline. Kafka will not promote an out of sync replica, because it could be missing acknowledged data. Availability is traded for safety.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "29584f54",
+   "say": "The rest of the broker side, quickly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48d54b60",
+   "say": "A follower dies: after nine seconds the controller drops it from the ISR, and acks all now waits for fewer replicas. No downtime while the ISR stays at or above min insync. If it's alive but slow, the leader asks for its removal after thirty seconds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "846e5aea",
+   "say": "A whole broker dies: both at once. Partitions where it was the leader get a new leader from the ISR. Partitions where it was a follower just drop it from the ISR and keep running.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8858de06",
+   "say": "A topic can't fail as a whole: it's just a name for partitions. A partition with no live ISR replica is unavailable, so keys that hash there can't be written, and the other partitions keep working.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0d1e3f2",
+   "say": "The group coordinator is simply the leader of one consumer offsets partition, so it fails over like any partition leader. Consumers' heartbeats and commits fail, they ask who is my coordinator again, and the commits are safe, because they were replicated.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbc08162",
+   "say": "And when a failed broker comes back: it registers, it's a follower everywhere, it cuts off any uncommitted tail the new leader never got, fetches what it missed, rejoins the ISR, and later gets its leadership back by preferred leader election, so load stays balanced. That truncation is exactly why only committed data is guaranteed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "12a79528",
+   "say": "Topic seventeen. When consumers fail. Two separate checks, and the one people get wrong.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f60cb633",
+   "say": "A Java consumer has two separate checks. A background heartbeat thread, every three seconds even while you process, proves the process is alive. Your poll loop, at least every five minutes, proves it's making progress. Dead or frozen: no heartbeats, removed after forty five seconds, and its partitions aren't read in the meantime.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d8fce09a",
+   "say": "Alive but stuck in slow processing: it's still heartbeating, so it isn't caught by the session timeout at all.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1f3afa1",
+   "say": "Stops cleanly: close sends leave group right away and the rebalance starts immediately, with no forty five second gap. Always close consumers on shutdown.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e46925b",
+   "say": "Heartbeats prove alive. Poll proves progress.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c0057241",
+   "say": "One batch takes six minutes, and max poll interval is five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52595ca4",
+   "say": "The whole time, the heartbeat thread keeps succeeding, so the coordinator thinks everything is fine.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d86efc2",
+   "say": "A slow consumer is still heartbeating. It's not detected by missing heartbeats. The consumer itself sees that poll hasn't been called for too long, and it leaves the group on its own.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2784e92e",
+   "say": "Rebalance. Another consumer gets P two and starts from the last commit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de276091",
+   "say": "Then the slow one finishes and tries to commit. It's no longer the owner, so the commit is rejected with commit failed exception. The result: the work is wasted and duplicated. The new owner reprocesses the same records from the last commit.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0ba7bf12",
+   "say": "Four fixes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "31205d2c",
+   "say": "Increase max poll interval, if the processing time is truly that long.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b4f6322",
+   "say": "Reduce max poll records, default five hundred, so each batch finishes faster. The classic trap: five hundred records at one second each is five hundred seconds, over the three hundred allowed. That's a rebalance every single poll, and every commit fails.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7a3881a4",
+   "say": "Make the processing faster.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a949d74d",
+   "say": "Or process in a separate thread pool and keep calling poll, with pause on those partitions so poll returns nothing new, and commit only offsets that are fully processed. Otherwise you're back to losing records.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e05a3e97",
+   "say": "Check 9. Your consumer takes 1 s per record, max.poll.records is 500, max.poll.interval.ms is the default. What goes wrong?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "26819f32",
+   "say": "Five hundred records times one second is five hundred seconds, more than the five minute default. So it leaves the group on every batch, its partitions are rebalanced and reprocessed, and its commits keep failing. Set max poll records below three hundred, say two hundred, or speed up processing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e2f575f5",
+   "say": "Topic eighteen. Inside the producer. What really happens when you call send, which turns out to be not sending.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4a5d4d4",
+   "say": "send does not send anything over the network. The record passes through stages inside the producer, on your thread, and a separate background thread does the network call later.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "620dc545",
+   "say": "Stage zero: the producer must know the partitions and their leaders; the first send waits for that. Stage one, the serializer. Kafka only stores bytes, so the key and value become byte arrays. String serializer, or for objects, the JSON serializer that comes from spring Kafka. If serialization fails, send itself throws immediately. No future, no callback.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db683998",
+   "say": "Stage two, the partitioner: the partition you gave, the key's hash, or sticky with no key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "57f9cf71",
+   "say": "Stage three, the record accumulator: an in memory buffer that keeps one open batch per topic partition. send returns here, with a future. Batching is the main reason producers achieve high throughput.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bf521e72",
+   "say": "Stage four, compression of the whole batch. Stage five, the sender thread, exactly one per producer. It takes ready batches, groups them by leader broker, and packs them into one produce request per broker. Then it handles the acks, retries failed batches, completes the futures and runs your callbacks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "128b7281",
+   "say": "Two things the pipeline picture hides. send can still block, on your thread, waiting for metadata or for buffer space. The buffer is thirty two megabytes shared by all batches; if the broker is slow and batches pile up, send blocks for up to max block ms, sixty seconds, then fails. In a REST controller that's a request thread hanging for a minute, so lower it if callers must fail fast. And failures show up in two places: before the accumulator, thrown by send; after it, through the future.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a669d79f",
+   "say": "Two knobs decide when a batch is ready to send, and whichever happens first wins. Batch size, sixteen kilobytes: once full, it's ready. Linger dot ms, five milliseconds: under low traffic a batch never fills, so after waiting that long it's sent half empty. Bigger values give more throughput and better compression, but more latency per record.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6420cccd",
+   "say": "The often asked follow up: batch size is thirty two kilobytes, but one record is a hundred? It's not rejected. It goes alone in its own batch. A hundred kilobyte record was stored as one batch of a hundred thousand and seventy three bytes. The real limit is max request size, one megabyte.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d91a9747",
+   "say": "Compression is per batch. The broker stores the batch still compressed, and consumers decompress, so it saves network and broker disk. A hundred repetitive order JSONs went from thirteen and a half kilobytes to under two with snappy. Real data compresses less. Lz four or snappy for speed, zstd for the best ratio.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87adb0e2",
+   "say": "And the sender keeps up to five requests in flight per broker connection, without waiting, which pipelines. Today's defaults: acks all, idempotence on, retries effectively infinite. The real limit is delivery timeout, two minutes, from send to success or final failure. Kafka's guidance is to leave retries alone and tune delivery timeout. One more: callbacks run on that single sender thread, so never do slow work, a DB call or an HTTP call, inside a callback. It stalls sending for the whole producer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "63b242ab",
+   "say": "Topic nineteen. The idempotent producer. Two problems retries create, and how a producer id and sequence numbers solve both.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "98e76daa",
+   "say": "Problem one. The producer sends a batch: created. The broker writes it at offset zero, but the reply is lost on the network.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b3b2a1a",
+   "say": "The producer can't tell not written from written, reply lost. So it retries, and the broker writes it again, at offset one. And a correction: duplicates do not need more than one in flight request. Any retry after a lost reply causes them, even with max in flight one. The app was even told created was acked at offset one; it never knew offset zero existed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ea639b38",
+   "say": "Problem two needs retries and more than one request in flight. Batch one, created, is lost on the network. Batch two, paid, was already sent without waiting, and is written at offset zero.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d7b4944",
+   "say": "Batch one is retried and lands at offset one. Paid, then created. A consumer sees the order paid before it existed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a825f088",
+   "say": "The fix has two ideas. A PID, a producer id: a unique number the producer gets from the cluster at startup. And a sequence number: each record gets one, increasing by one, separately for each partition. A batch carries its first and last sequence. This batch for topic A, P zero, is sequence zero to two, so the next batch for that partition starts at three. Both are written into the batch header on disk.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bb7c5f07",
+   "say": "The partition leader remembers, for every PID and partition, the last sequence it wrote. Last was two. A batch with base three arrives: three is two plus one, the expected next. Write it, remember five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e801e57",
+   "say": "Now the retry of that same batch arrives: base three again, lower than expected. It's a duplicate. The broker does not write it again, but still replies success, with the original offset. With idempotence on, the dropped reply test gave created at offset zero, paid at one, shipped at two. No duplicate.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "190ff776",
+   "say": "And a batch that arrives with a gap, expected six, got nine, means an earlier batch is missing. It's rejected as out of order, and the producer resends the earlier batch first. That's reordering fixed. And this state survives failover: PID and sequence are in every batch header, replicated to followers, so a new leader can rebuild it and keep deduplicating.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce0d715b",
+   "say": "What it needs. Acks all. With acks one, the leader replies before followers copy the batch. If it dies, the new leader may not have the batch or its sequence state, the producer was already told success, and the record is simply lost. Idempotence stops duplicates from retries; it can't bring back data acknowledged too early.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "05069dda",
+   "say": "Max in flight at most five, because the broker keeps details of only the last five batches per PID and partition to recognize duplicates. Five batches, not five sequence numbers. The client refuses to start with six.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52a11eb1",
+   "say": "And the trap: it's on by default since three point oh, but acks one silently turns it off. Only a log line says idempotence will be disabled because acks is set to one. Set enable idempotence true explicitly, and then a bad config fails at startup instead of quietly dropping the guarantee.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7b6614a",
+   "say": "What it does not cover. A producer restart gets a new PID, starting at sequence zero, so the broker can't link it to the old one: crash before the ack, restart, resend, and the records are written twice. Nor the app calling send twice for one event, nor all or nothing writes across partitions, nor consumer side duplicates. A fixed transactional id fixes the restart gap; that's the last part.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e841d49e",
+   "say": "Say it like this: idempotence gives exactly once writes per partition for one producer session; it doesn't survive a producer restart, and it isn't end to end exactly once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "de90ecb7",
+   "say": "Check 10. enable.idempotence=true is set. Can a downstream sink still see duplicates?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c963b609",
+   "say": "Yes. Idempotence only removes duplicates caused by one producer session's own retries to one partition. A restart gets a new PID, the app can call send twice for the same event, and a consumer that crashes before committing reprocesses. The sink still has to be idempotent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0f66eed",
+   "say": "Topic twenty. Spring Boot. First the producer side, which is mostly configuration.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d0c0dfa6",
+   "say": "A new topic bean. At startup, Kafka admin creates the topic if it doesn't exist: three partitions, three replicas, min insync two. Anything not set uses the cluster defaults.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e72c8f48",
+   "say": "Properties. More than one bootstrap server, so if one broker is down, the producer bootstraps from another. They're only the first contact: the producer fetches full metadata from one of them and then talks to each partition's leader directly. Acks all, idempotence explicitly on, a little linger for batching.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7db1084c",
+   "say": "Sending is asynchronous: kafka template dot send returns a completable future, and the HTTP request returns before Kafka confirms. That's why the controller answers two oh two accepted. The callback runs on the sender thread, so keep it light. Calling get makes it synchronous: simple, but one round trip per record and no batching benefit. And for a second serializer in the same app, build a second kafka template from the same properties with one setting overridden. Each template has its own producer, buffer and sender thread.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "48764f22",
+   "say": "Topic twenty one. The consumer side, where Spring writes the poll loop for you, and where most production bugs hide.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3825dc10",
+   "say": "Without Spring, a consumer is a loop you write yourself: properties, new Kafka consumer, subscribe, while true poll, commit, and close in finally. Spring Kafka writes all of that for you. You provide only two things: properties, and the business method.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "dbda3eb9",
+   "say": "The consumer factory reads spring dot kafka dot consumer properties and creates Kafka consumer objects.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8e5a85c6",
+   "say": "The listener container owns one Kafka consumer and one thread. It runs the poll loop, calls your method once per record, commits offsets, and closes the consumer on shutdown. Each at Kafka listener gets a concurrent container that creates concurrency children, default one, and each child is one consumer plus one thread, named like orders dash zero dash C dash one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d34889a2",
+   "say": "The containers aren't beans you inject. They live in the endpoint registry, which you use to stop, start or pause a listener. And a gotcha: give the listener an id, and Spring uses that id as the group id, ignoring your group id property. Set group id on the annotation explicitly.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16d729ab",
+   "say": "Two properties that each prevent a real bug. Auto offset reset. With the default, latest, a brand new group starts at the end. Orders one to nine were produced, then a new group started, and it received nothing from them. Only orders produced after it joined arrived. For a new service that must see existing data, use earliest.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d52d6eec",
+   "say": "And the deserializer: wrap the JSON deserializer in an error handling deserializer, and turn off type headers. Why that matters is the poison pill story, coming up in topic twenty four.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b7762ee0",
+   "say": "What happens inside poll, with Spring.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e594a56",
+   "say": "The first call does the whole read flow: find the coordinator, join group, sync group, fetch committed offsets or apply auto offset reset. Every later poll just fetches new data and handles commits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b9449eb",
+   "say": "A correction about coordinator crashes. It's often said the group must rejoin and rebalance. On a three broker cluster, the coordinator broker was killed, the consumer logged discovered group coordinator, the new one, and kept consuming. No rejoin, and the generation stayed one. The new coordinator loaded the group from consumer offsets.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7514dcfb",
+   "say": "Many partitions: one by one, or in parallel? The consumer sends one fetch request per leader broker, covering all its partitions there, and these go out in parallel. Fetch limits are about bytes over the network; max poll records is about how many records your code gets per poll. Extras wait in a buffer for the next poll.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df3585ec",
+   "say": "And in Spring, the container thread calls your method one record at a time, sequentially. Order is kept within each partition, and partitions are interleaved. Set listener type batch to take a whole list instead.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "45e068ba",
+   "say": "Topic twenty two. Who commits in Spring, and when. The answer changes what a crash costs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c186e567",
+   "say": "A correction: Spring Kafka sets enable auto commit to false, unless you set it yourself. The container commits instead, after your method has processed the records, based on the ack mode. The default is batch: commit once all records returned by one poll are processed. Record commits after each one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c98e1946",
+   "say": "Five events in one poll. Offsets zero and one process fine, and offset two crashes. Batch mode has committed nothing yet: the committed offset is still zero. Record mode committed after each one: it's at two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "56c833ea",
+   "say": "After the restart, batch reprocesses zero to four, so zero and one run twice. Record reprocesses only two, three, four. Batch: fewer commit requests, more duplicates after a crash, up to one whole poll of five hundred. Record: one commit per record, more load on the coordinator, fewer duplicates. Neither loses data. Both are at least once, so your processing must be idempotent.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fba8113b",
+   "say": "Manual and manual immediate: you call acknowledge yourself. Manual batches the commits and sends them later; manual immediate sends right away.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a0b7573e",
+   "say": "Use it when done is decided by your code. For example, acknowledge only after the database transaction commits. And if you never call acknowledge, nothing is committed, and the records come back after a restart or rebalance. Say it like this: Spring disables Kafka's auto commit and commits from the container after processing; with the default batch mode a crash replays the whole last poll, record replays only the failed record, and manual lets my code decide.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2f4a2b1a",
+   "say": "Topic twenty three. Rebalancing and scaling: how partitions move between members, and how to stop that hurting.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "96d98217",
+   "say": "A rebalance re divides partitions when a member joins, leaves or is considered dead. With the default eager protocol, all members stop during it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "62fe4cfc",
+   "say": "Consumer B joins. Eager, with range: A revokes all four partitions, then gets new ones. Everyone stops consuming during the rebalance, stop the world. Cooperative sticky: A revokes only P two and P three, the ones that move.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "321cffa7",
+   "say": "Same final split, but cooperative kept P zero and P one consuming the whole time. The default list is range and cooperative sticky, and the group uses the first one all members support, so range, eager, is what you get. The cooperative entry is there for a safe two step upgrade: roll out with both, then roll out again with only cooperative sticky.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "af6dfa71",
+   "say": "Static membership for rolling deploys. Restarting three pods normally causes six rebalances: each pod leaves, then joins. Give each pod a fixed group instance id, like its host name, and a longer session timeout. Restart within the timeout and the member gets its partitions back; the rest of the group never notices. The cost: if the pod really dies, its partitions sit unread until the timeout ends.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "39ba5187",
+   "say": "Commit on revoke. Anything processed but not committed when a partition is taken away gets processed again by the new owner. On partitions revoked is the last chance to commit, and Spring's container does it for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7ee30a5d",
+   "say": "Scaling. Listener concurrency three, or more pods with the same group id. On four partitions, concurrency three gives two, one, one, and concurrency five leaves a thread idle. And two unrelated listeners in the same group still share one group, so a rebalance caused by one pauses the other: give independent listeners their own group id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3c92650e",
+   "say": "Order. Each partition is still processed in order by one thread. Handing records to your own thread pool breaks per partition order and makes commits unsafe, because the container may commit before your pool finishes. Need more parallelism? Add partitions plus concurrency.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6bfc1c6e",
+   "say": "Every one of these is about the same cost: each deploy, slow consumer or dead pod costs a rebalance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e83d7d20",
+   "say": "Check 11. Spring listener concurrency = 10 on a 6-partition topic. How many threads do real work?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b6d1eab7",
+   "say": "Six. Each child container is one consumer in the group, and each partition has exactly one owner, so four of the ten threads sit idle.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dfa101e9",
+   "say": "Topic twenty four. Errors. One bad record can stop a whole partition, and the fix has a price.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "44696481",
+   "say": "Kafka gives each partition to one consumer, which reads it in order. A record can't be set aside the way a queue can. If record forty two keeps failing, there are only four possibilities.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "01868e92",
+   "say": "One: retry forever. The partition is stuck at forty two and lag grows forever. That's the classic poison pill. Two: skip it silently. Data loss. Three: stop the consumer. Everything stops until a human acts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ce33904",
+   "say": "Four: retry a few times, then move it somewhere safe, a dead letter topic, and continue. Because a partition is consumed in order, one failing record blocks everything behind it, so I retry transient failures a bounded number of times, then park the record in a dead letter topic so the partition keeps moving.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1d4e0a67",
+   "say": "Before retrying, ask one question: would trying again ever help? Transient failures, the DB is down, a timeout, a five oh three, a deadlock, a rate limit: wait a bit and it'll probably succeed. Retry with a back off.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "971dde0b",
+   "say": "Permanent failures, bad JSON, a missing required field, a broken business rule: retrying ten times gives the same failure ten times, and blocks the partition. Send it to the DLT right away. Spring already treats some exceptions as not retryable, like deserialization and conversion exceptions. Add your own validation errors to that list.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "691b05be",
+   "say": "And the worst pill. Spring's JSON serializer adds a type id header with the producer's class name, and the consumer's JSON deserializer prefers that header. If the consumer's class is in a different package, deserialization fails, inside poll, so the offset never advances. The same record failed on every poll: a hundred and eight thousand errors in about forty seconds, a five hundred ninety four megabyte log, and nothing after it was consumed. The fix: turn off type headers, and always wrap in error handling deserializer, which turns the failure into a normal failed record the error handler can skip or dead letter.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f2f54b8b",
+   "say": "And always throw something that extends runtime exception. An Error skips the error handler and stops the consumer, while the app can still look healthy from outside.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b154ca5c",
+   "say": "Blocking retries. Blocking means the retry happens on the same partition, in place: nothing behind the failed record is processed until it succeeds or is given up on. In Spring, that's the default error handler. Poll returned zero to five, and record three throws. First, the offsets of records that already succeeded are committed, so a retry never replays them.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4ed594ef",
+   "say": "Second, seek, not loop. The handler doesn't call your method again in a for loop. It moves the consumer's position back to three, and the next poll brings three, four, five again. Because it keeps calling poll, the consumer stays alive in the group the whole time. When the exception isn't retryable, or the attempts run out, the recoverer runs, the failed record's offset is committed, and the partition moves on.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21077433",
+   "say": "In real code you change two things: add a delay, and replace log and skip with publish to a DLT. Fixed back off one thousand, two means two retries, so three attempts in total, one second apart. The second number is retries, not attempts. On one partition: a bad record went straight to the DLT, a DB down record got three attempts, and the next record waited about two and a half seconds behind it. That wait is what blocking costs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6794ea4c",
+   "say": "Because the defaults will quietly lose data: ten attempts with zero delay, finished in milliseconds, which does nothing for a database that needs five seconds to come back. Then the record is logged and gone.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "8a49bb7c",
+   "say": "A DLT is a normal Kafka topic where records that couldn't be processed are parked, so the main partition can continue and nothing is silently lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4994e1e",
+   "say": "The name: the original topic dash dlt. Many blogs show dot DLT; that was the old default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce4b36f3",
+   "say": "The partition: the same partition number as the original. The trap: if orders has six partitions and orders dash dlt has one, a failure on partition four can't be published. Give the DLT at least as many partitions, or let Kafka pick with partition minus one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c0a024be",
+   "say": "Key and value are unchanged, and the headers carry the why, so nobody has to guess later: the original topic, partition, offset, and the exception's class, message and stack trace.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1d94473b",
+   "say": "And a DLT nobody reads is just data loss with extra steps. Alert on any DLT traffic, inspect the headers, fix the bug or the data, replay the fixed records, with idempotent consumers, and keep the DLT's retention long enough for humans to react.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6d0c0a2e",
+   "say": "Your payment service is down for two minutes. With blocking retries, every payment behind the first failing one waits two minutes, though most of them don't depend on each other. So: move the failing record to a separate retry topic, so the main topic keeps flowing. A retry consumer processes it again after a delay, and after the last attempt, it goes to the DLT.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b762e64e",
+   "say": "At retryable topic with four attempts, delay one second, multiplier two. Each failure hops the record one topic to the right: retry one thousand, two thousand, four thousand, about one, two and four seconds later, then the DLT, where the DLT handler method is called. Success at any stage ends it. And the main topic never stopped.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8fd7ad78",
+   "say": "How does it wait without sleeping? The forwarded record carries a due timestamp header. If the retry consumer reads it too early, it pauses that partition, seeks back, and resumes when the time comes. Every record in one retry topic has the same delay, so the first one waiting is always the earliest due.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6806c1ed",
+   "say": "The catch: you just broke ordering. One order, created then paid, same partition. Created fails and moves to the retry topic. Paid is processed now. So paid gets applied before created. For an email sender that's fine. For an order state machine it's a bug.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ff098f33",
+   "say": "So decide with one question: do events for the same key depend on each other? Blocking retries when order matters per key, order lifecycle events, account balance updates, and failures are short. Non blocking when records are independent and outages can last minutes. Most teams combine them: a few quick blocking retries for blips, then retry topics. And when order matters and the outage is long? Pause the container, alert, and resume after the fix. Lag grows, but nothing is applied out of order.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7fcc74fe",
+   "say": "Three last tools.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a5aa8a56",
+   "say": "Lag tells you something is wrong. Lag is log end offset minus committed offset, per partition: how far behind the group is. Lag on every partition means the consumers are too slow overall. Lag on one partition means a hot key, or a stuck poison record.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7e5fa257",
+   "say": "Pause and resume handle a slow downstream. Pause keeps poll running, but it returns nothing, so the consumer stays in the group. Just sleeping would breach max poll interval and trigger a rebalance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e7b1e36",
+   "say": "And replay fixes the past. Kafka keeps data after it's read, so after a bug fix you can go back: offsets for times to find the first offset two hours ago, then seek. Or from the command line, with the group stopped, reset offsets to a date time. Replays process records twice, so consumers must be idempotent. Which is exactly where we go next.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f6c6e564",
+   "say": "Check 12. What happens to message ordering when you use retry topics?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b4353834",
+   "say": "It breaks for the retried record. It's forwarded to a delayed retry topic while later records, including ones for the same key, keep being processed. So I use blocking retries when events for the same key depend on each other, and retry topics when records are independent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4e8d83ba",
+   "say": "Topic twenty five. Delivery semantics. Where you commit decides what a crash costs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8f4e2861",
+   "say": "First, who holds what. The Kafka brokers store the log and the committed offsets, and they survive your crash. The consumer is a client library inside your app; its in memory position dies with the crash, and after a restart it asks the brokers where its group committed. At most once: commit, then process. The commit said forty two was done before it was. The brokers believe it, so forty two is skipped forever. Lost.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d00826f1",
+   "say": "At least once: process, then commit. Crash in between, and the offset never moved, so forty two comes back and the work runs twice. Nothing lost, duplicates possible. This is the normal default.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3ccabbda",
+   "say": "Exactly once: the work and the commit as one atomic step. And that's only possible when the work itself lives inside Kafka, as we'll see.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e42077a4",
+   "say": "Keep the who holds what picture in mind for the rest of this part.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00d622dd",
+   "say": "Who does what. Kafka never calls a database or an API. The brokers only store records and answer requests. Every call is made by your app, which holds two Kafka clients: a consumer to read, and a transactional producer to write. The transaction coordinator isn't a separate server: it's a job one of the brokers does for your producer, chosen by its fixed transactional id, and it records each transaction's state in another internal topic, transaction state.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9a4f80c2",
+   "say": "Steps one and two: poll record forty two, and process it in memory into a result, R forty two. Right now R forty two exists only in your app's memory, and the group is still at forty two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0e5e3758",
+   "say": "Steps three and four: the producer writes R forty two to the output topic, and offset forty three to consumer offsets, both as pending records: already in the log, but tagged with a transaction that hasn't finished. Readers using read committed skip them for now, and the pending offset doesn't count yet.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d6e5d41f",
+   "say": "Step five, commit transaction. The coordinator saves prepare commit, and then step six: it writes a commit marker, a small control record, into both partitions. Now the result and the offset become real at the same moment. The input, the output and the committed offset all live inside the cluster, so the coordinator controls every write. That's why this can be atomic.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "583a469d",
+   "say": "Crash before the commit. The app restarts with the same transactional id and calls init transactions. The coordinator sees an open transaction from the old instance and aborts it. If the app never comes back, it's aborted anyway after the transaction timeout, sixty seconds. Abort markers hide the first R forty two forever, the pending offset is thrown away, and the group is still at forty two. The app reads forty two again, processes it again, and commits. A downstream read committed consumer sees R forty two exactly once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f04ebcf6",
+   "say": "And where it breaks. Your process step calls a bank API and charges five hundred rupees, then crashes before the commit. The abort undoes only what the cluster stores, the pending result and the pending offset. The bank call was made by your app to a system outside the cluster, and nothing can undo it. The retry charges the customer again. So what real systems build is at least once delivery plus idempotent processing, equals exactly once effect.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "253b3693",
+   "say": "Check 13. At-least-once, at-most-once, exactly-once: which is Kafka's default, and what does exactly-once cover?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "135d8c7c",
+   "say": "At least once is the default: process, then commit. Kafka's exactly once covers Kafka to Kafka processing through transactions. When the side effect is outside Kafka, I run at least once and make the consumer idempotent, so a duplicate delivery has no extra effect.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "251dfb5e",
+   "say": "Topic twenty six. Idempotent consumers. Duplicates will happen; two rules make them harmless.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "765c6120",
+   "say": "First, accept that duplicates will happen. Every one of these redelivers a record.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0bc2c043",
+   "say": "A crash after processing, but before the offset commit.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1544d4e",
+   "say": "A rebalance that moves a partition before its offsets were committed. The error handler seeking back and retrying.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1c15c4d",
+   "say": "A manual replay. An upstream publisher sending the same event twice, like an outbox relay. You can't stop all of these. You can make them harmless, with two rules.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "43daef60",
+   "say": "Rule one: commit the offset only after the write is durable. The database transaction commits first, and only then does the offset move. In Spring this happens naturally: the container commits offsets after your listener returns, so if the listener calls a transactional service, the database commit always comes first. Flip the order and the crash window becomes data loss.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "7345a680",
+   "say": "Record forty two, window w seven. The chunks are upserted and the transaction commits. Then a crash, before the offset commit. After the restart the committed offset is still forty two, so the record comes back. The write must be a no op the second time. That's rule two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bbf0438c",
+   "say": "Rule two: make the write itself idempotent. The upsert of w seven conflicts on the primary key, zero rows change, and the consumer commits forty three. The chunks of w seven are stored once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "40736ad3",
+   "say": "Pick the cheapest technique that fits. A: natural idempotency. Setting status to shipped gives the same result run once or five times. Adding ten to a balance does not.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c5676b6",
+   "say": "B, the most common: upsert on a deterministic key. A unique constraint on a key that comes from the data, and let the database reject the second insert. The key must be the same on every redelivery: derived from the source data, like file id plus byte offset, or an event id the producer assigned. Never a random UUID generated in the consumer: every redelivery would make a new id and insert a new row. For latest state rows, do update, guarded by a version so an older event can't overwrite a newer one.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d877dccd",
+   "say": "C: a dedup table, an inbox, when the effect can't be an upsert. Record which events were applied, in the same database transaction as the business change. Zero rows inserted means seen before, skip. If the two were separate transactions, a crash between them would skip a real event or apply it twice.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "27420c56",
+   "say": "D: an idempotency key for external APIs. You can't put a unique constraint on someone else's system, so pass the event id as, say, Stripe's idempotency key header.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b1fda0b7",
+   "say": "The follow ups this design gets. So, is it exactly once?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aaa4c3ec",
+   "say": "Delivery is at least once. The effect is exactly once. Say exactly once effect. Don't call it Kafka exactly once semantics, which means transactions, or you'll be asked how your transactions work.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7761afeb",
+   "say": "Why not just use Kafka transactions?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9281424",
+   "say": "They make Kafka writes and offset commits atomic. Your write goes to Postgres, which is outside the transaction, and Kafka doesn't join XA transactions with a database.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a20e4de1",
+   "say": "Why not use topic, partition and offset as the dedup key?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b5b0a47",
+   "say": "It's stable across redeliveries of the same record, but it fails when the same event is published twice, because the copy gets a new offset. A key from the data, or a producer assigned event id, catches both.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65f181ed",
+   "say": "The batch crashed halfway: sixty of a hundred records written?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "42bf4515",
+   "say": "The offset wasn't committed, so all hundred come back. Sixty conflict and do nothing, forty are inserted. No cleanup code needed. That's the payoff of idempotent writes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23f3357d",
+   "say": "Topic twenty seven. Kafka transactions: what they add on top of the idempotent producer, and what they cost readers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c63ad233",
+   "say": "What the idempotent producer can't fix. Problem A: an order service publishes order placed to orders, and inventory reserved to inventory, and crashes between the two sends. Now one event exists without the other. Problem B: consume, process, produce: write the result, crash before committing the input, and write a second result after the restart. Both need a group of writes that become visible all together or not at all. Setting a transactional id turns on idempotence automatically. Init transactions maps the id back to the same PID and raises the epoch, so an old instance still running, a zombie, is fenced: its writes are rejected.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1fb517bc",
+   "say": "Begin, then the sends. Data goes to the partition leaders as usual and lands in the logs immediately, marked transactional. The coordinator records which partitions this transaction touches, so it knows where to write the markers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "195d87d6",
+   "say": "For consume, process, produce, put the input offsets in the same transaction with send offsets to transaction. The group metadata lets the broker reject a commit from a consumer that already lost the partition in a rebalance.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "262a00db",
+   "say": "Commit, in two steps. Prepare commit to transaction state: from that moment the commit will happen, even if the coordinator crashes, because a new one reads the log and finishes it. Then commit markers in every partition. Abort is the same flow with abort markers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5dd9fa83",
+   "say": "Commit A, abort B, commit C, on one partition. The markers are control records and take offsets, so transactional topics have gaps, at one and three. And B is sitting right there in the log. Whether a consumer reads it depends on the consumer.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da267da3",
+   "say": "A correction: a transactional producer is not enough on its own. A consumer left at the default, read uncommitted, still reads aborted records. It sees A, B and C.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "551eddb1",
+   "say": "With isolation level read committed, it sees only A and C. Every downstream consumer must set it, and Spring Boot doesn't set it for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00ac2915",
+   "say": "And there's a price. A read committed consumer reads only up to the last stable offset: the first offset of the oldest transaction still open in that partition. E is committed, but it sits behind D, whose transaction is still open. So one slow or stuck producer stalls every read committed reader of that partition, until the transaction timeout, sixty seconds, aborts it. Keep transactions short, and commit batches, not single records.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ae2f3783",
+   "say": "In Spring Boot.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fabdf514",
+   "say": "One property turns it on: the producer's transaction id prefix. Plus read committed on the consumers, which Boot doesn't set for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5284fb37",
+   "say": "Inside a Kafka listener, the container starts the transaction, your kafka template send joins it, and the container adds the offsets and commits when the method returns. On an exception it rolls back. And once a template is transactional, a plain send outside a transaction fails: use execute in transaction.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3fea214d",
+   "say": "The trap: a transactional method that saves to the database and sends to Kafka does not make them atomic. Spring can synchronize the two, so the Kafka commit happens right after the database commit, but that's still two commits. A crash between them leaves the database and Kafka disagreeing. That gap is the last topic.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7b04974",
+   "say": "Topic twenty eight. The dual write problem, and the outbox pattern, the standard production answer to exactly once across services.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8964ba01",
+   "say": "Almost every service does this. Save the order to the database, then send order placed to Kafka. Two systems, two writes, and no way to commit them together.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "60908373",
+   "say": "Try every ordering. Send after the database commit: a crash in between loses the event. Send inside the transaction: the database rolls back after the event is out, a ghost event, and downstream ships an order that doesn't exist. Retry the send in a loop: useless if the process itself dies. No ordering of two independent writes survives a crash. So stop doing two writes.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1c94597e",
+   "say": "Make it one write. Insert the event into an outbox table, in the same database, in the same transaction as the business row. The order row and the outbox row are saved together or not at all. No ghost events, no lost events.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "50209df2",
+   "say": "A separate relay does the rest. Every few hundred milliseconds it reads the oldest unpublished rows, with for update skip locked, so two relay instances never grab the same rows. It sends each to Kafka and waits for the ack. Only after the ack does it mark the rows published, or delete them. Mark first and then fail the send, and the event is lost forever. And the event's UUID is fine here, unlike in a consumer: it's generated once, when the event is created, and stored, so every republish carries the same id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "20216cde",
+   "say": "And it still duplicates. The relay publishes row seventeen, gets the ack, and crashes before marking it. After a restart it publishes seventeen again. The outbox gives at least once publishing: never lost, sometimes duplicated. The consumer dedupes on the event id. Outbox on the producer side, plus idempotent consumer on the other side, is the standard production answer to exactly once across services.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "92d5128a",
+   "say": "The details interviewers push on. Ordering: use the aggregate id as the Kafka key so one order's events share a partition, and publish in created order. But skip locked with several relays can publish two events of the same order in parallel, out of order: use one active relay, split the work by a hash of the aggregate id, or put version numbers on events. Table growth: delete or archive published rows on a schedule. Relay down: events pile up in the table, nothing is lost, so alert on the age of the oldest unpublished row. And instead of polling, a CDC tool like Debezium can read the database's transaction log. Lower latency and no polling queries, but one more system to run, and still at least once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e7539713",
+   "say": "Check 14. Why can't you just send to Kafka inside the @Transactional method that saves the order?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "7deec4e0",
+   "say": "Because that's two writes to two systems with no shared commit. If the send goes out and the database then rolls back, I've published a ghost event. If the database commits and I crash before the send, the event is lost. So I insert the event into an outbox table in the same local transaction, and a relay publishes it with acks all, marking it only after the ack. Consumers dedupe on the event id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be0c16cc",
+   "say": "Last, the whole system, once more, on one board. One event, end to end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1ef8b978",
+   "say": "The producer hashes order one two three to P one, batches it, and sends it to the leader, broker two. Appended at one oh one, the followers fetch it, the high watermark moves to one oh two, and the producer gets its ack.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "38cda3af",
+   "say": "The consumer finds its coordinator on broker three, gets committed offset one hundred, fetches from the leader below the high watermark, processes idempotently, and commits five oh one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6ece01b",
+   "say": "And kill the leader. Nine seconds later the controller promotes broker one from the ISR. Clients fail, refresh their metadata and retry. Nothing acknowledged is lost, and the consumer's duplicates change nothing. That's Kafka end to end. The recall task: draw this board from memory, trace one event through it, then kill the leader's broker and say what happens to every piece.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  }
+ ]
+}

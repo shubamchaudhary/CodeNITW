@@ -4,7 +4,21 @@
 
 type N = { id: string; x: number; y: number; w: number; h?: number; t: string; s?: string; tone?: string; at?: number };
 type E = { id: string; from?: string; to?: string; fs?: "l" | "r" | "t" | "b"; ts?: "l" | "r" | "t" | "b"; fo?: number; tof?: number; via?: [number, number][]; d?: string; l?: string; lx?: number; ly?: number; la?: "start" | "middle" | "end"; at?: number };
-export type Step = { n?: string; t?: string; b?: string; m?: string; nodes?: string[]; edges?: string[]; all?: boolean };
+export type Step = {
+  n?: string;
+  t?: string;
+  b?: string;
+  m?: string;
+  nodes?: string[];
+  edges?: string[];
+  all?: boolean;
+  // Moving boards (KFK-ALL): records travelling along edges, crashed nodes,
+  // and a node's state (subtitle, tone) at this step.
+  moves?: { e: string; t?: string; tone?: string; rev?: boolean; delay?: number; dur?: number; once?: boolean }[];
+  dead?: string[];
+  subs?: Record<string, string>;
+  tones?: Record<string, string>;
+};
 type Board = { view: [number, number]; nodes: N[]; edges: E[]; groups?: { x: number; y: number; w: number; h: number; t: string; nodes?: string[] }[] };
 
 export const SITE: Board = {
