@@ -1,0 +1,1580 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "1538edd3",
+   "say": "Brikby. An AI company that automates property due diligence for Indian banks, NBFCs and legal vendors. You have a system design round with them in two days. By the end of this lecture you should be able to explain their customer's problem better than most of their customers can, sketch how their system probably works, and ask two questions that make you sound like you've already joined. We'll go slowly, and after every topic, I'll stop and ask you a question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "434ed4af",
+   "say": "Before anything else, a rule about evidence. Every claim in this lecture carries one of three labels.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "23a54300",
+   "say": "Public. It's on their website, their careers page, or LinkedIn. You can say it in the room, freely. I read your site.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "08dd6870",
+   "say": "Observed. It's what any visitor's browser downloads when it opens their site: the page's scripts, its headers, its DNS. Nothing behind a login, no calls to their API. You use this only to aim your questions. You never quote it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1c50e849",
+   "say": "Estimate. My arithmetic, or an industry assumption. You can say it, as long as you say it's an estimate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a71264fd",
+   "say": "And the goal, in one line.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e6e8eeb9",
+   "say": "Sound like you understand their customer. Not like you studied their code. Business first, then the system that business implies, then two good questions.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b2530762",
+   "say": "Topic one. The problem. Why does a lender need property due diligence at all?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "82cffc48",
+   "say": "Picture the scenario. A borrower applies for a home loan, or a loan against property, which everyone calls LAP.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eaca6101",
+   "say": "The loan is secured by the property. If the borrower stops paying, the lender's protection is that it can enforce its mortgage on the house.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7eb72256",
+   "say": "So a home loan is only as safe as the title of the house behind it. If the seller never really owned it, or someone else already holds a charge on it, the security is worthless.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4b26f9e4",
+   "say": "Before it disburses, the lender needs four answers. Ownership: the borrower, or the mortgagor, really owns the property.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fd1f52da",
+   "say": "A clean chain of title. Every transfer, going back thirteen or thirty years, with no gap and no break.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a72fb250",
+   "say": "No charges. No other mortgage, no lien, no attachment by a court or a tax authority.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e9ee439d",
+   "say": "And approvals. A sanctioned plan, an occupancy certificate, land converted from agricultural use, and for a project, registration under RERA.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6d3a0ef3",
+   "say": "And it needs these answers as a legal opinion, on every single file, before a rupee is disbursed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ea925434",
+   "say": "Here's why it hurts, in Brikby's own public numbers. A manual verification cycle runs seven to fifteen days. For their customers, they say they've cut it from four days to under thirty minutes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "78de6952",
+   "say": "Thirty to forty percent of a reviewer's time goes into interpreting regional language and handwritten records.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7f040117",
+   "say": "And there's no standard workflow, so legal opinions are inconsistent across vendors and branches.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad37c82d",
+   "say": "Keep this line. A vendor's turnaround is the lender's disbursal time. And in lending, the faster disbursal often wins the borrower.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c70b2966",
+   "say": "Check 1. If a title defect is missed, who carries the loss? A, The borrower. B, The legal vendor, always. C, The lender: its security can't be enforced. Or D, The registrar's office.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d09d4695",
+   "say": "C. The lender. Its mortgage is only as good as the title behind it. That's why it pays for a legal opinion on every file, and why accuracy matters even more than speed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a942a5ac",
+   "say": "Topic two. The workflow Brikby plugs into, step by step. One loan file, through every hand it passes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d2f8f455",
+   "say": "Here's the board. The borrower on the left. The lender at the top: its loan login desk and its credit team. In the middle, the legal vendor. Along the bottom, the government sources: the sub registrar, the revenue portal, and RERA and the development authority. And on the right, the report.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76255f31",
+   "say": "Step one. Loan login. The borrower hands over the property papers, and the lender opens the file in its loan origination system, its LOS.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be5ac1ed",
+   "say": "Step two. The lender doesn't check the title itself. It sends the file out to an empanelled advocate, or a legal vendor firm. So the vendor's turnaround becomes the lender's turnaround.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3e7afc54",
+   "say": "Step three, the search. The vendor traces the title back thirteen or thirty years. An encumbrance search at the sub registrar, the revenue records, approvals, and RERA. Each state does this on its own portal.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "efcd9e6c",
+   "say": "Step four, queries. Every gap goes back to the borrower. A missing link deed. An encumbrance certificate that stops four years short. A name that's spelt differently in the deed and the revenue record. Each round trip adds days.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e61303db",
+   "say": "Step five, the opinion. The vendor writes a Title Search Report, or a Legal Scrutiny Report, in that lender's own format. Four to fifteen days, end to end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "58b2d5c0",
+   "say": "Step six. Credit reads the opinion and sanctions, and the mortgage is created at disbursal. No clean title, no disbursal.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "536ac6e2",
+   "say": "Now the vocabulary. You must be able to speak it. The chain of title: every transfer from the oldest deed, which people call the mother deed, down to today's owner. Sale deeds, gift deeds, partition deeds, wills.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "835d3eac",
+   "say": "The EC, the Encumbrance Certificate. It lists the registered charges and transfers on the property, year by year, over the search period.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b5c1ecf",
+   "say": "The RoR, the record of rights. Who the state's land records show as the owner. And mutation, the update to that record after each transfer. A sale deed with no mutation in the buyer's favour is a query.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de7d50b7",
+   "say": "And the classic red flags. A power of attorney sale in the chain. A gap in the search period. A name that doesn't match across documents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f331d3cd",
+   "say": "And the search period itself: commonly thirteen years for smaller retail loans, and thirty years otherwise. Each lender sets it in its own policy.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "51a8789a",
+   "say": "Check 2. The encumbrance certificate covers thirty four of the thirty eight years the policy asks for. Pass, or query?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "59a6c3f5",
+   "say": "Query. A charge registered in those four missing years would be invisible. So the vendor asks for a fresh encumbrance certificate that covers the gap. Brikby's own sample report flags exactly this, as a medium severity query.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "722142d5",
+   "say": "Topic three. Why this is hard. Every state keeps its land records its own way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9d4ba35d",
+   "say": "Here's the same idea, the record of who owns the land, in four states. Uttar Pradesh calls it the Khatauni, on the UP Bhulekh portal.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3340d75f",
+   "say": "Karnataka has the RTC, also called the Pahani, on Bhoomi. And registrations and encumbrance certificates on a separate portal, Kaveri two point oh.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "891b1add",
+   "say": "Telangana had Dharani. In April twenty twenty five it was replaced by a new portal, Bhu Bharati, under a new act. If anyone in the room mentions Dharani, you can say it's Bhu Bharati now. That's the kind of detail that shows you've done the reading.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "842f8deb",
+   "say": "Maharashtra has the seven twelve extract and the property card, and the IGR portal for the Index Two and the e-search of registered documents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "255367ad",
+   "say": "And so on. Jamabandi in Haryana and Punjab. Patta and Chitta in Tamil Nadu. And a separate RERA website for every state.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a91b23f",
+   "say": "And here's what these portals are like to integrate with. This is the line in their job description about websites and APIs that were never built for you.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d61c5574",
+   "say": "Sessions and multi step forms. Pick a district, which loads the tehsils, which loads the villages.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a8441591",
+   "say": "HTML tables and scanned PDFs. No API, no schema, and layouts that change without notice.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "96141885",
+   "say": "Downtime, and rate limits nobody documents. Worst exactly when everyone is filing, at month end.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "689ba1d9",
+   "say": "And CAPTCHAs. Treat those as a policy question, not a technical challenge. We'll come back to that in topic ten.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "5362addb",
+   "say": "So the core difficulty, in one sentence. One product has to read every state's documents, in a dozen scripts, often scanned, often handwritten. Brikby claims fifty plus regional languages. That long tail is both the hard part and the moat.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2d171315",
+   "say": "Check 3. Which portal replaced Telangana's Dharani, and when? A, Bhoomi, in 2019. B, Bhu Bharati, in April 2025. C, Kaveri 2.0, in 2023. Or D, Bhulekh, in 2024.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "9a434b8c",
+   "say": "B. Bhu Bharati, in April twenty twenty five, under a new act. The records migrated, so old Dharani references in documents are still valid history, but a connector has to target the new portal.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3dbe3248",
+   "say": "Topic four. What Brikby actually sells, from their own public pages.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fcfed6f4",
+   "say": "Brikby's pitch is: upload a file's documents, any state, any language, any format, handwritten included, and get a structured due diligence report in under thirty minutes. The report has six parts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa63a165",
+   "say": "Document scrutiny. Every document listed with its key fields: parties, dates, survey, khasra and khata numbers, the sub registrar's office.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c50338fc",
+   "say": "Title flow. The chain of title, rebuilt across the deeds. Their sample traces a nineteen eighty five sale deed through to today's owner.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8d94d9ff",
+   "say": "Missing documents, for example a deed the encumbrance certificate mentions, that nobody supplied. And red flags, with severity. In their public sample: high, a missing title document. Medium, a fresh EC required because of a four year search gap. Low, the owner's name written differently in the deed and the revenue record.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3d63b1d4",
+   "say": "And it comes out in the customer's own format. Their words: bank format trained, bank policy trained. With insights specific to the loan type.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e42b42c9",
+   "say": "And, they say, the documents are verified against government records in real time. That's where their agents come in.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c47e2aa1",
+   "say": "Their public numbers. Fifteen thousand plus loan logins processed since January.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43fbf373",
+   "say": "Turnaround under thirty minutes, down from four days.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c18d981d",
+   "say": "Ninety five percent plus accuracy, claimed, on risk flagging. Hold on to that one. In topic eleven we'll ask: ninety five percent of what?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d67dd36",
+   "say": "And fifty plus regional languages.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cbce819a",
+   "say": "They're a twenty twenty five company in Gurugram. The plan they state publicly: become the gold standard in banking and financial services first, then sell ownership verification for any use case. Consumers, infrastructure, telecom.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "be49d8c4",
+   "say": "Who you'll probably meet. Two founders, both on their public team page. Rishabh Agarwal, co founder and CEO. Ex Savills, in real estate valuations. He knows the property and lender side cold.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43449e80",
+   "say": "And Sahith Desham, co founder and CTO. Ex UBS, an investment bank data engineer. Expect him to care about pipelines, data quality, and how you know your output is right.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c0245bb6",
+   "say": "And their careers page spells out the loop. A twenty minute intro. A technical interview: walk us through something you built, then solve a real problem with us. A founder conversation. Then an offer. So, bring one project you can walk through end to end, and expect the real problem to look a lot like their pipeline.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "104920ee",
+   "say": "Check 4. In one sentence: what does Brikby replace?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "c145ee6a",
+   "say": "Days of an empanelled advocate's manual legal scrutiny on every file, with an AI draft in under thirty minutes, in the customer's own format, that a lawyer or a credit officer then reviews.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9ef506c5",
+   "say": "Topic five. The business. Who pays, why they pay, and what the moat is.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d12ad682",
+   "say": "Who uses it. Lenders' legal and credit teams, and the legal vendor firms those lenders empanel. Both sides of the same transaction.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5b63744e",
+   "say": "How they price, publicly. An organisation shares a pool of report credits across its members. The self serve list price is two hundred rupees a report, pay per use. Enterprise deals are presumably negotiated, but that's an estimate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edce596e",
+   "say": "Why they pay. Faster disbursal. Fewer people per file: their site says four times productivity, and less manpower. And a smoother month end, when every lender rushes to close its numbers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9c7ad80c",
+   "say": "And the moat. Not the model. The long tail. Every state's documents and rules, every lender's format and policy, and the evaluation set that proves the accuracy on them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "583de4e0",
+   "say": "If you remember one value line, make it this. Brikby sells speed, without giving up the defensibility of the legal opinion.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9bb3651a",
+   "say": "Know the neighbourhood, briefly. TEAL sells API based property due diligence to banks, housing finance companies and law firms.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a2910484",
+   "say": "Landeed does record retrieval and AI title reports.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5587d420",
+   "say": "Square Yards has a property data and risk suite, including ownership verification.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ac0f9a6",
+   "say": "You don't need to compare them in the room. But if they ask how they're different, the honest answer from their own pages is: the lender's own format and policy, and the handwritten, regional long tail.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "015c0dfc",
+   "say": "Check 5. Why does \"bank format-trained\" matter commercially? A, It reduces the OCR cost. B, Lenders won't change their report formats for a vendor, so matching them removes the adoption cost. C, It is a legal requirement from RBI. Or D, It makes the LLM more accurate.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4f8e36a1",
+   "say": "B. Lenders don't change their report formats for a vendor. Producing each lender's own format, and applying its own policy, means a lender or a vendor can adopt it without changing anything about how they work.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "099de96e",
+   "say": "Topic six. How big are they, probably? Evidence first, then arithmetic, clearly labelled as estimates.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "16f003f1",
+   "say": "Start from the one hard public number: fifteen thousand loan logins since January. That's about ten and a half months. So, about fourteen hundred files a month. An estimate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2cee82af",
+   "say": "Divide by twenty two working days. About sixty five files a day. And month end in lending is real: assume two to three times that, a hundred and fifty to two hundred files on a peak day.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e37122a9",
+   "say": "Their own sample report has thirteen documents. Sale deeds run ten to forty pages, encumbrance certificates and land records one to five. Call it sixty to eighty pages a file. So about four and a half thousand pages a day, maybe twelve thousand at peak.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b2b0dab2",
+   "say": "And concurrency. Two hundred files over a ten hour peak day is twenty an hour. At fifteen to twenty five minutes each, that's five to eight files in flight at once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69ded672",
+   "say": "All of these are estimates. Say them as estimates. And if they correct you with the real numbers, that's a win: you've started a conversation about their system.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d1f699be",
+   "say": "So here's the insight to say out loud, if they ask what you think is hard.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ef22c662",
+   "say": "At this scale, throughput is easy. A few thousand pages a day is nothing. The hard problems are correctness on messy documents, tail latency from slow government portals and model calls, and cost per file. Plus auditability: every flag has to trace back to a page, because a lawyer signs the opinion.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d85f91af",
+   "say": "And growth changes the picture. A couple of large lenders onboarding could mean ten times the volume within a year. So the design should scale out per page, but it doesn't need to start complicated.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a3e5c5f",
+   "say": "Check 6. Roughly how many pages a day, and is that a hard throughput problem?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "01161ae5",
+   "say": "A few thousand pages a day, low tens of thousands at a month end peak, as an estimate. That is not a throughput problem. It's a correctness, tail latency, and cost per file problem.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f6713d49",
+   "say": "Topic seven. The stack, as any visitor's browser sees it. Observed, so it aims our questions, and we never quote it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "555c3c26",
+   "say": "Here's everything that's visible from the outside. The browser, Firebase Hosting, Firebase Auth, Cloud Storage, a set of serverless API functions, Firestore, Razorpay and PostHog. And one box on the right, the pipeline, that nobody outside can see.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7664e558",
+   "say": "The shell. A single page React app, built with Vite, served by Firebase Hosting from Google's edge. Sign in is Firebase Auth.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b9699267",
+   "say": "Upload. The documents go from the browser into Cloud Storage. PDFs and images, up to fifty megabytes each, whole folders allowed. The API never carries the bytes. Same idea as the presigned upload in DeepLogLens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51a9c9d9",
+   "say": "Create a job. The browser calls a same origin API function, with its Firebase ID token as a bearer token. The function records a job and returns its id. An asynchronous job, not a twenty minute request.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e0bfb61f",
+   "say": "Behind that function, the real pipeline runs. None of it is visible from outside. So the next board is inference, and that's exactly where the interview will be.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "888bda7f",
+   "say": "Live status. The worker updates the job document's stage in Firestore. The browser listens to that one document, and opens the report when it completes. No polling.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d1ecbaa5",
+   "say": "And credits. Organisations share a pool of report credits, bought through Razorpay. Product events, including the latency of each API call, go to PostHog.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0fccb488",
+   "say": "Now the trap. Don't say, I looked at your JavaScript bundle and your API is this.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "864941ca",
+   "say": "If they ask what you know about their stack, say: from the outside it looks like a lean Firebase and GCP stack. That's all you need.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b8236f0f",
+   "say": "Never quote endpoint names, regions, bucket names, or customer formats. Use what you saw only to choose good questions. It's public, but quoting it sounds like reconnaissance, not curiosity.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e24c917c",
+   "say": "Check 7. Why is a Firestore listener a good fit for a twenty minute job?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "6e6557a2",
+   "say": "Because the worker writes each stage change to one document, and every open tab is pushed that change in real time, with reconnection and offline handling built in. No polling, and no request held open for twenty minutes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "71d0d4c3",
+   "say": "Topic eight. The pipeline the product implies. This is inference, not observation: it's the board you'd draw in the room as, here's how I'd build it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad3a336e",
+   "say": "Here's the inferred pipeline. Create job, a queue, split, OCR, classify, extract, the title chain, rules, portal agents, the report, a report store, an outbox, and a human review. Teal boxes are where a model does the work. White boxes are plain code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9987b60e",
+   "say": "Accept. Create the job with an idempotency key, and answer at once. The work goes on a queue: Cloud Tasks for per job pushes with retry and rate control, or Pub Sub for fan out.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "21076d53",
+   "say": "Split. Render every page, and hash it. The page is the unit of retry, the unit of parallelism, and the unit of caching. A deed that appears in two files is read once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "249272d2",
+   "say": "Read. OCR, or a vision model, per page, in parallel. Regional scripts, stamps, handwriting. It's the slow, flaky, expensive step: most of the cost, and most of the time.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd2ebe34",
+   "say": "Understand. Classify each document: sale deed, encumbrance certificate, record of rights, building plan. Then extract its fields against that type's schema, and every field carries a page reference.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43abdb6e",
+   "say": "Chain and rules. Code, not a model, joins the deeds into a chain on parties and survey numbers. Then rules apply the state, the lender's policy and the loan type. Exact and explainable.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3a1031b8",
+   "say": "Verify. Portal agents fetch revenue records, encumbrance certificates and RERA entries, and reconcile them with the documents. They're slow and unreliable, so they're isolated.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "70f0e90c",
+   "say": "Report. One canonical, versioned JSON, with flags, severity and citations. A human reviews and edits it. Every lender's format is just a rendering of it. And every edit is labelled data for your evals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87547e2e",
+   "say": "Deliver. The ready event is written in the same transaction as the report, then sent to the lender as a signed webhook. Never lost, and the receiver dedupes. That's topic nine.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "439eabdb",
+   "say": "This is the most important design idea on the board. Where does the model sit, and where does code sit? The model reads. Pages in a dozen scripts, handwriting. It extracts fields into a schema. And it resolves fuzzy matches: is Ravi Kumar Gupta the same person as R. K. Gupta, transliterated from Hindi?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "546cb8df",
+   "say": "Code decides everything that must be exact. Joining deeds into a chain. Computing the gap in the search period, in years. Applying the lender's policy and the state's rules.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f0b5ef53",
+   "say": "And a human reviews the draft, edits it, and signs the opinion. And every edit feeds the evaluation set.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0296d7aa",
+   "say": "In one line. The LLM reads, code decides what must be exact, and a lawyer signs. It's the same split as DeepLogLens: code counts, the model explains.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1a3d4fe2",
+   "say": "Check 8. Why make the page, not the file, the unit of work? A, Firestore documents can't hold a whole file. B, Retries, parallelism and caching all get cheaper: one bad page is retried alone, pages run in parallel, a repeated deed is read once. C, LLMs can only read one page. Or D, It's required by Cloud Tasks.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "0309404c",
+   "say": "B. One bad page is retried alone, instead of the whole file. Pages run in parallel, so the turnaround is the slowest page, not the sum. And a page hash means a deed that shows up in many files is read once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a55c3eda",
+   "say": "Topic nine. Queues, retries, idempotency, the outbox, and signed webhooks. These are words straight from their job description, so let's make each one concrete.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "94c81b0b",
+   "say": "Four failures every job pipeline has to survive. One, the double submit. The user clicks twice, or the client retries after a timeout. The fix is an idempotency key. The second request returns the same job, and charges one credit, not two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "92d64c55",
+   "say": "Two, flaky calls. OCR and model APIs return four twenty nines, five oh threes and timeouts. Retry with exponential backoff and jitter, cap the attempts, then dead letter the task.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c1103eff",
+   "say": "Three, redelivery. Every queue delivers at least once. So each step's output is keyed by the job, the page hash and the step version. A redelivered task overwrites the same row; it never appends a duplicate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3b3a1de2",
+   "say": "Four, the lost notification. The worker saves the report, then crashes before telling the lender. The fix is the outbox.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fa30511d",
+   "say": "The phrase to use is one you already own from DeepLogLens. At least once delivery, exactly once effects.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "6a6f0983",
+   "say": "Here's the idempotency key, made concrete, in Postgres. A jobs table.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b84e2af4",
+   "say": "The key is unique per organisation. That constraint is the whole mechanism.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "235a5369",
+   "say": "Insert, on conflict do nothing, returning the id. If a row comes back, it's a new job, so charge the credit and enqueue. If nothing comes back, it's a retry: select the existing job and return it. The database, not the application, decides who wins the race.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "10f6f948",
+   "say": "Here's the outbox, as a sequence. Four actors: the worker, the database, a relay, and the lender's loan origination system.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5654a120",
+   "say": "The worker writes the report, and an outbox row saying report completed, in one transaction. Either both exist, or neither does.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "39aab9fe",
+   "say": "A relay reads the unsent outbox rows.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad1222c5",
+   "say": "And posts each event to the lender, with an HMAC signature over the timestamp and the body.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ed2283d",
+   "say": "The lender answers two hundred.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "697f14f2",
+   "say": "And only then does the relay mark the row sent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8980d87a",
+   "say": "Crash anywhere, and the relay simply sends again. So the receiver must dedupe on the event id. Delivery is at least once; the effect is exactly once.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a74f8298",
+   "say": "And here's what the receiving side does with that signature, in TypeScript, their stack.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e29f778a",
+   "say": "First, the timestamp. Reject anything older than five minutes. That stops an attacker replaying a captured webhook later.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9b392147",
+   "say": "Then recompute the HMAC with the shared secret, over the timestamp and the exact raw bytes of the body. Not the parsed JSON: re serialising can change the bytes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae25b555",
+   "say": "And compare in constant time, with timing safe equal, so the comparison doesn't leak how many characters matched. Three lines of defence: freshness, integrity, and a safe compare.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b0d9e301",
+   "say": "Check 9. The worker saves the report, then crashes before the webhook is sent. What happens?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "dac6d093",
+   "say": "Nothing is lost. The outbox row was committed in the same transaction as the report, so the relay finds it on its next pass and sends it. And because delivery is at least once, the lender dedupes on the event id.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcbe23df",
+   "say": "Topic ten. The agents that pull records from government sources. Their job description says: build out our multi agent system and the tools it uses across government sources.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "54c22942",
+   "say": "Here's one portal check, as a tool an agent calls. A planner, a rate limiter, a record cache, one connector per portal, an evidence store, and a reconcile step. Teal boxes are model driven. The connectors are plain code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "da74a733",
+   "say": "Plan. The planner reads the extracted documents and decides which portal checks this file needs, based on the state, the document types and the loan type.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ecd026b6",
+   "say": "Cache first. A record fetched for the same property in the last few hours is reused. Cheaper for you, and kinder to the portal.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00ad91b0",
+   "say": "Politely. Every portal gets its own token bucket and a small concurrency limit, shared across all workers, in a shared store. One portal's rate limit never blocks another.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1df499d0",
+   "say": "One connector per portal. It replays the portal's session and form steps, parses the HTML into a schema, and keeps the raw page as evidence. A parse failure is an alert, never a silent empty result.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bdb608f5",
+   "say": "Reconcile. The structured record is compared with the documents. An owner who differs. A charge that's missing from the encumbrance certificate. Each difference becomes a flag, citing the portal page.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77d48eb6",
+   "say": "Four rules for sites that were never built for you. When a portal is down: mark that check pending, ship the report on time with the item marked, and retry on a schedule.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4d2a5e9c",
+   "say": "When a layout changes: validate every parse against a schema, alert when it fails, and re parse later from the stored raw page.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ce868fe2",
+   "say": "CAPTCHAs: never try to defeat them. Prefer an official API, or licensed data where it exists, and a human assisted step otherwise. Say this clearly. It's a trust question for a company whose customers are regulated lenders.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9839dd36",
+   "say": "And evidence. Keep the raw response, a screenshot and the fetch time next to the extracted fields, so a lawyer can see exactly what the portal said.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3615cd3a",
+   "say": "The principle: a down portal delays one check. Never the whole report.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e7ef9dd7",
+   "say": "Check 10. A state portal is down for six hours at month-end. What should the customer see?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "872a64cd",
+   "say": "The report, on time, with that one verification marked pending, and retried automatically when the portal comes back. Not a job stuck at ninety percent.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "723970c3",
+   "say": "Topic eleven. Structured outputs, traces and evals. How you'd know the reports are right, and keep them right.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "351ff792",
+   "say": "Four habits. One, structured. Every document type has a JSON schema, the model must fill it, the output is validated, and a failure is re asked once with the validation error.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f0c40f4",
+   "say": "Two, grounded. Every extracted field and every flag carries its document and page, and ideally the quote or the bounding box. No citation, no flag.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fdf6d50d",
+   "say": "Three, traced. Every job leaves a trace: for each step, the inputs, the model, the prompt version, the tokens, the latency and the output. When a lawyer says this flag is wrong, you can open the exact step that produced it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c7fff947",
+   "say": "Four, evaluated. A golden set per state and document type. And every correction a lawyer makes becomes a regression test that runs on every prompt or model change.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48eda825",
+   "say": "That's almost word for word one line of their job description. Find out why LLM output goes wrong, fix it at the root, and build evals that keep it fixed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "589d8dfb",
+   "say": "And here's a thoughtful question to carry in. Their site says ninety five percent accuracy. Ninety five percent of what? There are at least three different numbers. Field accuracy: did we read the survey number, the dates and the parties correctly?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "967452ef",
+   "say": "Flag precision. Of the flags we raised, how many were real problems? A false flag costs a reviewer a few minutes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3fcd118d",
+   "say": "Flag recall. Of the real defects, how many did we catch? A miss can cost the lender its security.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59564991",
+   "say": "So, for a lender, recall on high severity flags is the number that matters most, and it should be measured on its own. Asking how they measure accuracy, and which number lenders ask for, is a great question for the CTO.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4479b9c0",
+   "say": "Check 11. Which error is worse here: a false flag or a missed one? A, A false flag: it annoys the customer. B, A missed high-severity flag: it can cost the lender its security. C, They're equally bad. Or D, Neither matters if a lawyer reviews.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "5e070c39",
+   "say": "B. A missed high severity flag. A false flag costs a reviewer a few minutes. A miss can cost the lender its security. So you tune for recall on the critical flags, and you measure it separately from everything else.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e70bfd4c",
+   "say": "Topic twelve. Cost and latency on GCP. Their job description says: run it on GCP with an eye on cost and latency. So let's put a rough number on a file.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "52e9fded",
+   "say": "A rough cost model, per file. Order of magnitude only, and labelled as an estimate. OCR: about seventy pages, at around a dollar and a half per thousand pages. About ten cents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3d4e6488",
+   "say": "A fast model to classify and extract: about fifteen hundred tokens of input per page, plus the structured output. Another ten cents or so.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de5cf578",
+   "say": "A stronger model, used only for the chain and the ambiguous cases. Maybe fifteen cents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f0392ca3",
+   "say": "All in, roughly thirty to fifty cents. Twenty five to forty five rupees a file, against a two hundred rupee list price.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "0525e24b",
+   "say": "These come from public list prices, so check current pricing before you quote them. And with margins like that, the real cost question is the tail: the files with two hundred pages, and the retries.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26ce0cd4",
+   "say": "And five levers, in the order I'd pull them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db151df1",
+   "say": "One, page hash caching. The same deed arrives again and again: in resales, resubmissions, balance transfers. Read it once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f7fc514",
+   "say": "Two, model routing. A fast model by default. The strong model only when the fast one is unsure, or for the chain.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d5cdda9c",
+   "say": "Three, batch where latency allows. Re runs and back fills can go through batch prediction at roughly half price. Never the thirty minute path.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae6e3641",
+   "say": "Four, fan out for latency. The turnaround is the slowest page plus the slowest portal. So parallelise both, and put timeouts on both.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "55b0f6fb",
+   "say": "Five, keep compute next to data. The bucket, the workers, the model endpoints and the database, in one region. Hold on to that one. It's our second question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "32f05a56",
+   "say": "Check 12. Where do the thirty minutes go, and what do you parallelise?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "69681d83",
+   "say": "Mostly OCR and model calls, and portal fetches. Fan out per page and per portal, with timeouts, and the critical path becomes the slowest single page, plus the chain and the report.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "40452734",
+   "say": "Topic thirteen. Only two gaps, phrased as design questions. Each one starts with, for a pipeline like this I'd expect, and neither depends on anything you could only know from their code.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "22173dff",
+   "say": "Question one. The report as data, delivered by integration. Here's how you'd say it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8da29028",
+   "say": "For a pipeline like this, I'd expect the report to exist once, as a canonical, versioned JSON on the server.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0f4cb449",
+   "say": "With every lender's format rendered from it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c6412cba",
+   "say": "And the result pushed into the lender's loan origination system by a signed webhook, through an outbox.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3860f1f3",
+   "say": "How do reports reach your lenders today? Download and upload, or an integration?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "78c32faf",
+   "say": "And when a lawyer edits a field, which version is the source of truth?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f5cbbbed",
+   "say": "Why this question lands.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "371b1248",
+   "say": "Lenders at volume want reports inside their own systems. Not in email, and not re typed by someone.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c12c91cd",
+   "say": "One canonical JSON makes formats cheap. A new lender becomes a new template, not a new pipeline.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "efd10184",
+   "say": "Edits become auditable and learnable. The AI draft versus the final: who changed what, and why. That diff is free evaluation data.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "bcdff674",
+   "say": "And it puts their own job description to work. Outbox, signed webhooks, idempotency.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5c6d28a5",
+   "say": "Question two. Where processing runs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ebee33b3",
+   "say": "For lender documents, I'd keep storage, OCR, the model endpoints and the database in one Indian region. Mumbai or Delhi.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1219f827",
+   "say": "Lenders' vendor risk reviews, under the RBI's directions on outsourcing IT services, ask where data is stored and processed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b27ebf3f",
+   "say": "The Digital Personal Data Protection Act adds its own duties.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd565d30",
+   "say": "And keeping it in one region also saves egress, and a round trip on every single call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b3523ed1",
+   "say": "How do you answer data residency questions in lender security reviews?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "d3b5087e",
+   "say": "Why it lands. It's a cost question, a latency question and a sales question, all at once. A founding engineer who raises it unprompted sounds like someone who has sat through an enterprise security review. And it ties straight to their line about running on GCP with an eye on cost and latency.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "39667a3f",
+   "say": "Check 13. Why are these two good questions, beyond being correct?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "65d96978",
+   "say": "Each one ties a line from their job description, the outbox and signed webhooks, or cost and latency on GCP, to revenue: integrations, and enterprise sales. And neither one implies that you looked at their systems.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f8bad601",
+   "say": "Topic fourteen. How to put all of this into the interview. The sixty second version, your stories mapped to their job description, and what not to say.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ccdc92f2",
+   "say": "When they ask, what do you know about us, here's the sixty second version.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6e01f888",
+   "say": "Lenders can't disburse a home loan or a LAP until a legal vendor confirms the title. Thirteen or thirty years of deeds, the encumbrance certificate, revenue records, approvals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1e695b47",
+   "say": "Today, that's days of an advocate's time per file, and much of it is spent reading regional and handwritten records.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de875d0e",
+   "say": "Brikby reads the whole file, rebuilds the chain of title, flags what's missing with severity, checks it against government records, and produces it in the lender's format, in under thirty minutes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "acd2e7db",
+   "say": "At your scale, throughput isn't the problem. Correctness, tail latency, and cost per file are.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1d4f16bd",
+   "say": "And that's the part of the system I'd want to own.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "00b8cab9",
+   "say": "Now map your own work onto their job description. Queues, retries and idempotency: DeepLogLens. Kafka with offsets committed after durable writes, and content fingerprint upserts.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df1bf7d5",
+   "say": "Agents, human in the loop and evals: the Inventory Ops Agent, a LangGraph supervisor with approval interrupts. And DeepLogLens's LLM as judge loop and labelled incident set.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e35e5030",
+   "say": "SQL, cost and scale: Blue Yonder. Postgres, Snowflake, and per request connection routing.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cd03c913",
+   "say": "React, Node and Firebase: InterviewPlanPrep, which you built end to end on Firebase. You already know Firestore listeners and security rules, which is their stack.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "593c4ddb",
+   "say": "And the thread through all of it: messy input turned into exact, auditable output, asynchronously, with an LLM in the loop. That's their problem too.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "201cedd4",
+   "say": "And four questions to ask them. Pick two.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "59d08ed5",
+   "say": "Which part of the pipeline produces most of the corrections lawyers make today? The reading, the chain building, or the policy?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2ac7b5a0",
+   "say": "How do you measure accuracy, and which number do lenders ask for?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2b8053fc",
+   "say": "Which states or document types are the hardest, and how do you decide which state to add next?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "26008b0c",
+   "say": "And how do lenders receive reports today, and what does an integration look like? That one opens the door to your first design question.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ae80d0e9",
+   "say": "And the last trap. Don't quote endpoints, regions, bucket names or customer formats. Even though a browser can see them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "143c8094",
+   "say": "Use public facts, your own reasoning, and estimates that you call estimates.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "059ae981",
+   "say": "Remember the goal from the very start. Sound like you understand their customer, not like you studied their code.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c9960e11",
+   "say": "Check 14. They ask \"why this role?\" What's your one-line answer?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "4dd66a4b",
+   "say": "It's the problem I've been solving already: messy input, turned into exact, auditable output, through an asynchronous pipeline with an LLM in the loop. But here, real lenders depend on it, and I'd own it end to end. Good luck. You're ready for this one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}

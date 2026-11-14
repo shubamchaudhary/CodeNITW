@@ -3,7 +3,7 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs: IPP-01, LL-01, IOA-01/02, BY-00..06).
+// except where a built-in document replaces them (Data/projectsDocs: IPP-01, LL-01, IOA-01/02, BY-00..06, BRIK-01).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -12,6 +12,7 @@ export const PROJECT_SECTIONS = [
   { key: "loglens", label: "DeepLogLens" },
   { key: "invops", label: "Inventory Ops Agent" },
   { key: "byjob", label: "Blue Yonder work" },
+  { key: "brikby", label: "Company prep: Brikby" },
   { key: "kafka", label: "Kafka" },
 ];
 
@@ -128,6 +129,16 @@ export const PROJECT_TOPICS = [
     sectionLabel: "Blue Yonder work",
     title: "Internship: onboarding, import/export, Testcontainers",
     summary: "Tenant onboarding with Key Vault credentials, ZIP-of-CSV config import/export, and the PostgreSQL Testcontainers framework gating every PR. ~10 min.",
+  },
+  // Prep for a company's system design round, from public signals only: the
+  // customer problem, the business and scale (labelled estimates), the observed
+  // stack vs the inferred pipeline, and two design questions to raise.
+  {
+    id: "BRIK-01",
+    section: "brikby",
+    sectionLabel: "Company prep: Brikby",
+    title: "Brikby: the business, the workflow, the architecture",
+    summary: "Lender property due diligence in India (title chain, EC, state land-record portals), what Brikby sells and at what scale, the observed stack vs the inferred pipeline, durable jobs and portal agents, evals, cost per file, and two questions to raise.",
   },
   // Checked against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as
