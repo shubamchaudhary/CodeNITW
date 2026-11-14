@@ -1,0 +1,677 @@
+{
+ "voice": "en-US-AndrewMultilingualNeural",
+ "beats": [
+  {
+   "key": "db10d6f7",
+   "say": "Your designs, next to Brikby's. Your two projects, DeepLogLens and InterviewPlanPrep, side by side with what we know and what we infer about Brikby. Where you decided the same way. Where you decided differently, and how to defend it. Where your version is stronger, where theirs is, and how to turn all of it into one pitch: you need someone who has already built this. Same rules as before: public facts you can say, observed facts you never quote, and inferences you call guesses.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa5b536b",
+   "say": "Topic one. Three systems, one picture. Which of your projects is their front half, and which is their back half.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2a393420",
+   "say": "Here's Brikby's pipeline as one board. The front half on the left, the back half on the right. And every box is lit with the project of yours that proves you can build it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "69384019",
+   "say": "The front half. Firebase Auth, with ID tokens verified in functions. Bytes straight to storage. Status pushed by Firestore listeners. You run exactly this stack in InterviewPlanPrep. Zero ramp up.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4123bb83",
+   "say": "Accept, then fan out. A job created once, then the work split into parts and processed in parallel. That's DeepLogLens's byte range parts over Kafka: two hundred and five parts for a one gigabyte file.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "098d1d45",
+   "say": "LLM only where needed. Deterministic code counts and decides. The model reads and explains only what needs it. Forty two thousand calls instead of two hundred and twenty thousand.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "3f913e00",
+   "say": "Sources that fail. Rate limited lanes, a retry topic, a dead letter queue, and the rule that nothing is ever stuck. That's the shape of a government portal connector.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "fed286ac",
+   "say": "Grounded and measured. Every claim points at stored evidence, and a seeded evaluation runs in CI and fails the build below its thresholds.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "76297527",
+   "say": "And versioned, delivered once. Revisions with compare and swap and append only history, from your notes. And effects that happen exactly once, from your upserts. That's what a lawyer's edits and a lender webhook need.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "56bacf03",
+   "say": "Check 1. Which of your projects is Brikby's front half, and which is its back half?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "059a3ed6",
+   "say": "InterviewPlanPrep is their front half: Firebase Auth, ID tokens to functions, Firestore listeners. DeepLogLens is their back half: large messy input, asynchronous fan out, the LLM only where needed, grounded output, and evals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b4468b36",
+   "say": "Topic two. The decisions you made the same way as Brikby. These are your credibility: you didn't read about them, you built them.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f4cf41a4",
+   "say": "Four decisions you made exactly the way they did. One: heavy work never sits on the request path. In DeepLogLens, the upload returns in milliseconds and the work runs behind Kafka. At Brikby, an analysis is a job, not a long request.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e0003cab",
+   "say": "Two: the bytes bypass the API. DeepLogLens uploads with a presigned PUT straight to Backblaze. Brikby's browser uploads straight to Cloud Storage.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b52da2a3",
+   "say": "Three: the server trusts a Google signed token, never the request body. InterviewPlanPrep verifies the ID token in every function. Brikby sends the same bearer token to its functions.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "51b0a839",
+   "say": "Four: push, don't poll. Your notes and ticks arrive by snapshot listeners. Their job status arrives the same way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ecb9d659",
+   "say": "And three more, at the level of principle. Code decides what must be exact. Every claim cites its evidence. And you instrument what you ship. Their job description uses almost those words.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3171493a",
+   "say": "Check 2. Name two decisions you and Brikby made the same way, with the reason for each.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "73ad5048",
+   "say": "For example: bytes go straight to storage, never through the API, so the API stays small and fast. And live status is pushed by a Firestore listener rather than polled, so there are no wasted requests and every open tab updates at once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cb639a3c",
+   "say": "Topic three. Where you decided differently. Each difference has a reason, and for one of them, the honest answer is that you'd change it at Brikby.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0845e1d3",
+   "say": "Four real differences. The queue. You used Kafka. They likely use a managed queue, like Cloud Tasks or Pub Sub: that's a guess. The difference is partitions as rate limit lanes and replay, against simplicity.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "2d5fa822",
+   "say": "The database. You used Postgres with pgvector. They use Firestore, and their job description mentions SQL, so likely both. The difference is SQL aggregation and search, against live per user documents.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b859bb9a",
+   "say": "Compute. DeepLogLens is one long running Java process, because Kafka consumers live forever. They run functions, plus some worker runtime we can't see.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6ddf6451",
+   "say": "And the report. DeepLogLens composes one canonical report on the server and stores it. How Brikby assembles theirs, you don't say. That's what your first design question is for.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "41579375",
+   "say": "And one difference that just reflects the product. InterviewPlanPrep is offline first. Brikby's jobs are online. A lawyer's report isn't edited on a plane.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ce008d1",
+   "say": "Check 3. Which of your differences would you change at Brikby, and which would you keep?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "60ef8429",
+   "say": "Change: Kafka, for a managed queue like Cloud Tasks or Pub Sub at their volume. Keep: one canonical report on the server, idempotent steps keyed by content, and evals in CI.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0d657f1c",
+   "say": "Topic four. Defending DeepLogLens's choices, when someone from a serverless startup asks why you built it that way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "edbc7eed",
+   "say": "The question you'll most likely get. Why Kafka for a side project? Isn't that overkill?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "571b51f5",
+   "say": "The constraints chose it. Thirty requests a minute per Groq key.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7c5939c7",
+   "say": "So every key got its own partition and one consumer thread. A lane that runs at its own full rate, and never blocks the others.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0b3428a9",
+   "say": "Kafka also gave me replay, to test exactly once effects, plus a retry topic and a dead letter queue.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4ceee3e9",
+   "say": "And for a system your size, I'd start with Cloud Tasks or Pub Sub, and reach for Kafka only when replay or per key ordering at volume earned it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "a6c58414",
+   "say": "Three more. Why Postgres, not Firestore? Every question was relational or search. Exact counts per minute and category, joins from findings to chunks, a transaction that writes a part's marker and its rows together, and hybrid vector plus full text search, all in one place.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0ca33501",
+   "say": "Why one deployable, not microservices? It fit the free tier, and Kafka consumer groups already let you run more copies. The first thing you'd split out is enrichment: it's rate limited, and scales with anomalies, not traffic.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "06db8467",
+   "say": "And, is it really exactly once? Say it precisely: at least once delivery, exactly once effects. Every chunk's primary key is a fingerprint of its content and position, so a redelivered part writes nothing new. Tested with kill dash nine, replays and rebalances.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "391a5177",
+   "say": "And a bonus story. Your first version used a polled jobs table, and you rejected it: no replay, and no consumer groups. That shows you've tried the simple thing, and know exactly when it stops being enough.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5319b4fc",
+   "say": "Check 4. In one sentence: why is Kafka defensible in DeepLogLens, but not what you'd pick for Brikby today?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "3d34428e",
+   "say": "In DeepLogLens, partitions were the rate limit lanes and replay was the test harness. At Brikby's volume, a managed queue gives retries and rate control with nothing to operate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "46d40cd6",
+   "say": "Topic five. Defending InterviewPlanPrep's choices, and building the bridge to their product.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1369dcfd",
+   "say": "Three InterviewPlanPrep defences. Why compare and swap in the security rules? Because devices edit offline, so a transaction is impossible, and a client side check isn't atomic. The rule is the check and the write in one step, for every client.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "33fd3490",
+   "say": "Why Vercel functions, not Cloud Functions? Same repo and deploy as the site, the CDN in front, cron for free, and to Firestore the admin SDK looks the same either way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b851ddb9",
+   "say": "Why three local layers? The store gives synchronous reads, the journal records what changed and when, and Firestore's cache handles the offline queue. Each does a job the others can't.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "9f89e3dc",
+   "say": "Notice the pattern. Each answer is a constraint, not a preference. That's what makes a design sound like yours.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "3d314e1a",
+   "say": "And here's the bridge. If they ask how your notes relate to their product, say this.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "de11e1fc",
+   "say": "A lawyer's edit to a report is a note edit. Revision one is the AI draft. Every save names the revision it was built on, a stale save is refused and merged, and the history is append only.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fb3e574c",
+   "say": "That gives a regulated lender an audit trail of who changed what in a legal opinion. And the difference between the AI draft and the final version is free evaluation data.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "ad982f6c",
+   "say": "Check 5. What's the bridge from your notes versioning to Brikby's product?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "46740431",
+   "say": "Treat report edits as revisions, with compare and swap and append only history. That's an audit trail for a legal opinion, and the diff between the AI draft and the final report becomes evaluation data.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bd35d5b7",
+   "say": "Topic six. Where your version is stronger. Not to show off: to show exactly what you'd bring on day one.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "7263e2d3",
+   "say": "Five strengths, each with its evidence, and each mapped to something Brikby needs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ecbf7786",
+   "say": "One. Exactly once effects on at least once delivery. Fingerprint keys, offsets after the commit, tested with kill dash nine. At Brikby, that's no double charged credits, no duplicate flags, no duplicate webhooks.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "d3e35eac",
+   "say": "Two. Fan out that respects rate limits and never gets stuck. A lane per API key, four twenty nines to a retry topic with a not before time, and a dead letter queue. That's the pattern for LLM quotas, and for government portals.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c543a978",
+   "say": "Three. Evals in CI with thresholds. F1 of point nine, retrieval recall, and an LLM judge calibrated against humans with a kappa of point six two five. Their job description literally says: build evals that keep it fixed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48170662",
+   "say": "Four. Cost discipline. The LLM only ran on twenty percent of the windows. Forty two thousand calls instead of two hundred and twenty thousand. That's cost per file at a month end peak.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "416f1152",
+   "say": "And five. The same Firebase stack, already in production, with real users. Auth, ID tokens, listeners, rules, the admin SDK. Zero ramp up on their front half.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "42d9a595",
+   "say": "And a sixth strength, easy to miss.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dec74c41",
+   "say": "Your contests page is a small portal connector. clist first, each platform's own API as a fallback, Promise all settled with eight second timeouts so one slow platform can't hold up the others, and the last good list kept per platform when one fails.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b585bb61",
+   "say": "That's exactly the shape of a government source connector. Smaller, friendlier sources, but the same thinking.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d980a440",
+   "say": "Check 6. Pick the three strengths that map most directly onto their job description.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "f7073374",
+   "say": "Idempotency and exactly once effects, for their line on queues, retries and idempotency. Evals in CI, for traces and evals. And rate limited fan out with retries and a dead letter queue, for government sources with rate limits.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "753d63dc",
+   "say": "Topic seven. Where their version is stronger. Saying this honestly is itself a strength in a founding engineer interview.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17051bed",
+   "say": "Their strengths, and what to say about each. Real customers. Fifteen thousand files since January. Say: your system has been shaped by lenders; mine was shaped by test sets.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dd8bb228",
+   "say": "Messy input. Scanned, handwritten, fifty plus languages. Say: OCR and vision on handwritten regional documents is harder than parsing log lines, and I'd want to learn how you evaluate it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a087eb8f",
+   "say": "Domain knowledge, encoded. State rules, lender policies, bank formats. Say: that's the moat. I'd bring the engineering around it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "dcf919e2",
+   "say": "Simplicity, for a tiny team. Managed and serverless, with little to operate. Say: Kafka would be the wrong call at your size.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f0b503d3",
+   "say": "And government portals with sessions and CAPTCHAs. Say: I've built against flaky APIs with fallbacks and timeouts, not against portals with sessions and CAPTCHAs. That's a gap I'd close fast.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1b29b67b",
+   "say": "Check 7. Which gap will you admit, and how do you turn it?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "b5968680",
+   "say": "Admit OCR on handwritten regional scans, and stateful portal scraping. Then turn it with what transfers: evals that measure it, and connectors built like your lanes, with rate limits, retries, timeouts, evidence, and never stuck.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d4b308d0",
+   "say": "Topic eight. Why they need you. Their job description, line by line, against your proof.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "df4b1269",
+   "say": "Their job description, four lines at a time. Reliability: queues, retries, idempotency. Your proof: DeepLogLens's lanes, dead letter queue and upserts. What you'd do first: idempotency keys on every step.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e11d970f",
+   "say": "Delivery: the outbox and signed webhooks. Your proof: InterviewPlanPrep's HMAC signed links checked with timing safe equal, and DeepLogLens's exactly once effects. First: an outbox to deliver reports into lenders' systems.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "8c6dd687",
+   "say": "Quality: find why LLM output goes wrong, and build evals. Your proof: the DeepLogLens eval harness, in CI, with thresholds. First: a golden set per state and document type.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "55303a99",
+   "say": "Agents over government sources. Your proof: the Inventory Ops Agent at Blue Yonder, a LangGraph supervisor with human approval. First: a connector framework, with rate limits, a cache, evidence, and pending checks.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f9218923",
+   "say": "And across all of it, a trace per file: turnaround, cost, and the slowest step. Their words: instrument what you ship.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f75009f8",
+   "say": "So, the thirty second pitch.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "53d932ac",
+   "say": "Your front half is the stack I run InterviewPlanPrep on: Firebase Auth, ID tokens to functions, Firestore listeners, security rules.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "87a71303",
+   "say": "Your back half is the problem DeepLogLens solves: huge, messy input, fanned out asynchronously.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "28ba7cdd",
+   "say": "Code for what must be exact, an LLM only where it's needed, every claim grounded, and evals in CI.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "12ee811b",
+   "say": "What I haven't done is OCR on handwritten regional documents, or scraping state portals. That's what I'd want to learn here.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "17748295",
+   "say": "And I'd bring the reliability and evaluation discipline around it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2e5b1308",
+   "say": "Check 8. Say the thirty second pitch out loud, from memory.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "fc2a1c4e",
+   "say": "Four beats. Your front half is my InterviewPlanPrep stack. Your back half is the DeepLogLens problem. My honest gap is OCR and portals. And what I bring is reliability and evals around it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "be875f4d",
+   "say": "Topic nine. The hardest questions they could ask about your fit, and the answers.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5495213d",
+   "say": "Rapid fire. Your projects are small. Have you run anything at scale?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "43aeee36",
+   "say": "DeepLogLens was built and measured at gigabyte scale: two gigabytes in a two hundred and fifty six megabyte heap, two hundred and five parts in parallel, forty two thousand rate limited LLM calls. Blue Yonder was production. And your scale today is a correctness problem more than a throughput problem.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f190a859",
+   "say": "Would you use Kafka here?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1c117209",
+   "say": "Not today. Cloud Tasks or Pub Sub, with idempotent steps. Kafka when replay or per key ordering at volume earns it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "110383bd",
+   "say": "Firestore or Postgres for reports?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "a81d65f2",
+   "say": "Firestore for the job and live status. A relational store for reports, users and billing, if you need joins and audits. And the versions append only, either way.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "241699ef",
+   "say": "How would you make a thirty minute turnaround reliable?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d633486b",
+   "say": "Fan out per page and per portal, with timeouts and backoff. A pending state for a portal that's down. And a trace per file, so the slowest step is visible.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f2542f50",
+   "say": "Why should we hire you over someone with OCR experience?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d06a77b6",
+   "say": "OCR is a component you can call. Making the pipeline around it correct, idempotent, measurable and cheap is the job, and I've built that twice.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "fe1a3cce",
+   "say": "Check 9. What's the one decision you'd copy from your projects into Brikby on day one?",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "bdbb3bc2",
+   "say": "Idempotent steps keyed by content: a page hash per step, so a retried or redelivered task can never double charge, double flag, or double notify. It's DeepLogLens's fingerprint keys, applied to pages. Good luck. You've built more of this than you think.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  }
+ ]
+}
