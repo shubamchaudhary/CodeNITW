@@ -4,15 +4,13 @@ import { p2 } from "./brik01/p2.ts";
 import { p3 } from "./brik01/p3.ts";
 import { p4 } from "./brik01/p4.ts";
 
-// Projects · BRIK-01: Brikby, prep for a system design round, from public
-// signals only: the lender's due-diligence problem, the business and its scale
-// (estimates labelled), the observed stack vs the inferred pipeline, durable
-// jobs, portal agents, evals, cost, and two design questions. Told in LL-01's
-// style (problem, mechanism on a board, alternatives, then a check) and drawn
-// with its boards. The parts live in brik01/ (p1.ts to p4.ts).
+// Projects · BRIK-01: Brikby, company prep from public signals, following the
+// notes page section by section: the lender's problem, the workflow, what they
+// sell, the business, scale (estimates labelled), the infrastructure at a high
+// level, two questions, and what to say. The parts live in brik01/ (p1 to p4).
 export const brik01: Chapter = {
   id: "brik01",
-  title: "Brikby: the business, the workflow, the architecture",
+  title: "Brikby: the business, and what they do",
   label: "Brikby",
   theme: "loglens",
   voice: "en-US-AndrewMultilingualNeural",
