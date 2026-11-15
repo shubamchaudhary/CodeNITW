@@ -145,7 +145,7 @@ export const PROJECT_TOPICS = [
     section: "brikby",
     sectionLabel: "Company prep: Brikby",
     title: "Brikby: the business, the workflow, the architecture",
-    summary: "Lender property due diligence in India (title chain, EC, state land-record portals), what Brikby sells and at what scale, the observed stack vs the inferred pipeline, durable jobs and portal agents, evals, cost per file, and two questions to raise.",
+    summary: "What Brikby does and for whom: the lender title check it replaces, what the report contains, who pays and why, rough scale, a high-level view of the system, two questions to ask, and the 60-second pitch.",
   },
   {
     id: "BRIK-02",
