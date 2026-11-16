@@ -84,20 +84,41 @@
   --neu-dark: #000000;
 }
 
-/* The shapes, built from the two shadow colours. Kept small so a card sits
-   just off the page. (A custom property is resolved where it is declared:
-   anything that redeclares --neu-* must redeclare these too.) */
+/* The shapes. Raised surfaces use a cool, layered shadow (a hairline ring,
+   a tight contact shadow and a soft ambient one) in a slate tint rather than
+   a solid grey, and no white highlight: on a white page it is invisible, and
+   over a dimmed backdrop (a dialog) it glowed. Pressed wells keep the
+   two-colour neumorphic inset. (A custom property is resolved where it is
+   declared: anything that redeclares --neu-* or --shade must redeclare these
+   too.) */
 :root {
-  --raise: 5px 5px 12px var(--neu-dark), -5px -5px 12px var(--neu-light);
-  --raise-sm: 3px 3px 7px var(--neu-dark), -3px -3px 7px var(--neu-light);
-  --raise-hover: 6px 6px 14px var(--neu-dark), -6px -6px 14px var(--neu-light);
-  --inset: inset 3px 3px 6px var(--neu-dark), inset -3px -3px 6px var(--neu-light);
-  --inset-sm: inset 2px 2px 4px var(--neu-dark), inset -2px -2px 4px var(--neu-light);
-  --inset-xs: inset 1px 1px 2px var(--neu-dark), inset -1px -1px 2px var(--neu-light);
+  --shade: 15 23 42;
+  --ring: rgb(var(--shade) / 0.06);
+  --raise: 0 0 0 1px var(--ring), 0 1px 2px rgb(var(--shade) / 0.04), 0 3px 10px -3px rgb(var(--shade) / 0.08);
+  --raise-sm: 0 0 0 1px var(--ring), 0 1px 2px rgb(var(--shade) / 0.05);
+  --raise-hover: 0 0 0 1px rgb(var(--shade) / 0.08), 0 2px 4px rgb(var(--shade) / 0.05), 0 8px 18px -6px rgb(var(--shade) / 0.12);
+  --inset: inset 2px 2px 5px rgb(var(--shade) / 0.07), inset -2px -2px 5px var(--neu-light);
+  --inset-sm: inset 1px 1px 3px rgb(var(--shade) / 0.07), inset -1px -1px 3px var(--neu-light);
+  --inset-xs: inset 1px 1px 2px rgb(var(--shade) / 0.06), inset -1px -1px 2px var(--neu-light);
   /* The topics panel: one soft shadow off its right edge. */
-  --raise-edge: 3px 0 10px -4px var(--neu-dark);
+  --raise-edge: 1px 0 0 var(--ring), 4px 0 12px -6px rgb(var(--shade) / 0.10);
   --shadow-xs: var(--raise-sm);
-  --shadow-overlay: 8px 8px 22px var(--neu-dark), -6px -6px 18px var(--neu-light);
+  --shadow-overlay: 0 0 0 1px rgb(var(--shade) / 0.06), 0 8px 16px -8px rgb(var(--shade) / 0.12), 0 24px 48px -16px rgb(var(--shade) / 0.22);
+  --shadow-header: 0 1px 0 rgb(var(--shade) / 0.04), 0 6px 16px -12px rgb(var(--shade) / 0.14);
+}
+/* Dark: black shadows need more weight to read on near-black, and the ring
+   is a faint light line so a card's edge still shows. */
+:root.dark {
+  --shade: 0 0 0;
+  --ring: rgb(255 255 255 / 0.06);
+  --raise: 0 0 0 1px var(--ring), 0 1px 2px rgb(0 0 0 / 0.35), 0 4px 12px -4px rgb(0 0 0 / 0.45);
+  --raise-sm: 0 0 0 1px var(--ring), 0 1px 2px rgb(0 0 0 / 0.35);
+  --raise-hover: 0 0 0 1px rgb(255 255 255 / 0.09), 0 2px 4px rgb(0 0 0 / 0.35), 0 8px 18px -6px rgb(0 0 0 / 0.55);
+  --inset: inset 2px 2px 5px rgb(0 0 0 / 0.55), inset -2px -2px 5px var(--neu-light);
+  --inset-sm: inset 1px 1px 3px rgb(0 0 0 / 0.55), inset -1px -1px 3px var(--neu-light);
+  --inset-xs: inset 1px 1px 2px rgb(0 0 0 / 0.5), inset -1px -1px 2px var(--neu-light);
+  --shadow-overlay: 0 0 0 1px rgb(255 255 255 / 0.08), 0 8px 16px -8px rgb(0 0 0 / 0.5), 0 24px 48px -16px rgb(0 0 0 / 0.7);
+  --shadow-header: 0 1px 0 rgb(255 255 255 / 0.04), 0 6px 16px -12px rgb(0 0 0 / 0.6);
 }
 
 /* A calm area (the Jobs lists): cards, rows and buttons look like the old
