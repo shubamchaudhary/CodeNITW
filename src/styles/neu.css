@@ -16,7 +16,7 @@
 /* The header floats over the page on a soft shadow instead of a line. */
 nav.sticky {
   border-bottom-color: transparent !important;
-  box-shadow: 0 6px 16px -8px var(--neu-dark);
+  box-shadow: var(--shadow-header);
 }
 
 /* Cards: raised, rounder. A card on a card gets the smaller shadow (`:where`
