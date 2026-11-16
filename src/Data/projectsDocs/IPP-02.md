@@ -1,141 +1,111 @@
-Firebase and Firestore from zero, then exactly how InterviewPlanPrep uses each piece. Brikby runs on the same family (Firebase Auth, Firestore listeners, functions behind the ID token), so expect "how does your Firestore sync work?" and "how do your security rules work?". These notes follow the lecture above topic by topic (1 to 12). Every IPP claim below is checked against the code: `src/firebase.jsx`, `src/Data/firestoreClient.js`, `src/Data/cloudSync.js`, `firestore.rules`, `api/_lib/admin.mjs`, `api/contest-reminders.mjs`.
+Asha ticks "Two Sum" as solved on her laptop on a train with no signal. That evening she opens InterviewPlanPrep on her phone and the tick is there. The next morning she edits the same note on both devices before either has synced, and neither edit is lost. No server code of yours ran for any of it: the browser talked straight to Google's database.
+
+This article explains how that works: Firebase and Firestore from first principles, then exactly how InterviewPlanPrep (IPP) uses each piece. It is written for the two questions interviewers ask whenever Firebase is on a resume: "how does your sync work?" and "if the browser talks to the database, what stops one user reading another's data?". Every IPP detail matches the code: `src/firebase.jsx`, `src/Data/firestoreClient.js`, `src/Data/cloudSync.js`, `firestore.rules`, `api/_lib/admin.mjs` and `api/contest-reminders.mjs`.
 
 ```mermaid
 flowchart LR
-    A["1-2<br/>What Firebase is,<br/>Auth and ID tokens"] --> B["3-5<br/>Documents, queries,<br/>writes, transactions"]
-    B --> C["6-7<br/>Listeners,<br/>offline cache"]
-    C --> D["8-9<br/>Security rules,<br/>compare-and-swap"]
-    D --> E["10-12<br/>Admin SDK, limits<br/>and cost, the answers"]
+    B["React app<br/>(browser)"] -->|"sign in"| A["Firebase Auth"]
+    A -->|"ID token<br/>(JWT, 1 h)"| B
+    B -->|"reads, writes,<br/>listeners<br/>+ ID token"| F[("Cloud Firestore")]
+    F -->|"every request<br/>judged by"| R["Security rules"]
+    V["Vercel functions<br/>(admin SDK)"] -->|"bypass rules:<br/>trusted server"| F
+    B -->|"Bearer ID token"| V
 ```
 
-## 1. What Firebase is
+## 1. The trade Firebase makes
 
-Firebase is Google's **backend-as-a-service** on top of Google Cloud. The idea that changes everything: **the browser talks to Google's services directly**. There is no API server of yours between the React app and the database.
+Firebase is Google's **backend-as-a-service**, built on Google Cloud. In a classic app, the browser calls your API server, and your server talks to the database and decides who may see what. Firebase removes the middle: **the browser talks to Google's services directly**. The products IPP uses:
 
-| Product | What it does | IPP uses it? |
-|---|---|---|
-| **Firebase Auth** | sign-in (email/password, Google, phone...), issues ID tokens | yes |
-| **Cloud Firestore** | a document database with real-time listeners and an offline cache | yes |
-| Firebase Hosting | static hosting on Google's CDN | no (Vercel) |
-| Cloud Functions | server code triggered by HTTP or events | no (Vercel functions) |
-| Cloud Storage | files and images | no (needs the paid plan; screenshots are compressed data URLs in Firestore) |
-| App Check | proves requests come from your real app | no (an honest gap; see 12) |
+- **Firebase Auth** signs users in (email and password, Google, phone) and issues tokens.
+- **Cloud Firestore** is a document database with real-time listeners and an offline cache. It is the same database as Google Cloud Firestore in the GCP console; "Firebase" is the developer-facing SDKs and console on top.
 
-If the browser talks to the database directly, **who stops user A reading user B's data?** The **security rules** (topic 8): a small program Google runs on every request. That is the deal Firebase makes: no server to write, but your authorization lives in the rules.
+Products IPP does not use, and what it does instead: Firebase Hosting and Cloud Functions (IPP runs on Vercel, with Vercel serverless functions and Vercel Cron), Cloud Storage (it needs the paid plan, so screenshots are compressed data URLs stored in Firestore), and App Check (an honest gap, section 10).
 
-Firestore **is** Google Cloud Firestore: the same database you see in the GCP console. "Firebase" is the developer-facing SDKs and console on top.
+If there is no server in between, the obvious question is who stops user A reading user B's documents. The answer is **security rules**: a small program Google runs on its servers for every single read and write (section 7). That is the deal: you write no backend, and in exchange your authorization lives in the rules, not in code you control at runtime.
 
-**Q. In one line, what is the trade Firebase makes?** No backend to run; in exchange, the client talks to the database directly and the security rules become your server-side authorization.
+Say it like this: "Firebase lets the client talk to Google's database directly, so there's no API server to build or scale. The price is that security rules become your server-side authorization, and anything that needs secrets, other users' data or a schedule still needs real server code."
 
-## 2. Firebase Auth and the ID token
+## 2. Signing in: Firebase Auth and the ID token
 
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant A as Firebase Auth
-    participant F as Firestore
-    participant V as Vercel function
-    B->>A: sign in (password or Google popup)
-    A-->>B: ID token (JWT, 1 hour) + refresh token
-    B->>F: requests carry the ID token (SDK does it)
-    Note over F: rules see request.auth.uid
-    B->>V: Authorization: Bearer ID token
-    V->>V: admin verifyIdToken: signature, aud, iss, exp
-```
+When Asha signs in, IPP calls `signInWithEmailAndPassword` (or `signInWithPopup` with `GoogleAuthProvider`). Firebase Auth checks the credentials and gives the browser two things:
 
-| Piece | What it is |
-|---|---|
-| **ID token** | a JWT signed by Google (RS256), valid **1 hour**. Claims: `sub`/`uid`, `email`, `email_verified`, `aud` = your project id, `iss` = `https://securetoken.google.com/<project>`, `exp` |
-| **Refresh token** | long-lived; the SDK swaps it for a new ID token before the old one expires. You never handle it |
-| **Persistence** | the browser SDK keeps the session in IndexedDB, so a reload stays signed in |
-| `onAuthStateChanged` | fires on sign-in, sign-out and page load: the app's single source of "who is signed in" |
-| **Verification on a server** | `admin.auth().verifyIdToken(token)` checks the signature against Google's public keys, the audience, the issuer and expiry. It does **not** check revocation unless you pass `checkRevoked` (an extra call) |
+- An **ID token**: a JWT signed by Google with RS256, valid for **one hour**. Its claims include `sub` (her uid), `email`, `email_verified`, `aud` (the Firebase project id) and `iss` (`https://securetoken.google.com/<project-id>`).
+- A **refresh token**: long-lived. The SDK silently exchanges it for a fresh ID token before the old one expires. Application code never touches it.
 
-**In IPP:**
-- Sign-in with **email/password** (`createUserWithEmailAndPassword`, `signInWithEmailAndPassword`, `sendPasswordResetEmail`) or **Google** (`signInWithPopup` with `GoogleAuthProvider`).
-- `onAuthStateChanged` starts and stops the sync for that account (`startCloudSync(uid)`), and scopes the local cache to `u:{uid}:...`.
-- The Firestore SDK attaches the token itself; the rules read it as `request.auth.uid`.
-- For Vercel functions the page calls `user.getIdToken()` and sends `Authorization: Bearer <token>`; `api/_lib/admin.mjs` -> `verifiedUser()` runs `verifyIdToken`. **The email for reminders comes from the verified token, never from the request body.**
+The SDK keeps the session in IndexedDB, so a reload keeps her signed in. `onAuthStateChanged` fires on sign-in, sign-out and page load, and it is IPP's single source of truth for "who is signed in": it starts the sync engine for that uid (`startCloudSync(uid)`) and scopes the local cache keys to `u:{uid}:...`, so two accounts on one browser never mix data.
 
-**Q. Why can't a user subscribe someone else's email to reminders?** The function takes the email from the verified ID token, which only Google can sign, not from anything the browser sends.
+The token then travels two ways:
 
-## 3. The data model: documents and collections
+1. **To Firestore**, automatically: the SDK attaches it to every request, and the rules see it as `request.auth.uid`.
+2. **To IPP's own functions**, explicitly: the page calls `user.getIdToken()` and sends `Authorization: Bearer <token>`. The function's `verifiedUser()` in `api/_lib/admin.mjs` runs the admin SDK's `verifyIdToken`, which checks Google's signature against Google's public keys, the audience, the issuer and expiry.
 
-- A **document** is a map of fields (strings, numbers, booleans, timestamps, maps, arrays, references), at most **1 MiB**.
-- A **collection** holds documents; a document can own **subcollections**. Paths alternate: `collection/doc/collection/doc`.
-- **No joins.** You shape data around the screens that read it, and duplicate when you must.
-- A document read is the unit of cost and of real-time updates.
+That second path is where a classic bug hides. The contest-reminder function needs Asha's email. If it took the email from the request body, anyone could subscribe anyone. It takes the email **from the verified token**, which only Google can sign.
 
-**IPP's layout** (one account, under `userProgress/{uid}`):
+One detail worth knowing: `verifyIdToken` does not check whether the session was revoked (for example after a password change) unless you pass `checkRevoked: true`, which costs an extra call. For a one-hour token on a low-risk endpoint, IPP accepts that window.
 
-| Path | Holds | Why separate |
-|---|---|---|
-| `userProgress/{uid}` | DSA ticks, solve times, stars, planned days, `_meta` (edit times), `_rev` | the original single document |
-| `.../data/{key}` | one document per other kind of progress (Core Stack ticks, job tracker, timer...) | a big job tracker must not push the main doc past 1 MiB |
-| `.../notes/{key}~{id}` | one document per note: `value`, `rev`, `base`, `deleted`, `updatedAt` | each note gets its own revision and its own size budget |
-| `.../history/{target}/revisions/{time-device}` | every saved version of a note | append-only history |
-| `.../noteAssets/{id}` | a screenshot as a compressed data URL, < 900,000 chars | no paid Cloud Storage |
+Say it like this: "The browser gets a Google-signed ID token, a one-hour JWT that the SDK refreshes on its own. Firestore reads it as `request.auth`; my functions verify it with the admin SDK and take the uid and email from the token, never from the request body."
 
-Server-only collections (the rules deny the browser everything outside `userProgress/{uid}`): `contestSubscribers`, `contestReminders`, `visits`, `appCache`.
+## 3. Shaping data for Firestore
 
-**Q. Why are notes split into their own documents?** The 1 MiB document limit: one heavy note-taker would fill the main document; and a per-note document gives each note its own revision for compare-and-swap.
+Firestore stores **documents**: maps of typed fields (strings, numbers, booleans, timestamps, nested maps, arrays), each at most **1 MiB**. Documents live in **collections**, and a document can own **subcollections**, so paths alternate: `collection/doc/collection/doc`.
 
-## 4. Reading: get, queries, indexes
+Three facts drive every design decision:
 
-| Operation | Notes |
-|---|---|
-| `getDoc(ref)` | one document, one read |
-| `getDocs(query)` | every matching document is one read |
-| `where`, `orderBy`, `limit`, cursors (`startAfter`) | **every query is served by an index**, so its cost and speed depend on the size of the result, not the collection |
-| single-field indexes | automatic |
-| composite indexes | declared for queries that filter or order on several fields; the error message links to create one |
-| `count()` | an aggregation query: counts without downloading the documents |
+- **There are no joins.** You shape data around the screens that read it, and duplicate when you must.
+- **A document is the unit of cost** (you pay per document read and written) and the unit of real-time updates (a listener fires when a document changes).
+- **A document is capped at 1 MiB**, and one document should not be written more than about once a second for long.
 
-**In IPP** (server side, admin SDK): reminders read `contestSubscribers.where("confirmed", "==", true)`; the job radar lists openings `orderBy("openedAt", "desc").orderBy(documentId, "desc")` with a cursor, and `count()` for totals. The browser side never queries: it listens to the account's own documents.
+IPP started with one document per user, `userProgress/{uid}`, holding everything. That worked until heavy users arrived: one person with long notes and a big job tracker would push the document toward 1 MiB, and every tick rewrote a large document. So the data was split by how it grows and how it changes:
 
-**Q. Why does a Firestore query stay fast as a collection grows?** Every query is answered from an index, so it costs in proportion to the results returned, not to the documents scanned.
+- `userProgress/{uid}` keeps DSA ticks, solve times, stars, planned days, `_meta` (an edit time per entry) and `_rev`.
+- `userProgress/{uid}/data/{key}`: one document per other kind of progress (Core Stack ticks, the job tracker, the timer), so a big tracker never crowds out the rest.
+- `userProgress/{uid}/notes/{key}~{id}`: one document per note, with `value`, `rev`, `base`, `deleted` and `updatedAt`. Each note gets its own size budget and its own revision number, which the conflict handling in section 8 needs.
+- `.../history/{target}/revisions/{time-device}`: every saved version of a note, append-only.
+- `.../noteAssets/{id}`: a screenshot as a compressed data URL under 900,000 characters.
 
-## 5. Writing: set, merge, update, batches, transactions
+Collections only the server touches sit outside `userProgress`: `contestSubscribers`, `contestReminders`, `visits` and `appCache`.
 
-| Call | Behaviour |
-|---|---|
-| `setDoc(ref, data)` | replace the whole document |
-| `setDoc(ref, data, { merge: true })` | merge into what is there |
-| `setDoc(ref, data, { mergeFields: [...] })` | write **only** the listed fields (by `FieldPath`) |
-| `updateDoc` | merge, but fails if the document doesn't exist |
-| `deleteField()` | remove one field |
-| `serverTimestamp()` | the server's clock, not the device's |
-| **batched write** | several writes, all or nothing; no reads |
-| **transaction** | read, decide, write, all or nothing. Client SDKs are **optimistic** (retried if a read document changed; they need to be online). Server SDKs use **pessimistic** locks on what they read |
+Say it like this: "I modelled per user under one root document, then split out anything that grows without bound, notes and big trackers, into subcollections, because a Firestore document caps at 1 MiB and is also the unit of cost and of sync."
 
-**In IPP:**
-- **Ticks and other entries:** `setDoc(ref, data, { mergeFields })` with one `FieldPath` per changed entry (`["DSAPrepCompleted", "two-sum"]`), plus its edit time in `_meta`. A deleted entry is `deleteField()` plus a tombstone time. So a push touches exactly the entries this device changed.
-- **Notes:** `setDoc(noteRef, { key, id, value, deleted, rev, base, updatedAt })`, the whole note document, judged by the rules (topic 9).
-- **Reminders (server):** `db.runTransaction` reads `contestReminders/{key}.sentTo`, keeps the people not in it, writes them in, then emails. Failed send: `update({ "sentTo.<id>": FieldValue.delete() })` releases the claim.
+## 4. Reading: why every query is fast
 
-**Q. Why `mergeFields` instead of writing the whole map of ticks?** A whole-map write from a stale device would overwrite entries it never touched; `mergeFields` writes only the entries this device changed.
+`getDoc` reads one document. `getDocs(query)` reads every matching document, and each one is billed as a read. Queries support `where`, `orderBy`, `limit` and cursors (`startAfter`), and here is the property that makes Firestore scale: **every query is served from an index**. Single-field indexes are automatic; a query that filters or sorts on several fields needs a **composite index**, and the error message links straight to creating it. The consequence: a query's cost and speed depend on the size of the result, not the size of the collection. A query that cannot use an index is simply not allowed.
 
-## 6. Real-time listeners
+For totals, an **aggregation query** (`count()`) counts on the server without downloading documents.
 
-`onSnapshot(ref or query, callback)` opens a stream (WebChannel in the browser). You get the current state first, then a new snapshot every time a document changes, from any device.
+In IPP the browser never queries: it only listens to the account's own documents (section 5). Queries run on the server: the reminder job reads `contestSubscribers.where("confirmed", "==", true)`, and the job radar pages openings with `orderBy("openedAt", "desc")` plus document id as a tie-breaker, a cursor, and `count()` for totals.
 
-| Snapshot metadata | Meaning |
-|---|---|
-| `metadata.fromCache` | true: this came from the local cache, the server hasn't confirmed it yet |
-| `metadata.hasPendingWrites` | true: it includes this device's own write that the server hasn't acknowledged |
-| `includeMetadataChanges: true` | also fire when only those flags flip (e.g. "now confirmed by the server") |
+## 5. Writing: replace, merge, or only the fields you mean
 
-**Latency compensation:** your own write fires your listener immediately, with `hasPendingWrites: true`, before the server has it.
+Writes come in a few shapes, and choosing the right one is the difference between correct sync and lost data:
 
-**Billing:** the first snapshot costs one read per document; afterwards one read per **changed** document. A listener that reconnects within 30 minutes isn't billed again for unchanged documents.
+- `setDoc(ref, data)` **replaces** the whole document.
+- `setDoc(ref, data, { merge: true })` **merges** into whatever is there.
+- `setDoc(ref, data, { mergeFields: [...] })` writes **only** the listed field paths.
+- `updateDoc` merges but fails if the document doesn't exist.
+- `deleteField()` removes a field; `serverTimestamp()` uses Google's clock instead of the device's.
+- A **batched write** groups several writes, all or nothing, with no reads.
+- A **transaction** reads, decides and writes atomically. In the client SDKs transactions are **optimistic**: if a document you read changes before commit, the whole function retries, and it needs to be online. Server SDKs take **pessimistic locks** on what they read.
 
-**In IPP (`cloudSync.js` -> `listen`):** three listeners per signed-in account, on the main document, the `data` subcollection and the `notes` subcollection, all with `includeMetadataChanges: true`. **Nothing is decided until all three have answered**, and nothing is pushed until a snapshot **from the server** has arrived. As the code says: *a cached "doesn't exist" proves nothing*, so a new device never mistakes an empty cache for an empty account.
+Why IPP uses `mergeFields` for ticks: imagine the phone has been offline for a week and still holds an old map of ticks. If it wrote the whole map, it would silently undo everything ticked on the laptop that week. Instead each push names exactly the entries this device changed, as field paths such as `["DSAPrepCompleted", "two-sum"]`, along with each entry's edit time in `_meta`. A removed entry is written as `deleteField()` plus a tombstone time, so "deleted on Tuesday" can beat "ticked on Monday". A push touches only what this device changed.
 
-This is the same mechanism Brikby's app uses for an analysis job's status: write a status field on the server, every open tab gets it pushed.
+Notes are written as a whole document, `setDoc(noteRef, { key, id, value, deleted, rev, base, updatedAt })`, and the rules decide whether that write is allowed (section 8).
 
-**Q. Why wait for a snapshot that is not `fromCache` before pushing?** The cache may be days old; deciding from it could push stale data over newer data on the server. The server's copy must be merged first.
+Say it like this: "Ticks are pushed with `mergeFields`, one field path per changed entry plus its edit time, so a stale device can never overwrite entries it didn't touch."
 
-## 7. The offline cache, and why IPP still has its own store
+## 6. Real-time listeners and the offline cache
+
+`onSnapshot(ref, callback)` opens a long-lived stream to Firestore. The callback fires first with the current data, then again every time the document changes, from any device. Each snapshot carries metadata worth understanding:
+
+- `metadata.fromCache` is true when the data came from the local cache and the server has not confirmed it yet.
+- `metadata.hasPendingWrites` is true when the snapshot includes this device's own write that the server hasn't acknowledged.
+- With `includeMetadataChanges: true`, the callback also fires when only those flags change, for example when a pending write becomes confirmed.
+
+Your own write fires your own listener immediately, before the server has it. That is **latency compensation**, and it is why Firestore apps feel instant.
+
+Billing for listeners: the first snapshot costs one read per document; after that, one read per **changed** document. A listener that reconnects within 30 minutes is not billed again for documents that didn't change.
+
+**The offline cache.** IPP initialises Firestore with a persistent cache:
 
 ```js
 // src/Data/firestoreClient.js
@@ -144,130 +114,137 @@ export const db = initializeFirestore(app, {
 });
 ```
 
-- **Persistent cache in IndexedDB:** reads work offline; writes are applied locally at once and queued; they reach the server when the network returns, even after a reload.
-- **Multi-tab manager:** several open tabs share one cache safely.
-- A write's promise resolves only when **the server acknowledges** it. If the rules refuse it, the SDK rolls the local change back and the promise rejects with `permission-denied`.
-- **Loaded on demand:** `loadFirestore()` imports the SDK in its own chunk the first time it's needed. A guest never downloads it; a signed-in visit renders from localStorage while it loads.
+The cache lives in IndexedDB. Reads work offline. Writes apply locally at once, are queued, and reach the server when the network returns, even after a reload. The multi-tab manager lets several open tabs share one cache safely. A write's promise resolves only when the server acknowledges it; if the rules refuse it, the SDK rolls the local change back and the promise rejects with `permission-denied`. The SDK itself is loaded on demand in its own chunk, so a guest never downloads it, and a signed-in visit renders from local storage while it loads.
 
-**Why IPP keeps a localStorage store and a journal on top:**
+**How IPP listens.** `cloudSync.js` keeps three listeners per signed-in account (the main document, the `data` subcollection and the `notes` subcollection), all with `includeMetadataChanges: true`. Two rules make it safe:
 
-| Need | Firestore cache alone | IPP's store + journal |
-|---|---|---|
-| synchronous reads for instant UI | async API | `loadJSON` is synchronous |
-| per-entry "newer edit wins" | last write to a field wins | edit times in `_meta`, tombstones, 5-minute skew guard |
-| survive the debounce window, a crash, a refresh | only writes already handed to the SDK | the pending journal is written first |
-| merge notes like git | no | base revision + three-way merge |
+1. **Nothing is decided until all three listeners have answered.**
+2. **Nothing is pushed until a snapshot from the server has arrived** (`fromCache` false). A new device has an empty cache, and a cached "this document doesn't exist" proves nothing. Without this rule a fresh phone could decide the account is empty and push emptiness over a year of progress.
 
-**Q. Firestore already queues offline writes. Why the journal?** The queue only holds writes already handed over, and it can't say what changed and when; the journal records that, which the merge rules need, and covers the debounce, crashes and refreshes.
+**Why IPP keeps its own store on top of Firestore's cache.** Firestore already caches and queues, so why have more?
 
-## 8. Security rules
+- The UI needs **synchronous** reads to render instantly; the Firestore API is asynchronous. IPP's local store (`loadJSON`) is synchronous.
+- Firestore's merge is "last write to a field wins". IPP needs "**the newer edit wins**, per entry", which needs edit times, tombstones and a guard against device clocks that are wrong (a five-minute skew guard).
+- Edits wait 800 ms before being pushed, so ten quick ticks become one write. Firestore's queue only holds writes already handed to it; a crash or refresh inside that window would lose them. IPP writes a **pending journal** first, so nothing in the window is lost.
+- Notes need a **three-way merge** like git, which needs the base revision each edit was built on.
 
-Because the browser talks to Firestore directly, the rules are the server-side authorization. They run on Google's servers for **every** read and write.
+Say it like this: "Every edit lands synchronously in a local store and a pending journal. After 800 ms of quiet, the sync engine pushes only the changed entries with `mergeFields` and their edit times. Each device listens to its account's documents, reconciles per entry with newer-edit-wins, and never pushes before it has heard from the server. Firestore's IndexedDB cache sits underneath for offline reads and queued writes."
 
-| Concept | Meaning |
-|---|---|
-| `request.auth` | the verified token (`uid`, claims), or null |
-| `resource.data` | the document as stored now |
-| `request.resource.data` | the document as it would be after this write |
-| `diff(...).affectedKeys()` | which fields this write changes |
-| `get()` / `exists()` | read another document inside a rule (billed as a read; at most 10 per request, 20 in a batch or transaction) |
-| default | **deny**: anything not matched is refused |
-| **rules are not filters** | a query must be provably limited to allowed documents, or the whole query is refused |
-| admin SDK | **bypasses rules** entirely: it is trusted server code |
+## 7. Security rules: the server-side authorization
 
-**IPP's rules, in plain words:**
-1. `signedInAs(uid)`: you can only touch `userProgress/{your uid}` and below.
-2. Everything else (`/{document=**}`) is `allow read, write: if false`: so subscribers, reminders, visits and caches are server-only.
-3. `noteAssets`: the data is a string under 900,000 characters, so an oversized write is never attempted.
-4. `history/.../revisions`: **create and read only**. No update, no delete: append-only, enforced by Google, not by the app.
-5. `data/{key}`: read, create, update for the owner; never deleted.
-6. Notes: fast-forward only (next topic).
+Because the browser talks to Firestore directly, the rules are the only thing standing between a user and everyone else's data. They run on Google's servers on every request, and anything not explicitly allowed is **denied**.
 
-**Q. A bug in the client tries to delete a history revision. What happens?** The rules have no `allow delete` on revisions, so Google refuses it; history can't be rewritten by any client, buggy or malicious.
+The vocabulary:
 
-## 9. Compare-and-swap in the rules
+- `request.auth` is the verified token (with `uid` and custom claims), or null.
+- `resource.data` is the document as stored now; `request.resource.data` is the document as it would be after this write.
+- `request.resource.data.diff(resource.data).affectedKeys()` lists which fields this write changes.
+- `get()` and `exists()` read another document inside a rule. They are billed as reads and limited (10 per request, 20 in a batch or transaction).
+
+Two misconceptions to correct in an interview:
+
+Correction: "Rules filter query results." They don't. A query must be **provably** limited to documents the user may read, or the whole query is refused. A rule saying "only your own documents" means the query itself must say `where("owner", "==", uid)`.
+
+Correction: "The admin SDK obeys the rules." It doesn't. Server code with a service account bypasses rules completely, which is exactly why it must never run in a browser.
+
+IPP's rules, in plain words:
+
+1. `signedInAs(uid)`: `request.auth != null && request.auth.uid == uid`. You can only touch `userProgress/{your uid}` and below.
+2. Everything else is denied, which makes subscribers, reminders, visits and caches server-only by construction.
+3. Screenshots: the data must be a string under 900,000 characters, so an oversized write is never attempted against the 1 MiB cap.
+4. Note history: **create and read only**. There is no update and no delete, so history is append-only, enforced by Google rather than by trusting the app.
+5. `data/{key}` documents may be read, created and updated by their owner, never deleted.
+6. Notes are fast-forward only, next section.
+
+Say it like this: "Each user can touch only the documents under their own uid, and everything else is denied. History is create-and-read only, so it's append-only by construction. And note saves must be fast-forwards of the stored revision, checked in the same step as the write."
+
+## 8. Compare-and-swap inside the rules
+
+Back to Asha's morning. Her note is at revision 7. The laptop and the phone both edit it offline.
+
+The phone syncs first and saves "built on 7, this is 8". Accepted: the note is now at 8. Then the laptop comes online and saves "built on 7, this is 8". If the database simply accepted it, the phone's edit would vanish: a classic lost update.
+
+IPP stops this in the rules:
 
 ```js
 match /notes/{noteId} {
   allow update: if signedInAs(uid) && validNote(noteId)
     && request.resource.data.key == resource.data.key
     && request.resource.data.id == resource.data.id
-    && request.resource.data.base == resource.data.rev;   // built on the head?
+    && request.resource.data.base == resource.data.rev;   // built on the current head?
 }
-// validNote: only the allowed fields, rev == base + 1, id matches the key
+// validNote: only the allowed fields, rev == base + 1, id matches the path
 ```
 
-A save says "I built this on revision 7, this is 8". The rule accepts it only if 7 is still the stored revision. A stale device is refused with `permission-denied`; `cloudSync.js` catches exactly that code, fetches the head, runs the three-way merge, and saves "based on 8, this is 9".
+The laptop's save says `base: 7`, but the stored `rev` is now 8, so Google refuses it with `permission-denied`. `cloudSync.js` catches exactly that error code, fetches the current note, runs a three-way merge (the common ancestor 7, the phone's 8, the laptop's edit), and saves "built on 8, this is 9". Both edits survive. The older main-document copies of notes use the same idea through `_write.base` and `_rev`, with the rule also checking that a save changes exactly one note and moves its revision up by exactly one.
 
-**Why rules and not a Firestore transaction?**
+Why in the rules and not somewhere else:
 
-| Option | Problem |
-|---|---|
-| client transaction | needs to be online; IPP edits offline and syncs later |
-| client-side check, then write | two devices can both check revision 7, both pass, both write |
-| **rule on the write (chosen)** | the check and the write are one atomic step on the server, enforced for every client, and an offline write is simply judged when it arrives |
+- A **client-side check** ("read rev, compare, then write") is not atomic: both devices can read 7, both pass, both write. It also only binds well-behaved clients.
+- A **client transaction** would be atomic, but it needs to be online, and IPP edits offline and syncs later.
+- A **rule on the write** makes the check and the write one atomic step on Google's servers, enforced for every client, and an offline write is simply judged when it finally arrives.
 
-Name it: **optimistic locking** (`UPDATE ... WHERE version = 7`), or git refusing a non-fast-forward push.
+This is **optimistic locking**, the same idea as `UPDATE notes SET ... WHERE id = ? AND version = 7`, or git refusing a non-fast-forward push.
 
-**Q. Why is a client-side version check not enough?** It isn't atomic with the write, and it only binds well-behaved clients; the rule is checked with the write, for every client.
+Say it like this: "A note save must name the revision it was built on, and the rule compares that with the stored revision in the same atomic step as the write. A stale device gets permission-denied, merges with the head three ways, and saves again."
 
-## 10. The admin SDK and the serverless functions
+## 9. The server side: admin SDK and functions
+
+A browser that talks to Firestore directly still cannot do everything. Three kinds of work need trusted server code:
+
+- **Secrets**: the Gmail app password for sending emails, the contest API key, the cron secret.
+- **Other people's data**: the list of every reminder subscriber, which no browser may read.
+- **Schedules**: sending reminders every 15 minutes whether anyone has the site open or not.
+
+IPP runs that code as **Vercel serverless functions on Node.js**, not Cloud Functions: they ship from the same repository and deploy as the site, Vercel Cron triggers the schedules, and no paid Firebase plan is needed.
 
 ```js
 // api/_lib/admin.mjs
 initializeApp({ credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
 export const db = () => getFirestore(app());
 export const auth = () => getAuth(app());
-export async function verifiedUser(request) { /* Bearer -> auth().verifyIdToken */ }
+export async function verifiedUser(request) { /* Bearer token -> auth().verifyIdToken */ }
 ```
 
-- The **service account** (a private key in Vercel's environment) makes the function a trusted admin: it **bypasses the rules**, so it can read every subscriber, which no browser can.
-- **Vercel functions on Node.js**, not Cloud Functions: same repo and deploy as the site, the CDN in front, Vercel Cron for schedules, no paid Firebase plan needed.
-- What runs on the server, and why: anything needing **secrets** (Gmail app password, clist key, cron secret), **other people's data** (subscriber emails), or **a schedule** (reminders every ~15 minutes via 96 daily crons).
-- **Claim before send:** the reminder transaction writes the claim before any email, so overlapping runs never double-send: never a duplicate, at worst one skipped email.
+The service account's private key lives in Vercel's environment variables. With it, the function is a trusted admin and bypasses the rules.
 
-**Q. The browser can talk to Firestore directly. Why does IPP need any server at all?** Secrets, other users' data and schedules can never be trusted to a browser.
+**Never sending a reminder twice.** Cron runs can overlap, and a retried run must not email someone twice. The reminder function **claims before it sends**: inside a transaction it reads `contestReminders/{key}.sentTo`, keeps only the subscribers not already in it, writes them in, and only then sends the emails. If a send fails, it releases that claim with `update({ "sentTo.<id>": FieldValue.delete() })` so a later run can retry. The guarantee is "never a duplicate, at worst one skipped email", which is the right side to err on for reminders.
 
-## 11. Limits and cost, and what IPP does about them
+Say it like this: "Anything needing secrets, other users' data or a schedule runs in a server function with the admin SDK. For reminders I claim each recipient in a transaction before sending, so overlapping runs never double-send."
 
-| Limit or price | Value | IPP's answer |
-|---|---|---|
-| document size | 1 MiB | notes and other keys split into their own documents |
-| sustained writes to one document | about 1 per second (a soft limit) | 800 ms debounce; ten quick ticks = one write |
-| billing | per document read, write, delete | lazy SDK; listeners on the account's own documents only; edge-cached contest list |
-| free quota | 50,000 reads, 20,000 writes, 20,000 deletes a day, 1 GiB stored | comfortably inside it |
-| `get()` in rules | billed as reads | only the first save of a note reads the main document |
-| location | chosen once when the database is created; can't be moved | (relevant to Brikby's question 2: pick asia-south1 or asia-south2 on day one) |
-| not for | joins, ad-hoc analytics, heavy aggregation, full-text or vector search | that is why DeepLogLens uses Postgres |
+## 10. Limits, cost, and when not to use Firestore
 
-**Q. When would you not choose Firestore?** When the work is relational or analytical: joins, ad-hoc reports, full-text or vector search, multi-row transactions at volume. Then Postgres (or BigQuery for analytics).
+The limits that shaped IPP:
 
-## 12. The answers to give
+- **1 MiB per document**: notes and large trackers live in their own documents.
+- **About one sustained write per second per document** (a soft limit): the 800 ms debounce turns ten quick ticks into one write.
+- **Billing per document read, written and deleted**: the SDK loads only for signed-in users, listeners cover only the account's own documents, and the public contest list is cached at the edge instead of read from Firestore per visitor.
+- **The free quota** (50,000 reads, 20,000 writes and 20,000 deletes a day, 1 GiB stored) comfortably covers IPP's traffic.
+- **`get()` inside rules is billed as a read**: only a note's first save reads the main document.
+- **The database location is chosen once** at creation and cannot be moved. For a product with Indian data-residency needs, that means picking `asia-south1` (Mumbai) or `asia-south2` (Delhi) on day one.
 
-**"How does Firestore sync work in your app?"**
-> "Every edit is written to a local store first, synchronously, and recorded in a pending journal. After 800 milliseconds of quiet the sync engine pushes only the changed entries to Firestore with `mergeFields`, with their edit times. Each device keeps three snapshot listeners on the account's documents; it reconciles per entry, newer edit wins, and it never pushes before it has heard from the server. Firestore's own IndexedDB cache sits underneath for offline reads and queued writes."
+What IPP would add next: **App Check**, so only the real app can call Firestore and the functions; `checkRevoked` on sensitive endpoints; and a scheduled export of Firestore to Cloud Storage for backups.
 
-**"How do your security rules work?"**
-> "Each user can only touch documents under their own uid; everything else is denied, which makes subscribers and caches server-only. History is create-and-read only, so it's append-only by construction. And notes are fast-forward only: a save must name the revision it was built on, the rule compares that with the stored revision in the same step as the write, so a stale device is refused and merges instead."
+**When not to choose Firestore.** It is excellent for per-user documents that sync live to clients. It is the wrong tool when the work is relational or analytical: joins, ad-hoc reports, heavy aggregation, full-text or vector search, multi-row transactions at high volume. That is why DeepLogLens uses PostgreSQL with pgvector, and why an analytics workload would go to BigQuery.
 
-**"How does your server trust the browser?"**
-> "It doesn't trust the body. The browser sends its Firebase ID token as a bearer token; the function verifies it with the admin SDK, which checks Google's signature, the audience and expiry, and takes the uid and email from the token."
+Say it like this: "Firestore fits per-user data that must sync live and work offline. For joins, analytics, search or vectors I'd use Postgres or BigQuery; picking the store is about the access pattern."
 
-**"What would you add?"**
-> "App Check, so only my real app can call Firestore and the functions; checkRevoked on sensitive endpoints; and a scheduled export of Firestore to Cloud Storage for backups."
+## 11. Complete example: one note, two offline devices
 
-**Rapid fire:**
+Setup: Asha's note `DSAPrepNotes~two-sum` is at revision 7 on the server. Both devices have synced it.
 
-| Question | Answer |
-|---|---|
-| ID token lifetime? | 1 hour; the SDK refreshes it |
-| What verifies a token on a server? | `verifyIdToken`: signature, `aud`, `iss`, `exp` |
-| Max document size? | 1 MiB |
-| How does a client transaction handle conflicts? | optimistic: retries if a read document changed; needs to be online |
-| Server transaction? | pessimistic locks on the read documents |
-| `fromCache`? | the snapshot came from the local cache, not yet confirmed by the server |
-| `hasPendingWrites`? | it includes a local write not yet acknowledged |
-| Do rules filter queries? | no: an unprovable query is refused whole |
-| Does the admin SDK obey rules? | no, it bypasses them |
-| Can you move a database's region? | no: chosen at creation |
-| Free quota? | 50K reads, 20K writes, 20K deletes a day |
+1. On the train, the laptop goes offline. She adds a paragraph. IPP writes it to the local store and the pending journal at once, so the UI updates instantly. The push is queued.
+2. At home, the phone is online. She fixes a typo in the same note. After 800 ms the phone saves `{ base: 7, rev: 8, value: ... }`. The rule checks `base == stored rev` (7 == 7) and accepts. The server is now at 8, and the laptop's listener will hear about it once it reconnects.
+3. The laptop reconnects. Its listeners first deliver snapshots from the cache, so it decides nothing yet. Then a server snapshot arrives showing revision 8.
+4. The laptop pushes its edit as `{ base: 7, rev: 8 }`. The rule sees `base` 7 against stored `rev` 8 and refuses: `permission-denied`. Its local optimistic change is rolled back.
+5. `cloudSync.js` catches that code, fetches the head (8), and merges three ways: ancestor 7, theirs 8 (typo fixed), ours (new paragraph). It saves `{ base: 8, rev: 9 }`. Accepted.
+6. Both devices' listeners fire with revision 9, containing the typo fix and the new paragraph. The history subcollection holds 7, 8 and 9, and no client can delete them.
+
+Expected result: no edit lost, no duplicate, and the conflict handled without any server code of IPP's own.
+
+**The answers, ready to say:**
+
+- "How does your sync work?" Local store and journal first, debounced `mergeFields` pushes with edit times, three listeners, per-entry newer-wins, never pushing before the server has answered.
+- "How do your rules work?" Own-uid only, deny by default, append-only history, fast-forward-only notes.
+- "How does your server trust the browser?" It verifies the Firebase ID token with the admin SDK and takes identity from the token, never from the body.
+- "What would you add?" App Check, revocation checks on sensitive endpoints, and scheduled backups.
