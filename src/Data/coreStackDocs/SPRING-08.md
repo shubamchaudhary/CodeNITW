@@ -1,129 +1,115 @@
 # Spring Part 8: Exception Handling: @ControllerAdvice and Error Contracts
 
-`GET /orders/999` hits an order that does not exist. The service throws `OrderNotFoundException`. With no handling, the client gets a 500 and Spring Boot's default body, or worse, a stack trace. The right answer is a 404 with a body every client can parse, built in one place for the whole app.
+When something goes wrong in an API (an order that does not exist, invalid input, a bug), the client should get the right status code and an error body it can understand, and every endpoint should fail the same way. Interviews ask three things here, in this order of frequency: **how do you handle exceptions globally**, **what the three annotations do**, and **what a good error response looks like**.
 
-## 1. Where exceptions are handled in Spring MVC [P0]
+## 1. Global exception handling: one place for all errors [P0]
 
-When a controller method throws, `DispatcherServlet` asks a list of **HandlerExceptionResolvers**, in order, to turn the exception into a response:
+Without any handling, an exception thrown in a controller becomes a 500 with Spring Boot's default body. Copying try-catch blocks into every controller is worse: duplicated, inconsistent, easy to forget.
+
+The standard answer is **one class that handles errors for the whole application**:
 
 ```mermaid
-flowchart TB
-    T["controller or service<br/>throws an exception"] --> R1["ExceptionHandlerExceptionResolver:<br/>@ExceptionHandler methods,<br/>local first, then advice"]
-    R1 -->|"not handled"| R2["ResponseStatusExceptionResolver:<br/>@ResponseStatus,<br/>ResponseStatusException"]
-    R2 -->|"not handled"| R3["DefaultHandlerExceptionResolver:<br/>Spring MVC exceptions<br/>-> 400, 405, 415..."]
-    R3 -->|"still not handled"| E["servlet /error:<br/>BasicErrorController,<br/>500"]
+flowchart LR
+    C["Controller or<br/>service throws<br/>OrderNotFoundException"] --> S["Spring looks for<br/>a matching handler"]
+    S --> A["@RestControllerAdvice<br/>class: the method for<br/>this exception type"]
+    A --> R["404 response with<br/>a clean JSON body"]
 ```
 
-1. `ExceptionHandlerExceptionResolver` looks for an `@ExceptionHandler` method that matches the exception: first in the controller that threw it, then in `@ControllerAdvice` classes.
-2. `ResponseStatusExceptionResolver` handles exceptions annotated with `@ResponseStatus`, and `ResponseStatusException`.
-3. `DefaultHandlerExceptionResolver` maps Spring's own exceptions: a missing parameter becomes 400, a wrong method 405, an unsupported content type 415.
-4. Anything left falls through to the servlet container's error page, which Spring Boot serves through `BasicErrorController` at `/error`, usually as a 500.
-
-Correction: `@ControllerAdvice` only sees exceptions thrown while a controller handles the request. Exceptions thrown in a servlet filter, including Spring Security's 401 and 403, happen before the `DispatcherServlet` and never reach it. Handle those in the filter, or with the security entry point and access-denied handler.
-
-Say it like this: "When a controller throws, DispatcherServlet's exception resolvers try @ExceptionHandler methods first, local then in controller advice, then @ResponseStatus, then Spring's default mappings, and only then the /error fallback."
-
-## 2. @ExceptionHandler, @ControllerAdvice and @RestControllerAdvice [P0]
-
-The three annotations differ only in scope:
-- **`@ExceptionHandler`** marks a method that handles one or more exception types. Inside a controller, it applies to that controller only.
-- **`@ControllerAdvice`** marks a class whose `@ExceptionHandler` (and `@InitBinder`, `@ModelAttribute`) methods apply to all controllers, or to the ones you select.
-- **`@RestControllerAdvice`** is `@ControllerAdvice` + `@ResponseBody`: return values are written as JSON instead of being treated as view names. Use it for REST APIs.
+1. Your code throws an exception that describes the problem, for example `OrderNotFoundException`.
+2. Spring catches it on the way out of the controller and looks for a handler method for that exception type.
+3. The handler lives in a class annotated `@RestControllerAdvice`. It returns the status code and the error body.
 
 ```java
 @RestControllerAdvice
 class ApiErrors {
+
     @ExceptionHandler(OrderNotFoundException.class)
     ProblemDetail notFound(OrderNotFoundException ex) {
-        ProblemDetail p = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        p.setTitle("Order not found");
-        p.setType(URI.create("https://api.example/errors/order-not-found"));
-        p.setProperty("orderId", ex.orderId());
-        return p;
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)            // catch-all: our bug
+    ProblemDetail unexpected(Exception ex) {
+        log.error("Unexpected error", ex);        // full details go to the log
+        return ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 ```
 
 The rules interviewers check:
-- **Local beats global**: an `@ExceptionHandler` inside the controller wins over the advice for that controller.
-- **Most specific type wins**: with handlers for `OrderNotFoundException` and `RuntimeException`, the specific one is chosen.
-- **Several advice classes**: order them with `@Order`. Narrow scope with `@RestControllerAdvice(basePackages = "com.shop.orders")`, `assignableTypes = ...` or `annotations = RestController.class`.
-- **A catch-all**: one `@ExceptionHandler(Exception.class)` returning a generic 500, with the real error logged and a correlation id, never the stack trace.
 
-Say it like this: "@ExceptionHandler handles exceptions for its own controller, @ControllerAdvice applies handlers to all or selected controllers, and @RestControllerAdvice is the same with @ResponseBody, so a REST API puts its handlers there and the most specific, most local handler wins."
+- **The most specific handler wins.** With handlers for `OrderNotFoundException` and `Exception`, a missing order goes to the first one.
+- **Always have a catch-all** for `Exception` that returns a plain 500, logs the real error, and never sends a stack trace to the client.
+- **Services throw business exceptions, not HTTP ones.** `OrderNotFoundException` knows nothing about 404; the advice class decides the status. So the same service works when called from a Kafka consumer or a batch job.
 
-## 3. The error contract: ProblemDetail (RFC 9457) [P0]
+Say it like this: "I create one @RestControllerAdvice class with an @ExceptionHandler method per exception type. Services throw meaningful business exceptions, the advice maps each to a status code and a consistent error body, and a catch-all turns anything unexpected into a 500 while logging the details."
 
-Every endpoint returning a different error shape forces every client to guess. An **error contract** is one documented shape for all errors. The standard is **RFC 9457** "Problem Details for HTTP APIs" (it replaced RFC 7807), served as `application/problem+json`:
+## 2. @ExceptionHandler vs @ControllerAdvice vs @RestControllerAdvice [P0]
+
+The three differ only in **scope**:
+
+- **`@ExceptionHandler`** marks a method that handles certain exception types. If you put it inside a controller, it only handles exceptions from **that controller**.
+- **`@ControllerAdvice`** marks a class whose `@ExceptionHandler` methods apply to **all controllers** (or to a chosen subset, for example `basePackages = "com.shop.orders"`).
+- **`@RestControllerAdvice`** is `@ControllerAdvice` plus `@ResponseBody`: whatever the handler returns is written as JSON. This is the one to use for REST APIs. Plain `@ControllerAdvice` is for apps that render HTML pages.
+
+When two handlers could apply:
+
+- A handler **inside the controller** beats the global advice for that controller.
+- Among global advice classes, `@Order` decides which is checked first.
+
+Say it like this: "@ExceptionHandler is the method that handles an exception; inside a controller it's local to that controller. @ControllerAdvice makes those handlers global, and @RestControllerAdvice is the same plus @ResponseBody, so the return value is serialized as JSON, which is what a REST API needs."
+
+## 3. What a good error response looks like: ProblemDetail [P0]
+
+If every endpoint returns errors in a different shape, every client has to guess. The fix is an **error contract**: one documented shape for all errors. The industry standard is **RFC 9457, "Problem Details for HTTP APIs"** (it replaced RFC 7807), sent with the content type `application/problem+json`:
 
 ```json
 {
-  "type": "https://api.example/errors/order-not-found",
-  "title": "Order not found",
-  "status": 404,
-  "detail": "Order 999 does not exist",
-  "instance": "/orders/999",
-  "orderId": 999,
+  "type": "https://api.example.com/errors/out-of-stock",
+  "title": "Out of stock",
+  "status": 409,
+  "detail": "Only 2 units of SKU 123 are left; you asked for 5",
+  "instance": "/orders",
   "traceId": "4bf92f3577b34da6"
 }
 ```
 
-- `type`: a URI identifying the kind of error; clients switch on it, not on the message.
-- `title`: a short, fixed summary for that type. `detail`: this occurrence. `status`: the HTTP status, repeated in the body.
-- `instance`: which request failed. Anything else is an extension (`orderId`, `traceId`, a list of field errors).
+What each field is for:
 
-Spring 6 / Boot 3 support it natively:
-- `ProblemDetail` is the class; return it from an `@ExceptionHandler`, as above. `setProperty` adds extensions.
-- `spring.mvc.problemdetails.enabled=true` makes Spring's own exceptions (400s, 405s, 415s) use the same format.
-- Or extend `ResponseEntityExceptionHandler` in your advice to customise those built-in cases, and add your own handlers next to them.
-- Exceptions can carry their own response: `ErrorResponseException`, or `ResponseStatusException(HttpStatus.CONFLICT, "...")`.
+- **type**: a stable identifier for the kind of error. Clients write their logic against this, not against the message.
+- **title**: a short, fixed summary of that kind of error.
+- **status**: the HTTP status code, repeated in the body.
+- **detail**: what went wrong in this particular request, readable by a person.
+- **instance**: which request failed.
+- **Extra fields** are allowed: a `traceId` so support can find the log line, or a list of field errors for validation.
 
-Never put stack traces, SQL or class names in the body. Log them with the `traceId`, and return the id so support can find the log line.
+Spring Boot 3 supports this out of the box: handlers return a `ProblemDetail` object (as in section 1), and the property `spring.mvc.problemdetails.enabled=true` makes Spring's own errors (bad JSON, missing parameter, wrong HTTP method) use the same format.
 
-Say it like this: "My error contract is RFC 9457 problem details: type, title, status, detail and instance plus extensions like a trace id, returned as application/problem+json from ProblemDetail in a @RestControllerAdvice."
+Never put stack traces, SQL or internal class names in the body: they help attackers and confuse clients. Log them, and return the trace id instead.
 
-## 4. Where to translate exceptions [P0]
+Say it like this: "Every error uses one contract, RFC 9457 problem details: type, title, status, detail and instance, plus extras like a trace id, as application/problem+json. In Spring Boot 3 my handlers return ProblemDetail, and I enable it for Spring's built-in errors too, so clients see one format everywhere."
 
-A JPA call throws `EmptyResultDataAccessException`, the service wraps it, and the controller builds a 404. Which layer should know about HTTP?
+## 4. Choosing the right status code [P1]
 
-```java
-// Broken: HTTP leaks into the service, and every controller repeats the mapping
-public Order find(long id) {
-    return repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-}
-```
-```java
-// Fixed: the service speaks the domain; one advice maps the domain to HTTP
-public Order find(long id) {
-    return repo.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-}
-// ApiErrors: OrderNotFoundException -> 404, InsufficientStockException -> 409, ...
-```
+The handler's main job is picking the right status. The ones that matter:
 
-- Repositories throw data exceptions (Spring already translates SQL errors into `DataAccessException`).
-- Services throw **domain exceptions** that name the business problem: `OrderNotFoundException`, `InsufficientStockException`. They know nothing about HTTP, so the same service works from a Kafka consumer or a batch job.
-- The **web edge** (one `@RestControllerAdvice`) maps domain exceptions to status codes and the error contract.
+- **400 Bad Request**: the input is malformed or fails validation.
+- **401 Unauthorized**: not logged in or the token is invalid. **403 Forbidden**: logged in but not allowed.
+- **404 Not Found**: the resource does not exist.
+- **409 Conflict**: clashes with the current state (a duplicate, a version conflict, out of stock).
+- **422 Unprocessable Content**: well-formed but breaks a business rule (some teams simply use 400).
+- **500 Internal Server Error**: a bug on our side, never the client's fault.
+
+**Validation errors**: with `@Valid` on a request body, bad input throws `MethodArgumentNotValidException`. Handle it as a 400 that lists each problem field ("email: must be a valid email"), so the client can show it next to the right input.
+
+## 5. What @ControllerAdvice cannot catch [P1]
+
+Correction: "@ControllerAdvice handles every exception in the app." It only sees exceptions thrown while Spring MVC is handling the request, that is inside controllers and the code they call.
+
+Errors raised **before** the request reaches a controller, in servlet filters, are invisible to it. The most important case is Spring Security: its 401 and 403 responses come from the security filter chain. To make them use the same error contract, configure the security **authentication entry point** (for 401) and **access denied handler** (for 403) to write a ProblemDetail body.
+
+Say it like this: "Controller advice only covers exceptions from controllers and the code they call. Security's 401 and 403 happen in filters before that, so I format those through the authentication entry point and access denied handler to keep one error contract."
 
 ![Exceptions translated once, at the web edge](/docs-img/spring-08/layers.svg)
 
-Status codes to get right:
-- 400: malformed or invalid input (including validation). 404: not found. 409: conflict with current state (a duplicate, a version clash). 422: well-formed but breaks a business rule (some teams use 400). 500: our bug, never the client's.
-- 401 and 403 come from security, not from this advice (section 1).
-
-Validation: `@Valid @RequestBody CreateOrder body` throws `MethodArgumentNotValidException` on bad input. Map it to 400 with each field error listed:
-
-```java
-@ExceptionHandler(MethodArgumentNotValidException.class)
-ProblemDetail invalid(MethodArgumentNotValidException ex) {
-    ProblemDetail p = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
-    p.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
-        .map(e -> Map.of("field", e.getField(), "message", e.getDefaultMessage())).toList());
-    return p;
-}
-```
-
-Also asked: checked or unchecked domain exceptions? Unchecked (extending `RuntimeException`): they pass through layers without `throws` clauses, and Spring's `@Transactional` rolls back on unchecked exceptions by default but not on checked ones.
-
-Say it like this: "Services throw domain exceptions with no HTTP in them, and one @RestControllerAdvice at the web edge maps each to a status and a problem-details body, so the same service works from REST, Kafka or a batch job."
-
-**Before the next part:** from memory, draw the resolver chain from a thrown exception to the /error fallback, then write the five standard ProblemDetail fields and a handler mapping a domain exception to 404.
+**Before the next part:** without looking, explain out loud how a missing order becomes a 404 with a ProblemDetail body (who throws, who catches, what is returned), then name the five standard ProblemDetail fields and one error the advice cannot catch.

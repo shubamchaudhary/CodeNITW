@@ -1,144 +1,93 @@
 # Spring Part 11: Filters vs Interceptors, and Where Tenant Resolution Goes
 
-A multi-tenant API must know, on every request, which tenant is calling, and must make sure no request ever sees another tenant's data. You also want request logging, a correlation id and timing. Each of these can live in a servlet filter, a Spring MVC interceptor, or an aspect. Interviewers want to know which runs first, what each can see, and where you would put tenant resolution.
+Both filters and interceptors let you run code on every request without touching each controller: logging, authentication, timing, tenant checks. The interview question is almost always the same: **"Filter vs interceptor: where does each run, and which would you use?"** The common follow-up is **where you would resolve the tenant in a multi-tenant API.**
 
-## 1. The order a request travels [P0]
+## 1. Where each one runs [P0]
 
 ```mermaid
 flowchart LR
-    TC["Tomcat"] --> F["Servlet filters<br/>(incl. Spring<br/>Security chain)"]
-    F --> DS["DispatcherServlet"]
-    DS --> PRE["interceptor<br/>preHandle"]
-    PRE --> C["controller<br/>method"]
-    C --> POST["interceptor<br/>postHandle"]
-    POST --> AC["interceptor<br/>afterCompletion"]
+    TC["Request<br/>arrives"] --> F["Filters<br/>(servlet level,<br/>incl. Spring Security)"]
+    F --> DS["DispatcherServlet<br/>picks the<br/>controller method"]
+    DS --> I["Interceptor<br/>preHandle"]
+    I --> C["Controller"]
+    C --> I2["Interceptor<br/>postHandle,<br/>afterCompletion"]
 ```
 
-1. Tomcat passes the request through every **servlet filter**, in order. Spring Security's whole chain is one of them.
-2. The filters hand it to Spring MVC's `DispatcherServlet`, which picks the controller method (the **handler**).
-3. Each **HandlerInterceptor**'s `preHandle` runs. Returning `false` stops the request there.
-4. The controller method runs.
-5. `postHandle` runs after the controller, if it did not throw.
-6. `afterCompletion` runs at the very end, always, even after an exception.
-7. Control unwinds back out through the filters, which can still touch the response.
+1. A request first passes through the **filters**. They belong to the servlet container (Tomcat), not to Spring MVC. Spring Security is itself a chain of filters.
+2. Then Spring MVC's **DispatcherServlet** decides which controller method will handle the request.
+3. Only now do **interceptors** run, right before the controller.
+4. The controller runs; interceptors get callbacks after it; finally the response travels back out through the filters.
 
-Say it like this: "A request passes the servlet filters, including Spring Security, then DispatcherServlet picks the handler, then interceptors' preHandle, the controller, postHandle and finally afterCompletion, and unwinds back out through the filters."
+The single most important fact: **filters run before Spring knows which controller will handle the request; interceptors run after.** Everything else follows from that.
 
-## 2. Servlet filters [P0]
+Say it like this: "Filters run first, at the servlet level, before Spring MVC; that includes Spring Security. Then DispatcherServlet picks the controller method, and only then do interceptors run, around that controller."
 
-A **filter** (`jakarta.servlet.Filter`) belongs to the servlet container, not to Spring MVC.
+## 2. Filters [P0]
 
-```java
-@Component @Order(1)
-class CorrelationIdFilter extends OncePerRequestFilter {
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws ServletException, IOException {
-        String id = Optional.ofNullable(req.getHeader("X-Request-Id")).orElse(UUID.randomUUID().toString());
-        MDC.put("requestId", id);                 // every log line gets the id
-        res.setHeader("X-Request-Id", id);
-        try { chain.doFilter(req, res); }          // call the rest of the chain
-        finally { MDC.remove("requestId"); }       // clean up: threads are reused
-    }
-}
-```
+A **filter** wraps the whole request. It runs code before passing the request on, and again after the response comes back.
 
-What a filter can and cannot do:
-- It sees **every** request: static files, error dispatches, requests no controller handles.
-- It sees the raw request and response, and can **wrap** them (for example `ContentCachingRequestWrapper`, to log a body that can otherwise be read only once) or replace them.
-- It runs code before and after the rest of the chain, around `chain.doFilter`.
-- It does **not** know which controller method will run.
-- Its exceptions do not reach `@ControllerAdvice`; it must write the error response itself.
+What a filter can do:
 
-Registration: a `@Component` filter applies to all URLs. For URL patterns and order, use a `FilterRegistrationBean`. `OncePerRequestFilter` guarantees one run per request, even when the request is forwarded or dispatched again.
+- See **every** request, including static files, error pages and URLs no controller handles.
+- Read and change the **raw** request and response, even replace them with wrappers (for example, to log a request body that can otherwise only be read once).
+- Stop a request completely (for example, reject a missing or invalid token).
 
-Use filters for cross-cutting work that is not about Spring MVC: authentication, CORS, correlation ids, request and response logging, compression, rate limiting.
+What it cannot do:
 
-Say it like this: "A filter is a servlet-level component that sees every request and the raw request and response, can wrap them and run code around the whole chain, but doesn't know which controller will handle the request."
+- Know which controller method will run, or read its annotations.
+- Rely on `@ControllerAdvice`: an exception thrown in a filter never reaches it, so the filter must write its own error response.
 
-## 3. HandlerInterceptors [P0]
+Typical uses: **authentication, CORS, correlation or request ids, request and response logging, rate limiting, compression.**
 
-A **HandlerInterceptor** belongs to Spring MVC and runs after `DispatcherServlet` has chosen the handler.
+In Spring Boot you usually extend `OncePerRequestFilter`, which guarantees the filter runs once per request even if the request is forwarded internally. Any filter that stores something per request (an id, a tenant) must clean it up in a `finally` block, because servlet threads are reused.
 
-```java
-class AuditInterceptor implements HandlerInterceptor {
-    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) {
-        if (handler instanceof HandlerMethod hm && hm.hasMethodAnnotation(Audited.class)) {
-            req.setAttribute("start", System.nanoTime());
-        }
-        return true;                                    // false = stop here
-    }
-    public void afterCompletion(HttpServletRequest req, HttpServletResponse res, Object handler, Exception ex) {
-        // log duration, status and ex; runs even if the controller threw
-    }
-}
+## 3. Interceptors [P0]
 
-@Configuration
-class WebConfig implements WebMvcConfigurer {
-    public void addInterceptors(InterceptorRegistry reg) {
-        reg.addInterceptor(new AuditInterceptor()).addPathPatterns("/api/**").excludePathPatterns("/api/health");
-    }
-}
-```
+An **interceptor** (`HandlerInterceptor`) belongs to Spring MVC. Because it runs after the controller method is chosen, it **knows which method will run**, including its annotations. That is its whole reason to exist.
 
-- `preHandle(req, res, handler)`: before the controller. The `handler` is usually a `HandlerMethod`, so you can read the method's annotations: the main thing a filter cannot do.
-- `postHandle(..., ModelAndView)`: after the controller, before the view renders. Skipped if the controller threw. For `@ResponseBody` / REST controllers the body is already written, so changing the response here is too late.
-- `afterCompletion(..., Exception ex)`: always runs, with the exception if any. The place for cleanup and timing.
+It has three methods:
 
-Use interceptors for work that depends on the handler: checks driven by custom annotations, per-endpoint audit, locale or feature flags tied to controllers.
+- **preHandle**: runs before the controller. Returning `false` stops the request. This is where you check things that depend on the controller, for example "this method is annotated `@AdminOnly`, is the caller an admin?".
+- **postHandle**: runs after the controller, **only if it did not throw**.
+- **afterCompletion**: runs at the very end, **always**, even after an exception. Use it for timing and cleanup.
 
-Also asked: **AOP aspects** (`@Around`) run around Spring bean methods, any layer, with the method's arguments. Use them for logging or metrics on service methods, not for request-level concerns.
+You register interceptors in a `WebMvcConfigurer` and can limit them to URL patterns, such as only `/api/**`.
 
-Correction: "an interceptor can modify the response body in postHandle." For REST controllers the body has already been written by then. Use `ResponseBodyAdvice` to change a body before it is written, or a filter with a response wrapper.
+Typical uses: **checks driven by custom annotations, per-endpoint auditing, timing per controller method.**
 
-Say it like this: "An interceptor is Spring MVC's hook after the handler is chosen: preHandle can read the controller method and its annotations, postHandle is skipped on exceptions and too late for REST bodies, and afterCompletion always runs for cleanup."
+Correction: "postHandle can change the response body." For REST controllers the JSON body has already been written by the time postHandle runs. To change a body before it is written, use `ResponseBodyAdvice`; to transform raw responses, use a filter.
 
-## 4. Choosing between them [P0]
+## 4. Which one would you use? [P0]
 
-- Needs to see every request, or wrap the raw request or response, or must run before Spring Security: a **filter**.
-- Needs to know which controller method runs, or its annotations: an **interceptor**.
-- Needs the method's arguments, in any layer: an **aspect**.
+The rule of thumb:
 
-The usual examples: authentication, CORS, correlation id and body logging go in filters; annotation-driven checks and per-handler audit go in interceptors.
+- If it must apply to **every request**, needs the **raw request or response**, or must run **before Spring Security**: use a **filter**.
+- If it depends on **which controller method** runs or its **annotations**: use an **interceptor**.
 
-Say it like this: "I put anything that must see every raw request, like auth, CORS or correlation ids, in a filter, and anything that depends on the controller method or its annotations in an interceptor."
+A third option interviewers sometimes add: an **AOP aspect** wraps any Spring bean's methods (services, repositories) and sees their arguments. It has nothing to do with HTTP. Use it for things like logging or metrics on service methods. `@Transactional` itself works this way.
 
-## 5. Where tenant resolution goes [P0]
+Say it like this, the full answer: "A filter is a servlet-level component that runs before DispatcherServlet on every request and sees the raw request and response, so I use filters for authentication, CORS, correlation ids and logging. An interceptor is Spring MVC's hook that runs after the controller method is chosen, so it can read the method and its annotations; I use it for annotation-driven checks and per-endpoint auditing. Its preHandle can stop the request, postHandle is skipped on exceptions, and afterCompletion always runs. If I need to wrap service methods regardless of HTTP, that's an aspect."
 
-Each request must carry a tenant, and every query must be scoped to it. The design most teams use:
+## 5. Where tenant resolution goes [P1]
+
+In a multi-tenant API every request belongs to one customer company (a **tenant**), and no request may ever see another tenant's data. The answer is a **filter, placed right after authentication**:
 
 ![Tenant resolution in a filter, after authentication](/docs-img/spring-11/tenant.svg)
 
-1. Spring Security's authentication filter validates the JWT first.
-2. A `TenantFilter`, placed **after** authentication in the security chain, reads the tenant: from the token's `tenant_id` claim (trusted, signed), or from a header such as `X-Tenant-ID` that it **checks against** the claim, never trusting the header alone.
-3. It stores the tenant in a `ThreadLocal` holder, `TenantContext`, and puts it in the logging `MDC`.
-4. Repositories or Hibernate's multi-tenancy (`CurrentTenantIdentifierResolver`) read `TenantContext` to pick the schema or add `tenant_id = ?` to queries.
-5. In a `finally` block, the filter clears `TenantContext`.
+1. Spring Security's filter validates the user's token first.
+2. A **tenant filter** runs next. It reads the tenant from the **verified token** (a `tenant_id` claim). If the client also sends a tenant header, the filter only accepts it when it matches the token; a header alone can be faked.
+3. It stores the tenant in a request-scoped holder, usually a `ThreadLocal`, so the data layer can scope every query to that tenant.
+4. In a `finally` block it **clears** the holder.
 
-```java
-class TenantFilter extends OncePerRequestFilter {
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws ServletException, IOException {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String tenant = jwt.getClaimAsString("tenant_id");
-        String asked = req.getHeader("X-Tenant-ID");
-        if (asked != null && !asked.equals(tenant)) { res.sendError(403); return; }
-        TenantContext.set(tenant);
-        try { chain.doFilter(req, res); }
-        finally { TenantContext.clear(); }
-    }
-}
+Why a filter and not an interceptor: the tenant must be known before anything touches data, and it does not depend on which controller runs.
 
-http.addFilterAfter(new TenantFilter(), BearerTokenAuthenticationFilter.class);
-```
+The follow-up questions on this design:
 
-Why a filter and not an interceptor: the tenant must be set before anything else touches data, including other filters, and it does not depend on which controller runs. An interceptor is fine only when tenant rules depend on controller annotations.
+- **Why clear it in finally?** Tomcat reuses threads. Without clearing, the next request on the same thread, possibly from a different tenant, would inherit the old tenant: a data leak between customers.
+- **What about async work?** `@Async` methods and thread pools run on other threads, which do not see the `ThreadLocal`. The tenant must be copied to the worker thread explicitly (for example with a task decorator on the executor) and cleared afterwards.
+- **What about Kafka consumers or batch jobs?** There is no HTTP request, so the tenant travels in the message (a header) and the listener sets and clears it itself.
+- **Is the filter enough?** For defence in depth, the database also enforces it: row-level security or a schema per tenant, so one forgotten condition in a query cannot leak data.
 
-The follow-ups on this design:
-- **Why clear in `finally`?** Tomcat reuses threads. Without clearing, the next request on that thread, from another tenant, would see the old tenant: a data leak between tenants.
-- **Async work**: `@Async` methods and `CompletableFuture` run on other threads, which do not see the `ThreadLocal`. Copy the tenant with a `TaskDecorator` on the executor, and clear it afterwards.
-- **Kafka consumers and batch jobs** have no HTTP request. Carry the tenant in a message header and set `TenantContext` in the listener, in a try-finally.
-- **Defence in depth**: also enforce the tenant in the database, with PostgreSQL row-level security or a schema per tenant, so one forgotten `where` clause cannot leak data.
+Say it like this: "I resolve the tenant in a filter right after authentication, from the signed token's claim, cross-checking any tenant header. I store it in a ThreadLocal that the data layer uses to scope queries, and clear it in finally because threads are reused. Async work and message consumers set the tenant explicitly, and the database enforces isolation as a second line of defence."
 
-Say it like this: "I resolve the tenant in a filter right after authentication, from the signed JWT claim, cross-checking any tenant header, store it in a ThreadLocal used by the data layer, and clear it in finally because threads are reused; async work and Kafka listeners set it explicitly."
-
-**Before the next part:** from memory, draw a request from Tomcat through the filters, DispatcherServlet and the three interceptor methods, then draw the tenant filter's position in the security chain and say why it must clear the ThreadLocal.
+**Before the next part:** without looking, draw a request going through filters, DispatcherServlet, the interceptor's three methods and the controller, then answer "filter vs interceptor" out loud in under a minute, and say why the tenant filter must clear its ThreadLocal.
