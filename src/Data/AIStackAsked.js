@@ -846,5 +846,141 @@ export const AI_STACK_ASKED = {
         "a": "Compile the graph once at startup; Postgres checkpointer and store so any instance can continue any thread; thread ids issued by my system and tied to the user; serve it from FastAPI streaming SSE (or the Agent Server, which adds background runs, queues and double-texting handling); caps on loops, tokens, cost and tool timeouts; LangSmith or OpenTelemetry tracing; and evals on whole trajectories before each release."
       }
     ]
+  },
+  "DP-01": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Where do you enforce document permissions in a RAG system, and why there?",
+        "a": "Inside the retrieval query: every chunk carries its tenant id and allowed groups, and the search filters on the caller's tenant and groups before ranking. Post-filtering after top-k can return zero results or leak through summaries, and asking the model to respect permissions is not a control. Groups are resolved from the identity provider and cached briefly; permission changes update chunk ACL metadata without re-embedding."
+      },
+      {
+        "q": "How do you keep the index fresh when source documents change or are deleted?",
+        "a": "Each connector syncs incrementally (webhooks or change cursors, with a periodic full reconciliation). Documents are keyed by (tenant, source, doc id) with a version or content hash; a changed document is re-chunked and upserted, its old chunks deleted in the same job; a deleted document removes all its chunks. Jobs are idempotent so retries are safe, and freshness lag is a monitored metric."
+      },
+      {
+        "q": "Answers are fluent but sometimes cite the wrong document. How do you debug it?",
+        "a": "Split retrieval from generation: check recall@k and the reranker on the failing questions (was the right chunk retrieved and ranked high?), then groundedness and citation accuracy (did the answer stick to and cite what it used?). Common causes: stale or duplicate versions in the index, chunks without enough context (add titles and section headers), or citations assigned after the fact instead of by chunk id."
+      }
+    ]
+  },
+  "DP-02": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you stop the agent refunding the wrong order or the wrong amount?",
+        "a": "The refund tool does not trust the model: it reads the order from the database using the session's customer id, checks the order belongs to them, recomputes the refundable amount from policy, and rejects mismatches. Amounts above a threshold need human approval. The call carries an idempotency key so a retry cannot refund twice, and the result is verified against the payment system before the agent tells the customer."
+      },
+      {
+        "q": "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
+        "a": "The workflow checkpoints its state and pauses at an approval step; the request goes to an approval queue with the proposed action and evidence. The customer gets a status message. When the manager decides, the run resumes from the checkpoint (on any server), executes the approved action idempotently and notifies the customer. Timeouts escalate or expire the request."
+      },
+      {
+        "q": "How would you measure whether the support agent is good?",
+        "a": "Outcome metrics on real traffic: resolution rate without human escalation, reopened tickets, customer rating, wrong-action rate from audits. Offline: scripted scenarios in a sandbox graded on end state and trajectory rules (read before write, approval above limit), reported as pass^k. Plus cost and latency per resolved ticket."
+      }
+    ]
+  },
+  "DP-03": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you stream responses, and what happens if the user disconnects mid-answer?",
+        "a": "The client opens an SSE connection; the server calls the model with streaming on and forwards each token event. The server accumulates the text and persists the final assistant message when the stream completes. On disconnect it can either stop generation (save cost) and store a partial message, or finish in the background and store it so a refresh shows the full answer; the choice is a product decision. Stop buttons send a cancel that aborts the upstream request."
+      },
+      {
+        "q": "A conversation has 300 turns. What goes into the next model call?",
+        "a": "A budgeted context: system prompt, a rolling summary of older turns, the last N turns verbatim, and any retrieved long-term memories or files relevant to the new message. When the budget is exceeded, older turns are folded into the summary. The full history stays in the database; only the context sent to the model is trimmed."
+      },
+      {
+        "q": "How do you rate-limit an LLM chat product fairly?",
+        "a": "By tokens, not just requests: a token bucket per user and plan that counts input plus output tokens, checked before the call (with an estimate) and settled after. Plus concurrency limits per user, a global budget per model to stay under provider limits, and stricter limits for anonymous or suspicious accounts."
+      }
+    ]
+  },
+  "DP-04": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How does the agent understand a codebase too large for the context window?",
+        "a": "By searching instead of reading everything: tools for file listing, text and symbol search, reading specific ranges, and optionally semantic search over code chunks. It keeps notes or a plan in its state, and summaries of explored areas, so the context holds only what is relevant to the current step."
+      },
+      {
+        "q": "How do you run model-generated code safely?",
+        "a": "In a sandbox: an isolated container or microVM per task with CPU, memory and time limits, a copy of the repo, no production credentials, and network egress blocked or allow-listed. The sandbox is destroyed after the task. Changes leave the sandbox only as a diff for human review."
+      },
+      {
+        "q": "How do you know the coding agent works?",
+        "a": "A benchmark of real tasks from your repos with hidden tests: run each task in a fresh sandbox several times, grade by whether the tests pass and the diff is acceptable, report pass@1 and pass^k, steps and cost per solved task, and track failure categories (wrong file, broke other tests, looped)."
+      }
+    ]
+  },
+  "DP-05": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "Why put a gateway in front of LLM providers instead of calling them directly?",
+        "a": "Central control of things every team needs: keys stay in one place, per-tenant quotas and budgets, routing and fallback across providers, caching, PII redaction, and one stream of usage and cost records for chargeback and debugging. It also lets you change providers or models without changing every product."
+      },
+      {
+        "q": "How do you implement per-tenant token limits?",
+        "a": "A token bucket per tenant (and per API key) in Redis: before the call, reserve an estimate of input plus max output tokens with an atomic script; after the call, settle the real usage. Requests over the limit get 429 with retry-after. Monthly budgets are tracked from the usage records and enforced with soft and hard thresholds."
+      },
+      {
+        "q": "What is semantic caching, and when is it dangerous?",
+        "a": "Caching a response under an embedding of the prompt and returning it for new prompts whose embedding is close enough. It saves cost on repeated questions but can return a wrong answer for a question that is similar but different, or leak one user's answer to another. Use it only for non-personal, stable content, scope the cache per tenant, include model and prompt version in the key, and prefer exact-match and provider prompt caching first."
+      }
+    ]
+  },
+  "DP-06": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you make a million-document LLM job resumable and safe to retry?",
+        "a": "Persist the job as work items with statuses (pending, running, done, failed). Workers claim items with a lease, write results with an upsert keyed by (job id, item id, prompt version), then mark done. A crash leaves leases that expire and items get re-claimed; idempotent writes make the repeat harmless. Restarting the job simply processes items not marked done."
+      },
+      {
+        "q": "The provider allows 2M tokens per minute. How do you design the throughput?",
+        "a": "Estimate tokens per item (input plus output) to compute items per minute, then pace workers with a shared token-bucket limiter (in Redis) sized below the limit, with concurrency to match latency. Handle 429s with exponential backoff and jitter. If the job is not urgent, use the provider's batch API, which has separate higher limits and lower cost."
+      },
+      {
+        "q": "How do you know the extractions are correct across a million documents?",
+        "a": "Validate every output against a schema and business rules (types, ranges, required fields) and route failures to retry or review. Measure quality on a stratified random sample with a calibrated judge or human review per document type, track field-level accuracy, and block the release of results if a slice falls below its threshold."
+      }
+    ]
+  },
+  "DP-07": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you stop text-to-SQL from running something dangerous or leaking data?",
+        "a": "The model never connects to the database directly. Generated SQL is parsed with a SQL parser: only SELECT, only allow-listed schemas and tables, no multiple statements. It runs as a read-only database role that has the analyst's own permissions and row-level security, with a statement timeout, a row limit and a cost check. Results are logged with the question and the SQL."
+      },
+      {
+        "q": "How does the model know which tables to use in a huge warehouse?",
+        "a": "Retrieval over a semantic layer: table and column descriptions, business definitions (what 'active user' means), known join paths and verified example question-SQL pairs, embedded and searched per question. Only the top tables and their relevant columns go into the prompt. Curated metric definitions beat raw schema dumps."
+      },
+      {
+        "q": "How do you evaluate a text-to-SQL system?",
+        "a": "Execution accuracy on a test set of real analyst questions with reference SQL: execute both on a fixed snapshot and compare result sets (order-insensitive where appropriate). Add checks for valid SQL rate, clarifying-question rate on ambiguous questions, latency and cost, and slice by domain and difficulty. String-matching SQL is wrong, since many queries are equivalent."
+      }
+    ]
+  },
+  "DP-08": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you decide which extracted fields a human must review?",
+        "a": "Route by risk: fields that fail validation rules (format, cross-field consistency, mismatch with an external source), fields with low confidence (model self-reported plus agreement checks such as two extraction passes or OCR confidence), and all fields of high-impact types for new customers or document formats. Thresholds are tuned on labelled data to hit a target error rate, and reviewer corrections feed the eval set."
+      },
+      {
+        "q": "Why a workflow engine for document processing instead of a chain of queue consumers?",
+        "a": "The process has many steps, long waits (human review, external lookups), retries per step and a need for an audit trail. A durable workflow keeps the state of each case, retries steps independently, resumes after crashes and shows where each case is. Chained consumers can work but spread the state across queues and make timeouts, compensation and visibility harder."
+      },
+      {
+        "q": "How do you deliver results reliably to the customer's system?",
+        "a": "Write the final report and an outbox event in the same database transaction; a dispatcher sends a signed webhook (HMAC with timestamp) with retries and backoff, and the customer deduplicates by event id because delivery is at-least-once. Customers can also fetch results by API, and failed deliveries are visible and replayable."
+      }
+    ]
   }
 };
