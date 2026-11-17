@@ -83,11 +83,13 @@ export const STACKS = {
       label: s.label,
       topics: AI_STACK_TOPICS.filter((t) => t.section === s.key),
     })),
-    filters: ["P0", "P1", "P2"],
-    matchFilter: (topic, f) => topic.priority === f,
-    tag: (topic) => ({ label: topic.priority, cls: PRIORITY_TEXT[topic.priority] || "text-gray-400" }),
+    // Since 2026-11-18 every AI Stack topic is essential: no priority filter,
+    // no tags, and no summary under the title (the chapter opens itself).
+    filters: null,
+    matchFilter: () => true,
+    tag: () => null,
     eyebrow: (topic) => topic.sectionLabel,
-    summary: (topic) => topic.why,
+    summary: () => null,
     planItem: aiStackPlanItem,
     daysSinceDone: aiStackDaysSinceChecked,
     accent: {
