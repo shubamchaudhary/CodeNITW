@@ -2344,7 +2344,7 @@ export const ASKED = {
     ]
   },
   "SPRING-04": {
-    "posts": 29,
+    "posts": 77,
     "items": [
       {
         "q": "Optimistic vs pessimistic locking in JPA — when do you use each?",
@@ -2365,113 +2365,6 @@ export const ASKED = {
           "Oracle"
         ]
       },
-      {
-        "q": "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
-        "a": "- **JPA**: the specification (annotations, `EntityManager`, JPQL).\n- **Hibernate**: the most common JPA **implementation** (plus extras).\n- **Spring Data JPA**: repositories on top — `interface OrderRepo extends JpaRepository<Order, Long>` with derived queries — so you write almost no DAO code.\n\nWhy an ORM: maps rows ↔ objects, dirty checking, caching, portable queries. Cost: hidden queries (N+1) — you must still understand the SQL.",
-        "n": 7,
-        "companies": [
-          "Lenovo",
-          "Mastercard",
-          "Nike",
-          "Rakuten Symphony",
-          "Truemeds",
-          "Visa"
-        ]
-      },
-      {
-        "q": "EntityManager vs CrudRepository vs JpaRepository?",
-        "a": "- `EntityManager` — the raw JPA API (`persist`, `find`, `merge`, queries).\n- `CrudRepository` — Spring Data: save/find/delete/count.\n- `PagingAndSortingRepository` — adds `Pageable`/`Sort`.\n- `JpaRepository` — adds JPA specifics: `flush`, `saveAndFlush`, batch deletes, `getReferenceById`.\n\nUse `JpaRepository`; drop to `EntityManager` for complex or bulk operations.",
-        "n": 2,
-        "companies": [
-          "Visa"
-        ]
-      },
-      {
-        "q": "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
-        "a": "Entity states: **new** → **managed** (in the persistence context) → **detached** (context closed) → **removed**.\n\n- Managed entities are **dirty-checked**: change a field inside a transaction and Hibernate issues the UPDATE at flush/commit — no `save()` needed.\n- `save()` = `persist` for new entities, `merge` for detached ones. It doesn't hit the DB immediately.\n- `saveAndFlush()` forces the SQL now (useful to surface constraint errors early).\n- `merge` copies a detached object's state onto a managed copy and returns **that** copy.\n\nThe persistence context is the first-level cache: the same id is loaded once per transaction.",
-        "n": 1,
-        "companies": [
-          "Target"
-        ]
-      },
-      {
-        "q": "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?",
-        "a": "- **Dialect**: tells Hibernate which SQL flavour to generate (auto-detected in Boot 3).\n- `spring.jpa.hibernate.ddl-auto`: `validate` in prod (schema managed by Flyway/Liquibase), `update`/`create-drop` only locally.\n- See the SQL: `spring.jpa.show-sql=true` or `logging.level.org.hibernate.SQL=debug` (+ bind parameters) — the first thing to switch on when hunting N+1.",
-        "n": 1,
-        "companies": [
-          "Mastercard"
-        ]
-      },
-      {
-        "q": "JDBC vs Hibernate — why use an ORM, and when would you still drop to plain JDBC (JdbcTemplate)?",
-        "a": "- **JDBC / `JdbcTemplate`**: you write the SQL; `JdbcTemplate` removes the boilerplate (connections, `PreparedStatement`, closing, exception translation) and maps rows with a `RowMapper`. Full control, no hidden queries.\n- **ORM (JPA/Hibernate)**: maps rows ↔ objects, dirty checking, L1 cache, relationships, portable JPQL — far less code for CRUD-heavy domains.\n\nReach for `JdbcTemplate` (or `JdbcClient` in Boot 3.2+) for reporting, bulk writes and hand-tuned SQL; both can live in one app and share the same `DataSource` and `@Transactional`.",
-        "n": 2,
-        "companies": [
-          "Walmart",
-          "Fortinet"
-        ]
-      },
-      {
-        "q": "First-level vs second-level cache in Hibernate — when does L2 help or hurt?",
-        "a": "- **L1**: the persistence context — per transaction/session, always on. Same id → same object, one SELECT.\n- **L2**: shared across sessions (Ehcache, Caffeine, Redis via a provider), opt-in per entity with `@Cacheable` + a concurrency strategy.\n\nL2 helps for **read-mostly reference data** (countries, product catalogue). It hurts for frequently-updated data (invalidation churn) and with **multiple instances** unless the cache is distributed or invalidated across nodes. The query cache is usually a trap — any write to the table invalidates it.",
-        "n": 0,
-        "companies": []
-      }
-    ]
-  },
-  "SPRING-07": {
-    "posts": 10,
-    "items": [
-      {
-        "q": "One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)?",
-        "a": "The **owning side** holds the foreign key and is the one Hibernate reads when writing; the other side says `mappedBy`:\n\n```java\n@Entity class Order {\n  @OneToMany(mappedBy = \"order\", cascade = ALL, orphanRemoval = true)\n  List<OrderLine> lines = new ArrayList<>();\n}\n@Entity class OrderLine {\n  @ManyToOne(fetch = LAZY) @JoinColumn(name = \"order_id\")   // owning side\n  Order order;\n}\n```\n\nFor one-to-one, the side with the FK column owns it; `@MapsId` shares the primary key. Bidirectional pairs serialised to JSON recurse forever — return DTOs.",
-        "n": 8,
-        "companies": [
-          "Blinkit",
-          "Target",
-          "Urban Company",
-          "VMware",
-          "Yes Madam",
-          "Zomato"
-        ]
-      },
-      {
-        "q": "What is cascade in JPA — which cascade types are safe?",
-        "a": "Cascade passes an operation from parent to children: `CascadeType.PERSIST`, `MERGE`, `REMOVE`, `REFRESH`, `DETACH`, `ALL`.\n\nUse cascading only for real **ownership** (Order → OrderLines). `CascadeType.ALL`/`REMOVE` on a `@ManyToOne` or `@ManyToMany` can delete shared data (delete one order, lose the customer).\n\n`orphanRemoval = true` deletes a child when it's removed from the parent's collection — different from `REMOVE`, which only fires when the parent is deleted.",
-        "n": 2,
-        "companies": [
-          "EPAM"
-        ]
-      }
-    ]
-  },
-  "SPRING-22": {
-    "posts": 4,
-    "items": [
-      {
-        "q": "How do you model a many-to-many relationship (e.g. Person ↔ Job)?",
-        "a": "```java\n@ManyToMany\n@JoinTable(name = \"person_job\", joinColumns = @JoinColumn(name = \"person_id\"),\n           inverseJoinColumns = @JoinColumn(name = \"job_id\"))\nSet<Job> jobs = new HashSet<>();\n```\n\nUse a `Set`, never cascade REMOVE. As soon as the link needs its own data (applied_at, status) — and it usually does — replace it with an explicit **join entity** (`Application` with two `@ManyToOne`s).",
-        "n": 3,
-        "companies": [
-          "Microsoft",
-          "Paytm",
-          "eBay"
-        ]
-      },
-      {
-        "q": "Which side should own a one-to-many — and why keep collections in sync?",
-        "a": "Make the **`@ManyToOne` (child) side the owner** — the FK lives in the child table. A unidirectional `@OneToMany` without `mappedBy` makes Hibernate create a join table and extra UPDATEs.\n\nIn a bidirectional pair, set both sides in a helper:\n\n```java\nvoid addLine(OrderLine l) { lines.add(l); l.setOrder(this); }\n```\n\nDefault fetch: `@ManyToOne`/`@OneToOne` are **EAGER** — set them to `LAZY`; collections are lazy already.",
-        "n": 2,
-        "companies": [
-          "Target",
-          "eBay"
-        ]
-      }
-    ]
-  },
-  "SPRING-20": {
-    "posts": 34,
-    "items": [
       {
         "q": "Lazy vs eager loading — and what causes LazyInitializationException?",
         "a": "- **Lazy**: load the association only when it's accessed (Hibernate puts a proxy there).\n- **Eager**: load it with the parent every time.\n\n`LazyInitializationException`: the transaction/session has closed, then something touches a lazy field — classically Jackson serialising an entity in the controller.\n\nFix: fetch what you need inside the service (`JOIN FETCH`/entity graph) and return **DTOs**. Leaving `spring.jpa.open-in-view` on hides the error by keeping the session open for the whole request — and holds a DB connection that long.",
@@ -2521,6 +2414,42 @@ export const ASKED = {
         ]
       },
       {
+        "q": "One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)?",
+        "a": "The **owning side** holds the foreign key and is the one Hibernate reads when writing; the other side says `mappedBy`:\n\n```java\n@Entity class Order {\n  @OneToMany(mappedBy = \"order\", cascade = ALL, orphanRemoval = true)\n  List<OrderLine> lines = new ArrayList<>();\n}\n@Entity class OrderLine {\n  @ManyToOne(fetch = LAZY) @JoinColumn(name = \"order_id\")   // owning side\n  Order order;\n}\n```\n\nFor one-to-one, the side with the FK column owns it; `@MapsId` shares the primary key. Bidirectional pairs serialised to JSON recurse forever — return DTOs.",
+        "n": 8,
+        "companies": [
+          "Blinkit",
+          "Target",
+          "Urban Company",
+          "VMware",
+          "Yes Madam",
+          "Zomato"
+        ]
+      },
+      {
+        "q": "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
+        "a": "- **JPA**: the specification (annotations, `EntityManager`, JPQL).\n- **Hibernate**: the most common JPA **implementation** (plus extras).\n- **Spring Data JPA**: repositories on top — `interface OrderRepo extends JpaRepository<Order, Long>` with derived queries — so you write almost no DAO code.\n\nWhy an ORM: maps rows ↔ objects, dirty checking, caching, portable queries. Cost: hidden queries (N+1) — you must still understand the SQL.",
+        "n": 7,
+        "companies": [
+          "Lenovo",
+          "Mastercard",
+          "Nike",
+          "Rakuten Symphony",
+          "Truemeds",
+          "Visa"
+        ]
+      },
+      {
+        "q": "How do you model a many-to-many relationship (e.g. Person ↔ Job)?",
+        "a": "```java\n@ManyToMany\n@JoinTable(name = \"person_job\", joinColumns = @JoinColumn(name = \"person_id\"),\n           inverseJoinColumns = @JoinColumn(name = \"job_id\"))\nSet<Job> jobs = new HashSet<>();\n```\n\nUse a `Set`, never cascade REMOVE. As soon as the link needs its own data (applied_at, status) — and it usually does — replace it with an explicit **join entity** (`Application` with two `@ManyToOne`s).",
+        "n": 3,
+        "companies": [
+          "Microsoft",
+          "Paytm",
+          "eBay"
+        ]
+      },
+      {
         "q": "Derived queries vs JPQL vs native SQL — how do you write complex queries in JPA?",
         "a": "- **Derived**: `findByStatusAndCreatedAtAfter(...)` — fine for simple filters; unreadable past ~3 conditions.\n- **JPQL** with `@Query(\"select o from Order o where …\")` — entity-based, portable.\n- **Native** `@Query(nativeQuery = true)` — DB-specific features (window functions, `ON CONFLICT`, JSONB), returns rows/projections.\n- Dynamic filters: Specifications / Criteria / Querydsl.\n\nReturn **projections** (interfaces or DTO constructor expressions) for read paths instead of full entities.",
         "n": 3,
@@ -2529,6 +2458,62 @@ export const ASKED = {
           "Publicis Sapient",
           "Rakuten Symphony"
         ]
+      },
+      {
+        "q": "EntityManager vs CrudRepository vs JpaRepository?",
+        "a": "- `EntityManager` — the raw JPA API (`persist`, `find`, `merge`, queries).\n- `CrudRepository` — Spring Data: save/find/delete/count.\n- `PagingAndSortingRepository` — adds `Pageable`/`Sort`.\n- `JpaRepository` — adds JPA specifics: `flush`, `saveAndFlush`, batch deletes, `getReferenceById`.\n\nUse `JpaRepository`; drop to `EntityManager` for complex or bulk operations.",
+        "n": 2,
+        "companies": [
+          "Visa"
+        ]
+      },
+      {
+        "q": "JDBC vs Hibernate — why use an ORM, and when would you still drop to plain JDBC (JdbcTemplate)?",
+        "a": "- **JDBC / `JdbcTemplate`**: you write the SQL; `JdbcTemplate` removes the boilerplate (connections, `PreparedStatement`, closing, exception translation) and maps rows with a `RowMapper`. Full control, no hidden queries.\n- **ORM (JPA/Hibernate)**: maps rows ↔ objects, dirty checking, L1 cache, relationships, portable JPQL — far less code for CRUD-heavy domains.\n\nReach for `JdbcTemplate` (or `JdbcClient` in Boot 3.2+) for reporting, bulk writes and hand-tuned SQL; both can live in one app and share the same `DataSource` and `@Transactional`.",
+        "n": 2,
+        "companies": [
+          "Walmart",
+          "Fortinet"
+        ]
+      },
+      {
+        "q": "What is cascade in JPA — which cascade types are safe?",
+        "a": "Cascade passes an operation from parent to children: `CascadeType.PERSIST`, `MERGE`, `REMOVE`, `REFRESH`, `DETACH`, `ALL`.\n\nUse cascading only for real **ownership** (Order → OrderLines). `CascadeType.ALL`/`REMOVE` on a `@ManyToOne` or `@ManyToMany` can delete shared data (delete one order, lose the customer).\n\n`orphanRemoval = true` deletes a child when it's removed from the parent's collection — different from `REMOVE`, which only fires when the parent is deleted.",
+        "n": 2,
+        "companies": [
+          "EPAM"
+        ]
+      },
+      {
+        "q": "Which side should own a one-to-many — and why keep collections in sync?",
+        "a": "Make the **`@ManyToOne` (child) side the owner** — the FK lives in the child table. A unidirectional `@OneToMany` without `mappedBy` makes Hibernate create a join table and extra UPDATEs.\n\nIn a bidirectional pair, set both sides in a helper:\n\n```java\nvoid addLine(OrderLine l) { lines.add(l); l.setOrder(this); }\n```\n\nDefault fetch: `@ManyToOne`/`@OneToOne` are **EAGER** — set them to `LAZY`; collections are lazy already.",
+        "n": 2,
+        "companies": [
+          "Target",
+          "eBay"
+        ]
+      },
+      {
+        "q": "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
+        "a": "Entity states: **new** → **managed** (in the persistence context) → **detached** (context closed) → **removed**.\n\n- Managed entities are **dirty-checked**: change a field inside a transaction and Hibernate issues the UPDATE at flush/commit — no `save()` needed.\n- `save()` = `persist` for new entities, `merge` for detached ones. It doesn't hit the DB immediately.\n- `saveAndFlush()` forces the SQL now (useful to surface constraint errors early).\n- `merge` copies a detached object's state onto a managed copy and returns **that** copy.\n\nThe persistence context is the first-level cache: the same id is loaded once per transaction.",
+        "n": 1,
+        "companies": [
+          "Target"
+        ]
+      },
+      {
+        "q": "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?",
+        "a": "- **Dialect**: tells Hibernate which SQL flavour to generate (auto-detected in Boot 3).\n- `spring.jpa.hibernate.ddl-auto`: `validate` in prod (schema managed by Flyway/Liquibase), `update`/`create-drop` only locally.\n- See the SQL: `spring.jpa.show-sql=true` or `logging.level.org.hibernate.SQL=debug` (+ bind parameters) — the first thing to switch on when hunting N+1.",
+        "n": 1,
+        "companies": [
+          "Mastercard"
+        ]
+      },
+      {
+        "q": "First-level vs second-level cache in Hibernate — when does L2 help or hurt?",
+        "a": "- **L1**: the persistence context — per transaction/session, always on. Same id → same object, one SELECT.\n- **L2**: shared across sessions (Ehcache, Caffeine, Redis via a provider), opt-in per entity with `@Cacheable` + a concurrency strategy.\n\nL2 helps for **read-mostly reference data** (countries, product catalogue). It hurts for frequently-updated data (invalidation churn) and with **multiple instances** unless the cache is distributed or invalidated across nodes. The query cache is usually a trap — any write to the table invalidates it.",
+        "n": 0,
+        "companies": []
       },
       {
         "q": "How do you build dynamic queries — Criteria API vs Specifications?",

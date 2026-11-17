@@ -2,7 +2,7 @@
 
 When something goes wrong in an API (an order that does not exist, invalid input, a bug), the client should get the right status code and an error body it can understand, and every endpoint should fail the same way. Interviews ask three things here, in this order of frequency: **how do you handle exceptions globally**, **what the three annotations do**, and **what a good error response looks like**.
 
-## 1. Global exception handling: one place for all errors [P0]
+## 1. Global exception handling: one place for all errors
 
 Without any handling, an exception thrown in a controller becomes a 500 with Spring Boot's default body. Copying try-catch blocks into every controller is worse: duplicated, inconsistent, easy to forget.
 
@@ -44,7 +44,7 @@ The rules interviewers check:
 
 Say it like this: "I create one @RestControllerAdvice class with an @ExceptionHandler method per exception type. Services throw meaningful business exceptions, the advice maps each to a status code and a consistent error body, and a catch-all turns anything unexpected into a 500 while logging the details."
 
-## 2. @ExceptionHandler vs @ControllerAdvice vs @RestControllerAdvice [P0]
+## 2. @ExceptionHandler vs @ControllerAdvice vs @RestControllerAdvice
 
 The three differ only in **scope**:
 
@@ -59,7 +59,7 @@ When two handlers could apply:
 
 Say it like this: "@ExceptionHandler is the method that handles an exception; inside a controller it's local to that controller. @ControllerAdvice makes those handlers global, and @RestControllerAdvice is the same plus @ResponseBody, so the return value is serialized as JSON, which is what a REST API needs."
 
-## 3. What a good error response looks like: ProblemDetail [P0]
+## 3. What a good error response looks like: ProblemDetail
 
 If every endpoint returns errors in a different shape, every client has to guess. The fix is an **error contract**: one documented shape for all errors. The industry standard is **RFC 9457, "Problem Details for HTTP APIs"** (it replaced RFC 7807), sent with the content type `application/problem+json`:
 
@@ -89,7 +89,7 @@ Never put stack traces, SQL or internal class names in the body: they help attac
 
 Say it like this: "Every error uses one contract, RFC 9457 problem details: type, title, status, detail and instance, plus extras like a trace id, as application/problem+json. In Spring Boot 3 my handlers return ProblemDetail, and I enable it for Spring's built-in errors too, so clients see one format everywhere."
 
-## 4. Choosing the right status code [P1]
+## 4. Choosing the right status code
 
 The handler's main job is picking the right status. The ones that matter:
 
@@ -102,7 +102,7 @@ The handler's main job is picking the right status. The ones that matter:
 
 **Validation errors**: with `@Valid` on a request body, bad input throws `MethodArgumentNotValidException`. Handle it as a 400 that lists each problem field ("email: must be a valid email"), so the client can show it next to the right input.
 
-## 5. What @ControllerAdvice cannot catch [P1]
+## 5. What @ControllerAdvice cannot catch
 
 Correction: "@ControllerAdvice handles every exception in the app." It only sees exceptions thrown while Spring MVC is handling the request, that is inside controllers and the code they call.
 
@@ -110,6 +110,5 @@ Errors raised **before** the request reaches a controller, in servlet filters, a
 
 Say it like this: "Controller advice only covers exceptions from controllers and the code they call. Security's 401 and 403 happen in filters before that, so I format those through the authentication entry point and access denied handler to keep one error contract."
 
-![Exceptions translated once, at the web edge](/docs-img/spring-08/layers.svg)
 
 **Before the next part:** without looking, explain out loud how a missing order becomes a 404 with a ProblemDetail body (who throws, who catches, what is returned), then name the five standard ProblemDetail fields and one error the advice cannot catch.
