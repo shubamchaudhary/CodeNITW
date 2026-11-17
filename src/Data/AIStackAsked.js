@@ -12,31 +12,6 @@ export const AI_STACK_ASKED_META = {
 };
 
 export const AI_STACK_ASKED = {
-  "AIE-02": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Walk me through an LLM feature you built, in two minutes.",
-        "a": "One fixed shape, with a number in it:\n\n1. **Problem and baseline** — who suffered and how it was done before.\n2. **The design decision** — one architecture choice and the alternative you rejected.\n3. **How you measured it** — test set, metric, before and after.\n4. **What broke** — one failure and the fix.\n5. **What you'd do next.**\n\nInterviewers interrupt at 3 and 4, so those must be concrete."
-      },
-      {
-        "q": "Your background is backend. Why an AI role?",
-        "a": "Make it the strength it is: **most AI engineering is backend engineering around a component that is sometimes wrong**.\n\n- Production LLM systems fail on backend things: retries and rate limits, queues, caching, idempotency, data freshness, access control.\n- Someone who has shipped those *and* the AI parts (retrieval, agents, evals) is exactly who these teams need.\n- Close with one measured outcome from your own work."
-      },
-      {
-        "q": "You say hybrid search helped. Did it beat vector-only, and by how much?",
-        "a": "This is the shape of every follow-up: **a number, the baseline, and the data it was measured on**. Answer from your eval, not the design: vector-only vs keyword vs hybrid at recall@k and MRR on your test set, *why* the winner won (identifier-heavy text favours keyword search), and what you'd add next (a reranker, measured the same way). If you can't give the number, re-run the eval before the interview."
-      },
-      {
-        "q": "You cut LLM calls by 80%. 80% of what, measured how?",
-        "a": "A percentage needs a denominator: calls per request with and without your change, counted on a fixed set of inputs with the same model and thresholds. Then say what it cost — what the cheaper path misses, and how you checked. Keep every figure you quote consistent with your own measurements."
-      },
-      {
-        "q": "What would make your project production-grade?",
-        "a": "The gaps in order of risk, each with how you'd verify it:\n\n1. **An eval gate in CI** — a golden set plus a calibrated judge; block merges on regression.\n2. **Tracing and cost per request.**\n3. **Guardrails** — input checks, injection handling for retrieved text, output schema checks.\n4. **Fallbacks** — timeouts, a fallback model, a safe default answer.\n5. **A feedback loop** — user corrections flow into the eval set."
-      }
-    ]
-  },
   "CH-01": {
     "posts": 0,
     "items": [
@@ -81,16 +56,28 @@ export const AI_STACK_ASKED = {
         "a": "Each token produces a query, a key and a value vector. A token's query is compared with the keys of the tokens before it; the similarity scores become weights that add up to one; the token's new vector is the weighted mix of those tokens' values. So “it” in “the milk was spoiled, so the customer returned it” absorbs information from “milk”. Multi-head attention runs several of these in parallel, each tracking different relationships."
       },
       {
-        "q": "Why does a longer prompt cost more time and money?",
-        "a": "Every prompt token is processed through every layer before the first output token (prefill), and attention compares each token with every earlier one, so the work grows faster than the length. Providers bill per token, and time to first token grows with the prompt. During generation, the KV cache also grows with context, using GPU memory and limiting how many requests a server can batch."
-      },
-      {
         "q": "Encoder vs decoder models — which do you use where?",
         "a": "Decoder-only models with causal attention generate text: chat and agents. Encoder models attend in both directions over a fixed input, which suits understanding tasks: embedding models for search and cross-encoder rerankers."
       },
       {
         "q": "What is a mixture-of-experts model?",
         "a": "Each layer has many smaller feed-forward “expert” networks and a router that sends each token to a few of them. The model has a huge total parameter count but uses only a fraction per token, so it's cheaper to run than a dense model of the same size — though all the weights still have to fit in memory."
+      },
+      {
+        "q": "When would you fine-tune instead of using RAG?",
+        "a": "When the gap is behaviour, not knowledge: a strict output format, a house style, or a narrow task (classification, extraction) that must run faster and cheaper on a small model. Not for facts that change — a fine-tuned model can't cite them and must be retrained on every change. Decide with an eval: fine-tune only if it beats a well-prompted strong model on your test set at acceptable cost."
+      },
+      {
+        "q": "What does LoRA change, and why is it cheaper?",
+        "a": "It freezes the original weights and trains, next to selected weight matrices, two small matrices whose product acts as a correction — often under 1% of the parameters. Training needs far less memory, and the result is a small adapter file; one base model can serve many adapters. QLoRA does the same on a 4-bit quantised base."
+      },
+      {
+        "q": "RLHF vs DPO?",
+        "a": "RLHF trains a reward model on human preference comparisons, then optimises the model with reinforcement learning to score highly, with a penalty for drifting from the original. DPO skips the reward model and RL and trains directly on (preferred, rejected) pairs — simpler and more stable, and widely used."
+      },
+      {
+        "q": "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?",
+        "a": "Distil: have the large model (plus human review of disagreements) label a few thousand real inputs, LoRA-fine-tune a small model on them, and compare on a held-out set. Ship it if it's within the quality bar, with a cascade sending low-confidence or invalid outputs to the large model. Retrain as inputs drift."
       }
     ]
   },
@@ -152,6 +139,26 @@ export const AI_STACK_ASKED = {
       {
         "q": "What are Matryoshka embeddings, and why would you use them?",
         "a": "Embeddings trained so that the first part of the vector is a good embedding on its own — the first 256 of 1,024 dimensions still work. You can store or search short vectors to save memory and time, and rerank with the full vectors, choosing the quality-cost trade-off after training."
+      },
+      {
+        "q": "How would you handle tables in a RAG system?",
+        "a": "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Country: Germany. Parental leave: 14 weeks.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
+      },
+      {
+        "q": "Some of your PDFs are scans. What changes?",
+        "a": "There is no text layer, so pages need OCR (or a vision model) to become text. OCR adds errors — digits and similar letters confused — so scanned sources get extra checks: a sample reviewed by eye, a metric for pages with no extracted text, and their own slice in the retrieval test set."
+      },
+      {
+        "q": "How do you keep the index in sync as 12,000 documents change?",
+        "a": "Incrementally. Store a content hash per document; on each sync skip unchanged ones, re-parse and re-chunk changed ones, and delete their old chunks in the same operation. Deletes and permission changes are handled as events quickly. Each chunk records its parser version so a parser upgrade re-processes only affected documents — via a blue-green re-index if it changes chunking."
+      },
+      {
+        "q": "Models have million-token context windows now. Is RAG dead?",
+        "a": "No — it changes the trade-off, not the need.\n\n- **Cost and latency** scale with input tokens on every query: retrieval sends 5K tokens, not 500K.\n- **Quality** degrades with length (lost in the middle, context rot); a focused context is usually more accurate.\n- **Access control and freshness**: retrieval filters per user and reflects updates; a stuffed prompt doesn't.\n- **Citations** fall out of retrieval naturally.\n\nLong context wins for small static corpora (prompt-cache them), whole-document tasks (summarise this contract), and as a generous window *after* retrieval."
+      },
+      {
+        "q": "“How many tickets were escalated last month, by region?” — RAG or SQL?",
+        "a": "SQL. Similarity search returns *some* relevant tickets; it can't count all of them correctly. Give the agent a **text-to-SQL tool** — or a typed API like `count_escalations(month, group_by)` — with guardrails: a read-only role, allow-listed tables, row limits and timeouts, validated SQL. Use RAG for the *why* questions that follow (“what were the common causes?”) over the ticket text."
       }
     ]
   },
@@ -209,12 +216,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "Why isn't FAISS a database?",
         "a": "FAISS is an in-process library for fast similarity search over vectors in memory. It doesn't store data durably, handle concurrent updates, filter by metadata, replicate or serve over a network — you'd have to build all of that. Great for experiments and batch jobs, not as a production store on its own."
-      }
-    ]
-  },
-  "CH-04": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "Draw corrective RAG. What stops it looping forever?",
         "a": "`retrieve → grade_documents →` relevant? → `generate`; not relevant → `rewrite_query → retrieve` again.\n\nControls: a **counter in state** that caps rewrites (e.g. 2), the graph's `recursion_limit` as a backstop, and a **fallback** after the cap — generate from the best retrieval seen so far, or say “I couldn't find this” — never an empty answer. Grade with a cheap model and structured output (`relevant: yes/no` per chunk). Log each loop so you can measure how often it fires and whether it helps."
@@ -252,28 +254,8 @@ export const AI_STACK_ASKED = {
         "a": "- An explicit **abstain path** in the instructions (“if the context does not contain the answer, say so”), with an example.\n- Structured output with `answerable: bool` before the answer.\n- A **groundedness check** after generation; unsupported → abstain or answer only the supported part.\n- A retrieval-score threshold: if the best chunk is weak, don't generate.\n- Unanswerable questions in the eval set, tracking the abstain rate — over-abstaining is a failure too."
       },
       {
-        "q": "How would you handle tables in a RAG system?",
-        "a": "Parse them with a layout-aware tool so rows stay rows. Index each row (or small group of rows) as its own chunk with the column names and the table title repeated (“Country: Germany. Parental leave: 14 weeks.”), add one summary chunk for overview questions, and keep the original table attached for display. Very large tables (thousands of rows) go into a database and are answered through a SQL tool instead."
-      },
-      {
-        "q": "Some of your PDFs are scans. What changes?",
-        "a": "There is no text layer, so pages need OCR (or a vision model) to become text. OCR adds errors — digits and similar letters confused — so scanned sources get extra checks: a sample reviewed by eye, a metric for pages with no extracted text, and their own slice in the retrieval test set."
-      },
-      {
-        "q": "How do you keep the index in sync as 12,000 documents change?",
-        "a": "Incrementally. Store a content hash per document; on each sync skip unchanged ones, re-parse and re-chunk changed ones, and delete their old chunks in the same operation. Deletes and permission changes are handled as events quickly. Each chunk records its parser version so a parser upgrade re-processes only affected documents — via a blue-green re-index if it changes chunking."
-      },
-      {
-        "q": "Models have million-token context windows now. Is RAG dead?",
-        "a": "No — it changes the trade-off, not the need.\n\n- **Cost and latency** scale with input tokens on every query: retrieval sends 5K tokens, not 500K.\n- **Quality** degrades with length (lost in the middle, context rot); a focused context is usually more accurate.\n- **Access control and freshness**: retrieval filters per user and reflects updates; a stuffed prompt doesn't.\n- **Citations** fall out of retrieval naturally.\n\nLong context wins for small static corpora (prompt-cache them), whole-document tasks (summarise this contract), and as a generous window *after* retrieval."
-      },
-      {
         "q": "What problem does GraphRAG solve that vector RAG doesn't?",
         "a": "Two kinds of question:\n\n- **Multi-hop / relational**: “which suppliers of our largest customer had incidents?” — that's following edges, not similarity.\n- **Global**: “what are the main themes across 10,000 tickets?” — no single chunk holds the answer.\n\nGraphRAG extracts entities and relations with an LLM, clusters the graph into communities and pre-summarises each; **global search** map-reduces over those summaries. Costs: slow, expensive indexing (LLM calls per chunk), hard incremental updates, extraction errors. Use it when those questions matter and are measured; otherwise hybrid RAG is cheaper."
-      },
-      {
-        "q": "“How many tickets were escalated last month, by region?” — RAG or SQL?",
-        "a": "SQL. Similarity search returns *some* relevant tickets; it can't count all of them correctly. Give the agent a **text-to-SQL tool** — or a typed API like `count_escalations(month, group_by)` — with guardrails: a read-only role, allow-listed tables, row limits and timeouts, validated SQL. Use RAG for the *why* questions that follow (“what were the common causes?”) over the ticket text."
       }
     ]
   },
@@ -301,30 +283,6 @@ export const AI_STACK_ASKED = {
         "a": "- **One clear job**, named for the action (`search_orders`, not `orders_api`).\n- **A description that says when to use it** — and when not to — with an example.\n- **Typed, constrained arguments** (enums, formats) so invalid calls fail validation.\n- **Concise, relevant output**: the five fields the model needs, not a 50 KB payload; paginate.\n- **Actionable errors** that tell the model what to change.\n- **Safe by default**: read-only where possible, writes behind approval, idempotent.\n\nThen evaluate tools by watching the model use them on real tasks."
       },
       {
-        "q": "LangChain vs LangGraph — when do you use each?",
-        "a": "In v1 they're layers, not rivals.\n\n- **LangChain `create_agent`**: the standard loop — the model decides, calls tools, observes, repeats — with middleware for guardrails, limits, summarisation and human approval. Use it when that loop is the whole design.\n- **LangGraph**: when you need explicit control flow — fixed steps, branches, parallel fan-out, loops with custom exits, approvals at specific nodes, several agents — plus checkpointing and durable execution.\n\n`create_agent` compiles to a LangGraph graph, so you can start high-level and drop down only for the parts that need control."
-      },
-      {
-        "q": "Would you use LangChain in production?",
-        "a": "Yes, selectively — and say why.\n\n- **For**: provider-agnostic model and tool interfaces, structured output, streaming, middleware (retries, fallbacks, call limits, approvals), tracing in LangSmith, and LangGraph's persistence underneath.\n- **Against**: abstraction layers slow down debugging, breaking changes between versions, hidden prompts in older chains.\n\nMitigations: pin versions, own your prompts, trace everything, keep tools as plain functions you can test without the framework, and wrap it behind your own interface so the core logic is plain Python."
-      },
-      {
-        "q": "What changed in LangChain v1?",
-        "a": "- `create_agent` replaces `create_react_agent` and AgentExecutor as the one way to build agents, and it runs on LangGraph.\n- **Middleware**: hooks before and after the model and around model and tool calls — approvals, summarisation, PII, call limits, retries, fallbacks.\n- **Structured output** inside the agent loop via `response_format` (tool-based or provider-native).\n- **Standard content blocks** across providers (text, reasoning, tool calls, citations).\n- Legacy chains and retrievers moved to `langchain-classic`; the core package is much smaller. Since 1.4, MCP support lives in `langchain.mcp`."
-      },
-      {
-        "q": "What does LCEL give you, and is it still relevant?",
-        "a": "A `Runnable` is anything with `invoke`, `batch` and `stream` (plus async versions); LCEL composes them with `|` into a pipeline that gets streaming, concurrent batching, retries, fallbacks and tracing for free. It's still in `langchain-core` and fine for short fixed pipelines (`prompt | model | parser`). For branching, loops or state, LangGraph replaced it as the recommended way."
-      },
-      {
-        "q": "Your agent loops and burns tokens. What middleware do you add?",
-        "a": "ModelCallLimitMiddleware and ToolCallLimitMiddleware for hard caps with a defined ending; SummarizationMiddleware or ContextEditingMiddleware so old tool output stops inflating every call; and a custom after_model hook that spots repeated identical tool calls and jumps to the end. Then find the cause in the traces — usually an unhelpful tool error or an exit condition the model can't recognise."
-      },
-      {
-        "q": "In what order do middleware hooks run?",
-        "a": "For [m1, m2, m3]: before_agent and before_model run m1 → m2 → m3; wrap_model_call nests with m1 outermost (m1 wraps m2 wraps m3 wraps the model); after_model and after_agent run m3 → m2 → m1. Cross-cutting wrappers (logging, retries) go first; guards that must run right before the model (PII masking) go last."
-      },
-      {
         "q": "How would you send easy questions to a cheap model and hard ones to a strong model?",
         "a": "A custom wrap_model_call hook: inspect the request (length, a difficulty flag set earlier, the tools needed), call `request.override(model=cheap_model)` for easy cases, then call the handler. Measure quality per route on the test set, and log the route on every trace."
       },
@@ -333,57 +291,24 @@ export const AI_STACK_ASKED = {
         "a": "The fallback model may follow the prompt differently, handle tools worse, or have a smaller context window, so an outage silently becomes a quality drop. Run the test set against the fallback too, keep outputs schema-validated, log every fallback with its reason, and alert when the fallback rate rises."
       },
       {
-        "q": "Sketch a LangGraph agent: state, nodes, edges.",
-        "a": "```python\nclass State(TypedDict):\n    messages: Annotated[list, add_messages]\n    steps: int\n\ndef call_model(state: State):\n    msg = model_with_tools.invoke(state['messages'])\n    return {'messages': [msg], 'steps': state['steps'] + 1}\n\ndef route(state: State):\n    if state['messages'][-1].tool_calls and state['steps'] < 8:\n        return 'tools'\n    return END\n\ng = StateGraph(State)\ng.add_node('model', call_model)\ng.add_node('tools', ToolNode(tools))\ng.add_edge(START, 'model')\ng.add_conditional_edges('model', route, ['tools', END])\ng.add_edge('tools', 'model')\napp = g.compile(checkpointer=checkpointer)\n```\n\nSay: nodes return partial updates, `add_messages` appends, the router caps the loop, and the checkpointer makes every run resumable."
+        "q": "Workflow or agent — which is your default, and why?",
+        "a": "A **workflow**, until the evidence says otherwise. If I can write the steps down, code should control their order: it's cheaper, faster, testable step by step and predictable. I use an agent when the path genuinely can't be known in advance — open-ended investigation, variable tool sequences — and when mistakes are cheap to detect or gated by approval. Even then the agent sits inside deterministic code: caps on steps and spend, typed tools with permissions, approvals for writes, and an outcome check at the end."
       },
       {
-        "q": "What is a reducer, and what happens without one when two nodes write the same key in parallel?",
-        "a": "A reducer is the function that **merges an update into a key's current value**: `Annotated[list, operator.add]` concatenates, `add_messages` appends and replaces by message id, a custom function can deduplicate or keep the maximum. Without one, the key keeps only the last value — fine for a single writer. If two nodes write it in the **same super-step**, LangGraph can't choose and raises an `InvalidUpdateError`. Fix: give the key a reducer, or have each branch write its own key."
+        "q": "Name the workflow patterns and a use for each.",
+        "a": "- **Prompt chaining**: a fixed sequence (extract → validate → draft) with checks between steps.\n- **Routing**: classify, then dispatch (billing vs technical support; a cheap vs a strong model).\n- **Parallelisation**: sectioning (independent subtasks at once) or voting (several attempts, aggregated).\n- **Orchestrator-workers**: a model splits the task into dynamic subtasks for workers (multi-file changes, research).\n- **Evaluator-optimizer**: generate → critique → revise until a check passes (writing or translation with clear criteria)."
       },
       {
-        "q": "Conditional edge or Command — when each?",
-        "a": "**Conditional edge**: a separate router function reads state and returns the next node(s). Routing stays visible in the graph definition — good when the decision is a pure function of state.\n\n**`Command(goto=..., update=...)`** returned by a node updates state **and** routes in one step — natural when the node's own result decides (an LLM picks the next agent: handoffs). `Command(graph=Command.PARENT)` jumps to a node in the parent graph from inside a subgraph. Declare the possible destinations so the graph can still be drawn."
+        "q": "What controls does every production agent need?",
+        "a": "- **Budgets**: maximum steps, tokens, wall-clock time and cost per run, with defined behaviour when hit.\n- **Least-privilege tools**: per-user permissions enforced in the tool; read-only by default.\n- **Approval** for irreversible or high-impact actions.\n- **Idempotent tools**, so retries can't apply twice.\n- **Validation** of tool arguments and of the final output.\n- **Tracing** of every step and **outcome verification** in the system of record.\n- **Evals**: trajectory rules and end-state checks before launch."
       },
       {
-        "q": "What is a super-step?",
-        "a": "One tick of the Pregel-style runtime: every node triggered by the previous step runs — in parallel if several — their updates are applied through reducers **at the end** of the step, and the checkpointer saves a checkpoint at that boundary; then edges decide what triggers next. Consequences: parallel branches can't see each other's updates within a step; if one parallel node fails, its siblings' successful writes are kept and not redone on resume; and `recursion_limit` counts super-steps."
-      },
-      {
-        "q": "How do you stop a LangGraph loop from running forever?",
-        "a": "In layers:\n\n1. An **exit condition in state**: a counter (`attempts`) the router checks, plus a quality condition (the grader passed).\n2. A **fallback route** when the cap is hit — the best answer so far, or a clear failure message — never a raw exception to the user.\n3. **`recursion_limit`** in the run config as the backstop (`GraphRecursionError`).\n4. Token and cost budgets per run, and a timeout around the whole invocation."
-      }
-    ]
-  },
-  "CH-06": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Where is LangGraph state stored, and what happens if the process crashes mid-run?",
-        "a": "In the **checkpointer** — in production a Postgres (or similar) saver — as one checkpoint per super-step under the run's `thread_id`. If the process dies, the next invocation on that `thread_id` loads the latest checkpoint and continues from the step that hadn't completed. Nodes that finished in the failed step keep their saved writes and don't re-run; the node that was running **runs again from its start**. With `durability='exit'` mid-run checkpoints aren't written, so you'd restart further back — use `'sync'` for long or expensive runs."
-      },
-      {
-        "q": "Why must nodes be idempotent in LangGraph?",
-        "a": "Because a node can run **more than once** for the same logical step: after a crash (the in-flight node is retried), after an `interrupt()` (the node restarts from its first line on resume), and on replay from an old checkpoint.\n\nSo writes must be safe to repeat: upserts keyed by a deterministic id, idempotency keys on external APIs, check-then-act guarded by a unique constraint — or move the side effect **after** the interrupt or into its own node. Wrap non-deterministic or side-effecting work in `@task` so its result is checkpointed and reused."
-      },
-      {
-        "q": "Thread vs checkpoint vs store?",
-        "a": "- **Thread** (`thread_id`): one conversation or run history — the unit you resume.\n- **Checkpoint**: a snapshot of the thread's state at a super-step boundary; a thread has many, forming its history.\n- **Store**: cross-thread, namespaced key-value memory (optionally with semantic search) — a user's preferences that survive across threads.\n\nRule of thumb: what this run needs → state and checkpointer; what future runs need → store."
-      },
-      {
-        "q": "What is time travel in LangGraph, and when would you use it?",
-        "a": "Every checkpoint is kept, so you can **inspect** state at any step (`get_state_history`), **replay** from an earlier `checkpoint_id` (later steps re-execute, LLM calls included), or **fork**: `update_state` writes edited values as a new checkpoint and execution continues from there, leaving the original branch intact. Uses: debugging a bad run (“what did the agent see at step 4?”), letting a human correct state and re-run from that point, and turning production runs into eval cases."
-      },
-      {
-        "q": "Which durability mode would you choose?",
-        "a": "It's write overhead against lost work:\n\n- `'exit'`: checkpoint only when the run ends or pauses — fastest; a crash loses the run's progress. Fine for short, cheap, idempotent runs.\n- `'async'`: write in the background while the next step runs — a sensible default.\n- `'sync'`: write before each next step — for long, expensive or side-effecting runs and anything awaiting human approval, where redoing work is costly or unsafe."
+        "q": "What is the agent-computer interface, and why does it matter?",
+        "a": "The tools — their names, descriptions, parameters, outputs and errors — are the interface the model works through, the way a UI is for people. Anthropic reported spending more time optimising tools than prompts for their agents. A good interface makes correct use obvious, uses formats the model handles well, prefers absolute identifiers to relative ones, makes mistakes hard (constrained parameters), returns concise outputs and helpful errors — and gets tested by watching the model use it."
       },
       {
         "q": "The conversation exceeds the context window. What are your options?",
         "a": "1. **Trim** to the most recent messages — cheap, forgets early facts.\n2. **Summarise** older messages into a running summary — keeps the gist, costs a call, may drop details.\n3. **Retrieve** relevant old turns by meaning — precise, adds a search per turn.\n\nCombine them, and pin key facts (order id, customer id) in dedicated state fields so they can never be trimmed. Also clear bulky old tool outputs."
-      },
-      {
-        "q": "Short-term vs long-term memory in LangGraph?",
-        "a": "Short-term memory is the thread's state — messages and working fields — saved by the checkpointer under the thread id and gone in a new thread. Long-term memory lives in the store under namespaces like `('agents', 'agent7')`, survives across threads, and can be searched by meaning. The design work is deciding what to save and when."
       },
       {
         "q": "What can go wrong with long-term memory?",
@@ -392,18 +317,6 @@ export const AI_STACK_ASKED = {
       {
         "q": "Prompt engineering vs context engineering?",
         "a": "Prompt engineering is the wording of instructions for one call. Context engineering is the whole set of tokens the model sees at each step of a system — instructions, tools, retrieved data, memory, history, tool results — and the logic that selects, orders, compresses and refreshes them as an agent runs. It's a systems problem, not a phrasing problem."
-      },
-      {
-        "q": "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
-        "a": "State: `docs`, `summaries: Annotated[list, operator.add]`, `report`. A conditional edge from START returns one `Send('summarise', {'doc': d})` per document, so all summaries run in one super-step and the reducer concatenates them. A `combine` node then reduces, in stages if the summaries don't fit one prompt. Cap `max_concurrency` below the provider's rate limit, add a retry policy on `summarise`, and use a checkpointer so a crash only redoes unfinished branches."
-      },
-      {
-        "q": "When would you use a subgraph?",
-        "a": "For a reusable piece (a retrieve-grade-rewrite loop used by several workflows), to keep scratch state private, to split ownership between teams, or for multi-agent setups where each agent is its own graph. Costs: mapping state at the boundary, nested checkpoints to debug, and on resume after an interrupt both the parent node and the subgraph node re-run from their start."
-      },
-      {
-        "q": "How would you stream a multi-step agent's progress to a UI?",
-        "a": "Combine stream modes: `messages` for tokens, `updates` for per-node status lines (“searching policies…”), and `custom` events emitted from long nodes. Forward them to the browser over Server-Sent Events. Interrupts arrive as events too, so the UI can show an approval card and resume the run with the decision."
       },
       {
         "q": "One agent or several — how do you decide?",
@@ -423,9 +336,85 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "CH-07": {
+  "CH-06": {
     "posts": 0,
     "items": [
+      {
+        "q": "Why LangGraph instead of a plain agent loop, or plain Python?",
+        "a": "A loop lets the model decide every step; some systems need steps you guarantee (classify first, check permissions before a refund, ask a human before paying). LangGraph makes those steps an explicit graph and adds what plain code doesn't give you: state saved after every step (resume, continue conversations), pausing for a human, streaming every step, and replaying or forking a run. The model can still decide at the points you choose."
+      },
+      {
+        "q": "What is a reducer, and what happens when two parallel nodes write the same key?",
+        "a": "A reducer says how a node's update merges into a state key: none → overwrite, `operator.add` → concatenate lists, `add_messages` → append, or replace a message with the same id. Parallel nodes in one super-step both write; with a reducer both updates are merged, without one LangGraph can't choose and raises `InvalidUpdateError`. Fix: add a reducer or give each node its own key."
+      },
+      {
+        "q": "Explain super-steps.",
+        "a": "LangGraph runs in rounds. In each, every scheduled node runs (in parallel if several), all reading the state as it was at the start of the round; none sees the others' updates. At the end, updates are merged through the reducers and a checkpoint is saved; then the edges choose the next round. That's why a fan-in node waits for all branches, and why a crash loses at most the current round."
+      },
+      {
+        "q": "How do you run a step once per item when the number of items is only known at run time?",
+        "a": "A router returns a list of `Send(\"node\", {...})`, one per item, each with its own small input. The copies run in parallel in the next super-step and write into a key with an appending reducer (`operator.add`); a following node combines them. That's map-reduce. Cap the fan-out for rate limits and cost, and decide what a single failure does."
+      },
+      {
+        "q": "What is a checkpoint, and what is a thread?",
+        "a": "A checkpoint is a saved snapshot of the state, plus what runs next, written by the checkpointer after every super-step. A thread is a sequence of runs sharing that state, named by `thread_id` — one conversation, ticket or job. Same thread id → the run continues from the latest checkpoint. They enable memory, interrupts, crash recovery and time travel (`get_state_history`, replay from a `checkpoint_id`, fork with `update_state`)."
+      },
+      {
+        "q": "How does interrupt work, and what is the trap?",
+        "a": "`interrupt(payload)` in a node saves the run and returns the payload to the caller; later `invoke(Command(resume=value), config)` on the same thread continues, and `interrupt` returns `value`. The trap: the node re-runs from its first line on resume, so code before the interrupt runs twice. Put side effects after it (or in another node), make them idempotent, keep multiple interrupts in a fixed order, and always use a checkpointer."
+      },
+      {
+        "q": "A run's rewrite-and-retrieve loop ran 40 times on one strange question. How do you stop that?",
+        "a": "Brakes at several levels: a `tries` counter in the state that the router checks, with a fallback route when it runs out (or the `RemainingSteps` managed value); a `recursion_limit` in the config as a backstop (it raises `GraphRecursionError`; recent versions default very high, so set your own); and a token, cost and time budget for the whole run."
+      },
+      {
+        "q": "The server crashes mid-run. What happens, and what can go wrong?",
+        "a": "With a durable checkpointer (Postgres), invoke the same thread with `None` and the run resumes from the last checkpoint; nodes that finished in the interrupted super-step aren't re-run. What can go wrong: the node that was running re-runs, so a side effect it already did (a charge, an email) happens twice. Make those idempotent (an idempotency key) or wrap them in `@task` so the result is saved; use retry policies for transient errors."
+      },
+      {
+        "q": "Short-term vs long-term memory in LangGraph?",
+        "a": "Short-term is the thread's state, saved by the checkpointer — the conversation and working data of one thread, trimmed or summarised as it grows. Long-term is a Store passed to `compile(store=...)`: items under namespaces like (\"users\", user_id), with put/get and optional semantic search, shared across threads and read in nodes through `runtime.store`. Per-run settings (user id, model choice) go in `context_schema`, not in state."
+      },
+      {
+        "q": "How do you run a LangGraph agent in production?",
+        "a": "Compile the graph once at startup; Postgres checkpointer and store so any instance can continue any thread; thread ids issued by my system and tied to the user; serve it from FastAPI streaming SSE (or the Agent Server, which adds background runs, queues and double-texting handling); caps on loops, tokens, cost and tool timeouts; LangSmith or OpenTelemetry tracing; and evals on whole trajectories before each release."
+      },
+      {
+        "q": "Sketch a LangGraph agent: state, nodes, edges.",
+        "a": "```python\nclass State(TypedDict):\n    messages: Annotated[list, add_messages]\n    steps: int\n\ndef call_model(state: State):\n    msg = model_with_tools.invoke(state['messages'])\n    return {'messages': [msg], 'steps': state['steps'] + 1}\n\ndef route(state: State):\n    if state['messages'][-1].tool_calls and state['steps'] < 8:\n        return 'tools'\n    return END\n\ng = StateGraph(State)\ng.add_node('model', call_model)\ng.add_node('tools', ToolNode(tools))\ng.add_edge(START, 'model')\ng.add_conditional_edges('model', route, ['tools', END])\ng.add_edge('tools', 'model')\napp = g.compile(checkpointer=checkpointer)\n```\n\nSay: nodes return partial updates, `add_messages` appends, the router caps the loop, and the checkpointer makes every run resumable."
+      },
+      {
+        "q": "Conditional edge or Command — when each?",
+        "a": "**Conditional edge**: a separate router function reads state and returns the next node(s). Routing stays visible in the graph definition — good when the decision is a pure function of state.\n\n**`Command(goto=..., update=...)`** returned by a node updates state **and** routes in one step — natural when the node's own result decides (an LLM picks the next agent: handoffs). `Command(graph=Command.PARENT)` jumps to a node in the parent graph from inside a subgraph. Declare the possible destinations so the graph can still be drawn."
+      },
+      {
+        "q": "Why must nodes be idempotent in LangGraph?",
+        "a": "Because a node can run **more than once** for the same logical step: after a crash (the in-flight node is retried), after an `interrupt()` (the node restarts from its first line on resume), and on replay from an old checkpoint.\n\nSo writes must be safe to repeat: upserts keyed by a deterministic id, idempotency keys on external APIs, check-then-act guarded by a unique constraint — or move the side effect **after** the interrupt or into its own node. Wrap non-deterministic or side-effecting work in `@task` so its result is checkpointed and reused."
+      },
+      {
+        "q": "Thread vs checkpoint vs store?",
+        "a": "- **Thread** (`thread_id`): one conversation or run history — the unit you resume.\n- **Checkpoint**: a snapshot of the thread's state at a super-step boundary; a thread has many, forming its history.\n- **Store**: cross-thread, namespaced key-value memory (optionally with semantic search) — a user's preferences that survive across threads.\n\nRule of thumb: what this run needs → state and checkpointer; what future runs need → store."
+      },
+      {
+        "q": "What is time travel in LangGraph, and when would you use it?",
+        "a": "Every checkpoint is kept, so you can **inspect** state at any step (`get_state_history`), **replay** from an earlier `checkpoint_id` (later steps re-execute, LLM calls included), or **fork**: `update_state` writes edited values as a new checkpoint and execution continues from there, leaving the original branch intact. Uses: debugging a bad run (“what did the agent see at step 4?”), letting a human correct state and re-run from that point, and turning production runs into eval cases."
+      },
+      {
+        "q": "Which durability mode would you choose?",
+        "a": "It's write overhead against lost work:\n\n- `'exit'`: checkpoint only when the run ends or pauses — fastest; a crash loses the run's progress. Fine for short, cheap, idempotent runs.\n- `'async'`: write in the background while the next step runs — a sensible default.\n- `'sync'`: write before each next step — for long, expensive or side-effecting runs and anything awaiting human approval, where redoing work is costly or unsafe."
+      },
+      {
+        "q": "Summarise 500 documents and combine the summaries. Model it in LangGraph.",
+        "a": "State: `docs`, `summaries: Annotated[list, operator.add]`, `report`. A conditional edge from START returns one `Send('summarise', {'doc': d})` per document, so all summaries run in one super-step and the reducer concatenates them. A `combine` node then reduces, in stages if the summaries don't fit one prompt. Cap `max_concurrency` below the provider's rate limit, add a retry policy on `summarise`, and use a checkpointer so a crash only redoes unfinished branches."
+      },
+      {
+        "q": "When would you use a subgraph?",
+        "a": "For a reusable piece (a retrieve-grade-rewrite loop used by several workflows), to keep scratch state private, to split ownership between teams, or for multi-agent setups where each agent is its own graph. Costs: mapping state at the boundary, nested checkpoints to debug, and on resume after an interrupt both the parent node and the subgraph node re-run from their start."
+      },
+      {
+        "q": "A tool call times out and the agent retries. How do you stop a write applying twice?",
+        "a": "Give every write an **idempotency key** derived from the proposal (e.g. `proposal_id`), store it with the result, and have the write path check it — a unique constraint on (key) or an upsert — so a repeat returns the first result instead of applying again. Retries happen in code with backoff, not by the model inventing a new call; and after a timeout, read the system of record to learn whether the first attempt landed before retrying."
+      },
       {
         "q": "Walk through what happens when a node calls interrupt().",
         "a": "1. The node runs until `interrupt(payload)`; LangGraph raises an internal interrupt signal.\n2. The checkpointer saves the thread's state and records the pending interrupt and its payload.\n3. The invocation returns to the caller with the payload (`result['__interrupt__']`). The run is paused and holds no process or thread.\n4. Seconds or days later the app calls `graph.invoke(Command(resume=decision), config={'configurable': {'thread_id': tid}})`.\n5. LangGraph loads the checkpoint and **re-runs the node from its start**; this time `interrupt()` returns `decision` instead of pausing, and execution continues."
@@ -439,10 +428,6 @@ export const AI_STACK_ASKED = {
         "a": "Resume values are matched to `interrupt()` calls **by position** within the node. On resume the node re-runs; if the list or a condition differs, the number or order of calls changes and resume values land on the wrong question. Keep interrupts deterministic: compute the items to approve in an earlier node and store them in state, then interrupt once with the whole batch — or use parallel branches, each with its own interrupt id."
       },
       {
-        "q": "Dynamic interrupt() vs interrupt_before / interrupt_after?",
-        "a": "**Static** interrupts (`interrupt_before=['tools']` at compile or run time) pause before or after a node every time, carry no payload, and resume with `invoke(None, config)` — good for debugging and stepping through. **Dynamic** `interrupt()` pauses **conditionally** from inside the node, with a payload describing what to review, and receives a typed resume value (approve, edit, reject plus data). Production HITL uses the dynamic form: pause only for risky actions, carry context to the reviewer, get the decision back."
-      },
-      {
         "q": "Two parallel branches are both waiting for approval. How do you resume?",
         "a": "Each pending interrupt has an id. Read them from the paused result (`result.interrupts` or `stream.interrupts`) and resume once with a mapping: `Command(resume={id_a: {'type': 'approve'}, id_b: {'type': 'reject', 'message': '…'}})`. Each `interrupt()` receives its own value and both branches continue in the next super-step."
       },
@@ -451,16 +436,8 @@ export const AI_STACK_ASKED = {
         "a": "Tier by **risk and reversibility**:\n\n- **Automatic**: reads, explanations, what-if simulations on a copy.\n- **Automatic + audit**: small, reversible changes inside limits (say ±5% on one item) — logged and easy to undo.\n- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.\n\nMechanics: the agent writes its proposal to a **staging overlay**, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the planner approves, edits or rejects, approved changes commit to the base in one transaction, and every decision is logged — who, when, why."
       },
       {
-        "q": "What should the approver see, and why does it matter?",
-        "a": "Enough to decide in under a minute without re-investigating:\n\n- the **exact action** (tool, arguments) and the **diff**, with its scope;\n- **why** — the user's request, the agent's reasoning, the data it relied on;\n- **risk flags** — over a threshold, an unusual pattern, stale data;\n- the available decisions and what each does.\n\nA thin payload (“approve action #42?”) gets rubber-stamped, which makes HITL theatre. Track the approval rate and time to decision: ~100% approvals in seconds means the gate isn't adding value."
-      },
-      {
         "q": "Why “approve the proposal, not the intent”?",
         "a": "If the human approves a description (“update safety stock for SKU X”) and the agent builds the call afterwards, the model can still produce wrong arguments after approval. Approving the **concrete tool call** — exact arguments, exact diff — means what runs is exactly what was reviewed. If the arguments need changing, the reviewer edits them, and the edited call is what executes."
-      },
-      {
-        "q": "How do rejections make the agent better over time?",
-        "a": "Every reject or edit is a labelled example: the proposal, its context and the correct action.\n\n- In the same run: the rejection message goes back to the model as the tool result, so it can revise.\n- Over time: rejected cases join the **eval set** as a regression suite of “should not propose this”, get mined for patterns (wrong scope, stale data), and drive fixes to prompts, tools and validation. Track edit and reject rates per action type as quality metrics."
       },
       {
         "q": "The approver never responds. What happens to the staged write?",
@@ -471,16 +448,52 @@ export const AI_STACK_ASKED = {
         "a": "Never commit a diff computed against old data. At proposal time record the **version** (or `updated_at` / a hash) of every row the change touches; at commit apply a **compare-and-set** — `UPDATE … WHERE id = $1 AND version = $2`. If any row changed, abort, recompute the proposal on fresh data and ask again, showing what changed. For approvals that can sit for hours, show data freshness in the review payload too."
       },
       {
-        "q": "Two planners approve conflicting changes to the same parameter. What happens?",
-        "a": "Prevent it, then detect it:\n\n- **One open proposal per entity**: a unique constraint or lock on (entity, pending); a second request is merged or queued.\n- **Optimistic concurrency at commit**: the version check makes the second commit fail and re-propose.\n- **Idempotent commit** keyed by proposal id: a retried or double-clicked approval applies once.\n\nEvery decision lands in the audit log, so any dispute is traceable."
-      },
-      {
         "q": "You deploy a new version of the graph while 200 runs are paused at an interrupt. What breaks?",
         "a": "Paused threads hold checkpoints written by the **old graph**: node names, the state schema and their position in the graph.\n\n- Renamed or removed nodes and incompatible state fields can make resume fail or misbehave.\n- Safe practice: backward-compatible changes (add optional fields, keep node names), version the graph and route old threads to the old version — or **drain**: stop new runs, let pending approvals finish or expire, then deploy.\n- Test resuming a previous version's checkpoint in CI."
       },
       {
-        "q": "How would you audit an agent that makes approved changes?",
-        "a": "An append-only record per action: the request (user, text), the agent's proposal (tool, arguments, diff, reasoning, sources), the trace id, the reviewer, the decision and any edits, timestamps, the commit result and the entity versions before and after. Keep it outside the agent's own state (a database table), keyed by proposal id and queryable by entity and user. It answers “who changed this, and why?”, supports rollback, and gives you labelled data for evals."
+        "q": "What is LangChain today, and what changed in version 1?",
+        "a": "A library for building LLM applications and agents on one interface across providers. Version 1 (October 2025) centred it on `create_agent`, middleware and structured output, built on LangGraph as the runtime; provider integrations are separate packages; the old chains (`LLMChain`, `RetrievalQA`, `AgentExecutor`) moved to `langchain-classic`. Answering with 2023-era “chains for everything” signals you haven't used it recently."
+      },
+      {
+        "q": "LangChain vs LangGraph: what's the difference, and when do you use each?",
+        "a": "LangGraph is the low-level runtime: state, a graph of nodes and edges, checkpoints, interrupts, streaming. LangChain sits on top: models, tools, messages, and `create_agent`, which compiles the standard tool-calling loop into a LangGraph graph. Use `create_agent` when the model should drive a standard loop; use LangGraph directly when you must fix the steps yourself: a mandatory classify → retrieve → grade order, parallel branches, approvals at chosen points, several agents."
+      },
+      {
+        "q": "What is LCEL, and is it still worth using?",
+        "a": "The pipe syntax that composes Runnables: `prompt | model | parser`. Every Runnable has invoke, stream, batch and async versions, so the whole chain streams, batches and traces for free. Still good for short fixed pipelines (a prompt, a model, a parser; a two-step RAG chain). For loops, branches, state or retries across steps, a LangGraph graph is clearer and easier to debug."
+      },
+      {
+        "q": "How does the model know how to call your tool? What makes a good tool?",
+        "a": "`@tool` turns the function into a schema: its name, its docstring as the description, and a JSON schema of the arguments from the type hints (Literal → enum, defaults → optional). That schema is all the model sees, so the docstring is a prompt: what it does, when to use it, what it returns. Good tools: few and clearly named, one job each, arguments the model can fill reliably (ids, enums), small results, errors returned as readable text, and permission checks in code. Values the model must not choose (the user id) come from `ToolRuntime`, hidden from the schema."
+      },
+      {
+        "q": "How do you get reliable structured output in LangChain?",
+        "a": "For one call, `model.with_structured_output(PydanticModel)`. In an agent, `create_agent(..., response_format=Schema)`; the validated object is in `result[\"structured_response\"]`. LangChain picks `ProviderStrategy` (the provider's native structured output) when supported, else `ToolStrategy` (the schema as a tool the model must call), whose `handle_errors` feeds validation errors back for another try. Still validate at the boundary and log the failure rate."
+      },
+      {
+        "q": "What does create_agent build, and what do you get for free?",
+        "a": "A LangGraph graph: a model node, a tools node, and an edge that loops back while the model's reply contains tool calls, ending when it answers without them. Because it's a graph you get: a checkpointer for per-thread memory, streaming of tokens and steps, interrupts (human approval), `context_schema` for per-run data, and middleware hooks around every model and tool call."
+      },
+      {
+        "q": "Middleware: what hooks exist, and in what order do [m1, m2, m3] run?",
+        "a": "Node-style hooks `before_agent`, `before_model`, `after_model`, `after_agent` (can update state or jump) and wrap-style `wrap_model_call`, `wrap_tool_call` (modify, retry, skip, fall back). `before_*` run m1 → m3, `wrap_*` nest with m1 outermost, `after_*` run m3 → m1. Put logging and retries first (outermost), guards that must run right before the model (PII masking) last."
+      },
+      {
+        "q": "A conversation loops through 40 tool calls, leaks an email into traces, and dies when the provider has an outage. Which middleware?",
+        "a": "`ModelCallLimitMiddleware` / `ToolCallLimitMiddleware` to cap the loop; `PIIMiddleware` to mask or block emails and card numbers; `ModelRetryMiddleware` and `ModelFallbackMiddleware` for the outage; and `SummarizationMiddleware` if long threads are slow and expensive. Then trace and alert on how often each fires — a fallback rate jumping is a signal."
+      },
+      {
+        "q": "How does memory work in a LangChain agent?",
+        "a": "Short-term: the conversation is the agent's state, saved by a checkpointer (`InMemorySaver` in development, `PostgresSaver` in production) under a `thread_id`; calling again with the same id continues the conversation. Long threads need trimming or `SummarizationMiddleware`. Long-term facts about a user go in a store under a namespace like (\"users\", user_id), read and written by tools via `runtime.store`."
+      },
+      {
+        "q": "How would you stream an agent's answer and its progress to a web UI?",
+        "a": "Run `agent.stream(..., stream_mode=[\"messages\", \"updates\"])`: `messages` yields tokens for the typing effect, `updates` yields each step (\"called search_orders\") for progress lines, and tools can emit `custom` events through `runtime.stream_writer`. Forward them from a FastAPI endpoint as Server-Sent Events, and stop when the client disconnects."
+      },
+      {
+        "q": "Would you use LangChain in production?",
+        "a": "Selectively. Yes for agents: one interface across providers, solved tools and structured output, middleware for production controls, LangGraph persistence underneath, LangSmith tracing. The costs are layers to debug and API churn. So: pin versions, keep prompts and business logic in my own modules, write tools as plain testable functions, trace everything — and skip the framework for single calls, where the SDK plus Pydantic and a retry is simpler."
       }
     ]
   },
@@ -542,12 +555,7 @@ export const AI_STACK_ASKED = {
       {
         "q": "You report recall@10 on 51 questions. How much do you trust a 0.02 difference?",
         "a": "Not at all: 0.02 on 51 questions is about **one question flipping**. Report per-question wins and losses between the two systems, use a paired test (bootstrap or sign test over questions), or grow the set to a few hundred. Check run-to-run variance if anything is stochastic. Treat a change as real only if it's consistent across slices and larger than the noise."
-      }
-    ]
-  },
-  "CH-09": {
-    "posts": 0,
-    "items": [
+      },
       {
         "q": "How would you evaluate a tool-using LangGraph agent before launch?",
         "a": "1. **A task set**: 30–100 realistic tasks from real requests and known failures, each with a check on the **end state** (the right row changed, the ticket created with the right fields) plus must / must-not rules.\n2. **An isolated environment** per trial: a seeded test database, mocked external APIs.\n3. **Graders**: code checks on the end state and the trajectory (approval before writes, no forbidden tools, ≤ N steps); an LLM judge for the user-facing message.\n4. **Several trials per task** → pass^k for consistency.\n5. Read the failing transcripts, fix, and keep the failures as regression tests.\n6. Track tokens, steps and latency per task."
@@ -579,83 +587,6 @@ export const AI_STACK_ASKED = {
       {
         "q": "Which online signals tell you the assistant is getting worse?",
         "a": "- **Explicit**: thumbs-down rate, written complaints.\n- **Behavioural**: regenerate rate, abandonment, escalations to a human, the same question rephrased repeatedly.\n- **System**: validation failures, tool errors, fallback and refusal rates, shifts in output length, latency and cost per request.\n- **Sampled judges**: faithfulness and policy pass rates on production traffic.\n\nSegment by intent and customer tier: averages hide local regressions."
-      }
-    ]
-  },
-  "CH-10": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "How do you structure an LLM system design answer?",
-        "a": "Seven steps, said out loud so the interviewer can follow:\n\n1. **Clarify** users, task, scale, latency, budget and the cost of a wrong answer.\n2. **Define success** and the baseline — before any architecture.\n3. **Start simple**: a prompt, then RAG, then a workflow; an agent only if needed.\n4. **Components**: gateway, data and retrieval, orchestration, tools, guardrails, caches, observability.\n5. **Evals**: an offline golden set and metrics, online sampling, a CI gate.\n6. **A cost and latency budget** with numbers.\n7. **Failures, fallbacks, the launch plan and the feedback loop.**\n\nRoughly 5 minutes on 1–2, 15 on 3–4, 15 on 5–7."
-      },
-      {
-        "q": "Rough cost estimate: 1M queries a day, 3K input and 300 output tokens each.",
-        "a": "Per day: 3B input tokens and 0.3B output tokens. At an assumed $1 per million input and $5 per million output tokens: 3,000 × $1 + 300 × $5 = **$4,500 a day, about $135K a month**.\n\nLevers: prompt caching on the static prefix (system prompt and instructions are often half the input, and cached reads cost a fraction), fewer and shorter retrieved chunks, a smaller model for easy queries, caching repeated questions, shorter outputs. State the price assumption — in a real estimate use the provider's current prices."
-      },
-      {
-        "q": "What are the components of a production LLM platform?",
-        "a": "From the request inwards:\n\n- **Gateway**: auth, per-tenant rate limits and quotas, model routing, retries and fallbacks, caching, logging.\n- **Context construction**: retrieval (vector + keyword), query rewriting, memory, tool results.\n- **Guardrails**: input (injection, PII, scope) and output (schema, groundedness, policy).\n- **Orchestration**: the workflow or agent (LangGraph) with state and checkpoints.\n- **Models**: hosted APIs and/or self-hosted models.\n- **Observability and evals**: traces, cost, online evals, feedback.\n- **Data pipeline**: ingestion, chunking, embedding, freshness, deletes."
-      },
-      {
-        "q": "Which failure modes would you design for in any LLM system?",
-        "a": "- **Provider outages, 429s, timeouts** → retries with backoff, a fallback model or provider, graceful degradation.\n- **Bad output** (hallucination, wrong format) → validation, groundedness checks, an abstain path.\n- **Prompt injection** from users or retrieved content → least privilege, approvals, no untrusted-content-to-action path.\n- **Cost blow-ups** (loops, long contexts) → budgets and caps per request and per tenant.\n- **Stale or missing data** → freshness monitoring, citations.\n- **Silent quality drift** → pinned versions, online evals, alerts."
-      },
-      {
-        "q": "Workflow or agent — which is your default, and why?",
-        "a": "A **workflow**, until the evidence says otherwise. If I can write the steps down, code should control their order: it's cheaper, faster, testable step by step and predictable. I use an agent when the path genuinely can't be known in advance — open-ended investigation, variable tool sequences — and when mistakes are cheap to detect or gated by approval. Even then the agent sits inside deterministic code: caps on steps and spend, typed tools with permissions, approvals for writes, and an outcome check at the end."
-      },
-      {
-        "q": "Name the workflow patterns and a use for each.",
-        "a": "- **Prompt chaining**: a fixed sequence (extract → validate → draft) with checks between steps.\n- **Routing**: classify, then dispatch (billing vs technical support; a cheap vs a strong model).\n- **Parallelisation**: sectioning (independent subtasks at once) or voting (several attempts, aggregated).\n- **Orchestrator-workers**: a model splits the task into dynamic subtasks for workers (multi-file changes, research).\n- **Evaluator-optimizer**: generate → critique → revise until a check passes (writing or translation with clear criteria)."
-      },
-      {
-        "q": "What controls does every production agent need?",
-        "a": "- **Budgets**: maximum steps, tokens, wall-clock time and cost per run, with defined behaviour when hit.\n- **Least-privilege tools**: per-user permissions enforced in the tool; read-only by default.\n- **Approval** for irreversible or high-impact actions.\n- **Idempotent tools**, so retries can't apply twice.\n- **Validation** of tool arguments and of the final output.\n- **Tracing** of every step and **outcome verification** in the system of record.\n- **Evals**: trajectory rules and end-state checks before launch."
-      },
-      {
-        "q": "What is the agent-computer interface, and why does it matter?",
-        "a": "The tools — their names, descriptions, parameters, outputs and errors — are the interface the model works through, the way a UI is for people. Anthropic reported spending more time optimising tools than prompts for their agents. A good interface makes correct use obvious, uses formats the model handles well, prefers absolute identifiers to relative ones, makes mistakes hard (constrained parameters), returns concise outputs and helpful errors — and gets tested by watching the model use it."
-      },
-      {
-        "q": "Design document Q&A for 500 tenants and 10M documents. Walk me from ingestion to answer.",
-        "a": "- **Ingestion**: per-tenant connectors push change events onto a queue; workers parse, chunk (~300–500 tokens, structure-aware), embed in batches, and upsert into the vector and keyword indexes with `tenant_id`, `doc_id`, `version` and `acl` metadata. Deletes and permission changes are events too.\n- **Query**: authenticate → resolve the user's groups → hybrid retrieval filtered by tenant and ACL → RRF → cross-encoder rerank to ~5 → prompt with labelled chunks → stream an answer with citations → groundedness check.\n- **Around it**: a gateway with per-tenant quotas, prompt caching, traces per request, evals per tenant slice, fallbacks (keyword-only search if the vector store is down; a secondary model).\n- **Numbers**: 10M docs × ~10 chunks = 100M vectors — shard by tenant; the big tenants get their own index."
-      },
-      {
-        "q": "An index per tenant, partitions, or a shared index with a filter — trade-offs?",
-        "a": "**Per tenant**: strong isolation, no filtered-ANN recall loss, easy tenant deletion and per-tenant tuning; but many indexes to operate and small tenants waste resources. **Shared + filter**: efficient for many small tenants, but every query is a filtered ANN search (watch recall — use iterative scans or filter-aware engines) and one bug leaks data across tenants. A hybrid is common: dedicated indexes for large tenants, partitioned shared ones for the long tail, with the tenant filter enforced below the application (RLS or a wrapper that can't be bypassed)."
-      },
-      {
-        "q": "A document is deleted or a user loses access. How does the index stay correct, and how fast?",
-        "a": "Treat both as events with an SLO (say under five minutes). A delete removes every chunk with that `doc_id` from both indexes and from caches. A permission change updates the ACL metadata on that document's chunks — or, better, store ACLs by group and resolve the user's groups at query time, so revoking a user needs no re-indexing. A nightly reconciliation job diffs source against index to catch missed events. Test it: an eval case that asks about a revoked document must find nothing."
-      },
-      {
-        "q": "Set a latency budget for the whole path.",
-        "a": "Targeting ~2 s to first token: auth and ACL resolution 50 ms · query embedding 30 ms · hybrid retrieval 80 ms · rerank 150 ms · prompt assembly 20 ms · time to first token from the model 600–1,200 ms (depends on prompt length; prompt caching helps) — then stream. Name what you'd cut if it's over: drop the reranker for simple queries, fewer chunks, a faster model, cache hot queries."
-      },
-      {
-        "q": "What's your fallback when the vector store or the model provider is down?",
-        "a": "Vector store down → keyword-only retrieval (worse but working) with a banner. Model provider down or rate-limited → a fallback model through the gateway (evaluated in advance) or a second provider; if everything fails, return the top documents as links with “I can't generate an answer right now” rather than an error. Circuit breakers stop hammering the failing dependency, and every fallback is logged and alerted on."
-      },
-      {
-        "q": "Design an agent that lets planners query and change replenishment settings in plain English.",
-        "a": "- **Tools**: `query_settings` (read-only, parameterised SQL over allowed views), `simulate_change` (what-if on a copy), `propose_change` (writes to a staging overlay), `commit_change` (only reachable after approval).\n- **Flow**: a LangGraph agent with a Postgres checkpointer → read and simulate freely → `propose_change` → `interrupt()` with the diff and expected impact → the planner approves, edits or rejects → commit with a version check → confirm by reading back from the system of record.\n- **Controls**: the user's own permissions applied in every tool, step and spend caps, idempotent commits keyed by proposal id, proposal expiry, full traces and an audit log.\n- **Evals**: scenarios replayed in a sandbox with end-state checks and the rule “no commit without approval”."
-      },
-      {
-        "q": "A tool call times out and the agent retries. How do you stop a write applying twice?",
-        "a": "Give every write an **idempotency key** derived from the proposal (e.g. `proposal_id`), store it with the result, and have the write path check it — a unique constraint on (key) or an upsert — so a repeat returns the first result instead of applying again. Retries happen in code with backoff, not by the model inventing a new call; and after a timeout, read the system of record to learn whether the first attempt landed before retrying."
-      },
-      {
-        "q": "How do you verify the agent's claim that it succeeded?",
-        "a": "Don't take its word: after a write, **read the system of record** and compare with the intended change (the row has the new value and version, the ticket exists with the right fields). Report success to the user only from that check. In evals, grade the end state of the environment, not the agent's final message."
-      },
-      {
-        "q": "Which tools get which permissions, and where is that enforced?",
-        "a": "The agent acts **as the user**: each tool call carries the user's identity and the tool checks it against the same authorisation the normal UI uses — the agent never gets a superuser credential. Read tools use read-only connections scoped to permitted data; write tools require both the user's permission and the approval tier for the change size. Enforced in the tool or service layer, never in the prompt."
-      },
-      {
-        "q": "What do you trace so a bad run can be debugged after the fact?",
-        "a": "The full trajectory: the user request, every model call (prompt version, inputs, outputs, tokens), every tool call (arguments, results, errors, latency), state at each checkpoint, interrupts with the reviewer's decision, and the final outcome — all under one trace id linked to the audit record. With LangGraph checkpoints you can also replay from any step to reproduce the failure."
       }
     ]
   },
@@ -693,27 +624,6 @@ export const AI_STACK_ASKED = {
       {
         "q": "Define cost per resolved task, and say why it beats cost per request.",
         "a": "Total LLM and infrastructure spend over a period ÷ tasks **successfully completed** in it (tickets resolved, answers accepted). Cost per request rewards cheap calls even when they fail and cause retries, escalations and repeat contacts. A model three times pricier per call that resolves twice as many tasks without a human can be cheaper per outcome. It ties cost work to the quality metric, so you can't improve one by breaking the other."
-      }
-    ]
-  },
-  "CH-12": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "When would you fine-tune instead of using RAG?",
-        "a": "When the gap is behaviour, not knowledge: a strict output format, a house style, or a narrow task (classification, extraction) that must run faster and cheaper on a small model. Not for facts that change — a fine-tuned model can't cite them and must be retrained on every change. Decide with an eval: fine-tune only if it beats a well-prompted strong model on your test set at acceptable cost."
-      },
-      {
-        "q": "What does LoRA change, and why is it cheaper?",
-        "a": "It freezes the original weights and trains, next to selected weight matrices, two small matrices whose product acts as a correction — often under 1% of the parameters. Training needs far less memory, and the result is a small adapter file; one base model can serve many adapters. QLoRA does the same on a 4-bit quantised base."
-      },
-      {
-        "q": "RLHF vs DPO?",
-        "a": "RLHF trains a reward model on human preference comparisons, then optimises the model with reinforcement learning to score highly, with a penalty for drifting from the original. DPO skips the reward model and RL and trains directly on (preferred, rejected) pairs — simpler and more stable, and widely used."
-      },
-      {
-        "q": "Your extraction prompt is 95% accurate on a large model but too slow and expensive. What do you do?",
-        "a": "Distil: have the large model (plus human review of disagreements) label a few thousand real inputs, LoRA-fine-tune a small model on them, and compare on a held-out set. Ship it if it's within the quality bar, with a cascade sending low-confidence or invalid outputs to the large model. Retrain as inputs drift."
       },
       {
         "q": "Why is continuous batching faster than static batching?",
@@ -732,118 +642,28 @@ export const AI_STACK_ASKED = {
         "a": "Fewer bits per weight (8-bit halves memory, 4-bit quarters it) mean fewer GPUs, more room for the KV cache and faster decoding, at a small quality cost that grows as bits shrink and varies by task — so measure on your own test set before switching."
       },
       {
-        "q": "What problem does MCP solve that plain function calling doesn't?",
-        "a": "Function calling is the model-side mechanism: the model emits a structured call to a tool you defined in your own code. MCP standardises the **integration side**: any tool or data source packaged once as an MCP server can be plugged into any MCP-capable application (an IDE, a chat app, your agent) without custom glue per pair. It turns N×M integrations into N+M, and adds discovery of tools, resources and prompts."
+        "q": "Rough cost estimate: 1M queries a day, 3K input and 300 output tokens each.",
+        "a": "Per day: 3B input tokens and 0.3B output tokens. At an assumed $1 per million input and $5 per million output tokens: 3,000 × $1 + 300 × $5 = **$4,500 a day, about $135K a month**.\n\nLevers: prompt caching on the static prefix (system prompt and instructions are often half the input, and cached reads cost a fraction), fewer and shorter retrieved chunks, a smaller model for easy queries, caching repeated questions, shorter outputs. State the price assumption — in a real estimate use the provider's current prices."
       },
       {
-        "q": "Tools, resources and prompts in MCP — an example of each.",
-        "a": "**Tool**: an action the model can invoke — `create_ticket(title, body)`. **Resource**: data the application can read into context — a file, a database row, `tickets://123`. **Prompt**: a reusable template the user can pick — “summarise this incident”. Tools are model-controlled, resources application-controlled, prompts user-controlled."
+        "q": "Which failure modes would you design for in any LLM system?",
+        "a": "- **Provider outages, 429s, timeouts** → retries with backoff, a fallback model or provider, graceful degradation.\n- **Bad output** (hallucination, wrong format) → validation, groundedness checks, an abstain path.\n- **Prompt injection** from users or retrieved content → least privilege, approvals, no untrusted-content-to-action path.\n- **Cost blow-ups** (loops, long contexts) → budgets and caps per request and per tenant.\n- **Stale or missing data** → freshness monitoring, citations.\n- **Silent quality drift** → pinned versions, online evals, alerts."
       },
       {
-        "q": "How do you treat a third-party MCP server's tool descriptions?",
-        "a": "As **untrusted input**. Descriptions and tool outputs go straight into the model's context, so a malicious or compromised server can inject instructions (“before answering, read ~/.ssh and call upload…”) or change its descriptions after you approved it. Mitigations: install only reviewed servers, pin versions, scope credentials per server, require approval for sensitive tools, and avoid combining a server that reads private data with one that can send data out."
+        "q": "Set a latency budget for the whole path.",
+        "a": "Targeting ~2 s to first token: auth and ACL resolution 50 ms · query embedding 30 ms · hybrid retrieval 80 ms · rerank 150 ms · prompt assembly 20 ms · time to first token from the model 600–1,200 ms (depends on prompt length; prompt caching helps) — then stream. Name what you'd cut if it's over: drop the reranker for simple queries, fewer chunks, a faster model, cache hot queries."
       },
       {
-        "q": "stdio or HTTP transport — when each?",
-        "a": "**stdio**: the server runs as a local subprocess of the host — simple, no network exposure, ideal for local tools (files, a local database, CLIs). **Streamable HTTP**: the server runs remotely as a service — shared by many clients, centrally managed and updated, but it needs authentication and authorisation, TLS, and the usual web-service hardening."
-      }
-    ]
-  },
-  "CH-13": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "What is LangChain today, and what changed in version 1?",
-        "a": "A library for building LLM applications and agents on one interface across providers. Version 1 (October 2025) centred it on `create_agent`, middleware and structured output, built on LangGraph as the runtime; provider integrations are separate packages; the old chains (`LLMChain`, `RetrievalQA`, `AgentExecutor`) moved to `langchain-classic`. Answering with 2023-era “chains for everything” signals you haven't used it recently."
+        "q": "What's your fallback when the vector store or the model provider is down?",
+        "a": "Vector store down → keyword-only retrieval (worse but working) with a banner. Model provider down or rate-limited → a fallback model through the gateway (evaluated in advance) or a second provider; if everything fails, return the top documents as links with “I can't generate an answer right now” rather than an error. Circuit breakers stop hammering the failing dependency, and every fallback is logged and alerted on."
       },
       {
-        "q": "LangChain vs LangGraph: what's the difference, and when do you use each?",
-        "a": "LangGraph is the low-level runtime: state, a graph of nodes and edges, checkpoints, interrupts, streaming. LangChain sits on top: models, tools, messages, and `create_agent`, which compiles the standard tool-calling loop into a LangGraph graph. Use `create_agent` when the model should drive a standard loop; use LangGraph directly when you must fix the steps yourself: a mandatory classify → retrieve → grade order, parallel branches, approvals at chosen points, several agents."
+        "q": "Which tools get which permissions, and where is that enforced?",
+        "a": "The agent acts **as the user**: each tool call carries the user's identity and the tool checks it against the same authorisation the normal UI uses — the agent never gets a superuser credential. Read tools use read-only connections scoped to permitted data; write tools require both the user's permission and the approval tier for the change size. Enforced in the tool or service layer, never in the prompt."
       },
       {
-        "q": "What is LCEL, and is it still worth using?",
-        "a": "The pipe syntax that composes Runnables: `prompt | model | parser`. Every Runnable has invoke, stream, batch and async versions, so the whole chain streams, batches and traces for free. Still good for short fixed pipelines (a prompt, a model, a parser; a two-step RAG chain). For loops, branches, state or retries across steps, a LangGraph graph is clearer and easier to debug."
-      },
-      {
-        "q": "How does the model know how to call your tool? What makes a good tool?",
-        "a": "`@tool` turns the function into a schema: its name, its docstring as the description, and a JSON schema of the arguments from the type hints (Literal → enum, defaults → optional). That schema is all the model sees, so the docstring is a prompt: what it does, when to use it, what it returns. Good tools: few and clearly named, one job each, arguments the model can fill reliably (ids, enums), small results, errors returned as readable text, and permission checks in code. Values the model must not choose (the user id) come from `ToolRuntime`, hidden from the schema."
-      },
-      {
-        "q": "How do you get reliable structured output in LangChain?",
-        "a": "For one call, `model.with_structured_output(PydanticModel)`. In an agent, `create_agent(..., response_format=Schema)`; the validated object is in `result[\"structured_response\"]`. LangChain picks `ProviderStrategy` (the provider's native structured output) when supported, else `ToolStrategy` (the schema as a tool the model must call), whose `handle_errors` feeds validation errors back for another try. Still validate at the boundary and log the failure rate."
-      },
-      {
-        "q": "What does create_agent build, and what do you get for free?",
-        "a": "A LangGraph graph: a model node, a tools node, and an edge that loops back while the model's reply contains tool calls, ending when it answers without them. Because it's a graph you get: a checkpointer for per-thread memory, streaming of tokens and steps, interrupts (human approval), `context_schema` for per-run data, and middleware hooks around every model and tool call."
-      },
-      {
-        "q": "Middleware: what hooks exist, and in what order do [m1, m2, m3] run?",
-        "a": "Node-style hooks `before_agent`, `before_model`, `after_model`, `after_agent` (can update state or jump) and wrap-style `wrap_model_call`, `wrap_tool_call` (modify, retry, skip, fall back). `before_*` run m1 → m3, `wrap_*` nest with m1 outermost, `after_*` run m3 → m1. Put logging and retries first (outermost), guards that must run right before the model (PII masking) last."
-      },
-      {
-        "q": "A conversation loops through 40 tool calls, leaks an email into traces, and dies when the provider has an outage. Which middleware?",
-        "a": "`ModelCallLimitMiddleware` / `ToolCallLimitMiddleware` to cap the loop; `PIIMiddleware` to mask or block emails and card numbers; `ModelRetryMiddleware` and `ModelFallbackMiddleware` for the outage; and `SummarizationMiddleware` if long threads are slow and expensive. Then trace and alert on how often each fires — a fallback rate jumping is a signal."
-      },
-      {
-        "q": "How does memory work in a LangChain agent?",
-        "a": "Short-term: the conversation is the agent's state, saved by a checkpointer (`InMemorySaver` in development, `PostgresSaver` in production) under a `thread_id`; calling again with the same id continues the conversation. Long threads need trimming or `SummarizationMiddleware`. Long-term facts about a user go in a store under a namespace like (\"users\", user_id), read and written by tools via `runtime.store`."
-      },
-      {
-        "q": "How would you stream an agent's answer and its progress to a web UI?",
-        "a": "Run `agent.stream(..., stream_mode=[\"messages\", \"updates\"])`: `messages` yields tokens for the typing effect, `updates` yields each step (\"called search_orders\") for progress lines, and tools can emit `custom` events through `runtime.stream_writer`. Forward them from a FastAPI endpoint as Server-Sent Events, and stop when the client disconnects."
-      },
-      {
-        "q": "Would you use LangChain in production?",
-        "a": "Selectively. Yes for agents: one interface across providers, solved tools and structured output, middleware for production controls, LangGraph persistence underneath, LangSmith tracing. The costs are layers to debug and API churn. So: pin versions, keep prompts and business logic in my own modules, write tools as plain testable functions, trace everything — and skip the framework for single calls, where the SDK plus Pydantic and a retry is simpler."
-      }
-    ]
-  },
-  "CH-14": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "Why LangGraph instead of a plain agent loop, or plain Python?",
-        "a": "A loop lets the model decide every step; some systems need steps you guarantee (classify first, check permissions before a refund, ask a human before paying). LangGraph makes those steps an explicit graph and adds what plain code doesn't give you: state saved after every step (resume, continue conversations), pausing for a human, streaming every step, and replaying or forking a run. The model can still decide at the points you choose."
-      },
-      {
-        "q": "What is a reducer, and what happens when two parallel nodes write the same key?",
-        "a": "A reducer says how a node's update merges into a state key: none → overwrite, `operator.add` → concatenate lists, `add_messages` → append, or replace a message with the same id. Parallel nodes in one super-step both write; with a reducer both updates are merged, without one LangGraph can't choose and raises `InvalidUpdateError`. Fix: add a reducer or give each node its own key."
-      },
-      {
-        "q": "Explain super-steps.",
-        "a": "LangGraph runs in rounds. In each, every scheduled node runs (in parallel if several), all reading the state as it was at the start of the round; none sees the others' updates. At the end, updates are merged through the reducers and a checkpoint is saved; then the edges choose the next round. That's why a fan-in node waits for all branches, and why a crash loses at most the current round."
-      },
-      {
-        "q": "How do you run a step once per item when the number of items is only known at run time?",
-        "a": "A router returns a list of `Send(\"node\", {...})`, one per item, each with its own small input. The copies run in parallel in the next super-step and write into a key with an appending reducer (`operator.add`); a following node combines them. That's map-reduce. Cap the fan-out for rate limits and cost, and decide what a single failure does."
-      },
-      {
-        "q": "What is a checkpoint, and what is a thread?",
-        "a": "A checkpoint is a saved snapshot of the state, plus what runs next, written by the checkpointer after every super-step. A thread is a sequence of runs sharing that state, named by `thread_id` — one conversation, ticket or job. Same thread id → the run continues from the latest checkpoint. They enable memory, interrupts, crash recovery and time travel (`get_state_history`, replay from a `checkpoint_id`, fork with `update_state`)."
-      },
-      {
-        "q": "How does interrupt work, and what is the trap?",
-        "a": "`interrupt(payload)` in a node saves the run and returns the payload to the caller; later `invoke(Command(resume=value), config)` on the same thread continues, and `interrupt` returns `value`. The trap: the node re-runs from its first line on resume, so code before the interrupt runs twice. Put side effects after it (or in another node), make them idempotent, keep multiple interrupts in a fixed order, and always use a checkpointer."
-      },
-      {
-        "q": "A run's rewrite-and-retrieve loop ran 40 times on one strange question. How do you stop that?",
-        "a": "Brakes at several levels: a `tries` counter in the state that the router checks, with a fallback route when it runs out (or the `RemainingSteps` managed value); a `recursion_limit` in the config as a backstop (it raises `GraphRecursionError`; recent versions default very high, so set your own); and a token, cost and time budget for the whole run."
-      },
-      {
-        "q": "The server crashes mid-run. What happens, and what can go wrong?",
-        "a": "With a durable checkpointer (Postgres), invoke the same thread with `None` and the run resumes from the last checkpoint; nodes that finished in the interrupted super-step aren't re-run. What can go wrong: the node that was running re-runs, so a side effect it already did (a charge, an email) happens twice. Make those idempotent (an idempotency key) or wrap them in `@task` so the result is saved; use retry policies for transient errors."
-      },
-      {
-        "q": "Short-term vs long-term memory in LangGraph?",
-        "a": "Short-term is the thread's state, saved by the checkpointer — the conversation and working data of one thread, trimmed or summarised as it grows. Long-term is a Store passed to `compile(store=...)`: items under namespaces like (\"users\", user_id), with put/get and optional semantic search, shared across threads and read in nodes through `runtime.store`. Per-run settings (user id, model choice) go in `context_schema`, not in state."
-      },
-      {
-        "q": "Supervisor or handoffs for a multi-agent system — and should it be multi-agent at all?",
-        "a": "Supervisor: a coordinator routes to specialist agents (often subgraphs) and collects results — easier to control, trace and evaluate. Handoffs/swarm: agents pass control directly with `Command(goto=..., graph=Command.PARENT)` — fewer hops, harder to reason about. And split only when parts need different tools or instructions or can run in parallel; otherwise one agent with good tools is cheaper and easier to evaluate."
-      },
-      {
-        "q": "How do you run a LangGraph agent in production?",
-        "a": "Compile the graph once at startup; Postgres checkpointer and store so any instance can continue any thread; thread ids issued by my system and tied to the user; serve it from FastAPI streaming SSE (or the Agent Server, which adds background runs, queues and double-texting handling); caps on loops, tokens, cost and tool timeouts; LangSmith or OpenTelemetry tracing; and evals on whole trajectories before each release."
+        "q": "What do you trace so a bad run can be debugged after the fact?",
+        "a": "The full trajectory: the user request, every model call (prompt version, inputs, outputs, tokens), every tool call (arguments, results, errors, latency), state at each checkpoint, interrupts with the reviewer's decision, and the final outcome — all under one trace id linked to the audit record. With LangGraph checkpoints you can also replay from any step to reproduce the failure."
       }
     ]
   },
@@ -861,6 +681,14 @@ export const AI_STACK_ASKED = {
       {
         "q": "When do you choose an agent over a workflow?",
         "a": "Default to a workflow: fixed steps you wrote, with the model used at chosen points. It is cheaper, faster and testable. Choose an agent (a loop where the model picks tools) only when the steps genuinely depend on what is discovered at run time, such as research or coding. Even then, keep safety in code: permissions, budgets, approvals for risky actions. Many good designs route common cases to workflows and only the long tail to an agent."
+      },
+      {
+        "q": "How do you structure an LLM system design answer?",
+        "a": "Seven steps, said out loud so the interviewer can follow:\n\n1. **Clarify** users, task, scale, latency, budget and the cost of a wrong answer.\n2. **Define success** and the baseline — before any architecture.\n3. **Start simple**: a prompt, then RAG, then a workflow; an agent only if needed.\n4. **Components**: gateway, data and retrieval, orchestration, tools, guardrails, caches, observability.\n5. **Evals**: an offline golden set and metrics, online sampling, a CI gate.\n6. **A cost and latency budget** with numbers.\n7. **Failures, fallbacks, the launch plan and the feedback loop.**\n\nRoughly 5 minutes on 1–2, 15 on 3–4, 15 on 5–7."
+      },
+      {
+        "q": "What are the components of a production LLM platform?",
+        "a": "From the request inwards:\n\n- **Gateway**: auth, per-tenant rate limits and quotas, model routing, retries and fallbacks, caching, logging.\n- **Context construction**: retrieval (vector + keyword), query rewriting, memory, tool results.\n- **Guardrails**: input (injection, PII, scope) and output (schema, groundedness, policy).\n- **Orchestration**: the workflow or agent (LangGraph) with state and checkpoints.\n- **Models**: hosted APIs and/or self-hosted models.\n- **Observability and evals**: traces, cost, online evals, feedback.\n- **Data pipeline**: ingestion, chunking, embedding, freshness, deletes."
       }
     ]
   },
@@ -878,23 +706,39 @@ export const AI_STACK_ASKED = {
       {
         "q": "Answers are fluent but sometimes cite the wrong document. How do you debug it?",
         "a": "Split retrieval from generation: check recall@k and the reranker on the failing questions (was the right chunk retrieved and ranked high?), then groundedness and citation accuracy (did the answer stick to and cite what it used?). Common causes: stale or duplicate versions in the index, chunks without enough context (add titles and section headers), or citations assigned after the fact instead of by chunk id."
+      },
+      {
+        "q": "Design document Q&A for 500 tenants and 10M documents. Walk me from ingestion to answer.",
+        "a": "- **Ingestion**: per-tenant connectors push change events onto a queue; workers parse, chunk (~300–500 tokens, structure-aware), embed in batches, and upsert into the vector and keyword indexes with `tenant_id`, `doc_id`, `version` and `acl` metadata. Deletes and permission changes are events too.\n- **Query**: authenticate → resolve the user's groups → hybrid retrieval filtered by tenant and ACL → RRF → cross-encoder rerank to ~5 → prompt with labelled chunks → stream an answer with citations → groundedness check.\n- **Around it**: a gateway with per-tenant quotas, prompt caching, traces per request, evals per tenant slice, fallbacks (keyword-only search if the vector store is down; a secondary model).\n- **Numbers**: 10M docs × ~10 chunks = 100M vectors — shard by tenant; the big tenants get their own index."
+      },
+      {
+        "q": "An index per tenant, partitions, or a shared index with a filter — trade-offs?",
+        "a": "**Per tenant**: strong isolation, no filtered-ANN recall loss, easy tenant deletion and per-tenant tuning; but many indexes to operate and small tenants waste resources. **Shared + filter**: efficient for many small tenants, but every query is a filtered ANN search (watch recall — use iterative scans or filter-aware engines) and one bug leaks data across tenants. A hybrid is common: dedicated indexes for large tenants, partitioned shared ones for the long tail, with the tenant filter enforced below the application (RLS or a wrapper that can't be bypassed)."
+      },
+      {
+        "q": "A document is deleted or a user loses access. How does the index stay correct, and how fast?",
+        "a": "Treat both as events with an SLO (say under five minutes). A delete removes every chunk with that `doc_id` from both indexes and from caches. A permission change updates the ACL metadata on that document's chunks — or, better, store ACLs by group and resolve the user's groups at query time, so revoking a user needs no re-indexing. A nightly reconciliation job diffs source against index to catch missed events. Test it: an eval case that asks about a revoked document must find nothing."
       }
     ]
   },
-  "DP-09": {
+  "DP-02": {
     "posts": 0,
     "items": [
       {
-        "q": "How do you turn 'waterproof boots under 5,000, wide fit' into a search?",
-        "a": "Detect the category, then extract a structured intent constrained to that category's facet schema: hard filters (price <= 5000, waterproof = true, width = wide) and soft preferences that feed ranking. Validate and normalise in code (units, currency, synonyms). If hard filters return nothing, relax the least important one and tell the shopper. Embedding the whole sentence would treat the price limit as vague similarity."
+        "q": "How do you stop the agent refunding the wrong order or the wrong amount?",
+        "a": "The refund tool does not trust the model: it reads the order from the database using the session's customer id, checks the order belongs to them, recomputes the refundable amount from policy, and rejects mismatches. Amounts above a threshold need human approval. The call carries an idempotency key so a retry cannot refund twice, and the result is verified against the payment system before the agent tells the customer."
       },
       {
-        "q": "Search runs at 3,000 queries per second. How do you add an LLM without hurting latency or cost?",
-        "a": "Tier it: cache parsed intents for head queries, send plain keyword queries straight to classic search, and use a small fine-tuned or distilled parser for the rest, with lexical retrieval running in parallel. Any message is generated after the results and streamed in. Move heavy LLM work offline: enrich product attributes once at ingestion and use them as ranking features."
+        "q": "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
+        "a": "The workflow checkpoints its state and pauses at an approval step; the request goes to an approval queue with the proposed action and evidence. The customer gets a status message. When the manager decides, the run resumes from the checkpoint (on any server), executes the approved action idempotently and notifies the customer. Timeouts escalate or expire the request."
       },
       {
-        "q": "How do you keep multi-turn refinement working ('lighter ones', 'in black')?",
-        "a": "Store the structured intent and the last result ids per session (Redis with a TTL), not the transcript. Each turn produces a delta applied to the stored intent; references like 'the second one' resolve against the last results; a topic change resets the intent. Logging the intent per turn shows whether understanding or ranking caused a bad result."
+        "q": "How would you measure whether the support agent is good?",
+        "a": "Outcome metrics on real traffic: resolution rate without human escalation, reopened tickets, customer rating, wrong-action rate from audits. Offline: scripted scenarios in a sandbox graded on end state and trajectory rules (read before write, approval above limit), reported as pass^k. Plus cost and latency per resolved ticket."
+      },
+      {
+        "q": "How do you verify the agent's claim that it succeeded?",
+        "a": "Don't take its word: after a write, **read the system of record** and compare with the intended change (the row has the new value and version, the ticket exists with the right fields). Report success to the user only from that check. In evals, grade the end state of the environment, not the agent's final message."
       }
     ]
   },
@@ -915,40 +759,6 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "DP-02": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "How do you stop the agent refunding the wrong order or the wrong amount?",
-        "a": "The refund tool does not trust the model: it reads the order from the database using the session's customer id, checks the order belongs to them, recomputes the refundable amount from policy, and rejects mismatches. Amounts above a threshold need human approval. The call carries an idempotency key so a retry cannot refund twice, and the result is verified against the payment system before the agent tells the customer."
-      },
-      {
-        "q": "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
-        "a": "The workflow checkpoints its state and pauses at an approval step; the request goes to an approval queue with the proposed action and evidence. The customer gets a status message. When the manager decides, the run resumes from the checkpoint (on any server), executes the approved action idempotently and notifies the customer. Timeouts escalate or expire the request."
-      },
-      {
-        "q": "How would you measure whether the support agent is good?",
-        "a": "Outcome metrics on real traffic: resolution rate without human escalation, reopened tickets, customer rating, wrong-action rate from audits. Offline: scripted scenarios in a sandbox graded on end state and trajectory rules (read before write, approval above limit), reported as pass^k. Plus cost and latency per resolved ticket."
-      }
-    ]
-  },
-  "DP-10": {
-    "posts": 0,
-    "items": [
-      {
-        "q": "How do you make sure the citations in a research report are correct?",
-        "a": "Make notes the unit of evidence: each stores a claim, the verbatim quote that supports it and a snapshot of the source. The writer may only make claims from notes it cites by id. A verifier (a calibrated judge) checks each claim against its quote; unsupported claims are rewritten, removed or flagged as inference. Contradictions between sources are surfaced, and citation precision is tracked as a metric."
-      },
-      {
-        "q": "Web pages may contain instructions aimed at your agent. How do you stay safe?",
-        "a": "Treat every page as data. Researcher agents can only search and fetch: no email, no writes, no access to user data, so an injected instruction has nothing to trigger. Pages are passed as delimited data, and researchers output only structured notes, which is all the orchestrator consumes. Add source-quality scoring and drop notes containing instructions unrelated to the question."
-      },
-      {
-        "q": "A single research run could cost a fortune. How do you cap it?",
-        "a": "Give each run a budget of tokens, tool calls and time, allocated across sub-questions. Route models: a strong one for planning, reflecting and writing, a cheaper one for reading pages, which is most of the tokens. Cache search results and pages across runs. Stop early when new rounds add little, and when the budget ends, write the best report from the notes so far and state what was not covered."
-      }
-    ]
-  },
   "DP-04": {
     "posts": 0,
     "items": [
@@ -966,20 +776,20 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "DP-08": {
+  "DP-05": {
     "posts": 0,
     "items": [
       {
-        "q": "How do you decide which extracted fields a human must review?",
-        "a": "Route by risk: fields that fail validation rules (format, cross-field consistency, mismatch with an external source), fields with low confidence (model self-reported plus agreement checks such as two extraction passes or OCR confidence), and all fields of high-impact types for new customers or document formats. Thresholds are tuned on labelled data to hit a target error rate, and reviewer corrections feed the eval set."
+        "q": "Why put a gateway in front of LLM providers instead of calling them directly?",
+        "a": "Central control of things every team needs: keys stay in one place, per-tenant quotas and budgets, routing and fallback across providers, caching, PII redaction, and one stream of usage and cost records for chargeback and debugging. It also lets you change providers or models without changing every product."
       },
       {
-        "q": "Why a workflow engine for document processing instead of a chain of queue consumers?",
-        "a": "The process has many steps, long waits (human review, external lookups), retries per step and a need for an audit trail. A durable workflow keeps the state of each case, retries steps independently, resumes after crashes and shows where each case is. Chained consumers can work but spread the state across queues and make timeouts, compensation and visibility harder."
+        "q": "How do you implement per-tenant token limits?",
+        "a": "A token bucket per tenant (and per API key) in Redis: before the call, reserve an estimate of input plus max output tokens with an atomic script; after the call, settle the real usage. Requests over the limit get 429 with retry-after. Monthly budgets are tracked from the usage records and enforced with soft and hard thresholds."
       },
       {
-        "q": "How do you deliver results reliably to the customer's system?",
-        "a": "Write the final report and an outbox event in the same database transaction; a dispatcher sends a signed webhook (HMAC with timestamp) with retries and backoff, and the customer deduplicates by event id because delivery is at-least-once. Customers can also fetch results by API, and failed deliveries are visible and replayable."
+        "q": "What is semantic caching, and when is it dangerous?",
+        "a": "Caching a response under an embedding of the prompt and returning it for new prompts whose embedding is close enough. It saves cost on repeated questions but can return a wrong answer for a question that is similar but different, or leak one user's answer to another. Use it only for non-personal, stable content, scope the cache per tenant, include model and prompt version in the key, and prefer exact-match and provider prompt caching first."
       }
     ]
   },
@@ -1017,20 +827,20 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "DP-05": {
+  "DP-08": {
     "posts": 0,
     "items": [
       {
-        "q": "Why put a gateway in front of LLM providers instead of calling them directly?",
-        "a": "Central control of things every team needs: keys stay in one place, per-tenant quotas and budgets, routing and fallback across providers, caching, PII redaction, and one stream of usage and cost records for chargeback and debugging. It also lets you change providers or models without changing every product."
+        "q": "How do you decide which extracted fields a human must review?",
+        "a": "Route by risk: fields that fail validation rules (format, cross-field consistency, mismatch with an external source), fields with low confidence (model self-reported plus agreement checks such as two extraction passes or OCR confidence), and all fields of high-impact types for new customers or document formats. Thresholds are tuned on labelled data to hit a target error rate, and reviewer corrections feed the eval set."
       },
       {
-        "q": "How do you implement per-tenant token limits?",
-        "a": "A token bucket per tenant (and per API key) in Redis: before the call, reserve an estimate of input plus max output tokens with an atomic script; after the call, settle the real usage. Requests over the limit get 429 with retry-after. Monthly budgets are tracked from the usage records and enforced with soft and hard thresholds."
+        "q": "Why a workflow engine for document processing instead of a chain of queue consumers?",
+        "a": "The process has many steps, long waits (human review, external lookups), retries per step and a need for an audit trail. A durable workflow keeps the state of each case, retries steps independently, resumes after crashes and shows where each case is. Chained consumers can work but spread the state across queues and make timeouts, compensation and visibility harder."
       },
       {
-        "q": "What is semantic caching, and when is it dangerous?",
-        "a": "Caching a response under an embedding of the prompt and returning it for new prompts whose embedding is close enough. It saves cost on repeated questions but can return a wrong answer for a question that is similar but different, or leak one user's answer to another. Use it only for non-personal, stable content, scope the cache per tenant, include model and prompt version in the key, and prefer exact-match and provider prompt caching first."
+        "q": "How do you deliver results reliably to the customer's system?",
+        "a": "Write the final report and an outbox event in the same database transaction; a dispatcher sends a signed webhook (HMAC with timestamp) with retries and backoff, and the customer deduplicates by event id because delivery is at-least-once. Customers can also fetch results by API, and failed deliveries are visible and replayable."
       }
     ]
   }
