@@ -1,191 +1,82 @@
-# Spring Part 23: JWT: Structure, Stateless Auth, Revocation and Refresh
+# Spring Part 23: JWT: Structure, Verification, Refresh and Revocation
 
-A user logs in once. For the next 15 minutes, every request to any of your 20 service instances proves who they are, and no instance looks anything up. That is what a JWT buys you. Interviewers then dig into four things: how it is verified, where Spring checks it, how refresh works, and how you kill a token early.
+By far the most-asked question here is **"how does a JWT work: its structure and how it is verified?"** (asked about seven times more often than anything else). The follow-ups: **where Spring validates it**, **access vs refresh tokens and where to store them**, and **how to revoke a JWT before it expires**.
 
-## 1. What a JWT is [P0]
+## 1. How a JWT works: structure and verification
 
-A **JWT** (JSON Web Token) is a signed, compact string that carries claims about a user. It has three parts separated by dots:
+A **JWT** (JSON Web Token) is a compact, signed token that carries facts about a user ("claims"). Its whole point: **any service can verify it on its own, without calling a database or the server that issued it.**
 
-```text
-eyJhbGciOiJSUzI1NiIsImtpZCI6ImsxIn0 . eyJzdWIiOiJhc2hhIiwicm9sZXMi... . Q2xHk9...
-            header                              payload                  signature
-```
-
-Each part is **Base64URL** encoded (a URL-safe text encoding, not encryption). Decoded:
-
-```json
-// header
-{ "alg": "RS256", "kid": "k1", "typ": "JWT" }
-
-// payload: the claims
-{ "iss": "https://auth.example", "sub": "asha", "aud": "orders-api",
-  "exp": 1767225600, "iat": 1767224700, "jti": "7f3a...", "roles": ["USER"] }
-```
-
-- `iss` (issuer): who created it. `sub` (subject): who it is about. `aud` (audience): which API it is for.
-- `exp` (expiry), `iat` (issued at), `nbf` (not before): times in seconds since 1970.
-- `jti` (JWT id): a unique id, useful for revocation.
-- Any custom claims, such as `roles`.
-
-![The three parts of a JWT](/docs-img/spring-23/jwt-anatomy.svg)
-
-The **signature** is computed over `header.payload` with a key. Change one character of the payload and the signature no longer matches.
-
-Correction: a JWT is signed, not encrypted. Anyone holding the token can decode and read the payload (paste it into jwt.io). Never put passwords or personal secrets in it. Encrypted tokens exist (JWE), but signed JWS is what people mean by "JWT".
-
-Say it like this: "A JWT is header.payload.signature, each Base64URL encoded; the payload carries claims like sub, exp and roles, and the signature lets any service verify it was issued by us and not changed, but anyone can read it."
-
-## 2. Signing and verifying [P0]
-
-Two families of algorithm:
-- **HS256** (HMAC with a shared secret): the same secret signs and verifies. Simple, but every service that verifies could also mint tokens, and the secret must be shared with all of them.
-- **RS256 / ES256** (asymmetric): the auth server signs with a **private key**; services verify with the **public key**. Services cannot mint tokens. Public keys are published as a **JWKS** (JSON Web Key Set) at a URL such as `/.well-known/jwks.json`, and the header's `kid` says which key to use, which makes key rotation easy.
-
-Prefer RS256 or ES256 whenever more than one service verifies tokens.
-
-What a verifier must check, every time:
-1. The signature, with an algorithm **you** fix, not the one the header asks for.
-2. `exp` and `nbf`, allowing a little clock skew (Spring allows 60 seconds by default).
-3. `iss`: it came from your auth server.
-4. `aud`: it was meant for this API, not some other service.
-
-The attacks these checks stop:
-- **`alg: none`**: an attacker sends an unsigned token with `"alg": "none"`. A careless library accepts it. Fix: never accept `none`; pin the expected algorithm.
-- **Algorithm confusion**: the server expects RS256, but the attacker sends HS256 signed with the server's **public** key as the HMAC secret. A library that trusts the header verifies it. Fix: pin the algorithm per key.
-
-Say it like this: "I sign with RS256 so services verify with a public key from the JWKS endpoint and can't mint tokens, and I check the signature with a pinned algorithm plus exp, iss and aud on every request."
-
-## 3. Where Spring validates the JWT [P0]
-
-The JWT is checked in a filter, inside the security filter chain, before authorization. Two ways to do it.
-
-**The standard way: Spring's resource server.** Add `spring-boot-starter-oauth2-resource-server`:
-
-```yaml
-spring.security.oauth2.resourceserver.jwt.issuer-uri: https://auth.example
-```
-```java
-http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));
-```
-
-![Where the JWT is checked in the filter chain](/docs-img/spring-23/jwt-filter.svg)
-
-1. `BearerTokenAuthenticationFilter` reads `Authorization: Bearer <token>`. No header: the request continues as anonymous.
-2. The `JwtDecoder` (Nimbus) fetches the issuer's JWKS once, caches the keys, verifies the signature and checks `exp`, `nbf` and `iss`.
-3. The `JwtAuthenticationConverter` turns claims into authorities (`scope` becomes `SCOPE_orders:read`) and builds a `JwtAuthenticationToken`.
-4. The token goes into the `SecurityContextHolder`, and `AuthorizationFilter` checks the URL rules.
-5. A bad token (wrong signature, expired) stops at step 2: the response is **401** with `WWW-Authenticate: Bearer error="invalid_token"`. A valid token without the needed role passes authentication and gets **403** from authorization.
-
-**The hand-written way** (asked when you built your own login):
-
-```java
-@Component
-class JwtFilter extends OncePerRequestFilter {
-    private final JwtService jwt;
-    JwtFilter(JwtService jwt) { this.jwt = jwt; }
-
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-            throws ServletException, IOException {
-        String h = req.getHeader("Authorization");
-        if (h != null && h.startsWith("Bearer ")) {
-            try {
-                Claims c = jwt.verify(h.substring(7));          // signature, exp, iss, aud
-                var auth = new UsernamePasswordAuthenticationToken(c.getSubject(), null, jwt.authorities(c));
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (JwtException e) {
-                SecurityContextHolder.clearContext();            // invalid: stay unauthenticated
-            }
-        }
-        chain.doFilter(req, res);                                // always continue
-    }
-}
-
-http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-```
-
-- `OncePerRequestFilter` guarantees one run per request, even with forwards.
-- On an invalid token, do not throw out of the filter. Leave the context empty and continue; the entry point then returns a clean 401 for protected URLs.
-- Public endpoints still work with no token.
-
-Also asked: the resource server does not check `aud` by default. Add a validator: `JwtValidators.createDefaultWithIssuer(issuer)` combined with an audience check, set on the `NimbusJwtDecoder`.
-
-Correction: "the JWT filter should load the user from the database on every request." Then it is no longer stateless. The token's claims should carry what authorization needs.
-
-Say it like this: "With the resource server, BearerTokenAuthenticationFilter reads the Bearer header, the JwtDecoder verifies signature, expiry and issuer against cached JWKS keys, and the claims become authorities; a bad token gets a 401 with an invalid_token header before any controller runs."
-
-## 4. Access tokens and refresh tokens [P0]
-
-A stolen access token works until it expires, so access tokens are short-lived. But nobody wants to log in every 15 minutes. So there are two tokens.
-
-- The **access token**: a JWT, short-lived (5 to 15 minutes), sent on every API call.
-- The **refresh token**: long-lived (days), sent only to the auth server's refresh endpoint, to get a new access token. Usually an opaque random string stored server-side, so it can be revoked.
+It has three parts, base64url-encoded and joined by dots: `header.payload.signature`
 
 ```mermaid
 flowchart LR
-    L["login"] --> T["access 15 min<br/>+ refresh 7 days"]
-    T --> C["call APIs with<br/>the access token"]
-    C -->|"401: expired"| R["POST /auth/refresh<br/>with refresh token"]
-    R --> N["new access token<br/>+ new refresh token"]
-    N --> C
+    H["Header<br/>alg: RS256<br/>kid: key-2026"] --> D1["."]
+    D1 --> P["Payload (claims)<br/>sub, iss, aud, exp,<br/>iat, roles"]
+    P --> D2["."]
+    D2 --> S["Signature<br/>sign(header.payload)"]
 ```
 
-**Refresh token rotation**: every refresh returns a new refresh token and invalidates the old one. **Reuse detection**: if an already-used refresh token shows up again, someone copied it. The server revokes the whole token family and forces a new login.
+- **Header**: the signing algorithm (`alg`) and which key was used (`kid`).
+- **Payload**: the claims. Standard ones: `sub` (who the token is about), `iss` (who issued it), `aud` (which API it is for), `exp` (expiry), `iat` (issued at), `jti` (a unique id). Plus custom claims such as roles or tenant id.
+- **Signature**: computed over the header and payload with the issuer's key.
 
-Say it like this: "The access token is a short-lived JWT for API calls; the refresh token is long-lived, server-side and rotated on every use, and reusing an old one revokes the whole family."
+**Signed, not encrypted.** Anyone holding the token can base64-decode the payload and read it. The signature only proves it was not **changed**. So never put secrets or sensitive personal data in a JWT.
 
-## 5. Where tokens live in the browser [P0]
+**Verification**, done by every service that receives the token:
 
-- **localStorage**: easy, but any script on the page can read it. One XSS bug and every user's token is stolen.
-- **Memory** (a JavaScript variable): not readable after a page reload, so it is lost on refresh, but it is out of `localStorage`'s reach.
-- **HttpOnly cookie**: JavaScript cannot read it, so XSS cannot steal it. But the browser sends it automatically, so CSRF is back. Use `Secure`, `SameSite=Strict` or `Lax`, and a CSRF token if cookies authenticate state-changing requests.
+1. **Check the signature** with the issuer's key, using an algorithm the service has **pinned** (never trust the token's own `alg` blindly, and never accept `none`).
+2. **Check `exp`** (not expired), **`iss`** (the expected issuer) and **`aud`** (meant for this API).
+3. Then read the claims (user, roles) and authorize.
 
-A common answer: keep the access token in memory, and the refresh token in an `HttpOnly; Secure; SameSite=Strict` cookie scoped to the refresh path (`Path=/auth/refresh`). After a reload, the app calls refresh to get a new access token.
+**Two kinds of signing keys:**
 
-Also asked: the **BFF** (backend for frontend) pattern keeps every token on a small server; the browser only holds an HttpOnly session cookie.
+- **HS256 (shared secret)**: the same secret signs and verifies. Simple, but every service that verifies could also forge tokens.
+- **RS256 / ES256 (key pair)**: the auth server signs with a **private key**; services verify with the **public key**, typically fetched from the issuer's **JWKS endpoint** and cached. Services cannot forge tokens. This is the standard for microservices.
 
-Say it like this: "I keep the access token in memory and the refresh token in an HttpOnly, Secure, SameSite cookie, because localStorage is readable by any XSS, and cookies need SameSite or a CSRF token."
+Say it like this: "A JWT is header, payload and signature, base64url-encoded. The payload holds claims like subject, issuer, audience, expiry and roles. It's signed, not encrypted, so anyone can read it but nobody can change it unnoticed. A service verifies the signature with the issuer's public key from JWKS using a pinned algorithm, then checks expiry, issuer and audience, all without calling anyone."
 
-## 6. Revoking a JWT before it expires [P0]
+## 2. Where Spring validates the JWT
 
-A user logs out, or an admin bans them. Their JWT is still valid for 12 more minutes, and every service will accept it, because no service checks anywhere. Options, from cheapest:
+In Spring Security, a JWT arriving as `Authorization: Bearer <token>` is handled by the resource-server support:
 
-- **Short expiry**: 5 to 15 minutes caps the damage. Logging out deletes the refresh token, so no new access token can be minted.
-- **A denylist**: store revoked `jti` values in Redis with a TTL equal to the token's remaining life. The filter checks it on each request. Small and self-cleaning, but every request now does a lookup.
-- **A token version per user**: put `ver: 7` in the token; bump the user's version on logout-everywhere or password change; reject tokens with an older version. One small lookup per user, cacheable.
-- **Revoke the refresh token**: the next refresh fails, so the session dies within one access-token lifetime.
+- **BearerTokenAuthenticationFilter** extracts the token from the header.
+- A **JwtDecoder** verifies the signature (using the issuer's JWKS keys) and checks `exp`, `iss` and `aud`.
+- On success, a `JwtAuthenticationToken` with the user's authorities is stored in the **SecurityContext**; controllers and `@PreAuthorize` read it from there. On failure, the response is 401.
 
-Correction: "JWTs can't be revoked." They can, but every way of doing it brings back some server-side state. That trade-off is the real answer.
+Configuration is mostly properties:
 
-Say it like this: "I keep access tokens short, revoke refresh tokens on logout, and when I need instant revocation I add a jti denylist in Redis with a TTL, accepting that it brings back a lookup per request."
-
-## 7. Complete example: issue and verify with jjwt [P1]
-
-```java
-@Service
-class JwtService {
-    private final SecretKey key = Keys.hmacShaKeyFor(secretBytes);   // HS256, 256-bit secret
-
-    String issue(String user, List<String> roles) {
-        Instant now = Instant.now();
-        return Jwts.builder()
-            .issuer("https://auth.example").subject(user).audience().add("orders-api").and()
-            .claim("roles", roles).id(UUID.randomUUID().toString())
-            .issuedAt(Date.from(now)).expiration(Date.from(now.plus(15, ChronoUnit.MINUTES)))
-            .signWith(key).compact();
-    }
-
-    Claims verify(String token) {
-        return Jwts.parser().verifyWith(key)                          // fixes the algorithm
-            .requireIssuer("https://auth.example").requireAudience("orders-api")
-            .build().parseSignedClaims(token).getPayload();            // checks exp too
-    }
-}
+```yaml
+spring.security.oauth2.resourceserver.jwt.issuer-uri: https://auth.example.com
 ```
 
-Expected behaviour:
-- `verify(issue("asha", List.of("USER")))` returns claims with subject `asha`.
-- Changing one character of the payload throws `SignatureException`.
-- A token 16 minutes old throws `ExpiredJwtException`.
-- A token with `"alg": "none"` is rejected, because `parseSignedClaims` requires a signature.
+plus `http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))` in the security chain, with sessions set to stateless.
 
-**Before the next part:** from memory, write a JWT's three parts with five claims, then draw the refresh flow with rotation, and list three ways to revoke a token with the cost of each.
+**If asked to write a JWT filter by hand:** extend `OncePerRequestFilter`; read the `Authorization` header; if it starts with `Bearer `, verify the token; on success, put an authenticated `Authentication` into `SecurityContextHolder`; on failure, return 401 and stop; with no header, continue as anonymous and let the authorization rules decide. Register it before `UsernamePasswordAuthenticationFilter`. Then say you would use Spring's resource server in production, because it already handles key rotation, clock skew and the edge cases.
+
+## 3. Access tokens, refresh tokens and where they live
+
+- **Access token**: short-lived (5 to 15 minutes), sent with every API call, verified without any lookup. If stolen, it expires soon.
+- **Refresh token**: long-lived, sent **only to the auth server** to get a new access token, and stored server-side so it **can be revoked**.
+- **Rotation**: each refresh returns a new refresh token and invalidates the old one. If an old one is ever used again, someone stole it, so the whole token family is revoked.
+
+**Where to keep them in a browser:**
+
+- **Not in localStorage**: any script, including one injected through XSS, can read it.
+- The access token **in memory** (a JavaScript variable), lost on reload and re-obtained silently.
+- The refresh token in an **HttpOnly, Secure, SameSite cookie**, which scripts cannot read.
+- Best for browser apps: a **backend-for-frontend** server keeps the tokens and gives the browser only a session cookie.
+
+Say it like this: "The access token is short-lived and sent on every call; the refresh token is long-lived, only goes to the auth server, rotates on each use and can be revoked. In the browser I keep the access token in memory and the refresh token in an HttpOnly, Secure, SameSite cookie, never localStorage."
+
+## 4. Revoking a JWT before it expires
+
+The hard part: a JWT is valid until `exp` precisely because nobody is asked. Options, from simplest to strongest:
+
+- **Short expiry, always**: limits the damage with no state at all. Combined with revoking the refresh token, a banned user is cut off within minutes.
+- **A denylist**: store the token's `jti` (or the user id) in Redis with a time-to-live equal to the token's remaining life; the validation filter rejects listed tokens. Instant logout or ban, at the cost of one fast lookup per request.
+- **A token version per user**: store a version (or "valid after" time) on the user; put it in the token; bump it to invalidate all of that user's tokens at once ("log out everywhere").
+- **Opaque tokens with introspection**: the API asks the auth server about every token. Instant revocation, but a network call per request.
+
+Say it like this: "JWTs can't be revoked by design, so I keep access tokens short-lived and revoke the refresh token. When a logout or ban must be instant, I add a Redis denylist of token ids with a TTL equal to the remaining lifetime, or a per-user token version for logging out everywhere."
+
+**Before the next part:** without looking, write the three parts of a JWT with three claims in the payload, list the four checks a service makes, and give two ways to revoke a token early.

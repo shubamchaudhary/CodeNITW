@@ -2,7 +2,7 @@
 
 Both filters and interceptors let you run code on every request without touching each controller: logging, authentication, timing, tenant checks. The interview question is almost always the same: **"Filter vs interceptor: where does each run, and which would you use?"** The common follow-up is **where you would resolve the tenant in a multi-tenant API.**
 
-## 1. Where each one runs [P0]
+## 1. Where each one runs
 
 ```mermaid
 flowchart LR
@@ -22,7 +22,7 @@ The single most important fact: **filters run before Spring knows which controll
 
 Say it like this: "Filters run first, at the servlet level, before Spring MVC; that includes Spring Security. Then DispatcherServlet picks the controller method, and only then do interceptors run, around that controller."
 
-## 2. Filters [P0]
+## 2. Filters
 
 A **filter** wraps the whole request. It runs code before passing the request on, and again after the response comes back.
 
@@ -41,7 +41,7 @@ Typical uses: **authentication, CORS, correlation or request ids, request and re
 
 In Spring Boot you usually extend `OncePerRequestFilter`, which guarantees the filter runs once per request even if the request is forwarded internally. Any filter that stores something per request (an id, a tenant) must clean it up in a `finally` block, because servlet threads are reused.
 
-## 3. Interceptors [P0]
+## 3. Interceptors
 
 An **interceptor** (`HandlerInterceptor`) belongs to Spring MVC. Because it runs after the controller method is chosen, it **knows which method will run**, including its annotations. That is its whole reason to exist.
 
@@ -57,7 +57,7 @@ Typical uses: **checks driven by custom annotations, per-endpoint auditing, timi
 
 Correction: "postHandle can change the response body." For REST controllers the JSON body has already been written by the time postHandle runs. To change a body before it is written, use `ResponseBodyAdvice`; to transform raw responses, use a filter.
 
-## 4. Which one would you use? [P0]
+## 4. Which one would you use?
 
 The rule of thumb:
 
@@ -68,11 +68,18 @@ A third option interviewers sometimes add: an **AOP aspect** wraps any Spring be
 
 Say it like this, the full answer: "A filter is a servlet-level component that runs before DispatcherServlet on every request and sees the raw request and response, so I use filters for authentication, CORS, correlation ids and logging. An interceptor is Spring MVC's hook that runs after the controller method is chosen, so it can read the method and its annotations; I use it for annotation-driven checks and per-endpoint auditing. Its preHandle can stop the request, postHandle is skipped on exceptions, and afterCompletion always runs. If I need to wrap service methods regardless of HTTP, that's an aspect."
 
-## 5. Where tenant resolution goes [P1]
+## 5. Where tenant resolution goes
 
 In a multi-tenant API every request belongs to one customer company (a **tenant**), and no request may ever see another tenant's data. The answer is a **filter, placed right after authentication**:
 
-![Tenant resolution in a filter, after authentication](/docs-img/spring-11/tenant.svg)
+```mermaid
+flowchart LR
+    R["Request with<br/>JWT"] --> A["Security filter:<br/>verify the token"]
+    A --> T["Tenant filter:<br/>tenant from the<br/>token claim"]
+    T --> H["ThreadLocal<br/>TenantContext"]
+    H --> C["Controller and<br/>data layer scope<br/>every query"]
+    T -->|"finally"| X["Clear the<br/>ThreadLocal"]
+```
 
 1. Spring Security's filter validates the user's token first.
 2. A **tenant filter** runs next. It reads the tenant from the **verified token** (a `tenant_id` claim). If the client also sends a tenant header, the filter only accepts it when it matches the token; a header alone can be faked.

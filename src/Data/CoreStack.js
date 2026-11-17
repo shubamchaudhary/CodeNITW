@@ -1481,8 +1481,8 @@ export const CORE_STACK_TOPICS = [
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
     "priority": "P0",
-    "title": "JPA core — persistence context, entity lifecycle & L1 cache",
-    "why": "Entity states, dirty checking and save vs saveAndFlush are the JPA warm-ups, and Spring Data JPA is your loudest resume claim. Two of the playlist's ten JPA videos sit here; the JDBC Template (#23), L2 cache (#26) and DTO-to-table (#27) videos are skipped — their interview question is one line each, answered on this card.",
+    "title": "JPA & Spring Data JPA — entities, relationships, fetching, queries & locking",
+    "why": "One card for all of JPA (merged from four, Nov 2026). The most-asked questions: optimistic vs pessimistic locking, lazy vs eager and LazyInitializationException, N+1, pagination and slow deep OFFSET, owning side and mappedBy, and JPA vs Hibernate vs Spring Data. Spring Data JPA is a loud resume claim, so this card is P0.",
     "resources": [
       {
         "id": "SPRING-04-r1",
@@ -1493,7 +1493,7 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 24,
         "minutes": 63,
-        "note": "Setup comes first — skim it. The JPA architecture (EntityManager, persistence context) and the entity lifecycle are what gets asked."
+        "note": "JPA architecture and the entity lifecycle; skim the setup."
       },
       {
         "id": "SPRING-04-r2",
@@ -1504,35 +1504,10 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 25,
         "minutes": 24,
-        "note": "The L1 cache is the persistence context seen from the read side — same id, one SELECT. Hold on to \"L1 vs L2\": that comparison is the whole L2 question in interviews."
-      }
-    ],
-    "minutes": 87,
-    "duration": "1h 27m",
-    "questions": [
-      "Optimistic vs pessimistic locking in JPA — when do you use each?",
-      "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
-      "EntityManager vs CrudRepository vs JpaRepository?",
-      "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
-      "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?",
-      "JDBC vs Hibernate — why use an ORM, and when would you still drop to plain JDBC (JdbcTemplate)?",
-      "First-level vs second-level cache in Hibernate — when does L2 help or hurt?"
-    ],
-    "asked": {
-      "posts": 29,
-      "items": 7
-    }
-  },
-  {
-    "id": "SPRING-07",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "JPA relationships I — @OneToOne, owning side & cascades",
-    "why": "Split into two cards, one video each. Mapping questions are routine at 2–5 years, and they are where N+1 starts. This one carries owning side, mappedBy, cascades and fetch defaults.",
-    "resources": [
+        "note": "The persistence context as the first-level cache."
+      },
       {
-        "id": "SPRING-07-r1",
+        "id": "SPRING-04-r3",
         "kind": "video",
         "title": "Spring boot: JPA (Part-6) | OneToOne Unidirectional and Bidirectional Mapping",
         "source": "Concept && Coding - by Shrayansh",
@@ -1540,30 +1515,10 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 28,
         "minutes": 66,
-        "note": ""
-      }
-    ],
-    "minutes": 66,
-    "duration": "1h 6m",
-    "questions": [
-      "One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)?",
-      "What is cascade in JPA — which cascade types are safe?"
-    ],
-    "asked": {
-      "posts": 10,
-      "items": 2
-    }
-  },
-  {
-    "id": "SPRING-22",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "JPA relationships II — @OneToMany, @ManyToOne & @ManyToMany",
-    "why": "NEW — the second half of the old relationships card. One-to-many is the mapping you will actually draw in an interview; many-to-many is the one you should argue against.",
-    "resources": [
+        "note": "@OneToOne, owning side, cascades and fetch types."
+      },
       {
-        "id": "SPRING-22-r1",
+        "id": "SPRING-04-r4",
         "kind": "video",
         "title": "Spring boot: JPA (Part-7) | OneToMany, ManyToOne & ManyToMany Unidirectional & Bidirectional Mapping",
         "source": "Concept && Coding - by Shrayansh",
@@ -1571,30 +1526,10 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 29,
         "minutes": 59,
-        "note": ""
-      }
-    ],
-    "minutes": 59,
-    "duration": "59m",
-    "questions": [
-      "How do you model a many-to-many relationship (e.g. Person ↔ Job)?",
-      "Which side should own a one-to-many — and why keep collections in sync?"
-    ],
-    "asked": {
-      "posts": 4,
-      "items": 2
-    }
-  },
-  {
-    "id": "SPRING-20",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "Spring Data queries — derived queries, JPQL, N+1 & pagination",
-    "why": "The most-asked JPA video in the playlist: lazy vs eager, LazyInitializationException and N+1 come up in more write-ups than every other JPA topic combined, and N+1 is the one you get asked to fix live. Comes after the relationship cards because N+1 lives on lazy associations. Native queries, Criteria and Specifications (#31, #32) are skipped — no write-up asked them; the one-line answer is on this card.",
-    "resources": [
+        "note": "@OneToMany, @ManyToOne and @ManyToMany."
+      },
       {
-        "id": "SPRING-20-r1",
+        "id": "SPRING-04-r5",
         "kind": "video",
         "title": "Spring boot: JPA (Part-8) | JPQL, Derived Query, N+1 Problem, Joins, Pagination and Sorting etc.",
         "source": "Concept && Coding - by Shrayansh",
@@ -1602,21 +1537,32 @@ export const CORE_STACK_TOPICS = [
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
         "position": 30,
         "minutes": 59,
-        "note": ""
+        "note": "Derived queries, JPQL, N+1 and pagination: the most-asked part."
       }
     ],
-    "minutes": 59,
-    "duration": "59m",
+    "minutes": 271,
+    "duration": "4h 31m",
     "questions": [
+      "Optimistic vs pessimistic locking in JPA — when do you use each?",
       "Lazy vs eager loading — and what causes LazyInitializationException?",
       "What is the N+1 problem in Hibernate, and how do you fix it?",
       "How do you paginate in Spring Data — and why is a deep OFFSET slow?",
+      "One-to-one vs one-to-many — how do you map them, and what is the owning side (mappedBy)?",
+      "JPA vs Hibernate vs Spring Data JPA — why use Hibernate at all?",
+      "How do you model a many-to-many relationship (e.g. Person ↔ Job)?",
       "Derived queries vs JPQL vs native SQL — how do you write complex queries in JPA?",
+      "EntityManager vs CrudRepository vs JpaRepository?",
+      "JDBC vs Hibernate — why use an ORM, and when would you still drop to plain JDBC (JdbcTemplate)?",
+      "What is cascade in JPA — which cascade types are safe?",
+      "Which side should own a one-to-many — and why keep collections in sync?",
+      "save() vs saveAndFlush(), persist vs merge — and what is dirty checking?",
+      "How do you configure Hibernate — dialect, ddl-auto, and SQL logging?",
+      "First-level vs second-level cache in Hibernate — when does L2 help or hurt?",
       "How do you build dynamic queries — Criteria API vs Specifications?"
     ],
     "asked": {
-      "posts": 34,
-      "items": 5
+      "posts": 77,
+      "items": 16
     }
   },
   {
@@ -2818,10 +2764,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 69;
+export const CORE_STACK_TOTAL = 66;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":40,"P1":20,"P2":9};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":37,"P1":20,"P2":9};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":21,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
+export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":18,"data":4,"kafka":3,"platform":8,"testing":3,"resume":6};
 
 export const CORE_STACK_MINUTES = 3650;
