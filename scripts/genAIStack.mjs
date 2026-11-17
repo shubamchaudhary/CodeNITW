@@ -162,7 +162,8 @@ for (const t of TOPICS) {
   if (dupe) errors.push(`${t.id}: drill question listed twice — "${dupe.q}"`);
 
   const resources = (t.resources || []).map((r, i) => resolveResource(r, t.id, i)).filter(Boolean);
-  if (!resources.some((r) => r.kind === "video")) errors.push(`${t.id}: every topic needs at least one video`);
+  // A design-practice topic is the built-in document itself, so it may have no video.
+  if (!t.docOnly && !resources.some((r) => r.kind === "video")) errors.push(`${t.id}: every topic needs at least one video`);
 
   // Order: sections as listed, then priority within a section.
   const si = SECTION_INDEX.get(t.section);
