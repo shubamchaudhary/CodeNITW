@@ -1849,6 +1849,39 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
+    "id": "DP-00",
+    "section": "P",
+    "sectionLabel": "Part 8 · Design practice",
+    "priority": "P0",
+    "title": "Start here — The AI system design delivery framework",
+    "why": "Every AI design question shares one skeleton and one delivery order. Interviewers score structure as much as content: requirements and success metrics first, numbers that change the design, the simplest design that works, deep dives on the hardest parts, and never skipping evals and cost.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "draw the reference architecture from memory, run the seven steps with their time boxes, state AI-specific requirements and success metrics, do token and cost estimation, and handle a vague or half-built prompt by restating, assuming and checking in.",
+      "tooDeep": "provider-specific pricing tables; GPU kernel details."
+    },
+    "know": [
+      "The reference architecture: API/edge, orchestrator (workflow or agent), context layer (retrieval, memory, tools), model gateway, guardrails, ingestion pipeline, traces and evals.",
+      "Seven steps: requirements (~5 min), success metrics (~3), entities/API/numbers (~5), high-level design (~10), deep dives (15-20), evals and safety (~5), cost/scale/trade-offs (~3).",
+      "AI-specific requirement questions: quality bar, actions, latency, freshness, data sensitivity and tenancy, budget per request.",
+      "Estimation in tokens: tokens per request x requests = tokens per day; cost = input x input price + output x output price; concurrency = QPS x stream duration.",
+      "Start with the simplest design (workflow before agent, RAG before fine-tuning, hosted before self-hosted) and add complexity only when a requirement forces it."
+    ],
+    "resources": [],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "You get a vague prompt, or a half-built system to extend. What do you do in the first five minutes?",
+      "How do you estimate the cost of an LLM feature in an interview?",
+      "When do you choose an agent over a workflow?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 3
+    }
+  },
+  {
     "id": "DP-01",
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
@@ -1881,31 +1914,31 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "DP-02",
+    "id": "DP-09",
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 2 — Customer-support agent that takes actions (refunds, approvals)",
-    "why": "Tests agent design under real stakes: tools that change money and data, policy enforcement in code, human approval, idempotency, escalation to people and measuring resolution, not just answers.",
+    "title": "Design 2 — Conversational product search",
+    "why": "Tests putting an LLM into a high-volume, latency-critical path without making it slow, expensive or untrustworthy: free text to structured filters, multi-turn state, ranking, and facts only from the catalog.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
-      "enough": "design the agent loop with scoped tools, policy checks in code, approval thresholds, idempotent side effects, durable state across an approval, human handoff, and success metrics.",
-      "tooDeep": "training the model; contact-center telephony."
+      "enough": "design schema-constrained query understanding, hard vs soft constraints, structured session state, a latency path with caching and a keyword fast path, LLM enrichment offline as ranking features, and NDCG plus A/B evaluation.",
+      "tooDeep": "training learning-to-rank models in depth; search engine internals."
     },
     "know": [
-      "Split read tools (order lookup, policy search) from write tools (refund, cancel); write tools validate policy and permissions in code and are idempotent with a key per action.",
-      "Above a threshold or outside policy, the agent proposes and a person approves; the run pauses durably (checkpointed) and resumes on the decision.",
-      "Identity comes from the authenticated session, never from the model; the agent can only act on the signed-in customer's records.",
-      "Measure resolution without escalation, wrong-action rate, cost per resolved ticket and pass^k on scripted scenarios, not only answer quality."
+      "Query understanding turns text plus session state into a structured intent: category, hard filters, soft preferences, free text; constrained to the category's allowed facets.",
+      "Most searches must not hit a big LLM: cache parsed intents for head queries, a keyword fast path, and a small distilled parser for the rest; lexical retrieval starts in parallel.",
+      "LLM work moves offline: enrich products once (attributes, tags) and feed them to the existing ranking model as features.",
+      "Prices, stock and sizes always come from catalog services; quality is judged NDCG offline and conversion in A/B tests."
     ],
     "resources": [],
     "minutes": 0,
     "duration": "—",
     "questions": [
-      "How do you stop the agent refunding the wrong order or the wrong amount?",
-      "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
-      "How would you measure whether the support agent is good?"
+      "How do you turn 'waterproof boots under 5,000, wide fit' into a search?",
+      "Search runs at 3,000 queries per second. How do you add an LLM without hurting latency or cost?",
+      "How do you keep multi-turn refinement working ('lighter ones', 'in black')?"
     ],
     "asked": {
       "posts": 0,
@@ -1917,7 +1950,7 @@ export const AI_STACK_TOPICS = [
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 3 — ChatGPT-style assistant (conversation memory, streaming, abuse limits)",
+    "title": "Design 3 — ChatGPT-style assistant with memory (streaming, context budget, limits)",
     "why": "Tests the chat product end to end at scale: streaming tokens, storing and trimming conversation history, context-window management, long-term memory, rate limits and abuse controls, and cost per user.",
     "resumeLinked": false,
     "flag": "",
@@ -1945,11 +1978,75 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
+    "id": "DP-02",
+    "section": "P",
+    "sectionLabel": "Part 8 · Design practice",
+    "priority": "P1",
+    "title": "Design 4 — Customer-support agent that takes actions (refunds, approvals)",
+    "why": "Tests agent design under real stakes: tools that change money and data, policy enforcement in code, human approval, idempotency, escalation to people and measuring resolution, not just answers.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "design the agent loop with scoped tools, policy checks in code, approval thresholds, idempotent side effects, durable state across an approval, human handoff, and success metrics.",
+      "tooDeep": "training the model; contact-center telephony."
+    },
+    "know": [
+      "Split read tools (order lookup, policy search) from write tools (refund, cancel); write tools validate policy and permissions in code and are idempotent with a key per action.",
+      "Above a threshold or outside policy, the agent proposes and a person approves; the run pauses durably (checkpointed) and resumes on the decision.",
+      "Identity comes from the authenticated session, never from the model; the agent can only act on the signed-in customer's records.",
+      "Measure resolution without escalation, wrong-action rate, cost per resolved ticket and pass^k on scripted scenarios, not only answer quality."
+    ],
+    "resources": [],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "How do you stop the agent refunding the wrong order or the wrong amount?",
+      "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
+      "How would you measure whether the support agent is good?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 3
+    }
+  },
+  {
+    "id": "DP-10",
+    "section": "P",
+    "sectionLabel": "Part 8 · Design practice",
+    "priority": "P1",
+    "title": "Design 5 — Deep research agent",
+    "why": "Tests long-running agent design end to end: planning and replanning, parallel sub-agents with isolated context, quote-backed citations that are verified, defending against prompt injection from web pages, and capping cost per run.",
+    "resumeLinked": false,
+    "flag": "",
+    "ceiling": {
+      "enough": "design an async checkpointed run with a planner, read-only researcher sub-agents producing quote-backed notes, iterative replanning with stopping rules, a writer that cites notes, a citation verifier, budgets and model routing, and evaluation against expert checklists.",
+      "tooDeep": "search engine internals; training retrieval models."
+    },
+    "know": [
+      "An async, checkpointed run: planner -> parallel researchers -> reflect and replan in rounds -> writer -> citation verifier.",
+      "Researchers have isolated contexts and only search and fetch; they return notes (claim, verbatim quote, source snapshot), never raw pages.",
+      "Citations stay honest when the writer may only cite notes and a calibrated verifier checks each claim against its quote.",
+      "Cost is capped by per-run token, tool-call and time budgets, cheap models for reading, caching across runs and early stopping on diminishing returns."
+    ],
+    "resources": [],
+    "minutes": 0,
+    "duration": "—",
+    "questions": [
+      "How do you make sure the citations in a research report are correct?",
+      "Web pages may contain instructions aimed at your agent. How do you stay safe?",
+      "A single research run could cost a fortune. How do you cap it?"
+    ],
+    "asked": {
+      "posts": 0,
+      "items": 3
+    }
+  },
+  {
     "id": "DP-04",
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 4 — AI coding assistant (a multi-step agent)",
+    "title": "Design 6 — Coding agent (a long-running multi-step agent)",
     "why": "Tests long-running agent design: planning, tool use over a repository, sandboxed execution, context management for large codebases, verification with tests, cost and safety controls.",
     "resumeLinked": false,
     "flag": "",
@@ -1977,31 +2074,31 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "DP-05",
+    "id": "DP-08",
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 5 — LLM gateway (routing, fallbacks, per-tenant limits, caching, traces)",
-    "why": "Tests platform thinking: one internal service in front of every model provider that enforces limits and budgets, routes and falls back, caches, redacts and records every call, so product teams do not each reinvent it.",
+    "title": "Design 7 — Document extraction pipeline (OCR, evidence, human review)",
+    "why": "Tests an end-to-end AI workflow for regulated businesses: uploading scanned documents, OCR, classification, structured extraction with confidence, validation against rules and external sources, human review queues and an auditable final report.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
-      "enough": "design the gateway's request path, provider abstraction, routing and fallback, token-based quotas per tenant, exact and semantic caching, PII redaction, and cost and trace recording.",
-      "tooDeep": "building a model provider; network proxy internals."
+      "enough": "design upload and storage, an orchestrated multi-step workflow, OCR and layout handling, schema-driven extraction with evidence, validation, confidence-based routing to human review, delivery of results by webhook, and evals per field.",
+      "tooDeep": "OCR model internals; training document models."
     },
     "know": [
-      "One API for all models; providers behind adapters; the gateway adds auth, quotas, routing, retries with fallback, caching, redaction and logging on every call.",
-      "Quotas are token-based per tenant and per key (token buckets in Redis), with budgets in money per month, separate from the provider's own rate limits.",
-      "Routing by policy (cheapest model that meets the task's quality bar), fallback to another provider or region on errors or timeouts, circuit breakers per provider.",
-      "Every call emits a record: tenant, model, tokens, cost, latency, cache hit, error; this powers chargeback, dashboards and incident debugging."
+      "A durable workflow per case: upload -> OCR and layout -> classify document type -> extract fields to a schema with source evidence -> validate -> route to review if needed -> assemble report -> deliver.",
+      "Each extracted field carries its value, the page and region it came from, and a confidence signal; low confidence or failed validation goes to a human review queue.",
+      "Every step is idempotent and retried independently; the workflow state is persisted so long waits (human review, external checks) survive restarts.",
+      "Quality is measured per field and document type against labelled documents, with straight-through-processing rate and reviewer correction rate as business metrics."
     ],
     "resources": [],
     "minutes": 0,
     "duration": "—",
     "questions": [
-      "Why put a gateway in front of LLM providers instead of calling them directly?",
-      "How do you implement per-tenant token limits?",
-      "What is semantic caching, and when is it dangerous?"
+      "How do you decide which extracted fields a human must review?",
+      "Why a workflow engine for document processing instead of a chain of queue consumers?",
+      "How do you deliver results reliably to the customer's system?"
     ],
     "asked": {
       "posts": 0,
@@ -2013,7 +2110,7 @@ export const AI_STACK_TOPICS = [
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 6 — Batch LLM pipeline (summarise or extract from millions of documents)",
+    "title": "Design 8 — Batch LLM pipeline (millions of documents)",
     "why": "Tests backend fundamentals applied to LLM work: queues, workers, rate limits, retries, idempotency, checkpointing, cost control and quality sampling for a job that runs for hours or days.",
     "resumeLinked": false,
     "flag": "",
@@ -2045,7 +2142,7 @@ export const AI_STACK_TOPICS = [
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 7 — Text-to-SQL for data analysts",
+    "title": "Design 9 — Text-to-SQL for data analysts",
     "why": "Tests a high-stakes generation problem: grounding the model in a large schema, generating correct SQL, executing it safely with permissions, verifying results and evaluating by execution, not by string match.",
     "resumeLinked": false,
     "flag": "",
@@ -2073,31 +2170,31 @@ export const AI_STACK_TOPICS = [
     }
   },
   {
-    "id": "DP-08",
+    "id": "DP-05",
     "section": "P",
     "sectionLabel": "Part 8 · Design practice",
     "priority": "P1",
-    "title": "Design 8 — Document-processing pipeline (OCR, extraction, validation, human review)",
-    "why": "Tests an end-to-end AI workflow for regulated businesses: uploading scanned documents, OCR, classification, structured extraction with confidence, validation against rules and external sources, human review queues and an auditable final report.",
+    "title": "Design 10 — LLM gateway (routing, fallbacks, limits, caching)",
+    "why": "Tests platform thinking: one internal service in front of every model provider that enforces limits and budgets, routes and falls back, caches, redacts and records every call, so product teams do not each reinvent it.",
     "resumeLinked": false,
     "flag": "",
     "ceiling": {
-      "enough": "design upload and storage, an orchestrated multi-step workflow, OCR and layout handling, schema-driven extraction with evidence, validation, confidence-based routing to human review, delivery of results by webhook, and evals per field.",
-      "tooDeep": "OCR model internals; training document models."
+      "enough": "design the gateway's request path, provider abstraction, routing and fallback, token-based quotas per tenant, exact and semantic caching, PII redaction, and cost and trace recording.",
+      "tooDeep": "building a model provider; network proxy internals."
     },
     "know": [
-      "A durable workflow per case: upload -> OCR and layout -> classify document type -> extract fields to a schema with source evidence -> validate -> route to review if needed -> assemble report -> deliver.",
-      "Each extracted field carries its value, the page and region it came from, and a confidence signal; low confidence or failed validation goes to a human review queue.",
-      "Every step is idempotent and retried independently; the workflow state is persisted so long waits (human review, external checks) survive restarts.",
-      "Quality is measured per field and document type against labelled documents, with straight-through-processing rate and reviewer correction rate as business metrics."
+      "One API for all models; providers behind adapters; the gateway adds auth, quotas, routing, retries with fallback, caching, redaction and logging on every call.",
+      "Quotas are token-based per tenant and per key (token buckets in Redis), with budgets in money per month, separate from the provider's own rate limits.",
+      "Routing by policy (cheapest model that meets the task's quality bar), fallback to another provider or region on errors or timeouts, circuit breakers per provider.",
+      "Every call emits a record: tenant, model, tokens, cost, latency, cache hit, error; this powers chargeback, dashboards and incident debugging."
     ],
     "resources": [],
     "minutes": 0,
     "duration": "—",
     "questions": [
-      "How do you decide which extracted fields a human must review?",
-      "Why a workflow engine for document processing instead of a chain of queue consumers?",
-      "How do you deliver results reliably to the customer's system?"
+      "Why put a gateway in front of LLM providers instead of calling them directly?",
+      "How do you implement per-tenant token limits?",
+      "What is semantic caching, and when is it dangerous?"
     ],
     "asked": {
       "posts": 0,
@@ -2115,10 +2212,10 @@ export const AI_STACK_PRIORITY_CONFIG = {
   P3: { label: "P3", blurb: "Differentiators. Skip under time pressure", cls: "bg-slate-500/15 text-slate-600 dark:text-slate-300 border-slate-500/30" },
 };
 
-export const AI_STACK_TOTAL = 23;
+export const AI_STACK_TOTAL = 26;
 
-export const AI_STACK_PRIORITY_COUNTS = {"P0":9,"P1":13,"P2":1,"P3":0};
+export const AI_STACK_PRIORITY_COUNTS = {"P0":10,"P1":15,"P2":1,"P3":0};
 
-export const AI_STACK_SECTION_COUNTS = {"S":1,"B":1,"R":3,"A":3,"E":2,"D":2,"F":1,"L":2,"P":8};
+export const AI_STACK_SECTION_COUNTS = {"S":1,"B":1,"R":3,"A":3,"E":2,"D":2,"F":1,"L":2,"P":11};
 
 export const AI_STACK_MINUTES = 2404;

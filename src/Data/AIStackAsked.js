@@ -847,6 +847,23 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
+  "DP-00": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "You get a vague prompt, or a half-built system to extend. What do you do in the first five minutes?",
+        "a": "Restate and draw what exists, ask what is missing or broken rather than what to build, and state assumptions out loud instead of waiting (\"I'll assume 10k users a day and a 2-second budget; tell me if that's off\"). Write functional and non-functional requirements, including the AI-specific ones: quality bar, actions, latency, freshness, data sensitivity, budget. Then check in every ten minutes so the design stays aligned with what the interviewer has in mind."
+      },
+      {
+        "q": "How do you estimate the cost of an LLM feature in an interview?",
+        "a": "Count tokens, not requests. Tokens per request = system prompt + retrieved context + history + input + output. Multiply by requests per day for tokens per day, then cost = input tokens x input price + output tokens x output price. Example: 2M questions a day x 4,000 input tokens = 8B input tokens a day, so context size and caching are cost levers. For streaming, concurrent connections = requests per second x average stream duration."
+      },
+      {
+        "q": "When do you choose an agent over a workflow?",
+        "a": "Default to a workflow: fixed steps you wrote, with the model used at chosen points. It is cheaper, faster and testable. Choose an agent (a loop where the model picks tools) only when the steps genuinely depend on what is discovered at run time, such as research or coding. Even then, keep safety in code: permissions, budgets, approvals for risky actions. Many good designs route common cases to workflows and only the long tail to an agent."
+      }
+    ]
+  },
   "DP-01": {
     "posts": 0,
     "items": [
@@ -864,20 +881,20 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "DP-02": {
+  "DP-09": {
     "posts": 0,
     "items": [
       {
-        "q": "How do you stop the agent refunding the wrong order or the wrong amount?",
-        "a": "The refund tool does not trust the model: it reads the order from the database using the session's customer id, checks the order belongs to them, recomputes the refundable amount from policy, and rejects mismatches. Amounts above a threshold need human approval. The call carries an idempotency key so a retry cannot refund twice, and the result is verified against the payment system before the agent tells the customer."
+        "q": "How do you turn 'waterproof boots under 5,000, wide fit' into a search?",
+        "a": "Detect the category, then extract a structured intent constrained to that category's facet schema: hard filters (price <= 5000, waterproof = true, width = wide) and soft preferences that feed ranking. Validate and normalise in code (units, currency, synonyms). If hard filters return nothing, relax the least important one and tell the shopper. Embedding the whole sentence would treat the price limit as vague similarity."
       },
       {
-        "q": "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
-        "a": "The workflow checkpoints its state and pauses at an approval step; the request goes to an approval queue with the proposed action and evidence. The customer gets a status message. When the manager decides, the run resumes from the checkpoint (on any server), executes the approved action idempotently and notifies the customer. Timeouts escalate or expire the request."
+        "q": "Search runs at 3,000 queries per second. How do you add an LLM without hurting latency or cost?",
+        "a": "Tier it: cache parsed intents for head queries, send plain keyword queries straight to classic search, and use a small fine-tuned or distilled parser for the rest, with lexical retrieval running in parallel. Any message is generated after the results and streamed in. Move heavy LLM work offline: enrich product attributes once at ingestion and use them as ranking features."
       },
       {
-        "q": "How would you measure whether the support agent is good?",
-        "a": "Outcome metrics on real traffic: resolution rate without human escalation, reopened tickets, customer rating, wrong-action rate from audits. Offline: scripted scenarios in a sandbox graded on end state and trajectory rules (read before write, approval above limit), reported as pass^k. Plus cost and latency per resolved ticket."
+        "q": "How do you keep multi-turn refinement working ('lighter ones', 'in black')?",
+        "a": "Store the structured intent and the last result ids per session (Redis with a TTL), not the transcript. Each turn produces a delta applied to the stored intent; references like 'the second one' resolve against the last results; a topic change resets the intent. Logging the intent per turn shows whether understanding or ranking caused a bad result."
       }
     ]
   },
@@ -898,6 +915,40 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
+  "DP-02": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you stop the agent refunding the wrong order or the wrong amount?",
+        "a": "The refund tool does not trust the model: it reads the order from the database using the session's customer id, checks the order belongs to them, recomputes the refundable amount from policy, and rejects mismatches. Amounts above a threshold need human approval. The call carries an idempotency key so a retry cannot refund twice, and the result is verified against the payment system before the agent tells the customer."
+      },
+      {
+        "q": "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
+        "a": "The workflow checkpoints its state and pauses at an approval step; the request goes to an approval queue with the proposed action and evidence. The customer gets a status message. When the manager decides, the run resumes from the checkpoint (on any server), executes the approved action idempotently and notifies the customer. Timeouts escalate or expire the request."
+      },
+      {
+        "q": "How would you measure whether the support agent is good?",
+        "a": "Outcome metrics on real traffic: resolution rate without human escalation, reopened tickets, customer rating, wrong-action rate from audits. Offline: scripted scenarios in a sandbox graded on end state and trajectory rules (read before write, approval above limit), reported as pass^k. Plus cost and latency per resolved ticket."
+      }
+    ]
+  },
+  "DP-10": {
+    "posts": 0,
+    "items": [
+      {
+        "q": "How do you make sure the citations in a research report are correct?",
+        "a": "Make notes the unit of evidence: each stores a claim, the verbatim quote that supports it and a snapshot of the source. The writer may only make claims from notes it cites by id. A verifier (a calibrated judge) checks each claim against its quote; unsupported claims are rewritten, removed or flagged as inference. Contradictions between sources are surfaced, and citation precision is tracked as a metric."
+      },
+      {
+        "q": "Web pages may contain instructions aimed at your agent. How do you stay safe?",
+        "a": "Treat every page as data. Researcher agents can only search and fetch: no email, no writes, no access to user data, so an injected instruction has nothing to trigger. Pages are passed as delimited data, and researchers output only structured notes, which is all the orchestrator consumes. Add source-quality scoring and drop notes containing instructions unrelated to the question."
+      },
+      {
+        "q": "A single research run could cost a fortune. How do you cap it?",
+        "a": "Give each run a budget of tokens, tool calls and time, allocated across sub-questions. Route models: a strong one for planning, reflecting and writing, a cheaper one for reading pages, which is most of the tokens. Cache search results and pages across runs. Stop early when new rounds add little, and when the budget ends, write the best report from the notes so far and state what was not covered."
+      }
+    ]
+  },
   "DP-04": {
     "posts": 0,
     "items": [
@@ -915,20 +966,20 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "DP-05": {
+  "DP-08": {
     "posts": 0,
     "items": [
       {
-        "q": "Why put a gateway in front of LLM providers instead of calling them directly?",
-        "a": "Central control of things every team needs: keys stay in one place, per-tenant quotas and budgets, routing and fallback across providers, caching, PII redaction, and one stream of usage and cost records for chargeback and debugging. It also lets you change providers or models without changing every product."
+        "q": "How do you decide which extracted fields a human must review?",
+        "a": "Route by risk: fields that fail validation rules (format, cross-field consistency, mismatch with an external source), fields with low confidence (model self-reported plus agreement checks such as two extraction passes or OCR confidence), and all fields of high-impact types for new customers or document formats. Thresholds are tuned on labelled data to hit a target error rate, and reviewer corrections feed the eval set."
       },
       {
-        "q": "How do you implement per-tenant token limits?",
-        "a": "A token bucket per tenant (and per API key) in Redis: before the call, reserve an estimate of input plus max output tokens with an atomic script; after the call, settle the real usage. Requests over the limit get 429 with retry-after. Monthly budgets are tracked from the usage records and enforced with soft and hard thresholds."
+        "q": "Why a workflow engine for document processing instead of a chain of queue consumers?",
+        "a": "The process has many steps, long waits (human review, external lookups), retries per step and a need for an audit trail. A durable workflow keeps the state of each case, retries steps independently, resumes after crashes and shows where each case is. Chained consumers can work but spread the state across queues and make timeouts, compensation and visibility harder."
       },
       {
-        "q": "What is semantic caching, and when is it dangerous?",
-        "a": "Caching a response under an embedding of the prompt and returning it for new prompts whose embedding is close enough. It saves cost on repeated questions but can return a wrong answer for a question that is similar but different, or leak one user's answer to another. Use it only for non-personal, stable content, scope the cache per tenant, include model and prompt version in the key, and prefer exact-match and provider prompt caching first."
+        "q": "How do you deliver results reliably to the customer's system?",
+        "a": "Write the final report and an outbox event in the same database transaction; a dispatcher sends a signed webhook (HMAC with timestamp) with retries and backoff, and the customer deduplicates by event id because delivery is at-least-once. Customers can also fetch results by API, and failed deliveries are visible and replayable."
       }
     ]
   },
@@ -966,20 +1017,20 @@ export const AI_STACK_ASKED = {
       }
     ]
   },
-  "DP-08": {
+  "DP-05": {
     "posts": 0,
     "items": [
       {
-        "q": "How do you decide which extracted fields a human must review?",
-        "a": "Route by risk: fields that fail validation rules (format, cross-field consistency, mismatch with an external source), fields with low confidence (model self-reported plus agreement checks such as two extraction passes or OCR confidence), and all fields of high-impact types for new customers or document formats. Thresholds are tuned on labelled data to hit a target error rate, and reviewer corrections feed the eval set."
+        "q": "Why put a gateway in front of LLM providers instead of calling them directly?",
+        "a": "Central control of things every team needs: keys stay in one place, per-tenant quotas and budgets, routing and fallback across providers, caching, PII redaction, and one stream of usage and cost records for chargeback and debugging. It also lets you change providers or models without changing every product."
       },
       {
-        "q": "Why a workflow engine for document processing instead of a chain of queue consumers?",
-        "a": "The process has many steps, long waits (human review, external lookups), retries per step and a need for an audit trail. A durable workflow keeps the state of each case, retries steps independently, resumes after crashes and shows where each case is. Chained consumers can work but spread the state across queues and make timeouts, compensation and visibility harder."
+        "q": "How do you implement per-tenant token limits?",
+        "a": "A token bucket per tenant (and per API key) in Redis: before the call, reserve an estimate of input plus max output tokens with an atomic script; after the call, settle the real usage. Requests over the limit get 429 with retry-after. Monthly budgets are tracked from the usage records and enforced with soft and hard thresholds."
       },
       {
-        "q": "How do you deliver results reliably to the customer's system?",
-        "a": "Write the final report and an outbox event in the same database transaction; a dispatcher sends a signed webhook (HMAC with timestamp) with retries and backoff, and the customer deduplicates by event id because delivery is at-least-once. Customers can also fetch results by API, and failed deliveries are visible and replayable."
+        "q": "What is semantic caching, and when is it dangerous?",
+        "a": "Caching a response under an embedding of the prompt and returning it for new prompts whose embedding is close enough. It saves cost on repeated questions but can return a wrong answer for a question that is similar but different, or leak one user's answer to another. Use it only for non-personal, stable content, scope the cache per tenant, include model and prompt version in the key, and prefer exact-match and provider prompt caching first."
       }
     ]
   }
