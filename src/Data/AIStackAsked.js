@@ -7,7 +7,7 @@ export const AI_STACK_ASKED_META = {
   "eyebrow": "Interview drill",
   "heading": "Say it out loud, then open the answer",
   "blurb": "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first, then open the answer.",
-  "footer": "Written from the sources in this topic's reading list and the current LangChain and LangGraph docs (checked 2026-10-30). Numbers quoted from a source are that source's; check the provider's current docs before quoting API details.",
+  "footer": "Answers match this page's chapters and were checked against current provider and framework docs (2026-11-18). Prices in examples are illustrative; check the provider's current docs before quoting API details or prices.",
   "counts": false
 };
 
@@ -432,16 +432,16 @@ export const AI_STACK_ASKED = {
         "a": "Each pending interrupt has an id. Read them from the paused result (`result.interrupts` or `stream.interrupts`) and resume once with a mapping: `Command(resume={id_a: {'type': 'approve'}, id_b: {'type': 'reject', 'message': '…'}})`. Each `interrupt()` receives its own value and both branches continue in the next super-step."
       },
       {
-        "q": "Design approvals for an agent that can change inventory parameters. What needs a human?",
-        "a": "Tier by **risk and reversibility**:\n\n- **Automatic**: reads, explanations, what-if simulations on a copy.\n- **Automatic + audit**: small, reversible changes inside limits (say ±5% on one item) — logged and easy to undo.\n- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.\n\nMechanics: the agent writes its proposal to a **staging overlay**, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the planner approves, edits or rejects, approved changes commit to the base in one transaction, and every decision is logged — who, when, why."
+        "q": "An agent can change business data (prices, limits, account settings). Design its approvals: what needs a human?",
+        "a": "Tier by **risk and reversibility**:\n\n- **Automatic**: reads, explanations, what-if simulations on a copy.\n- **Automatic + audit**: small, reversible changes inside limits (say a few percent on one record) — logged and easy to undo.\n- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.\n\nMechanics: the agent stores its proposal as a **pending record**, separate from live data, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the approver approves, edits or rejects, approved changes are applied to live data in one transaction, and every decision is logged — who, when, why."
       },
       {
         "q": "Why “approve the proposal, not the intent”?",
-        "a": "If the human approves a description (“update safety stock for SKU X”) and the agent builds the call afterwards, the model can still produce wrong arguments after approval. Approving the **concrete tool call** — exact arguments, exact diff — means what runs is exactly what was reviewed. If the arguments need changing, the reviewer edits them, and the edited call is what executes."
+        "a": "If the human approves a description (“update the limit for account X”) and the agent builds the call afterwards, the model can still produce wrong arguments after approval. Approving the **concrete tool call** — exact arguments, exact diff — means what runs is exactly what was reviewed. If the arguments need changing, the reviewer edits them, and the edited call is what executes."
       },
       {
-        "q": "The approver never responds. What happens to the staged write?",
-        "a": "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.\n\n- Every proposal carries an **expiry** (24–72 h by risk), with reminders and escalation to a backup approver before it.\n- A sweeper marks it expired, **discards the staged overlay** (or the Redis keys lapse by TTL) and notifies the requester.\n- Resuming an expired thread returns “expired — re-run the request” instead of committing.\n- Metrics on pending count and age, so a backlog is visible."
+        "q": "The approver never responds. What happens to the pending proposal?",
+        "a": "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.\n\n- Every proposal carries an **expiry** (24–72 h by risk), with reminders and escalation to a backup approver before it.\n- A sweeper marks it expired, **discards the pending proposal** and notifies the requester.\n- Resuming an expired thread returns “expired — re-run the request” instead of committing.\n- Metrics on pending count and age, so a backlog is visible."
       },
       {
         "q": "The underlying data changed while the human was deciding. Now what?",
