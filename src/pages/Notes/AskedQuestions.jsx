@@ -64,10 +64,13 @@ export default function AskedQuestions({ source = "corestack", topicId, colorMod
         ))}
       </ol>
 
-      <p className="mt-6 text-[12px] leading-relaxed text-fg-subtle">
-        {meta.footer ||
-          `From ${meta.sources}. Each count is distinct write-ups, not people — one candidate posting two loops counts twice. A question with no company was asked in a write-up that did not name one.`}
-      </p>
+      {/* An empty footer string means "no footer" (AI Stack); undefined falls back to the source line. */}
+      {meta.footer !== "" && (
+        <p className="mt-6 text-[12px] leading-relaxed text-fg-subtle">
+          {meta.footer ||
+            `From ${meta.sources}. Each count is distinct write-ups, not people — one candidate posting two loops counts twice. A question with no company was asked in a write-up that did not name one.`}
+        </p>
+      )}
     </section>
   );
 }
