@@ -248,7 +248,7 @@ const askedMeta = {
   eyebrow: "Interview drill",
   heading: "Say it out loud, then open the answer",
   blurb: "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first, then open the answer.",
-  footer: "Written from the sources in this topic's reading list and the current LangChain and LangGraph docs (checked 2026-10-30). Numbers quoted from a source are that source's; check the provider's current docs before quoting API details.",
+  footer: "Answers match this page's chapters and were checked against current provider and framework docs (2026-11-18). Prices in examples are illustrative; check the provider's current docs before quoting API details or prices.",
   counts: false,
 };
 

@@ -40,17 +40,12 @@ export const SECTIONS = [
   },
   {
     "key": "E",
-    "label": "Part 4 · Evals",
+    "label": "Part 4 · Evals and production",
     "chip": "Evals"
   },
   {
-    "key": "D",
-    "label": "Part 5 · Production",
-    "chip": "Production"
-  },
-  {
     "key": "P",
-    "label": "Part 6 · System design",
+    "label": "Part 5 · System design",
     "chip": "Design"
   }
 ];
@@ -881,28 +876,28 @@ export const TOPICS = [
         "a": "Each pending interrupt has an id. Read them from the paused result (`result.interrupts` or `stream.interrupts`) and resume once with a mapping: `Command(resume={id_a: {'type': 'approve'}, id_b: {'type': 'reject', 'message': '…'}})`. Each `interrupt()` receives its own value and both branches continue in the next super-step."
       },
       {
-        "q": "Design approvals for an agent that can change inventory parameters. What needs a human?",
+        "q": "An agent can change business data (prices, limits, account settings). Design its approvals: what needs a human?",
         "a": [
           "Tier by **risk and reversibility**:",
           "",
           "- **Automatic**: reads, explanations, what-if simulations on a copy.",
-          "- **Automatic + audit**: small, reversible changes inside limits (say ±5% on one item) — logged and easy to undo.",
+          "- **Automatic + audit**: small, reversible changes inside limits (say a few percent on one record) — logged and easy to undo.",
           "- **Approval**: changes beyond a threshold, bulk updates, anything spanning many locations or with financial impact; a second approver above a higher threshold.",
           "",
-          "Mechanics: the agent writes its proposal to a **staging overlay**, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the planner approves, edits or rejects, approved changes commit to the base in one transaction, and every decision is logged — who, when, why."
+          "Mechanics: the agent stores its proposal as a **pending record**, separate from live data, the run calls `interrupt()` with a diff (parameter, scope, old → new, expected impact, reasoning), the approver approves, edits or rejects, approved changes are applied to live data in one transaction, and every decision is logged — who, when, why."
         ]
       },
       {
         "q": "Why “approve the proposal, not the intent”?",
-        "a": "If the human approves a description (“update safety stock for SKU X”) and the agent builds the call afterwards, the model can still produce wrong arguments after approval. Approving the **concrete tool call** — exact arguments, exact diff — means what runs is exactly what was reviewed. If the arguments need changing, the reviewer edits them, and the edited call is what executes."
+        "a": "If the human approves a description (“update the limit for account X”) and the agent builds the call afterwards, the model can still produce wrong arguments after approval. Approving the **concrete tool call** — exact arguments, exact diff — means what runs is exactly what was reviewed. If the arguments need changing, the reviewer edits them, and the edited call is what executes."
       },
       {
-        "q": "The approver never responds. What happens to the staged write?",
+        "q": "The approver never responds. What happens to the pending proposal?",
         "a": [
           "Nothing is applied without approval, so the risk is **clutter and stale proposals**, not bad writes.",
           "",
           "- Every proposal carries an **expiry** (24–72 h by risk), with reminders and escalation to a backup approver before it.",
-          "- A sweeper marks it expired, **discards the staged overlay** (or the Redis keys lapse by TTL) and notifies the requester.",
+          "- A sweeper marks it expired, **discards the pending proposal** and notifies the requester.",
           "- Resuming an expired thread returns “expired — re-run the request” instead of committing.",
           "- Metrics on pending count and age, so a backlog is visible."
         ]
@@ -1192,7 +1187,7 @@ export const TOPICS = [
   },
   {
     "id": "CH-11",
-    "section": "D",
+    "section": "E",
     "priority": "P0",
     "title": "Chapter 7 — Security, cost, latency and serving",
     "why": "Every design question ends with “how do you stop it being abused?” and “what does it cost?”. Prompt injection and the lethal trifecta, safe text-to-SQL, and the levers on latency and the monthly bill are where answers become senior.",

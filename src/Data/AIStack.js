@@ -29,17 +29,12 @@ export const AI_STACK_SECTIONS = [
   },
   {
     "key": "E",
-    "label": "Part 4 · Evals",
+    "label": "Part 4 · Evals and production",
     "chip": "Evals"
   },
   {
-    "key": "D",
-    "label": "Part 5 · Production",
-    "chip": "Production"
-  },
-  {
     "key": "P",
-    "label": "Part 6 · System design",
+    "label": "Part 5 · System design",
     "chip": "Design"
   }
 ];
@@ -313,9 +308,9 @@ export const AI_STACK_TOPICS = [
       "The node writes to Redis and then calls interrupt(). What happens on resume?",
       "Why can't you call interrupt() in a loop over a list that may change?",
       "Two parallel branches are both waiting for approval. How do you resume?",
-      "Design approvals for an agent that can change inventory parameters. What needs a human?",
+      "An agent can change business data (prices, limits, account settings). Design its approvals: what needs a human?",
       "Why “approve the proposal, not the intent”?",
-      "The approver never responds. What happens to the staged write?",
+      "The approver never responds. What happens to the pending proposal?",
       "The underlying data changed while the human was deciding. Now what?",
       "You deploy a new version of the graph while 200 runs are paused at an interrupt. What breaks?",
       "What is LangChain today, and what changed in version 1?",
@@ -338,7 +333,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "CH-08",
     "section": "E",
-    "sectionLabel": "Part 4 · Evals",
+    "sectionLabel": "Part 4 · Evals and production",
     "priority": "P0",
     "title": "Chapter 6 — Evals: error analysis, LLM judges, RAG and agent evaluation",
     "why": "Evals are the round people fail most often and the strongest signal of real experience. Start from real failures, build a golden set, trust an LLM judge only after measuring it, and compute retrieval and answer metrics by hand.",
@@ -394,8 +389,8 @@ export const AI_STACK_TOPICS = [
   },
   {
     "id": "CH-11",
-    "section": "D",
-    "sectionLabel": "Part 5 · Production",
+    "section": "E",
+    "sectionLabel": "Part 4 · Evals and production",
     "priority": "P0",
     "title": "Chapter 7 — Security, cost, latency and serving",
     "why": "Every design question ends with “how do you stop it being abused?” and “what does it cost?”. Prompt injection and the lethal trifecta, safe text-to-SQL, and the levers on latency and the monthly bill are where answers become senior.",
@@ -444,7 +439,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-00",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Start here — The AI system design delivery framework",
     "why": "Every AI design question shares one skeleton and one delivery order. Interviewers score structure as much as content: requirements and success metrics first, numbers that change the design, the simplest design that works, deep dives on the hardest parts, and never skipping evals and cost.",
@@ -479,7 +474,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-01",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 1 — Enterprise document Q&A (multi-tenant RAG with permissions)",
     "why": "The most common AI design prompt. It tests whether you can turn RAG into a product: ingestion at scale, tenant isolation, permissions enforced at retrieval time, freshness, citations, latency and evals.",
@@ -514,7 +509,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-02",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 2 — Customer-support agent that takes actions (refunds, approvals)",
     "why": "Tests agent design under real stakes: tools that change money and data, policy enforcement in code, human approval, idempotency, escalation to people and measuring resolution, not just answers.",
@@ -547,7 +542,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-03",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 3 — ChatGPT-style assistant with memory (streaming, context budget, limits)",
     "why": "Tests the chat product end to end at scale: streaming tokens, storing and trimming conversation history, context-window management, long-term memory, rate limits and abuse controls, and cost per user.",
@@ -579,7 +574,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-04",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 4 — Coding agent (a long-running multi-step agent)",
     "why": "Tests long-running agent design: planning, tool use over a repository, sandboxed execution, context management for large codebases, verification with tests, cost and safety controls.",
@@ -611,7 +606,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-05",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 5 — LLM gateway (routing, fallbacks, limits, caching)",
     "why": "Tests platform thinking: one internal service in front of every model provider that enforces limits and budgets, routes and falls back, caches, redacts and records every call, so product teams do not each reinvent it.",
@@ -643,7 +638,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-06",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 6 — Batch LLM pipeline (millions of documents)",
     "why": "Tests backend fundamentals applied to LLM work: queues, workers, rate limits, retries, idempotency, checkpointing, cost control and quality sampling for a job that runs for hours or days.",
@@ -675,7 +670,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-07",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 7 — Text-to-SQL for data analysts",
     "why": "Tests a high-stakes generation problem: grounding the model in a large schema, generating correct SQL, executing it safely with permissions, verifying results and evaluating by execution, not by string match.",
@@ -707,7 +702,7 @@ export const AI_STACK_TOPICS = [
   {
     "id": "DP-08",
     "section": "P",
-    "sectionLabel": "Part 6 · System design",
+    "sectionLabel": "Part 5 · System design",
     "priority": "P0",
     "title": "Design 8 — Document processing pipeline (OCR, extraction, validation, human review)",
     "why": "Tests an end-to-end AI workflow for regulated businesses: uploading scanned documents, OCR, classification, structured extraction with confidence, validation against rules and external sources, human review queues and an auditable final report.",
@@ -751,6 +746,6 @@ export const AI_STACK_TOTAL = 16;
 
 export const AI_STACK_PRIORITY_COUNTS = {"P0":16,"P1":0,"P2":0,"P3":0};
 
-export const AI_STACK_SECTION_COUNTS = {"B":1,"R":2,"A":2,"E":1,"D":1,"P":9};
+export const AI_STACK_SECTION_COUNTS = {"B":1,"R":2,"A":2,"E":2,"P":9};
 
 export const AI_STACK_MINUTES = 0;
