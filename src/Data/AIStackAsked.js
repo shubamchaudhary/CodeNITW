@@ -6,8 +6,8 @@
 export const AI_STACK_ASKED_META = {
   "eyebrow": "Interview drill",
   "heading": "Say it out loud, then open the answer",
-  "blurb": "Model answers at the depth a 2-year AI engineer loop expects. Answer each one aloud first, then open the answer.",
-  "footer": "Answers match this page's chapters and were checked against current provider and framework docs (2026-11-18). Prices in examples are illustrative; check the provider's current docs before quoting API details or prices.",
+  "blurb": "",
+  "footer": "",
   "counts": false
 };
 
@@ -718,6 +718,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "A document is deleted or a user loses access. How does the index stay correct, and how fast?",
         "a": "Treat both as events with an SLO (say under five minutes). A delete removes every chunk with that `doc_id` from both indexes and from caches. A permission change updates the ACL metadata on that document's chunks — or, better, store ACLs by group and resolve the user's groups at query time, so revoking a user needs no re-indexing. A nightly reconciliation job diffs source against index to catch missed events. Test it: an eval case that asks about a revoked document must find nothing."
+      },
+      {
+        "q": "A tenant requires that its data never leaves the EU. What changes?",
+        "a": "Everything that holds or processes its content moves to an EU deployment: object storage, the index partition, conversation history, logs, traces and backups. Model calls are routed (by the gateway, keyed on the tenant's region) to EU endpoints or self-hosted models only, and nothing replicates across regions. Support staff access is restricted too, and an audit shows where every copy lives."
+      },
+      {
+        "q": "A question needs facts spread across 30 documents. How do you answer it?",
+        "a": "One retrieval of the top 8 passages will miss most of them. Options: decompose the question into sub-questions and retrieve for each; an agentic mode that searches repeatedly until it has enough evidence, with step and token budgets; or map-reduce: answer per document group, then combine. Every sub-answer keeps its citations, and if the question is really an aggregation (count, list all), route it to structured extraction or SQL instead."
+      },
+      {
+        "q": "Users complain that answers cite outdated policies. How do you debug and fix it?",
+        "a": "Check the stages: are old versions still searchable (active-version filter), is the same policy stored in two sources (a Drive copy and a Confluence page) with the older one ranking higher, and is the freshness lag for that connector high? Fixes: filter to active versions, deduplicate near-identical documents at ingestion with a canonical-source priority, put dates in the prompt with a prefer-newest rule, and alert on freshness lag."
+      },
+      {
+        "q": "How do you onboard a tenant with 2 million documents without hurting other tenants?",
+        "a": "Run the backfill as a background job on that tenant's own queue, at a lower priority than incremental updates for everyone, within the source API's rate limits and an embedding budget. The index fills incrementally, so search works on what is already indexed, and the admin console shows progress and an estimated finish time. Estimate the cost and duration first from a sample."
       }
     ]
   },
@@ -739,6 +755,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you verify the agent's claim that it succeeded?",
         "a": "Don't take its word: after a write, **read the system of record** and compare with the intended change (the row has the new value and version, the ticket exists with the right fields). Report success to the user only from that check. In evals, grade the end state of the environment, not the agent's final message."
+      },
+      {
+        "q": "An angry customer threatens to leave. How should the agent behave?",
+        "a": "Acknowledge and de-escalate, stay factual, and never improvise compensation: any discount or goodwill credit must come from the policy engine, never from the model. For high-value customers or retention risk, hand off to a human with the context. Sentiment and the outcome are logged so retention handling can be reviewed."
+      },
+      {
+        "q": "How would you add a voice channel?",
+        "a": "Streaming speech-to-text in, the same agent and policy engine in the middle, streaming text-to-speech out. The new constraint is latency per turn (aim for well under a second to start speaking), so use shorter answers, a fast model for simple intents, and support for the customer interrupting. Read back amounts and orders before confirming an action, and verify identity with a one-time code rather than voice alone."
+      },
+      {
+        "q": "How do you stop the agent promising things it cannot guarantee, like a delivery date?",
+        "a": "Facts in answers (dates, amounts, statuses) must come from tool results, and an output check compares numbers and dates in the reply with the tool data. A list of commitments the agent may never make on its own (delivery guarantees, compensation, exceptions) is enforced in the prompt and checked on output; commitments the business does allow come from templates filled with data. Evals include customers pushing for promises."
+      },
+      {
+        "q": "A return needs a label, the item to arrive, and then a refund. How do you model that?",
+        "a": "As a durable process, not as part of the conversation: return created, label sent, item received (an event from the warehouse), refund executed, each step idempotent. The agent starts the process and can report its status; the customer is notified at each step through their channel. The conversation can end long before the refund happens."
       }
     ]
   },
@@ -756,6 +788,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you rate-limit an LLM chat product fairly?",
         "a": "By tokens, not just requests: a token bucket per user and plan that counts input plus output tokens, checked before the call (with an estimate) and settled after. Plus concurrency limits per user, a global budget per model to stay under provider limits, and stricter limits for anonymous or suspicious accounts."
+      },
+      {
+        "q": "How do you implement the stop button?",
+        "a": "The client sends stop with the message id; the chat service signals the inference server to cancel that request, which removes it from the batch and frees its GPU memory immediately. The partial answer is stored with status stopped, and usage is charged only for tokens generated."
+      },
+      {
+        "q": "A user edits a message from ten turns ago. What happens?",
+        "a": "The edit creates a new sibling message under the same parent, starting a new branch; the active leaf moves to it, and the old branch is kept. The next context is built only from the path from the root to the new message. A summary covering turns after the branch point no longer applies, so the summary is recomputed for the new path (or the recent turns are sent verbatim until it is)."
+      },
+      {
+        "q": "How would you add web search as a tool?",
+        "a": "The model calls a search tool; the system fetches and extracts the top pages, and the answer cites them. Pages are untrusted content, so a session that reads the web gets no tools that send data out, and links in answers point only to the cited pages. Show progress while searching, cache search results briefly, and count the extra tokens toward the user's limits."
+      },
+      {
+        "q": "How do you decide what the free tier gets?",
+        "a": "From the cost per user: tokens per message times messages per day times the model's price must fit the budget for free users. That sets the default model, message and token limits, and a lower priority than paid tiers when GPUs are busy. Watch conversion, retention and abuse, because the free tier is both the funnel and the main abuse target."
       }
     ]
   },
@@ -773,6 +821,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you know the coding agent works?",
         "a": "A benchmark of real tasks from your repos with hidden tests: run each task in a fresh sandbox several times, grade by whether the tests pass and the diff is acceptable, report pass@1 and pass^k, steps and cost per solved task, and track failure categories (wrong file, broke other tests, looped)."
+      },
+      {
+        "q": "The repository's test suite takes 40 minutes. How does the agent verify changes?",
+        "a": "During iteration, run only the tests affected by the changed files (found through the import graph or test-impact analysis), in parallel across the sandbox's cores, with build caches. Run the full suite once before the PR, or let CI run it and feed failures back to the same run. Known flaky tests are tracked so they are not mistaken for regressions."
+      },
+      {
+        "q": "A task needs changes in a frontend and a backend repository. How do you handle it?",
+        "a": "One run with both repositories in its sandbox, so a single thread of decisions covers both sides (two separate agents would make inconsistent choices about the shared contract). Change the contract first, then both sides, verify with integration tests, and open two linked PRs that must merge together."
+      },
+      {
+        "q": "How do you stop two agent runs conflicting on the same files?",
+        "a": "Each run works on its own branch, so they never overwrite each other. Detect overlapping tasks at intake (same files or area) and queue them; rebase before opening a PR; if a conflict remains, report it rather than resolving it silently. Humans merge."
+      },
+      {
+        "q": "Reviewers reject the agent's PRs because the diffs are too large. What do you change?",
+        "a": "Scope tasks smaller, add a plan-approval step for larger tasks, set diff-size limits that make the agent split or stop, put conventions ('minimal changes, no unrelated refactors') in the instructions file, and add scope to the self-review rubric. Track review rounds and diff size per task type to confirm the fix."
       }
     ]
   },
@@ -790,6 +854,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "What is semantic caching, and when is it dangerous?",
         "a": "Caching a response under an embedding of the prompt and returning it for new prompts whose embedding is close enough. It saves cost on repeated questions but can return a wrong answer for a question that is similar but different, or leak one user's answer to another. Use it only for non-personal, stable content, scope the cache per tenant, include model and prompt version in the key, and prefer exact-match and provider prompt caching first."
+      },
+      {
+        "q": "How do you migrate 20 teams from calling providers directly to the gateway?",
+        "a": "Make migration cheap: an OpenAI-compatible API means teams change only the base URL and key. Offer dashboards and higher limits as the incentive, migrate team by team with a short shadow period, then revoke the old provider keys so nothing bypasses the gateway, with a published deadline."
+      },
+      {
+        "q": "A provider changes its prices tomorrow. What happens to cost reports?",
+        "a": "Prices are versioned with effective dates: usage events record the price version in force, so historical costs stay correct and new events use the new prices. Budget forecasts are recomputed and teams near their limits are alerted."
+      },
+      {
+        "q": "One team needs the lowest possible latency. How does the gateway serve it?",
+        "a": "A gateway instance in the same region as the team, optional steps such as redaction and caching turned off for that route, a priority class, and dedicated or provisioned-throughput deployments for its alias. The added overhead is measured per route to prove the gateway is not the bottleneck."
+      },
+      {
+        "q": "How would you add shared guardrails to the gateway?",
+        "a": "As optional steps per virtual key or alias: input checks (moderation, personal data, injection classifiers) and output checks. Input checks run in parallel with the provider call where possible and cancel it on a block. Each team chooses fail-open or fail-closed, and block and error rates are reported per team."
       }
     ]
   },
@@ -807,6 +887,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you know the extractions are correct across a million documents?",
         "a": "Validate every output against a schema and business rules (types, ranges, required fields) and route failures to retry or review. Measure quality on a stratified random sample with a calibrated judge or human review per document type, track field-level accuracy, and block the release of results if a slice falls below its threshold."
+      },
+      {
+        "q": "Halfway through the job you find a prompt bug affecting one field. What now?",
+        "a": "Pause the dispatcher, fix the prompt, and measure the fix on the gold set. Then decide by impact and cost: create a new pipeline version and reprocess the affected items, or re-extract only that field for the items already done. Old outputs stay under the old version until the new ones are validated."
+      },
+      {
+        "q": "After the backfill, 50,000 new documents arrive every day. How do you process them?",
+        "a": "Event-driven on the same design: object-storage notifications create work items, the same workers and validation process them, using online calls or small frequent batches to meet a daily SLA, at a higher priority than any running backfill."
+      },
+      {
+        "q": "Some documents are 500 pages long. How do you handle them?",
+        "a": "Do not send them whole. Find the relevant pages first (by layout, keywords or a cheap classifier), or split them into sections, extract per section and merge the results with rules for conflicts. Use a long-context model only where a task truly needs the whole document, and account for these documents separately in the cost plan."
+      },
+      {
+        "q": "How do you estimate the job's cost before running it?",
+        "a": "Run a pilot on about 1,000 representative documents and measure tokens per document after trimming, the cascade's escalation rate, and the repair-retry rate. Multiply by the document count and price, apply the batch discount, and add a safety margin."
       }
     ]
   },
@@ -824,6 +920,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you evaluate a text-to-SQL system?",
         "a": "Execution accuracy on a test set of real analyst questions with reference SQL: execute both on a fixed snapshot and compare result sets (order-insensitive where appropriate). Add checks for valid SQL rate, clarifying-question rate on ambiguous questions, latency and cost, and slice by domain and difficulty. String-matching SQL is wrong, since many queries are equivalent."
+      },
+      {
+        "q": "A user asks 'why did revenue drop last month?'. Can text-to-SQL answer that?",
+        "a": "Not with one query: it is analysis. An agentic mode can break it down (revenue by region, product and segment versus the previous month), run several queries, compare them, and summarise the biggest contributors with the queries shown, within a step budget. It should describe where the drop occurred, not claim causes the data cannot show."
+      },
+      {
+        "q": "How do you keep catalogue descriptions good enough for schema linking?",
+        "a": "Owners write descriptions for certified tables; an LLM drafts descriptions for the rest from column names, sample values and query logs, and owners review them. Failed linkings (users correcting the chosen tables) point to the descriptions that need work, and descriptions are checked when schemas change."
+      },
+      {
+        "q": "The same question produces different SQL on different days. Is that a problem?",
+        "a": "Different SQL is fine if the results are equal; different results are the problem. Use temperature 0, answer common questions from verified queries, cache the question-to-SQL mapping per user scope, and measure consistency over repeated runs as part of the evals."
+      },
+      {
+        "q": "A question needs data the user is not allowed to see. What happens?",
+        "a": "Row-level security returns only the permitted rows, and the explanation says the result reflects the user's access. Be careful with aggregates over sensitive data: very small groups can reveal individuals, so suppress cells below a minimum count, and never report how many rows were hidden."
       }
     ]
   },
@@ -841,6 +953,22 @@ export const AI_STACK_ASKED = {
       {
         "q": "How do you deliver results reliably to the customer's system?",
         "a": "Write the final report and an outbox event in the same database transaction; a dispatcher sends a signed webhook (HMAC with timestamp) with retries and backoff, and the customer deduplicates by event id because delivery is at-least-once. Customers can also fetch results by API, and failed deliveries are visible and replayable."
+      },
+      {
+        "q": "A bank changes its statement layout and accuracy drops. How do you find and fix it?",
+        "a": "Monitoring by source and layout catches it: validation failures and low confidence rise for one cluster of documents. That cluster is routed to review automatically while you add examples or rules for the new layout, re-run the evals for that document type, and release the fix. Reviewer corrections on the new layout become test cases."
+      },
+      {
+        "q": "How would you detect tampered documents?",
+        "a": "Fraud detection is a separate system, but the pipeline can flag signals: file metadata showing edits, inconsistent fonts or alignment, totals that do not add up, income that disagrees across documents, and the same document reused across applications. Flagged applications go to a specialist."
+      },
+      {
+        "q": "How do you cut reviewer time per field?",
+        "a": "Show the page with the evidence box highlighted next to the value and the failed check, pre-fill the value, use keyboard shortcuts, and group a reviewer's work by application. Measure seconds per review and test changes to the interface like product experiments."
+      },
+      {
+        "q": "A lender wants reports in 10 minutes instead of an hour. What changes?",
+        "a": "Higher priority and more parallelism for that lender, faster OCR and extraction paths, reviewers staffed for an on-call SLA, and possibly higher auto-approve thresholds, which trade review time against the error target. Agree a separate SLA tier and price, because it costs more."
       }
     ]
   }

@@ -499,11 +499,15 @@ export const AI_STACK_TOPICS = [
       "Answers are fluent but sometimes cite the wrong document. How do you debug it?",
       "Design document Q&A for 500 tenants and 10M documents. Walk me from ingestion to answer.",
       "An index per tenant, partitions, or a shared index with a filter — trade-offs?",
-      "A document is deleted or a user loses access. How does the index stay correct, and how fast?"
+      "A document is deleted or a user loses access. How does the index stay correct, and how fast?",
+      "A tenant requires that its data never leaves the EU. What changes?",
+      "A question needs facts spread across 30 documents. How do you answer it?",
+      "Users complain that answers cite outdated policies. How do you debug and fix it?",
+      "How do you onboard a tenant with 2 million documents without hurting other tenants?"
     ],
     "asked": {
       "posts": 0,
-      "items": 6
+      "items": 10
     }
   },
   {
@@ -532,11 +536,15 @@ export const AI_STACK_TOPICS = [
       "How do you stop the agent refunding the wrong order or the wrong amount?",
       "A refund needs a manager's approval that may take hours. How does the system handle the wait?",
       "How would you measure whether the support agent is good?",
-      "How do you verify the agent's claim that it succeeded?"
+      "How do you verify the agent's claim that it succeeded?",
+      "An angry customer threatens to leave. How should the agent behave?",
+      "How would you add a voice channel?",
+      "How do you stop the agent promising things it cannot guarantee, like a delivery date?",
+      "A return needs a label, the item to arrive, and then a refund. How do you model that?"
     ],
     "asked": {
       "posts": 0,
-      "items": 4
+      "items": 8
     }
   },
   {
@@ -564,11 +572,15 @@ export const AI_STACK_TOPICS = [
     "questions": [
       "How do you stream responses, and what happens if the user disconnects mid-answer?",
       "A conversation has 300 turns. What goes into the next model call?",
-      "How do you rate-limit an LLM chat product fairly?"
+      "How do you rate-limit an LLM chat product fairly?",
+      "How do you implement the stop button?",
+      "A user edits a message from ten turns ago. What happens?",
+      "How would you add web search as a tool?",
+      "How do you decide what the free tier gets?"
     ],
     "asked": {
       "posts": 0,
-      "items": 3
+      "items": 7
     }
   },
   {
@@ -596,11 +608,15 @@ export const AI_STACK_TOPICS = [
     "questions": [
       "How does the agent understand a codebase too large for the context window?",
       "How do you run model-generated code safely?",
-      "How do you know the coding agent works?"
+      "How do you know the coding agent works?",
+      "The repository's test suite takes 40 minutes. How does the agent verify changes?",
+      "A task needs changes in a frontend and a backend repository. How do you handle it?",
+      "How do you stop two agent runs conflicting on the same files?",
+      "Reviewers reject the agent's PRs because the diffs are too large. What do you change?"
     ],
     "asked": {
       "posts": 0,
-      "items": 3
+      "items": 7
     }
   },
   {
@@ -628,11 +644,15 @@ export const AI_STACK_TOPICS = [
     "questions": [
       "Why put a gateway in front of LLM providers instead of calling them directly?",
       "How do you implement per-tenant token limits?",
-      "What is semantic caching, and when is it dangerous?"
+      "What is semantic caching, and when is it dangerous?",
+      "How do you migrate 20 teams from calling providers directly to the gateway?",
+      "A provider changes its prices tomorrow. What happens to cost reports?",
+      "One team needs the lowest possible latency. How does the gateway serve it?",
+      "How would you add shared guardrails to the gateway?"
     ],
     "asked": {
       "posts": 0,
-      "items": 3
+      "items": 7
     }
   },
   {
@@ -660,11 +680,15 @@ export const AI_STACK_TOPICS = [
     "questions": [
       "How do you make a million-document LLM job resumable and safe to retry?",
       "The provider allows 2M tokens per minute. How do you design the throughput?",
-      "How do you know the extractions are correct across a million documents?"
+      "How do you know the extractions are correct across a million documents?",
+      "Halfway through the job you find a prompt bug affecting one field. What now?",
+      "After the backfill, 50,000 new documents arrive every day. How do you process them?",
+      "Some documents are 500 pages long. How do you handle them?",
+      "How do you estimate the job's cost before running it?"
     ],
     "asked": {
       "posts": 0,
-      "items": 3
+      "items": 7
     }
   },
   {
@@ -692,11 +716,15 @@ export const AI_STACK_TOPICS = [
     "questions": [
       "How do you stop text-to-SQL from running something dangerous or leaking data?",
       "How does the model know which tables to use in a huge warehouse?",
-      "How do you evaluate a text-to-SQL system?"
+      "How do you evaluate a text-to-SQL system?",
+      "A user asks 'why did revenue drop last month?'. Can text-to-SQL answer that?",
+      "How do you keep catalogue descriptions good enough for schema linking?",
+      "The same question produces different SQL on different days. Is that a problem?",
+      "A question needs data the user is not allowed to see. What happens?"
     ],
     "asked": {
       "posts": 0,
-      "items": 3
+      "items": 7
     }
   },
   {
@@ -724,11 +752,15 @@ export const AI_STACK_TOPICS = [
     "questions": [
       "How do you decide which extracted fields a human must review?",
       "Why a workflow engine for document processing instead of a chain of queue consumers?",
-      "How do you deliver results reliably to the customer's system?"
+      "How do you deliver results reliably to the customer's system?",
+      "A bank changes its statement layout and accuracy drops. How do you find and fix it?",
+      "How would you detect tampered documents?",
+      "How do you cut reviewer time per field?",
+      "A lender wants reports in 10 minutes instead of an hour. What changes?"
     ],
     "asked": {
       "posts": 0,
-      "items": 3
+      "items": 7
     }
   }
 ];
