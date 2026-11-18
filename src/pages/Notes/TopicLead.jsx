@@ -4,6 +4,8 @@ import { readingList } from "./stacks";
 import { hasLecture, lectureMinutes } from "./lectures";
 import { DoneCircle } from "./StackNav";
 import { LectureCard } from "./LectureCard";
+import InterviewPromptCard from "./InterviewPromptCard";
+import { hasInterviewPrompt } from "../../Data/aiStackInterview";
 import { Button, PriorityTag, Icon, buttonClass } from "../../components/ui";
 
 
@@ -54,6 +56,7 @@ export default function TopicLead({ stack, owner, topic, done, doneDays, planned
 
       <div className="mt-6 border-t border-line" />
 
+      {hasInterviewPrompt(stack.key, topic.id) && <InterviewPromptCard key={topic.id} id={topic.id} owner={owner} />}
       {hasLecture(stack.key, topic.id, owner) && <LectureCard key={topic.id} id={topic.id} minutes={lectureMinutes(stack.key, topic.id)} />}
       {items.length > 0 && <WatchFirst items={items} />}
     </header>
