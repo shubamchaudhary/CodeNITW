@@ -217,14 +217,21 @@ const BTN = {
 // bigger, with bigger buttons.
 const Featured = createContext(false);
 
-function Btn({ kind, onClick, title, children }) {
+// A button, or with `href` a link that looks like one (opens in a new tab).
+// `square` makes it icon-sized.
+function Btn({ kind, onClick, href, title, square, children }) {
   const big = useContext(Featured);
+  const size = square ? (big ? "p-1.5" : "p-1") : big ? "text-xs px-3 py-1.5" : "text-[11px] px-2 py-1";
+  const cls = `inline-flex items-center gap-1 font-semibold rounded-lg transition-colors ${size} ${BTN[kind]}`;
+  if (href) {
+    return (
+      <a href={href} target="_blank" rel="noreferrer" draggable={false} title={title} className={cls}>
+        {children}
+      </a>
+    );
+  }
   return (
-    <button
-      onClick={onClick}
-      title={title}
-      className={`inline-flex items-center gap-1 font-semibold rounded-lg transition-colors ${big ? "text-xs px-3 py-1.5" : "text-[11px] px-2 py-1"} ${BTN[kind]}`}
-    >
+    <button onClick={onClick} title={title} className={cls}>
       {children}
     </button>
   );
@@ -626,6 +633,9 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
           const added = agoLabel(l.addedAt);
           return (
             <Row key={l.id} {...rowProps("toApply", g, l, added && `added ${added}`)} icon="○" iconCls="text-warning-fg">
+              <Btn kind="violet" href={l.url} title="Open the posting to apply (new tab)">
+                <HiOutlineExternalLink className="w-3.5 h-3.5" /> Apply
+              </Btn>
               <Btn kind="emerald" onClick={mv(g, l, "applied")} title="You applied: moves to Applied">
                 <HiCheck className="w-3.5 h-3.5" /> Applied
               </Btn>
@@ -634,6 +644,9 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
               </Btn>
               <Btn kind="violetLine" onClick={mv(g, l, "appliedOutreach")} title="You applied: moves to Applied, and to Outreach to message the recruiter later">
                 Applied + outreach
+              </Btn>
+              <Btn kind="roseLine" square onClick={() => removeLink(g.company.id, l.id)} title="Not applying: remove it (Undo in the toast)">
+                <HiX className="w-3.5 h-3.5" />
               </Btn>
             </Row>
           );
