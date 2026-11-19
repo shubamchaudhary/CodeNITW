@@ -294,7 +294,7 @@ function Pager({ page, pages, from, to, total, onPage }) {
   );
 }
 
-export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob }) {
+export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob, addJobs, removeJobs }) {
   const [cached] = useState(readCache);
   const [radar, setRadar] = useState(cached?.data || null);
   const [loadedAt, setLoadedAt] = useState(cached?.at || null);
@@ -439,6 +439,18 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
     );
   };
 
+  // Every opening through the current filters (all pages), in one go.
+  const applyAll = () => {
+    const items = shown.map((o) => ({ companyName: o.company, url: urlOf(o), role: o.title, stage: "toApply" }));
+    if (!items.length || !addJobs(items)) return;
+    undoToast(
+      <>
+        <span className="font-semibold">{items.length} openings</span> added to To Apply
+      </>,
+      () => removeJobs(items)
+    );
+  };
+
   return (
     <div>
       <div className="flex items-end justify-between flex-wrap gap-2 mb-3">
@@ -469,12 +481,23 @@ export default function OpeningsTab({ queuedUrls, hidden, onHide, onUnhide, onUn
             </div>
           )}
         </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search company, role, city"
-          className="text-sm px-2.5 py-1.5 rounded-lg border border-line-strong bg-canvas w-56"
-        />
+        <div className="flex items-center gap-2">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search company, role, city"
+            className="text-sm px-2.5 py-1.5 rounded-lg border border-line-strong bg-canvas w-56"
+          />
+          {shown.length > 0 && (
+            <button
+              onClick={applyAll}
+              title="Put every opening shown by these filters (all pages) in To Apply"
+              className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-success hover:opacity-90 text-white"
+            >
+              <HiCheck className="w-4 h-4" /> Add all {shown.length} to To Apply
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-3">

@@ -82,7 +82,8 @@ export function agoLabel(timestamp) {
 // referral/referralAt (asked), referralAppliedAt (applied with that
 // referral), outcome/outcomeAt ("rejected"), closedReason/closedAt
 // ("noReply"), touchedAt (last moved), and the older referralOutcome
-// ("accepted"/"rejected") from before this model.
+// ("accepted"/"rejected") from before this model; outreach/outreachAt/
+// outreachDoneAt (see needsOutreach).
 
 const isAppliedLink = (l) => !!(l.applied || l.referralAppliedAt);
 
@@ -98,8 +99,71 @@ export function appliedTime(link, entry = {}) {
   return link.referralAppliedAt || link.appliedAt || entry.appliedAt || null;
 }
 
+// Outreach: a recruiter to message about a job you're applying to (with a
+// referral) or already applied to. A flag on top of the stage, so the same
+// job can sit in Asked for Referral or Applied and in Outreach at once; it
+// leaves Outreach once messaged (outreachDoneAt) or once the job closes.
+export function needsOutreach(link, entry = {}) {
+  if (!link.outreach || link.outreachDoneAt) return false;
+  const stage = linkStage(link, entry);
+  return stage === "referral" || stage === "applied";
+}
+
 export function closedTime(link) {
   return link.outcomeAt || link.closedAt || link.referralOutcomeAt || null;
+}
+
+// ── Daily activity ───────────────────────────────────────────────────────────
+// A day runs 4am to 4am IST, so a late-night session counts for the day it
+// started. dayKey gives that day as "YYYY-MM-DD".
+const DAY_MS = 24 * 60 * 60 * 1000;
+const DAY_SHIFT = (5.5 - 4) * 60 * 60 * 1000; // UTC → IST, minus 4 hours
+export const dayKey = (ts) => new Date(ts + DAY_SHIFT).toISOString().slice(0, 10);
+export const todayKey = () => dayKey(Date.now());
+// The days back from today, oldest first: [{ key, ts }] for the chart.
+export function lastDays(n) {
+  const now = Date.now();
+  return Array.from({ length: n }, (_, i) => {
+    const ts = now - (n - 1 - i) * DAY_MS;
+    return { key: dayKey(ts), ts };
+  });
+}
+
+// When a link counted for the chart: applied (a), referral asked (r),
+// recruiter messaged (o).
+const activityOf = (l) => ({ a: l.referralAppliedAt || l.appliedAt || null, r: l.referralAt || null, o: l.outreachDoneAt || null });
+export const LEDGER_DAYS = 100;
+
+// The activity ledger, link id → { a, r, o }, kept apart from the links so
+// the chart still counts a job after it's erased or removed. A link that's
+// still there is taken as it is now (so a step back un-counts it); entries
+// older than LEDGER_DAYS go. Returns the same object when nothing changed.
+export function withLedger(ledger = {}, companies = {}) {
+  const next = { ...ledger };
+  let changed = false;
+  Object.values(companies).forEach((e) =>
+    (e.links || []).forEach((l) => {
+      const act = activityOf(l);
+      const prev = next[l.id];
+      if (!act.a && !act.r && !act.o) {
+        if (prev) {
+          delete next[l.id];
+          changed = true;
+        }
+      } else if (!prev || prev.a !== act.a || prev.r !== act.r || prev.o !== act.o) {
+        next[l.id] = act;
+        changed = true;
+      }
+    })
+  );
+  const cut = Date.now() - LEDGER_DAYS * DAY_MS;
+  Object.entries(next).forEach(([id, t]) => {
+    if (Math.max(t.a || 0, t.r || 0, t.o || 0) < cut) {
+      delete next[id];
+      changed = true;
+    }
+  });
+  return changed ? next : ledger;
 }
 
 // ── Erasing what's gone cold ─────────────────────────────────────────────────
@@ -193,14 +257,14 @@ export function CultureStars({ n }) {
   );
 }
 
-export function StatusSelect({ value, onChange }) {
+export function StatusSelect({ value, onChange, small }) {
   const v = value || "none";
   return (
     <select
       value={v}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => onChange(e.target.value)}
-      className={`text-xs font-semibold rounded-lg px-2 py-1.5 border-0 cursor-pointer focus:ring-2 focus:ring-focus ${STATUSES[v].cls}`}
+      className={`${small ? "text-[10px] px-1.5 py-0.5" : "text-xs px-2 py-1.5"} font-semibold rounded-lg border-0 cursor-pointer focus:ring-2 focus:ring-focus ${STATUSES[v].cls}`}
     >
       {Object.entries(STATUSES).map(([k, s]) => (
         <option key={k} value={k}>

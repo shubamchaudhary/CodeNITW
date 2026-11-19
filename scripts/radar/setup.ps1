@@ -83,8 +83,8 @@ if (-not (Test-Path $EnvFile)) {
     "RADAR_INGEST_TOKEN=$(New-Token)",
     "# Lets any device read (GET /api/radar). Set the same value as RADAR_READ_TOKEN on Vercel; share only this one.",
     "RADAR_READ_TOKEN=$(New-Token)",
-    "# The resume the radar takes its keywords from (this is the default).",
-    "# RESUME_PDF=$env:USERPROFILE\Downloads\SHUBAM_CHAUDHARY_RESUME_SDE.pdf",
+    "# The resumes the radar takes its keywords from, joined with ; (this is the default).",
+    "# RESUME_PDF=$env:USERPROFILE\Downloads\SHUBAM_CHAUDHARY_RESUME_SDE.pdf;$env:USERPROFILE\Downloads\SHUBAM_CHAUDHARY_RESUME_GENAI.pdf",
     "# RADAR_API_URL=https://interviewplanprep.vercel.app/api/radar"
   ) | Set-Content -Path $EnvFile -Encoding UTF8
   Write-Host "Created $EnvFile with two new tokens - add both to the Vercel project's environment variables."

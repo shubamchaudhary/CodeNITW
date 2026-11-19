@@ -20,20 +20,24 @@ GitHub Actions**: the old Actions radar got the GitHub account blocked.
 
 ## Your resume drives the keywords
 
-Each run reads your resume PDF (`RESUME_PDF` in `.radar\.env`; default
-`Downloads\SHUBAM_CHAUDHARY_RESUME_SDE.pdf`) with `pdftotext` (it comes with
-Git for Windows):
+Each run reads your resume PDFs, one per kind of role you apply to
+(`RESUME_PDF` in `.radar\.env`, several joined with `;`; default
+`Downloads\SHUBAM_CHAUDHARY_RESUME_SDE.pdf` and
+`Downloads\SHUBAM_CHAUDHARY_RESUME_GENAI.pdf`) with `pdftotext` (it comes with
+Git for Windows), and merges them:
 
-- **Search terms** for Naukri, Indeed and Glassdoor come from its headline and
-  first language and framework (today: "java spring boot developer", "backend
-  engineer java", "software engineer distributed systems", "software engineer
-  microservices").
-- **career-ops' title filter** uses the headline's role and focus areas.
-- **The skills match** scores each opening against the skills the resume
+- **Search terms** for Naukri, Indeed and Glassdoor come from each headline
+  and first language with its framework, taken in turn, up to six (today:
+  "java spring boot developer", "python fastapi developer", "backend engineer
+  java", "backend engineer python", "software engineer distributed systems",
+  "software engineer genai").
+- **career-ops' title filter** uses the headlines' roles and focus areas, plus
+  AI titles (AI engineer, GenAI, LLM, applied AI…) when a resume leads with GenAI.
+- **The skills match** scores each opening against the skills either resume
   names, plus the extras and "want" list in `radar/skills.json`. Each opening
-  also lists the skills it asks for that the resume doesn't mention.
+  also lists the skills it asks for that neither resume mentions.
 
-Replace the PDF and the next run picks it up and re-scores everything. The
+Replace a PDF and the next run picks it up and re-scores everything. The
 career-ops checkout also gets the resume as `cv.md`, so its own modes (score
 a posting A–H, tailor the CV) work there: open your AI CLI in
 `.radar\career-ops`.
