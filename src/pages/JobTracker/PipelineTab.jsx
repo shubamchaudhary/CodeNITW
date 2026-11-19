@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { HiOutlineExternalLink, HiCheck, HiX, HiPlus, HiChevronDown, HiReply, HiChatAlt } from "react-icons/hi";
+import { HiOutlineExternalLink, HiCheck, HiX, HiPlus, HiChevronDown, HiChevronDoubleDown, HiChevronDoubleUp, HiReply, HiChatAlt } from "react-icons/hi";
 import {
   APPLIED_SET,
   ERASE_AFTER_DAYS,
@@ -529,6 +529,11 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
     const newest = (g) => Math.max(0, ...g.links.map((l) => Math.max(STAGE_TIME[stage](l, g.entry) || 0, l.touchedAt || 0)));
     list.sort((a, b) => newest(b) - newest(a));
   });
+  // To Apply: a company moved to the end ("Later") stays below the rest until
+  // the day turns (4am IST); the last one moved goes last.
+  const today = todayKey();
+  const laterAt = (g) => (g.entry.laterAt && dayKey(g.entry.laterAt) === today ? g.entry.laterAt : 0);
+  groups.toApply.sort((a, b) => (laterAt(a) && laterAt(b) ? laterAt(a) - laterAt(b) : !!laterAt(a) - !!laterAt(b)));
   const count = (stage) => groups[stage].reduce((n, g) => n + g.links.length, 0);
 
   const clearClosed = () => {
@@ -628,7 +633,30 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const toApplyCards = groups.toApply.map((g) => ({
     key: g.company.id,
     node: (featured) => (
-      <JobCard company={g.company} featured={featured} {...cardDrag("toApply", g)}>
+      <JobCard
+        company={g.company}
+        featured={featured}
+        {...cardDrag("toApply", g)}
+        aside={
+          laterAt(g) ? (
+            <button
+              onClick={() => patchCompany(g.company.id, { laterAt: null })}
+              title="Moved to the end for today. Bring it back into place"
+              className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded border border-line text-fg-muted hover:bg-surface-hover"
+            >
+              <HiChevronDoubleUp className="w-3 h-3" /> Later · undo
+            </button>
+          ) : (
+            <button
+              onClick={() => patchCompany(g.company.id, { laterAt: Date.now() })}
+              title="Move this company to the end of To Apply until tomorrow (4am IST)"
+              className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded border border-line text-fg-subtle hover:text-fg hover:bg-surface-hover"
+            >
+              <HiChevronDoubleDown className="w-3 h-3" /> Move to end
+            </button>
+          )
+        }
+      >
         {g.links.map((l) => {
           const added = agoLabel(l.addedAt);
           return (
@@ -711,7 +739,6 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   // Applied, compact: today's applications only (4am–4am IST), a line per
   // job, newest company first. Earlier ones stay in the data (statuses,
   // the chart), just not listed.
-  const today = todayKey();
   const appliedToday = (l, entry) => {
     const at = appliedTime(l, entry);
     return !!at && dayKey(at) === today;
