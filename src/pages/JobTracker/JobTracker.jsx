@@ -9,7 +9,7 @@ import { requireAuth } from "../../Data/authGate";
 import { whenSynced } from "../../Data/cloudSync";
 import { isOwner } from "../../components/OwnerRoute";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
-import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, customCompany, eraseCold } from "./shared";
+import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, needsOutreach, customCompany, eraseCold, withLedger, dayKey, todayKey, appliedTime } from "./shared";
 import PipelineTab from "./PipelineTab";
 import CompaniesTab from "./CompaniesTab";
 
@@ -30,6 +30,7 @@ const PIPELINE_RESET_TOKEN = "v7-2026-07";
 // Only these fields are kept, so anything retired (the old Openings tab's
 // dismissed-openings map) drops out of storage with the next save.
 // radarHidden is the new Openings tab's "hide" list: opening key → time hidden.
+// activity is the daily-chart ledger (withLedger in shared.jsx).
 function loadState() {
   const s = loadJSON(KEYS.JOB_TRACKER, {});
   // One-time reset: wipe all pipeline tracking (links/statuses) so the tracker
@@ -43,6 +44,7 @@ function loadState() {
       contacts: s.contacts || [],
       contactEdits: s.contactEdits || {},
       radarHidden: s.radarHidden || {},
+      activity: s.activity || {},
       pipelineReset: PIPELINE_RESET_TOKEN,
     };
   }
@@ -52,8 +54,31 @@ function loadState() {
     contacts: s.contacts || [],
     contactEdits: s.contactEdits || {},
     radarHidden: s.radarHidden || {},
+    activity: s.activity || {},
     pipelineReset: s.pipelineReset,
   };
+}
+
+// The state with one job link added (see addJobs in the page).
+function withJob(prev, { companyName, url, role, stage }, fresh, linkId, now) {
+  const name = companyName.trim();
+  let company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name.toLowerCase());
+  let custom = prev.custom;
+  if (!company) {
+    company = fresh;
+    custom = [...custom, company];
+  }
+  const added = { id: linkId, label: role || "Opening", url, applied: false, addedAt: now };
+  if (stage === "referral") Object.assign(added, { referral: true, referralAt: now });
+  if (stage === "applied") Object.assign(added, { applied: true, appliedAt: now });
+  const entry = prev.companies[company.id] || {};
+  const status = entry.status || "none";
+  const merged = { ...entry, links: [...(entry.links || []), added] };
+  if (stage === "applied" && !APPLIED_SET.has(status)) {
+    merged.status = "applied";
+    merged.appliedAt = entry.appliedAt || now;
+  } else if (status === "none") merged.status = "toApply";
+  return { ...prev, custom, companies: { ...prev.companies, [company.id]: merged } };
 }
 
 const TABS = [
@@ -107,6 +132,7 @@ export default function JobTracker() {
         contacts: raw.contacts || [],
         contactEdits: raw.contactEdits || {},
         radarHidden: raw.radarHidden || {},
+        activity: raw.activity || {},
         pipelineReset: PIPELINE_RESET_TOKEN,
       }));
     }
@@ -134,10 +160,10 @@ export default function JobTracker() {
         if (patch.status && !APPLIED_SET.has(patch.status)) {
           delete merged.appliedAt;
         }
-        const next = {
-          ...prev,
-          companies: { ...prev.companies, [id]: merged },
-        };
+        const companies = { ...prev.companies, [id]: merged };
+        // The ledger takes the links before and after, so one removed here
+        // is still counted for the day it was acted on.
+        const next = { ...prev, companies, activity: withLedger(withLedger(prev.activity, prev.companies), companies) };
         saveJSON(KEYS.JOB_TRACKER, next);
         return next;
       });
@@ -157,52 +183,52 @@ export default function JobTracker() {
   // not in the list becomes a company of your own), and the link starts in the
   // section it was added from. One write, so the new company and its link
   // can't come apart. Returns false when a guest is asked to sign in instead.
-  const addJob = useCallback(({ companyName, url, role, stage }) => {
+  // addJobs does many in one write (Openings' "Add all"), skipping links
+  // already in the pipeline.
+  const addJobs = useCallback((items) => {
     if (!requireAuth("Sign in to track your applications — your pipeline is saved to your account.")) return false;
     // Ids and the time are made once, outside the updater, which may run twice.
-    const name = companyName.trim();
-    const fresh = customCompany({ name });
     const now = Date.now();
-    const link = { id: uid(), label: role || "Opening", url, applied: false, addedAt: now };
+    const prepared = items.map((it) => ({ it, fresh: customCompany({ name: it.companyName.trim() }), linkId: uid() }));
     setState((prev) => {
-      let company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name.toLowerCase());
-      let custom = prev.custom;
-      if (!company) {
-        company = fresh;
-        custom = [...custom, company];
+      const queued = new Set(Object.values(prev.companies).flatMap((e) => (e.links || []).map((l) => l.url)));
+      let next = prev;
+      prepared.forEach(({ it, fresh, linkId }) => {
+        if (prepared.length > 1 && queued.has(it.url)) return;
+        queued.add(it.url);
+        next = withJob(next, it, fresh, linkId, now);
+      });
+      if (next !== prev) {
+        next = { ...next, activity: withLedger(prev.activity, next.companies) };
+        saveJSON(KEYS.JOB_TRACKER, next);
       }
-      const added = { ...link };
-      if (stage === "referral") Object.assign(added, { referral: true, referralAt: now });
-      if (stage === "applied") Object.assign(added, { applied: true, appliedAt: now });
-      const entry = prev.companies[company.id] || {};
-      const status = entry.status || "none";
-      const merged = { ...entry, links: [...(entry.links || []), added] };
-      if (stage === "applied" && !APPLIED_SET.has(status)) {
-        merged.status = "applied";
-        merged.appliedAt = entry.appliedAt || now;
-      } else if (status === "none") merged.status = "toApply";
-      const next = { ...prev, custom, companies: { ...prev.companies, [company.id]: merged } };
-      saveJSON(KEYS.JOB_TRACKER, next);
       return next;
     });
     return true;
   }, []);
+  const addJob = useCallback((item) => addJobs([item]), [addJobs]);
 
-  // Undo for addJob from the Openings tab: take that link back out. A company
-  // left with no links goes back from "To Apply" to untracked, as in Pipeline.
-  const removeJob = useCallback(({ companyName, url }) => {
+  // Undo for addJob(s) from the Openings tab: take those links back out. A
+  // company left with no links goes back from "To Apply" to untracked, as in
+  // Pipeline.
+  const removeJobs = useCallback((items) => {
     setState((prev) => {
-      const name = companyName.trim().toLowerCase();
-      const company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name);
-      const entry = company && prev.companies[company.id];
-      if (!entry) return prev;
-      const links = (entry.links || []).filter((l) => l.url !== url);
-      const merged = { ...entry, links, ...(!links.length && entry.status === "toApply" ? { status: "none" } : {}) };
-      const next = { ...prev, companies: { ...prev.companies, [company.id]: merged } };
+      let companies = prev.companies;
+      items.forEach(({ companyName, url }) => {
+        const name = companyName.trim().toLowerCase();
+        const company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name);
+        const entry = company && companies[company.id];
+        if (!entry) return;
+        const links = (entry.links || []).filter((l) => l.url !== url);
+        companies = { ...companies, [company.id]: { ...entry, links, ...(!links.length && entry.status === "toApply" ? { status: "none" } : {}) } };
+      });
+      if (companies === prev.companies) return prev;
+      const next = { ...prev, companies };
       saveJSON(KEYS.JOB_TRACKER, next);
       return next;
     });
   }, []);
+  const removeJob = useCallback((item) => removeJobs([item]), [removeJobs]);
 
   // ── HR contacts ────────────────────────────────────────────────────────────
   // Contacts come from three places: the seeded vCard import, hrContacts saved
@@ -322,7 +348,7 @@ export default function JobTracker() {
       if (!result) return;
       persistState((prev) => {
         const r = eraseCold(prev.companies);
-        return r ? { ...prev, companies: r.companies } : prev;
+        return r ? { ...prev, companies: r.companies, activity: withLedger(prev.activity, prev.companies) } : prev;
       });
       const changed = Object.keys(before).filter((id) => result.companies[id] !== before[id]);
       const undo = () =>
@@ -365,29 +391,38 @@ export default function JobTracker() {
   const allCompanies = useMemo(() => [...COMPANIES, ...state.custom], [state.custom]);
 
   const entryOf = useCallback((id) => state.companies[id] || {}, [state.companies]);
+  // The chart's ledger: what's stored, brought up to date with the links (not
+  // written back here; every edit writes it).
+  const ledger = useMemo(() => withLedger(state.activity, state.companies), [state.activity, state.companies]);
 
   // Job links per pipeline stage (see linkStage), plus company-level progress.
   const stats = useMemo(() => {
-    const n = { toApply: 0, referral: 0, applied: 0, closed: 0 };
+    const n = { toApply: 0, referral: 0, applied: 0, closed: 0, outreach: 0 };
     let inProcess = 0;
     let offers = 0;
+    let appliedToday = 0;
+    const today = todayKey();
     allCompanies.forEach((c) => {
       const e = state.companies[c.id] || {};
       const status = e.status || "none";
       (e.links || []).forEach((l) => {
         n[linkStage(l, e)] += 1;
+        if (needsOutreach(l, e)) n.outreach += 1;
+        const at = linkStage(l, e) === "applied" && appliedTime(l, e);
+        if (at && dayKey(at) === today) appliedToday += 1;
       });
       if (status === "oa" || status === "interview") inProcess += 1;
       if (status === "offer") offers += 1;
     });
-    return { total: allCompanies.length, ...n, inProcess, offers };
+    return { total: allCompanies.length, ...n, appliedToday, inProcess, offers };
   }, [allCompanies, state.companies]);
 
   const statTiles = [
     { label: "Companies", value: stats.total, cls: "text-fg" },
     { label: "To Apply", value: stats.toApply, cls: "text-fg" },
     { label: "Referral", value: stats.referral, cls: "text-fg" },
-    { label: "Applied", value: stats.applied, cls: "text-fg" },
+    { label: "Outreach", value: stats.outreach, cls: "text-fg" },
+    { label: "Applied today", value: stats.appliedToday, cls: "text-fg" },
     { label: "In Process", value: stats.inProcess, cls: "text-fg" },
     { label: "Offers", value: stats.offers, cls: "text-fg" },
   ];
@@ -408,7 +443,7 @@ export default function JobTracker() {
         </h1>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-5">
           {statTiles.map((s) => (
             <div key={s.label} className={`${GLASS} rounded-lg px-3 py-2.5 text-center`}>
               <div className={`font-mono text-[22px] leading-8 font-medium tabular-nums ${s.cls}`}>{s.value}</div>
@@ -460,6 +495,7 @@ export default function JobTracker() {
             entryOf={entryOf}
             patchCompany={patchCompany}
             addJob={addJob}
+            ledger={ledger}
           />
         )}
 
@@ -474,6 +510,8 @@ export default function JobTracker() {
               onUnhideAll={unhideOpenings}
               addJob={addJob}
               removeJob={removeJob}
+              addJobs={addJobs}
+              removeJobs={removeJobs}
             />
           </Suspense>
           </div>

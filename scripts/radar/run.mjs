@@ -40,7 +40,7 @@ import { fetchJobspyJobs } from "./jobspy.mjs";
 import { fetchCareerOpsJobs, writeCv } from "./careerops.mjs";
 import { experienceRange, experienceTag } from "./experience.mjs";
 import { makePayChecker } from "./pay.mjs";
-import { DEFAULT_RESUME_PDF, loadResumeText, resumeProfile } from "./resume.mjs";
+import { loadResumeTexts, resumePdfs, resumesProfile } from "./resume.mjs";
 import { openingIdOf } from "./ids.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -183,8 +183,9 @@ async function main() {
   // Skills to score against: the resume's, plus radar/skills.json's extras
   // (skills the resume implies without naming) and its want list.
   const listed = JSON.parse(readFileSync(join(ROOT, "radar/skills.json"), "utf8"));
-  const { text: resumeText, changed: resumeTextChanged } = loadResumeText({ stateDir: STATE, pdfPath: env.RESUME_PDF || DEFAULT_RESUME_PDF, log });
-  const resume = resumeText ? resumeProfile(resumeText) : null;
+  const { texts: resumeTexts, changed: resumeTextChanged } = loadResumeTexts({ stateDir: STATE, pdfPaths: resumePdfs(env.RESUME_PDF), log });
+  const resumeText = resumeTexts.join("\n\n");
+  const resume = resumeTexts.length ? resumesProfile(resumeTexts) : null;
   // A changed resume or a new way of scoring means every opening is re-scored,
   // so the dataset source re-fetches descriptions it would otherwise skip.
   const scoreVersionChanged = loadJSON("score-version.json", {}).version !== SCORE_VERSION;

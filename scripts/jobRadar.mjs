@@ -26,9 +26,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 //   • locations: India, or remote anywhere (foreign remote is fine; only
 //     foreign onsite is dropped)
 const TITLE_RX =
-  /\b(software (development )?engineer|sde|swe|backend|back-end|java|senior engineer|member of technical staff|mts|platform engineer|distributed systems|kafka|kubernetes|k8s|gen\s?ai|genai|llm|agentic|ai engineer)\b/i;
+  /\b(software (development )?engineer|sde|swe|backend|back-end|java|python|fastapi|senior engineer|member of technical staff|mts|platform engineer|distributed systems|kafka|kubernetes|k8s|gen\s?ai|genai|generative ai|llm|agentic|ai engineer|ai\s?\/\s?ml engineer|ai developer|applied ai)\b/i;
+// "ML engineer" is out, but "AI/ML Engineer" is how many GenAI roles are titled.
 const TITLE_EXCLUDE_RX =
-  /\b(intern|staff|principal|director|manager|vp|head of|lead|architect|phd|early career|campus|university|new grad|graduate|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|ml engineer|devops|sre|site reliability|security engineer|hardware|embedded|firmware|computer vision)\b/i;
+  /\b(intern|staff|principal|director|manager|vp|head of|lead|architect|phd|early career|campus|university|new grad|graduate|frontend|front-end|mobile|ios|android|qa|test|sales|support|designer|data scientist|(?<!ai\s?\/\s?)ml engineer|devops|sre|site reliability|security engineer|hardware|embedded|firmware|computer vision)\b/i;
 export const INDIA_RX = /\b(india|bangalore|bengaluru|hyderabad|pune|gurgaon|gurugram|noida|delhi|ncr|chennai|mumbai|kolkata|ahmedabad|kochi|trivandrum|thiruvananthapuram|jaipur|indore|coimbatore|chandigarh|mohali)\b/i;
 
 export function isRelevant(title, location) {

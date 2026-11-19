@@ -127,6 +127,11 @@ export const SKILL_DEFS = [
   ["PyTorch", B("py\\s?torch"), 2],
   ["TensorFlow", B("tensor\\s?flow"), 2],
   ["NLP", B("nlp|natural language processing"), 2],
+  ["Function Calling", B("tool calling|function calling|tool use"), 2],
+  ["LLM Evals", B("llm eval(?:uation)?s?|evals|llm[-\\s]as[-\\s](?:a[-\\s])?judge|golden (?:set|dataset)s?|ragas"), 2],
+  ["OpenAI API", B("openai|azure openai|gpt-?4o?|chat\\s?gpt api"), 2],
+  ["Hybrid Search", B("hybrid search|bm25|reciprocal rank fusion"), 1],
+  ["Firebase", B("firebase|firestore"), 1],
   // Security / auth
   ["OAuth", B("oauth|oidc|openid"), 2],
   ["JWT", B("\\bjwt\\b|json web token"), 1],
@@ -165,7 +170,7 @@ const GENERIC = new Set(
 );
 
 // Bump when scoring changes: the radar then re-scores every opening it has.
-export const SCORE_VERSION = 2;
+export const SCORE_VERSION = 3;
 
 // Title words that mark a relevant engineering role — used for the low-signal
 // fallback score when an opening exposes only a title (no description).
