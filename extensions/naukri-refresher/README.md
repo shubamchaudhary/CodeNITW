@@ -60,33 +60,44 @@ You can keep a Naukri tab open (it will be used), but you don't have to: if none
 - **Failures:** network or server errors retry up to 3 times, 2–5 min apart, within the slot. On HTTP 429 (too many requests) it rests for 2 hours. On logout or an unexpected API response it **pauses** and shows a desktop notification instead of retrying blindly.
 - **Self-healing schedule:** a 1-minute watchdog alarm plus saved state, so a restarted browser, a stopped background worker or a lost alarm can't silently stop it.
 - **Permissions:** `alarms`, `storage`, `scripting`, `notifications`, `power` (keep-awake), access to `www.naukri.com`, and to `interviewplanprep.vercel.app` (the job finder's uploads). Two small scripts run on pages:
-  - `capture.js` runs on Naukri's job search pages only. It's read-only and keeps a copy of the results the page loads.
+  - `capture.js` runs on Naukri's job search pages and job pages only. It's read-only and keeps a copy of the results and job details the page loads.
   - `site-bridge.js` runs on your own site only. It lets your Job tracker page hand the finder its token. It can only ask the extension two things (is there a finder here, and take this token), and it never reads the page.
 
 Automating your profile may be against Naukri's terms. The schedule is deliberately human-paced, but the risk isn't zero.
 
 ## Job finder
 
-Every 2 hours from 09:00 to 19:00 IST (±7 min), it opens Naukri's own job search pages in a muted background tab, one after another, and reads the results each page loads for itself. It never clicks anything and never applies. The jobs that fit go to your site's **Openings → ⭐ Naukri today**, as two lists, one per Naukri account (Naukri allows 50 applies a day per account):
+Every 2 hours from 09:00 to 19:00 IST (±7 min), it opens Naukri's own job search pages in a muted background tab, one after another, and reads the results each page loads for itself.
+- **The JD:** for every card that looks right, it opens that job's page and reads the JD the same way.
+- **Read-only:** it never clicks anything and never applies.
 
-- **Backend:** backend-first roles, checked against your SDE resume, top 50 a day.
-- **AI:** AI-first roles (an AI title such as GenAI/LLM/AI Engineer, or mostly GenAI tech in its tags), checked against your GenAI resume, top 50 a day.
+The jobs whose JD matches you go to your site's **Openings → ⭐ Naukri today**, as two lists, one per Naukri account:
 
-A job is on one list only, so you never apply to it from both accounts. Which list a job goes on depends on the listing alone, never on which search found it. Open one, apply on Naukri from the account it names, and press **Applied**: it goes into your pipeline as applied today, and the next one moves up.
+- **Backend:** backend-first roles.
+- **AI:** AI-first roles: an AI title such as GenAI/LLM/AI Engineer, or a JD where GenAI/ML work is at least 40% of its technology.
 
-**What it keeps.** It works on a best-effort basis: a detail the listing leaves out never drops a job; only a detail it states can.
+A job is on one list only, so you never apply to it from both accounts. Which list a job goes on depends on the job alone, never on which search found it. Every kept job is shown, best first, and each list aims for 100 a day. Open one, apply on Naukri from the account it names, and press **Applied**: it goes into your pipeline as applied today.
 
-| Check | Kept when |
+**Step 1, the card.** A detail the card leaves out never drops a job; only a detail it states can.
+
+| Check | Passes when |
 |---|---|
 | Posted | today (the day runs 4am to 4am IST, like your tracker) |
-| Title | not a stack or level you don't do: Android, iOS/mobile, .NET, PHP, frontend-only, QA/testing, DevOps/SRE, data, SAP/Salesforce-type platforms, embedded, support, lead/architect/manager, intern. A plain "Software Engineer/Developer" is kept. A title naming only a language you don't have (Go, Scala…) is out |
-| Experience | asks for under 2.5 years, and isn't a 0–1 year fresher role. Not stated: kept |
-| Pay | reaches 15 LPA. A salary the employer hid on the listing still counts when Naukri's data carries it. Not there at all: assumed in range |
-| Skills | at least 85% of the tech in the job's Naukri skill tags is on that list's resume. Soft skills, degrees and vague tags are ignored, variants count once ("Core Java" = Java), a close substitute counts 70% (Angular when you know React, RabbitMQ when you know Kafka). No tags: kept |
+| Title | not a stack or level you don't do: Android, iOS/mobile, .NET, PHP, frontend-only, QA/testing, DevOps/SRE, data, SAP/Salesforce-type platforms, embedded, C/C++ systems work, support, lead/architect/manager, intern. A plain "Software Engineer/Developer" passes. A title naming only a language you don't have (Go, Scala…) is out |
+| Experience | asks for under 2.5 years, and isn't a 0–1 year fresher role. Not stated: passes |
+| Pay | reaches 15 LPA when the listing gives a salary (one the employer hid still counts when Naukri's data has it). Not given: passes |
+| Skill chips | when they name 3 or more known technologies and under 40% are yours, the job is another stack and its page isn't opened. Chips that aren't technologies ("Strategic", "Compliance") are ignored |
 
-Each list is ranked 0–100 on skills, title, experience, pay, AmbitionBox rating and how fresh it is.
+**Step 2, the JD.**
+- **Finding the skills:** the finder opens the job's page and finds every technology the JD asks for with the skills dictionary (`skills-dict.js`, over a thousand skills: languages, frameworks, databases, messaging, cloud, DevOps, data, ML, GenAI, testing, security, system design…). It also reads Naukri's "Key Skills" on that page.
+- **Matching:** every technology counts, backend and AI alike, against your skills. The job is kept when at least **60%** of them are yours. You can change that bar in the finder's settings.
+- **What doesn't count:** "nice to have" and "is a plus" lines, company blurbs and perks.
+- **JDs that say little:** a JD naming fewer than 4 technologies is held to the same bar and ranked a little lower. One naming none at all is kept, since there's nothing to judge.
+- **Unreadable job pages:** the job is judged on its card's chips, and only when they say enough. After 3 unreadable pages in a row, the run stops opening job pages and says so.
 
-Each list's skills come from its own resume plus `radar/skills.json`. Today the two differ only a little: AWS/S3 is on the SDE resume only, and Tool Calling and the eval metrics are on the GenAI one only. Run `naukri-refresher-dev/make-job-profile.mjs` after a resume changes to regenerate `job-profile.js`. You can add more skills in the finder's settings; they count for both lists.
+Why 60%: on 643 real engineering JDs from public job boards, strong backend fits scored 60–80%, because nearly every JD also names something you don't list (Go, GCP, MySQL…). The share decides only whether a job is kept; within a list, jobs are ranked 0–100 on JD match, title, experience, pay, AmbitionBox rating and how fresh they are. Run over those 643 JDs as if they were Naukri jobs, 209 passed the title rules and 67 were kept (44 backend, 23 AI). The JD step turned down 142.
+
+**Your skills** are everything the dictionary finds in your two resumes (they're nearly the same), plus `radar/skills.json`'s extras, plus what those imply: Spring Boot means Spring and Java, Hibernate means JPA and JDBC. Run `naukri-refresher-dev/make-job-profile.mjs` after a resume changes to regenerate `job-profile.js`. You can add more skills in the finder's settings. `naukri-refresher-dev/skills-coverage.mjs` checks the dictionary against a set of JDs and lists the tech words it missed.
 
 **Two accounts, two browsers.** Popup → Job finder → **Searches for**:
 - Pick **Backend only** in the browser logged in to your Backend Naukri account, and **AI only** in the other. Each account then reads only its own searches, which is half the pages each.
@@ -102,14 +113,16 @@ On your site, the Naukri today view opens on the list this browser searches for.
    - That token can only send job finder openings.
    - It's derived from `RADAR_INGEST_TOKEN`, so a new ingest token disconnects every finder until you open the site again.
    - Pasting `RADAR_INGEST_TOKEN` in Settings → *Paste a token instead* still works.
-4. Pick **Searches for**, press **Find jobs now** and watch the first run (a few minutes), then check **Openings → ⭐ Naukri today**. Switch it on in the popup when it looks right.
+4. Pick **Searches for**, press **Find jobs now** and watch the first run (several minutes now that it reads JDs), then check **Openings → ⭐ Naukri today**. Switch it on in the popup when it looks right.
 5. Once it works, add `RADAR_NAUKRI=off` to `.radar\.env` so the radar's JobSpy stops searching Naukri from a script. JobSpy runs got "recaptcha required" from Naukri, and the browser does this better.
 
 **Safety.**
-- **Pace:** one run at a time, 4–9 s between pages, at most 40 pages a run and 220 a day per browser. A search stops paging as soon as a page turns up little that's new.
-- **Pausing:** it pauses at once, with a notification, when Naukri shows an "are you human?" check, a login page, an error, or pages it can't read. It never retries into a block. Finish any check yourself in that browser, then press **Resume**.
-- **Settings page:** it lists why listings were left out, tags it didn't recognize (add the ones you know as skills), recent runs, and the last page it read, for fixing the finder if Naukri changes its pages.
-- **Terms:** reading Naukri automatically may be against its terms. The pace is a person's, but the risk isn't zero.
+- **Pace:** one run at a time, 4–9 s between pages.
+- **Page caps:** at most 80 pages a run and 400 a day per browser (search pages and job pages together), and 250 job pages a day.
+- **Paging:** a search stops paging as soon as a page turns up little that's new, and a list's searches stop for the day once it has 100 jobs. Job pages a run doesn't get to are read first next time.
+- **Pausing:** it pauses at once, with a notification, when Naukri shows an "are you human?" check (on a search page or a job page), a login page, an error, or search pages it can't read. It never retries into a block. Finish any check yourself in that browser, then press **Resume**.
+- **Settings page:** it lists why jobs were left out, chips it didn't recognize, recent runs, and the last search page and job page it read, for fixing the finder if Naukri changes its pages.
+- **Terms:** reading Naukri automatically may be against its terms. The pace is a person's, but the risk isn't zero, and reading JDs means more pages than reading results alone.
 
 ## Tests
 
@@ -121,9 +134,10 @@ node extensions/naukri-refresher-dev/e2e.mjs            # chrome edge firefox, o
 The end-to-end test loads this exact folder into headless Chrome, Edge and Firefox with throwaway profiles and audio muted. It points `www.naukri.com` (and the site's `/api/radar`) at a local mock and covers the scheduling, refresh, retry, back-off, logout, API-change, backup, keep-awake, sleeping-tab and safety paths. For the job finder it also covers:
 - **Connecting:** your site's real Job tracker handover code (`src/pages/JobTracker/finderBridge.js`) connecting the finder. Someone else signed in gets nothing, and a token the site rejects is refused.
 - **Reading and lists:** search pages read through both fetch and XHR, an exact keep/drop list, the two lists, duplicates, later runs, and a browser set to AI only.
-- **Stopping:** the "are you human?" pause, and a site that isn't updated yet.
+- **JDs:** job pages opened only for cards that pass. A job with filler chips but a Java JD is kept, one with fine chips but a .NET JD is dropped, nice-to-haves and the company blurb don't count, and an unreadable page falls back to its card.
+- **Stopping:** the "are you human?" pause on a search page and on a job page (that job is read first after Resume), and a site that isn't updated yet.
 
-`site-api.test.mjs` checks the site API's token rules: what the finder's token may do, and that pairing works only for the owner.
+`site-api.test.mjs` checks the site API's token rules: what the finder's token may do, and that pairing works only for the owner. `skills-dict.test.mjs` checks the dictionary: spellings, words that are also plain English ("react", "rest", "less"), names that need context (Go, C, R), and your skills.
 
 ## The Naukri API
 

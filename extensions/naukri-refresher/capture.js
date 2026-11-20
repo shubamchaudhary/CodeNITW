@@ -1,12 +1,13 @@
-// Runs in the page (MAIN world) at document_start on Naukri's job search pages only.
-// It keeps a copy of the search results the page itself fetches, so the job finder reads exactly
-// what Naukri showed, without making any request of its own. Read-only: it changes nothing on the
-// page and sends nothing anywhere; the extension reads `window.__nrJobs` when it needs it.
+// Runs in the page (MAIN world) at document_start on Naukri's job search pages and job pages only.
+// It keeps a copy of the search results and the job details the page itself fetches, so the job
+// finder reads exactly what Naukri showed, without making any request of its own. Read-only: it
+// changes nothing on the page and sends nothing anywhere; the extension reads `window.__nrJobs`
+// when it needs it.
 (() => {
   if (window.__nrCapture) return;
   window.__nrCapture = true;
   const store = (window.__nrJobs = []);
-  const wanted = (url) => /\/jobapi\/v\d+\/search\b/.test(String(url || ''));
+  const wanted = (url) => /\/jobapi\/v\d+\/(?:search|job)\b/.test(String(url || ''));
   const keep = (url, status, text) => {
     let json = null;
     try { json = typeof text === 'string' ? JSON.parse(text) : text; } catch { /* not JSON */ }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Naukri Refresher",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Keeps your Naukri profile fresh (one trailing dot on the headline, about once an hour) and finds today's best Naukri jobs for your Backend and AI profiles.",
   "minimum_chrome_version": "121",
   "permissions": ["alarms", "storage", "scripting", "notifications", "power"],
@@ -13,7 +13,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.naukri.com/*-jobs*"],
+      "matches": ["https://www.naukri.com/*-jobs*", "https://www.naukri.com/job-listings-*"],
       "js": ["capture.js"],
       "run_at": "document_start",
       "world": "MAIN"
