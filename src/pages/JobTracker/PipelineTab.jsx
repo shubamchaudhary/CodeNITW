@@ -153,13 +153,15 @@ const unsettled = (entry, before, gone, status) => ({
 // Take one job out: only the link with this id. Undo puts that one back where
 // it was, and leaves everything done since (another job removed, moved or
 // added) as it is.
-function makeRemove(entryOf, patchCompany) {
+// The removed job's link is also dismissed, so Openings never offers it again.
+function makeRemove(entryOf, patchCompany, dismissUrls) {
   return (companyId, linkId) => {
     const entry = entryOf(companyId);
     const before = entry.links || [];
     const removed = before.find((l) => l.id === linkId);
     if (!removed) return;
     patchCompany(companyId, (e) => settled(e, (e.links || []).filter((l) => l.id !== linkId)));
+    dismissUrls?.([removed.url]);
     toast.info(
       ({ closeToast }) => (
         <span className="text-sm">
@@ -167,6 +169,7 @@ function makeRemove(entryOf, patchCompany) {
           <button
             onClick={() => {
               patchCompany(companyId, (e) => unsettled(e, before, [removed], entry.status));
+              dismissUrls?.([removed.url], false);
               closeToast();
             }}
             className="underline font-semibold"
@@ -531,9 +534,9 @@ const STAGE_TIME = {
   closed: closedTime,
 };
 
-export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJob, ledger }) {
+export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJob, dismissUrls, ledger }) {
   const move = makeMover(patchCompany);
-  const removeLink = makeRemove(entryOf, patchCompany);
+  const removeLink = makeRemove(entryOf, patchCompany, dismissUrls);
   const [adding, setAdding] = useState(null); // the section whose Add form is open
   // What's being dragged, { from, companyId, linkIds }: in a ref for the drop
   // logic (set at once), and in state for the highlighting (set a tick later).
