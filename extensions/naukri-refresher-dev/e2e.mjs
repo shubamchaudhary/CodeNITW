@@ -707,7 +707,7 @@ async function suite(d, mock) {
     assert.equal(mock.state.radarPosts.length, 0, 'connecting uploads nothing');
   });
 
-  await step("find jobs: reads Naukri's own results page by page in a background tab, keeps what fits, sends it to the site", async () => {
+  await step("find jobs: reads Naukri's results, opens each good-looking job's page, keeps the ones whose JD matches, sends them to the site", async () => {
     await setStore({ jobsDev: { pause: [60, 120], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'] } });
     const t0 = Date.now();
     const r = await d.msg({ type: 'jobsNow' });
@@ -734,11 +734,22 @@ async function suite(d, mock) {
     assert.equal(byId[EXPECT.idOf(7)].pay.verdict, 'hidden', "a salary the employer hid is still read from Naukri's data");
     assert.equal(byId[EXPECT.idOf(9)].exp, 'unknown', 'a plain Software Engineer listing with no details is kept');
     assert.equal(byId[EXPECT.idOf(41)].coverage, 100, 'the AI search (loaded by XMLHttpRequest) was read too');
-    assert.ok(s.reasons.some(([why]) => why === 'Android role') && s.reasons.some(([why]) => why === 'skills under 85%'), JSON.stringify(s.reasons));
+    // The JDs: every card that passed had its page opened; the JD decided.
+    const jobPages = mock.jobPages().map((p) => p.path);
+    assert.ok(jobPages.length >= EXPECT.keep.length, `opened ${jobPages.length} job pages`);
+    assert.ok(!jobPages.some((p) => /android|net-developer|php/.test(p)), "a card ruled out by its title isn't opened");
+    assert.ok(byId[EXPECT.idOf(61)], 'filler chips, but its JD is Java: kept');
+    assert.ok(!byId[EXPECT.idOf(62)], 'fine chips, but its JD is .NET: dropped');
+    assert.ok(s.reasons.some(([why]) => why === 'JD match under 60%'), JSON.stringify(s.reasons));
+    assert.equal(byId[EXPECT.idOf(61)].jd, true);
+    assert.ok(!byId[EXPECT.idOf(61)].missing.some((m) => /Salesforce|SAP|Go\b|Terraform/.test(m)), 'nice-to-haves and the company blurb left out');
+    for (const id of EXPECT.cardOnly) assert.equal(byId[id].jd, false, "its page couldn't be read: judged by its card");
+    assert.ok(s.daily.jds >= EXPECT.keep.length && s.jdSample && s.jdSample.via === 'api', JSON.stringify(s.jdSample));
+    assert.ok(s.reasons.some(([why]) => why === 'Android role') && s.reasons.some(([why]) => why === "card's skills are another stack"), JSON.stringify(s.reasons));
     assert.equal(s.daily.kept.ai, EXPECT.ai.length);
     assert.equal(s.daily.kept.backend, EXPECT.keep.length - EXPECT.ai.length);
     assert.equal(naukriPosts().length, 0, 'never sends anything to Naukri (no apply, no form)');
-    assert.equal((await d.naukriTabs()).filter((u) => /-jobs/.test(u)).length, 0, 'its background tab is closed again');
+    assert.equal((await d.naukriTabs()).filter((u) => /-jobs|job-listings/.test(u)).length, 0, 'its background tab is closed again');
   });
 
   await step('a later run reads one page per search and sends only the new listing that fits', async () => {
@@ -767,16 +778,41 @@ async function suite(d, mock) {
     assert.equal(r.halted, null);
   });
 
-  await step("a site that doesn't know the finder yet stops it before anything is searched or sent", async () => {
-    mock.state.radarMode = 'old';
+  await step('a check on a job page pauses it too; that job waits and is read first after Resume', async () => {
+    mock.state.jobMode = 'captcha';
+    mock.state.srpExtra = [listing(53, { title: 'Backend Developer', tagsAndSkills: 'Java,Spring Boot,PostgreSQL,Redis' })];
     const t0 = Date.now();
     await d.msg({ type: 'jobsNow' });
-    const s = await waitRun(t0);
-    assert.equal(s.halted && s.halted.short, 'site not updated');
+    let s = await waitRun(t0);
+    assert.equal(s.halted && s.halted.short, 'Naukri asked for a check');
+    assert.equal(s.queued, 1, 'the job waits');
     assert.equal(mock.state.radarPosts.length, 2, 'nothing sent');
-    assert.equal(mock.searchPages().filter((p) => p.t >= t0).length, 0, 'not even searched');
-    mock.state.radarMode = 'ok';
+    mock.state.jobMode = 'ok';
     await d.msg({ type: 'jobsResume' });
+    const t1 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    s = await waitRun(t1);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    const first = mock.state.requests.filter((r) => r.t >= t1 && (/^\/job-listings-/.test(r.path) || /-jobs(?:-\d+)?$/.test(r.path)))[0];
+    assert.ok(first && first.path.endsWith(EXPECT.idOf(53)), `read its page first: ${first && first.path}`);
+    assert.deepEqual(mock.state.radarPosts[2].openings.map((o) => o.openingId), [EXPECT.idOf(53)]);
+    mock.state.srpExtra = [];
+    await d.msg({ type: 'jobsResume' }); // the next step's run checks the site again
+  });
+
+  await step("a site that doesn't know the finder yet stops it before anything is searched or sent", async () => {
+    mock.state.radarMode = 'old';
+    try {
+      const t0 = Date.now();
+      await d.msg({ type: 'jobsNow' });
+      const s = await waitRun(t0);
+      assert.equal(s.halted && s.halted.short, 'site not updated');
+      assert.equal(mock.state.radarPosts.length, 3, 'nothing sent');
+      assert.equal(mock.searchPages().filter((p) => p.t >= t0).length, 0, 'not even searched');
+    } finally {
+      mock.state.radarMode = 'ok';
+      await d.msg({ type: 'jobsResume' });
+    }
   });
 
   await step('switching the finder on plans runs around 09, 11, 13, 15, 17 and 19 IST; off clears them', async () => {
@@ -792,7 +828,7 @@ async function suite(d, mock) {
 
   await step('popup shows the job finder in one line', async () => {
     const line = await d.evalExt("(async () => { await new Promise((r) => setTimeout(r, 1700)); return document.getElementById('jobsLine').textContent; })()");
-    assert.equal(line, `Off · ${EXPECT.keep.length - EXPECT.ai.length + 1} Backend · ${EXPECT.ai.length} AI today`);
+    assert.equal(line, `Off · ${EXPECT.keep.length - EXPECT.ai.length + 2} Backend · ${EXPECT.ai.length} AI today`);
   });
 
   await step('a browser set to "AI only" runs just the AI searches; each job still goes on its own list', async () => {

@@ -12,6 +12,7 @@ const el = (tag, text, cls) => {
 };
 
 let extraLoaded = false;
+let barLoaded = false;
 
 function chips(root, pairs, empty) {
   root.replaceChildren();
@@ -40,14 +41,22 @@ function render(s) {
   $('sBackend').textContent = kept.backend || 0;
   $('sAi').textContent = kept.ai || 0;
   $('sRead').textContent = (s.daily && s.daily.read) || 0;
+  $('sJds').textContent = (s.daily && s.daily.jds) || 0;
   $('sPages').textContent = (s.daily && s.daily.pages) || 0;
   $('sSent').textContent = (s.daily && s.daily.uploaded) || 0;
-  $('nBackend').textContent = s.profileSkills.backend;
-  $('nAi').textContent = s.profileSkills.ai;
+  $('nSkills').textContent = s.skillCount;
+  $('skillsDate').textContent = s.skillsGenerated || '';
   if (document.activeElement !== $('scope')) $('scope').value = s.settings.scope;
   $('scopeSearches').textContent = `This browser searches: ${s.searches.join(' · ')}.`;
+  if (!barLoaded) {
+    const [lo, hi] = s.rules.minScoreRange;
+    for (let p = Math.round(lo * 100); p <= Math.round(hi * 100); p += 5) $('minScore').add(new Option(`${p}%`, String(p / 100)));
+    $('minScore').value = String(s.settings.minScore);
+    barLoaded = true;
+  }
   let next = s.settings.enabled ? (s.plan ? `Next run ${fmtWhen(s.plan.at, now)} IST.` : '') : 'The finder is off (switch it on in the popup).';
   if (s.running) next = 'Running now…';
+  if (s.queued) next += ` ${s.queued} job pages wait to be read.`;
   if (s.pending) next += ` ${s.pending} kept jobs wait to be sent.`;
   $('nextLine').textContent = next;
   $('now').disabled = s.running || !s.settings.hasToken || !!s.halted;
@@ -62,36 +71,37 @@ function render(s) {
   if (!s.runs.length) {
     const tr = el('tr');
     const td = el('td', 'No runs yet.', 'muted');
-    td.colSpan = 7;
+    td.colSpan = 8;
     tr.append(td);
     tb.append(tr);
   }
   const scopeLabel = { both: '', backend: ' · Backend', ai: ' · AI' };
   for (const r of s.runs) {
     const tr = el('tr');
-    tr.append(el('td', fmtWhen(r.t, now)), el('td', `${r.trigger || ''}${scopeLabel[r.scope] || ''}`), el('td', String(r.pages || 0), 'n'), el('td', String(r.read || 0), 'n'),
-      el('td', String(r.kept || 0), 'n'), el('td', String(r.uploaded || 0), 'n'),
+    tr.append(el('td', fmtWhen(r.t, now)), el('td', `${r.trigger || ''}${scopeLabel[r.scope] || ''}`), el('td', String(r.pages || 0), 'n'),
+      el('td', String(r.jds || 0), 'n'), el('td', String(r.read || 0), 'n'), el('td', String(r.kept || 0), 'n'), el('td', String(r.uploaded || 0), 'n'),
       el('td', r.outcome === 'ok' ? r.note || '' : `${r.outcome}: ${r.note || ''}`, r.outcome === 'ok' ? '' : 'warn'));
     tb.append(tr);
   }
 
   const R = s.rules;
   const rules = $('rules');
-  if (!rules.childElementCount) {
-    const of = (p) => s.allSearches.filter((x) => x.profile === p).map((x) => x.k).join(' · ');
-    for (const t of [
-      'Two lists, one per Naukri account. An AI-first role (an AI title such as GenAI/LLM/AI Engineer, or mostly GenAI tech in its tags) goes on the AI list and is checked against your GenAI resume. Any other role goes on the Backend list and is checked against your SDE resume. A job is on one list only, so you never apply to it from both accounts.',
-      'Posted today (the day runs 4am to 4am IST, like your tracker).',
-      'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, or lead/architect/manager. A plain "Software Engineer/Developer" is kept.',
-      `Experience: asks for less than ${R.maxMinYears} years (and isn't a 0–1 year fresher role). A listing that doesn't say is kept.`,
-      `Pay: reaches ${R.minPayL} LPA. A salary the listing doesn't show is assumed to be in range.`,
-      `Skills: at least ${Math.round(R.minCoverage * 100)}% of the tech in the job's Naukri tags is on that list's resume. Soft skills and vague tags are ignored, and a close substitute (Angular when you know React) counts ${Math.round(R.partial * 100)}%. A listing with no tags is kept.`,
-      `Each list is ranked 0–100 (skills, title, experience, pay, company rating, how fresh), and your site shows its top ${R.dailyTop} for the day.`,
-      `Backend searches: ${of('backend')}.`,
-      `AI searches: ${of('ai')}.`,
-    ]) rules.append(el('li', t));
-  }
+  rules.replaceChildren();
+  const of = (p) => s.allSearches.filter((x) => x.profile === p).map((x) => x.k).join(' · ');
+  for (const t of [
+    'First the card. It must be posted today (the day runs 4am to 4am IST, like your tracker).',
+    'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, or lead/architect/manager. A plain "Software Engineer/Developer" passes.',
+    `Experience: asks for less than ${R.maxMinYears} years, and isn't a 0–1 year fresher role. A card that doesn't say passes.`,
+    `Pay: reaches ${R.minPayL} LPA when the listing gives a salary. One it doesn't give passes.`,
+    `Skill chips: when they name 3 or more known technologies and under ${Math.round(R.cardFloor * 100)}% are yours, the job is another stack and its page isn't opened. Chips that aren't technologies are ignored.`,
+    `Then the JD. The finder opens the job's page, finds every technology the JD asks for with the skills dictionary (over a thousand skills), and compares them with yours. The job is kept when at least ${Math.round(s.settings.minScore * 100)}% are yours. "Nice to have" lines, company blurbs and perks don't count. A JD naming fewer than ${R.minJdSkills} technologies is held to the same bar and ranked a little lower; one naming none is kept.`,
+    `The list: AI when the title is an AI one, or when GenAI/ML work is ${Math.round(R.aiShare * 100)}%+ of the JD's technology. Otherwise Backend. A job is on one list only.`,
+    `Each list is ranked 0–100 (JD match, title, experience, pay, company rating, how fresh) and aims for ${R.dailyTarget} jobs a day. Its searches stop for the day once it has them.`,
+    `Backend searches: ${of('backend')}.`,
+    `AI searches: ${of('ai')}.`,
+  ]) rules.append(el('li', t));
   $('sample').textContent = s.sample ? JSON.stringify(s.sample, null, 2) : 'Nothing read yet.';
+  $('jdSample').textContent = s.jdSample ? JSON.stringify(s.jdSample, null, 2) : 'Nothing read yet.';
 }
 
 async function refresh() {
@@ -120,9 +130,14 @@ $('test').addEventListener('click', async () => {
   showToken(r.ok ? 'ok' : 'err', r.ok ? 'Your site accepts the token and knows the job finder.' : `${r.msg || r.short}.`);
 });
 $('scope').addEventListener('change', async (e) => { await send('jobsSave', { patch: { scope: e.target.value } }); refresh(); });
+$('saveBar').addEventListener('click', async () => {
+  await send('jobsSave', { patch: { minScore: Number($('minScore').value) } });
+  $('barOut').textContent = `Saved ${istHM(Date.now())}. Press "Re-scan today" to apply it to jobs already decided.`;
+  refresh();
+});
 $('saveExtra').addEventListener('click', async () => {
   await send('jobsSave', { patch: { extraSkills: $('extra').value } });
-  $('extraOut').textContent = `Saved ${istHM(Date.now())}. Press "Re-scan today" to apply them to listings already read.`;
+  $('extraOut').textContent = `Saved ${istHM(Date.now())}. Press "Re-scan today" to apply them to jobs already decided.`;
 });
 $('now').addEventListener('click', async () => { $('now').disabled = true; await send('jobsNow'); refresh(); });
 $('rescan').addEventListener('click', async () => { await send('jobsRescan'); refresh(); });

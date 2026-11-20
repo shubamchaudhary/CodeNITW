@@ -46,7 +46,7 @@
 <body>
   <main>
     <h1>Job finder</h1>
-    <p class="muted">Every 2 hours from 09:00 to 19:00 IST it reads Naukri's own search results for today (in a muted background tab, never applying to anything) and sends the jobs that fit to your site's <b>Openings</b> tab, as <b>Naukri today</b>. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles, checked against your SDE resume) and <b>AI</b> (AI-first roles, checked against your GenAI resume). Each keeps its own top 50 a day, and a job is on one list only.</p>
+    <p class="muted">Every 2 hours from 09:00 to 19:00 IST it reads Naukri's own search results for today, in a muted background tab, and never applies to anything. For every card that looks right, it opens the job's page and reads the JD. It keeps the job only if enough of the technologies the JD asks for are yours. The jobs it keeps go to your site's <b>Openings</b> tab, as <b>Naukri today</b>. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles) and <b>AI</b> (AI-first roles, where GenAI work is a large share of the JD). A job is on one list only. Each list aims for 100 a day.</p>
 
     <div id="halted" class="card bad" hidden>
       <b>Paused:</b> <span id="haltedMsg"></span>
@@ -91,7 +91,8 @@
       <div class="stat"><span class="muted small">Backend list</span><b id="sBackend">0</b></div>
       <div class="stat"><span class="muted small">AI list</span><b id="sAi">0</b></div>
       <div class="stat"><span class="muted small">Listings read</span><b id="sRead">0</b></div>
-      <div class="stat"><span class="muted small">Pages read</span><b id="sPages">0</b></div>
+      <div class="stat"><span class="muted small">Job pages (JDs) read</span><b id="sJds">0</b></div>
+      <div class="stat"><span class="muted small">Pages read in all</span><b id="sPages">0</b></div>
       <div class="stat"><span class="muted small">Sent to the site</span><b id="sSent">0</b></div>
     </div>
     <p class="small muted" id="nextLine" style="margin-top:8px"></p>
@@ -103,29 +104,44 @@
     <h2>Why listings were left out today</h2>
     <div id="reasons" class="chips"><span class="muted small">Nothing yet.</span></div>
 
-    <h2>Tags it didn't recognize (counted as skills you lack)</h2>
-    <p class="small muted">If you know one of these, add it below so it counts as yours.</p>
+    <h2>Skill chips it didn't recognize (ignored)</h2>
+    <p class="small muted">Chips on Naukri's cards that aren't in the skills dictionary, such as "Strategic" or "Resource". They don't count for or against a job.</p>
     <div id="unknown" class="chips"><span class="muted small">None yet.</span></div>
 
-    <h2>Extra skills</h2>
+    <h2>The JD match bar</h2>
     <div class="card">
-      <p class="small muted">Each list's skills come from its own resume plus <code>radar/skills.json</code>: Backend <span id="nBackend">0</span> (SDE resume), AI <span id="nAi">0</span> (GenAI resume). Add any others here, comma-separated. They count for both lists.</p>
+      <div class="row">
+        <label for="minScore" class="small">Keep a job when at least</label>
+        <select id="minScore" aria-label="JD match bar"></select>
+        <span class="small">of the technologies its JD asks for are yours.</span>
+      </div>
+      <p class="small muted" style="margin-top:8px">Every technology counts, backend and AI alike. "Nice to have" lines, company blurbs and perks don't. On 643 real engineering JDs, strong backend fits scored 60–80%, since nearly every JD also names something you don't list, like Go, GCP or MySQL. 60% is the default.</p>
+      <div class="row"><button id="saveBar" type="button" class="secondary">Save the bar</button><span id="barOut" class="small muted"></span></div>
+    </div>
+
+    <h2>Your skills</h2>
+    <div class="card">
+      <p class="small muted"><span id="nSkills">0</span> skills: everything the skills dictionary finds in your two resumes, plus <code>radar/skills.json</code> (read <span id="skillsDate"></span>; <code>naukri-refresher-dev/make-job-profile.mjs</code> rereads them after a resume changes). Add any others here, comma-separated.</p>
       <textarea id="extra" aria-label="Extra skills" placeholder="e.g. Struts, JSP, Apache Camel"></textarea>
       <div class="row" style="margin-top:8px"><button id="saveExtra" type="button">Save skills</button><span id="extraOut" class="small muted"></span></div>
     </div>
 
     <h2>Recent runs</h2>
     <table>
-      <thead><tr><th>When (IST)</th><th>How</th><th class="n">Pages</th><th class="n">Read</th><th class="n">Kept</th><th class="n">Sent</th><th>Note</th></tr></thead>
-      <tbody id="runs"><tr><td colspan="7" class="muted">No runs yet.</td></tr></tbody>
+      <thead><tr><th>When (IST)</th><th>How</th><th class="n">Pages</th><th class="n">JDs</th><th class="n">Read</th><th class="n">Kept</th><th class="n">Sent</th><th>Note</th></tr></thead>
+      <tbody id="runs"><tr><td colspan="8" class="muted">No runs yet.</td></tr></tbody>
     </table>
 
     <h2>The rules</h2>
     <ul class="small muted" id="rules"></ul>
 
     <details>
-      <summary>Last page read (for fixing the finder if Naukri changes its pages)</summary>
+      <summary>Last search page read (for fixing the finder if Naukri changes its pages)</summary>
       <pre id="sample">Nothing read yet.</pre>
+    </details>
+    <details style="margin-top:8px">
+      <summary>Last job page read</summary>
+      <pre id="jdSample">Nothing read yet.</pre>
     </details>
   </main>
   <script type="module" src="jobs-page.js"></script>

@@ -56,7 +56,7 @@ export function fixtures() {
     listing(8, { title: 'Java Developer', footerPlaceholderLabel: '1 Day Ago', createdDate: Date.now() - 30 * H }), // DROP not today
     listing(9, { title: 'Software Engineer', tagsAndSkills: '', placeholders: [], jobDescription: '' }), // KEEP, nothing known
     listing(10, { title: 'Java Developer', tagsAndSkills: 'Java,Struts,JSP,Oracle,PL/SQL' }), // DROP skills
-    listing(11, { title: 'Python Developer', tagsAndSkills: 'Python,FastAPI,LLM,RAG,PostgreSQL', placeholders: [exp('1-3 Yrs'), sal('20-30 Lacs PA'), loc] }), // KEEP ai
+    listing(11, { title: 'Python Developer', tagsAndSkills: 'Python,FastAPI,LLM,RAG,PostgreSQL', placeholders: [exp('1-3 Yrs'), sal('20-30 Lacs PA'), loc] }), // KEEP backend (a little LLM work)
     ...[12, 13, 14, 15, 16, 17, 18, 19, 20].map((n) => listing(n)), // KEEP backend
   ];
   const java2 = [
@@ -65,6 +65,9 @@ export function fixtures() {
     listing(23, { title: 'Software Developer', tagsAndSkills: 'Java,Hibernate,MySQL' }), // KEEP
     listing(24, { title: 'Java Developer', placeholders: [exp('0-1 Yrs'), sal('Not disclosed'), loc] }), // DROP fresher
     listing(25, { title: 'PHP Developer' }), // DROP title
+    listing(61, { title: 'Software Developer', tagsAndSkills: 'Software,Compliance,Partnerships,Strategic' }), // KEEP: filler chips, its JD is Java
+    listing(62, { title: 'Software Developer', tagsAndSkills: 'Microsoft Azure,SQL Server,AWS' }), // DROP: fine chips, its JD is .NET
+    listing(63, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Microservices,Docker' }), // KEEP: its page fails, judged by its chips
   ];
   return {
     'java spring boot developer': [java1, java2],
@@ -81,11 +84,29 @@ export function fixtures() {
   };
 }
 export const EXPECT = {
-  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43].map(idOf),
-  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42].map(idOf),
-  ai: [11, 41, 43].map(idOf),
+  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43, 61, 63].map(idOf),
+  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42, 62].map(idOf),
+  ai: [41, 43].map(idOf),
+  cardOnly: [63].map(idOf), // kept on its card: its page couldn't be read
+  pageFails: [63].map(idOf),
   idOf,
 };
+
+// The JDs on the job pages. A listing without its own gets one listing its chips as requirements,
+// plus a company blurb whose technologies must not count.
+const JDS = {
+  [idOf(9)]: '<p>Build and run backend services.</p><p><strong>Requirements</strong></p><ul><li>Java, Spring Boot</li><li>REST APIs, PostgreSQL</li><li>Docker</li></ul>',
+  [idOf(61)]: '<p>Design, develop, test, and maintain software applications.</p><p><strong>Preferred candidate profile</strong></p><ul><li>Strong Java and Spring Boot, REST APIs, Microservices</li>'
+    + '<li>PostgreSQL, Redis, Kafka</li><li>Docker, Kubernetes, CI/CD</li></ul><p>Good to have: Go, Terraform</p><p><strong>About Company</strong></p><p>We work with Salesforce and SAP clients.</p>',
+  [idOf(62)]: '<p>The ideal candidate should have a strong foundation in .NET technologies.</p><p><strong>Requirements:</strong></p><ul><li>C#, ASP.NET MVC, .NET Core, Web API</li>'
+    + '<li>SQL Server, Entity Framework</li><li>Azure DevOps, Git</li></ul>',
+};
+function jdFor(l) {
+  if (JDS[l.jobId]) return JDS[l.jobId];
+  const tags = String(l.tagsAndSkills || '').split(',').map((t) => t.trim()).filter(Boolean);
+  return `<p>We are hiring a ${l.title} at ${l.companyName}.</p><p><strong>Requirements</strong></p><ul>${tags.map((t) => `<li>Hands-on experience with ${t}</li>`).join('')}</ul>`
+    + '<p><strong>About us</strong></p><p>We work with Salesforce, SAP and ServiceNow customers.</p>';
+}
 
 // The search page: like Naukri's, it loads its results with a request of its own after the HTML
 // (fetch for some searches, XMLHttpRequest for the AI ones, so both capture paths are tested).
@@ -129,6 +150,26 @@ document.getElementById('out').textContent = JSON.stringify(r);
 await fetch('/__bridge/result', { method: 'POST', body: JSON.stringify(r) });
 </script></body></html>`;
 
+// The job page: like Naukri's, it loads the job's details with a request of its own after the HTML.
+const JOB_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Job</title></head><body>
+<iframe src="/recaptcha/api2/anchor?size=invisible" style="width:0;height:0;border:0;position:absolute"></iframe>
+<div id="jd">Loading…</div>
+<script>
+(async () => {
+  const id = (location.pathname.match(/-(\\d{9,})$/) || [])[1];
+  const r = await fetch('/jobapi/v4/job/' + id + '?microsite=y', { headers: { appid: '121', systemid: 'Naukri' } });
+  const box = document.getElementById('jd');
+  if (r.status === 406) {
+    box.innerHTML = '<p>Please verify you are human.</p><iframe src="/recaptcha/api2/bframe?k=1" width="300" height="400"></iframe>';
+    return;
+  }
+  const d = await r.json().catch(() => null);
+  box.innerHTML = d && d.jobDetails
+    ? '<section class="styles_job-desc-container"><div class="styles_JDC__dang-inner-html">' + d.jobDetails.description + '</div></section>'
+    : '<p>Something went wrong. Please try again.</p>';
+})();
+</script></body></html>`;
+
 // ---------------------------------------------------------------- the server
 
 export async function startMock({ key, cert }) {
@@ -144,6 +185,7 @@ export async function startMock({ key, cert }) {
     requests: [],
     srpMode: 'ok', // ok | captcha
     srpExtra: [], // listings put first on the first page of the Java search
+    jobMode: 'ok', // ok | captcha (job pages answer 406)
     radarMode: 'ok', // ok | old (a site that doesn't know the finder)
     radarPosts: [],
     radarPostAuth: [], // which token each upload came with: ingest | finder
@@ -204,6 +246,15 @@ export async function startMock({ key, cert }) {
 
     if (url.pathname.startsWith('/recaptcha/')) return send(200, '<!doctype html><title>r</title>');
     if (/^\/[a-z0-9-]+-jobs(?:-\d+)?$/.test(url.pathname)) return send(200, SRP_PAGE, login);
+    if (/^\/job-listings-.+-\d{9,}$/.test(url.pathname)) return send(200, JOB_PAGE, login);
+    const jobApi = url.pathname.match(/^\/jobapi\/v\d+\/job\/(\d+)$/);
+    if (jobApi) {
+      if (state.jobMode === 'captcha') return send(406, { message: 'recaptcha required' });
+      const all = [...Object.values(fixtures()).flat(2), ...state.srpExtra];
+      const l = all.find((j) => j.jobId === jobApi[1]);
+      if (!l || EXPECT.pageFails.includes(l.jobId)) return send(500, { message: 'server error' });
+      return send(200, { jobDetails: { jobId: l.jobId, title: l.title, description: jdFor(l), keySkills: { other: [], preferred: [] } } });
+    }
     if (url.pathname === '/jobapi/v3/search') {
       if (state.srpMode === 'captcha') return send(406, { message: 'recaptcha required' });
       const k = url.searchParams.get('keyword') || '';
@@ -261,6 +312,7 @@ export async function startMock({ key, cert }) {
     reset,
     apiCalls: (method) => state.requests.filter((r) => r.path.startsWith(API) && (!method || r.method === method)),
     searchPages: () => state.requests.filter((r) => /-jobs(?:-\d+)?$/.test(r.path)),
+    jobPages: () => state.requests.filter((r) => /^\/job-listings-/.test(r.path)),
     close: () => Promise.all(servers.map((s) => new Promise((ok) => { s.closeAllConnections?.(); s.close(() => ok()); }))),
   };
 }

@@ -80,11 +80,12 @@ const PAY_CLS = {
 };
 
 // The Naukri job finder (extensions/naukri-refresher) uploads today's Naukri jobs with a rank
-// and the list they're on, one list per Naukri account; Naukri allows 50 applies a day each.
-const DAILY_TOP = 50;
+// and the list they're on, one list per Naukri account. Every job it keeps is shown, best first;
+// each list aims for DAILY_TARGET a day.
+const DAILY_TARGET = 100;
 const PROFILES = [
-  { id: "backend", label: "Backend", hint: "Backend-first roles, checked against your SDE resume: apply from your Backend Naukri account" },
-  { id: "ai", label: "AI", hint: "AI-first roles, checked against your GenAI resume: apply from your AI Naukri account" },
+  { id: "backend", label: "Backend", hint: "Backend-first roles: apply from your Backend Naukri account" },
+  { id: "ai", label: "AI", hint: "AI-first roles (GenAI work is a large share of the JD): apply from your AI Naukri account" },
 ];
 const profileLabel = (id) => (PROFILES.find((p) => p.id === id) || PROFILES[0]).label;
 const SCOPE_TEXT = { both: "both lists", backend: "the Backend list", ai: "the AI list" };
@@ -351,8 +352,13 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
 function FinderCard({ o, n, onSkip, onApplied }) {
   const years = yearsText(o);
   const profile = PROFILES.find((p) => p.id === o.profile) || PROFILES[0];
+  // How many of the technologies its JD asks for are yours (or its card's chips, when the page couldn't be read).
   const skills =
-    o.coverage != null ? `${o.skillsHave}/${o.skillsTotal} skills · ${o.coverage}%` : "skills ?";
+    o.coverage != null
+      ? `${o.jd === false ? "card" : "JD"} ${o.skillsHave}/${o.skillsTotal} skills · ${o.coverage}%`
+      : o.fewSkills
+        ? "JD names few skills"
+        : "skills ?";
   return (
     <div className={`${CARD} rounded-lg p-3.5 h-full flex flex-col gap-2`}>
       <div className="flex items-center gap-1.5 min-w-0">
@@ -393,8 +399,12 @@ function FinderCard({ o, n, onSkip, onApplied }) {
           {o.pay?.verdict === "unknown" ? "pay not shown" : o.pay?.text || PAY_LABEL.unknown}
         </Tag>
         <Tag
-          cls={o.coverage >= 95 ? "bg-success-subtle text-success-fg  " : "bg-surface-hover text-fg  "}
-          title={`How much of the tech this job's Naukri tags ask for is on your ${profile.id === "ai" ? "GenAI" : "SDE"} resume`}
+          cls={o.coverage >= 80 ? "bg-success-subtle text-success-fg  " : "bg-surface-hover text-fg  "}
+          title={
+            o.jd === false
+              ? "Its job page couldn't be read: how many of the skills on its card are yours"
+              : "How many of the technologies its JD asks for are on your resumes (nice-to-haves and company text left out)"
+          }
         >
           {skills}
         </Tag>
@@ -554,8 +564,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
         .sort((a, b) => (b.rank || 0) - (a.rank || 0));
       const done = all.filter((o) => queuedUrls.has(urlOf(o))).length;
       const left = all.filter((o) => !queuedUrls.has(urlOf(o)));
-      const room = Math.max(0, DAILY_TOP - done);
-      out[p.id] = { found: all.length, done, list: left.slice(0, room), more: Math.max(0, left.length - room) };
+      out[p.id] = { found: all.length, done, list: left };
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -666,7 +675,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
 
   const modeSwitch = (
     <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1 mb-3`}>
-      <Chip on={mode === "naukri"} onClick={() => setMode("naukri")} title={`Today's Naukri jobs from the job finder: the top ${DAILY_TOP} per profile`}>
+      <Chip on={mode === "naukri"} onClick={() => setMode("naukri")} title={`Today's Naukri jobs from the job finder, best first; each list aims for ${DAILY_TARGET} a day`}>
         ⭐ Naukri today ({finder.backend.list.length + finder.ai.list.length})
       </Chip>
       <Chip on={mode === "all"} onClick={() => setMode("all")} title="Every opening the radar keeps (15 days)">
@@ -710,9 +719,9 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
             {sentLine}
           </div>
           <div className="text-xs text-fg-subtle">
-            Two lists, one per Naukri account: Backend (backend-first roles, checked against your SDE resume) and AI (AI-first roles,
-            checked against your GenAI resume). A job is on one list only. Posted today · asks for under 2.5 yrs · 15L+ or pay not shown ·
-            at least 85% of the job's skills on that list's resume. Naukri allows {DAILY_TOP} applies a day per account.
+            Two lists, one per Naukri account: Backend (backend-first roles) and AI (AI-first roles, where GenAI work is a large share of
+            the JD). A job is on one list only. Posted today · asks for under 2.5 yrs · 15L+ or pay not shown · the finder read its JD and
+            enough of the technologies it asks for are yours. Each list aims for {DAILY_TARGET} a day.
           </div>
           {extLine && (
             <div className={`text-xs ${finderExt.connected ? "text-fg-subtle" : "text-warning-fg"}`}>{extLine}</div>
@@ -723,7 +732,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
           <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
             {PROFILES.map((p) => (
               <Chip key={p.id} on={profileTab === p.id} onClick={() => setProfileTab(p.id)} title={p.hint}>
-                {p.label} · {finder[p.id].done}/{DAILY_TOP} done · {finder[p.id].list.length} to go
+                {p.label} · {finder[p.id].done} applied · {finder[p.id].list.length} to go
               </Chip>
             ))}
           </div>
@@ -743,11 +752,9 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
 
         {cur.list.length === 0 ? (
           <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
-            {cur.done >= DAILY_TOP
-              ? `That's ${DAILY_TOP} for today on this account.`
-              : cur.found
-                ? "All of today's jobs on this list are decided."
-                : "No jobs on this list yet today. The job finder (in the Naukri Refresher extension) runs every 2 hours, 09:00–19:00 IST."}
+            {cur.found
+              ? "All of today's jobs on this list are decided. More arrive with the job finder's next run."
+              : "No jobs on this list yet today. The job finder (in the Naukri Refresher extension) runs every 2 hours, 09:00–19:00 IST."}
           </div>
         ) : (
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -764,11 +771,6 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
                 </motion.div>
               ))}
             </AnimatePresence>
-          </div>
-        )}
-        {cur.more > 0 && (
-          <div className="mt-3 text-xs text-fg-subtle text-center">
-            {cur.more} more kept today beyond the top {DAILY_TOP}; they move up as you decide these.
           </div>
         )}
       </div>

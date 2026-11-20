@@ -148,6 +148,11 @@ function fields(o) {
     rating: num(o.rating),
     reviews: num(o.reviews),
     postedTime: num(o.postedTime),
+    // Whether its skills come from the job's own JD (or only its card), how much of it is AI work,
+    // and whether the JD named too few technologies to judge on a share.
+    jd: typeof o.jd === "boolean" ? o.jd : undefined,
+    aiShare: num(o.aiShare),
+    fewSkills: o.fewSkills === true ? true : undefined,
   };
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined));
 }
