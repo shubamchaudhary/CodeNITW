@@ -460,7 +460,7 @@ function Pager({ page, pages, from, to, total, onPage }) {
   );
 }
 
-export default function OpeningsTab({ finderExt, queuedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob, addJobs, removeJobs }) {
+export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob, addJobs, removeJobs }) {
   const [cached] = useState(readCache);
   const [radar, setRadar] = useState(cached?.data || null);
   const [loadedAt, setLoadedAt] = useState(cached?.at || null);
@@ -526,6 +526,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, hidden, onHide, onU
         relevant(o) &&
         !hidden[o.id] &&
         !queuedUrls.has(urlOf(o)) &&
+        !dismissedUrls.has(urlOf(o)) &&
         (!listedOnly || o.active) &&
         exp[o.exp || "unknown"] !== false &&
         pay[o.pay?.verdict || "unknown"] !== false &&
@@ -537,7 +538,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, hidden, onHide, onU
     if (sort === "score") list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, queuedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
+  }, [openings, hidden, queuedUrls, dismissedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
 
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
@@ -549,7 +550,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, hidden, onHide, onU
     const out = {};
     for (const p of PROFILES) {
       const all = openings
-        .filter((o) => o.finder === "naukri" && o.postedAt === today && (o.profile || "backend") === p.id && !hidden[o.id])
+        .filter((o) => o.finder === "naukri" && o.postedAt === today && (o.profile || "backend") === p.id && !hidden[o.id] && !dismissedUrls.has(urlOf(o)))
         .sort((a, b) => (b.rank || 0) - (a.rank || 0));
       const done = all.filter((o) => queuedUrls.has(urlOf(o))).length;
       const left = all.filter((o) => !queuedUrls.has(urlOf(o)));
@@ -558,7 +559,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, hidden, onHide, onU
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, queuedUrls, today]);
+  }, [openings, hidden, queuedUrls, dismissedUrls, today]);
   const finderFound = finder.backend.found + finder.ai.found;
   const mode = modePref || (finderFound ? "naukri" : "all");
   const setMode = (m) => {

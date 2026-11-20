@@ -44,6 +44,7 @@ function loadState() {
       contacts: s.contacts || [],
       contactEdits: s.contactEdits || {},
       radarHidden: s.radarHidden || {},
+      radarDismissed: s.radarDismissed || {},
       activity: s.activity || {},
       pipelineReset: PIPELINE_RESET_TOKEN,
     };
@@ -55,6 +56,7 @@ function loadState() {
     contacts: s.contacts || [],
     contactEdits: s.contactEdits || {},
     radarHidden: s.radarHidden || {},
+    radarDismissed: s.radarDismissed || {},
     activity: s.activity || {},
     pipelineReset: s.pipelineReset,
   };
@@ -161,6 +163,7 @@ export default function JobTracker() {
         contacts: raw.contacts || [],
         contactEdits: raw.contactEdits || {},
         radarHidden: raw.radarHidden || {},
+        radarDismissed: raw.radarDismissed || {},
         activity: raw.activity || {},
         pipelineReset: PIPELINE_RESET_TOKEN,
       }));
@@ -297,6 +300,20 @@ export default function JobTracker() {
       }),
     [persistState]
   );
+  // Job links removed from the pipeline (✕): never offered in Openings again,
+  // and not brought back by "Bring back skipped". Undo of the remove clears
+  // it. Let go after 90 days, long after the radar has dropped the opening.
+  const dismissUrls = useCallback(
+    (urls, on = true) =>
+      persistState((prev) => {
+        const cut = Date.now() - 90 * 24 * 60 * 60 * 1000;
+        const next = Object.fromEntries(Object.entries(prev.radarDismissed || {}).filter(([, t]) => t > cut));
+        urls.filter(Boolean).forEach((u) => (on ? (next[u] = Date.now()) : delete next[u]));
+        return { ...prev, radarDismissed: next };
+      }),
+    [persistState]
+  );
+  const dismissedUrls = useMemo(() => new Set(Object.keys(state.radarDismissed || {})), [state.radarDismissed]);
   // Every job link already in the pipeline, so an opening shows "✓ queued".
   const queuedUrls = useMemo(
     () => new Set(Object.values(state.companies).flatMap((e) => (e.links || []).map((l) => l.url))),
@@ -540,6 +557,7 @@ export default function JobTracker() {
             entryOf={entryOf}
             patchCompany={patchCompany}
             addJob={addJob}
+            dismissUrls={dismissUrls}
             ledger={ledger}
           />
         )}
@@ -550,6 +568,7 @@ export default function JobTracker() {
             <OpeningsTab
               finderExt={finderExt}
               queuedUrls={queuedUrls}
+              dismissedUrls={dismissedUrls}
               hidden={state.radarHidden}
               onHide={hideOpening}
               onUnhide={unhideOpening}
