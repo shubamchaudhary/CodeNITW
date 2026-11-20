@@ -93,7 +93,8 @@ function skillLines(text) {
       continue;
     }
     if (inSkills && /^(experience|projects|education|achievements|certifications)\b/i.test(l)) break;
-    const m = inSkills && l.match(/^([A-Za-z &/]+):\s*(.+)$/);
+    // The heading may hold commas: "Testing, Evals & CI/CD: JUnit, Mockito, ..."
+    const m = inSkills && l.match(/^([A-Za-z &/,]+):\s*(.+)$/);
     if (m) out[m[1].trim().toLowerCase()] = m[2];
   }
   return out;

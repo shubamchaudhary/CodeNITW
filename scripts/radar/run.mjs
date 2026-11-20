@@ -222,7 +222,7 @@ async function main() {
   const batches = await Promise.all([
     run("board", () => fetchBoardJobs({ atsCache, linkedin: flag("linkedin"), log })),
     run("riley", () => fetchRileyJobs({ days: DAYS, keep: keepDataset, known: knownUrls, cacheFile: join(STATE, "riley-cache.json"), log })),
-    run("jobspy", () => fetchJobspyJobs({ stateDir: STATE, terms: resume?.searchTerms, hoursOld: Math.min(DAYS, 7) * 24, log })),
+    run("jobspy", () => fetchJobspyJobs({ stateDir: STATE, terms: resume?.searchTerms, hoursOld: Math.min(DAYS, 7) * 24, naukri: env.RADAR_NAUKRI !== "off", log })),
     run("careerops", () => fetchCareerOpsJobs({ stateDir: STATE, titleKeywords, sinceDays: Math.max(DAYS, 14), log })),
   ]);
   saveJSON("atsCache.json", atsCache);

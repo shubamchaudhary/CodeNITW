@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "crypto";
+import { createHmac, timingSafeEqual } from "crypto";
 import { gunzipSync, gzipSync } from "zlib";
 import { FieldPath, FieldValue } from "firebase-admin/firestore";
 import { adminConfigured, db, verifiedUser } from "./_lib/admin.mjs";
@@ -16,6 +16,16 @@ import { OWNER_EMAIL } from "./_lib/visits.mjs";
 //         rules now reject (experience, skills match, pay); any stored copy is
 //         deleted. Then it runs the DELETE below, so the collection only ever
 //         holds the last KEEP_DAYS days.
+//         body { finder: "naukri", summary, openings } is the Naukri job finder
+//         (extensions/naukri-refresher): same openings plus rank/profile/coverage,
+//         never removes anything, its run kept as latestFinderRun (and per list it
+//         searched for, finderRuns.backend|ai|both), its openings kept
+//         FINDER_KEEP_DAYS. { finder: "naukri", check: true } only answers
+//         { ok, finder: true } (the finder asks before uploading; writes nothing).
+//         The finder may use its own token instead of RADAR_INGEST_TOKEN: it can
+//         only send finder openings. { finder: "naukri", pair: true } with the
+//         owner's Firebase ID token answers { ok, finder: true, token } — the site's
+//         Job tracker page hands that token to the extension, so nothing is pasted.
 //
 //   DELETE Authorization: Bearer <RADAR_INGEST_TOKEN>
 //         Deletes openings that opened more than KEEP_DAYS days ago, and run
@@ -24,7 +34,8 @@ import { OWNER_EMAIL } from "./_lib/visits.mjs";
 //   GET   Authorization: Bearer <RADAR_READ_TOKEN>, or the owner's Firebase ID token
 //         ?limit=50 (1–200)  ?cursor=<nextCursor from the previous page>
 //         ?since=2026-10-01 (opened on or after; a date or epoch ms)
-//         → { openings, nextCursor, total (first page only), summary (latest run) }
+//         → { openings, nextCursor, total (first page only), summary (latest run),
+//             finderSummary (the job finder's latest run), finderRuns (its latest per list) }
 //         Newest opening first.
 //         ?all=1 → every opening in one response, from the snapshot below
 //         (one Firestore read instead of a query per page); falls back to the
@@ -50,6 +61,11 @@ import { OWNER_EMAIL } from "./_lib/visits.mjs";
 const OPENINGS = "radarOpenings";
 const RUNS = "radarRuns";
 const KEEP_DAYS = 15;
+// The Naukri job finder (the browser extension) uploads with { finder: "naukri" }. Its openings
+// are "posted today" lists, so they're kept FINDER_KEEP_DAYS; the radar's own uploads never
+// delete or overwrite them (a radar run only refreshes their lastSeen and sources).
+const FINDER = "naukri";
+const FINDER_KEEP_DAYS = 3;
 const ACTIVE_DAYS = 7; // seen by a run in the last week → still open
 const MAX_OPENINGS = 2000;
 const DAY = 86400000;
@@ -82,6 +98,15 @@ function tokenMatches(request, secret) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+// The job finder's own token, derived from RADAR_INGEST_TOKEN (nothing new to configure; a new
+// ingest token makes a new finder token too). It can only send finder openings.
+export function finderToken(secret) {
+  return secret ? `nrf1.${createHmac("sha256", secret).update("naukri-finder:v1").digest("base64url")}` : null;
+}
+
+const isOwner = (user) => !!user && (user.email || "").toLowerCase() === OWNER_EMAIL && user.email_verified === true;
+const FINDER_SCOPES = new Set(["backend", "ai", "both"]);
+
 const slug = (s) =>
   String(s || "")
     .toLowerCase()
@@ -112,6 +137,17 @@ function fields(o) {
       : undefined,
     missing: Array.isArray(o.missing) ? o.missing.slice(0, 6).map((s) => str(s, 40)).filter(Boolean) : undefined,
     snippet: str(o.snippet, 260) || undefined,
+    // The Naukri job finder's own fields (extensions/naukri-refresher): which of the owner's two
+    // Naukri profiles to apply with, its 0–100 rank, and how much of the job's tech is covered.
+    finder: o.finder === FINDER ? FINDER : undefined,
+    rank: num(o.rank),
+    profile: o.profile === "ai" || o.profile === "backend" ? o.profile : undefined,
+    coverage: num(o.coverage),
+    skillsHave: num(o.skillsHave),
+    skillsTotal: num(o.skillsTotal),
+    rating: num(o.rating),
+    reviews: num(o.reviews),
+    postedTime: num(o.postedTime),
   };
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined));
 }
@@ -143,7 +179,16 @@ async function prune(days, now) {
       if (snap.size < 400) break;
     }
   }
-  return deleted;
+  // The finder's "today" openings go sooner. One equality filter, so no composite index needed.
+  const finderCut = now - FINDER_KEEP_DAYS * DAY;
+  const finders = await db().collection(OPENINGS).where("finder", "==", FINDER).get();
+  const old = finders.docs.filter((d) => (d.get("openedAt") || 0) < finderCut);
+  for (let i = 0; i < old.length; i += 400) {
+    const batch = db().batch();
+    old.slice(i, i + 400).forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+  }
+  return deleted + old.length;
 }
 
 export async function DELETE(request) {
@@ -159,14 +204,28 @@ export async function DELETE(request) {
 
 // ── POST: store a run ─────────────────────────────────────────────────────────
 export async function POST(request) {
-  if (!adminConfigured() || !process.env.RADAR_INGEST_TOKEN) return json({ error: "not-configured" }, 503);
-  if (!tokenMatches(request, process.env.RADAR_INGEST_TOKEN)) return json({ error: "unauthorized" }, 401);
+  const secret = process.env.RADAR_INGEST_TOKEN;
+  if (!adminConfigured() || !secret) return json({ error: "not-configured" }, 503);
+  if (!/^Bearer ./.test(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+  const ingest = tokenMatches(request, secret);
+  const finderKey = !ingest && tokenMatches(request, finderToken(secret));
   let body;
   try {
     body = await request.json();
   } catch (_) {
-    return json({ error: "bad-json" }, 400);
+    return ingest || finderKey ? json({ error: "bad-json" }, 400) : json({ error: "unauthorized" }, 401);
   }
+  const finder = body?.finder === FINDER ? FINDER : null;
+  // The site's Job tracker page, signed in as the owner, asks for the finder's token to hand
+  // to the extension (src/pages/JobTracker/finderBridge.js). Nothing else uses an ID token here.
+  if (finder && body.pair === true && !ingest && !finderKey) {
+    if (!isOwner(await verifiedUser(request))) return json({ error: "unauthorized" }, 401);
+    return json({ ok: true, finder: true, token: finderToken(secret) });
+  }
+  // The finder's own token only ever sends finder openings.
+  if (!ingest && !(finder && finderKey)) return json({ error: "unauthorized" }, 401);
+  // The finder asks this before its first upload of the day: "do you know me?" Writes nothing.
+  if (finder && body.check === true) return json({ ok: true, finder: true });
   if (!Array.isArray(body?.openings)) return json({ error: "no-openings" }, 400);
 
   const now = Date.now();
@@ -202,7 +261,9 @@ export async function POST(request) {
     }
     if (old) {
       const sources = [...new Set([...(old.get("sources") || []), ...(Array.isArray(o.sources) ? o.sources : [o.source])].filter(Boolean))].slice(0, 6);
-      batch.set(old.ref, { ...data, sources, lastSeen: now, runs: FieldValue.increment(1) }, { merge: true });
+      // An opening the finder owns keeps the finder's verdict when the radar sees it too.
+      const keepFinder = !finder && old.get("finder");
+      batch.set(old.ref, keepFinder ? { sources, lastSeen: now, runs: FieldValue.increment(1) } : { ...data, sources, lastSeen: now, runs: FieldValue.increment(1) }, { merge: true });
       updated += 1;
     } else {
       const openedAt = openedAtOf(o, now);
@@ -231,10 +292,10 @@ export async function POST(request) {
   await Promise.all(writes);
 
   // Openings the run saw but its rules now reject: delete any stored copy
-  // (never one this same upload just stored).
+  // (never one this same upload just stored, and never one the finder owns).
   const removeBases = [
     ...new Set(
-      (Array.isArray(body.remove) ? body.remove : [])
+      (Array.isArray(body.remove) && !finder ? body.remove : [])
         .slice(0, MAX_OPENINGS)
         .map((r) => [slug(str(r?.company, 120)), cleanId(r?.openingId)])
         .filter(([c, id]) => c && id)
@@ -242,7 +303,7 @@ export async function POST(request) {
         .filter((b) => !incoming.has(b))
     ),
   ];
-  const stale = [...(await storedByBase(col, removeBases)).values()];
+  const stale = [...(await storedByBase(col, removeBases)).values()].filter((d) => !d.get("finder"));
   for (let i = 0; i < stale.length; i += 450) {
     const del = db().batch();
     stale.slice(i, i + 450).forEach((d) => del.delete(d.ref));
@@ -254,13 +315,16 @@ export async function POST(request) {
   const deleted = await prune(KEEP_DAYS, now);
 
   const summary = body.summary && typeof body.summary === "object" ? body.summary : {};
-  const run = { ...summary, receivedAt: now, received: body.openings.length, created, updated, tooOld, rejected, removed, deleted };
+  const run = { ...summary, ...(finder ? { kind: "naukri-finder" } : {}), receivedAt: now, received: body.openings.length, created, updated, tooOld, rejected, removed, deleted };
+  // Two browsers may each search for one list: keep each one's latest run too.
+  const scope = FINDER_SCOPES.has(summary.scope) ? summary.scope : "both";
   await Promise.all([
-    db().collection(RUNS).doc(String(now)).set(run),
-    db().collection("appCache").doc("radar").set({ latestRun: run }),
+    db().collection(RUNS).doc(`${now}${finder ? "-finder" : ""}`).set(run),
+    // The radar's run and the finder's run are kept side by side.
+    db().collection("appCache").doc("radar").set(finder ? { latestFinderRun: run, finderRuns: { [scope]: run } } : { latestRun: run }, { merge: true }),
     writeSnapshot(now),
   ]);
-  return json({ created, updated, tooOld, rejected, removed, deleted });
+  return json({ created, updated, tooOld, rejected, removed, deleted, ...(finder ? { finder: true } : {}) });
 }
 
 // Stored openings by their company:openingId (Firestore's "in" takes 30 values at a time).
@@ -296,6 +360,8 @@ export async function GET(request) {
         nextCursor: null,
         total: all.length,
         summary: latest.exists ? latest.get("latestRun") : null,
+        finderSummary: (latest.exists && latest.get("latestFinderRun")) || null,
+        finderRuns: (latest.exists && latest.get("finderRuns")) || null,
       });
     }
   }
@@ -330,5 +396,7 @@ export async function GET(request) {
     nextCursor: snap.size === limit ? snap.docs[snap.size - 1].id : null,
     ...(total ? { total: total.data().count } : {}),
     summary: latest.exists ? latest.get("latestRun") : null,
+    finderSummary: (latest.exists && latest.get("latestFinderRun")) || null,
+    finderRuns: (latest.exists && latest.get("finderRuns")) || null,
   });
 }

@@ -16,10 +16,12 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const FALLBACK_TERMS = ["java backend developer", "backend engineer", "software engineer java spring boot"];
 const NAUKRI_CITIES = ["Bengaluru", "Hyderabad", "Pune", "Gurugram", "Noida", "Chennai", "Mumbai"];
 
-export function jobspyQueries(terms = FALLBACK_TERMS) {
+// naukri: false leaves Naukri to the browser extension's job finder (RADAR_NAUKRI=off in
+// .radar/.env), whose searches run in a logged-in browser instead of from this script.
+export function jobspyQueries(terms = FALLBACK_TERMS, { naukri = true } = {}) {
   const q = [];
   for (const term of terms) {
-    for (const city of NAUKRI_CITIES) q.push({ site: "naukri", term, location: city, results: 40 });
+    if (naukri) for (const city of NAUKRI_CITIES) q.push({ site: "naukri", term, location: city, results: 40 });
     q.push({ site: "indeed", term, location: "India", results: 60 });
   }
   q.push({ site: "glassdoor", term: terms[0], location: "Bengaluru", results: 30 });
@@ -34,14 +36,15 @@ function lakhs(amount, interval) {
   return Math.round(((amount * perYear) / 1e5) * 10) / 10;
 }
 
-export async function fetchJobspyJobs({ stateDir, terms, hoursOld = 72, log = console.log } = {}) {
+export async function fetchJobspyJobs({ stateDir, terms, hoursOld = 72, naukri = true, log = console.log } = {}) {
   const py = join(stateDir, "venv", process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
   if (!existsSync(py)) {
     log("JobSpy: skipped — no venv yet (run scripts/radar/setup.ps1)");
     return { jobs: [], skipped: true };
   }
   const cfgPath = join(stateDir, "jobspy-queries.json");
-  writeFileSync(cfgPath, JSON.stringify({ hours_old: hoursOld, queries: jobspyQueries(terms?.length ? terms : undefined) }));
+  if (!naukri) log("JobSpy: Naukri off (RADAR_NAUKRI=off): the browser job finder covers it");
+  writeFileSync(cfgPath, JSON.stringify({ hours_old: hoursOld, queries: jobspyQueries(terms?.length ? terms : undefined, { naukri }) }));
 
   const raw = await new Promise((resolve, reject) => {
     const child = spawn(py, ["-I", join(HERE, "jobspy_fetch.py"), cfgPath], { stdio: ["ignore", "pipe", "pipe"] });

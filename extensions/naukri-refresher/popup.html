@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Naukri Refresher</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" alt="" width="20" height="20">
+    <h1>Naukri Refresher</h1>
+    <span id="version" class="muted"></span>
+  </header>
+
+  <div id="access" class="banner" hidden>
+    <span>Needs access to naukri.com.</span>
+    <button id="grant" type="button">Allow</button>
+  </div>
+
+  <section class="card" id="state">
+    <div class="state-line"><span class="dot"></span><strong id="headline">Loading…</strong></div>
+    <p id="detail" class="muted small" hidden></p>
+    <button id="resume" type="button" class="secondary" hidden>Resume</button>
+  </section>
+
+  <dl class="facts">
+    <dt>Account</dt><dd id="account">—</dd>
+    <dt>Headline now</dt><dd id="now">—</dd>
+    <dt>Saves today</dt><dd id="today">—</dd>
+  </dl>
+
+  <section class="settings">
+    <label class="row" title="Hourly, at a random time within ±7.5 min of each hour"><span>Auto-refresh</span><input type="checkbox" id="enabled"></label>
+    <div class="row">
+      <span>Hours (IST)</span>
+      <span class="hours"><select id="start" aria-label="First hour"></select>–<select id="end" aria-label="Last hour"></select></span>
+    </div>
+    <label class="row"><span>Skip weekends</span><input type="checkbox" id="weekends"></label>
+    <label class="row" id="awake-row" title="Stops Windows from sleeping while auto-refresh is on. The screen still turns off."><span>Keep laptop awake</span><input type="checkbox" id="keepAwake"></label>
+  </section>
+
+  <div class="actions">
+    <button id="check" type="button" class="secondary" title="Reads your profile, changes nothing">Check connection</button>
+    <button id="run" type="button">Refresh now</button>
+  </div>
+  <p id="result" class="result" role="status" hidden></p>
+
+  <section class="jobs" id="jobs" aria-label="Job finder">
+    <label class="row" title="Every 2 hours, 09:00–19:00 IST, finds today's Naukri jobs for your Backend and AI accounts (one list each, top 50 a day) and sends them to your site's Openings tab.">
+      <strong>Job finder</strong><input type="checkbox" id="jobsEnabled">
+    </label>
+    <div class="row" title="Two Naukri accounts in two browsers? Pick Backend in one and AI in the other: each account then reads only its own searches. Every job still lands on the right list.">
+      <span>Searches for</span>
+      <select id="jobsScope" aria-label="Searches for">
+        <option value="both">Backend + AI</option>
+        <option value="backend">Backend only</option>
+        <option value="ai">AI only</option>
+      </select>
+    </div>
+    <p id="jobsLine" class="small muted">Loading…</p>
+    <div class="actions">
+      <button id="jobsNow" type="button" class="secondary">Find jobs now</button>
+      <button id="jobsConnect" type="button" hidden title="Opens your site's Job tracker; signed in there, it connects this browser by itself">Connect to your site</button>
+      <button id="jobsResume" type="button" class="secondary" hidden>Resume</button>
+      <button id="jobsAllow" type="button" class="secondary" hidden>Allow access</button>
+      <button id="jobsSettings" type="button" class="secondary">Settings</button>
+    </div>
+  </section>
+
+  <section id="history" aria-label="History"></section>
+
+  <details id="details">
+    <summary>Details</summary>
+    <p class="small"><a id="backup-link" href="#" hidden>Profile backup (from before the first save)</a></p>
+    <ul id="log"></ul>
+  </details>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
