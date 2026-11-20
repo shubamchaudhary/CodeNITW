@@ -16,6 +16,7 @@ import {
   dayKey,
   todayKey,
   normalizeUrl,
+  putBack,
 } from "./shared";
 import { LIGHT_BUTTON, LIGHT_FIELD } from "../../components/glass";
 import ActivityChart from "./ActivityChart";
@@ -105,33 +106,36 @@ function moveLink(l, to, now) {
 // for a drag — keeping the company's own status in step: a new application
 // makes it Applied (also when it was Rejected: its earlier applications stay
 // closed, each marked rejected itself), and taking back its only application
-// returns it to To Apply.
-function makeMover(entryOf, patchCompany) {
+// returns it to To Apply. Worked out from the company as it is when the
+// change lands (patchCompany hands it in), not as the page last drew it, so a
+// sync that arrived in between isn't written over.
+function makeMover(patchCompany) {
   return (companyId, linkIds, to) => {
     const ids = new Set([].concat(linkIds));
-    const entry = entryOf(companyId);
-    const status = entry.status || "none";
-    const now = Date.now();
+    const now = Date.now(); // outside the update, which may run twice
     const drop = to.startsWith("drop:") ? to.slice(5) : null;
-    let applying = false;
-    let unapplying = false;
-    let links = (entry.links || []).map((l) => {
-      if (!ids.has(l.id)) return l;
-      const next = drop ? dropLink(l, drop, now) : moveLink(l, to, now);
-      if (linkStage(next) === "applied" && linkStage(l, entry) !== "applied") applying = true;
-      if (hasApplied(l) && !hasApplied(next)) unapplying = true;
-      return { ...next, touchedAt: now }; // any move restarts the erase clock
+    patchCompany(companyId, (entry) => {
+      const status = entry.status || "none";
+      let applying = false;
+      let unapplying = false;
+      let links = (entry.links || []).map((l) => {
+        if (!ids.has(l.id)) return l;
+        const next = drop ? dropLink(l, drop, now) : moveLink(l, to, now);
+        if (linkStage(next) === "applied" && linkStage(l, entry) !== "applied") applying = true;
+        if (hasApplied(l) && !hasApplied(next)) unapplying = true;
+        return { ...next, touchedAt: now }; // any move restarts the erase clock
+      });
+      const patch = {};
+      if (applying && (!APPLIED_SET.has(status) || status === "rejected")) {
+        if (status === "rejected") {
+          links = links.map((l) =>
+            !ids.has(l.id) && linkStage(l, entry) === "closed" && linkStage(l) === "applied" ? { ...l, outcome: "rejected", outcomeAt: now } : l
+          );
+        }
+        patch.status = "applied";
+      } else if (unapplying && status === "applied" && !links.some(hasApplied)) patch.status = "toApply";
+      return { ...patch, links };
     });
-    const patch = {};
-    if (applying && (!APPLIED_SET.has(status) || status === "rejected")) {
-      if (status === "rejected") {
-        links = links.map((l) =>
-          !ids.has(l.id) && linkStage(l, entry) === "closed" && linkStage(l) === "applied" ? { ...l, outcome: "rejected", outcomeAt: now } : l
-        );
-      }
-      patch.status = "applied";
-    } else if (unapplying && status === "applied" && !links.some(hasApplied)) patch.status = "toApply";
-    patchCompany(companyId, { ...patch, links });
   };
 }
 
@@ -139,20 +143,30 @@ function makeMover(entryOf, patchCompany) {
 // last one is gone.
 const settled = (entry, links) => ({ links, ...(!links.length && entry.status === "toApply" ? { status: "none" } : {}) });
 
+// Undo for settled(): the links go back (see putBack), and so does "To
+// Apply" if taking them out had cleared it.
+const unsettled = (entry, before, gone, status) => ({
+  links: putBack(entry.links || [], before, gone),
+  ...(status === "toApply" && (entry.status || "none") === "none" ? { status } : {}),
+});
+
+// Take one job out: only the link with this id. Undo puts that one back where
+// it was, and leaves everything done since (another job removed, moved or
+// added) as it is.
 function makeRemove(entryOf, patchCompany) {
   return (companyId, linkId) => {
     const entry = entryOf(companyId);
-    const prevLinks = entry.links || [];
-    const removed = prevLinks.find((l) => l.id === linkId);
-    const patch = settled(entry, prevLinks.filter((l) => l.id !== linkId));
-    patchCompany(companyId, patch);
+    const before = entry.links || [];
+    const removed = before.find((l) => l.id === linkId);
+    if (!removed) return;
+    patchCompany(companyId, (e) => settled(e, (e.links || []).filter((l) => l.id !== linkId)));
     toast.info(
       ({ closeToast }) => (
         <span className="text-sm">
-          Removed <span className="font-semibold">{(removed?.label || "opening").slice(0, 40)}</span>{" "}
+          Removed <span className="font-semibold">{(removed.label || "opening").slice(0, 40)}</span>{" "}
           <button
             onClick={() => {
-              patchCompany(companyId, { links: prevLinks, ...(patch.status ? { status: entry.status } : {}) });
+              patchCompany(companyId, (e) => unsettled(e, before, [removed], entry.status));
               closeToast();
             }}
             className="underline font-semibold"
@@ -217,6 +231,24 @@ const BTN = {
 // bigger, with bigger buttons.
 const Featured = createContext(false);
 
+// ── One click, one job ──────────────────────────────────────────────────────
+// Acting on a job (remove, Applied, Rejected, …) takes its row out, and the
+// row below slides up into its place — the next card's, when it was the
+// card's last job. So the second click of a double-click, or of a quick
+// repeat, landed on the next job's same button and acted on it too. A click
+// the browser counts as a repeat (detail > 1), or one within REPEAT_MS of the
+// last job action, is ignored.
+const REPEAT_MS = 350;
+let lastActionAt = 0;
+const oneJob = (fn) =>
+  fn &&
+  ((e) => {
+    const now = Date.now();
+    if (e?.detail > 1 || now - lastActionAt < REPEAT_MS) return;
+    lastActionAt = now;
+    fn(e);
+  });
+
 // A button, or with `href` a link that looks like one (opens in a new tab).
 // `square` makes it icon-sized.
 function Btn({ kind, onClick, href, title, square, children }) {
@@ -231,7 +263,7 @@ function Btn({ kind, onClick, href, title, square, children }) {
     );
   }
   return (
-    <button onClick={onClick} title={title} className={cls}>
+    <button onClick={oneJob(onClick)} title={title} className={cls}>
       {children}
     </button>
   );
@@ -332,11 +364,11 @@ function Row({ link, icon, iconCls, linkCls = "text-fg ", meta, metaCls, onBack,
         </a>
         <HiOutlineExternalLink className="w-3 h-3 text-fg-subtle shrink-0" />
         {onBack && (
-          <button onClick={onBack} title={backTitle} className="shrink-0 text-fg-subtle hover:text-fg-muted">
+          <button onClick={oneJob(onBack)} title={backTitle} className="shrink-0 text-fg-subtle hover:text-fg-muted">
             <HiReply className="w-3.5 h-3.5" />
           </button>
         )}
-        <button onClick={onRemove} title="Remove from pipeline" className="shrink-0 text-fg-subtle hover:text-fg">
+        <button onClick={oneJob(onRemove)} title="Remove from pipeline" className="shrink-0 text-fg-subtle hover:text-fg">
           <HiX className="w-3.5 h-3.5" />
         </button>
         {meta && <span className={`ml-auto pl-2 shrink-0 text-[11px] font-medium ${metaCls || "text-fg-subtle "}`}>{meta}</span>}
@@ -403,7 +435,7 @@ function CompactRow({ company, link, meta, tags, drag, dimmed, controls }) {
 }
 
 const IconBtn = ({ onClick, title, cls = "text-fg-subtle hover:text-fg", children }) => (
-  <button onClick={onClick} title={title} className={`shrink-0 ${cls}`}>
+  <button onClick={oneJob(onClick)} title={title} className={`shrink-0 ${cls}`}>
     {children}
   </button>
 );
@@ -500,7 +532,7 @@ const STAGE_TIME = {
 };
 
 export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJob, ledger }) {
-  const move = makeMover(entryOf, patchCompany);
+  const move = makeMover(patchCompany);
   const removeLink = makeRemove(entryOf, patchCompany);
   const [adding, setAdding] = useState(null); // the section whose Add form is open
   // What's being dragged, { from, companyId, linkIds }: in a ref for the drop
@@ -537,21 +569,20 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
   const count = (stage) => groups[stage].reduce((n, g) => n + g.links.length, 0);
 
   const clearClosed = () => {
-    // What each company held before, so Undo puts back exactly that.
-    const plans = groups.closed.map((g) => {
-      const entry = entryOf(g.company.id);
-      const links = entry.links || [];
-      return { id: g.company.id, links, status: entry.status, patch: settled(entry, links.filter((l) => linkStage(l, entry) !== "closed")) };
-    });
+    // Exactly the closed jobs shown, so Undo puts back just those.
+    const plans = groups.closed.map((g) => ({ id: g.company.id, before: g.entry.links || [], gone: g.links, status: g.entry.status }));
     const n = count("closed");
-    plans.forEach((p) => patchCompany(p.id, p.patch));
+    plans.forEach((p) => {
+      const gone = new Set(p.gone.map((l) => l.id));
+      patchCompany(p.id, (e) => settled(e, (e.links || []).filter((l) => !gone.has(l.id))));
+    });
     toast.info(
       ({ closeToast }) => (
         <span className="text-sm">
           Cleared {n} closed{" "}
           <button
             onClick={() => {
-              plans.forEach((p) => patchCompany(p.id, { links: p.links, ...(p.patch.status ? { status: p.status } : {}) }));
+              plans.forEach((p) => patchCompany(p.id, (e) => unsettled(e, p.before, p.gone, p.status)));
               closeToast();
             }}
             className="underline font-semibold"
@@ -640,7 +671,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
         aside={
           laterAt(g) ? (
             <button
-              onClick={() => patchCompany(g.company.id, { laterAt: null })}
+              onClick={oneJob(() => patchCompany(g.company.id, { laterAt: null }))}
               title="Moved to the end for today. Bring it back into place"
               className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded border border-line text-fg-muted hover:bg-surface-hover"
             >
@@ -648,7 +679,7 @@ export default function PipelineTab({ allCompanies, entryOf, patchCompany, addJo
             </button>
           ) : (
             <button
-              onClick={() => patchCompany(g.company.id, { laterAt: Date.now() })}
+              onClick={oneJob(() => patchCompany(g.company.id, { laterAt: Date.now() }))}
               title="Move this company to the end of To Apply until tomorrow (4am IST)"
               className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded border border-line text-fg-subtle hover:text-fg hover:bg-surface-hover"
             >

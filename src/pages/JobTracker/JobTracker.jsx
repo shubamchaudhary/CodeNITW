@@ -9,7 +9,7 @@ import { requireAuth } from "../../Data/authGate";
 import { whenSynced } from "../../Data/cloudSync";
 import { isOwner } from "../../components/OwnerRoute";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
-import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, needsOutreach, customCompany, eraseCold, withLedger, dayKey, todayKey, appliedTime } from "./shared";
+import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, needsOutreach, customCompany, eraseCold, withLedger, withUniqueLinkIds, putBack, dayKey, todayKey, appliedTime } from "./shared";
 import PipelineTab from "./PipelineTab";
 import CompaniesTab from "./CompaniesTab";
 
@@ -49,7 +49,8 @@ function loadState() {
     };
   }
   return {
-    companies: s.companies || {},
+    // Every job link with an id of its own (see withUniqueLinkIds).
+    companies: withUniqueLinkIds(s.companies || {}),
     custom: s.custom || [],
     contacts: s.contacts || [],
     contactEdits: s.contactEdits || {},
@@ -143,11 +144,16 @@ export default function JobTracker() {
     saveJSON(KEYS.JOB_TRACKER, next);
   }, []);
 
+  // `change` is the fields to set, or a function from the company's entry as
+  // it is when the update lands to those fields: the Pipeline's job actions
+  // use that, so a sync that arrived since the page last drew isn't written
+  // over with an older copy of the company's links.
   const patchCompany = useCallback(
-    (id, patch) => {
+    (id, change) => {
       if (!requireAuth("Sign in to track your applications — your pipeline is saved to your account.")) return;
       setState((prev) => {
         const existing = prev.companies[id] || {};
+        const patch = typeof change === "function" ? change(existing) : change;
         const merged = { ...existing, ...patch };
         if (
           patch.status &&
@@ -351,11 +357,22 @@ export default function JobTracker() {
         return r ? { ...prev, companies: r.companies, activity: withLedger(prev.activity, prev.companies) } : prev;
       });
       const changed = Object.keys(before).filter((id) => result.companies[id] !== before[id]);
+      // Undo puts the erased jobs back, and leaves anything done since as it is.
       const undo = () =>
-        persistState((prev) => ({
-          ...prev,
-          companies: { ...prev.companies, ...Object.fromEntries(changed.map((id) => [id, before[id]])) },
-        }));
+        persistState((prev) => {
+          const companies = { ...prev.companies };
+          changed.forEach((id) => {
+            const was = before[id].links || [];
+            const kept = new Set(result.companies[id].links || []);
+            const cur = companies[id] || {};
+            companies[id] = {
+              ...cur,
+              links: putBack(cur.links || [], was, was.filter((l) => !kept.has(l))),
+              ...(before[id].status === "toApply" && (cur.status || "none") === "none" ? { status: "toApply" } : {}),
+            };
+          });
+          return { ...prev, companies };
+        });
       toast.info(
         ({ closeToast }) => (
           <span className="text-sm">

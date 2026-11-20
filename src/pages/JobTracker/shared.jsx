@@ -217,6 +217,64 @@ export function eraseCold(companies) {
   return erased ? { companies: next, erased } : null;
 }
 
+// ── One job, one id ──────────────────────────────────────────────────────────
+// Removing or moving a job goes by its id, so two links sharing one (or both
+// without one) would go together. uid() never makes such a pair, but a copy
+// saved by an older version might hold one: on load, a link whose id is
+// missing or already taken gets one of its own, made from its company and
+// place so it comes out the same on every load until it's saved. Nothing else
+// about the link changes. Returns the same object when every id is unique.
+export function withUniqueLinkIds(companies) {
+  const seen = new Set();
+  let changed = false;
+  const out = {};
+  Object.entries(companies || {}).forEach(([cid, entry]) => {
+    const links = entry && entry.links;
+    let fixed = null;
+    if (Array.isArray(links)) {
+      links.forEach((l, i) => {
+        if (!l || typeof l !== "object") return;
+        let id = l.id;
+        if (id === undefined || id === null || id === "" || seen.has(id)) {
+          id = `${cid}~${i}`; // "~" never appears in a uid(), so no clash
+          while (seen.has(id)) id += "~";
+          fixed = fixed || links.slice();
+          fixed[i] = { ...l, id };
+        }
+        seen.add(id);
+      });
+    }
+    out[cid] = fixed ? { ...entry, links: fixed } : entry;
+    if (fixed) changed = true;
+  });
+  return changed ? out : companies;
+}
+
+// Undo for links taken out of a company: each of `gone` goes back where it
+// sat in `before` (the links as they were then), into `current` (the links as
+// they are now), so whatever changed in between, like a job added or moved
+// meanwhile, stays as it is. One that's back already isn't added twice.
+export function putBack(current = [], before = [], gone = []) {
+  const back = new Set(gone);
+  const out = [...current];
+  const have = new Set(out.map((l) => l.id));
+  before.forEach((l, i) => {
+    if (!back.has(l) || have.has(l.id)) return;
+    // Right after the nearest link before it that's still there, else first.
+    let at = 0;
+    for (let k = i - 1; k >= 0; k--) {
+      const j = out.findIndex((x) => x.id === before[k].id);
+      if (j !== -1) {
+        at = j + 1;
+        break;
+      }
+    }
+    out.splice(at, 0, l);
+    have.add(l.id);
+  });
+  return out;
+}
+
 // A company typed in that isn't in the list yet: same shape as the roster's.
 export function customCompany({ name, pay = "", location = "", category = "", careers = "" }) {
   return {
