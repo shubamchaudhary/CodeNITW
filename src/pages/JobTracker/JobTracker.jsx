@@ -91,13 +91,41 @@ const TABS = [
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function JobTracker() {
-  const [activeTab, setActiveTab] = useState("pipeline");
+  // ?tab=openings opens a tab directly (the job finder's "Connect to your site" uses it).
+  const [activeTab, setActiveTab] = useState(() => {
+    const t = new URLSearchParams(window.location.search).get("tab");
+    return TABS.some((x) => x.id === t) ? t : "pipeline";
+  });
   const [state, setState] = useState(loadState);
   const [user, setUser] = useState(undefined); // undefined while auth loads
   const owner = isOwner(user);
   const [ownerData, setOwnerData] = useState({ templates: null, seedContacts: [] });
+  // The Naukri Refresher extension's job finder in this browser, if any (finderBridge.js).
+  const [finderExt, setFinderExt] = useState(null);
 
   useEffect(() => onAuthStateChanged(getAuth(), (u) => setUser(u || null)), []);
+
+  // Signed in as the owner, this page connects the job finder in this browser by itself: the
+  // extension gets its own token from the site, so there's nothing to copy or paste.
+  useEffect(() => {
+    if (!owner) {
+      setFinderExt(null);
+      return undefined;
+    }
+    let alive = true;
+    import("./finderBridge")
+      .then(({ connectFinder }) => connectFinder({ getIdToken: () => getAuth().currentUser?.getIdToken() }))
+      .then((r) => {
+        if (!alive) return;
+        setFinderExt(r);
+        if (r.justConnected) toast.success("Job finder connected in this browser");
+        else if (r.present && r.error) toast.warn(`Job finder not connected: ${r.error}`);
+      })
+      .catch(() => alive && setFinderExt({ present: false }));
+    return () => {
+      alive = false;
+    };
+  }, [owner]);
 
   // The owner's private data, fetched only once we know it's the owner.
   useEffect(() => {
@@ -520,6 +548,7 @@ export default function JobTracker() {
           <div className="neu-calm">
           <Suspense fallback={null}>
             <OpeningsTab
+              finderExt={finderExt}
               queuedUrls={queuedUrls}
               hidden={state.radarHidden}
               onHide={hideOpening}

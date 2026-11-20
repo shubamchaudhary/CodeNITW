@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Naukri Refresher",
+  "version": "1.3.0",
+  "description": "Keeps your Naukri profile fresh (one trailing dot on the headline, about once an hour) and finds today's best Naukri jobs for your Backend and AI profiles.",
+  "minimum_chrome_version": "121",
+  "permissions": ["alarms", "storage", "scripting", "notifications", "power"],
+  "host_permissions": ["https://www.naukri.com/*", "https://interviewplanprep.vercel.app/*"],
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.naukri.com/*-jobs*"],
+      "js": ["capture.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://interviewplanprep.vercel.app/*"],
+      "js": ["site-bridge.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Naukri Refresher",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png" }
+  },
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "naukri-refresher@local",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  }
+}

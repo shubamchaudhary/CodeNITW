@@ -1,0 +1,266 @@
+// A fake www.naukri.com (and a fake interviewplanprep.vercel.app: its /api/radar and the Job
+// tracker page's job finder handover) for end-to-end tests. Browsers are pointed at it with
+// --host-resolver-rules (Chromium) or network.dns.localDomains (Firefox).
+import https from 'node:https';
+import { readFileSync } from 'node:fs';
+
+const API = '/cloudgateway-mynaukri/resman-aggregator-services';
+const TOKEN = 'FAKE.TOKEN.VALUE';
+export const RADAR_TOKEN = 'TEST-INGEST';
+// The site's own pieces: the owner's sign-in (a Firebase ID token there) and the finder's token
+// it hands out (api/radar.mjs finderToken makes the real one).
+export const OWNER_ID_TOKEN = 'OWNER-ID-TOKEN';
+export const FINDER_TOKEN = `nrf1.${'T'.repeat(43)}`;
+// The site's real handover code, served to the fake Job tracker page below.
+const BRIDGE_FILE = new URL('../../src/pages/JobTracker/finderBridge.js', import.meta.url);
+const H = 3_600_000;
+
+// ---------------------------------------------------------------- the job search fixtures
+
+const idOf = (n) => String(201100000000 + n);
+export function listing(n, over = {}) {
+  const id = idOf(n);
+  return {
+    jobId: id,
+    title: 'Backend Engineer',
+    companyName: `Company ${n}`,
+    jdURL: `/job-listings-backend-engineer-company-${n}-bengaluru-2-to-5-years-${id}`,
+    createdDate: Date.now() - 2 * H,
+    footerPlaceholderLabel: 'Few Hours Ago',
+    placeholders: [
+      { type: 'experience', label: '2-5 Yrs' },
+      { type: 'salary', label: 'Not disclosed' },
+      { type: 'location', label: 'Bengaluru' },
+    ],
+    tagsAndSkills: 'Java,Spring Boot,Docker,Kubernetes',
+    ambitionBoxData: { AggregateRating: '3.9', ReviewsCount: 120 },
+    jobDescription: '<p>Build backend services.</p>',
+    salaryDetail: { hideSalary: true, minimumSalary: 0, maximumSalary: 0 },
+    ...over,
+  };
+}
+const exp = (label) => ({ type: 'experience', label });
+const sal = (label) => ({ type: 'salary', label });
+const loc = { type: 'location', label: 'Pune' };
+
+// What each search returns; ids are the listing numbers above. KEEP/DROP is what the finder must do.
+export function fixtures() {
+  const java1 = [
+    listing(1, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Microservices,Kafka' }), // KEEP backend
+    listing(2, { title: 'Android Developer', tagsAndSkills: 'Kotlin,Android,Java' }), // DROP title
+    listing(3, { title: '.NET Developer', tagsAndSkills: 'C#,.Net,SQL Server' }), // DROP title
+    listing(4, { title: 'QA Automation Engineer', tagsAndSkills: 'Selenium,Java' }), // DROP title
+    listing(5, { title: 'Java Developer', placeholders: [exp('3-6 Yrs'), sal('Not disclosed'), loc] }), // DROP years
+    listing(6, { title: 'Java Developer', placeholders: [exp('2-5 Yrs'), sal('6-10 Lacs PA'), loc] }), // DROP pay
+    listing(7, { title: 'Java Developer', salaryDetail: { hideSalary: true, minimumSalary: 1800000, maximumSalary: 2600000 } }), // KEEP, pay hidden
+    listing(8, { title: 'Java Developer', footerPlaceholderLabel: '1 Day Ago', createdDate: Date.now() - 30 * H }), // DROP not today
+    listing(9, { title: 'Software Engineer', tagsAndSkills: '', placeholders: [], jobDescription: '' }), // KEEP, nothing known
+    listing(10, { title: 'Java Developer', tagsAndSkills: 'Java,Struts,JSP,Oracle,PL/SQL' }), // DROP skills
+    listing(11, { title: 'Python Developer', tagsAndSkills: 'Python,FastAPI,LLM,RAG,PostgreSQL', placeholders: [exp('1-3 Yrs'), sal('20-30 Lacs PA'), loc] }), // KEEP ai
+    ...[12, 13, 14, 15, 16, 17, 18, 19, 20].map((n) => listing(n)), // KEEP backend
+  ];
+  const java2 = [
+    listing(21), // KEEP
+    listing(22, { title: 'Lead Java Developer' }), // DROP title
+    listing(23, { title: 'Software Developer', tagsAndSkills: 'Java,Hibernate,MySQL' }), // KEEP
+    listing(24, { title: 'Java Developer', placeholders: [exp('0-1 Yrs'), sal('Not disclosed'), loc] }), // DROP fresher
+    listing(25, { title: 'PHP Developer' }), // DROP title
+  ];
+  return {
+    'java spring boot developer': [java1, java2],
+    'software engineer': [[
+      java1[0], // the same listing in a second search: counted once
+      listing(31, { title: 'Software Engineer', tagsAndSkills: 'Java,SQL' }), // KEEP
+      listing(32, { title: 'Data Engineer', tagsAndSkills: 'Spark,Python,SQL' }), // DROP title
+    ]],
+    'generative ai engineer': [[
+      listing(41, { title: 'Generative AI Engineer', tagsAndSkills: 'Python,Generative AI,LLM,RAG,Langchain' }), // KEEP ai
+      listing(42, { title: 'AI Engineer', tagsAndSkills: 'Python,Machine Learning,Deep Learning,PyTorch,TensorFlow' }), // DROP skills
+      listing(43, { title: 'LLM Engineer', tagsAndSkills: 'Python,LLM,Vector Database' }), // KEEP ai
+    ]],
+  };
+}
+export const EXPECT = {
+  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43].map(idOf),
+  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42].map(idOf),
+  ai: [11, 41, 43].map(idOf),
+  idOf,
+};
+
+// The search page: like Naukri's, it loads its results with a request of its own after the HTML
+// (fetch for some searches, XMLHttpRequest for the AI ones, so both capture paths are tested).
+const SRP_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Jobs</title></head><body>
+<iframe src="/recaptcha/api2/anchor?size=invisible" style="width:0;height:0;border:0;position:absolute"></iframe>
+<div id="list">Loading…</div>
+<script>
+(async () => {
+  const m = location.pathname.match(/^\\/(.+?)-jobs(?:-(\\d+))?$/);
+  const q = new URLSearchParams(location.search);
+  const k = q.get('k') || '';
+  const url = '/jobapi/v3/search?noOfResults=20&urlType=search_by_keyword&searchType=adv&keyword=' + encodeURIComponent(k)
+    + '&pageNo=' + ((m && m[2]) || '1') + '&experience=' + (q.get('experience') || '') + '&jobAge=' + (q.get('jobAge') || '');
+  let status = 0, data = null;
+  if (/\\b(ai|llm|genai|langchain|agentic)\\b/.test(k)) {
+    await new Promise((ok) => { const x = new XMLHttpRequest(); x.open('GET', url); x.setRequestHeader('appid', '109');
+      x.onloadend = () => { status = x.status; try { data = JSON.parse(x.responseText); } catch (e) {} ok(); }; x.send(); });
+  } else {
+    const r = await fetch(url, { headers: { appid: '109', systemid: 'Naukri' } });
+    status = r.status; data = await r.json().catch(() => null);
+  }
+  const list = document.getElementById('list');
+  if (status === 406) {
+    list.innerHTML = '<p>Please verify you are human.</p><iframe src="/recaptcha/api2/bframe?k=1" width="300" height="400"></iframe>';
+    return;
+  }
+  const jobs = (data && data.jobDetails) || [];
+  list.innerHTML = jobs.length ? jobs.map((j) => '<article class="srp-jobtuple-wrapper" data-job-id="' + j.jobId + '"><a class="title" href="' + j.jdURL + '">' + j.title + '</a></article>').join('') : '<p>No jobs found</p>';
+})();
+</script></body></html>`;
+
+// The site's Job tracker page, as far as the job finder is concerned: it runs the real
+// finderBridge.js, signed in as the owner (or, with ?idt=, as someone else), and reports what
+// came of it to /__bridge/result.
+const SITE_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Job tracker</title></head><body><p id="out">…</p>
+<script type="module">
+import { connectFinder } from '/__bridge/finderBridge.js';
+const idt = new URLSearchParams(location.search).get('idt') || ${JSON.stringify(OWNER_ID_TOKEN)};
+const r = await connectFinder({ getIdToken: async () => idt });
+document.getElementById('out').textContent = JSON.stringify(r);
+await fetch('/__bridge/result', { method: 'POST', body: JSON.stringify(r) });
+</script></body></html>`;
+
+// ---------------------------------------------------------------- the server
+
+export async function startMock({ key, cert }) {
+  const state = {};
+  const reset = (over = {}) => Object.assign(state, {
+    mode: 'ok', // ok | 500 | 429 | 401 | drop | shape | ignore | wipe
+    headline: 'Backend Software Engineer (Java) | 2+ YOE',
+    profileId: 'pid-12345678',
+    name: 'Test User',
+    keySkills: 'Java, Spring Boot, Kafka',
+    employments: [{ designation: 'Software Engineer', organization: 'Some Co' }],
+    saves: 0,
+    requests: [],
+    srpMode: 'ok', // ok | captcha
+    srpExtra: [], // listings put first on the first page of the Java search
+    radarMode: 'ok', // ok | old (a site that doesn't know the finder)
+    radarPosts: [],
+    radarPostAuth: [], // which token each upload came with: ingest | finder
+    radarChecks: 0,
+    radarPairs: 0, // finder tokens handed to the owner's page
+    bridgeResults: [], // what each Job tracker page made of the handover
+  }, over);
+  reset();
+
+  const radarApi = (req, res, url, body) => {
+    const reply = (code, payload, type = 'application/json') => {
+      res.writeHead(code, { 'content-type': type });
+      res.end(typeof payload === 'string' ? payload : JSON.stringify(payload));
+    };
+    if (req.method === 'GET' && url.pathname === '/job-tracker') return reply(200, SITE_PAGE, 'text/html; charset=utf-8');
+    if (req.method === 'GET' && url.pathname === '/__bridge/finderBridge.js') return reply(200, readFileSync(BRIDGE_FILE, 'utf8'), 'text/javascript; charset=utf-8');
+    if (req.method === 'POST' && url.pathname === '/__bridge/result') {
+      try { state.bridgeResults.push(JSON.parse(body)); } catch { state.bridgeResults.push({ bad: body }); }
+      return reply(200, { ok: true });
+    }
+    if (url.pathname !== '/api/radar' || req.method !== 'POST') return reply(404, { error: 'not-found' });
+    let j;
+    try { j = JSON.parse(body); } catch { return reply(400, { error: 'bad-json' }); }
+    const auth = req.headers.authorization || '';
+    const ingest = auth === `Bearer ${RADAR_TOKEN}`;
+    const finderKey = auth === `Bearer ${FINDER_TOKEN}`;
+    const finder = j.finder === 'naukri';
+    // As api/radar.mjs: pairing needs the owner signed in; the finder token sends finder openings only.
+    if (finder && j.pair === true && !ingest && !finderKey) {
+      if (auth !== `Bearer ${OWNER_ID_TOKEN}`) return reply(401, { error: 'unauthorized' });
+      state.radarPairs += 1;
+      return reply(200, { ok: true, finder: true, token: FINDER_TOKEN });
+    }
+    if (!ingest && !(finder && finderKey)) return reply(401, { error: 'unauthorized' });
+    if (j.check === true) {
+      state.radarChecks += 1;
+      return state.radarMode === 'old' ? reply(400, { error: 'no-openings' }) : reply(200, { ok: true, finder: true });
+    }
+    if (!Array.isArray(j.openings)) return reply(400, { error: 'no-openings' });
+    state.radarPosts.push(j);
+    state.radarPostAuth.push(finderKey ? 'finder' : 'ingest');
+    return reply(200, { created: j.openings.length, updated: 0, ...(state.radarMode === 'old' ? {} : { finder: true }) });
+  };
+
+  const handler = async (req, res) => {
+    const url = new URL(req.url, 'https://www.naukri.com');
+    let body = '';
+    for await (const c of req) body += c;
+    const host = String(req.headers.host || '').split(':')[0];
+    if (host === 'interviewplanprep.vercel.app') return radarApi(req, res, url, body);
+    state.requests.push({ method: req.method, path: url.pathname, search: url.search, headers: req.headers, body, t: Date.now() });
+    const send = (code, payload, headers = {}) => {
+      const html = typeof payload === 'string';
+      res.writeHead(code, { 'content-type': html ? 'text/html; charset=utf-8' : 'application/json', ...headers });
+      res.end(html ? payload : JSON.stringify(payload));
+    };
+    const login = { 'set-cookie': `nauk_at=${TOKEN}; Path=/; Secure; SameSite=Lax` };
+
+    if (url.pathname.startsWith('/recaptcha/')) return send(200, '<!doctype html><title>r</title>');
+    if (/^\/[a-z0-9-]+-jobs(?:-\d+)?$/.test(url.pathname)) return send(200, SRP_PAGE, login);
+    if (url.pathname === '/jobapi/v3/search') {
+      if (state.srpMode === 'captcha') return send(406, { message: 'recaptcha required' });
+      const k = url.searchParams.get('keyword') || '';
+      const page = Number(url.searchParams.get('pageNo')) || 1;
+      const pages = fixtures()[k] || [];
+      let jobs = pages[page - 1] || [];
+      if (k === 'java spring boot developer' && page === 1 && state.srpExtra.length) jobs = [...state.srpExtra, ...jobs].slice(0, 20);
+      return send(200, { noOfJobs: pages.flat().length, jobDetails: jobs });
+    }
+    if (!url.pathname.startsWith(API)) {
+      if (url.pathname === '/favicon.ico') return send(404, {});
+      // Any page: log the browser in the way the real site does (a JS-readable token cookie).
+      return send(200, '<!doctype html><title>Mock Naukri</title><p>mock</p>', login);
+    }
+    switch (state.mode) {
+      case 'drop': return req.socket.destroy();
+      case '500': return send(500, { message: 'server error' });
+      case '429': return send(429, { message: 'too many requests' });
+      case '401': return send(401, { message: 'unauthorized' });
+      default: break;
+    }
+    if (req.headers.authorization !== `Bearer ${TOKEN}`) return send(401, { message: 'no token' });
+    if (req.method === 'GET' && url.pathname === `${API}/v2/users/self`) {
+      if (state.mode === 'shape') return send(200, { dashboard: { something: 'else' } });
+      return send(200, {
+        profile: [{ profileId: state.profileId, name: state.name, resumeHeadline: state.headline, keySkills: state.keySkills, modifiedOn: Date.now() }],
+        employments: state.employments,
+      });
+    }
+    if (req.method === 'POST' && url.pathname === `${API}/v1/users/self/fullprofiles`) {
+      if (req.headers['x-http-method-override'] !== 'PUT') return send(405, { message: 'method' });
+      let j;
+      try { j = JSON.parse(body); } catch { return send(400, { message: 'bad json' }); }
+      const h = j && j.profile && j.profile.resumeHeadline;
+      if (j.profileId !== state.profileId || typeof h !== 'string' || !h.trim() || h.length > 250) return send(400, { message: 'bad payload' });
+      if (state.mode !== 'ignore') state.headline = h;
+      if (state.mode === 'wipe') { state.keySkills = ''; state.employments = []; } // a PUT that clobbers the rest
+      state.saves += 1;
+      return send(200, { status: 'success' });
+    }
+    return send(404, { message: 'not found' });
+  };
+
+  const servers = [];
+  for (const host of ['127.0.0.1', '::1']) {
+    const s = https.createServer({ key, cert }, handler);
+    await new Promise((ok) => {
+      s.once('error', () => ok()); // ::1 may be unavailable; 127.0.0.1 is enough
+      s.listen(443, host, () => { servers.push(s); ok(); });
+    });
+  }
+  if (!servers.length) throw new Error('mock Naukri could not listen on port 443');
+  return {
+    state,
+    reset,
+    apiCalls: (method) => state.requests.filter((r) => r.path.startsWith(API) && (!method || r.method === method)),
+    searchPages: () => state.requests.filter((r) => /-jobs(?:-\d+)?$/.test(r.path)),
+    close: () => Promise.all(servers.map((s) => new Promise((ok) => { s.closeAllConnections?.(); s.close(() => ok()); }))),
+  };
+}

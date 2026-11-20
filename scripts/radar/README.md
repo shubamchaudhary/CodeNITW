@@ -14,7 +14,8 @@ GitHub Actions**: the old Actions radar got the GitHub account blocked.
 |---|---|---|
 | Company boards | ~140 tracked companies (Amazon, Microsoft, Google, Uber, Atlassian, Workday/Greenhouse/Lever boards…) | `scripts/jobRadar.mjs`, each company's public jobs API |
 | ATS dataset | 20,000+ companies on Greenhouse, Lever, Ashby, Workday, iCIMS, BambooHR, Paylocity | the daily dataset of [Riley-Dorrington/job-board-aggregator](https://github.com/Riley-Dorrington/job-board-aggregator), downloaded as static files |
-| Indian job boards | Naukri (7 cities), Indeed India, Glassdoor India | [JobSpy](https://github.com/speedyapply/JobSpy) in a local Python venv |
+| Indian job boards | Naukri (7 cities), Indeed India, Glassdoor India | [JobSpy](https://github.com/speedyapply/JobSpy) in a local Python venv. `RADAR_NAUKRI=off` in `.radar\.env` leaves Naukri to the browser job finder (below) |
+| Naukri, today's top 50 per account | the Naukri Refresher extension's **job finder** (`extensions/naukri-refresher`), in your logged-in browser(s): a Backend list checked against the SDE resume, an AI list against the GenAI one | it POSTs to the same `/api/radar` with `finder: "naukri"`, using a token your site's Job tracker hands it; the Openings tab shows them under **⭐ Naukri today**. Its openings are kept 3 days, and radar runs never delete or overwrite them |
 | career-ops | employers on hiring systems the others can't read (IBM, Oracle, Qualcomm…; edit `career-ops-companies.yml`) | [career-ops](https://github.com/career-ops-hq/career-ops)' scanner, checked out at a pinned commit in `.radar/career-ops` |
 | LinkedIn | off by default | `--linkedin` turns on the old guest-page sweep; LinkedIn rate-limits it by IP |
 
@@ -107,7 +108,9 @@ any device ──GET /api/radar──▶ newest first, paged   (the Jobs page's 
 | Call | Token | Does |
 |---|---|---|
 | `POST /api/radar` | `RADAR_INGEST_TOKEN` | body `{ summary, openings, remove }`: creates new openings, updates known ones, deletes the stored copies of those in `remove` (seen, but now rejected by the rules), then deletes those older than 15 days. Answers `{ created, updated, tooOld, rejected, removed, deleted }` |
-| `GET /api/radar` | `RADAR_READ_TOKEN` (or the owner's login) | `?limit=50` (1–200), `?cursor=` (the previous page's `nextCursor`), `?since=2026-10-15`. Answers `{ openings, nextCursor, total, summary }`, newest opening first |
+| `POST /api/radar` with `finder: "naukri"` | `RADAR_INGEST_TOKEN`, or the finder's own token | the job finder's uploads (`{ finder, summary, openings }`) and its check (`{ finder, check: true }`, writes nothing). The finder's token is derived from the ingest token and can only do these |
+| `POST /api/radar` `{ finder: "naukri", pair: true }` | the owner's login (Firebase ID token) | answers `{ ok, finder: true, token }`: the Job tracker page hands that token to the extension (`src/pages/JobTracker/finderBridge.js`) |
+| `GET /api/radar` | `RADAR_READ_TOKEN` (or the owner's login) | `?limit=50` (1–200), `?cursor=` (the previous page's `nextCursor`), `?since=2026-10-15`. Answers `{ openings, nextCursor, total, summary, finderSummary, finderRuns }`, newest opening first (`finderRuns`: the finder's latest run per list it searched for) |
 | `DELETE /api/radar` | `RADAR_INGEST_TOKEN` | deletes openings that opened more than 15 days ago; `?days=N` for another age |
 
 Each opening has `id`, `company`, `openingId`, `title`, `location`, `url`,
