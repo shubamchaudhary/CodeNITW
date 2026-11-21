@@ -19,6 +19,7 @@
 
 import { findSkills, skillOf, withParents } from './skills-dict.js';
 import { JOB_PROFILE } from './job-profile.js';
+import { lowPayList, lowPayMatch } from './low-pay.js';
 import { NAUKRI_ORIGIN, MIN, HOUR, DAY } from './lib.js';
 
 export const SITE_ORIGIN = 'https://interviewplanprep.vercel.app';
@@ -28,7 +29,7 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
 // Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
-export const RULES_VERSION = 5;
+export const RULES_VERSION = 6;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
@@ -303,35 +304,10 @@ const MY_SKILLS = mySkills();
 
 // ---------------------------------------------------------------- companies
 
-// Employers whose pay at about 2 years of experience is well under your bar: India's IT services,
-// consulting, outsourcing and engineering-services firms. Their listings are dropped on the card,
-// before any JD is opened. The finder's settings can change this list (one company per line).
-// Each name matches whole words of the company's name, so "HCL" isn't "HCLTech" (both are listed).
-export const LOW_PAY_COMPANIES = Object.freeze([
-  'Accenture', 'TCS', 'Tata Consultancy Services', 'Infosys', 'Wipro', 'Cognizant', 'Capgemini', 'HCL', 'HCLTech', 'Tech Mahindra',
-  'LTIMindtree', 'Mindtree', 'L&T Infotech', 'Larsen & Toubro', 'L&T Technology Services', 'LTTS', 'Mphasis', 'Hexaware',
-  'Persistent Systems', 'Coforge', 'NIIT Technologies', 'Birlasoft', 'Zensar', 'Sonata Software', 'Mastek', 'Cyient', 'KPIT',
-  'Happiest Minds', 'NTT DATA', 'DXC Technology', 'Virtusa', 'UST Global', 'UST', 'IBM', 'Deloitte', 'PwC', 'PricewaterhouseCoopers',
-  'EY', 'Ernst & Young', 'KPMG', 'Genpact', 'WNS', 'EXL', 'EXL Service', 'Concentrix', 'Teleperformance', 'Firstsource', 'Sutherland',
-  'HGS', 'Hinduja Global Solutions', 'iGate', 'Syntel', 'Atos', 'Sopra Steria', 'CGI', 'Unisys', 'Fujitsu', 'NEC', 'Datamatics',
-  '3i Infotech', 'Cybage', 'Quest Global', 'Tata Elxsi', 'Tata Technologies', 'Sasken', 'Expleo', 'Alten', 'Infinite Computer Solutions',
-  'Trigent', 'Kellton', 'InfoBeans', 'Saksoft', 'Mindteck', 'Intellect Design Arena', 'Nucleus Software', 'R Systems', 'Infogain',
-  'Ness Digital Engineering',
-]);
-
-const companyWords = (s) => ` ${String(s ?? '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim()} `;
-
-/** A list of company names (yours from the settings, or the default) → what cardCheck matches against. */
-export function lowPayList(names = LOW_PAY_COMPANIES) {
-  return [...new Set((Array.isArray(names) ? names : []).map(companyWords).filter((w) => w.trim()))];
-}
+// Low-pay employers (IT services and consulting firms): the list and its matching live in
+// low-pay.js, shared with the PC radar and your site. cardCheck drops their listings.
+export { LOW_PAY_COMPANIES, lowPayList, lowPayMatch } from './low-pay.js';
 const LOW_PAY = lowPayList();
-
-/** The entry of `list` a company's name matches, or null. */
-export function lowPayMatch(company, list = LOW_PAY) {
-  const name = companyWords(company);
-  return list.find((w) => name.includes(w)) || null;
-}
 
 // ---------------------------------------------------------------- the job's own stack
 
@@ -429,7 +405,7 @@ const NOT_TARGET = new Set(['C', 'C++']);
 // Close enough that a title naming them is still yours.
 const CLOSE = { TypeScript: 'JavaScript', Flask: 'Python', Django: 'Python', NestJS: 'Node.js', 'Express.js': 'Node.js', 'Next.js': 'React' };
 
-const CORE_TITLE = /\b(?:java|spring|back[\s-]?end|sde|swe|software (?:development )?engineer|software developer|platform engineer|microservices?|full[\s-]?stack|python (?:developer|engineer)|fast\s?api|node(?:\.?js)? (?:developer|engineer)|api developer|application (?:developer|engineer)|member of technical staff|mts)\b/i;
+const CORE_TITLE = /\b(?:java|spring|back[\s-]?end|sde|swe|software (?:development )?engineer|software developer|platform engineer|microservices?|full[\s-]?stack|python (?:developer|engineer)|fast\s?api|node(?:\.?js)? (?:developer|engineer)|api developer|application (?:developer|engineer)|member (?:of )?technical staff|mts)\b/i;
 export const AI_TITLE = /\b(?:gen\s?ai|generative ai|llms?|ai (?:engineer|developer|application|solutions? engineer|agents?)|applied ai|agentic|ai\s?\/\s?ml|ai[\s-]ml|ml engineer|machine learning engineer|prompt engineer|conversational ai|nlp engineer|rag)\b/i;
 const ANY_ENG_TITLE = /\b(?:developer|engineer|programmer|sde|swe|coder)\b/i;
 const SENIOR = /\b(?:senior|sr\.?|iii|iv)\b/i;
@@ -449,6 +425,8 @@ export function titleCheck(title, mine = MY_SKILLS) {
   const stacks = [...findSkills(title).keys()].filter((l) => STACK_AREAS.has(skillOf(l).area));
   const target = (l) => !NOT_TARGET.has(l) && ['java', 'python', 'genai'].includes(stackOf(l));
   if (stacks.length && !stacks.some(target) && !ai) return { ok: false, why: `${stacks.join('/')} role` };
+  // No engineering word, no technology, nothing AI: not a software job ("Gardener", "Accountant").
+  if (!ai && !stacks.length && !CORE_TITLE.test(t) && !ANY_ENG_TITLE.test(t) && !/\bsoftware\b/i.test(t)) return { ok: false, why: 'not a software role' };
   let fit = ai || CORE_TITLE.test(t) ? 1 : ANY_ENG_TITLE.test(t) ? 0.8 : 0.6;
   if (SENIOR.test(t)) fit *= 0.8;
   return { ok: true, fit, ai };

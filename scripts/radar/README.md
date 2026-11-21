@@ -15,7 +15,7 @@ GitHub Actions**: the old Actions radar got the GitHub account blocked.
 | Company boards | ~140 tracked companies (Amazon, Microsoft, Google, Uber, Atlassian, Workday/Greenhouse/Lever boards…) | `scripts/jobRadar.mjs`, each company's public jobs API |
 | ATS dataset | 20,000+ companies on Greenhouse, Lever, Ashby, Workday, iCIMS, BambooHR, Paylocity | the daily dataset of [Riley-Dorrington/job-board-aggregator](https://github.com/Riley-Dorrington/job-board-aggregator), downloaded as static files |
 | Indian job boards | Naukri (7 cities), Indeed India, Glassdoor India | [JobSpy](https://github.com/speedyapply/JobSpy) in a local Python venv. `RADAR_NAUKRI=off` in `.radar\.env` leaves Naukri to the browser job finder (below) |
-| Naukri, the last 48 hours per account (top 100 a list, highest AI rating first) | the Naukri Refresher extension's **job finder** (`extensions/naukri-refresher`), in your logged-in browser(s): it reads every page of every search, then each good-looking job's JD, and keeps it when enough of the technologies it asks for are yours; a Backend list (Java/Spring Boot) and an AI list (Python and GenAI), no low-pay IT services firms; its best 400 a list are rated 1–100 against your resume by an LLM on Groq | it POSTs to the same `/api/radar` with `finder: "naukri"`, using a token your site's Job tracker hands it; the Openings tab shows them under **⭐ Naukri, last 48 hours**. Its openings are kept 3 days, and radar runs never delete or overwrite them |
+| Naukri, the last 48 hours per account (top 100 a list, highest AI rating first) | the Naukri Refresher extension's **job finder** (`extensions/naukri-refresher`), in your logged-in browser(s): it reads every page of every search, then each good-looking job's JD, and keeps it when enough of the technologies it asks for are yours; a Backend list (Java/Spring Boot) and an AI list (Python and GenAI), no low-pay IT services firms; its best 400 a list are rated 1–100 against your resume by an LLM on Groq | it POSTs to the same `/api/radar` with `finder: "naukri"`, using a token your site's Job tracker hands it; the Openings tab shows them under **⭐ Naukri, last 48 hours**. Its openings are kept 3 days, and radar runs never delete or overwrite them. Each job shows in one view only: **📡 All openings** leaves out the ⭐ Naukri jobs, the finder's older Naukri-only jobs, and any other copy of a ⭐ Naukri job (matched by Naukri id, link, or company and title: `src/pages/JobTracker/jobKeys.js`); a repost shows once, and a job in your pipeline under the same company and title stays out of both |
 | career-ops | employers on hiring systems the others can't read (IBM, Oracle, Qualcomm…; edit `career-ops-companies.yml`) | [career-ops](https://github.com/career-ops-hq/career-ops)' scanner, checked out at a pinned commit in `.radar/career-ops` |
 | LinkedIn | off by default | `--linkedin` turns on the old guest-page sweep; LinkedIn rate-limits it by IP |
 
@@ -49,6 +49,12 @@ Every job, from any source, goes through the same checks:
 
 1. **Role and place**: a backend/SDE/Java/platform/GenAI title, not senior or lead
    levels, not QA, frontend or mobile, located in India (or remote that includes India).
+   **Not a low-pay employer**: India's big IT services, consulting and outsourcing firms
+   (Accenture, TCS, Infosys, Wipro, Cognizant, Capgemini, HCLTech, the Big Four…) are dropped,
+   and any copy an earlier run stored is deleted. The list is
+   `extensions/naukri-refresher/low-pay.js`, shared with the Naukri job finder and the Openings tab
+   (which hides anything still stored). A few firms are left off on purpose because they can reach
+   25 LPA (NTT DATA, Persistent Systems, CGI, IBM's and Fujitsu's labs…); the file says why.
 2. **Experience**: the range of years it asks for, from Naukri's experience
    field, a range in the title, or the job description, must include 2
    (`YOUR_YEARS` in `experience.mjs`). "0–2", "1–3", "2–5" and "1+" stay; "3+"

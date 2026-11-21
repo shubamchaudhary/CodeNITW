@@ -124,14 +124,18 @@ test("titles: stacks and levels that aren't yours are out; plain software roles 
     'Golang Developer', 'Scala Engineer', 'C++ Developer', 'Telecom Software Developer - C/C++ & Kubernetes', 'Technical Support Engineer', 'Consultant',
     'AI Builder (Senior Product Designer)',
     // Your lists are Java/Spring Boot and Python/GenAI: a title naming only a JavaScript stack is out.
-    'Node.js Developer', 'Full Stack Developer (React + Node)', 'TypeScript Developer', 'MERN Stack Developer', 'MEAN Stack Developer', 'NestJS Backend Developer'];
+    'Node.js Developer', 'Full Stack Developer (React + Node)', 'TypeScript Developer', 'MERN Stack Developer', 'MEAN Stack Developer', 'NestJS Backend Developer',
+    // Not a software job at all.
+    'Gardener', 'Accountant', 'Store Associate', 'Chef'];
   for (const t of out) assert.equal(titleCheck(t).ok, false, t);
   const keep = ['Software Engineer', 'Software Developer', 'SDE 2', 'Member of Technical Staff', 'Java Consultant', 'Backend Engineer',
     'Python Developer', 'Full Stack Developer', 'Java Full Stack Developer (Angular)', 'Full Stack Engineer (Java, React)',
-    'Generative AI Engineer', 'LLM Engineer', 'AI/ML Engineer', 'Senior Software Engineer', 'Application Developer'];
+    'Generative AI Engineer', 'LLM Engineer', 'AI/ML Engineer', 'Senior Software Engineer', 'Application Developer',
+    'Member Technical Staff', 'Software Development Specialist', 'Programmer Analyst'];
   for (const t of keep) assert.equal(titleCheck(t).ok, true, t);
   assert.equal(titleCheck('Telecom Software Developer - C/C++').why, 'C/C++ role');
   assert.equal(titleCheck('MERN Stack Developer').why, 'MERN/MEAN stack role');
+  assert.equal(titleCheck('Gardener').why, 'not a software role');
   assert.ok(titleCheck('Senior Software Engineer').fit < titleCheck('Software Engineer').fit, 'senior ranks a little lower');
 });
 
@@ -269,7 +273,9 @@ test('low-pay companies are out on the card, matched on whole words of the name;
     assert.ok(lowPayMatch(name), name);
     assert.equal(card({ companyName: name }).why, 'low-pay company', name);
   }
-  for (const name of ['Acme Software', 'Bey Labs', 'Trust Bank', 'Atlassian', 'Thoughtworks', 'Hclean Foods', 'Tata 1mg', 'Persistent Ventures']) {
+  // Left off the list on purpose: they can reach your bar, or the name catches more than the services arm.
+  for (const name of ['Acme Software', 'Bey Labs', 'Trust Bank', 'Atlassian', 'Thoughtworks', 'Hclean Foods', 'Tata 1mg', 'Persistent Ventures',
+    'NTT DATA', 'Persistent Systems', 'CGI', 'IBM India Pvt Ltd', 'Fujitsu Research of India', 'Nucleus Software', 'Infogain', 'Larsen & Toubro Limited', 'L&T Finance']) {
     assert.equal(lowPayMatch(name), null, name);
   }
   assert.equal(card({ companyName: 'Accenture', isApplied: true }).why, 'you applied on Naukri', 'applied is said first');

@@ -42,6 +42,8 @@ import { experienceRange, experienceTag } from "./experience.mjs";
 import { makePayChecker } from "./pay.mjs";
 import { loadResumeTexts, resumePdfs, resumesProfile } from "./resume.mjs";
 import { openingIdOf } from "./ids.mjs";
+// The same low-pay employers the Naukri job finder leaves out (IT services and consulting firms).
+import { lowPayMatch } from "../../extensions/naukri-refresher/low-pay.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const STATE = join(ROOT, ".radar");
@@ -228,7 +230,7 @@ async function main() {
   saveJSON("atsCache.json", atsCache);
 
   // ── Relevance + de-duplication ──────────────────────────────────────────────
-  const dropped = { notRelevant: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0 };
+  const dropped = { notRelevant: 0, lowPayCompany: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0 };
   const byFp = new Map();
   for (const raw of batches.flat()) {
     if (!keep(raw.title, raw.location)) {
@@ -270,6 +272,12 @@ async function main() {
     const key = hash(urlKey(j.url));
     const old = store[key];
     seenNow.add(key);
+    // A low-pay IT services or consulting firm (extensions/naukri-refresher/low-pay.js): out, and
+    // any copy an earlier run stored is deleted.
+    if (lowPayMatch(j.company)) {
+      drop("lowPayCompany", key, j);
+      continue;
+    }
     const range =
       j.desc || j.experienceRange || !old
         ? experienceRange(j)
