@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Naukri Refresher",
-  "version": "1.4.2",
-  "description": "Keeps your Naukri profile fresh (one trailing dot on the headline, about once an hour) and reads every Naukri listing of the last 48 hours to find the best matches for your Backend and AI profiles.",
+  "version": "1.5.0",
+  "description": "Keeps your Naukri profile fresh (one trailing dot on the headline, about once an hour) and reads every Naukri listing of the last 48 hours to find the best matches for your Backend and AI profiles, each one rated against your resume by Grok.",
   "minimum_chrome_version": "121",
-  "permissions": ["alarms", "storage", "scripting", "notifications", "power"],
-  "host_permissions": ["https://www.naukri.com/*", "https://interviewplanprep.vercel.app/*"],
+  "permissions": ["alarms", "storage", "unlimitedStorage", "scripting", "notifications", "power"],
+  "host_permissions": ["https://www.naukri.com/*", "https://interviewplanprep.vercel.app/*", "https://api.x.ai/*"],
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"],

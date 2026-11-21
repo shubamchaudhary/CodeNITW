@@ -3,16 +3,19 @@
 //
 // The finder reads every page of every search (see SEARCHES), and two steps decide each listing:
 //   1. The card (what Naukri's search results show). Posted in the last 48 hours ("Just now",
-//      "Few hours ago", "1 day ago"; "2 days ago" is out); not one you've applied to on Naukri; a
-//      title that isn't a stack or level you don't do; asks for under 2.5 years and pays 15 LPA+
-//      when it says; and its skill chips don't clearly belong to another stack. A detail the card
-//      leaves out never drops a job, and chips that aren't technologies are ignored.
+//      "Few hours ago", "1 day ago"; "2 days ago" is out); not one you've applied to on Naukri; not
+//      from a company on the low-pay list (IT services and consulting firms, editable in the
+//      settings); a title that isn't a stack or level you don't do; asks for under 2.5 years and
+//      pays 15 LPA+ when it says; and its skill chips don't clearly belong to another stack. A
+//      detail the card leaves out never drops a job, and chips that aren't technologies are ignored.
 //   2. The JD (the job's own page, opened for every card that passes). Every technology it asks for
 //      is found with the skills dictionary (skills-dict.js) and compared with your skills (both
 //      resumes, job-profile.js). It's kept when the share you have reaches the bar (60% by
 //      default; "nice to have" lines and company blurbs don't count). How much of it is GenAI work
-//      decides its list: AI-first or backend-first. A job is on one list only. Your site shows the
-//      top 200 per list from the last 48 hours that you haven't taken yet, highest match first.
+//      decides its list: AI-first or backend-first. A job is on one list only.
+// The parser's top 400 per list (last 48 hours, by JD match) go to your site, and each one is then
+// rated by Grok against your resume (rate-lib.js). Your site shows the top 100 per list that you
+// haven't taken yet, highest rating first.
 
 import { findSkills, skillOf, withParents } from './skills-dict.js';
 import { JOB_PROFILE } from './job-profile.js';
@@ -25,12 +28,13 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
 // Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
-export const RULES_VERSION = 3;
+export const RULES_VERSION = 4;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
+  poolTop: 400, // the parser's best this many per list (last 48 hours, by JD match) go to your site and are rated
   showHours: 48, // your site lists the top `showTop` per list posted in the last 48 hours, not yet taken,
-  showTop: 200, // highest JD match first
+  showTop: 100, // highest AI rating first (jobs not rated yet after, by JD match)
   minPayL: 15, // LPA the top of a salary the job shows must reach
   maxMinYears: 2.5, // the years it asks for must start below this ("less than 2.5 years")
   minMaxYears: 2, // ...and reach this, so "0–1 yrs" fresher roles are out
@@ -293,6 +297,38 @@ export function mySkills(extra = [], base = JOB_PROFILE) {
 }
 const MY_SKILLS = mySkills();
 
+// ---------------------------------------------------------------- companies
+
+// Employers whose pay at about 2 years of experience is well under your bar: India's IT services,
+// consulting, outsourcing and engineering-services firms. Their listings are dropped on the card,
+// before any JD is opened. The finder's settings can change this list (one company per line).
+// Each name matches whole words of the company's name, so "HCL" isn't "HCLTech" (both are listed).
+export const LOW_PAY_COMPANIES = Object.freeze([
+  'Accenture', 'TCS', 'Tata Consultancy Services', 'Infosys', 'Wipro', 'Cognizant', 'Capgemini', 'HCL', 'HCLTech', 'Tech Mahindra',
+  'LTIMindtree', 'Mindtree', 'L&T Infotech', 'Larsen & Toubro', 'L&T Technology Services', 'LTTS', 'Mphasis', 'Hexaware',
+  'Persistent Systems', 'Coforge', 'NIIT Technologies', 'Birlasoft', 'Zensar', 'Sonata Software', 'Mastek', 'Cyient', 'KPIT',
+  'Happiest Minds', 'NTT DATA', 'DXC Technology', 'Virtusa', 'UST Global', 'UST', 'IBM', 'Deloitte', 'PwC', 'PricewaterhouseCoopers',
+  'EY', 'Ernst & Young', 'KPMG', 'Genpact', 'WNS', 'EXL', 'EXL Service', 'Concentrix', 'Teleperformance', 'Firstsource', 'Sutherland',
+  'HGS', 'Hinduja Global Solutions', 'iGate', 'Syntel', 'Atos', 'Sopra Steria', 'CGI', 'Unisys', 'Fujitsu', 'NEC', 'Datamatics',
+  '3i Infotech', 'Cybage', 'Quest Global', 'Tata Elxsi', 'Tata Technologies', 'Sasken', 'Expleo', 'Alten', 'Infinite Computer Solutions',
+  'Trigent', 'Kellton', 'InfoBeans', 'Saksoft', 'Mindteck', 'Intellect Design Arena', 'Nucleus Software', 'R Systems', 'Infogain',
+  'Ness Digital Engineering',
+]);
+
+const companyWords = (s) => ` ${String(s ?? '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim()} `;
+
+/** A list of company names (yours from the settings, or the default) → what cardCheck matches against. */
+export function lowPayList(names = LOW_PAY_COMPANIES) {
+  return [...new Set((Array.isArray(names) ? names : []).map(companyWords).filter((w) => w.trim()))];
+}
+const LOW_PAY = lowPayList();
+
+/** The entry of `list` a company's name matches, or null. */
+export function lowPayMatch(company, list = LOW_PAY) {
+  const name = companyWords(company);
+  return list.find((w) => name.includes(w)) || null;
+}
+
 // ---------------------------------------------------------------- titles
 
 // A title naming one of these is a stack or a level you don't apply for.
@@ -446,10 +482,11 @@ export function rankOf({ fit, score, have = 0, years, pay, rating, reviews, crea
  * → { keep:false, why, job } or { keep:true, job, day, years, pay, fit, titleAi, chips, cardRank }
  * `keep` here means "worth opening its JD".
  */
-export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScore } = {}) {
+export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScore, lowPay = LOW_PAY } = {}) {
   const job = normalizeJob(raw || {});
   if (!job.id || !job.title || !job.url || !job.company) return { keep: false, why: 'incomplete listing', job };
   if (job.applied) return { keep: false, why: 'you applied on Naukri', job };
+  if (lowPayMatch(job.company, lowPay)) return { keep: false, why: 'low-pay company', job };
   const ageH = postedAgeH(job, now);
   if (ageH != null && ageH >= RULES.maxAgeH) return { keep: false, why: 'posted over 48 hours ago', job };
   const day = trackerDay(now); // the day it's found on
@@ -511,6 +548,12 @@ export function cardOnly(card, { now, minScore = RULES.minScore } = {}) {
 }
 
 // ---------------------------------------------------------------- what the site gets
+
+// The parser's order (your site's too, for jobs not rated yet): highest JD match first. A JD that
+// names only a few technologies says little, so those come after the ones that name enough, and one
+// naming none comes last; the rank (title, experience, pay, company rating) breaks ties.
+export const parserTier = (o) => (o.coverage == null ? 2 : o.fewSkills ? 1 : 0);
+export const byParser = (a, b) => parserTier(a) - parserTier(b) || (b.coverage || 0) - (a.coverage || 0) || (b.rank || 0) - (a.rank || 0);
 
 /** The pay label for the site (verdict names the Openings tab knows). */
 export function payLabel(pay) {

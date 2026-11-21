@@ -356,6 +356,21 @@ function JobCard({ company, aside, children, drag, dimmed, featured }) {
   );
 }
 
+// A job from the Naukri job finder: which Naukri account to apply from.
+const NAUKRI_ACCOUNT = { backend: "Backend", ai: "AI" };
+function AccountTag({ link }) {
+  const name = NAUKRI_ACCOUNT[link.naukriAccount];
+  if (!name) return null;
+  return (
+    <span
+      title={`From the Naukri job finder's ${name} list: apply from your ${name} Naukri account`}
+      className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-surface-hover text-fg-muted"
+    >
+      Naukri · {name}
+    </span>
+  );
+}
+
 function Row({ link, icon, iconCls, linkCls = "text-fg ", meta, metaCls, onBack, backTitle, onRemove, drag, children }) {
   const big = useContext(Featured);
   return (
@@ -366,6 +381,7 @@ function Row({ link, icon, iconCls, linkCls = "text-fg ", meta, metaCls, onBack,
           {link.label}
         </a>
         <HiOutlineExternalLink className="w-3 h-3 text-fg-subtle shrink-0" />
+        <AccountTag link={link} />
         {onBack && (
           <button onClick={oneJob(onBack)} title={backTitle} className="shrink-0 text-fg-subtle hover:text-fg-muted">
             <HiReply className="w-3.5 h-3.5" />
@@ -426,6 +442,7 @@ function CompactRow({ company, link, meta, tags, drag, dimmed, controls }) {
         <a href={link.url} target="_blank" rel="noreferrer" title={link.url} draggable={false} className="truncate text-fg-muted hover:underline">
           {link.label}
         </a>
+        <AccountTag link={link} />
         <span className="ml-auto pl-1 shrink-0 text-[10px] text-fg-subtle">{meta}</span>
       </div>
       <div className="mt-1 flex items-center gap-1.5">

@@ -17,13 +17,16 @@ import { normalizeUrl } from "./shared";
 // The last load is kept on this device for CACHE_TTL (30 min), so the tab
 // opens instantly; past that it's still shown while a fresh copy loads.
 //
-// It's a triage board: BATCH cards at a time, newest first, each with its
-// title, pay, years and skills right above its three buttons (skip, open,
-// To Apply), so deciding takes no travel across the screen. A decided card
-// leaves and the next one fills its place; "Next 20" moves past a batch
-// without deciding it. Every decision can be undone from its toast.
+// It's a triage board: BATCH cards at a time, highest score first (or newest
+// first), each with its title, pay, years and skills right above its three
+// buttons (skip, open, To Apply), so deciding takes no travel across the
+// screen. A decided card leaves and the next one fills its place; "Next 20"
+// moves past a batch without deciding it. "Add top 50" puts the TOP_N highest
+// scores in To Apply at once. Every decision can be undone from its toast.
 
 const BATCH = 20;
+const TOP_N = 50; // "Add top 50": how many go to To Apply in one click
+const byScore = (a, b) => (b.matchScore || 0) - (a.matchScore || 0);
 const NEW_HOURS = 30; // "new" = first stored by a run in roughly the last day
 const API_PAGE = 200; // openings per /api/radar request
 const MAX_API_PAGES = 10;
@@ -497,7 +500,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
   const [listedOnly, setListedOnly] = useState(true);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
-  const [sort, setSort] = useState("recent"); // "recent" | "score"
+  const [sort, setSort] = useState("score"); // "score" | "recent"
   const [modePref, setModePref] = useState(readMode); // "naukri" | "all", remembered on this device
   // Which list: picked on this visit, else the one this browser's job finder searches for (its
   // Naukri account), else the one picked last time on this device.
@@ -533,7 +536,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
     };
   }, [reloads, cached]);
 
-  // A filter change starts again from the newest.
+  // A filter change starts again from the first page.
   useEffect(() => setPage(0), [exp, pay, source, newOnly, listedOnly, query, sort]);
 
   const openings = radar?.openings || [];
@@ -541,8 +544,8 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
   const urlOf = (o) => normalizeUrl(o.url) || o.url;
 
   // The ones still to decide: not skipped, not already in the pipeline, and
-  // through the filters. Most recent first (the API's order), or by score
-  // (newest first among equal scores).
+  // through the filters. Highest score first (newest first among equal
+  // scores), or most recent first (the API's order).
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = openings.filter(
@@ -559,7 +562,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
         (!q || `${o.company} ${o.title} ${o.location}`.toLowerCase().includes(q))
     );
     // Array sort is stable, so equal scores keep the newest-first order.
-    if (sort === "score") list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    if (sort === "score") list.sort(byScore);
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openings, hidden, queuedUrls, dismissedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
@@ -660,9 +663,19 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
       () => onUnhide(o.id)
     );
   };
+  // An opening as a pipeline job. One from the Naukri job finder keeps its list, so the
+  // Pipeline says which Naukri account to apply from.
+  const jobOf = (o, stage) => ({
+    companyName: o.company,
+    url: urlOf(o),
+    role: o.title,
+    stage,
+    ...(o.finder === "naukri" ? { naukriAccount: o.profile || "backend" } : {}),
+  });
+
   const apply = (o) => {
     const url = urlOf(o);
-    if (!addJob({ companyName: o.company, url, role: o.title, stage: "toApply" })) return;
+    if (!addJob(jobOf(o, "toApply"))) return;
     undoToast(
       <>
         <span className="font-semibold">{o.company}</span> added to To Apply
@@ -671,21 +684,30 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
     );
   };
 
-  // Every opening through the current filters (all pages), in one go.
-  const applyAll = () => {
-    const items = shown.map((o) => ({ companyName: o.company, url: urlOf(o), role: o.title, stage: "toApply" }));
+  // Many openings into To Apply in one write, undone together from the toast.
+  const addToApply = (list, what) => {
+    const items = list.map((o) => jobOf(o, "toApply"));
     if (!items.length || !addJobs(items)) return;
     undoToast(
       <>
-        <span className="font-semibold">{items.length} openings</span> added to To Apply
+        <span className="font-semibold">
+          {items.length} {what}
+        </span>{" "}
+        added to To Apply
       </>,
       () => removeJobs(items)
     );
   };
+  // Every opening through the current filters (all pages), in one go.
+  const applyAll = () => addToApply(shown, "openings");
+  // The TOP_N highest scores through the current filters, whichever order the cards are in.
+  // The sort is stable, so among equal scores the newest go first, as on the cards.
+  const topScored = sort === "score" ? shown.slice(0, TOP_N) : [...shown].sort(byScore).slice(0, TOP_N);
+  const applyTop = () => addToApply(topScored, "top-scored openings");
 
   const markApplied = (o) => {
     const url = urlOf(o);
-    if (!addJob({ companyName: o.company, url, role: o.title, stage: "applied" })) return;
+    if (!addJob(jobOf(o, "applied"))) return;
     undoToast(
       <>
         <span className="font-semibold">{o.company}</span> marked applied
@@ -767,6 +789,15 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
               Bring back {hiddenCount} skipped
             </button>
           )}
+          {cur.list.length > 0 && (
+            <button
+              onClick={() => addToApply(cur.list.slice(0, TOP_N), `${profileLabel(profileTab)} jobs`)}
+              title={`Put the ${Math.min(TOP_N, cur.list.length)} highest-matched jobs on the ${profileLabel(profileTab)} list (#1–#${Math.min(TOP_N, cur.list.length)}) in To Apply. Apply to them from your ${profileLabel(profileTab)} Naukri account.`}
+              className="ml-auto inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-success hover:opacity-90 text-white"
+            >
+              <HiCheck className="w-4 h-4" /> Add top {Math.min(TOP_N, cur.list.length)} {profileLabel(profileTab)} to To Apply
+            </button>
+          )}
         </div>
 
         {extScope && profileTab !== extScope && (
@@ -846,6 +877,15 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
             placeholder="Search company, role, city"
             className="text-sm px-2.5 py-1.5 rounded-lg border border-line-strong bg-canvas w-56"
           />
+          {shown.length > TOP_N && (
+            <button
+              onClick={applyTop}
+              title={`Put the ${TOP_N} highest-scored openings shown by these filters in To Apply`}
+              className="inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-success hover:opacity-90 text-white"
+            >
+              <HiCheck className="w-4 h-4" /> Add top {TOP_N} to To Apply
+            </button>
+          )}
           {shown.length > 0 && (
             <button
               onClick={applyAll}
