@@ -135,6 +135,7 @@ export const EXPECT = {
   cardOnly: [63].map(idOf), // kept on its card: its page couldn't be read
   pageFails: [63].map(idOf),
   applied: { card: [68].map(idOf), data: [66].map(idOf), button: [67].map(idOf) },
+  companySite: [12, 13].map(idOf), // "Apply on company site": the job's data has the company's link
   idOf,
 };
 
@@ -216,7 +217,9 @@ const JOB_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Job</t
   // applied to: only the job's own button counts.
   const apply = d && d.jobDetails && d.jobDetails.mockApplied
     ? '<span id="already-applied" class="styles_already-applied">Applied</span>'
-    : '<button id="apply-button" class="styles_apply-button">Apply</button>';
+    : d && d.jobDetails && d.jobDetails.applyRedirectUrl
+      ? '<button id="company-site-button" class="styles_company-site-button">Apply on company site</button>'
+      : '<button id="apply-button" class="styles_apply-button">Apply</button>';
   box.innerHTML = d && d.jobDetails
     ? '<header>' + apply + '</header><section class="styles_job-desc-container"><div class="styles_JDC__dang-inner-html">' + d.jobDetails.description + '</div></section>'
       + '<aside class="similar-jobs"><article><a href="#">Another job</a><button class="styles_applied">Applied</button></article></aside>'
@@ -356,6 +359,7 @@ export async function startMock({ key, cert }) {
           jobId: l.jobId, title: l.title, description: jdFor(l), keySkills: { other: [], preferred: [] }, applyCount: 140,
           ...(EXPECT.applied.data.includes(l.jobId) ? { applyStatus: 'APPLIED' } : {}),
           ...(EXPECT.applied.button.includes(l.jobId) ? { mockApplied: true } : {}), // only the page shows it
+          ...(EXPECT.companySite.includes(l.jobId) ? { applyRedirectUrl: `https://careers.example.org/jobs/${l.jobId}?src=naukri` } : {}),
         },
       });
     }

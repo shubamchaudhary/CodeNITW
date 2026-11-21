@@ -224,6 +224,9 @@ function fields(o) {
     fewSkills: o.fewSkills === true ? true : undefined,
     // Its AI rating (the finder's second pass: an LLM read the JD against the resume).
     ai: aiOf(o.ai),
+    // How you apply: on Naukri, or on the company's own site (and that site's link).
+    apply: o.apply === "naukri" || o.apply === "company" ? o.apply : undefined,
+    applyUrl: typeof o.applyUrl === "string" && /^https?:\/\//.test(o.applyUrl) ? str(o.applyUrl, 600) : undefined,
   };
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined));
 }

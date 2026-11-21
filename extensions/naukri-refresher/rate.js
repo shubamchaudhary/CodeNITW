@@ -92,21 +92,51 @@ export async function callGroq({ key, model, input, timeoutMs = RATE.timeoutMs }
 }
 
 /**
- * The keys, taken in turn: each one rests while Groq says it's at a limit; a rejected one is left
- * out. A key that hasn't answered yet gets one call at a time, so a bad key costs one call.
+ * The keys, taken in turn, each kept under 70% of Groq's free limits (RATE.keyLimits, keyShare):
+ *   - a minute's requests and tokens, by its own count (the last 60 s) and by Groq's headers, which
+ *     cover every browser using the key: under 30% left, it rests until Groq's reset;
+ *   - a day's requests and tokens, by its own count (`ledger`, the day's tally per key) and by
+ *     Groq's daily request count: past 70%, it's done for the day.
+ * A key that hasn't answered yet gets one call at a time, so a bad key costs one call. A key Groq
+ * rejects is left out (the worker sets that).
  */
-export function keyPool(keys, start = Math.floor(Math.random() * Math.max(1, keys.length))) {
-  const slots = keys.map((key) => ({ key, hint: keyHint(key), until: 0, dead: null, busy: 0, proven: false }));
+export function keyPool(keys, start = Math.floor(Math.random() * Math.max(1, keys.length)), ledger = {}) {
+  const L = RATE.keyLimits;
+  const share = RATE.keyShare;
+  const cap = { rpm: Math.floor(L.rpm * share), tpm: Math.floor(L.tpm * share), rpd: Math.floor(L.rpd * share), tpd: Math.floor(L.tpd * share) };
+  const slots = keys.map((key) => {
+    const hint = keyHint(key);
+    const day = ledger[hint] || (ledger[hint] = { calls: 0, ok: 0, last: '' });
+    day.req = day.req || 0;
+    day.tok = day.tok || 0;
+    return { key, hint, day, recent: [], until: 0, dead: null, deadKind: null, busy: 0, proven: false, strikes: 0, limitedSince: 0 };
+  });
+  let est = RATE.callTokensGuess; // tokens a call counts against the limits, learned as it goes
   let turn = start % Math.max(1, slots.length);
+  const minute = (s, now) => {
+    s.recent = s.recent.filter((r) => r.t > now - 60_000);
+    return { req: s.recent.length + s.busy, tok: s.recent.reduce((t, r) => t + r.tok, 0) + s.busy * est };
+  };
   return {
     slots,
+    cap,
+    get est() { return est; },
     take(now = Date.now()) {
       for (let i = 0; i < slots.length; i++) {
         const s = slots[(turn + i) % slots.length];
-        if (!s.dead && s.until <= now && (s.proven || s.busy === 0)) {
-          turn = (turn + i + 1) % slots.length;
-          return s;
+        if (s.dead || s.until > now || (!s.proven && s.busy > 0)) continue;
+        if (s.day.req >= cap.rpd || s.day.tok + est > cap.tpd) {
+          s.dead = "used 70% of Groq's daily quota";
+          s.deadKind = 'budget';
+          continue;
         }
+        const m = minute(s, now);
+        if (m.req >= cap.rpm || m.tok + est > cap.tpm) {
+          s.until = s.recent.length ? s.recent[0].t + 60_000 : now + 5_000; // when its oldest call leaves the minute
+          continue;
+        }
+        turn = (turn + i + 1) % slots.length;
+        return s;
       }
       return null;
     },
@@ -115,11 +145,24 @@ export function keyPool(keys, start = Math.floor(Math.random() * Math.max(1, key
       const live = slots.filter((s) => !s.dead);
       return live.length ? Math.max(0, Math.min(...live.map((s) => s.until)) - now) : Infinity;
     },
-    /** What Groq's headers say about a key's budget: rest it until it can take another call. */
+    /** A call's tokens (cached ones don't count against Groq's limits), into the key's minute and day. */
+    used(slot, usage, now = Date.now()) {
+      slot.day.req += 1;
+      if (!usage) return;
+      const tok = Math.max(0, (usage.input || 0) - (usage.cached || 0)) + (usage.output || 0);
+      if (!tok) return;
+      slot.recent.push({ t: now, tok });
+      slot.day.tok += tok;
+      est = Math.round(est * 0.8 + tok * 0.2);
+    },
+    /** What Groq's headers say (the whole account, every browser): under 30% left, rest or stop for the day. */
     note(slot, limits, now = Date.now()) {
       if (!limits) return;
-      if (limits.tokensLeft != null && limits.tokensLeft < RATE.callTokens) slot.until = Math.max(slot.until, now + (limits.tokensReset ?? 60_000));
-      if (limits.requestsLeft === 0) slot.until = Math.max(slot.until, now + (limits.requestsReset ?? 3_600_000));
+      if (limits.tokensLeft != null && limits.tokensLeft < L.tpm * (1 - share)) slot.until = Math.max(slot.until, now + (limits.tokensReset ?? 60_000));
+      if (limits.requestsLeft != null && limits.requestsLeft < L.rpd * (1 - share)) {
+        slot.dead = "used 70% of Groq's daily requests";
+        slot.deadKind = 'budget';
+      }
     },
   };
 }
@@ -182,29 +225,30 @@ export async function saveQueue(items) {
  * Rates `queue` (shared with a finder run, which adds jobs as it keeps them), best-ranked first, a
  * few at a time over the keys, until it's empty, a list reaches its daily cap, or every key is at
  * its limit.
- *   ctx: { keys, model, resumes, perDay, counts (the day's tally, mutated), onRated(item, ai) }
+ *   ctx: { keys, model, resumes, callsPerDay, counts (the day's tally, mutated), onRated(item, ai) }
  * → { stop(): Promise, drain(ms): Promise, problem: why it gave up, if it did }
  */
 export function startRater(queue, ctx) {
-  const { model, resumes, perDay, counts, onRated } = ctx;
-  const pool = ctx.pool || keyPool(ctx.keys);
+  const { model, resumes, callsPerDay, counts, onRated } = ctx;
+  const limitBaseMs = ctx.limitBaseMs ?? RATE.limitBaseMs;
+  const limitStopMs = ctx.limitStopMs ?? RATE.limitStopMs;
+  counts.keys = counts.keys || {};
+  const pool = ctx.pool || keyPool(ctx.keys, undefined, counts.keys);
   const inflight = new Set();
-  const going = { backend: 0, ai: 0 }; // being rated right now, per list: they count toward the cap
+  let going = 0; // calls on their way: they count toward the day's cap
   let stopping = false;
   let deadline = Infinity;
   let problem = null;
   let failsInRow = 0;
-  const capped = (p) => (counts.rated[p] || 0) + (going[p] || 0) >= perDay;
-  const perKey = (slot) => {
-    counts.keys = counts.keys || {};
-    return counts.keys[slot.hint] || (counts.keys[slot.hint] = { calls: 0, ok: 0, last: '' });
-  };
+  const capped = () => counts.calls + going >= callsPerDay;
+  const perKey = (slot) => slot.day;
 
   const pick = () => {
+    if (capped()) return null; // the day's calls are used: the rest wait for tomorrow
     let best = -1;
     for (let i = 0; i < queue.length; i++) {
       const it = queue[i];
-      if (inflight.has(it.id) || capped(it.profile)) continue;
+      if (inflight.has(it.id)) continue;
       if (best < 0 || byParser(it.p || {}, queue[best].p || {}) < 0) best = i;
     }
     return best < 0 ? null : queue[best];
@@ -219,10 +263,15 @@ export function startRater(queue, ctx) {
     const input = buildInput({ resume, job: item.job, text: item.text, skills: item.skills || [] });
     slot.busy += 1;
     const r = await callGroq({ key: slot.key, model, input }).finally(() => { slot.busy -= 1; });
-    if (r.ok || r.kind === 'answer') slot.proven = true;
+    if (r.ok || r.kind === 'answer') {
+      slot.proven = true;
+      slot.strikes = 0;
+      slot.limitedSince = 0;
+    }
     const k = perKey(slot);
     k.calls += 1;
     counts.calls += 1;
+    pool.used(slot, r.usage);
     pool.note(slot, r.limits);
     if (r.usage) {
       counts.tokens.input += r.usage.input;
@@ -248,8 +297,21 @@ export function startRater(queue, ctx) {
     k.last = r.msg;
     counts.last = { t: Date.now(), kind: r.kind, msg: r.msg };
     // A key's own trouble: that key rests or goes, and the job is tried again on another one.
-    if (r.kind === 'key') { slot.dead = r.msg; return; }
-    if (r.kind === 'rate') { slot.until = Math.max(slot.until, Date.now() + r.wait); return; }
+    if (r.kind === 'key') { slot.dead = r.msg; slot.deadKind = 'rejected'; return; }
+    if (r.kind === 'rate') {
+      // At its limit: rest it, a little longer each time (or as long as Groq says). At its daily
+      // limit, or still limited a minute after the first 429: not used again this run.
+      const now = Date.now();
+      if (!slot.limitedSince) slot.limitedSince = now;
+      if (r.day || now - slot.limitedSince >= limitStopMs) {
+        slot.dead = r.day ? "at Groq's daily limit" : 'still at its limit after a minute';
+        slot.deadKind = 'limit';
+        return;
+      }
+      slot.strikes += 1;
+      slot.until = Math.max(slot.until, now + Math.max(r.wait || 0, limitBaseMs * 2 ** (slot.strikes - 1)));
+      return;
+    }
     if (r.kind === 'model') { problem = r; return; }
     counts.fails += 1;
     if (r.kind === 'transient') slot.until = Math.max(slot.until, Date.now() + 5_000);
@@ -270,20 +332,27 @@ export function startRater(queue, ctx) {
       const slot = pool.take();
       if (!slot) {
         const w = pool.wait();
-        if (w === Infinity) { problem = { kind: 'key', msg: 'Groq rejected every key' }; return; }
+        if (w === Infinity) {
+          problem = pool.slots.every((s) => s.deadKind === 'rejected')
+            ? { kind: 'key', msg: 'Groq rejected every key' }
+            : pool.slots.some((s) => s.deadKind === 'budget')
+              ? { kind: 'quota', msg: "every Groq key has used 70% of today's quota; the rest wait for tomorrow" }
+              : { kind: 'quota', msg: `every Groq key is at its limit for ${model}; the next run carries on` };
+          return;
+        }
         if (w > RATE.maxWaitMs) { problem = { kind: 'quota', msg: `every Groq key is at its limit for ${model}; the next run carries on` }; return; }
         await sleep(Math.min(w + 250, Math.max(0, deadline - Date.now())));
         continue;
       }
       inflight.add(item.id);
-      going[item.profile] = (going[item.profile] || 0) + 1;
+      going += 1;
       try {
         await rateOne(item, slot);
       } catch (e) {
         problem = { kind: 'transient', msg: `rating error: ${scrub(e && e.message)}` };
       } finally {
         inflight.delete(item.id);
-        going[item.profile] -= 1;
+        going -= 1;
       }
     }
   }

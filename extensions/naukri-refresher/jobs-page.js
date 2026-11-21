@@ -25,14 +25,14 @@ function renderRating(s, now) {
   const line = $('rateLine');
   line.className = R.on ? 'small ok' : 'small warn';
   line.textContent = R.on
-    ? `On: ${R.model}, ${R.keys.length} key${R.keys.length === 1 ? '' : 's'}, up to ${R.perDay} ratings per list a day.`
+    ? `On: ${R.model}, ${R.keys.length} key${R.keys.length === 1 ? '' : 's'}, up to ${R.calls} Groq calls a day in this browser.`
     : `Off: ${R.why}.`;
   $('keysSaved').textContent = R.keys.length ? `Saved: ${R.keys.length} key${R.keys.length === 1 ? '' : 's'} (${R.keys.join(', ')}).` : 'No keys saved.';
   if (!rateLoaded) {
-    for (const n of s.rate.perDayChoices) $('ratePerDay').add(new Option(n ? String(n) : '0 (off)', String(n)));
+    for (const n of s.rate.callsChoices) $('rateCalls').add(new Option(n ? String(n) : '0 (off)', String(n)));
     rateLoaded = true;
   }
-  if (document.activeElement !== $('ratePerDay')) $('ratePerDay').value = String(R.perDay);
+  if (document.activeElement !== $('rateCalls')) $('rateCalls').value = String(R.calls);
   if (document.activeElement !== $('rateModel')) $('rateModel').value = R.model;
   $('rateModel').placeholder = R.defaultModel;
   const t = R.today;
@@ -159,15 +159,15 @@ function render(s) {
     'No job twice: a listing it judged in the last 3 days (kept or not) is skipped by its id, so no JD is opened twice and nothing is sent or rated twice. "Start over" deletes the finder\'s jobs from your site and forgets all of that, for a fresh run end to end.',
     `First the card. It must be posted in the last ${R.maxAgeH} hours, as Naukri labels it ("Just now", "Few hours ago", "1 day ago"); "2 days ago" and older are out. A card that doesn't say passes. A job you already applied to on Naukri is out, when its card or its page says so.`,
     `Company: one on your low-pay list (${s.lowPay.names.length} companies, such as ${s.lowPay.names.slice(0, 4).join(', ')}) is out before its JD is opened.`,
-    'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, or lead/architect/manager. A plain "Software Engineer/Developer" passes.',
+    'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, MERN/MEAN, Node-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, lead/architect/manager, or not a software job at all. A plain "Software Engineer/Developer" passes and its JD decides.',
     `Experience: asks for less than ${R.maxMinYears} years, and isn't a 0–1 year fresher role. A card that doesn't say passes.`,
     `Pay: reaches ${R.minPayL} LPA when the listing gives a salary. One it doesn't give passes.`,
     `Skill chips: when they name 3 or more known technologies and under ${Math.round(R.cardFloor * 100)}% are yours, the job is another stack and its page isn't opened. Chips that aren't technologies are ignored.`,
     `Then the JD. The finder opens the job's page, finds every technology the JD asks for with the skills dictionary (over a thousand skills), and compares them with yours. The job is kept when at least ${Math.round(s.settings.minScore * 100)}% are yours. "Nice to have" lines, company blurbs and perks don't count. A JD naming fewer than ${R.minJdSkills} technologies is held to the same bar and ranked a little lower; one naming none is kept.`,
-    `The list: AI when the title is an AI one, or when GenAI/ML work is ${Math.round(R.aiShare * 100)}%+ of the JD's technology. Otherwise Backend. A job is on one list only.`,
-    `Your site gets the parser's top ${R.poolTop} of each list from the last ${R.maxAgeH} hours, highest JD match first (ties by rank: title, experience, pay, company rating, how fresh). A job kept below that isn't sent. A job whose JD was read in the last 3 days isn't opened again.`,
-    `Then the AI rating (above, with your Groq keys): each job sent is rated 1–100 against your resume and sent again with its rating, up to ${s.rating.perDay} per list a day, best JD match first.`,
-    `Your site shows the top ${R.showTop} of each list posted in the last ${R.showHours} hours, highest AI rating first; jobs not rated yet come after them, highest JD match first. What you applied to, skipped or have in the pipeline is left out.`,
+    "The list: the JD's main stack decides. Java ahead of Python and GenAI: Backend. Python with GenAI (LLMs, RAG, agents, LangChain, LangGraph) or FastAPI: AI. JavaScript (React, Node, MERN) or another language ahead: out. A job is on one list only.",
+    `Your site gets every job it keeps from the last ${R.maxAgeH} hours (up to ${R.poolTop} a list), highest JD match first (ties by rank: title, experience, pay, company rating, how fresh), with how you apply: on Naukri, or on the company's site (and its link, read off the job's page, never clicked).`,
+    `Then the AI rating (above, with your Groq keys): each job sent is rated 1–100 against your resume and sent again with its rating, up to ${s.rating.calls} Groq calls a day in this browser, best JD match first. A key Groq says is at its limit rests 5 s, then 10, 20, 40…, and isn't used again that run if it's still limited a minute later.`,
+    `Your site shows each list in two parts: Apply on Naukri, its top ${R.showTop} (Naukri takes 50 applies a day per account), and Apply on company site, all of them. Highest AI rating first; jobs not rated yet come after, highest JD match first. What you applied to, skipped or have in the pipeline is left out, and a job is never shown twice.`,
     `Backend searches: ${of('backend')}.`,
     `AI searches: ${of('ai')}.`,
   ]) rules.append(el('li', t));
@@ -252,7 +252,7 @@ $('saveModel').addEventListener('click', async () => {
   showKeys('muted', `Model saved ${istHM(Date.now())}.`);
   refresh();
 });
-$('ratePerDay').addEventListener('change', async (e) => { await send('jobsSave', { patch: { ratePerDay: Number(e.target.value) } }); refresh(); });
+$('rateCalls').addEventListener('change', async (e) => { await send('jobsSave', { patch: { rateCalls: Number(e.target.value) } }); refresh(); });
 $('saveLowPay').addEventListener('click', async () => {
   const names = $('lowPay').value.split(/\n|,/).map((x) => x.trim()).filter(Boolean);
   const s = await send('jobsSave', { patch: { lowPay: names } });

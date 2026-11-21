@@ -60,10 +60,10 @@ function cleanSettings(s = {}) {
     pairedAt: typeof s.pairedAt === 'number' ? s.pairedAt : null, // when your site last handed over the token
     minScore: bar >= lo && bar <= hi ? Math.round(bar * 100) / 100 : RULES.minScore, // the JD match bar
     // The AI rating: your Groq keys (kept in this browser, sent only to api.groq.com), the model,
-    // and how many jobs per list a day it may rate.
+    // and how many Groq calls this browser may make a day.
     groqKeys: [...new Set(splitKeys(s.groqKeys).filter((k) => KEY_SHAPE.test(k)))].slice(0, RATE.maxKeys),
     rateModel: MODEL_SHAPE.test(model) ? model : RATE.model,
-    ratePerDay: RATE.perDayChoices.includes(Number(s.ratePerDay)) ? Number(s.ratePerDay) : RATE.perDay,
+    rateCalls: RATE.callsChoices.includes(Number(s.rateCalls)) ? Number(s.rateCalls) : RATE.callsPerDay,
     // Companies left out on the card; null means the default list (LOW_PAY_COMPANIES).
     lowPay: Array.isArray(s.lowPay)
       ? [...new Set(s.lowPay.map((x) => String(x ?? '').replace(/\s+/g, ' ').trim().slice(0, 60)).filter(Boolean))].slice(0, 300)
@@ -156,7 +156,8 @@ async function ratingSetup(settings, dev, st) {
   const access = await hasGroqAccess();
   let why = '';
   if (!settings.groqKeys.length) why = 'no Groq key saved';
-  else if (!settings.ratePerDay) why = 'switched off (0 a day)';
+  else if (!settings.rateCalls) why = 'switched off (0 calls a day)';
+  else if (((st.daily && st.daily.rate && st.daily.rate.calls) || 0) >= settings.rateCalls) why = `today's ${settings.rateCalls} Groq calls are used; it carries on tomorrow`;
   else if (!resumes) why = "your resumes aren't in the extension yet (resume.local.json: run naukri-refresher-dev/make-job-profile.mjs)";
   else if (!access) why = 'no access to api.groq.com yet (press Save keys on the settings page to allow it)';
   else if (st.rateStop) why = `paused: ${st.rateStop.msg}`;
@@ -328,6 +329,46 @@ function readJobPage() {
     const applyBtn = [...document.querySelectorAll('button, [id*="appl" i], [class*="appl" i]')]
       .find((e) => /^\W*(?:apply|applied|already\s+applied|apply on company site|i am interested|interested)\W*$/i.test((e.textContent || '').trim()));
     out.applied = flagged || !!(applyBtn && /^\W*(?:already\s+)?applied\W*$/i.test(applyBtn.textContent.trim()));
+    // How you apply: on Naukri ("Apply"), or on the company's own site ("Apply on company site"),
+    // and that site's link when the page has it: in the job's data (a field naming apply,
+    // redirect, career or company with a link off Naukri), or as the button's own link. Read, never
+    // clicked: a click could count as an application on Naukri.
+    const offNaukri = (u) => {
+      try {
+        const x = new URL(String(u), location.href);
+        return /^https?:$/.test(x.protocol)
+          && !/(?:^|\.)(?:naukri\.com|naukimg\.com|ambitionbox\.com|google\.com|googleapis\.com|gstatic\.com|facebook\.com|linkedin\.com|twitter\.com|x\.com|instagram\.com|youtube\.com|whatsapp\.com)$/i.test(x.hostname)
+          && !/\.(?:png|jpe?g|gif|svg|webp|ico|css|js|pdf)$/i.test(x.pathname) ? x.href : null;
+      } catch { return null; }
+    };
+    let applyUrl = null;
+    const applyKeys = [];
+    if (detail) {
+      const seen2 = new Set();
+      const scan = (v, depth, key) => {
+        if (!v || depth > 4) return;
+        if (typeof v === 'string') {
+          if (/apply|redirect|career|external|company.?url|url.?company|website/i.test(key)) {
+            applyKeys.push(key);
+            if (!applyUrl) applyUrl = offNaukri(v);
+          }
+          return;
+        }
+        if (typeof v !== 'object' || seen2.has(v)) return;
+        seen2.add(v);
+        for (const k of Object.keys(v).slice(0, 150)) scan(v[k], depth + 1, k);
+      };
+      scan(detail, 0, '');
+    }
+    const btnText = applyBtn ? applyBtn.textContent.trim() : '';
+    if (!applyUrl && applyBtn) {
+      const a = applyBtn.closest('a[href]') || applyBtn.querySelector('a[href]');
+      if (a) applyUrl = offNaukri(a.getAttribute('href'));
+    }
+    const companyFlag = !!detail && Object.entries(detail).some(([k, v]) => v === true && /^(?:is)?(?:external|companysite|redirect)(?:apply|job|url)?$/i.test(k));
+    out.apply = applyUrl || companyFlag || /company\s*site/i.test(btnText) ? 'company' : /^\W*apply(?:\s+now)?\W*$/i.test(btnText) ? 'naukri' : null;
+    out.applyUrl = applyUrl;
+    out.applyInfo = { button: btnText.slice(0, 40), keys: [...new Set(applyKeys)].slice(0, 12), link: applyUrl ? new URL(applyUrl).hostname : null };
     if (!out.jd) {
       // The page itself: the JD block and its "Key Skills" chips.
       for (const sel of ['[class*="dang-inner-html"]', '[class*="job-desc"]', '[class*="JDC"]', '[class*="jobDescription"]', 'section.job-desc', '#job_description', '.jd-desc']) {
@@ -656,6 +697,9 @@ async function findJobs(trigger) {
     kept[v.profile] = (kept[v.profile] || 0) + 1;
     st.seen[id] = { t: Date.now(), k: 1, r: v.rank, p: v.profile, s: v.skills.score };
     const c = st.rated[id];
+    // How you apply: on Naukri (counts toward its 50 a day) or on the company's own site.
+    if (jd && jd.apply) o.apply = jd.apply;
+    if (jd && jd.applyUrl) o.applyUrl = jd.applyUrl;
     if (ratingOk(c, v.profile)) o.ai = c.ai; // rated in the last few days: no new call
     else if (jd && jd.text) {
       rq.push({
@@ -697,14 +741,14 @@ async function findJobs(trigger) {
       jdFails = 0;
       const text = htmlToText(r.jd);
       if (!st.jdSample || st.jdSample.reader || now - st.jdSample.t > 6 * 3600_000) {
-        st.jdSample = { t: now, url: card.job.url, via: r.via, chars: text.length, keySkills: r.skills.slice(0, 20), start: text.slice(0, 600) };
+        st.jdSample = { t: now, url: card.job.url, via: r.via, chars: text.length, keySkills: r.skills.slice(0, 20), apply: r.apply || null, applyInfo: r.applyInfo || null, start: text.slice(0, 600) };
       }
       const v = jdCheck(card, { text, skills: r.skills }, { now, mine: skills, minScore });
       // What the JD said, so the job isn't opened again while it's fresh.
       st.memo[id] = v.keep
         ? { t: now, keep: true, profile: v.profile, o: toOpening(v, now) }
         : { t: now, keep: false, why: v.why };
-      decide(id, v, { text, skills: r.skills });
+      decide(id, v, { text, skills: r.skills, apply: r.apply, applyUrl: r.applyUrl });
     } else {
       jdFails += 1;
       st.jdSample = { t: now, url: card.job.url, reader: { ...r, jd: undefined } };
@@ -784,7 +828,7 @@ async function findJobs(trigger) {
     // The rating runs alongside the sweep (it only talks to api.groq.com, never to Naukri).
     if (rating.on) {
       rater = startRater(rq, {
-        keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, perDay: settings.ratePerDay,
+        keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, callsPerDay: settings.rateCalls,
         counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run),
       });
     }
@@ -974,7 +1018,7 @@ async function rateOnly() {
   liveQueue = rq;
   const run = { rated: 0 };
   const rater = startRater(rq, {
-    keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, perDay: settings.ratePerDay,
+    keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, callsPerDay: settings.rateCalls,
     counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run),
   });
   const saver = setInterval(() => { saveState(st).catch(() => {}); }, 5000);
@@ -1102,7 +1146,7 @@ async function jobsStatus() {
     // The AI rating. Never a key itself: only the last 4 characters of each.
     rating: {
       on: rating.on, why: rating.why, keys: settings.groqKeys.map(keyHint), model: settings.rateModel, defaultModel: RATE.model,
-      perDay: settings.ratePerDay, access: rating.access,
+      calls: settings.rateCalls, access: rating.access,
       resumes: rating.resumes ? { sde: rating.resumes.sde.length, genai: rating.resumes.genai.length, generated: rating.resumes.generated, from: rating.resumes.from } : null,
       today: (st.daily && st.daily.rate) || null, stop: st.rateStop || null, last: st.lastRate || null,
       queued: liveQueue ? liveQueue.length : st.rateQueued || 0, ratedKept: Object.keys(st.rated).length,
@@ -1160,7 +1204,7 @@ export const jobsHandlers = {
     const next = cleanSettings({ ...cur, ...allowed, ...('token' in allowed ? { pairedAt: null } : {}) });
     await ext.storage.local.set({ [S]: next });
     // New keys, model or daily cap: whatever stopped the rating may be fixed now.
-    if (next.groqKeys.join() !== cur.groqKeys.join() || next.rateModel !== cur.rateModel || next.ratePerDay !== cur.ratePerDay) {
+    if (next.groqKeys.join() !== cur.groqKeys.join() || next.rateModel !== cur.rateModel || next.rateCalls !== cur.rateCalls) {
       const st = await loadState();
       if (st.rateStop) { st.rateStop = null; await saveState(st); }
     }
