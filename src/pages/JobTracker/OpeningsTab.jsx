@@ -5,6 +5,9 @@ import { toast } from "react-toastify";
 import { HiOutlineExternalLink, HiCheck, HiX, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { GLASS, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
 import { normalizeUrl } from "./shared";
+// The low-pay employers the radar and the job finder leave out (IT services and consulting firms).
+import { lowPayMatch } from "../../../extensions/naukri-refresher/low-pay.js";
+import { jobKeys, roleKey } from "./jobKeys";
 
 // Owner-only feed from the job radar (scripts/radar/run.mjs). The radar runs on
 // the owner's PC five times a day and POSTs to /api/radar, which keeps the openings
@@ -32,14 +35,15 @@ const API_PAGE = 200; // openings per /api/radar request
 const MAX_API_PAGES = 10;
 
 // The radar keeps only openings whose asked range includes 2 years ("fits") or
-// that don't say ("unknown"). Anything else still stored from older rules, and
-// any 0 skills match, is hidden here until the next run deletes it.
+// that don't say ("unknown"), from employers off the low-pay list (low-pay.js).
+// Anything else still stored from older rules, and any 0 skills match, is
+// hidden here until the next run deletes it.
 const EXP_LABEL = { fits: "2 yrs in range", unknown: "yrs ?" };
 const EXP_CLS = {
   fits: "bg-success-subtle text-success-fg  ",
   unknown: "bg-surface-hover text-fg-subtle  ",
 };
-const relevant = (o) => (o.exp === "fits" || o.exp === "unknown" || !o.exp) && o.matchScore > 0;
+const relevant = (o) => (o.exp === "fits" || o.exp === "unknown" || !o.exp) && o.matchScore > 0 && !lowPayMatch(o.company);
 
 // "1–3 yrs", "2+ yrs", or null when the posting doesn't say.
 function yearsText(o) {
@@ -533,7 +537,7 @@ function Pager({ page, pages, from, to, total, onPage }) {
   );
 }
 
-export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob, addJobs, removeJobs }) {
+export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismissedUrls, hidden, onHide, onUnhide, onUnhideAll, addJob, removeJob, addJobs, removeJobs }) {
   const [cached] = useState(readCache);
   const [radar, setRadar] = useState(cached?.data || null);
   const [loadedAt, setLoadedAt] = useState(cached?.at || null);
@@ -592,13 +596,30 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
   // The ones still to decide: not skipped, not already in the pipeline, and
   // through the filters. Highest score first (newest first among equal
   // scores), or most recent first (the API's order).
+  // Each job shows in one view only. The job finder's Naukri jobs from the last 48 hours are the
+  // ⭐ Naukri view; 📡 All openings leaves those out, the finder's older Naukri-only jobs, and any
+  // other copy of a ⭐ Naukri job (another board, or the radar's own Naukri search), matched by
+  // Naukri id, link, or company and title (jobKeys.js). A job already in your pipeline under the
+  // same company and title stays out of both.
+  const hour = Math.floor(Date.now() / HOUR_MS); // recomputed as the window moves on
+  const naukri = useMemo(() => {
+    const since = Date.now() - WINDOW_HOURS * HOUR_MS;
+    const list = openings.filter((o) => o.finder === "naukri" && postedMs(o) >= since && !lowPayMatch(o.company));
+    return { list, ids: new Set(list.map((o) => o.id)), keys: new Set(list.flatMap(jobKeys)) };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openings, hour]);
+  const taken = (o) => queuedUrls.has(urlOf(o)) || (!!takenRoles && takenRoles.has(roleKey(o.company, o.title)));
+
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const list = openings.filter(
       (o) =>
+        !naukri.ids.has(o.id) &&
+        !(o.finder === "naukri" && !(o.sources || []).some((src) => src !== "naukri")) &&
+        !jobKeys(o).some((k) => naukri.keys.has(k)) &&
         relevant(o) &&
         !hidden[o.id] &&
-        !queuedUrls.has(urlOf(o)) &&
+        !taken(o) &&
         !dismissedUrls.has(urlOf(o)) &&
         (!listedOnly || o.active) &&
         exp[o.exp || "unknown"] !== false &&
@@ -611,32 +632,36 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
     if (sort === "score") list.sort(byScore);
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, queuedUrls, dismissedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
+  }, [openings, naukri, hidden, queuedUrls, takenRoles, dismissedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
 
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
 
   // The job finder's Naukri jobs from the last 48 hours, per list, highest AI rating first. Ones
   // you've taken (applied, in the pipeline) or skipped are left out; the top SHOW_TOP of the rest show.
-  const hour = Math.floor(Date.now() / HOUR_MS); // recomputed as the window moves on
   const finder = useMemo(() => {
-    const since = Date.now() - WINDOW_HOURS * HOUR_MS;
     const out = {};
     for (const p of PROFILES) {
-      const all = openings
-        .filter(
-          (o) =>
-            o.finder === "naukri" &&
-            postedMs(o) >= since &&
-            (o.profile || "backend") === p.id &&
-            !hidden[o.id] &&
-            !dismissedUrls.has(urlOf(o))
-        )
-        .sort(byRating);
-      const left = all.filter((o) => !queuedUrls.has(urlOf(o)));
+      // One card per job: a repost, or the same job found twice, is one job, shown as its
+      // best-rated copy. Skip or take any copy and the job is skipped or taken.
+      const groups = [];
+      const groupOf = new Map();
+      for (const o of naukri.list.filter((x) => (x.profile || "backend") === p.id).sort(byRating)) {
+        const keys = jobKeys(o);
+        let g = keys.map((k) => groupOf.get(k)).find(Boolean);
+        if (!g) {
+          g = { best: o, skipped: false, taken: false };
+          groups.push(g);
+        }
+        for (const k of keys) groupOf.set(k, g);
+        if (hidden[o.id] || dismissedUrls.has(urlOf(o))) g.skipped = true;
+        if (taken(o)) g.taken = true;
+      }
+      const live = groups.filter((g) => !g.skipped);
+      const left = live.filter((g) => !g.taken).map((g) => g.best);
       out[p.id] = {
-        found: all.length,
-        done: all.length - left.length,
+        found: live.length,
+        done: live.length - left.length,
         rated: left.filter((o) => aiScore(o) > 0).length,
         list: left.slice(0, SHOW_TOP),
         more: Math.max(0, left.length - SHOW_TOP),
@@ -644,7 +669,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, queuedUrls, dismissedUrls, hour]);
+  }, [naukri, hidden, queuedUrls, takenRoles, dismissedUrls]);
   const finderFound = finder.backend.found + finder.ai.found;
   const mode = modePref || (finderFound ? "naukri" : "all");
   const setMode = (m) => {

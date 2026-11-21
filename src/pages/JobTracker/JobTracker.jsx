@@ -9,6 +9,7 @@ import { requireAuth } from "../../Data/authGate";
 import { whenSynced } from "../../Data/cloudSync";
 import { isOwner } from "../../components/OwnerRoute";
 import { COMPANIES } from "../../Data/jobTrackerCompanies";
+import { roleKey } from "./jobKeys";
 import { APPLIED_SET, ERASE_AFTER_DAYS, uid, linkStage, needsOutreach, customCompany, eraseCold, withLedger, withUniqueLinkIds, putBack, dayKey, todayKey, appliedTime } from "./shared";
 import PipelineTab from "./PipelineTab";
 import CompaniesTab from "./CompaniesTab";
@@ -453,6 +454,16 @@ export default function JobTracker() {
   }, [state.contacts, state.contactEdits, state.companies, ownerData.seedContacts]);
 
   const allCompanies = useMemo(() => [...COMPANIES, ...state.custom], [state.custom]);
+  // Every job in the pipeline by company and title too, so its copy on another board or a
+  // repost stays out of Openings (jobKeys.js).
+  const takenRoles = useMemo(() => {
+    const nameOf = new Map(allCompanies.map((c) => [c.id, c.name]));
+    return new Set(
+      Object.entries(state.companies)
+        .flatMap(([id, e]) => (e.links || []).map((l) => roleKey(nameOf.get(id) || e.name, l.label)))
+        .filter(Boolean)
+    );
+  }, [allCompanies, state.companies]);
 
   const entryOf = useCallback((id) => state.companies[id] || {}, [state.companies]);
   // The chart's ledger: what's stored, brought up to date with the links (not
@@ -570,6 +581,7 @@ export default function JobTracker() {
             <OpeningsTab
               finderExt={finderExt}
               queuedUrls={queuedUrls}
+              takenRoles={takenRoles}
               dismissedUrls={dismissedUrls}
               hidden={state.radarHidden}
               onHide={hideOpening}
