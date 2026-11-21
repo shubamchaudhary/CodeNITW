@@ -62,8 +62,9 @@ function loadState() {
   };
 }
 
-// The state with one job link added (see addJobs in the page).
-function withJob(prev, { companyName, url, role, stage }, fresh, linkId, now) {
+// The state with one job link added (see addJobs in the page). A job from the
+// Naukri job finder keeps which Naukri account to apply from ("backend" | "ai").
+function withJob(prev, { companyName, url, role, stage, naukriAccount }, fresh, linkId, now) {
   const name = companyName.trim();
   let company = [...COMPANIES, ...prev.custom].find((c) => c.name.toLowerCase() === name.toLowerCase());
   let custom = prev.custom;
@@ -72,6 +73,7 @@ function withJob(prev, { companyName, url, role, stage }, fresh, linkId, now) {
     custom = [...custom, company];
   }
   const added = { id: linkId, label: role || "Opening", url, applied: false, addedAt: now };
+  if (naukriAccount) added.naukriAccount = naukriAccount;
   if (stage === "referral") Object.assign(added, { referral: true, referralAt: now });
   if (stage === "applied") Object.assign(added, { applied: true, appliedAt: now });
   const entry = prev.companies[company.id] || {};
