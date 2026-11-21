@@ -3,8 +3,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  RULES, SEARCHES, searchUrl, searchesFor, trackerDay, nextFinderRun, normalizeJob, postedDay, parseYears, parseLakhs, parsePay,
-  titleCheck, mySkills, chipCheck, cardCheck, jdSections, jdCheck, cardOnly, htmlToText, rankOf, toOpening, payLabel,
+  RULES, FINDER_LIMITS, SEARCHES, searchUrl, searchesFor, trackerDay, nextFinderRun, normalizeJob, postedAgeH, postedTimeOf, parseYears,
+  parseLakhs, parsePay, titleCheck, mySkills, chipCheck, cardCheck, jdSections, jdCheck, cardOnly, htmlToText, rankOf, toOpening, payLabel,
 } from '../naukri-refresher/jobs-lib.js';
 
 const H = 3_600_000;
@@ -39,10 +39,12 @@ const AI_JD = 'Key Responsibilities\nBuild agentic AI workflows with LangGraph a
   + 'Requirements\nPython, FastAPI, Docker. OpenAI and Azure OpenAI APIs. Prompt engineering.\nNice to have: fine-tuning, PyTorch.';
 const ML_JD = 'Requirements\nDeep learning with PyTorch and TensorFlow, computer vision, CNNs, model training at scale, MLOps with Kubeflow, Python, CUDA.';
 
-test("search URLs use Naukri's own page with its filters: last day, 2 years", () => {
-  assert.equal(searchUrl('java spring boot developer'), 'https://www.naukri.com/java-spring-boot-developer-jobs?k=java%20spring%20boot%20developer&experience=2&jobAge=1');
-  assert.equal(searchUrl('llm engineer', 3), 'https://www.naukri.com/llm-engineer-jobs-3?k=llm%20engineer&experience=2&jobAge=1');
+test("search URLs use Naukri's own page with its filters: last 3 days, 2 years", () => {
+  assert.equal(searchUrl('java spring boot developer'), 'https://www.naukri.com/java-spring-boot-developer-jobs?k=java%20spring%20boot%20developer&experience=2&jobAge=3');
+  assert.equal(searchUrl('llm engineer', 3), 'https://www.naukri.com/llm-engineer-jobs-3?k=llm%20engineer&experience=2&jobAge=3');
   assert.ok(SEARCHES.some((s) => s.profile === 'ai') && SEARCHES.some((s) => s.profile === 'backend'), 'searches cover both lists');
+  assert.equal(new Set(SEARCHES.map((s) => s.k)).size, SEARCHES.length, 'no search twice');
+  assert.ok(SEARCHES.every((s) => !('pages' in s)), 'no page count: every page of every search is read');
 });
 
 test('each browser can search for one list only', () => {
@@ -79,13 +81,24 @@ test('a listing is normalized: absolute link, id from the link when missing, lab
   assert.deepEqual(normalizeJob({ tagsAndSkills: 'Java, java ,Spring Boot,,Kafka' }).tags, ['Java', 'Spring Boot', 'Kafka']);
 });
 
-test("posted today: the listing's own \"x ago\" label first, then its creation time; unknown counts as today", () => {
+test("how long ago it was posted: the listing's own \"x ago\" label first, then its creation time", () => {
   const base = normalizeJob(job());
-  assert.equal(postedDay({ ...base, footer: 'Just Now' }, NOW), '2026-11-20');
-  assert.equal(postedDay({ ...base, footer: '1 Day Ago' }, NOW), '2026-11-19');
-  assert.equal(postedDay({ ...base, footer: '30+ Days Ago' }, NOW), trackerDay(NOW - 30 * D));
-  assert.equal(postedDay({ ...base, footer: '', createdAt: NOW - 30 * H }, NOW), '2026-11-19');
-  assert.equal(postedDay({ ...base, footer: '', createdAt: null }, NOW), '2026-11-20');
+  assert.equal(postedAgeH({ ...base, footer: 'Just Now' }, NOW), 0);
+  assert.equal(postedAgeH({ ...base, footer: '5 hours ago' }, NOW), 5);
+  assert.equal(postedAgeH({ ...base, footer: 'Few Hours Ago' }, NOW), 6);
+  assert.equal(postedAgeH({ ...base, footer: '1 Day Ago' }, NOW), 24);
+  assert.equal(postedAgeH({ ...base, footer: '30+ Days Ago' }, NOW), 720);
+  assert.equal(postedAgeH({ ...base, footer: '', createdAt: NOW - 30 * H }, NOW), 30);
+  assert.equal(postedAgeH({ ...base, footer: '', createdAt: null }, NOW), null, "it doesn't say");
+});
+
+test("when it was posted, for the site's 48 hours: Naukri's own time when it agrees with the label", () => {
+  const base = normalizeJob(job());
+  assert.equal(postedTimeOf({ ...base, createdAt: NOW - 30 * H }, 24, NOW), NOW - 30 * H, '"1 day ago" and created 30 h ago agree');
+  assert.equal(postedTimeOf({ ...base, createdAt: NOW - 10 * D }, 24, NOW), NOW - 24 * H, 'a reposted job: the label wins');
+  assert.equal(postedTimeOf({ ...base, createdAt: null }, 6, NOW), NOW - 6 * H, 'only the label');
+  assert.equal(postedTimeOf({ ...base, createdAt: NOW - 5 * H }, null, NOW), NOW - 5 * H, 'only its own time');
+  assert.equal(postedTimeOf({ ...base, createdAt: null }, null, NOW), NOW, "neither: when it's found");
 });
 
 test('experience and salary labels', () => {
@@ -149,7 +162,15 @@ test('the card: worth opening its JD unless what it says rules the job out; a mi
   assert.equal(why({ placeholders: [{ type: 'salary', label: '6-10 Lacs PA' }] }), 'pays under 15L');
   assert.equal(why({ salaryDetail: { hideSalary: true, minimumSalary: 400000, maximumSalary: 800000 } }), 'pays under 15L', 'a hidden but known low salary');
   assert.equal(why({ title: 'Software Developer', tagsAndSkills: 'C#,.NET,ASP.NET,SQL Server,Entity Framework' }), "card's skills are another stack");
-  assert.equal(why({ footerPlaceholderLabel: '1 Day Ago', createdDate: NOW - 30 * H }), 'not posted today');
+  assert.equal(why({ footerPlaceholderLabel: '3 Days Ago', createdDate: NOW - 80 * H }), 'posted over 48 hours ago');
+  assert.equal(why({ footerPlaceholderLabel: '2 Days Ago', createdDate: NOW - 50 * H }), 'posted over 48 hours ago');
+  assert.equal(card({ footerPlaceholderLabel: '1 Day Ago', createdDate: NOW - 30 * H }).keep, true, 'the last 48 hours, as Naukri labels them');
+  assert.equal(card({ footerPlaceholderLabel: '', createdDate: NOW - 47 * H }).keep, true);
+  assert.equal(why({ footerPlaceholderLabel: '', createdDate: NOW - 49 * H }), 'posted over 48 hours ago', 'no label: its own time');
+  assert.equal(why({ isApplied: true }), 'you applied on Naukri');
+  assert.equal(why({ applyStatus: 'APPLIED' }), 'you applied on Naukri');
+  assert.equal(card({ applyCount: 250, isApplied: false }).keep, true, "other people's applications don't count");
+  assert.equal(card({ footerPlaceholderLabel: '', createdDate: null }).keep, true, "doesn't say when: kept");
   assert.equal(why({ companyName: '' }), 'incomplete listing');
   assert.equal(card({ placeholders: [{ type: 'salary', label: '15-18 Lacs PA' }] }).keep, true, '15L reaches the bar');
 });
@@ -216,7 +237,10 @@ test("the opening sent to the site: the radar's fields plus the finder's own", (
   assert.equal(o.finder, 'naukri');
   assert.equal(o.profile, 'ai');
   assert.equal(o.jd, true);
-  assert.equal(o.postedAt, '2026-11-20');
+  assert.equal(o.postedAt, '2026-11-20', 'the day it was found');
+  assert.equal(o.postedTime, NOW - 2 * H, "Naukri's own posting time (it agrees with \"Few Hours Ago\")");
+  const reposted = toOpening(jdCheck(card({ title: 'AI Engineer', tagsAndSkills: 'Python,LLM,RAG', createdDate: NOW - 9 * D, footerPlaceholderLabel: '1 Day Ago' }), { text: AI_JD }, { now: NOW }), NOW);
+  assert.equal(reposted.postedTime, NOW - 24 * H, 'reposted: the label, so the 48 hours count from it');
   assert.ok(/^https:\/\/www\.naukri\.com\/job-listings-/.test(o.url));
   assert.equal(o.pay.verdict, 'hidden');
   assert.equal(o.coverage, Math.round(v.skills.score * 100));
@@ -235,8 +259,12 @@ test('your skills: both resumes, plus extras typed in the settings', () => {
 });
 
 test('rules are the agreed ones', () => {
+  assert.equal(RULES.maxAgeH, 48, 'the last 48 hours ("2 days ago" is out)');
+  assert.equal(RULES.showHours, 48);
+  assert.equal(RULES.showTop, 200, 'the top 200 per list, highest match first');
   assert.equal(RULES.minPayL, 15);
   assert.equal(RULES.maxMinYears, 2.5);
   assert.equal(RULES.minScore, 0.6);
-  assert.equal(RULES.dailyTarget, 100);
+  assert.equal(RULES.dailyTarget, undefined, 'no daily target: every listing is read');
+  assert.equal(FINDER_LIMITS.runMinutes, 60, 'a run may take up to an hour');
 });

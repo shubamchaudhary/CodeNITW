@@ -715,9 +715,13 @@ async function suite(d, mock) {
     const s = await waitRun(t0);
     assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
     const pages = mock.searchPages();
-    assert.ok(pages.some((p) => p.path === '/java-spring-boot-developer-jobs' && /experience=2/.test(p.search) && /jobAge=1/.test(p.search)), "Naukri's own filters in the URL");
-    assert.ok(pages.some((p) => p.path === '/java-spring-boot-developer-jobs-2'), 'went on to page 2 after a full first page');
-    assert.ok(!pages.some((p) => p.path === '/java-spring-boot-developer-jobs-3'), 'stopped after a short page');
+    assert.ok(pages.some((p) => p.path === '/java-spring-boot-developer-jobs' && /experience=2/.test(p.search) && /jobAge=3/.test(p.search)), "Naukri's own filters in the URL");
+    assert.ok(pages.some((p) => p.path === '/java-spring-boot-developer-jobs-2'), 'went on to page 2: Naukri says there are more');
+    assert.ok(!pages.some((p) => p.path === '/java-spring-boot-developer-jobs-3'), "stopped once Naukri's total was read");
+    // Every page of every search, one page of each search in turn.
+    assert.deepEqual(pages.map((p) => p.path), ['/java-spring-boot-developer-jobs', '/software-engineer-jobs', '/generative-ai-engineer-jobs', '/java-spring-boot-developer-jobs-2']);
+    assert.equal(s.sweep && s.sweep.done, true, JSON.stringify(s.sweep));
+    assert.deepEqual([s.sweep.over, s.sweep.searches, s.sweep.pages], [3, 3, 4]);
     const posts = mock.state.radarPosts;
     assert.equal(posts.length, 1, 'one upload');
     assert.equal(posts[0].finder, 'naukri');
@@ -746,22 +750,48 @@ async function suite(d, mock) {
     for (const id of EXPECT.cardOnly) assert.equal(byId[id].jd, false, "its page couldn't be read: judged by its card");
     assert.ok(s.daily.jds >= EXPECT.keep.length && s.jdSample && s.jdSample.via === 'api', JSON.stringify(s.jdSample));
     assert.ok(s.reasons.some(([why]) => why === 'Android role') && s.reasons.some(([why]) => why === "card's skills are another stack"), JSON.stringify(s.reasons));
+    const reason = Object.fromEntries(s.reasons);
+    assert.equal(reason['posted over 48 hours ago'], 2, '"2 days ago" and "3 days ago" are out');
+    // Already applied: its card says so (not opened), or its page's data or apply button does.
+    assert.equal(reason['you applied on Naukri'], 3, JSON.stringify(s.reasons));
+    for (const id of EXPECT.applied.card) assert.ok(!jobPages.some((p) => p.endsWith(id)), 'an applied card is not opened');
+    for (const id of [...EXPECT.applied.data, ...EXPECT.applied.button]) assert.ok(jobPages.some((p) => p.endsWith(id)), 'read, then dropped');
     assert.equal(s.daily.kept.ai, EXPECT.ai.length);
     assert.equal(s.daily.kept.backend, EXPECT.keep.length - EXPECT.ai.length);
     assert.equal(naukriPosts().length, 0, 'never sends anything to Naukri (no apply, no form)');
     assert.equal((await d.naukriTabs()).filter((u) => /-jobs|job-listings/.test(u)).length, 0, 'its background tab is closed again');
   });
 
-  await step('a later run reads one page per search and sends only the new listing that fits', async () => {
+  await step("the finder's settings page shows the sweep and the rules", async () => {
+    const page = await d.evalExt(`(async () => {
+      const f = document.createElement('iframe');
+      f.src = X.runtime.getURL('jobs.html');
+      document.body.append(f);
+      await new Promise((r) => { f.onload = r; });
+      await new Promise((r) => setTimeout(r, 1500));
+      const doc = f.contentDocument;
+      const out = { sweep: doc.getElementById('sweepLine').textContent, next: doc.getElementById('nextLine').textContent, rules: doc.getElementById('rules').textContent };
+      f.remove();
+      return out;
+    })()`);
+    assert.match(page.sweep, /^Sweep 1 read every page of all 3 searches \(4 pages/, page.sweep);
+    assert.doesNotMatch(page.next, /Not responding/, page.next);
+    assert.match(page.rules, /Every listing, not a sample/);
+    assert.match(page.rules, /last 48 hours/);
+    assert.match(page.rules, /top 200 of each list/);
+  });
+
+  await step('a later run sweeps every page of every search again and sends only the new listing that fits', async () => {
     mock.state.srpExtra = [listing(51, { title: 'Java Backend Developer', tagsAndSkills: 'Java,Spring Boot,Redis' }), listing(52, { title: 'iOS Developer' })];
     const before = mock.searchPages().length;
     const t0 = Date.now();
     await d.msg({ type: 'jobsNow' });
-    await waitRun(t0);
+    const s = await waitRun(t0);
     const posts = mock.state.radarPosts;
     assert.equal(posts.length, 2, 'one more upload');
     assert.deepEqual(posts[1].openings.map((o) => o.openingId), [EXPECT.idOf(51)]);
-    assert.equal(mock.searchPages().length - before, 3, 'one page per search when little is new');
+    assert.equal(mock.searchPages().length - before, 4, 'every page again: a new sweep');
+    assert.deepEqual([s.sweep.n, s.sweep.done], [2, true]);
   });
 
   await step('Naukri asking "are you human?" pauses the finder at once; nothing is sent; Resume clears it', async () => {

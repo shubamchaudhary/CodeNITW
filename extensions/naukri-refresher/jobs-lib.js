@@ -1,17 +1,18 @@
 // Naukri job finder: the pure rules (no browser APIs), shared by the background worker, the
 // settings page and the Node tests.
 //
-// Two steps per listing:
-//   1. The card (what Naukri's search results show). Posted today (the tracker's day, 4am to 4am
-//      IST); a title that isn't a stack or level you don't do; asks for under 2.5 years and pays
-//      15 LPA+ when it says; and its skill chips don't clearly belong to another stack. A detail
-//      the card leaves out never drops a job, and chips that aren't technologies are ignored.
-//   2. The JD (the job's own page, opened only for cards that pass). Every technology it asks for
+// The finder reads every page of every search (see SEARCHES), and two steps decide each listing:
+//   1. The card (what Naukri's search results show). Posted in the last 48 hours ("Just now",
+//      "Few hours ago", "1 day ago"; "2 days ago" is out); not one you've applied to on Naukri; a
+//      title that isn't a stack or level you don't do; asks for under 2.5 years and pays 15 LPA+
+//      when it says; and its skill chips don't clearly belong to another stack. A detail the card
+//      leaves out never drops a job, and chips that aren't technologies are ignored.
+//   2. The JD (the job's own page, opened for every card that passes). Every technology it asks for
 //      is found with the skills dictionary (skills-dict.js) and compared with your skills (both
 //      resumes, job-profile.js). It's kept when the share you have reaches the bar (60% by
 //      default; "nice to have" lines and company blurbs don't count). How much of it is GenAI work
-//      decides its list: AI-first or backend-first. A job is on one list only. Each list aims for
-//      100 a day, ranked 0–100.
+//      decides its list: AI-first or backend-first. A job is on one list only. Your site shows the
+//      top 200 per list from the last 48 hours that you haven't taken yet, highest match first.
 
 import { findSkills, skillOf, withParents } from './skills-dict.js';
 import { JOB_PROFILE } from './job-profile.js';
@@ -23,7 +24,13 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 // Opening this page in a browser, signed in to your site, connects that browser's job finder.
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
+// Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
+export const RULES_VERSION = 3;
+
 export const RULES = Object.freeze({
+  maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
+  showHours: 48, // your site lists the top `showTop` per list posted in the last 48 hours, not yet taken,
+  showTop: 200, // highest JD match first
   minPayL: 15, // LPA the top of a salary the job shows must reach
   maxMinYears: 2.5, // the years it asks for must start below this ("less than 2.5 years")
   minMaxYears: 2, // ...and reach this, so "0–1 yrs" fresher roles are out
@@ -32,20 +39,22 @@ export const RULES = Object.freeze({
   cardFloor: 0.4, // a card whose chips name 3+ known skills and match under this isn't opened
   minJdSkills: 4, // a JD naming fewer technologies says little: same bar, ranked a little lower
   aiShare: 0.4, // AI-first when GenAI/ML work is at least this share of the JD's technology
-  dailyTarget: 100, // each list aims for this many a day; its searches stop once it has them
 });
 
+// Every page of every search, so a run can be long: it works up to an hour, and the next run picks
+// up where it stopped. The caps are a safety net, not a target.
 export const FINDER_LIMITS = Object.freeze({
-  pagesPerRun: 80, // search pages and job pages together
-  pagesPerDay: 400,
-  jdPerDay: 250, // job pages opened per day
-  runMinutes: 45,
+  runMinutes: 60,
+  pagesPerRun: 500, // search pages and job pages together
+  pagesPerDay: 2000,
+  jdPerDay: 1000, // job pages opened per day
+  pagesPerSearch: 100, // 2,000 results: past that a search is too broad to be about you
   pauseMin: 4_000, // ms between page loads, picked at random in [min, max]
   pauseMax: 9_000,
   pageWaitMs: 15_000, // how long a page may take to show its results
   uploadMax: 150, // openings per upload
-  perListDay: 200, // kept per list per day, at most
-  lockTtlMin: 60,
+  perListDay: 1000, // kept per list per day, at most
+  lockTtlMin: 90,
   jdFailStop: 3, // job pages in a row it can't read before it stops opening them this run
 });
 
@@ -58,25 +67,39 @@ export const PROFILES = Object.freeze({
 // What one browser searches for: both lists, or only the one its Naukri account applies to.
 export const SCOPES = Object.freeze(['both', 'backend', 'ai']);
 
-// The searches, Naukri's own filters on each: posted in the last day, 2 years of experience.
-// `profile` is the list a search is for; what a job turns out to be decides its list.
+// The searches, with Naukri's own filters on each: 2 years of experience, posted in the last 3 days
+// (Naukri has no 48-hour filter; the card check drops "2 days ago"). Every page of each is read.
+// `profile` is the list a search is for; what a job turns out to be decides its list, and a job
+// several searches find is read once.
 export const SEARCHES = Object.freeze([
-  { k: 'java spring boot developer', profile: 'backend', pages: 5 },
-  { k: 'java backend developer', profile: 'backend', pages: 4 },
-  { k: 'java developer', profile: 'backend', pages: 4 },
-  { k: 'java microservices', profile: 'backend', pages: 3 },
-  { k: 'backend developer', profile: 'backend', pages: 3 },
-  { k: 'python backend developer', profile: 'backend', pages: 3 },
-  { k: 'python fastapi developer', profile: 'backend', pages: 2 },
-  { k: 'software engineer', profile: 'backend', pages: 4 },
-  { k: 'software developer', profile: 'backend', pages: 4 },
-  { k: 'generative ai engineer', profile: 'ai', pages: 3 },
-  { k: 'genai developer', profile: 'ai', pages: 3 },
-  { k: 'llm engineer', profile: 'ai', pages: 3 },
-  { k: 'ai engineer', profile: 'ai', pages: 4 },
-  { k: 'ai developer', profile: 'ai', pages: 3 },
-  { k: 'agentic ai', profile: 'ai', pages: 2 },
-  { k: 'langchain', profile: 'ai', pages: 2 },
+  { k: 'java spring boot developer', profile: 'backend' },
+  { k: 'java backend developer', profile: 'backend' },
+  { k: 'java developer', profile: 'backend' },
+  { k: 'java microservices', profile: 'backend' },
+  { k: 'spring boot', profile: 'backend' },
+  { k: 'backend developer', profile: 'backend' },
+  { k: 'backend engineer', profile: 'backend' },
+  { k: 'python developer', profile: 'backend' },
+  { k: 'python backend developer', profile: 'backend' },
+  { k: 'python fastapi developer', profile: 'backend' },
+  { k: 'node js developer', profile: 'backend' },
+  { k: 'full stack developer', profile: 'backend' },
+  { k: 'software engineer', profile: 'backend' },
+  { k: 'software developer', profile: 'backend' },
+  { k: 'sde', profile: 'backend' },
+  { k: 'api developer', profile: 'backend' },
+  { k: 'generative ai engineer', profile: 'ai' },
+  { k: 'genai developer', profile: 'ai' },
+  { k: 'llm engineer', profile: 'ai' },
+  { k: 'ai engineer', profile: 'ai' },
+  { k: 'ai developer', profile: 'ai' },
+  { k: 'ai ml engineer', profile: 'ai' },
+  { k: 'agentic ai', profile: 'ai' },
+  { k: 'langchain', profile: 'ai' },
+  { k: 'rag developer', profile: 'ai' },
+  { k: 'machine learning engineer', profile: 'ai' },
+  { k: 'nlp engineer', profile: 'ai' },
+  { k: 'prompt engineer', profile: 'ai' },
 ]);
 
 /** The searches one browser runs: its own list's, or all of them. */
@@ -91,7 +114,7 @@ const RUN_JITTER = 7 * MIN;
 /** Naukri's own search page for a keyword, with its filters in the URL. */
 export function searchUrl(k, page = 1) {
   const slug = String(k).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return `${NAUKRI_ORIGIN}/${slug}-jobs${page > 1 ? `-${page}` : ''}?k=${encodeURIComponent(k)}&experience=2&jobAge=1`;
+  return `${NAUKRI_ORIGIN}/${slug}-jobs${page > 1 ? `-${page}` : ''}?k=${encodeURIComponent(k)}&experience=2&jobAge=3`;
 }
 
 // ---------------------------------------------------------------- days and run times
@@ -166,7 +189,20 @@ export function normalizeJob(raw) {
     rating: num(box.AggregateRating),
     reviews: num(box.ReviewsCount),
     snippet: stripHtml(raw.jobDescription || '').slice(0, 400),
+    applied: appliedOnNaukri(raw),
   };
+}
+
+/**
+ * Whether Naukri's own data says this account already applied: a true "applied"/"isApplied" flag,
+ * or an apply status of "applied". Counts of other applicants ("applyCount") don't count.
+ */
+function appliedOnNaukri(raw) {
+  for (const [k, v] of Object.entries(raw || {})) {
+    if (/^(?:is|has)?applied$/i.test(k) && v === true) return true;
+    if (/^(?:apply|application)status$/i.test(k) && /^applied$/i.test(String(v))) return true;
+  }
+  return false;
 }
 
 export function splitTags(s) {
@@ -184,15 +220,22 @@ export function splitTags(s) {
 
 // ---------------------------------------------------------------- posted when
 
-/** The tracker day the listing was posted on; a listing that doesn't say counts as today. */
-export function postedDay(job, now) {
+/**
+ * How many hours ago the listing was posted, as Naukri shows it: its own "x ago" label first
+ * (what you see, and what Naukri's freshness filter goes by), else its creation time; null when it
+ * says neither.
+ */
+export function postedAgeH(job, now) {
   const f = job.footer.toLowerCase();
-  if (/just now|few (?:hours|minutes|mins)|\d+\s*(?:hours?|hrs?|minutes?|mins?)\s*ago|\btoday\b/.test(f)) return trackerDay(now);
+  if (/just now|few (?:minutes|mins)|\d+\s*(?:minutes?|mins?)\s*ago/.test(f)) return 0;
+  const h = f.match(/(\d+)\s*(?:hours?|hrs?)\s*ago/);
+  if (h) return Number(h[1]);
+  if (/few hours|\btoday\b/.test(f)) return 6;
   const d = f.match(/(\d+)\+?\s*days?\s*ago/);
-  if (d) return trackerDay(now - Number(d[1]) * DAY);
-  if (/yesterday/.test(f)) return trackerDay(now - DAY);
-  if (job.createdAt && job.createdAt <= now + HOUR) return trackerDay(job.createdAt);
-  return trackerDay(now);
+  if (d) return Number(d[1]) * 24;
+  if (/yesterday/.test(f)) return 24;
+  if (job.createdAt && job.createdAt <= now + HOUR) return Math.max(0, (now - job.createdAt) / HOUR);
+  return null;
 }
 
 // ---------------------------------------------------------------- experience and pay
@@ -406,8 +449,10 @@ export function rankOf({ fit, score, have = 0, years, pay, rating, reviews, crea
 export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScore } = {}) {
   const job = normalizeJob(raw || {});
   if (!job.id || !job.title || !job.url || !job.company) return { keep: false, why: 'incomplete listing', job };
-  const day = postedDay(job, now);
-  if (day !== trackerDay(now)) return { keep: false, why: 'not posted today', job, day };
+  if (job.applied) return { keep: false, why: 'you applied on Naukri', job };
+  const ageH = postedAgeH(job, now);
+  if (ageH != null && ageH >= RULES.maxAgeH) return { keep: false, why: 'posted over 48 hours ago', job };
+  const day = trackerDay(now); // the day it's found on
   const t = titleCheck(job.title, mine);
   if (!t.ok) return { keep: false, why: t.why, job };
   const years = parseYears(job.expText);
@@ -421,7 +466,7 @@ export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScor
     fit: t.fit, score: chips.counted.length >= 2 ? chips.score : null, have: chips.have.length,
     years, pay, rating: job.rating, reviews: job.reviews, createdAt: job.createdAt,
   }, now, minScore);
-  return { keep: true, job, day, years, pay, fit: t.fit, titleAi: t.ai, chips, cardRank };
+  return { keep: true, job, day, ageH, years, pay, fit: t.fit, titleAi: t.ai, chips, cardRank };
 }
 
 // ---------------------------------------------------------------- step 2: the JD
@@ -437,7 +482,7 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
   const w = weigh(found, mine, new Set(findSkills(card.job.title).keys()));
   const profile = card.titleAi || w.aiShare >= RULES.aiShare ? 'ai' : 'backend';
   const v = {
-    job: card.job, day: card.day, years: card.years, pay: card.pay, fit: card.fit, profile, jd: true,
+    job: card.job, day: card.day, ageH: card.ageH, years: card.years, pay: card.pay, fit: card.fit, profile, jd: true,
     aiShare: w.aiShare, skills: { counted: w.counted, have: w.have, missing: w.missing, score: w.score },
   };
   const rank = (score) => rankOf({
@@ -454,7 +499,7 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
 export function cardOnly(card, { now, minScore = RULES.minScore } = {}) {
   const c = card.chips;
   const v = {
-    job: card.job, day: card.day, years: card.years, pay: card.pay, fit: card.fit, jd: false,
+    job: card.job, day: card.day, ageH: card.ageH, years: card.years, pay: card.pay, fit: card.fit, jd: false,
     profile: card.titleAi || c.aiShare >= RULES.aiShare ? 'ai' : 'backend', aiShare: c.aiShare,
     skills: { counted: c.counted, have: c.have, missing: c.missing, score: c.score },
   };
@@ -477,6 +522,17 @@ export function payLabel(pay) {
   return { verdict: 'unknown', text: 'Not disclosed on the listing' };
 }
 
+/**
+ * When it was posted, for your site's 48-hour window: Naukri's own time when it agrees with the
+ * "x ago" label (a reposted job keeps its old creation time; the label is what Naukri goes by),
+ * else the label's estimate, else when it was found.
+ */
+export function postedTimeOf(job, ageH, now) {
+  if (ageH == null) return job.createdAt && job.createdAt <= now + HOUR ? job.createdAt : now;
+  const fromLabel = Math.round(now - ageH * HOUR);
+  return job.createdAt && Math.abs(job.createdAt - fromLabel) <= 24 * HOUR ? job.createdAt : fromLabel;
+}
+
 /** A kept job (jdCheck or cardOnly) → the opening /api/radar stores (the radar's fields, plus the finder's own). */
 export function toOpening(v, now) {
   const { job, years, pay, skills, profile, rank } = v;
@@ -493,7 +549,7 @@ export function toOpening(v, now) {
     finder: 'naukri',
     postedAt: v.day,
     seenSince: now,
-    ...(job.createdAt ? { postedTime: job.createdAt } : {}),
+    postedTime: postedTimeOf(job, v.ageH, now),
     ...(years ? { minYoe: years.min, ...(years.max != null ? { maxYoe: years.max } : {}) } : {}),
     exp: years ? 'fits' : 'unknown',
     pay: payLabel(pay),

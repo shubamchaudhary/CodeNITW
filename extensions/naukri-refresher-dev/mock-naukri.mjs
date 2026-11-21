@@ -53,7 +53,9 @@ export function fixtures() {
     listing(5, { title: 'Java Developer', placeholders: [exp('3-6 Yrs'), sal('Not disclosed'), loc] }), // DROP years
     listing(6, { title: 'Java Developer', placeholders: [exp('2-5 Yrs'), sal('6-10 Lacs PA'), loc] }), // DROP pay
     listing(7, { title: 'Java Developer', salaryDetail: { hideSalary: true, minimumSalary: 1800000, maximumSalary: 2600000 } }), // KEEP, pay hidden
-    listing(8, { title: 'Java Developer', footerPlaceholderLabel: '1 Day Ago', createdDate: Date.now() - 30 * H }), // DROP not today
+    listing(8, { title: 'Java Developer', footerPlaceholderLabel: '3 Days Ago', createdDate: Date.now() - 80 * H }), // DROP: 3+ days old
+    listing(65, { title: 'Java Developer', footerPlaceholderLabel: '2 Days Ago', createdDate: Date.now() - 50 * H }), // DROP: over 48 hours
+    listing(64, { title: 'Backend Developer', footerPlaceholderLabel: '1 Day Ago', createdDate: Date.now() - 30 * H, tagsAndSkills: 'Java,Spring Boot,Kafka,PostgreSQL' }), // KEEP: the last 48 hours
     listing(9, { title: 'Software Engineer', tagsAndSkills: '', placeholders: [], jobDescription: '' }), // KEEP, nothing known
     listing(10, { title: 'Java Developer', tagsAndSkills: 'Java,Struts,JSP,Oracle,PL/SQL' }), // DROP skills
     listing(11, { title: 'Python Developer', tagsAndSkills: 'Python,FastAPI,LLM,RAG,PostgreSQL', placeholders: [exp('1-3 Yrs'), sal('20-30 Lacs PA'), loc] }), // KEEP backend (a little LLM work)
@@ -68,6 +70,9 @@ export function fixtures() {
     listing(61, { title: 'Software Developer', tagsAndSkills: 'Software,Compliance,Partnerships,Strategic' }), // KEEP: filler chips, its JD is Java
     listing(62, { title: 'Software Developer', tagsAndSkills: 'Microsoft Azure,SQL Server,AWS' }), // DROP: fine chips, its JD is .NET
     listing(63, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Microservices,Docker' }), // KEEP: its page fails, judged by its chips
+    listing(66, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Kafka' }), // DROP: its page's data says you applied
+    listing(67, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Redis' }), // DROP: its page's apply button says "Applied"
+    listing(68, { title: 'Java Developer', isApplied: true }), // DROP: its card says you applied (page not opened)
   ];
   return {
     'java spring boot developer': [java1, java2],
@@ -84,11 +89,12 @@ export function fixtures() {
   };
 }
 export const EXPECT = {
-  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43, 61, 63].map(idOf),
-  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42, 62].map(idOf),
+  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43, 61, 63, 64].map(idOf),
+  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42, 62, 65, 66, 67, 68].map(idOf),
   ai: [41, 43].map(idOf),
   cardOnly: [63].map(idOf), // kept on its card: its page couldn't be read
   pageFails: [63].map(idOf),
+  applied: { card: [68].map(idOf), data: [66].map(idOf), button: [67].map(idOf) },
   idOf,
 };
 
@@ -164,8 +170,14 @@ const JOB_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Job</t
     return;
   }
   const d = await r.json().catch(() => null);
+  // Its apply button first ("Applied" once you have), and further down other jobs, one of them
+  // applied to: only the job's own button counts.
+  const apply = d && d.jobDetails && d.jobDetails.mockApplied
+    ? '<span id="already-applied" class="styles_already-applied">Applied</span>'
+    : '<button id="apply-button" class="styles_apply-button">Apply</button>';
   box.innerHTML = d && d.jobDetails
-    ? '<section class="styles_job-desc-container"><div class="styles_JDC__dang-inner-html">' + d.jobDetails.description + '</div></section>'
+    ? '<header>' + apply + '</header><section class="styles_job-desc-container"><div class="styles_JDC__dang-inner-html">' + d.jobDetails.description + '</div></section>'
+      + '<aside class="similar-jobs"><article><a href="#">Another job</a><button class="styles_applied">Applied</button></article></aside>'
     : '<p>Something went wrong. Please try again.</p>';
 })();
 </script></body></html>`;
@@ -253,7 +265,13 @@ export async function startMock({ key, cert }) {
       const all = [...Object.values(fixtures()).flat(2), ...state.srpExtra];
       const l = all.find((j) => j.jobId === jobApi[1]);
       if (!l || EXPECT.pageFails.includes(l.jobId)) return send(500, { message: 'server error' });
-      return send(200, { jobDetails: { jobId: l.jobId, title: l.title, description: jdFor(l), keySkills: { other: [], preferred: [] } } });
+      return send(200, {
+        jobDetails: {
+          jobId: l.jobId, title: l.title, description: jdFor(l), keySkills: { other: [], preferred: [] }, applyCount: 140,
+          ...(EXPECT.applied.data.includes(l.jobId) ? { applyStatus: 'APPLIED' } : {}),
+          ...(EXPECT.applied.button.includes(l.jobId) ? { mockApplied: true } : {}), // only the page shows it
+        },
+      });
     }
     if (url.pathname === '/jobapi/v3/search') {
       if (state.srpMode === 'captcha') return send(406, { message: 'recaptcha required' });
