@@ -82,11 +82,12 @@ const PAY_CLS = {
   unknown: "bg-surface-hover text-fg-subtle  ",
 };
 
-// The Naukri job finder (extensions/naukri-refresher) uploads Naukri jobs with their JD match, a
-// rank and the list they're on, one list per Naukri account. Each list shows its top SHOW_TOP
-// posted in the last WINDOW_HOURS hours that you haven't taken yet, highest JD match first.
+// The Naukri job finder (extensions/naukri-refresher) uploads its top 400 Naukri jobs per list with
+// their JD match, a rank, the list they're on (one per Naukri account) and, once an LLM has read the
+// JD against your resume, an AI rating (`ai`). Each list shows its top SHOW_TOP posted in the last
+// WINDOW_HOURS hours that you haven't taken yet, highest AI rating first.
 const WINDOW_HOURS = 48;
-const SHOW_TOP = 200;
+const SHOW_TOP = 100;
 const HOUR_MS = 3600000;
 // When a finder opening was posted: Naukri's own time, else when the finder first stored it.
 const postedMs = (o) => o.postedTime || o.firstSeen || o.openedAt || 0;
@@ -95,6 +96,24 @@ const postedMs = (o) => o.postedTime || o.firstSeen || o.openedAt || 0;
 // experience, pay, company rating) breaks ties.
 const matchTier = (o) => (o.coverage == null ? 2 : o.fewSkills ? 1 : 0);
 const byMatch = (a, b) => matchTier(a) - matchTier(b) || (b.coverage || 0) - (a.coverage || 0) || (b.rank || 0) - (a.rank || 0);
+// Rated jobs first, highest rating first (ties by JD match); the ones not rated yet after them.
+const aiScore = (o) => (o.ai && o.ai.s >= 1 ? o.ai.s : 0);
+const byRating = (a, b) => aiScore(b) - aiScore(a) || byMatch(a, b);
+// What the AI rating rests on, for its tooltip.
+const LEVEL_TEXT = { junior: "junior", mid: "mid-level", senior: "senior", lead: "lead" };
+function aiHint(ai) {
+  const lines = [
+    `AI rating ${ai.s}/100: an LLM read the JD against your resume; the rating is worked out from what it found, with fixed weights.`,
+    `Must-haves your resume shows: ${ai.m[0]} of ${ai.m[1]}.`,
+    ai.have?.length ? `✓ ${ai.have.join(", ")}` : null,
+    ai.part?.length ? `½ ${ai.part.join(", ")}` : null,
+    ai.miss?.length ? `✗ ${ai.miss.join(", ")}` : null,
+    `Role: ${ai.role}, ${LEVEL_TEXT[ai.lvl] || ai.lvl}${ai.yrs != null ? `, asks ${ai.yrs}+ years` : ""}.`,
+    ai.uv ? `${ai.uv} claim${ai.uv === 1 ? "" : "s"} without a quote from your resume counted as not met.` : null,
+    ai.thin ? "The JD names fewer than 3 requirements, so the rating is held at 75 or less." : null,
+  ];
+  return lines.filter(Boolean).join("\n");
+}
 const PROFILES = [
   { id: "backend", label: "Backend", hint: "Backend-first roles: apply from your Backend Naukri account" },
   { id: "ai", label: "AI", hint: "AI-first roles (GenAI work is a large share of the JD): apply from your AI Naukri account" },
@@ -378,12 +397,18 @@ function FinderCard({ o, n, onSkip, onApplied }) {
     <div className={`${CARD} rounded-lg p-3.5 h-full flex flex-col gap-2`}>
       <div className="flex items-center gap-1.5 min-w-0">
         <span className="shrink-0 text-[11px] font-bold text-fg-muted tabular-nums">#{n}</span>
-        <span
-          className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${scoreCls(o.rank)}`}
-          title="Rank 0–100: skills match, title, experience, pay, company rating, how fresh"
-        >
-          {o.rank}
-        </span>
+        {o.ai ? (
+          <span className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${scoreCls(o.ai.s)}`} title={aiHint(o.ai)}>
+            AI {o.ai.s}
+          </span>
+        ) : (
+          <span
+            className="shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-surface-hover text-fg-subtle"
+            title={`Not rated yet: listed after the rated jobs, by JD match. Rank ${o.rank} (skills match, title, experience, pay, company rating, how fresh).`}
+          >
+            not rated
+          </span>
+        )}
         <span className="text-xs font-semibold text-fg-muted truncate">{o.company}</span>
         {o.rating != null && (
           <span className="shrink-0 text-[10px] text-fg-subtle" title={`AmbitionBox rating${o.reviews ? `, ${o.reviews} reviews` : ""}`}>
@@ -427,23 +452,44 @@ function FinderCard({ o, n, onSkip, onApplied }) {
         </Tag>
       </div>
 
-      {(o.matched?.length > 0 || o.missing?.length > 0) && (
+      {o.ai ? (
+        // The requirements the AI rating found: shown by your resume, partly, or not.
         <div className="flex flex-wrap gap-1">
-          {(o.matched || []).slice(0, 6).map((m) => (
-            <Tag
-              key={m.skill}
-              cls={m.type === "want" ? "bg-surface-hover text-fg  " : "bg-success-subtle text-success-fg  "}
-              title={m.type === "want" ? "A close substitute for a skill you have (counts 70%)" : "On your resume"}
-            >
-              {m.type === "want" ? "≈" : "✓"} {m.skill}
+          {(o.ai.have || []).slice(0, 4).map((r) => (
+            <Tag key={`h${r}`} cls="bg-success-subtle text-success-fg  " title="A must-have your resume shows (quoted from it)">
+              ✓ {r}
             </Tag>
           ))}
-          {(o.missing || []).slice(0, 3).map((s) => (
-            <Tag key={s} cls="bg-danger-subtle text-danger-fg  " title="Asked for, not on your resume">
-              ✗ {s}
+          {(o.ai.part || []).slice(0, 2).map((r) => (
+            <Tag key={`p${r}`} cls="bg-surface-hover text-fg  " title="Your resume shows something close, not the same">
+              ½ {r}
+            </Tag>
+          ))}
+          {(o.ai.miss || []).slice(0, 3).map((r) => (
+            <Tag key={`m${r}`} cls="bg-danger-subtle text-danger-fg  " title="A must-have your resume doesn't show">
+              ✗ {r}
             </Tag>
           ))}
         </div>
+      ) : (
+        (o.matched?.length > 0 || o.missing?.length > 0) && (
+          <div className="flex flex-wrap gap-1">
+            {(o.matched || []).slice(0, 6).map((m) => (
+              <Tag
+                key={m.skill}
+                cls={m.type === "want" ? "bg-surface-hover text-fg  " : "bg-success-subtle text-success-fg  "}
+                title={m.type === "want" ? "A close substitute for a skill you have (counts 70%)" : "On your resume"}
+              >
+                {m.type === "want" ? "≈" : "✓"} {m.skill}
+              </Tag>
+            ))}
+            {(o.missing || []).slice(0, 3).map((s) => (
+              <Tag key={s} cls="bg-danger-subtle text-danger-fg  " title="Asked for, not on your resume">
+                ✗ {s}
+              </Tag>
+            ))}
+          </div>
+        )
       )}
 
       {o.snippet && <p className="text-[11px] leading-relaxed text-fg-subtle line-clamp-2">{plainText(o.snippet)}</p>}
@@ -570,7 +616,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
 
-  // The job finder's Naukri jobs from the last 48 hours, per list, highest JD match first. Ones
+  // The job finder's Naukri jobs from the last 48 hours, per list, highest AI rating first. Ones
   // you've taken (applied, in the pipeline) or skipped are left out; the top SHOW_TOP of the rest show.
   const hour = Math.floor(Date.now() / HOUR_MS); // recomputed as the window moves on
   const finder = useMemo(() => {
@@ -586,9 +632,15 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
             !hidden[o.id] &&
             !dismissedUrls.has(urlOf(o))
         )
-        .sort(byMatch);
+        .sort(byRating);
       const left = all.filter((o) => !queuedUrls.has(urlOf(o)));
-      out[p.id] = { found: all.length, done: all.length - left.length, list: left.slice(0, SHOW_TOP), more: Math.max(0, left.length - SHOW_TOP) };
+      out[p.id] = {
+        found: all.length,
+        done: all.length - left.length,
+        rated: left.filter((o) => aiScore(o) > 0).length,
+        list: left.slice(0, SHOW_TOP),
+        more: Math.max(0, left.length - SHOW_TOP),
+      };
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -721,7 +773,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
       <Chip
         on={mode === "naukri"}
         onClick={() => setMode("naukri")}
-        title={`The job finder's Naukri jobs from the last ${WINDOW_HOURS} hours that you haven't taken: the top ${SHOW_TOP} per list, highest JD match first`}
+        title={`The job finder's Naukri jobs from the last ${WINDOW_HOURS} hours that you haven't taken: the top ${SHOW_TOP} per list, highest AI rating first`}
       >
         ⭐ Naukri, last {WINDOW_HOURS} hours ({finder.backend.list.length + finder.ai.list.length})
       </Chip>
@@ -766,10 +818,12 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
             {sentLine}
           </div>
           <div className="text-xs text-fg-subtle">
-            Two lists, one per Naukri account: Backend (backend-first roles) and AI (AI-first roles, where GenAI work is a large share of
-            the JD). A job is on one list only. Posted in the last {WINDOW_HOURS} hours · not applied or taken yet · asks for under 2.5
-            yrs · 15L+ or pay not shown · the finder read its JD and enough of the technologies it asks for are yours. The finder reads
-            every page of every search. Each list shows its top {SHOW_TOP}, highest JD match first.
+            Two lists, one per Naukri account: Backend (Java/Spring Boot roles) and AI (Python and GenAI roles: LLMs, RAG, agents,
+            LangChain, LangGraph, FastAPI). A job is on one list only; frontend, MERN and other-stack roles are left out, and so are IT
+            services firms that pay far under your bar. Posted in the last {WINDOW_HOURS} hours · not applied or taken yet · asks for
+            under 2.5 yrs · 15L+ or pay not shown · the finder read its JD and enough of the technologies it asks for are yours. The
+            finder reads every page of every search; its best 400 per list are rated 1–100 by an LLM against your resume. Each list
+            shows its top {SHOW_TOP}, highest AI rating first; jobs not rated yet come after them, by JD match.
           </div>
           {extLine && (
             <div className={`text-xs ${finderExt.connected ? "text-fg-subtle" : "text-warning-fg"}`}>{extLine}</div>
@@ -780,7 +834,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
           <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
             {PROFILES.map((p) => (
               <Chip key={p.id} on={profileTab === p.id} onClick={() => setProfileTab(p.id)} title={p.hint}>
-                {p.label} · {finder[p.id].done} taken · {finder[p.id].list.length} to go
+                {p.label} · {finder[p.id].done} taken · {finder[p.id].list.length} to go · {finder[p.id].rated} rated
               </Chip>
             ))}
           </div>
@@ -792,7 +846,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
           {cur.list.length > 0 && (
             <button
               onClick={() => addToApply(cur.list.slice(0, TOP_N), `${profileLabel(profileTab)} jobs`)}
-              title={`Put the ${Math.min(TOP_N, cur.list.length)} highest-matched jobs on the ${profileLabel(profileTab)} list (#1–#${Math.min(TOP_N, cur.list.length)}) in To Apply. Apply to them from your ${profileLabel(profileTab)} Naukri account.`}
+              title={`Put the ${Math.min(TOP_N, cur.list.length)} highest-rated jobs on the ${profileLabel(profileTab)} list (#1–#${Math.min(TOP_N, cur.list.length)}) in To Apply. Apply to them from your ${profileLabel(profileTab)} Naukri account.`}
               className="ml-auto inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-success hover:opacity-90 text-white"
             >
               <HiCheck className="w-4 h-4" /> Add top {Math.min(TOP_N, cur.list.length)} {profileLabel(profileTab)} to To Apply
@@ -811,7 +865,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
           <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
             {cur.found
               ? "Every job on this list from the last 48 hours is taken or skipped. More arrive with the job finder's next run."
-              : "No jobs on this list from the last 48 hours yet. The job finder (in the Naukri Refresher extension) runs every 2 hours, 09:00–19:00 IST, up to an hour each, and sends what it keeps as it goes."}
+              : "No jobs on this list from the last 48 hours yet. The job finder (in the Naukri Refresher extension) runs every day around 17:00 IST, until it has read every listing of the last 48 hours, and sends what it keeps as it goes."}
           </div>
         ) : (
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">

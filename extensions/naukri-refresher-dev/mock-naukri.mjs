@@ -1,6 +1,7 @@
 // A fake www.naukri.com (and a fake interviewplanprep.vercel.app: its /api/radar and the Job
-// tracker page's job finder handover) for end-to-end tests. Browsers are pointed at it with
-// --host-resolver-rules (Chromium) or network.dns.localDomains (Firefox).
+// tracker page's job finder handover; and a fake api.groq.com for the AI rating) for end-to-end
+// tests. Browsers are pointed at it with --host-resolver-rules (Chromium) or
+// network.dns.localDomains (Firefox).
 import https from 'node:https';
 import { readFileSync } from 'node:fs';
 
@@ -14,6 +15,39 @@ export const FINDER_TOKEN = `nrf1.${'T'.repeat(43)}`;
 // The site's real handover code, served to the fake Job tracker page below.
 const BRIDGE_FILE = new URL('../../src/pages/JobTracker/finderBridge.js', import.meta.url);
 const H = 3_600_000;
+
+// The AI rating's fake Groq: one key it accepts, one it rejects, one that's at its limit.
+export const GROQ_KEYS = { good: `gsk_${'G1'.repeat(26)}`, bad: `gsk_${'B2'.repeat(26)}`, busy: `gsk_${'Z3'.repeat(26)}` };
+// The resumes the tests rate against (jobsDev.resume): no Kubernetes on them.
+export const TEST_RESUME = {
+  sde: 'Software Engineer | Backend\nSummary\nSoftware Engineer with 2+ years in Java, Spring Boot, Microservices, Hibernate and REST APIs.\n'
+    + 'Technical Skills\nLanguages: Java, Python (FastAPI), SQL\nData & Messaging: PostgreSQL, MySQL, Redis, Apache Kafka\nCloud & DevOps: Docker, Git\n'
+    + 'GenAI: LangChain, RAG, LLM agents, Vector Database search',
+  genai: 'Software Engineer | GenAI\nSummary\nSoftware Engineer with 2+ years building LLM agents and RAG in Python and FastAPI.\n'
+    + 'Technical Skills\nLanguages: Python (FastAPI), Java, SQL\nGenAI: Generative AI, LLM, RAG, LangChain, Vector Database\nData: PostgreSQL, Redis, Apache Kafka\n'
+    + 'Frameworks: Spring Boot, Microservices, Docker',
+};
+const RATE_SKILLS = ['Java', 'Spring Boot', 'Microservices', 'Kafka', 'PostgreSQL', 'Redis', 'Docker', 'Kubernetes', 'Python', 'FastAPI', 'LLM', 'RAG',
+  'Langchain', 'Hibernate', 'MySQL', 'SQL', 'REST APIs', 'Vector Database', 'Generative AI'];
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** What the fake model answers: the JD's known skills, met when the resume names them, plus two planted mistakes. */
+function groqAnswer(content) {
+  const resume = (content.split('\nJOB:\n')[0] || '').split('RESUME (the candidate):\n')[1] || '';
+  const job = content.split('\nJOB:\n')[1] || '';
+  const requirements = [];
+  for (const k of RATE_SKILLS) {
+    if (!new RegExp(`\\b${esc(k)}\\b`, 'i').test(job)) continue;
+    const m = resume.match(new RegExp(`\\b${esc(k)}\\b`, 'i'));
+    if (m) requirements.push({ req: k, must: true, met: 'yes', evidence: m[0] });
+    else if (k === 'Kubernetes') requirements.push({ req: k, must: true, met: 'yes', evidence: 'Kubernetes in production' }); // not on the resume
+    else requirements.push({ req: k, must: true, met: 'no', evidence: '' });
+  }
+  requirements.push({ req: 'Rust systems programming', must: true, met: 'no', evidence: '' }); // not in the JD
+  const title = (job.match(/^Title: (.*)$/m) || [])[1] || '';
+  const years = Number((job.match(/^Experience asked: (\d+)/m) || [])[1]);
+  return { requirements, min_years: Number.isFinite(years) ? years : null, role: /\b(ai|llm|genai|generative)\b/i.test(title) ? 'genai' : 'backend', level: 'mid' };
+}
 
 // ---------------------------------------------------------------- the job search fixtures
 
@@ -58,7 +92,7 @@ export function fixtures() {
     listing(64, { title: 'Backend Developer', footerPlaceholderLabel: '1 Day Ago', createdDate: Date.now() - 30 * H, tagsAndSkills: 'Java,Spring Boot,Kafka,PostgreSQL' }), // KEEP: the last 48 hours
     listing(9, { title: 'Software Engineer', tagsAndSkills: '', placeholders: [], jobDescription: '' }), // KEEP, nothing known
     listing(10, { title: 'Java Developer', tagsAndSkills: 'Java,Struts,JSP,Oracle,PL/SQL' }), // DROP skills
-    listing(11, { title: 'Python Developer', tagsAndSkills: 'Python,FastAPI,LLM,RAG,PostgreSQL', placeholders: [exp('1-3 Yrs'), sal('20-30 Lacs PA'), loc] }), // KEEP backend (a little LLM work)
+    listing(11, { title: 'Python Developer', tagsAndSkills: 'Python,FastAPI,LLM,RAG,PostgreSQL', placeholders: [exp('1-3 Yrs'), sal('20-30 Lacs PA'), loc] }), // KEEP ai: Python, FastAPI and GenAI
     ...[12, 13, 14, 15, 16, 17, 18, 19, 20].map((n) => listing(n)), // KEEP backend
   ];
   const java2 = [
@@ -73,6 +107,10 @@ export function fixtures() {
     listing(66, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Kafka' }), // DROP: its page's data says you applied
     listing(67, { title: 'Java Developer', tagsAndSkills: 'Java,Spring Boot,Redis' }), // DROP: its page's apply button says "Applied"
     listing(68, { title: 'Java Developer', isApplied: true }), // DROP: its card says you applied (page not opened)
+    listing(69, { title: 'Java Developer', companyName: 'Accenture Solutions Pvt Ltd' }), // DROP: a low-pay company (page not opened)
+    listing(70, { title: 'Software Engineer', tagsAndSkills: 'React.js,Node.js,MongoDB,Express.js' }), // DROP: MERN chips (page not opened)
+    listing(71, { title: 'Software Engineer', tagsAndSkills: 'Software,Strategic' }), // DROP: filler chips; its JD is MERN (page opened)
+    listing(72, { title: 'Java Full Stack Developer', tagsAndSkills: 'Java,Spring Boot,React,Microservices' }), // KEEP backend: some frontend is fine
   ];
   return {
     'java spring boot developer': [java1, java2],
@@ -89,9 +127,11 @@ export function fixtures() {
   };
 }
 export const EXPECT = {
-  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43, 61, 63, 64].map(idOf),
-  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42, 62, 65, 66, 67, 68].map(idOf),
-  ai: [41, 43].map(idOf),
+  keep: [1, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 31, 41, 43, 61, 63, 64, 72].map(idOf),
+  drop: [2, 3, 4, 5, 6, 8, 10, 22, 24, 25, 32, 42, 62, 65, 66, 67, 68, 69, 70, 71].map(idOf),
+  ai: [11, 41, 43].map(idOf),
+  lowPay: [69].map(idOf),
+  mern: { card: [70].map(idOf), jd: [71].map(idOf) },
   cardOnly: [63].map(idOf), // kept on its card: its page couldn't be read
   pageFails: [63].map(idOf),
   applied: { card: [68].map(idOf), data: [66].map(idOf), button: [67].map(idOf) },
@@ -106,6 +146,8 @@ const JDS = {
     + '<li>PostgreSQL, Redis, Kafka</li><li>Docker, Kubernetes, CI/CD</li></ul><p>Good to have: Go, Terraform</p><p><strong>About Company</strong></p><p>We work with Salesforce and SAP clients.</p>',
   [idOf(62)]: '<p>The ideal candidate should have a strong foundation in .NET technologies.</p><p><strong>Requirements:</strong></p><ul><li>C#, ASP.NET MVC, .NET Core, Web API</li>'
     + '<li>SQL Server, Entity Framework</li><li>Azure DevOps, Git</li></ul>',
+  [idOf(71)]: '<p>Build our customer web app end to end.</p><p><strong>Requirements</strong></p><ul><li>React.js, Redux, TypeScript, HTML, CSS</li>'
+    + '<li>Node.js, Express.js, MongoDB, REST APIs</li><li>Docker, Git</li></ul>',
 };
 function jdFor(l) {
   if (JDS[l.jobId]) return JDS[l.jobId];
@@ -199,13 +241,48 @@ export async function startMock({ key, cert }) {
     srpExtra: [], // listings put first on the first page of the Java search
     jobMode: 'ok', // ok | captcha (job pages answer 406)
     radarMode: 'ok', // ok | old (a site that doesn't know the finder)
+    finderResetAt: 0, // when the finder last started over
+    radarResets: 0,
     radarPosts: [],
     radarPostAuth: [], // which token each upload came with: ingest | finder
     radarChecks: 0,
     radarPairs: 0, // finder tokens handed to the owner's page
     bridgeResults: [], // what each Job tracker page made of the handover
+    groqMode: 'ok', // ok | reject (every key 401)
+    groqCalls: [], // each rating request: { key, body }
+    groqModelChecks: 0,
   }, over);
   reset();
+
+  // The fake api.groq.com: chat completions for the rating, the models list for "Check keys".
+  const groqApi = (req, res, url, body) => {
+    const reply = (code, payload, headers = {}) => {
+      res.writeHead(code, { 'content-type': 'application/json', ...headers });
+      res.end(JSON.stringify(payload));
+    };
+    const key = String(req.headers.authorization || '').replace(/^Bearer /, '');
+    const known = key === GROQ_KEYS.good || key === GROQ_KEYS.busy;
+    const rejected = !known || state.groqMode === 'reject';
+    if (req.method === 'GET' && url.pathname === '/openai/v1/models') {
+      state.groqModelChecks += 1;
+      if (rejected) return reply(401, { error: { message: 'Invalid API Key', type: 'invalid_request_error', code: 'invalid_api_key' } });
+      return reply(200, { object: 'list', data: [{ id: 'openai/gpt-oss-20b' }, { id: 'openai/gpt-oss-120b' }] });
+    }
+    if (req.method !== 'POST' || url.pathname !== '/openai/v1/chat/completions') return reply(404, { error: { message: 'not found' } });
+    let j = null;
+    try { j = JSON.parse(body); } catch { return reply(400, { error: { message: 'bad json' } }); }
+    state.groqCalls.push({ key, body: j, t: Date.now() });
+    if (rejected) return reply(401, { error: { message: 'Invalid API Key', type: 'invalid_request_error', code: 'invalid_api_key' } });
+    if (key === GROQ_KEYS.busy) {
+      return reply(429, { error: { message: 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_mock` on tokens per minute (TPM). Please try again in 2m0s.', type: 'tokens', code: 'rate_limit_exceeded' } }, { 'retry-after': '120' });
+    }
+    const content = String(j.messages && j.messages[0] && j.messages[0].content);
+    return reply(200, {
+      id: `chatcmpl-${state.groqCalls.length}`, object: 'chat.completion', model: j.model,
+      choices: [{ index: 0, message: { role: 'assistant', content: JSON.stringify(groqAnswer(content)) }, finish_reason: 'stop' }],
+      usage: { prompt_tokens: Math.round(content.length / 4), completion_tokens: 300, total_tokens: Math.round(content.length / 4) + 300, prompt_tokens_details: { cached_tokens: 900 } },
+    }, { 'x-ratelimit-remaining-tokens': '7000', 'x-ratelimit-reset-tokens': '8.5s', 'x-ratelimit-remaining-requests': '990', 'x-ratelimit-reset-requests': '1m26s' });
+  };
 
   const radarApi = (req, res, url, body) => {
     const reply = (code, payload, type = 'application/json') => {
@@ -236,6 +313,14 @@ export async function startMock({ key, cert }) {
       state.radarChecks += 1;
       return state.radarMode === 'old' ? reply(400, { error: 'no-openings' }) : reply(200, { ok: true, finder: true });
     }
+    // Start over, and when it last happened (as api/radar.mjs).
+    if (j.state === true) return state.radarMode === 'old' ? reply(400, { error: 'no-openings' }) : reply(200, { ok: true, finder: true, resetAt: state.finderResetAt });
+    if (j.reset === true) {
+      if (state.radarMode === 'old') return reply(400, { error: 'no-openings' });
+      state.finderResetAt = Date.now();
+      state.radarResets += 1;
+      return reply(200, { ok: true, finder: true, deleted: 21, resetAt: state.finderResetAt });
+    }
     if (!Array.isArray(j.openings)) return reply(400, { error: 'no-openings' });
     state.radarPosts.push(j);
     state.radarPostAuth.push(finderKey ? 'finder' : 'ingest');
@@ -248,6 +333,7 @@ export async function startMock({ key, cert }) {
     for await (const c of req) body += c;
     const host = String(req.headers.host || '').split(':')[0];
     if (host === 'interviewplanprep.vercel.app') return radarApi(req, res, url, body);
+    if (host === 'api.groq.com') return groqApi(req, res, url, body);
     state.requests.push({ method: req.method, path: url.pathname, search: url.search, headers: req.headers, body, t: Date.now() });
     const send = (code, payload, headers = {}) => {
       const html = typeof payload === 'string';

@@ -26,3 +26,5 @@ yarn-error.log*
 .env
 # job radar state (runs locally, see scripts/radar/README.md)
 /.radar/
+# the Naukri job finder's copy of your resumes, for its AI rating (made by make-job-profile.mjs)
+/extensions/naukri-refresher/resume.local.json
