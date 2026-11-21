@@ -3,8 +3,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  RULES, FINDER_LIMITS, SEARCHES, searchUrl, searchesFor, trackerDay, nextFinderRun, normalizeJob, postedAgeH, postedTimeOf, parseYears,
+  RULES, FINDER_LIMITS, SEARCHES, RUN_HOURS, searchUrl, searchesFor, trackerDay, nextFinderRun, normalizeJob, postedAgeH, postedTimeOf, parseYears,
   parseLakhs, parsePay, titleCheck, mySkills, chipCheck, cardCheck, jdSections, jdCheck, cardOnly, htmlToText, rankOf, toOpening, payLabel,
+  LOW_PAY_COMPANIES, lowPayList, lowPayMatch, byParser,
 } from '../naukri-refresher/jobs-lib.js';
 
 const H = 3_600_000;
@@ -61,15 +62,16 @@ test('the day runs 4am to 4am IST, like the job tracker', () => {
   assert.equal(trackerDay(at(2026, 11, 20, 23, 30)), '2026-11-20');
 });
 
-test('finder runs land within ±7 min of 09, 11, 13, 15, 17, 19 IST and never repeat a slot', () => {
-  const at = (h, min = 0) => Date.UTC(2026, 10, 20, h, min) - IST;
+test('the finder runs once a day, within ±7 min of 17:00 IST, and never repeats a day', () => {
+  assert.deepEqual([...RUN_HOURS], [17]);
+  const at = (h, min = 0, d = 20) => Date.UTC(2026, 10, d, h, min) - IST;
   const a = nextFinderRun(at(8, 0), null, () => 0);
-  assert.equal(a.slot, '2026-11-20T09');
-  assert.equal(a.at, at(8, 53));
-  assert.equal(nextFinderRun(at(8, 0), null, () => 1).at, at(9, 7));
-  assert.equal(nextFinderRun(at(9, 30), '2026-11-20T09', () => 0.5).slot, '2026-11-20T11');
-  assert.equal(nextFinderRun(at(20, 0), null, () => 0.5).slot, '2026-11-21T09');
-  assert.equal(nextFinderRun(at(14, 20), '2026-11-20T11', () => 0.5).slot, '2026-11-20T15', 'a slot the PC slept through is skipped');
+  assert.equal(a.slot, '2026-11-20T17');
+  assert.equal(a.at, at(16, 53));
+  assert.equal(nextFinderRun(at(8, 0), null, () => 1).at, at(17, 7));
+  assert.equal(nextFinderRun(at(17, 30), '2026-11-20T17', () => 0.5).slot, '2026-11-21T17', 'the next day after today has run');
+  assert.equal(nextFinderRun(at(20, 0), null, () => 0.5).slot, '2026-11-21T17', 'a day the PC slept through 17:00 waits for tomorrow');
+  assert.equal(nextFinderRun(at(17, 3), null, () => 0).at, at(17, 3), 'within the window: right away');
 });
 
 test('a listing is normalized: absolute link, id from the link when missing, labels by type', () => {
@@ -120,13 +122,16 @@ test("titles: stacks and levels that aren't yours are out; plain software roles 
     'React Developer', 'Frontend Engineer', 'QA Automation Engineer', 'SDET', 'DevOps Engineer', 'Data Engineer', 'SAP ABAP Consultant',
     'Embedded Software Engineer', 'Technical Lead - Java', 'Java Architect', 'Engineering Manager', 'Staff Software Engineer', 'Java Intern',
     'Golang Developer', 'Scala Engineer', 'C++ Developer', 'Telecom Software Developer - C/C++ & Kubernetes', 'Technical Support Engineer', 'Consultant',
-    'AI Builder (Senior Product Designer)'];
+    'AI Builder (Senior Product Designer)',
+    // Your lists are Java/Spring Boot and Python/GenAI: a title naming only a JavaScript stack is out.
+    'Node.js Developer', 'Full Stack Developer (React + Node)', 'TypeScript Developer', 'MERN Stack Developer', 'MEAN Stack Developer', 'NestJS Backend Developer'];
   for (const t of out) assert.equal(titleCheck(t).ok, false, t);
   const keep = ['Software Engineer', 'Software Developer', 'SDE 2', 'Member of Technical Staff', 'Java Consultant', 'Backend Engineer',
-    'Python Developer', 'Node.js Developer', 'Full Stack Developer (React + Node)', 'Java Full Stack Developer (Angular)', 'TypeScript Developer',
+    'Python Developer', 'Full Stack Developer', 'Java Full Stack Developer (Angular)', 'Full Stack Engineer (Java, React)',
     'Generative AI Engineer', 'LLM Engineer', 'AI/ML Engineer', 'Senior Software Engineer', 'Application Developer'];
   for (const t of keep) assert.equal(titleCheck(t).ok, true, t);
   assert.equal(titleCheck('Telecom Software Developer - C/C++').why, 'C/C++ role');
+  assert.equal(titleCheck('MERN Stack Developer').why, 'MERN/MEAN stack role');
   assert.ok(titleCheck('Senior Software Engineer').fit < titleCheck('Software Engineer').fit, 'senior ranks a little lower');
 });
 
@@ -258,10 +263,58 @@ test('your skills: both resumes, plus extras typed in the settings', () => {
   assert.ok(mySkills(['Struts', 'Apache Camel']).has('Struts'));
 });
 
+test('low-pay companies are out on the card, matched on whole words of the name; your list replaces the default', () => {
+  for (const name of ['Accenture Solutions Pvt Ltd', 'Tata Consultancy Services Limited', 'TCS', 'Infosys BPM', 'Cognizant Technology Solutions India',
+    'HCLTech', 'HCL Technologies', 'LTIMindtree', 'Larsen & Toubro Infotech', 'Ernst & Young', 'EY GDS', 'Capgemini Technology Services India Limited']) {
+    assert.ok(lowPayMatch(name), name);
+    assert.equal(card({ companyName: name }).why, 'low-pay company', name);
+  }
+  for (const name of ['Acme Software', 'Bey Labs', 'Trust Bank', 'Atlassian', 'Thoughtworks', 'Hclean Foods', 'Tata 1mg', 'Persistent Ventures']) {
+    assert.equal(lowPayMatch(name), null, name);
+  }
+  assert.equal(card({ companyName: 'Accenture', isApplied: true }).why, 'you applied on Naukri', 'applied is said first');
+  const mine = lowPayList(['Acme Software']);
+  assert.equal(cardCheck(job({ companyName: 'Acme Software Pvt Ltd' }), { now: NOW, lowPay: mine }).why, 'low-pay company');
+  assert.equal(cardCheck(job({ companyName: 'Accenture' }), { now: NOW, lowPay: mine }).keep, true, 'your list replaces the default one');
+  assert.equal(cardCheck(job({ companyName: 'Accenture' }), { now: NOW, lowPay: lowPayList([]) }).keep, true, 'an empty list leaves nobody out');
+  assert.ok(LOW_PAY_COMPANIES.length >= 50 && LOW_PAY_COMPANIES.includes('Accenture'));
+});
+
+test('the main stack decides: Java is Backend, Python with GenAI (or FastAPI) is AI; JavaScript, MERN and other stacks are out', () => {
+  const jd = (title, text, over = {}) => jdCheck(card({ title, tagsAndSkills: '', ...over }), { text: `Requirements\n${text}` }, { now: NOW, minScore: 0.4 });
+  const mern = jd('Software Engineer', '• React, Node.js, Express.js, MongoDB, JavaScript, TypeScript, HTML, CSS, REST APIs\n• Java is a plus');
+  assert.deepEqual([mern.keep, mern.why], [false, 'frontend or MERN stack'], 'a plain Software Engineer card is opened, and its JD decides');
+  const javaFs = jd('Full Stack Developer', '• Java, Spring Boot, Microservices, Hibernate, PostgreSQL\n• React or Angular for the UI');
+  assert.deepEqual([javaFs.keep, javaFs.profile], [true, 'backend'], 'some frontend next to a Java core is fine');
+  const genai = jd('Software Engineer', '• Python, FastAPI, LangChain, LangGraph, RAG, vector databases\n• PostgreSQL, Docker');
+  assert.deepEqual([genai.keep, genai.profile], [true, 'ai']);
+  const fastapi = jd('Backend Developer', '• Python, FastAPI, PostgreSQL, Docker, Kafka, Redis');
+  assert.deepEqual([fastapi.keep, fastapi.profile], [true, 'ai'], 'Python and FastAPI: the AI list');
+  const django = jd('Python Developer', '• Python, Django, Flask, Celery, PostgreSQL, REST APIs');
+  assert.deepEqual([django.keep, django.why], [false, 'Python role without GenAI']);
+  const javaAi = jd('Backend Engineer', '• Java, Spring Boot, Kafka, PostgreSQL\n• Integrate LLM APIs (OpenAI) into services');
+  assert.deepEqual([javaAi.keep, javaAi.profile], [true, 'backend'], 'Java with some AI: Backend');
+  const dotnet = jd('Software Engineer', '• C#, ASP.NET Core, Entity Framework, SQL Server, Azure', { tagsAndSkills: '' });
+  assert.equal(dotnet.keep, false);
+  // The card: chips that are all JavaScript (or all another stack) aren't opened.
+  assert.equal(card({ title: 'Software Engineer', tagsAndSkills: 'React.js,Node.js,MongoDB,Express.js' }).why, 'frontend or MERN stack');
+  assert.equal(card({ title: 'Full Stack Developer', tagsAndSkills: 'Java,Spring Boot,React,Angular' }).keep, true);
+  assert.equal(card({ title: 'Software Engineer', tagsAndSkills: 'Software,Strategic,Communication' }).keep, true, 'filler chips: its JD decides');
+});
+
+test("the parser's order: JD match first, few-skills JDs after, then no-skills ones; rank breaks ties", () => {
+  const list = [
+    { id: 'a', coverage: 70, rank: 60 }, { id: 'b', coverage: 90, rank: 40 }, { id: 'c', coverage: 95, fewSkills: true, rank: 90 },
+    { id: 'd', coverage: null, rank: 99 }, { id: 'e', coverage: 70, rank: 80 },
+  ].sort(byParser);
+  assert.deepEqual(list.map((o) => o.id), ['b', 'e', 'a', 'c', 'd']);
+});
+
 test('rules are the agreed ones', () => {
   assert.equal(RULES.maxAgeH, 48, 'the last 48 hours ("2 days ago" is out)');
   assert.equal(RULES.showHours, 48);
-  assert.equal(RULES.showTop, 200, 'the top 200 per list, highest match first');
+  assert.equal(RULES.poolTop, 400, "the parser's top 400 per list go to your site and are rated");
+  assert.equal(RULES.showTop, 100, 'your site shows the top 100 per list, highest rating first');
   assert.equal(RULES.minPayL, 15);
   assert.equal(RULES.maxMinYears, 2.5);
   assert.equal(RULES.minScore, 0.6);

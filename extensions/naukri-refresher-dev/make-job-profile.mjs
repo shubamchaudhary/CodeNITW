@@ -8,11 +8,16 @@
 // Reads the resume texts the radar caches (.radar/resume.txt = SDE, .radar/resume-2.txt =
 // GenAI; it re-reads the PDFs first when pdftotext is available) and writes job-profile.js into
 // the extension (it can't import from outside its own folder).
+//
+// It also writes resume.local.json next to the extension: the two resumes as text, without your
+// name and contact lines, for the AI rating (rate.js sends the one that fits each job to Groq).
+// That file is in .gitignore: it never goes to git.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadResumeTexts, resumePdfs } from '../../scripts/radar/resume.mjs';
 import { findSkills, withParents, skillOf } from '../naukri-refresher/skills-dict.js';
+import { cleanResume } from '../naukri-refresher/rate-lib.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const STATE = join(ROOT, '.radar');
@@ -40,3 +45,7 @@ writeFileSync(join(EXT, 'job-profile.js'),
   + `export const JOB_PROFILE = ${JSON.stringify(profile, null, 2)};\n`);
 const onlyExtras = extras.filter((l) => !sde.includes(l) && !genai.includes(l));
 console.log(`job-profile.js: ${skills.length} skills (SDE resume ${sde.length}, GenAI resume ${genai.length}, from skills.json only: ${onlyExtras.join(', ') || 'none'})`);
+
+const [sdeText, genaiText] = texts.map(cleanResume);
+writeFileSync(join(EXT, 'resume.local.json'), `${JSON.stringify({ generated: profile.generated, sde: sdeText, genai: genaiText }, null, 2)}\n`);
+console.log(`resume.local.json (git-ignored, for the AI rating): SDE ${sdeText.length} characters, GenAI ${genaiText.length}, name and contact lines left out`);

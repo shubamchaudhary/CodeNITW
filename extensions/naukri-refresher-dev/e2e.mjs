@@ -10,7 +10,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
-import { startMock, EXPECT, RADAR_TOKEN, listing } from './mock-naukri.mjs';
+import { startMock, EXPECT, RADAR_TOKEN, GROQ_KEYS, TEST_RESUME, listing } from './mock-naukri.mjs';
 import { istHM, MIN, HOUR, DAY } from '../naukri-refresher/lib.js';
 
 const EXT_DIR = fileURLToPath(new URL('../naukri-refresher', import.meta.url));
@@ -89,7 +89,7 @@ async function chromium(name, tmp) {
   const common = [
     '--headless', `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
     '--mute-audio', '--disable-sync', '--disable-background-networking', '--disable-component-update',
-    '--host-resolver-rules=MAP www.naukri.com 127.0.0.1,MAP interviewplanprep.vercel.app 127.0.0.1', '--ignore-certificate-errors',
+    '--host-resolver-rules=MAP www.naukri.com 127.0.0.1,MAP interviewplanprep.vercel.app 127.0.0.1,MAP api.groq.com 127.0.0.1', '--ignore-certificate-errors',
   ];
   let cdp;
   let proc;
@@ -174,7 +174,7 @@ async function firefox(tmp) {
   const profile = join(tmp, 'firefox-profile');
   mkdirSync(profile, { recursive: true });
   const prefs = {
-    'network.dns.localDomains': 'www.naukri.com,interviewplanprep.vercel.app',
+    'network.dns.localDomains': 'www.naukri.com,interviewplanprep.vercel.app,api.groq.com',
     'network.trr.mode': 5,
     'extensions.webextensions.uuids': JSON.stringify({ [FX_ID]: FX_UUID }),
     'extensions.originControls.grantByDefault': true,
@@ -215,7 +215,7 @@ async function firefox(tmp) {
   // BiDi may not navigate to extension pages, so a TEST COPY of the extension opens its own
   // popup.html in a tab on install. The real extension folder is not modified.
   const copy = join(tmp, 'ext-firefox-test');
-  cpSync(EXT_DIR, copy, { recursive: true });
+  cpSync(EXT_DIR, copy, { recursive: true, filter: (src) => !src.endsWith('resume.local.json') }); // never your real resume
   const manifest = JSON.parse(readFileSync(join(copy, 'manifest.json'), 'utf8'));
   manifest.background.scripts = [...manifest.background.scripts, 'test-open-popup.js'];
   writeFileSync(join(copy, 'manifest.json'), JSON.stringify(manifest, null, 2));
@@ -756,6 +756,14 @@ async function suite(d, mock) {
     assert.equal(reason['you applied on Naukri'], 3, JSON.stringify(s.reasons));
     for (const id of EXPECT.applied.card) assert.ok(!jobPages.some((p) => p.endsWith(id)), 'an applied card is not opened');
     for (const id of [...EXPECT.applied.data, ...EXPECT.applied.button]) assert.ok(jobPages.some((p) => p.endsWith(id)), 'read, then dropped');
+    // A low-pay company and MERN chips are out on the card; a plain Software Engineer card is opened and its MERN JD rules it out.
+    assert.equal(reason['low-pay company'], 1, JSON.stringify(s.reasons));
+    assert.equal(reason['frontend or MERN stack'], 2, JSON.stringify(s.reasons));
+    for (const id of [...EXPECT.lowPay, ...EXPECT.mern.card]) assert.ok(!jobPages.some((p) => p.endsWith(id)), `${id}: not opened`);
+    for (const id of EXPECT.mern.jd) assert.ok(jobPages.some((p) => p.endsWith(id)), `${id}: opened, its JD decided`);
+    assert.equal(byId[EXPECT.idOf(72)].profile, 'backend', 'Java full stack: some frontend next to Java is fine');
+    assert.equal(byId[EXPECT.idOf(11)].profile, 'ai', 'Python, FastAPI and GenAI: the AI list');
+    assert.ok(posts[0].openings.every((o) => !o.ai), 'no key yet: nothing rated');
     assert.equal(s.daily.kept.ai, EXPECT.ai.length);
     assert.equal(s.daily.kept.backend, EXPECT.keep.length - EXPECT.ai.length);
     assert.equal(naukriPosts().length, 0, 'never sends anything to Naukri (no apply, no form)');
@@ -778,7 +786,9 @@ async function suite(d, mock) {
     assert.doesNotMatch(page.next, /Not responding/, page.next);
     assert.match(page.rules, /Every listing, not a sample/);
     assert.match(page.rules, /last 48 hours/);
-    assert.match(page.rules, /top 200 of each list/);
+    assert.match(page.rules, /top 400 of each list/);
+    assert.match(page.rules, /top 100 of each list/);
+    assert.match(page.rules, /low-pay list/);
   });
 
   await step('a later run sweeps every page of every search again and sends only the new listing that fits', async () => {
@@ -845,13 +855,14 @@ async function suite(d, mock) {
     }
   });
 
-  await step('switching the finder on plans runs around 09, 11, 13, 15, 17 and 19 IST; off clears them', async () => {
+  await step('switching the finder on plans one run a day, around 17:00 IST; off clears it', async () => {
     await d.msg({ type: 'jobsSave', patch: { enabled: true } });
     const s = await jobs();
     assert.ok(s.plan && s.plan.at > Date.now() - 1000, JSON.stringify(s.plan));
     const hm = istHM(s.plan.at);
     const mins = Number(hm.slice(0, 2)) * 60 + Number(hm.slice(3));
-    assert.ok([9, 11, 13, 15, 17, 19].some((h) => Math.abs(mins - h * 60) <= 7), hm);
+    assert.ok(Math.abs(mins - 17 * 60) <= 7, hm);
+    assert.ok(s.plan.at - Date.now() <= 25 * HOUR, 'within a day');
     await d.msg({ type: 'jobsSave', patch: { enabled: false } });
     assert.equal((await jobs()).plan, null);
   });
@@ -882,6 +893,161 @@ async function suite(d, mock) {
     await setStore({ jobsDev: null });
   });
 
+  // The AI rating, on the fake api.groq.com (mock-naukri.mjs), with test resumes.
+  const DEV = { pause: [60, 120], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'], resume: TEST_RESUME };
+  const waitRate = async (since, ms = 90_000) => {
+    const end = Date.now() + ms;
+    let s;
+    while (Date.now() < end) {
+      s = await jobs();
+      if (!s.running && s.rating.last && s.rating.last.t >= since) return s;
+      await sleep(400);
+    }
+    throw new Error(`the rating didn't finish: ${JSON.stringify(s && s.rating)}`);
+  };
+
+  await step('AI rating: jobs kept before any key wait; saved Groq keys rate them, past a rejected and a busy key; only proven claims count', async () => {
+    await setStore({ jobsDev: DEV });
+    await d.msg({ type: 'jobsRescan' });
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    let s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    assert.equal(mock.state.groqCalls.length, 0, 'no key: Groq untouched');
+    assert.equal(s.rating.on, false);
+    assert.match(s.rating.why, /no Groq key/);
+    const rateable = EXPECT.keep.filter((id) => !EXPECT.cardOnly.includes(id)); // a job whose page couldn't be read has no JD to rate
+    const waiting = s.rating.queued;
+    assert.ok(waiting >= rateable.length, `they wait, with their JD text (and the ones earlier runs kept): ${waiting}`);
+    // Keys: three, one per line as pasted; the status shows hints, never a key.
+    const saved = await d.msg({ type: 'jobsSave', patch: { groqKeys: `${GROQ_KEYS.bad}\n${GROQ_KEYS.good}\n${GROQ_KEYS.busy}` } });
+    assert.equal(saved.rating.keys.length, 3);
+    assert.ok(!Object.values(GROQ_KEYS).some((k) => JSON.stringify(saved).includes(k)), 'no key in the status');
+    assert.equal((await d.msg({ type: 'jobsSave', patch: { groqKeys: 'not a key' } })).error !== undefined, true, 'a typo is refused, the keys stay');
+    assert.equal((await jobs()).rating.keys.length, 3);
+    const check = await d.msg({ type: 'jobsKeyCheck' });
+    assert.equal(check.ok, true, JSON.stringify(check));
+    assert.deepEqual(check.keys.map((k) => k.msg), ['rejected', 'works', 'works']);
+    const t1 = Date.now();
+    assert.equal((await d.msg({ type: 'jobsRateNow' })).result.kind, 'started');
+    s = await waitRate(t1);
+    assert.equal(s.rating.last.rated, waiting, JSON.stringify(s.rating));
+    assert.equal(s.rating.queued, 0);
+    assert.equal(s.rating.today.rated.backend + s.rating.today.rated.ai, waiting);
+    // What Groq got: the rules, the right resume, strict JSON on gpt-oss-20b; never Naukri's pages.
+    const calls = mock.state.groqCalls;
+    assert.ok(calls.length >= rateable.length);
+    assert.equal(calls.filter((c) => c.key === GROQ_KEYS.bad).length, 1, 'a rejected key is left out after its first answer');
+    assert.ok(calls.filter((c) => c.key === GROQ_KEYS.busy).length <= 3, 'a key at its limit rests');
+    for (const c of calls) {
+      assert.equal(c.body.model, 'openai/gpt-oss-20b');
+      assert.equal(c.body.response_format.json_schema.strict, true);
+      assert.equal(c.body.reasoning_effort, 'low');
+      assert.ok(!JSON.stringify(c.body).includes('gsk_'), 'no key in the request body');
+    }
+    const aiCall = calls.find((c) => /Title: Generative AI Engineer/.test(c.body.messages[0].content));
+    assert.ok(aiCall && aiCall.body.messages[0].content.includes('building LLM agents and RAG in Python'), 'an AI-list job is rated against the GenAI resume');
+    // What your site got: the jobs again, each with its rating.
+    const post = mock.state.radarPosts.at(-1);
+    assert.equal(post.summary.trigger, 'rate');
+    const rated = Object.fromEntries(post.openings.filter((o) => o.ai).map((o) => [o.openingId, o.ai]));
+    assert.equal(Object.keys(rated).length, waiting, 'every rated job goes to your site again, with its rating');
+    for (const id of rateable) assert.ok(rated[id], `${id} rated`);
+    for (const a of Object.values(rated)) assert.ok(a.s >= 1 && a.s <= 100 && a.inv >= 1, JSON.stringify(a));
+    const k8s = rated[EXPECT.idOf(12)]; // its JD asks for Kubernetes; the fake model claimed it with a quote that isn't on the resume
+    assert.ok(k8s.uv >= 1 && k8s.miss.includes('Kubernetes'), JSON.stringify(k8s));
+    assert.ok(!k8s.miss.includes('Rust systems programming'), 'an invented requirement is left out');
+  });
+
+  await step('every key rejected: the rating pauses and says why; jobs are still found and sent, unrated; new keys resume it', async () => {
+    mock.state.groqMode = 'reject';
+    mock.state.srpExtra = [listing(54, { title: 'Java Backend Developer', tagsAndSkills: 'Java,Spring Boot,Redis' })];
+    try {
+      const t0 = Date.now();
+      await d.msg({ type: 'jobsNow' });
+      const s = await waitRun(t0);
+      const seen = JSON.stringify({ run: s.lastRun, rating: s.rating, calls: mock.state.groqCalls.filter((c) => c.t >= t0).map((c) => c.key.slice(-4)) });
+      assert.equal(s.lastRun.outcome, 'ok', seen);
+      assert.match(s.lastRun.note, /AI rating stopped: Groq rejected every key/, seen);
+      assert.equal(s.rating.on, false);
+      assert.match(s.rating.why, /^paused: Groq rejected every key/);
+      const sent = mock.state.radarPosts.flatMap((p) => p.openings).filter((o) => o.openingId === EXPECT.idOf(54));
+      assert.ok(sent.length && sent.every((o) => !o.ai), 'sent without a rating');
+    } finally {
+      mock.state.groqMode = 'ok';
+      mock.state.srpExtra = [];
+    }
+    const again = await d.msg({ type: 'jobsSave', patch: { groqKeys: [GROQ_KEYS.good] } });
+    assert.equal(again.rating.on, true, JSON.stringify(again.rating));
+  });
+
+  await step("a company you add to the low-pay list comes off your site at the next run", async () => {
+    const names = (await jobs()).lowPay.names;
+    await d.msg({ type: 'jobsSave', patch: { lowPay: [...names, 'Company 12'] } });
+    await d.msg({ type: 'jobsRescan' });
+    const before = mock.state.radarPosts.length;
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    const s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    const posts = mock.state.radarPosts.slice(before);
+    assert.ok(posts.some((p) => (p.remove || []).some((r) => r.openingId === EXPECT.idOf(12) && r.company === 'Company 12')), JSON.stringify(posts.map((p) => p.remove)));
+    assert.ok(!posts.some((p) => p.openings.some((o) => o.openingId === EXPECT.idOf(12))));
+    const late = mock.state.groqCalls.filter((c) => c.t >= t0);
+    assert.ok(late.every((c) => /Company: Company 54\b/.test(c.body.messages[0].content)), 'only the job still waiting is rated; ratings from the last 3 days are kept');
+    await d.msg({ type: 'jobsSave', patch: { lowPay: null, groqKeys: [] } });
+    await setStore({ jobsDev: null });
+  });
+
+  await step('a later run skips every job it already judged: no JD opened twice, nothing sent twice', async () => {
+    await setStore({ jobsDev: { pause: [60, 120], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'] } });
+    const pagesBefore = mock.jobPages().length;
+    const postsBefore = mock.state.radarPosts.length;
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    const s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    assert.equal(s.sweep.done, true);
+    assert.ok(mock.searchPages().some((p) => p.t >= t0), 'it read the search pages again, for anything new');
+    assert.equal(mock.jobPages().length, pagesBefore, 'no job page opened again');
+    assert.equal(s.lastRun.fresh, 0, 'every listing was already judged');
+    assert.equal(mock.state.radarPosts.length, postsBefore, 'nothing new to send');
+    assert.ok(s.judged >= EXPECT.keep.length + EXPECT.drop.length - EXPECT.applied.card.length, String(s.judged));
+  });
+
+  await step('Start over: your site deletes the finder\'s jobs, this browser forgets what it read, and every listing is read and sent again', async () => {
+    const pagesBefore = mock.jobPages().length;
+    const postsBefore = mock.state.radarPosts.length;
+    const t0 = Date.now();
+    const r = await d.msg({ type: 'jobsStartOver' });
+    assert.equal(r.result.kind, 'started', JSON.stringify(r.result));
+    assert.equal(mock.state.radarResets, 1, 'your site was asked to delete the finder\'s jobs');
+    const s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    assert.equal(s.lastRun.trigger, 'start over');
+    assert.ok(s.startedOver >= t0);
+    const opened = mock.jobPages().slice(pagesBefore).map((p) => p.path);
+    for (const id of EXPECT.keep.filter((x) => !EXPECT.cardOnly.includes(x))) assert.ok(opened.some((p) => p.endsWith(id)), `${id}: its JD read again`);
+    const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
+    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort(), 'every job that fits, sent again');
+    assert.deepEqual([s.daily.kept.backend + s.daily.kept.ai], [EXPECT.keep.length]);
+  });
+
+  await step('Start over in your other browser: this one sees it at its next run and starts over too', async () => {
+    mock.state.finderResetAt = Date.now() + 1; // as if the other browser had just started over
+    const pagesBefore = mock.jobPages().length;
+    const postsBefore = mock.state.radarPosts.length;
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    const s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    assert.match(s.lastRun.note, /^started over/);
+    assert.ok(mock.jobPages().length > pagesBefore, 'its JDs read again');
+    const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
+    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort());
+    await setStore({ jobsDev: null });
+  });
+
   if (process.env.NR_SHOT && d.screenshot) {
     await sleep(1600);
     await d.screenshot(process.env.NR_SHOT);
@@ -896,7 +1062,7 @@ async function suite(d, mock) {
 const which = process.argv.slice(2).length ? process.argv.slice(2) : ['chrome', 'edge', 'firefox'];
 const tmp = mkdtempSync(join(tmpdir(), 'naukri-refresher-e2e-'));
 const cert = spawnSync(OPENSSL, ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(tmp, 'key.pem'), '-out', join(tmp, 'cert.pem'),
-  '-days', '2', '-subj', '/CN=www.naukri.com', '-addext', 'subjectAltName=DNS:www.naukri.com,DNS:interviewplanprep.vercel.app'], { encoding: 'utf8' });
+  '-days', '2', '-subj', '/CN=www.naukri.com', '-addext', 'subjectAltName=DNS:www.naukri.com,DNS:interviewplanprep.vercel.app,DNS:api.groq.com'], { encoding: 'utf8' });
 if (cert.status !== 0) throw new Error(`openssl failed: ${cert.error || cert.stderr}`);
 const mock = await startMock({ key: readFileSync(join(tmp, 'key.pem')), cert: readFileSync(join(tmp, 'cert.pem')) });
 

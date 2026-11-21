@@ -46,7 +46,7 @@
 <body>
   <main>
     <h1>Job finder</h1>
-    <p class="muted">Every 2 hours from 09:00 to 19:00 IST it reads Naukri's own search results, every page of every search, in a muted background tab, and never applies to anything. A run goes on for up to an hour and the next one carries on where it stopped. For every card from the last 48 hours that looks right, it opens the job's page and reads the JD. It keeps the job only if enough of the technologies the JD asks for are yours. The jobs it keeps go to your site's <b>Openings</b> tab, under <b>⭐ Naukri, last 48 hours</b>. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles) and <b>AI</b> (AI-first roles, where GenAI work is a large share of the JD). A job is on one list only. Your site shows the top 200 per list that you haven't applied to or taken yet, highest JD match first.</p>
+    <p class="muted">Every day around 17:00 IST it reads Naukri's own search results, every page of every search, in a muted background tab, and never applies to anything. It works in hour-long stretches with 10-minute rests until every listing of the last 48 hours is read. A job it judged in an earlier run (the last 3 days) is skipped: no JD is opened twice and nothing is sent or rated twice. For every card from the last 48 hours that looks right (and isn't from a company on your low-pay list), it opens the job's page and reads the JD. It keeps the job only if enough of the technologies the JD asks for are yours. The best 400 it keeps per list go to your site's <b>Openings</b> tab, under <b>⭐ Naukri, last 48 hours</b>, and each one is then rated 1–100 against your resume by an LLM on Groq. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles) and <b>AI</b> (AI-first roles, where GenAI work is a large share of the JD). A job is on one list only. Your site shows the top 100 per list that you haven't applied to or taken yet, highest rating first.</p>
 
     <div id="halted" class="card bad" hidden>
       <b>Paused:</b> <span id="haltedMsg"></span>
@@ -99,7 +99,53 @@
     <p class="small muted" id="sweepLine"></p>
     <div class="row">
       <button id="now" type="button">Find jobs now</button>
-      <button id="rescan" type="button" class="secondary" title="Forget today's verdicts and start the sweep again from every search's first page (after you add skills, say)">Re-scan today</button>
+      <button id="rescan" type="button" class="secondary" title="Forget what it judged and start the sweep again from every search's first page (after you add skills, say). Your site keeps its jobs.">Re-scan</button>
+      <button id="startOver" type="button" class="secondary" title="Delete every job the finder put on your site (both lists), forget everything it read, and read every listing of the last 48 hours again, now">Start over…</button>
+    </div>
+    <div id="startOut" class="out" hidden></div>
+
+    <h2>AI rating (Groq)</h2>
+    <div class="card">
+      <p id="rateLine" class="small">Checking…</p>
+      <p class="small muted">Each job sent to your site is read by an LLM on Groq against your resume (the SDE one for the Backend list, the GenAI one for the AI list). The model only lists the JD's requirements and, for each, whether your resume shows it, quoting the resume. The rating is worked out here with fixed weights, and a requirement counts as met only when its quote is really in your resume, word for word. Paste as many keys as you have (up to 10), comma-separated: it uses every one, each in turn, and a key at its limit rests while the others work. The keys stay in this browser and go only to api.groq.com; your name and contact lines are never sent.</p>
+      <div class="row">
+        <input id="groqKeys" type="password" autocomplete="off" placeholder="Your Groq keys, comma-separated: key1,key2,key3 (up to 10)" aria-label="Groq API keys">
+        <button id="saveKeys" type="button">Save keys</button>
+      </div>
+      <p class="small muted" id="keysSaved" style="margin-top:6px"></p>
+      <div class="row">
+        <button id="checkKeys" type="button" class="secondary">Check keys</button>
+        <button id="dropKeys" type="button" class="secondary">Remove keys</button>
+        <button id="rateNow" type="button" class="secondary" title="Rate the jobs that wait for a rating now, without opening Naukri">Rate waiting jobs now</button>
+      </div>
+      <div id="keysOut" class="out" hidden></div>
+      <div class="row" style="margin-top:10px">
+        <label for="rateModel" class="small">Model</label>
+        <input id="rateModel" type="text" autocomplete="off" spellcheck="false" aria-label="Groq model" style="max-width:280px">
+        <button id="saveModel" type="button" class="secondary">Save model</button>
+        <label for="ratePerDay" class="small">Rate up to</label>
+        <select id="ratePerDay" aria-label="Ratings per list per day"></select>
+        <span class="small">jobs per list a day</span>
+      </div>
+      <p class="small muted" id="rateToday" style="margin-top:8px"></p>
+      <p class="small muted" id="rateKeys"></p>
+      <p class="small muted" id="rateQueue"></p>
+      <p class="small" id="rateResumes"></p>
+      <details style="margin-top:6px">
+        <summary class="small">How the rating is worked out</summary>
+        <ul class="small muted" id="rubric"></ul>
+      </details>
+    </div>
+
+    <h2>Companies left out</h2>
+    <div class="card">
+      <p class="small muted">Listings from these companies are dropped on the card, before their JD is opened: IT services, consulting and outsourcing firms that pay far under your bar at 2 years. One company per line; a name matches whole words of the company's name ("HCL" isn't "HCLTech").</p>
+      <textarea id="lowPay" aria-label="Companies left out" style="min-height:120px"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button id="saveLowPay" type="button">Save the list</button>
+        <button id="resetLowPay" type="button" class="secondary">Back to the default list</button>
+        <span id="lowPayOut" class="small muted"></span>
+      </div>
     </div>
 
     <h2>Why listings were left out today</h2>

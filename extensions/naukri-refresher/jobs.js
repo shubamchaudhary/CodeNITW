@@ -12,9 +12,9 @@
 // in turn, so wherever a run stops each search had its share). A run goes on for up to an hour and
 // the next one carries on where it stopped; a finished sweep starts again for what's new since.
 //
-// The AI rating (with your xAI key): while the sweep goes on, each job sent is also rated by Grok
-// against your resume (rate.js), and sent again with its rating. Your site shows the top 100 per
-// list by that rating. Without a key the jobs wait, with their JD text, for a key to be saved.
+// The AI rating (with your Groq keys): while the sweep goes on, each job sent is also rated by an
+// LLM against your resume (rate.js), and sent again with its rating. Your site shows the top 100
+// per list by that rating. Without a key the jobs wait, with their JD text, for keys to be saved.
 //
 // Safety: one run at a time, a few seconds between pages, page caps per run and per day, and it
 // pauses (and tells you) the moment Naukri shows a check, a login page or an error, instead of
@@ -31,7 +31,7 @@ import {
   trackerDay, nextFinderRun, cardCheck, jdCheck, cardOnly, mySkills, toOpening, normalizeJob, htmlToText, lowPayList, byParser,
 } from './jobs-lib.js';
 import { RATE, rateText, keyHint } from './rate-lib.js';
-import { loadResumes, hasXaiAccess, checkKey, loadQueue, pruneQueue, saveQueue, startRater } from './rate.js';
+import { loadResumes, hasGroqAccess, checkKeys, loadQueue, pruneQueue, saveQueue, startRater } from './rate.js';
 import { JOB_PROFILE } from './job-profile.js';
 
 const ext = globalThis.browser ?? globalThis.chrome;
@@ -42,14 +42,15 @@ const rand = (lo, hi) => Math.round(lo + Math.random() * (hi - lo));
 // The token your site hands over (api/radar.mjs finderToken).
 const PAIR_TOKEN = /^nrf1\.[A-Za-z0-9_-]{20,100}$/;
 
-// An xAI API key: one word ("xai-…"). A model id: "grok-4.20-0309-non-reasoning".
-const XAI_KEY_SHAPE = /^[A-Za-z0-9._-]{20,200}$/;
-const MODEL_SHAPE = /^[a-z0-9][a-z0-9._-]{2,60}$/i;
+// A Groq API key: one word ("gsk_…"). A model id: "openai/gpt-oss-20b".
+const KEY_SHAPE = /^[A-Za-z0-9._-]{20,200}$/;
+const MODEL_SHAPE = /^[a-z0-9][a-z0-9._/-]{2,80}$/i;
+/** Keys as typed (one per line, or separated by commas or spaces) → a list. */
+const splitKeys = (v) => (Array.isArray(v) ? v : String(v ?? '').split(/[\s,;]+/)).map((k) => String(k ?? '').trim()).filter(Boolean);
 
 function cleanSettings(s = {}) {
   const [lo, hi] = RULES.minScoreRange;
   const bar = Number(s.minScore);
-  const key = typeof s.xaiKey === 'string' ? s.xaiKey.trim() : '';
   const model = typeof s.rateModel === 'string' ? s.rateModel.trim() : '';
   return {
     enabled: s.enabled === true,
@@ -58,9 +59,9 @@ function cleanSettings(s = {}) {
     scope: SCOPES.includes(s.scope) ? s.scope : 'both',
     pairedAt: typeof s.pairedAt === 'number' ? s.pairedAt : null, // when your site last handed over the token
     minScore: bar >= lo && bar <= hi ? Math.round(bar * 100) / 100 : RULES.minScore, // the JD match bar
-    // The AI rating: your xAI key (kept in this browser, sent only to api.x.ai), the model, and how
-    // many jobs per list a day it may rate.
-    xaiKey: XAI_KEY_SHAPE.test(key) ? key : '',
+    // The AI rating: your Groq keys (kept in this browser, sent only to api.groq.com), the model,
+    // and how many jobs per list a day it may rate.
+    groqKeys: [...new Set(splitKeys(s.groqKeys).filter((k) => KEY_SHAPE.test(k)))].slice(0, RATE.maxKeys),
     rateModel: MODEL_SHAPE.test(model) ? model : RATE.model,
     ratePerDay: RATE.perDayChoices.includes(Number(s.ratePerDay)) ? Number(s.ratePerDay) : RATE.perDay,
     // Companies left out on the card; null means the default list (LOW_PAY_COMPANIES).
@@ -92,7 +93,20 @@ async function loadState() {
   st.memo = st.memo && typeof st.memo === 'object' ? st.memo : {};
   // Each job's AI rating, kept 3 days. A re-scan or new rules keep them: a rating costs money.
   st.rated = st.rated && typeof st.rated === 'object' ? st.rated : {};
+  // What this browser has on your site (kept 3 days, like the site keeps it), and what to take off
+  // it: a job read again that the rules now turn down.
+  st.onSite = st.onSite && typeof st.onSite === 'object' ? st.onSite : {};
+  st.unsend = Array.isArray(st.unsend) ? st.unsend : [];
   return st;
+}
+
+/** Before verdicts are forgotten (new rules, a re-scan): what they kept is on your site, so it can come off. */
+function rememberOnSite(st) {
+  const onSite = { ...(st.onSite || {}) };
+  for (const [id, m] of Object.entries(st.memo || {})) {
+    if (m && m.keep && m.o && m.pool !== false && !onSite[id]) onSite[id] = { t: m.t, company: m.o.company };
+  }
+  return onSite;
 }
 const MEMO_DAYS = 3;
 const FLUSH_MS = 5 * MIN; // a long run sends what it kept every few minutes
@@ -100,7 +114,7 @@ const POOL_WHY = `kept, but below the top ${RULES.poolTop} of its list`;
 
 /** The day's AI rating tally (in st.daily, so a new day starts it again). */
 function rateCounts(daily) {
-  if (!daily.rate) daily.rate = { calls: 0, rated: { backend: 0, ai: 0 }, usd: 0, tokens: { input: 0, cached: 0, output: 0 }, fails: 0, last: null };
+  if (!daily.rate) daily.rate = { calls: 0, rated: { backend: 0, ai: 0 }, tokens: { input: 0, cached: 0, output: 0 }, fails: 0, last: null, keys: {} };
   return daily.rate;
 }
 
@@ -117,7 +131,7 @@ function rollDay(st, now) {
   const day = trackerDay(now);
   if (st.rulesVersion !== RULES_VERSION) {
     st = {
-      ...st, rulesVersion: RULES_VERSION, seen: {}, queue: [], unknown: {}, reasons: {}, memo: {}, sweep: null,
+      ...st, rulesVersion: RULES_VERSION, seen: {}, queue: [], unknown: {}, reasons: {}, memo: {}, sweep: null, onSite: rememberOnSite(st),
       daily: { ...(st.daily || {}), read: 0, kept: { backend: 0, ai: 0 } },
     };
   }
@@ -126,7 +140,10 @@ function rollDay(st, now) {
   const fresh = (o) => Object.fromEntries(Object.entries(o || {}).filter(([, m]) => m && m.t > cut));
   const since = now - RULES.maxAgeH * HOUR;
   return {
-    ...st, day, seen: {}, queue: [], unknown: {}, reasons: {}, memo: fresh(st.memo), rated: fresh(st.rated),
+    // What it judged stays judged for 3 days (a job seen again is skipped, whatever day it is), and
+    // job pages a run didn't get to wait while they're within the 48 hours.
+    ...st, day, seen: fresh(st.seen), queue: (st.queue || []).filter((c) => c && c.job && (c.t || 0) > now - 2 * DAY), unknown: {}, reasons: {},
+    memo: fresh(st.memo), rated: fresh(st.rated), onSite: fresh(st.onSite),
     // What didn't reach your site yet still goes, while it's within the 48 hours.
     pending: (st.pending || []).filter((o) => o && (o.postedTime || 0) >= since),
     daily: { runs: 0, pages: 0, jds: 0, read: 0, kept: { backend: 0, ai: 0 }, uploaded: 0 },
@@ -136,20 +153,22 @@ function rollDay(st, now) {
 /** Whether the AI rating can run, and if not, why (for the settings page). */
 async function ratingSetup(settings, dev, st) {
   const resumes = await loadResumes(dev);
-  const access = await hasXaiAccess();
-  const stop = st.rateStop && (st.rateStop.kind !== 'credits' || st.rateStop.day === st.day) ? st.rateStop : null;
+  const access = await hasGroqAccess();
   let why = '';
-  if (!settings.xaiKey) why = 'no xAI key saved';
+  if (!settings.groqKeys.length) why = 'no Groq key saved';
   else if (!settings.ratePerDay) why = 'switched off (0 a day)';
   else if (!resumes) why = "your resumes aren't in the extension yet (resume.local.json: run naukri-refresher-dev/make-job-profile.mjs)";
-  else if (!access) why = 'no access to api.x.ai yet (press Save key on this page to allow it)';
-  else if (stop) why = `paused: ${stop.msg}`;
+  else if (!access) why = 'no access to api.groq.com yet (press Save keys on the settings page to allow it)';
+  else if (st.rateStop) why = `paused: ${st.rateStop.msg}`;
   return { on: !why, why, resumes, access, hash: resumes ? resumes.hash : null };
 }
 
-/** A problem that stops the rating (a rejected key, no credits, an unknown model) waits for you. */
+/**
+ * A problem no later run can get past by itself (every key rejected, a model Groq doesn't serve)
+ * waits for you: new keys or a new model in the settings clear it. Keys at their limits don't.
+ */
 function noteRater(st, problem) {
-  if (!problem || !['key', 'credits', 'model'].includes(problem.kind)) return;
+  if (!problem || !['key', 'model'].includes(problem.kind)) return;
   st.rateStop = { kind: problem.kind, msg: problem.msg, t: Date.now(), day: st.day };
   notify('nr-rate', 'AI rating paused', `${problem.msg}. Jobs are still found and sent, without a rating.`);
 }
@@ -159,11 +178,13 @@ const onRatedFor = (st, rating, run) => (item, ai) => {
   st.rated[item.id] = { t: Date.now(), h: rating.hash ? rating.hash[item.profile] : null, ai };
   run.rated = (run.rated || 0) + 1;
   const m = st.memo[item.id];
-  const o = m && m.keep ? m.o : null;
+  if (m && (!m.keep || m.pool === false)) return; // turned down since it was queued: not sent again
+  const o = m ? m.o : null;
   if (o) o.ai = ai;
   const i = st.pending.findIndex((p) => p && p.openingId === item.id);
   if (i >= 0) st.pending[i] = { ...st.pending[i], ai };
-  else if (o && m.pool !== false) st.pending.push({ ...o });
+  // Its verdict forgotten since (a re-scan, new rules) but it's on your site: the copy it waited with goes.
+  else if (o || (item.o && st.onSite[item.id])) st.pending.push({ ...(o || item.o), ai });
 };
 
 /** The jobs still waiting for a rating, saved for the next run. */
@@ -401,6 +422,52 @@ async function hasAccess() {
   return { naukri, site };
 }
 
+/** A finder request to your site that answers JSON: → { status, j } ({ status: 0 } when unreachable). */
+async function sitePost(token, body) {
+  try {
+    const res = await fetch(RADAR_API_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+      body: JSON.stringify({ finder: 'naukri', ...body }),
+    });
+    return { status: res.status, j: await res.json().catch(() => null) };
+  } catch (e) {
+    return { status: 0, err: e && e.message };
+  }
+}
+
+/** When you last started over (in any browser), as your site remembers it: 0 when it doesn't say. */
+async function siteResetAt(token) {
+  const { status, j } = await sitePost(token, { state: true });
+  return status === 200 && j && j.finder === true ? Number(j.resetAt) || 0 : 0;
+}
+
+/** "Start over": your site deletes every job the finder put there, both lists. */
+async function siteReset(token) {
+  const { status, j, err } = await sitePost(token, { reset: true });
+  if (status === 200 && j && j.finder === true && Number(j.resetAt) > 0) return { ok: true, deleted: Number(j.deleted) || 0, resetAt: Number(j.resetAt) };
+  if (status === 401) return { ok: false, short: 'site token rejected' };
+  if (status === 0) return { ok: false, short: `could not reach your site (${err})` };
+  return { ok: false, short: status === 400 ? "your site doesn't know Start over yet (deploy the site changes)" : `your site answered HTTP ${status}` };
+}
+
+/**
+ * Forget everything this browser read, as if the finder were new: the next run reads every listing
+ * of the last 48 hours again, opens every good-looking JD, and sends what fits. Ratings from the
+ * last 3 days stay (same job, same resume, same rating), and so do the day's run log and caps.
+ */
+function freshStart(st, resetAt) {
+  Object.assign(st, { seen: {}, memo: {}, queue: [], sweep: null, onSite: {}, unsend: [], pending: [], reasons: {}, unknown: {}, rateQueued: 0 });
+  st.resetSeen = resetAt;
+  st.startedOver = Date.now();
+  const kept = st.daily.kept || (st.daily.kept = {});
+  kept.backend = 0;
+  kept.ai = 0;
+  st.daily.read = 0;
+  st.daily.pages = 0; // a fresh start gets the whole day's page caps for its sweep
+  st.daily.jds = 0;
+}
+
 /** Ask the site whether it knows the finder; writes nothing. */
 async function siteCheck(token) {
   try {
@@ -419,12 +486,12 @@ async function siteCheck(token) {
   }
 }
 
-async function upload(token, openings, summary) {
+async function upload(token, openings, summary, remove = []) {
   try {
     const res = await fetch(RADAR_API_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
-      body: JSON.stringify({ finder: 'naukri', summary, openings, remove: [] }),
+      body: JSON.stringify({ finder: 'naukri', summary, openings, remove }),
     });
     const j = await res.json().catch(() => null);
     if (res.ok && j && j.finder === true) return { ok: true, created: j.created || 0, updated: j.updated || 0 };
@@ -436,24 +503,37 @@ async function upload(token, openings, summary) {
 }
 
 /**
- * Sends st.pending to your site in batches. A job that changed while its batch was on the way (a
- * rating came back) stays for the next batch. → { ok } or upload()'s failure.
+ * Sends st.pending to your site in batches, with the jobs to take off it (st.unsend). A job that
+ * changed while its batch was on the way (a rating came back) stays for the next batch.
+ * → { ok } or upload()'s failure.
  */
 async function sendPending(st, token, summary, onSent) {
-  while (st.pending.length) {
+  while (st.pending.length || st.unsend.length) {
     const batch = st.pending.slice(0, FINDER_LIMITS.uploadMax);
-    const u = await upload(token, batch, summary);
+    const gone = st.unsend.slice(0, FINDER_LIMITS.uploadMax);
+    const u = await upload(token, batch, summary, gone);
     if (!u.ok) return u;
     const sent = new Set(batch);
     st.pending = st.pending.filter((o) => !sent.has(o));
+    st.unsend = st.unsend.slice(gone.length);
     const t = Date.now();
     for (const o of batch) {
       const m = st.memo[o.openingId];
       if (m && m.keep) m.sent = t;
+      st.onSite[o.openingId] = { t, company: o.company };
     }
     onSent(batch.length);
   }
   return { ok: true };
+}
+
+/** A job your site has that the rules now turn down: taken off it with the next upload. */
+function unlist(st, id, why) {
+  const on = st.onSite[id];
+  if (!on || why === 'posted over 48 hours ago') return; // that one leaves your site's 48 hours by itself
+  delete st.onSite[id];
+  if (!st.unsend.some((r) => r.openingId === id)) st.unsend.push({ company: on.company, openingId: id });
+  st.pending = st.pending.filter((o) => o.openingId !== id);
 }
 
 async function halt(st, short, msg) {
@@ -533,6 +613,11 @@ async function findJobs(trigger) {
   liveQueue = rq;
   let rater = null;
   const ratingOk = (c, profile) => !!c && (!rating.hash || c.h === rating.hash[profile]);
+  // A job turned down now needs no rating.
+  const unqueue = (id) => {
+    const i = rq.findIndex((it) => it.id === id);
+    if (i >= 0) rq.splice(i, 1);
+  };
 
   // In the parser's top RULES.poolTop of its list (the last 48 hours, by JD match)? Only those go
   // to your site and get a rating.
@@ -550,22 +635,26 @@ async function findJobs(trigger) {
   // A decision on one job, recorded. `jd` ({ text, skills }) is what its page said, for the rating.
   const decide = (id, v, jd = null) => {
     if (!v.keep) {
-      st.seen[id] = { k: 0, w: v.why };
+      st.seen[id] = { t: Date.now(), k: 0, w: v.why };
       st.reasons[v.why] = (st.reasons[v.why] || 0) + 1;
+      unlist(st, id, v.why); // on your site from before (older rules)? It comes off.
+      unqueue(id);
       return;
     }
-    if ((kept[v.profile] || 0) >= FINDER_LIMITS.perListDay) { st.seen[id] = { k: 0, w: 'daily cap' }; return; }
+    if ((kept[v.profile] || 0) >= FINDER_LIMITS.perListDay) { st.seen[id] = { t: Date.now(), k: 0, w: 'daily cap' }; return; }
     const m = st.memo[id];
     const o = m && m.keep && m.o ? m.o : toOpening(v, Date.now());
     if (!inPool(o)) {
       if (m) m.pool = false;
-      st.seen[id] = { k: 0, w: POOL_WHY };
+      st.seen[id] = { t: Date.now(), k: 0, w: POOL_WHY };
       st.reasons[POOL_WHY] = (st.reasons[POOL_WHY] || 0) + 1;
+      unlist(st, id, POOL_WHY);
+      unqueue(id);
       return;
     }
     if (m) m.pool = true;
     kept[v.profile] = (kept[v.profile] || 0) + 1;
-    st.seen[id] = { k: 1, r: v.rank, p: v.profile, s: v.skills.score };
+    st.seen[id] = { t: Date.now(), k: 1, r: v.rank, p: v.profile, s: v.skills.score };
     const c = st.rated[id];
     if (ratingOk(c, v.profile)) o.ai = c.ai; // rated in the last few days: no new call
     else if (jd && jd.text) {
@@ -574,6 +663,7 @@ async function findJobs(trigger) {
         p: { coverage: o.coverage, fewSkills: o.fewSkills, rank: o.rank },
         text: rateText(jd.text), skills: (jd.skills || []).slice(0, 20),
         job: { title: o.title, company: o.company, exp: v.job.expText, location: o.location },
+        o, // the job as sent, for when its verdict is forgotten before its rating comes back
       });
     }
     st.pending.push(o);
@@ -630,7 +720,7 @@ async function findJobs(trigger) {
   let flushed = Date.now();
   const flush = async () => {
     flushed = Date.now();
-    if (!st.pending.length || refused) return !refused;
+    if ((!st.pending.length && !st.unsend.length) || refused) return !refused;
     const summary = {
       ranAt: new Date(started).toISOString(), seconds: Math.round((Date.now() - started) / 1000), trigger,
       pages: run.pages, jds: run.jds, read: run.read, kept: run.kept, rated: run.rated, day: st.day, scope: settings.scope, browser: browserName(),
@@ -681,10 +771,20 @@ async function findJobs(trigger) {
       st.siteOkDay = st.day;
     }
 
-    // The rating runs alongside the sweep (it only talks to api.x.ai, never to Naukri).
+    // Started over since (in this browser or in your other one)? Your site no longer has what this
+    // browser sent, so it forgets what it read too, and this sweep reads everything again.
+    const resetAt = await siteResetAt(settings.token);
+    if (resetAt > (st.resetSeen || 0)) {
+      freshStart(st, resetAt);
+      rq.length = 0;
+      run.note = 'started over: reading every listing of the last 48 hours again';
+      await saveState(st);
+    }
+
+    // The rating runs alongside the sweep (it only talks to api.groq.com, never to Naukri).
     if (rating.on) {
       rater = startRater(rq, {
-        key: settings.xaiKey, model: settings.rateModel, resumes: rating.resumes, perDay: settings.ratePerDay,
+        keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, perDay: settings.ratePerDay,
         counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run),
       });
     }
@@ -704,7 +804,12 @@ async function findJobs(trigger) {
         const open = searches.filter((s) => !sw.over[s.k]);
         if (!open.length) { sw.done = true; sw.finished = Date.now(); break; } // every search read to the end
         for (const s of open) {
-          if (!budget() || (!jdOff && !jdBudget())) { run.note = run.note || 'stopped at its time or page cap; the next run carries on'; break outer; }
+          if (!budget() || (!jdOff && !jdBudget())) {
+            // A stretch's own cap: it rests, then carries on. The day's cap: tomorrow's run carries on.
+            run.capped = (st.daily.pages || 0) >= FINDER_LIMITS.pagesPerDay || (st.daily.jds || 0) >= FINDER_LIMITS.jdPerDay ? 'day' : 'stretch';
+            run.note = run.note || (run.capped === 'day' ? "stopped at the day's page cap; tomorrow's run carries on" : 'stopped at its time or page cap; it carries on after a short rest');
+            break outer;
+          }
           if (run.pages > 0) await pause();
           const page = sw.next[s.k] || 1;
           const url = searchUrl(s.k, page);
@@ -754,7 +859,7 @@ async function findJobs(trigger) {
               // Its JD was read in the last few days: the same verdict, no page opened. Your site
               // already has it; it's sent again only if it never got there or has a newer rating.
               if (!m.keep) { decide(id, { keep: false, why: m.why }); continue; }
-              st.seen[id] = { k: 1, p: m.profile, memo: true };
+              st.seen[id] = { t: Date.now(), k: 1, p: m.profile, memo: true };
               if (m.pool === false || (kept[m.profile] || 0) >= FINDER_LIMITS.perListDay) continue;
               kept[m.profile] = (kept[m.profile] || 0) + 1;
               run.kept += 1;
@@ -764,8 +869,8 @@ async function findJobs(trigger) {
               if (!m.sent || newer) st.pending.push(m.o);
               continue;
             }
-            st.seen[id] = { k: 2 }; // its job page is next
-            st.queue.push(c);
+            st.seen[id] = { t: Date.now(), k: 2 }; // its job page is next
+            st.queue.push({ ...c, t: Date.now() });
           }
           run.fresh += fresh;
           // This search is read to the end when its results run out: Naukri's own total reached, or a
@@ -808,12 +913,29 @@ async function findJobs(trigger) {
   return { kind: 'ok', ...run };
 }
 
+/**
+ * One run: stretch after stretch (each up to an hour), with a short rest between them, until the
+ * sweep has read every listing, Naukri asks for a check, or the day's caps are reached.
+ */
 async function runGuarded(trigger) {
   if (running) return { kind: 'busy' };
   running = true;
   const stop = keepAlive();
   try {
-    return await findJobs(trigger);
+    let r = null;
+    for (let stretch = 1; stretch <= FINDER_LIMITS.stretches; stretch++) {
+      r = await findJobs(stretch === 1 ? trigger : `${trigger}, part ${stretch}`);
+      if (r.kind !== 'ok' || r.capped !== 'stretch' || stretch === FINDER_LIMITS.stretches) break;
+      const st = await loadState();
+      st.resting = { until: Date.now() + FINDER_LIMITS.restMin * MIN, part: stretch + 1 };
+      await saveState(st);
+      await sleep(FINDER_LIMITS.restMin * MIN);
+      const after = await loadState();
+      after.resting = null;
+      await saveState(after);
+      if (after.halted || !(await loadSettings()).token) break;
+    }
+    return r;
   } catch (e) {
     const st = await loadState();
     await closeTab(st);
@@ -827,7 +949,7 @@ async function runGuarded(trigger) {
     running = false;
     liveQueue = null;
     const st = await loadState();
-    if (st.lock) { st.lock = null; await saveState(st); }
+    if (st.lock || st.resting) { st.lock = null; st.resting = null; await saveState(st); }
   }
 }
 
@@ -852,7 +974,7 @@ async function rateOnly() {
   liveQueue = rq;
   const run = { rated: 0 };
   const rater = startRater(rq, {
-    key: settings.xaiKey, model: settings.rateModel, resumes: rating.resumes, perDay: settings.ratePerDay,
+    keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, perDay: settings.ratePerDay,
     counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run),
   });
   const saver = setInterval(() => { saveState(st).catch(() => {}); }, 5000);
@@ -860,7 +982,7 @@ async function rateOnly() {
   noteRater(st, rater.problem);
   let note = rater.problem ? rater.problem.msg : '';
   // The ratings go to your site (when it's known to take the finder's uploads), else with the next run.
-  if (st.pending.length && settings.token) {
+  if ((st.pending.length || st.unsend.length) && settings.token) {
     let siteOk = st.siteOkDay === st.day;
     if (!siteOk) {
       siteOk = (await siteCheck(settings.token)).ok;
@@ -971,13 +1093,15 @@ async function jobsStatus() {
     access, running: running || !!(st.lock && st.lock.until > Date.now()),
     day: st.day, daily: st.daily, plan: st.plan || null, halted: st.halted || null,
     lastRun: st.lastRun || null, runs: st.runs, pending: st.pending.length, queued: st.queue.length, sweep,
-    reasons: top(st.reasons, 14), unknown: top(st.unknown, 15), sample: st.sample || null, jdSample: st.jdSample || null,
+    resting: st.resting && st.resting.until > Date.now() ? st.resting : null, startedOver: st.startedOver || null, removing: st.unsend.length,
+    judged: Object.keys(st.seen).length,
+    reasons: top(st.reasons, 24), unknown: top(st.unknown, 15), sample: st.sample || null, jdSample: st.jdSample || null,
     searches: searchesFor(settings.scope).map((s) => s.k), allSearches: SEARCHES.map((s) => ({ k: s.k, profile: s.profile })),
     rules: RULES, limits: FINDER_LIMITS, profiles: PROFILES,
     skillCount: mySkills(extraList(settings)).size, resumeSkills: JOB_PROFILE.skills.length, skillsGenerated: JOB_PROFILE.generated,
-    // The AI rating. Never the key itself: only that there is one, and its last 4 characters.
+    // The AI rating. Never a key itself: only the last 4 characters of each.
     rating: {
-      on: rating.on, why: rating.why, hasKey: !!settings.xaiKey, keyHint: keyHint(settings.xaiKey), model: settings.rateModel,
+      on: rating.on, why: rating.why, keys: settings.groqKeys.map(keyHint), model: settings.rateModel, defaultModel: RATE.model,
       perDay: settings.ratePerDay, access: rating.access,
       resumes: rating.resumes ? { sde: rating.resumes.sde.length, genai: rating.resumes.genai.length, generated: rating.resumes.generated, from: rating.resumes.from } : null,
       today: (st.daily && st.daily.rate) || null, stop: st.rateStop || null, last: st.lastRate || null,
@@ -1027,13 +1151,16 @@ export const jobsHandlers = {
   async jobsSave({ patch = {} }) {
     const cur = await loadSettings();
     const { pairedAt, ...allowed } = patch; // only a token from your site counts as paired
-    if (typeof allowed.xaiKey === 'string' && allowed.xaiKey.trim() && !XAI_KEY_SHAPE.test(allowed.xaiKey.trim())) {
-      return { ...(await jobsStatus()), error: "that doesn't look like an xAI API key (one word, like xai-…); nothing saved" };
+    if ('groqKeys' in allowed) {
+      const typed = splitKeys(allowed.groqKeys);
+      const bad = typed.filter((k) => !KEY_SHAPE.test(k)).length;
+      if (bad) return { ...(await jobsStatus()), error: `${bad} of those ${bad === 1 ? "doesn't" : "don't"} look like a Groq API key (one word each, like gsk_…); nothing saved` };
+      if (typed.length > RATE.maxKeys) return { ...(await jobsStatus()), error: `at most ${RATE.maxKeys} keys; nothing saved` };
     }
     const next = cleanSettings({ ...cur, ...allowed, ...('token' in allowed ? { pairedAt: null } : {}) });
     await ext.storage.local.set({ [S]: next });
-    // A new key, model or daily cap: whatever stopped the rating may be fixed now.
-    if (next.xaiKey !== cur.xaiKey || next.rateModel !== cur.rateModel || next.ratePerDay !== cur.ratePerDay) {
+    // New keys, model or daily cap: whatever stopped the rating may be fixed now.
+    if (next.groqKeys.join() !== cur.groqKeys.join() || next.rateModel !== cur.rateModel || next.ratePerDay !== cur.ratePerDay) {
       const st = await loadState();
       if (st.rateStop) { st.rateStop = null; await saveState(st); }
     }
@@ -1078,7 +1205,31 @@ export const jobsHandlers = {
   // What xAI says about the saved key (never the key itself), and whether it has the model.
   async jobsKeyCheck() {
     const s = await loadSettings();
-    return checkKey(s.xaiKey, s.rateModel);
+    return checkKeys(s.groqKeys, s.rateModel);
+  },
+  /**
+   * "Start over": your site deletes every job the finder put there (both lists); this browser forgets
+   * what it read and starts a fresh sweep of the last 48 hours right away, stretch after stretch
+   * until every listing is read. Your other browser starts over at its next run (it sees the time).
+   */
+  async jobsStartOver() {
+    const settings = await loadSettings();
+    const st0 = await loadState();
+    const access = await hasAccess();
+    const no = (short) => ({ result: { kind: 'error', short } });
+    if (running || (st0.lock && st0.lock.until > Date.now())) return { result: { kind: 'busy' }, status: await jobsStatus() };
+    if (!access.naukri || !access.site) return { ...no('needs access to naukri.com and your site (popup → Allow access)'), status: await jobsStatus() };
+    if (!settings.token) return { ...no('not connected to your site yet'), status: await jobsStatus() };
+    if (st0.halted) return { ...no(`paused (${st0.halted.short}): press Resume first`), status: await jobsStatus() };
+    const r = await siteReset(settings.token);
+    if (!r.ok) return { ...no(r.short), status: await jobsStatus() };
+    const st = rollDay(await loadState(), Date.now());
+    freshStart(st, r.resetAt);
+    await saveState(st);
+    await saveQueue([]);
+    runGuarded('start over'); // takes a while: the settings page follows it through jobsStatus
+    await sleep(300);
+    return { result: { kind: 'started', deleted: r.deleted }, status: await jobsStatus() };
   },
   async jobsRateNow() {
     const st = await loadState();
@@ -1096,6 +1247,7 @@ export const jobsHandlers = {
     st.reasons = {};
     st.unknown = {};
     st.queue = [];
+    st.onSite = rememberOnSite(st); // what those verdicts put on your site, so it can come off if they change
     st.memo = {}; // and the JDs it read: new skills or a new bar can change their verdicts
     st.daily = { ...st.daily, read: 0, kept: { backend: 0, ai: 0 } };
     await saveState(st);

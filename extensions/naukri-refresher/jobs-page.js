@@ -1,5 +1,8 @@
 import { fmtWhen, istHM } from './lib.js';
 import { SITE_JOBS_URL } from './jobs-lib.js';
+import { WEIGHTS } from './rate-lib.js';
+
+const GROQ_MATCH = 'https://api.groq.com/*';
 
 const ext = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
@@ -13,6 +16,58 @@ const el = (tag, text, cls) => {
 
 let extraLoaded = false;
 let barLoaded = false;
+let rateLoaded = false;
+let lowPayLoaded = false;
+
+/** The AI rating's card: on or off (and why), the keys, today's use, what waits. */
+function renderRating(s, now) {
+  const R = s.rating;
+  const line = $('rateLine');
+  line.className = R.on ? 'small ok' : 'small warn';
+  line.textContent = R.on
+    ? `On: ${R.model}, ${R.keys.length} key${R.keys.length === 1 ? '' : 's'}, up to ${R.perDay} ratings per list a day.`
+    : `Off: ${R.why}.`;
+  $('keysSaved').textContent = R.keys.length ? `Saved: ${R.keys.length} key${R.keys.length === 1 ? '' : 's'} (${R.keys.join(', ')}).` : 'No keys saved.';
+  if (!rateLoaded) {
+    for (const n of s.rate.perDayChoices) $('ratePerDay').add(new Option(n ? String(n) : '0 (off)', String(n)));
+    rateLoaded = true;
+  }
+  if (document.activeElement !== $('ratePerDay')) $('ratePerDay').value = String(R.perDay);
+  if (document.activeElement !== $('rateModel')) $('rateModel').value = R.model;
+  $('rateModel').placeholder = R.defaultModel;
+  const t = R.today;
+  $('rateToday').textContent = t && t.calls
+    ? `Today: ${t.rated.backend || 0} Backend and ${t.rated.ai || 0} AI jobs rated in ${t.calls} calls, ${(t.tokens.input + t.tokens.output).toLocaleString()} tokens (${t.tokens.cached.toLocaleString()} of them cached).${t.fails ? ` ${t.fails} failed.` : ''}${t.last ? ` Last problem: ${t.last.msg}.` : ''}`
+    : 'Today: nothing rated yet.';
+  const keys = Object.entries((t && t.keys) || {});
+  $('rateKeys').textContent = keys.length ? `Per key today: ${keys.map(([h, k]) => `${h} ${k.calls} calls, ${k.ok} rated${k.last && k.last !== 'ok' ? ` (${k.last})` : ''}`).join(' · ')}` : '';
+  const last = R.last ? ` Last "Rate now" ${fmtWhen(R.last.t, now)} IST: ${R.last.rated} rated${R.last.note ? `, ${R.last.note}` : ''}.` : '';
+  $('rateQueue').textContent = `${R.queued} job${R.queued === 1 ? '' : 's'} wait for a rating.${last} ${R.ratedKept} ratings from the last 3 days are kept, so a job seen again isn't rated twice.`;
+  const res = $('rateResumes');
+  res.className = R.resumes ? 'small muted' : 'small warn';
+  res.textContent = R.resumes
+    ? `Resumes it sends: SDE (${R.resumes.sde.toLocaleString()} characters) and GenAI (${R.resumes.genai.toLocaleString()}), ${R.resumes.from === 'test' ? 'test copies' : `made ${R.resumes.generated || 'from your PDFs'}`}, without your name and contact lines.`
+    : 'Your resumes aren\'t in the extension yet. Run: node extensions/naukri-refresher-dev/make-job-profile.mjs (it writes resume.local.json next to the extension, which git ignores), then reload the extension.';
+  $('rateNow').disabled = s.running || !R.on;
+  if (!$('rubric').children.length) {
+    for (const t2 of [
+      `Must-have requirements your resume shows: ${WEIGHTS.must} points (partly shown counts half).`,
+      `Nice-to-haves your resume shows: ${WEIGHTS.nice}.`,
+      `Years asked: ${WEIGHTS.years} at up to 2 years, less at 3 or 4, none at 5+.`,
+      `Role: ${WEIGHTS.role} for backend (Backend list) or GenAI (AI list), less for full stack, ML or data, none for QA, support or mobile.`,
+      `Level: ${WEIGHTS.level} for mid-level, a little less for junior, little for senior, none for lead.`,
+      'Caps: QA, support or mobile roles 20 at most; lead roles or 5+ years asked 30 at most; a JD naming fewer than 3 requirements 75 at most.',
+      "Checks: a requirement the model names that isn't in the JD is dropped; a \"met\" whose quote isn't in your resume, word for word, counts as not met.",
+    ]) $('rubric').append(el('li', t2));
+  }
+}
+
+function renderLowPay(s) {
+  if (lowPayLoaded) return;
+  $('lowPay').value = s.lowPay.names.join('\n');
+  $('lowPayOut').textContent = `${s.lowPay.names.length} companies${s.lowPay.custom ? ' (your list)' : ' (the default list)'}.`;
+  lowPayLoaded = true;
+}
 
 function chips(root, pairs, empty) {
   root.replaceChildren();
@@ -54,9 +109,12 @@ function render(s) {
     $('minScore').value = String(s.settings.minScore);
     barLoaded = true;
   }
-  let next = s.settings.enabled ? (s.plan ? `Next run ${fmtWhen(s.plan.at, now)} IST.` : '') : 'The finder is off (switch it on in the popup).';
-  if (s.running) next = 'Running now…';
+  let next = s.settings.enabled ? (s.plan ? `Next run ${fmtWhen(s.plan.at, now)} IST.` : '') : 'The finder is off (switch it on in the popup); "Find jobs now" still works.';
+  if (s.running) next = s.resting ? `Resting until ${fmtWhen(s.resting.until, now)} IST, then part ${s.resting.part} of this run.` : 'Running now…';
   if (s.queued) next += ` ${s.queued} job pages wait to be read.`;
+  if (s.removing) next += ` ${s.removing} jobs wait to come off your site.`;
+  next += ` It remembers ${s.judged} jobs it judged in the last 3 days, and skips them.`;
+  if (s.startedOver) next += ` Started over ${fmtWhen(s.startedOver, now)} IST.`;
   if (s.pending) next += ` ${s.pending} kept jobs wait to be sent.`;
   $('nextLine').textContent = next;
   const w = s.sweep;
@@ -64,9 +122,12 @@ function render(s) {
     : w.done ? `Sweep ${w.n} read every page of all ${w.searches} searches (${w.pages} pages, ${fmtWhen(w.started, now)} to ${fmtWhen(w.finished, now)} IST). The next run starts a new one.`
       : `Sweep ${w.n}, started ${fmtWhen(w.started, now)} IST: ${w.over} of ${w.searches} searches read to the end, ${w.pages} pages so far. The next run carries on.`;
   $('now').disabled = s.running || !s.settings.hasToken || !!s.halted;
+  $('startOver').disabled = s.running || !s.settings.hasToken || !!s.halted;
   $('token').placeholder = s.settings.hasToken ? 'Saved (paste a new one to replace it)' : 'Paste the token';
   if (!extraLoaded) { $('extra').value = s.settings.extraSkills || ''; extraLoaded = true; }
 
+  renderRating(s, now);
+  renderLowPay(s);
   chips($('reasons'), s.reasons, 'Nothing yet.');
   chips($('unknown'), s.unknown, 'None yet.');
 
@@ -94,15 +155,19 @@ function render(s) {
   rules.replaceChildren();
   const of = (p) => s.allSearches.filter((x) => x.profile === p).map((x) => x.k).join(' · ');
   for (const t of [
-    `Every listing, not a sample: the runs read every page of every search (up to ${L.pagesPerSearch} pages each), one page of each search in turn. A run goes on for up to ${L.runMinutes} minutes and the next one carries on where it stopped; once every search is read to the end, the next run starts a new sweep for what's new. At most ${L.pagesPerDay} pages and ${L.jdPerDay} job pages a day.`,
+    `Every listing, not a sample: once a day, around 17:00 IST, a run reads every page of every search (up to ${L.pagesPerSearch} pages each), one page of each search in turn. It works in stretches of up to ${L.runMinutes} minutes with ${L.restMin}-minute rests (up to ${L.stretches} stretches) until every search is read to the end; where it stops, the next run carries on. At most ${L.pagesPerDay} pages and ${L.jdPerDay} job pages a day.`,
+    'No job twice: a listing it judged in the last 3 days (kept or not) is skipped by its id, so no JD is opened twice and nothing is sent or rated twice. "Start over" deletes the finder\'s jobs from your site and forgets all of that, for a fresh run end to end.',
     `First the card. It must be posted in the last ${R.maxAgeH} hours, as Naukri labels it ("Just now", "Few hours ago", "1 day ago"); "2 days ago" and older are out. A card that doesn't say passes. A job you already applied to on Naukri is out, when its card or its page says so.`,
+    `Company: one on your low-pay list (${s.lowPay.names.length} companies, such as ${s.lowPay.names.slice(0, 4).join(', ')}) is out before its JD is opened.`,
     'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, or lead/architect/manager. A plain "Software Engineer/Developer" passes.',
     `Experience: asks for less than ${R.maxMinYears} years, and isn't a 0–1 year fresher role. A card that doesn't say passes.`,
     `Pay: reaches ${R.minPayL} LPA when the listing gives a salary. One it doesn't give passes.`,
     `Skill chips: when they name 3 or more known technologies and under ${Math.round(R.cardFloor * 100)}% are yours, the job is another stack and its page isn't opened. Chips that aren't technologies are ignored.`,
     `Then the JD. The finder opens the job's page, finds every technology the JD asks for with the skills dictionary (over a thousand skills), and compares them with yours. The job is kept when at least ${Math.round(s.settings.minScore * 100)}% are yours. "Nice to have" lines, company blurbs and perks don't count. A JD naming fewer than ${R.minJdSkills} technologies is held to the same bar and ranked a little lower; one naming none is kept.`,
     `The list: AI when the title is an AI one, or when GenAI/ML work is ${Math.round(R.aiShare * 100)}%+ of the JD's technology. Otherwise Backend. A job is on one list only.`,
-    `Your site shows the top ${R.showTop} of each list posted in the last ${R.showHours} hours, highest JD match first (ties by rank: title, experience, pay, company rating, how fresh), leaving out what you applied to, skipped or have in the pipeline. A job whose JD was read in the last 3 days isn't opened again.`,
+    `Your site gets the parser's top ${R.poolTop} of each list from the last ${R.maxAgeH} hours, highest JD match first (ties by rank: title, experience, pay, company rating, how fresh). A job kept below that isn't sent. A job whose JD was read in the last 3 days isn't opened again.`,
+    `Then the AI rating (above, with your Groq keys): each job sent is rated 1–100 against your resume and sent again with its rating, up to ${s.rating.perDay} per list a day, best JD match first.`,
+    `Your site shows the top ${R.showTop} of each list posted in the last ${R.showHours} hours, highest AI rating first; jobs not rated yet come after them, highest JD match first. What you applied to, skipped or have in the pipeline is left out.`,
     `Backend searches: ${of('backend')}.`,
     `AI searches: ${of('ai')}.`,
   ]) rules.append(el('li', t));
@@ -145,8 +210,78 @@ $('saveExtra').addEventListener('click', async () => {
   await send('jobsSave', { patch: { extraSkills: $('extra').value } });
   $('extraOut').textContent = `Saved ${istHM(Date.now())}. Press "Re-scan today" to apply them to jobs already decided.`;
 });
+function showKeys(cls, text) {
+  const o = $('keysOut');
+  o.hidden = false;
+  o.className = `out ${cls}`;
+  o.textContent = text;
+}
+$('saveKeys').addEventListener('click', async () => {
+  const typed = $('groqKeys').value.trim();
+  if (!typed) return showKeys('warn', 'Paste your keys first.');
+  // Asked right away, while this click still counts as yours (Firefox needs it; Chrome and Edge already allow it).
+  const granted = ext.permissions.request({ origins: [GROQ_MATCH] }).catch(() => false);
+  const s = await send('jobsSave', { patch: { groqKeys: typed } });
+  $('groqKeys').value = '';
+  if (s.error) return showKeys('err', `Not saved: ${s.error}.`);
+  const n = s.rating.keys.length;
+  showKeys((await granted) ? 'ok' : 'warn', (await granted)
+    ? `Saved ${n} key${n === 1 ? '' : 's'}. "Check keys" tries each one.`
+    : `Saved ${n} key${n === 1 ? '' : 's'}, but this browser hasn't allowed api.groq.com yet: press Save keys again and allow it.`);
+  refresh();
+});
+$('checkKeys').addEventListener('click', async () => {
+  showKeys('muted', 'Asking Groq about each key…');
+  const r = await send('jobsKeyCheck');
+  const each = (r.keys || []).map((k) => `${k.hint}: ${k.msg}`).join(' · ');
+  showKeys(r.ok ? 'ok' : 'err', `${r.short}.${each ? ` ${each}.` : ''}`);
+});
+$('dropKeys').addEventListener('click', async () => {
+  await send('jobsSave', { patch: { groqKeys: [] } });
+  showKeys('muted', 'Keys removed from this browser.');
+  refresh();
+});
+$('rateNow').addEventListener('click', async () => {
+  $('rateNow').disabled = true;
+  const r = await send('jobsRateNow');
+  showKeys(r.result.kind === 'started' ? 'ok' : 'warn', r.result.kind === 'started' ? 'Rating the jobs that wait; this page follows it.' : 'Busy: a finder run is on. It rates as it goes.');
+  refresh();
+});
+$('saveModel').addEventListener('click', async () => {
+  await send('jobsSave', { patch: { rateModel: $('rateModel').value.trim() } });
+  showKeys('muted', `Model saved ${istHM(Date.now())}.`);
+  refresh();
+});
+$('ratePerDay').addEventListener('change', async (e) => { await send('jobsSave', { patch: { ratePerDay: Number(e.target.value) } }); refresh(); });
+$('saveLowPay').addEventListener('click', async () => {
+  const names = $('lowPay').value.split(/\n|,/).map((x) => x.trim()).filter(Boolean);
+  const s = await send('jobsSave', { patch: { lowPay: names } });
+  $('lowPayOut').textContent = `Saved ${s.lowPay.names.length} companies ${istHM(Date.now())}. Press "Re-scan today" to apply it to jobs already decided.`;
+});
+$('resetLowPay').addEventListener('click', async () => {
+  const s = await send('jobsSave', { patch: { lowPay: null } });
+  $('lowPay').value = s.lowPay.names.join('\n');
+  $('lowPayOut').textContent = `Back to the default list: ${s.lowPay.names.length} companies.`;
+});
 $('now').addEventListener('click', async () => { $('now').disabled = true; await send('jobsNow'); refresh(); });
 $('rescan').addEventListener('click', async () => { await send('jobsRescan'); refresh(); });
+$('startOver').addEventListener('click', async () => {
+  const ok = window.confirm('Start over?\n\nYour site deletes every job the finder put there, on both lists (the radar\'s own openings stay).'
+    + ' This browser forgets everything it read and reads every listing of the last 48 hours again, now, until it is done.'
+    + ' Your other browser starts over at its next run. Ratings from the last 3 days are kept.');
+  if (!ok) return;
+  const o = $('startOut');
+  o.hidden = false;
+  o.className = 'out muted';
+  o.textContent = 'Asking your site to delete the finder\'s jobs…';
+  const r = await send('jobsStartOver');
+  const res = r.result || {};
+  o.className = `out ${res.kind === 'started' ? 'ok' : 'err'}`;
+  o.textContent = res.kind === 'started'
+    ? `Started over: your site deleted ${res.deleted} jobs. Reading every listing of the last 48 hours again; this page follows it. On your site, press Refresh in Openings.`
+    : res.kind === 'busy' ? 'A run is on: try again when it ends.' : `Not started over: ${res.short}.`;
+  refresh();
+});
 $('resume').addEventListener('click', async () => { await send('jobsResume'); refresh(); });
 
 refresh();

@@ -28,7 +28,7 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
 // Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
-export const RULES_VERSION = 4;
+export const RULES_VERSION = 5;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
@@ -45,13 +45,16 @@ export const RULES = Object.freeze({
   aiShare: 0.4, // AI-first when GenAI/ML work is at least this share of the JD's technology
 });
 
-// Every page of every search, so a run can be long: it works up to an hour, and the next run picks
-// up where it stopped. The caps are a safety net, not a target.
+// Every page of every search, so a run can be long: it works in hour-long stretches, resting 10
+// minutes between them, until every search is read to the end. Where it stops (the day's caps, a
+// check from Naukri), the next run picks up. The caps are a safety net, not a target.
 export const FINDER_LIMITS = Object.freeze({
-  runMinutes: 60,
-  pagesPerRun: 500, // search pages and job pages together
-  pagesPerDay: 2000,
-  jdPerDay: 1000, // job pages opened per day
+  runMinutes: 60, // one stretch of a run
+  pagesPerRun: 500, // search pages and job pages together, in one stretch
+  stretches: 6, // a run goes on, stretch after stretch, until every listing is read (or the day's caps)
+  restMin: 10, // the rest between stretches
+  pagesPerDay: 3000,
+  jdPerDay: 1500, // job pages opened per day
   pagesPerSearch: 100, // 2,000 results: past that a search is too broad to be about you
   pauseMin: 4_000, // ms between page loads, picked at random in [min, max]
   pauseMax: 9_000,
@@ -111,8 +114,9 @@ export function searchesFor(scope) {
   return scope === 'backend' || scope === 'ai' ? SEARCHES.filter((s) => s.profile === scope) : SEARCHES;
 }
 
-// Run times (IST hours); each lands at a random minute within ±7 of the hour.
-export const RUN_HOURS = Object.freeze([9, 11, 13, 15, 17, 19]);
+// Run times (IST hours): once a day, around 5 pm, at a random minute within ±7 of the hour. A run
+// works in hour-long stretches with short rests until it has read every listing (FINDER_LIMITS).
+export const RUN_HOURS = Object.freeze([17]);
 const RUN_JITTER = 7 * MIN;
 
 /** Naukri's own search page for a keyword, with its filters in the URL. */
@@ -329,10 +333,72 @@ export function lowPayMatch(company, list = LOW_PAY) {
   return list.find((w) => name.includes(w)) || null;
 }
 
+// ---------------------------------------------------------------- the job's own stack
+
+// What a job is mostly about decides whether it's yours: the Backend list is for Java/Spring Boot
+// roles, the AI list for Python and GenAI ones (LLMs, RAG, agents, LangChain, LangGraph, FastAPI).
+// A JD whose main stack is JavaScript (React, Angular, Node, MERN or MEAN) or another language
+// (Go, .NET, PHP…) is out; some frontend or AI next to a Java core is fine.
+const JAVA_TOO = new Set(['JVM', 'Micronaut', 'Quarkus', 'Vert.x', 'Dropwizard', 'Java EE', 'EJB', 'JSP', 'Servlets', 'JSF', 'Struts', 'Apache Camel',
+  'JAX-RS', 'JAX-WS', 'Netty', 'Lombok', 'Jackson', 'Tomcat', 'Jetty', 'JBoss', 'WebLogic', 'WebSphere', 'GlassFish', 'Undertow', 'MyBatis', 'jOOQ',
+  'JDBC', 'Hystrix', 'Zuul', 'OpenFeign', 'Helidon', 'Javalin']);
+const PYTHON_TOO = new Set(['Tornado', 'aiohttp', 'Sanic', 'Starlette', 'SQLAlchemy', 'Pydantic', 'asyncio', 'Gunicorn', 'Uvicorn']);
+const JS_TOO = new Set(['Deno', 'Bun', 'Socket.IO']);
+const STACKS = ['java', 'python', 'genai', 'ml', 'js', 'other'];
+
+/** The stack a technology belongs to: java, python, genai, ml, js (frontend or Node), other (another language's), or null (databases, cloud…). */
+export function stackOf(label) {
+  const s = skillOf(label);
+  if (!s) return null;
+  if (s.area === 'genai') return 'genai';
+  if (s.area === 'ml') return 'ml';
+  if (s.area === 'frontend') return 'js';
+  const up = withParents([s.label]);
+  if (up.has('Java') || JAVA_TOO.has(s.label)) return 'java';
+  if (up.has('Python') || PYTHON_TOO.has(s.label)) return 'python';
+  if (up.has('JavaScript') || up.has('TypeScript') || JS_TOO.has(s.label)) return 'js';
+  return s.area === 'lang' || s.area === 'backend' || s.area === 'mobile' ? 'other' : null;
+}
+
+/** Found skills → each stack's weight (and how many skills), the same weighing as the match share. */
+export function stackWeights(found, titleSkills = new Set()) {
+  const w = Object.fromEntries(STACKS.map((k) => [k, 0]));
+  const n = Object.fromEntries(STACKS.map((k) => [k, 0]));
+  let otherTop = null;
+  let otherW = 0;
+  for (const [l, k] of found) {
+    const s = skillOf(l);
+    const f = s && s.count ? stackOf(l) : null;
+    if (!f) continue;
+    const x = s.weight * Math.min(k, 3) * (titleSkills.has(l) ? 2 : 1);
+    w[f] += x;
+    n[f] += 1;
+    if (f === 'other' && x > otherW) { otherTop = s.label; otherW = x; }
+  }
+  return { ...w, n, otherTop };
+}
+
+/**
+ * A JD's stacks → its list, or why it's out. Java ahead of Python and GenAI: Backend. Python and
+ * GenAI ahead: AI, when there's GenAI work or FastAPI in it (a plain Django or Flask job is
+ * neither). JavaScript or another language ahead of both: out. No stack named at all: null (the
+ * caller decides as before). → { profile } | { out: why } | null
+ */
+export function stackVerdict(sw, { titleAi = false, fastApi = false } = {}) {
+  const pyai = sw.python + sw.genai + 0.5 * sw.ml;
+  const core = Math.max(sw.java, pyai);
+  if (!(sw.java + pyai + sw.js + sw.other > 0)) return null;
+  if (sw.js > core || sw.other > core) return { out: sw.js >= sw.other ? 'frontend or MERN stack' : `${sw.otherTop || 'another'} stack` };
+  if (sw.java >= pyai && sw.java > 0 && !(titleAi && pyai >= sw.java)) return { profile: 'backend' };
+  if (sw.genai > 0 || fastApi || titleAi) return { profile: 'ai' };
+  return { out: 'Python role without GenAI' };
+}
+
 // ---------------------------------------------------------------- titles
 
 // A title naming one of these is a stack or a level you don't apply for.
 const TITLE_OUT = [
+  [/\bm(?:ern|ean|evn)\b/i, 'MERN/MEAN stack'],
   [/\bandroid\b/i, 'Android'],
   [/\bios\b|\bswift(?:ui)?\b|objective[- ]?c\b|\bxcode\b/i, 'iOS'],
   [/\bflutter\b|react[\s-]?native|\bmobile\b|\bxamarin\b|\bionic\b/i, 'mobile'],
@@ -377,10 +443,12 @@ export function titleCheck(title, mine = MY_SKILLS) {
     return { ok: false, why: `${why} role` };
   }
   if (CONSULTANT.test(t) && !DEV_WORD.test(t)) return { ok: false, why: 'consulting role' };
-  const stacks = [...findSkills(title).keys()].filter((l) => STACK_AREAS.has(skillOf(l).area));
-  const yours = (l) => !NOT_TARGET.has(l) && (mine.has(l) || mine.has(CLOSE[l] || ''));
-  if (stacks.length && !stacks.some(yours)) return { ok: false, why: `${stacks.join('/')} role` };
+  // The stacks a title names must include Java or Python (or it's an AI title): "Node.js Developer"
+  // or "Full Stack Developer (React)" is out; "Java Full Stack" and a plain "Software Engineer" are in.
   const ai = AI_TITLE.test(t);
+  const stacks = [...findSkills(title).keys()].filter((l) => STACK_AREAS.has(skillOf(l).area));
+  const target = (l) => !NOT_TARGET.has(l) && ['java', 'python', 'genai'].includes(stackOf(l));
+  if (stacks.length && !stacks.some(target) && !ai) return { ok: false, why: `${stacks.join('/')} role` };
   let fit = ai || CORE_TITLE.test(t) ? 1 : ANY_ENG_TITLE.test(t) ? 0.8 : 0.6;
   if (SENIOR.test(t)) fit *= 0.8;
   return { ok: true, fit, ai };
@@ -423,7 +491,7 @@ function chipSkills(tags) {
 /** The card's skill chips. Chips the dictionary doesn't know (filler like "Strategic") are ignored. */
 export function chipCheck(tags, mine = MY_SKILLS) {
   const { found, unknown } = chipSkills(tags);
-  return { ...weigh(found, mine), unknown };
+  return { ...weigh(found, mine), unknown, stacks: stackWeights(found) };
 }
 
 // A line that marks what follows (or itself) as optional; sections that aren't the job.
@@ -499,6 +567,13 @@ export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScor
   if (pay.kind !== 'unknown' && pay.maxL < RULES.minPayL) return { keep: false, why: 'pays under 15L', job };
   const chips = chipCheck(job.tags, mine);
   if (chips.counted.length >= 3 && chips.score < RULES.cardFloor) return { keep: false, why: "card's skills are another stack", job, chips };
+  // Chips that are all JavaScript (MERN, MEAN, React and Node) or all another language's stack,
+  // with nothing of Java, Python or GenAI among them: its JD isn't opened.
+  const cs = chips.stacks;
+  if (cs.n.java + cs.n.python + cs.n.genai === 0) {
+    if (cs.n.js >= 2 && cs.n.js >= cs.n.other) return { keep: false, why: 'frontend or MERN stack', job, chips };
+    if (cs.n.other >= 2) return { keep: false, why: `${cs.otherTop} stack`, job, chips };
+  }
   const cardRank = rankOf({
     fit: t.fit, score: chips.counted.length >= 2 ? chips.score : null, have: chips.have.length,
     years, pay, rating: job.rating, reviews: job.reviews, createdAt: job.createdAt,
@@ -516,8 +591,11 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
   const { req } = jdSections(text);
   const found = findSkills(`${card.job.title}\n${req}`);
   for (const [l, k] of chipSkills(skills).found) found.set(l, Math.max(found.get(l) || 0, k)); // the page's "Key Skills"
-  const w = weigh(found, mine, new Set(findSkills(card.job.title).keys()));
-  const profile = card.titleAi || w.aiShare >= RULES.aiShare ? 'ai' : 'backend';
+  const titleSkills = new Set(findSkills(card.job.title).keys());
+  const w = weigh(found, mine, titleSkills);
+  // Its main stack decides its list (Java: Backend; Python and GenAI: AI) or rules it out.
+  const sv = stackVerdict(stackWeights(found, titleSkills), { titleAi: card.titleAi, fastApi: found.has('FastAPI') });
+  const profile = sv && sv.profile ? sv.profile : card.titleAi || w.aiShare >= RULES.aiShare ? 'ai' : 'backend';
   const v = {
     job: card.job, day: card.day, ageH: card.ageH, years: card.years, pay: card.pay, fit: card.fit, profile, jd: true,
     aiShare: w.aiShare, skills: { counted: w.counted, have: w.have, missing: w.missing, score: w.score },
@@ -527,6 +605,7 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
     rating: card.job.rating, reviews: card.job.reviews, createdAt: card.job.createdAt,
   }, now, minScore);
   if (w.score != null && w.score < minScore) return { keep: false, why: `JD match under ${Math.round(minScore * 100)}%`, ...v };
+  if (sv && sv.out) return { keep: false, why: sv.out, ...v };
   // A JD naming few technologies (or none) says little: kept on the same bar, ranked a little lower.
   if (w.counted.length < RULES.minJdSkills) return { keep: true, few: true, ...v, rank: Math.max(0, rank(w.score) - 5) };
   return { keep: true, ...v, rank: rank(w.score) };
@@ -535,12 +614,14 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
 /** A job whose page couldn't be read: judged on its chips alone, and only when they say enough. */
 export function cardOnly(card, { now, minScore = RULES.minScore } = {}) {
   const c = card.chips;
+  const sv = c.stacks ? stackVerdict(c.stacks, { titleAi: card.titleAi, fastApi: c.counted.includes('FastAPI') }) : null;
   const v = {
     job: card.job, day: card.day, ageH: card.ageH, years: card.years, pay: card.pay, fit: card.fit, jd: false,
-    profile: card.titleAi || c.aiShare >= RULES.aiShare ? 'ai' : 'backend', aiShare: c.aiShare,
+    profile: sv && sv.profile ? sv.profile : card.titleAi || c.aiShare >= RULES.aiShare ? 'ai' : 'backend', aiShare: c.aiShare,
     skills: { counted: c.counted, have: c.have, missing: c.missing, score: c.score },
   };
   if (!(c.counted.length >= 3 && c.score >= minScore)) return { keep: false, why: "job page unreadable, card doesn't say enough", ...v };
+  if (sv && sv.out) return { keep: false, why: sv.out, ...v };
   return {
     keep: true, ...v,
     rank: rankOf({ fit: card.fit, score: c.score, have: c.have.length, years: card.years, pay: card.pay, rating: card.job.rating, reviews: card.job.reviews, createdAt: card.job.createdAt }, now, minScore),
