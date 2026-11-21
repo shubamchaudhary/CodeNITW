@@ -764,6 +764,14 @@ async function suite(d, mock) {
     assert.equal(byId[EXPECT.idOf(72)].profile, 'backend', 'Java full stack: some frontend next to Java is fine');
     assert.equal(byId[EXPECT.idOf(11)].profile, 'ai', 'Python, FastAPI and GenAI: the AI list');
     assert.ok(posts[0].openings.every((o) => !o.ai), 'no key yet: nothing rated');
+    // How you apply, read off each job's page (never clicked): on Naukri, or on the company's site with its link.
+    for (const id of EXPECT.companySite) {
+      assert.equal(byId[id].apply, 'company', `${id}: apply on company site`);
+      assert.equal(byId[id].applyUrl, `https://careers.example.org/jobs/${id}?src=naukri`);
+    }
+    assert.equal(byId[EXPECT.idOf(1)].apply, 'naukri', 'a plain "Apply" button: on Naukri');
+    assert.equal(byId[EXPECT.idOf(1)].applyUrl, undefined);
+    assert.equal(s.jdSample.applyInfo && typeof s.jdSample.applyInfo.button, 'string', 'the last job page read says what its apply button said');
     assert.equal(s.daily.kept.ai, EXPECT.ai.length);
     assert.equal(s.daily.kept.backend, EXPECT.keep.length - EXPECT.ai.length);
     assert.equal(naukriPosts().length, 0, 'never sends anything to Naukri (no apply, no form)');
@@ -786,8 +794,8 @@ async function suite(d, mock) {
     assert.doesNotMatch(page.next, /Not responding/, page.next);
     assert.match(page.rules, /Every listing, not a sample/);
     assert.match(page.rules, /last 48 hours/);
-    assert.match(page.rules, /top 400 of each list/);
-    assert.match(page.rules, /top 100 of each list/);
+    assert.match(page.rules, /Apply on Naukri, its top 100/);
+    assert.match(page.rules, /Apply on company site, all of them/);
     assert.match(page.rules, /low-pay list/);
   });
 

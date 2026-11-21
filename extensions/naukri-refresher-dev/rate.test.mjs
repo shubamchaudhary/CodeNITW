@@ -201,7 +201,7 @@ function fakeGroq(script) {
     const body = init.body ? JSON.parse(init.body) : null;
     calls.push({ url: String(url), key, body });
     const r = script(key, calls.length, body) || {};
-    return new Response(JSON.stringify(r.json ?? { choices: [{ message: { content: OK_ANSWER } }], usage: { prompt_tokens: 3000, completion_tokens: 400, prompt_tokens_details: { cached_tokens: 2000 } } }), {
+    return new Response(JSON.stringify(r.json ?? { choices: [{ message: { content: OK_ANSWER } }], usage: { prompt_tokens: 1000, completion_tokens: 200, prompt_tokens_details: { cached_tokens: 800 } } }), {
       status: r.status || 200,
       headers: { 'content-type': 'application/json', ...(r.headers || {}) },
     });
@@ -256,7 +256,7 @@ const item = (id, profile = 'backend', coverage = 80, post = Date.now()) => ({
 const counts = () => ({ calls: 0, rated: { backend: 0, ai: 0 }, tokens: { input: 0, cached: 0, output: 0 }, fails: 0, last: null });
 const RESUMES = { sde: RESUME, genai: `${RESUME}\nGenAI first` };
 
-test('the worker rates the best-ranked jobs first, moves past a rejected or busy key, and keeps to the daily cap', async () => {
+test('the worker moves past a rejected key and a busy one, best-ranked job first, the right resume for each list', async () => {
   const calls = fakeGroq((key) => {
     if (key === KEY('b')) return { status: 401, json: { error: { message: 'Invalid API Key' } } };
     if (key === KEY('c')) return { status: 429, headers: { 'retry-after': '120' }, json: { error: { message: 'Rate limit reached ... (TPM)' } } };
@@ -266,33 +266,76 @@ test('the worker rates the best-ranked jobs first, moves past a rejected or busy
   const c = counts();
   const rated = [];
   const rater = startRater(queue, {
-    keys: [KEY('b'), KEY('a'), KEY('c')], model: RATE.model, resumes: RESUMES, perDay: 2, counts: c,
+    keys: [KEY('b'), KEY('a'), KEY('c'), KEY('d')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: c,
     onRated: (it, ai) => rated.push([it.id, ai.s]),
   });
   await rater.drain(20_000);
   assert.equal(rater.problem, null, JSON.stringify(rater.problem));
-  assert.deepEqual(rated.map(([id]) => id).filter((id) => id !== 'ai1').sort(), ['mid', 'top'], 'the best two, two a day on the Backend list');
-  assert.ok(rated.some(([id]) => id === 'ai1'), 'the AI list has its own cap');
-  assert.deepEqual(queue.map((i) => i.id), ['low'], 'what the cap held back waits');
+  assert.deepEqual(rated.map(([id]) => id).sort(), ['ai1', 'low', 'mid', 'top']);
   assert.ok(rated.every(([, s]) => s >= 1 && s <= 100));
-  assert.equal(rater.pool.slots[0].dead !== null, true, 'the rejected key is left out');
-  assert.ok(rater.pool.slots[2].until > Date.now() + 60_000, 'the busy key rests');
-  assert.ok(calls.filter((x) => x.key === KEY('b')).length === 1, 'a rejected key is not tried again');
-  assert.equal(c.rated.backend, 2);
-  assert.equal(c.tokens.cached > 0, true);
-  const sentResume = calls.find((x) => x.key === KEY('a') && /GenAI first/.test(x.body.messages[0].content));
-  assert.ok(sentResume, 'an AI-list job is rated against the GenAI resume');
+  assert.equal(rater.pool.slots[0].deadKind, 'rejected', 'the rejected key is left out');
+  assert.ok(rater.pool.slots[2].until > Date.now() + 60_000, 'the busy key rests as long as Groq says');
+  assert.equal(calls.filter((x) => x.key === KEY('b')).length, 1, 'a rejected key is not tried again');
+  assert.equal(c.calls, calls.length);
+  assert.ok(c.tokens.cached > 0);
+  assert.ok(calls.find((x) => /GenAI first/.test(x.body.messages[0].content) && (x.key === KEY('a') || x.key === KEY('d'))), 'an AI-list job is rated against the GenAI resume');
 });
 
-test('every key rejected, or every key at its limit for long: the worker stops and says why', async () => {
+test("the day's call cap: no more Groq calls than the settings allow; the best jobs get them", async () => {
+  const calls = fakeGroq(() => null);
+  const queue = [item('low', 'backend', 61), item('top', 'backend', 95), item('mid', 'backend', 75)];
+  const rated = [];
+  const c = counts();
+  const rater = startRater(queue, { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 2, counts: c, onRated: (it) => rated.push(it.id) });
+  await rater.drain(20_000);
+  assert.deepEqual(rated, ['top', 'mid']);
+  assert.equal(calls.length, 2);
+  assert.deepEqual(queue.map((i) => i.id), ['low'], 'the rest wait for tomorrow');
+  assert.equal(RATE.callsPerDay, 750, '750 a browser: 1,500 a day with two');
+});
+
+test('a key at its limit rests longer each time, and is left alone once it is still limited a minute after its first 429', async () => {
+  const calls = fakeGroq(() => ({ status: 429, json: { error: { message: 'Rate limit reached on tokens per minute (TPM). Please try again in 0.01s.' } } }));
+  const rater = startRater([item('x')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), onRated: () => {}, limitBaseMs: 100, limitStopMs: 1000 });
+  await rater.drain(10_000);
+  assert.equal(rater.problem && rater.problem.kind, 'quota');
+  assert.equal(rater.pool.slots[0].dead, 'still at its limit after a minute');
+  assert.ok(calls.length >= 3 && calls.length <= 6, `backed off: ${calls.length} tries`);
+});
+
+test('every key rejected, or at its daily limit: the worker stops and says why', async () => {
   fakeGroq(() => ({ status: 401, json: { error: { message: 'Invalid API Key' } } }));
-  let rater = startRater([item('x')], { keys: [KEY('a'), KEY('b')], model: RATE.model, resumes: RESUMES, perDay: 10, counts: counts(), onRated: () => {} });
+  let rater = startRater([item('x')], { keys: [KEY('a'), KEY('b')], model: RATE.model, resumes: RESUMES, callsPerDay: 10, counts: counts(), onRated: () => {} });
   await rater.drain(10_000);
   assert.equal(rater.problem && rater.problem.kind, 'key');
   fakeGroq(() => ({ status: 429, json: { error: { message: 'tokens per day (TPD): Limit 200000. Please try again in 2h0m0s.' } } }));
-  rater = startRater([item('y')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, perDay: 10, counts: counts(), onRated: () => {} });
+  rater = startRater([item('y')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 10, counts: counts(), onRated: () => {} });
   await rater.drain(10_000);
   assert.equal(rater.problem && rater.problem.kind, 'quota');
+});
+
+test("each key stays under 70% of Groq's free limits: a minute's tokens and requests, a day's, and what Groq's headers say", () => {
+  const ledger = {};
+  const pool = keyPool([KEY('a')], 0, ledger);
+  assert.deepEqual(pool.cap, { rpm: 21, tpm: 5600, rpd: 700, tpd: 140000 });
+  const now = 5_000_000;
+  const s = pool.take(now);
+  pool.used(s, { input: 3000, cached: 0, output: 300 }, now); // 3,300 counted
+  assert.equal(pool.take(now), null, 'another 2,800 or so would pass 5,600 tokens this minute');
+  assert.equal(pool.slots[0].until, now + 60_000, 'it rests until that call leaves the minute');
+  assert.ok(pool.take(now + 60_001));
+  pool.used(s, { input: 2000, cached: 1800, output: 200 }, now + 60_001); // cached tokens don't count: 400
+  assert.equal(ledger['…aaaa'].tok, 3700);
+  assert.equal(ledger['…aaaa'].req, 2, "the day's tally is kept per key");
+  ledger['…aaaa'].req = 700;
+  assert.equal(pool.take(now + 200_000), null);
+  assert.equal(pool.slots[0].deadKind, 'budget', "700 requests: done for the day");
+  const p2 = keyPool([KEY('b')], 0, {});
+  p2.note(p2.slots[0], { requestsLeft: 250, tokensLeft: 8000 }, now);
+  assert.equal(p2.slots[0].deadKind, 'budget', "Groq says under 30% of the day's requests are left (another browser used them)");
+  const p3 = keyPool([KEY('c')], 0, {});
+  p3.note(p3.slots[0], { requestsLeft: 900, tokensLeft: 2000, tokensReset: 15_000 }, now);
+  assert.equal(p3.slots[0].until, now + 15_000, "under 30% of the minute's tokens left: it rests until Groq's reset");
 });
 
 test('the queue between runs: the last 48 hours, not rated yet, best first, no repeats', () => {

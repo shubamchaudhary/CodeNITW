@@ -3,7 +3,8 @@
 // finder) come from the same stored openings and are loaded together, so they're matched as
 // they're shown: no extra database. Any one key in common means the same job.
 //   - Naukri id: the number at the end of a naukri.com/job-listings-… link (the finder's own id).
-//   - Link: lowercased, without #fragments, tracking parameters or a trailing slash.
+//   - Link: lowercased, without #fragments, tracking parameters or a trailing slash (a Naukri job
+//     you apply to on the company's site has that site's link too).
 //   - Company + title: "Acme Technologies Pvt Ltd" is "acme"; "Java Developer (Immediate
 //     Joiners) - Bangalore" is "java developer". Reposts and the same role on two boards match.
 // Plain JS (no JSX) so the Node tests can load it.
@@ -55,6 +56,9 @@ export function jobKeys(o) {
   if (id) keys.push(`n:${id}`);
   const link = linkKey(o.url);
   if (link) keys.push(`u:${link}`);
+  // A Naukri job you apply to on the company's own site: that page is the job too.
+  const site = o.applyUrl ? linkKey(o.applyUrl) : '';
+  if (site && site !== link) keys.push(`u:${site}`);
   const role = roleKey(o.company, o.title);
   if (role) keys.push(role);
   return keys;

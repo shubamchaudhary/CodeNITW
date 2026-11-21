@@ -91,7 +91,8 @@ const PAY_CLS = {
 // JD against your resume, an AI rating (`ai`). Each list shows its top SHOW_TOP posted in the last
 // WINDOW_HOURS hours that you haven't taken yet, highest AI rating first.
 const WINDOW_HOURS = 48;
-const SHOW_TOP = 100;
+const SHOW_TOP = 100; // "Apply" on Naukri: the top 100 a list (Naukri takes 50 applies a day per account)
+const SITE_BATCH = 60; // "Apply on company site": every one, 60 cards at a time
 const HOUR_MS = 3600000;
 // When a finder opening was posted: Naukri's own time, else when the finder first stored it.
 const postedMs = (o) => o.postedTime || o.firstSeen || o.openedAt || 0;
@@ -432,7 +433,12 @@ function FinderCard({ o, n, onSkip, onApplied }) {
         {o.title}
       </a>
       <div className="text-[11px] text-fg-subtle truncate" title={o.location}>
-        {o.location || "India"} · <span title={profile.hint}>apply from your {profile.label} account</span>
+        {o.location || "India"} ·{" "}
+        {o.apply === "company" ? (
+          <span title="Its Naukri page says “Apply on company site”">apply on the company&apos;s site</span>
+        ) : (
+          <span title={profile.hint}>apply from your {profile.label} account</span>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-1">
@@ -503,13 +509,13 @@ function FinderCard({ o, n, onSkip, onApplied }) {
           <HiX className="w-3.5 h-3.5" /> Skip
         </button>
         <a
-          href={o.url}
+          href={o.apply === "company" && o.applyUrl ? o.applyUrl : o.url}
           target="_blank"
           rel="noreferrer"
-          title="Open the listing on Naukri to apply"
+          title={o.apply === "company" && o.applyUrl ? "Open the job on the company's own site, to apply there" : "Open the listing on Naukri to apply"}
           className={`${ACTION} border border-line-strong text-fg-muted hover:bg-surface-hover `}
         >
-          <HiOutlineExternalLink className="w-3.5 h-3.5" /> Open
+          <HiOutlineExternalLink className="w-3.5 h-3.5" /> {o.apply === "company" && o.applyUrl ? "Company site" : "Open"}
         </a>
         <button onClick={onApplied} title="I applied: add it to the pipeline as applied today" className={`${ACTION} bg-success hover:opacity-90 text-white`}>
           <HiCheck className="w-3.5 h-3.5" /> Applied
@@ -555,6 +561,8 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   // Which list: picked on this visit, else the one this browser's job finder searches for (its
   // Naukri account), else the one picked last time on this device.
   const [profileChoice, setProfileChoice] = useState(null);
+  const [applyTab, setApplyTab] = useState("naukri"); // ⭐ Naukri: "naukri" (Apply on Naukri) | "company" (Apply on company site)
+  const [siteShown, setSiteShown] = useState(SITE_BATCH);
   const [savedProfile] = useState(readProfile);
   const extScope = finderExt?.present && (finderExt.scope === "backend" || finderExt.scope === "ai") ? finderExt.scope : null;
   const profileTab = profileChoice || extScope || savedProfile || "backend";
@@ -657,15 +665,18 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
         if (hidden[o.id] || dismissedUrls.has(urlOf(o))) g.skipped = true;
         if (taken(o)) g.taken = true;
       }
+      // Two lists per account: "Apply" on Naukri (it takes 50 applies a day per account, so the top
+      // SHOW_TOP show) and "Apply on company site" (as many as there are).
       const live = groups.filter((g) => !g.skipped);
-      const left = live.filter((g) => !g.taken).map((g) => g.best);
-      out[p.id] = {
-        found: live.length,
-        done: live.length - left.length,
-        rated: left.filter((o) => aiScore(o) > 0).length,
-        list: left.slice(0, SHOW_TOP),
-        more: Math.max(0, left.length - SHOW_TOP),
+      const part = (company) => {
+        const mine = live.filter((g) => (g.best.apply === "company") === company);
+        const left = mine.filter((g) => !g.taken).map((g) => g.best);
+        const top = company ? left : left.slice(0, SHOW_TOP);
+        return { found: mine.length, done: mine.length - left.length, rated: left.filter((o) => aiScore(o) > 0).length, list: top, more: left.length - top.length };
       };
+      const naukriPart = part(false);
+      const sitePart = part(true);
+      out[p.id] = { naukri: naukriPart, company: sitePart, found: naukriPart.found + sitePart.found };
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -800,7 +811,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
         onClick={() => setMode("naukri")}
         title={`The job finder's Naukri jobs from the last ${WINDOW_HOURS} hours that you haven't taken: the top ${SHOW_TOP} per list, highest AI rating first`}
       >
-        ⭐ Naukri, last {WINDOW_HOURS} hours ({finder.backend.list.length + finder.ai.list.length})
+        ⭐ Naukri, last {WINDOW_HOURS} hours ({PROFILES.reduce((n, p) => n + finder[p.id].naukri.list.length + finder[p.id].company.list.length, 0)})
       </Chip>
       <Chip on={mode === "all"} onClick={() => setMode("all")} title="Every opening the radar keeps (15 days)">
         📡 All openings ({shown.length})
@@ -810,7 +821,10 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
 
   if (mode === "naukri") {
     const fs = radar.finderSummary;
-    const cur = finder[profileTab] || finder.backend;
+    const lists = finder[profileTab] || finder.backend;
+    const cur = lists[applyTab] || lists.naukri;
+    const onSite = applyTab === "company";
+    const visible = onSite ? cur.list.slice(0, siteShown) : cur.list;
     // When each browser's finder last sent: one per list it searches for (two browsers, two accounts).
     const runs = radar.finderRuns || {};
     const sent = ["backend", "ai", "both"]
@@ -847,8 +861,9 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
             LangChain, LangGraph, FastAPI). A job is on one list only; frontend, MERN and other-stack roles are left out, and so are IT
             services firms that pay far under your bar. Posted in the last {WINDOW_HOURS} hours · not applied or taken yet · asks for
             under 2.5 yrs · 15L+ or pay not shown · the finder read its JD and enough of the technologies it asks for are yours. The
-            finder reads every page of every search; its best 400 per list are rated 1–100 by an LLM against your resume. Each list
-            shows its top {SHOW_TOP}, highest AI rating first; jobs not rated yet come after them, by JD match.
+            finder reads every page of every search, and every job it keeps is rated 1–100 by an LLM against your resume. Each list
+            shows two lists: Apply on Naukri (its top {SHOW_TOP}: Naukri takes 50 applies a day per account) and Apply on company site (all
+            of them), highest AI rating first; jobs not rated yet come after them, by JD match.
           </div>
           {extLine && (
             <div className={`text-xs ${finderExt.connected ? "text-fg-subtle" : "text-warning-fg"}`}>{extLine}</div>
@@ -859,10 +874,25 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
             {PROFILES.map((p) => (
               <Chip key={p.id} on={profileTab === p.id} onClick={() => setProfileTab(p.id)} title={p.hint}>
-                {p.label} · {finder[p.id].done} taken · {finder[p.id].list.length} to go · {finder[p.id].rated} rated
+                {p.label} · {finder[p.id].naukri.list.length} on Naukri · {finder[p.id].company.list.length} on company sites
               </Chip>
             ))}
           </div>
+          <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
+            <Chip
+              on={!onSite}
+              onClick={() => setApplyTab("naukri")}
+              title={`Jobs you apply to on Naukri itself. Naukri takes 50 applies a day per account, so the top ${SHOW_TOP} show, highest rating first.`}
+            >
+              Apply on Naukri · {lists.naukri.list.length}
+            </Chip>
+            <Chip on={onSite} onClick={() => setApplyTab("company")} title="Jobs whose Naukri page says “Apply on company site”: no Naukri limit, so all of them show, highest rating first">
+              Apply on company site · {lists.company.list.length}
+            </Chip>
+          </div>
+          <span className="text-xs text-fg-subtle">
+            {cur.done} taken · {cur.rated} rated
+          </span>
           {hiddenCount > 0 && (
             <button onClick={onUnhideAll} className="text-xs font-semibold text-accent-fg hover:underline">
               Bring back {hiddenCount} skipped
@@ -871,7 +901,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           {cur.list.length > 0 && (
             <button
               onClick={() => addToApply(cur.list.slice(0, TOP_N), `${profileLabel(profileTab)} jobs`)}
-              title={`Put the ${Math.min(TOP_N, cur.list.length)} highest-rated jobs on the ${profileLabel(profileTab)} list (#1–#${Math.min(TOP_N, cur.list.length)}) in To Apply. Apply to them from your ${profileLabel(profileTab)} Naukri account.`}
+              title={`Put the ${Math.min(TOP_N, cur.list.length)} highest-rated jobs on this list (#1–#${Math.min(TOP_N, cur.list.length)}) in To Apply.${onSite ? " Apply on each company's site." : ` Apply to them from your ${profileLabel(profileTab)} Naukri account.`}`}
               className="ml-auto inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg bg-success hover:opacity-90 text-white"
             >
               <HiCheck className="w-4 h-4" /> Add top {Math.min(TOP_N, cur.list.length)} {profileLabel(profileTab)} to To Apply
@@ -890,12 +920,16 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
             {cur.found
               ? "Every job on this list from the last 48 hours is taken or skipped. More arrive with the job finder's next run."
+              : lists.found
+                ? onSite
+                  ? "No company-site jobs on this list right now: they're all applied on Naukri."
+                  : "No Naukri-apply jobs on this list right now: they're all applied on the company's site."
               : "No jobs on this list from the last 48 hours yet. The job finder (in the Naukri Refresher extension) runs every day around 17:00 IST, until it has read every listing of the last 48 hours, and sends what it keeps as it goes."}
           </div>
         ) : (
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <AnimatePresence initial={false} mode="popLayout">
-              {cur.list.map((o, i) => (
+              {visible.map((o, i) => (
                 <motion.div
                   key={o.id}
                   layout
@@ -912,6 +946,13 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
         {cur.more > 0 && (
           <div className="mt-3 text-xs text-fg-subtle text-center">
             {cur.more} more on this list beyond the top {SHOW_TOP}; they move up as you take or skip these.
+          </div>
+        )}
+        {onSite && visible.length < cur.list.length && (
+          <div className="mt-3 text-center">
+            <button onClick={() => setSiteShown((n) => n + SITE_BATCH)} className="text-xs font-semibold text-accent-fg hover:underline">
+              Show {Math.min(SITE_BATCH, cur.list.length - visible.length)} more of {cur.list.length - visible.length}
+            </button>
           </div>
         )}
       </div>

@@ -150,3 +150,19 @@ test("the finder takes off only its own openings, and never one it's sending in 
   assert.deepEqual(plan.openings.map((o) => o.base).sort(), ['beta:222', 'radar-co:333']);
   assert.deepEqual(plan.writes.filter((w) => w.op === 'delete').map((w) => w.id), [`acme:111:${NOW - DAY}`]);
 });
+
+test('how you apply is stored: on Naukri, or on the company site with its link (links that are not web links are dropped)', () => {
+  const plan = planFinderUpload({
+    current: [],
+    incoming: upload([
+      opening('A', '1', { apply: 'company', applyUrl: 'https://careers.a.example/jobs/1' }),
+      opening('B', '2', { apply: 'naukri' }),
+      opening('C', '3', { apply: 'elsewhere', applyUrl: 'javascript:alert(1)' }),
+    ]),
+    now: NOW,
+  });
+  const by = Object.fromEntries(plan.openings.map((o) => [o.company, o]));
+  assert.deepEqual([by.A.apply, by.A.applyUrl], ['company', 'https://careers.a.example/jobs/1']);
+  assert.deepEqual([by.B.apply, by.B.applyUrl], ['naukri', undefined]);
+  assert.deepEqual([by.C.apply, by.C.applyUrl], [undefined, undefined]);
+});

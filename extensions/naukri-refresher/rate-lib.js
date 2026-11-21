@@ -25,16 +25,27 @@ export const RATE = Object.freeze({
   // strict JSON schema, and the part of each prompt that repeats (these rules and your resume) is
   // cached by Groq, which doesn't count cached tokens against the limits (console.groq.com/docs).
   model: 'openai/gpt-oss-20b',
-  perDay: 300, // ratings per list per day, at most (the settings can change it)
-  perDayChoices: Object.freeze([0, 50, 100, 200, 300, 400, 600]),
+  // Groq calls a day in this browser, at most: your two browsers together stay at or under 1,500.
+  // Groq's free plan allows each key (each account) 30 requests and 8,000 tokens a minute, and
+  // 1,000 requests and 200,000 tokens a day, on this model (console.groq.com/docs/rate-limits):
+  // with 5 or 6 keys that's a few hundred ratings a day, so the keys' own limits usually come first.
+  callsPerDay: 750,
+  callsChoices: Object.freeze([0, 250, 500, 750, 1000, 1500]),
   maxKeys: 10,
-  concurrency: 5, // calls at a time, spread over the keys (fewer when you give fewer keys)
+  concurrency: 10, // calls at a time: one per key, up to 10
   timeoutMs: 60_000,
   temperature: 0.1,
   maxTokens: 1600, // the model's short reasoning counts against this too
   maxTextChars: 3000, // of the JD (its requirements and nice-to-haves; no company blurb)
-  callTokens: 4000, // about what one call needs of a key's per-minute token budget
   maxWaitMs: 90_000, // every key busy: wait this long at most for one to free up
+  // Groq's free limits for one key (one account) on this model, and the share of them used: 70%,
+  // so it doesn't run into 429s. Per minute it goes by its own count and by Groq's headers (they
+  // cover both browsers); per day by its own count (give each browser its own keys).
+  keyLimits: Object.freeze({ rpm: 30, tpm: 8_000, rpd: 1_000, tpd: 200_000 }),
+  keyShare: 0.7,
+  callTokensGuess: 2_700, // a rating's tokens before it has seen any (your Groq usage: ~40K for 15 calls)
+  limitBaseMs: 5_000, // a key Groq says is at its limit (429) rests 5 s, then 10, 20, 40… (or longer if Groq says so)
+  limitStopMs: 60_000, // …and one still at its limit a minute after its first 429 isn't used again that run
   drainMs: 10 * 60_000, // after a run's sweep, how long it may go on rating what's left
   queueMax: 500, // jobs kept waiting for a rating between runs
 });

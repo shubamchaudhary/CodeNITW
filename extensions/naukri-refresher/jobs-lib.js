@@ -33,9 +33,9 @@ export const RULES_VERSION = 6;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
-  poolTop: 400, // the parser's best this many per list (last 48 hours, by JD match) go to your site and are rated
+  poolTop: 1000, // the parser's best this many per list (last 48 hours, by JD match) go to your site and are rated
   showHours: 48, // your site lists the top `showTop` per list posted in the last 48 hours, not yet taken,
-  showTop: 100, // highest AI rating first (jobs not rated yet after, by JD match)
+  showTop: 100, // "Apply" on Naukri: the top 100 per list (Naukri takes 50 applies a day per account); company-site jobs all show
   minPayL: 15, // LPA the top of a salary the job shows must reach
   maxMinYears: 2.5, // the years it asks for must start below this ("less than 2.5 years")
   minMaxYears: 2, // ...and reach this, so "0–1 yrs" fresher roles are out
