@@ -277,8 +277,9 @@ const AREAS = [
   ]],
 
   ['ml', 'Machine learning and data science', { weight: 3, ai: true }, [
-    'Machine Learning | =ML | ml models | machine-learning | ml algorithms | =AI/ML | ai ml | aiml | ai/ml',
-    'Deep Learning | neural networks | neural network | deep neural networks', 'NLP | natural language processing | =NLU',
+    'Artificial Intelligence | =AI(?=\\s*(?:,|/|&|and)\\s*(?:ML|Machine))',
+    'Machine Learning > Artificial Intelligence | =ML | ml models | machine-learning | ml algorithms | =AI/ML | ai ml | aiml | ai/ml',
+    'Deep Learning | neural networks | neural network | deep neural networks', 'NLP > Artificial Intelligence | natural language processing | =NLU | sentiment analysis | text classification | named entity recognition | text analytics',
     'Computer Vision | image processing | image recognition | object detection | image classification',
     'Reinforcement Learning', 'Recommendation Systems | recommender systems | recommendation engine | recommendation engines | recsys',
     'Time Series Forecasting | time series | time-series forecasting | demand forecasting',
@@ -299,7 +300,7 @@ const AREAS = [
   ]],
 
   ['genai', 'GenAI and LLMs', { weight: 3, ai: true }, [
-    'Generative AI | genai | gen ai | gen-ai | generative artificial intelligence | generative-ai',
+    'Generative AI > Artificial Intelligence | genai | gen ai | gen-ai | generative artificial intelligence | generative-ai',
     'LLM | llms | large language models | large language model | foundation models | foundational models | language models',
     'OpenAI API > LLM | openai | =GPT | gpt-4 | gpt-4o | gpt4 | gpt-3.5 | chatgpt | chat gpt | openai sdk',
     'Azure OpenAI > OpenAI API, Azure | azure openai service | =AOAI',

@@ -6,7 +6,11 @@
 // opens that job's own page and reads its JD the same way (the page's job-details response, or
 // the page itself), and keeps the job only if the JD's technologies match yours. It never clicks
 // anything, never applies, and makes no Naukri request of its own. Kept jobs are sent to your
-// site's /api/radar, where the Openings tab lists them, best first, one list per Naukri account.
+// site's /api/radar, where the Openings tab lists them, best match first, one list per account.
+//
+// Every listing, not a sample: the runs sweep through every page of every search (one page of each
+// in turn, so wherever a run stops each search had its share). A run goes on for up to an hour and
+// the next one carries on where it stopped; a finished sweep starts again for what's new since.
 //
 // Safety: one run at a time, a few seconds between pages, page caps per run and per day, and it
 // pauses (and tells you) the moment Naukri shows a check, a login page or an error, instead of
@@ -19,7 +23,7 @@
 
 import { NAUKRI_ORIGIN, NAUKRI_MATCH, MIN } from './lib.js';
 import {
-  RADAR_API_URL, RADAR_API_MATCH, SEARCHES, FINDER_LIMITS, RULES, PROFILES, SCOPES, searchUrl, searchesFor, trackerDay,
+  RADAR_API_URL, RADAR_API_MATCH, SEARCHES, FINDER_LIMITS, RULES, RULES_VERSION, PROFILES, SCOPES, searchUrl, searchesFor, trackerDay,
   nextFinderRun, cardCheck, jdCheck, cardOnly, mySkills, toOpening, normalizeJob, htmlToText,
 } from './jobs-lib.js';
 import { JOB_PROFILE } from './job-profile.js';
@@ -63,8 +67,12 @@ async function loadState() {
   st.queue = Array.isArray(st.queue) ? st.queue : []; // cards whose job pages a run didn't get to
   st.reasons = st.reasons && typeof st.reasons === 'object' ? st.reasons : {};
   st.unknown = st.unknown && typeof st.unknown === 'object' ? st.unknown : {};
+  // What each job's JD said, kept 3 days: a job seen again isn't opened again.
+  st.memo = st.memo && typeof st.memo === 'object' ? st.memo : {};
   return st;
 }
+const MEMO_DAYS = 3;
+const FLUSH_MS = 5 * MIN; // a long run sends what it kept every few minutes
 
 /** Record how a run ended (shown in the popup and the settings page). */
 function noteRun(st, run) {
@@ -74,12 +82,20 @@ function noteRun(st, run) {
 }
 const saveState = (st) => ext.storage.local.set({ [K]: st });
 
-/** A new day (4am IST) starts fresh lists. */
+/** A new day (4am IST) starts fresh lists; new rules (an update) forget the verdicts they made. */
 function rollDay(st, now) {
   const day = trackerDay(now);
+  if (st.rulesVersion !== RULES_VERSION) {
+    st = {
+      ...st, rulesVersion: RULES_VERSION, seen: {}, queue: [], unknown: {}, reasons: {}, memo: {}, sweep: null,
+      daily: { ...(st.daily || {}), read: 0, kept: { backend: 0, ai: 0 } },
+    };
+  }
   if (st.day === day) return st;
+  const cut = now - MEMO_DAYS * 24 * 3600_000;
+  const memo = Object.fromEntries(Object.entries(st.memo || {}).filter(([, m]) => m && m.t > cut));
   return {
-    ...st, day, seen: {}, pending: [], queue: [], unknown: {}, reasons: {},
+    ...st, day, seen: {}, pending: [], queue: [], unknown: {}, reasons: {}, memo,
     daily: { runs: 0, pages: 0, jds: 0, read: 0, kept: { backend: 0, ai: 0 }, uploaded: 0 },
   };
 }
@@ -193,20 +209,28 @@ function readJobPage() {
       return list.map((s) => (typeof s === 'string' ? s : (s && (s.label || s.name)) || '')).filter(Boolean).slice(0, 40);
     };
     const caps = Array.isArray(window.__nrJobs) ? window.__nrJobs : [];
+    let detail = null;
     for (let i = caps.length - 1; i >= 0 && !out.jd; i--) {
       const c = caps[i];
       if (!c || !/\/job\//.test(c.url)) continue;
       if (c.status >= 400 && out.status == null) out.status = c.status;
       const d = c.json && pick(c.json, 0);
-      if (d) { out.via = 'api'; out.status = c.status; out.jd = d.description; out.skills = skillsOf(d); }
+      if (d) { out.via = 'api'; out.status = c.status; out.jd = d.description; out.skills = skillsOf(d); detail = d; }
     }
     if (!out.jd) {
       for (const name of ['_initialState', '__INITIAL_STATE__', 'initialState', '__NEXT_DATA__', '__APP_STATE__']) {
         let d = null;
         try { d = pick(window[name], 0); } catch { d = null; }
-        if (d) { out.via = 'state'; out.jd = d.description; out.skills = skillsOf(d); break; }
+        if (d) { out.via = 'state'; out.jd = d.description; out.skills = skillsOf(d); detail = d; break; }
       }
     }
+    // Applied to it already? Naukri's own flag on the job, or its apply button (the first one on
+    // the page, the job's own) saying "Applied".
+    const flagged = !!detail && Object.entries(detail).some(([k, v]) =>
+      (/^(?:is|has)?applied$/i.test(k) && v === true) || (/^(?:apply|application)status$/i.test(k) && /^applied$/i.test(String(v))));
+    const applyBtn = [...document.querySelectorAll('button, [id*="appl" i], [class*="appl" i]')]
+      .find((e) => /^\W*(?:apply|applied|already\s+applied|apply on company site|i am interested|interested)\W*$/i.test((e.textContent || '').trim()));
+    out.applied = flagged || !!(applyBtn && /^\W*(?:already\s+)?applied\W*$/i.test(applyBtn.textContent.trim()));
     if (!out.jd) {
       // The page itself: the JD block and its "Key Skills" chips.
       for (const sel of ['[class*="dang-inner-html"]', '[class*="job-desc"]', '[class*="JDC"]', '[class*="jobDescription"]', 'section.job-desc', '#job_description', '.jd-desc']) {
@@ -434,6 +458,12 @@ async function findJobs(trigger) {
     if (r.offsite || r.loginWall) { outcome = LOGIN; st.queue.unshift(card); return false; }
     if (!r.jd && (r.captcha || [403, 406, 429].includes(r.status))) { outcome = CHECK(r); st.queue.unshift(card); return false; }
     const now = Date.now();
+    if (r.applied) {
+      const v = { keep: false, why: 'you applied on Naukri' };
+      st.memo[id] = { t: now, ...v };
+      record(id, v);
+      return true;
+    }
     if (r.closed) { record(id, { keep: false, why: 'job closed' }); return true; }
     if (r.jd) {
       jdFails = 0;
@@ -441,7 +471,12 @@ async function findJobs(trigger) {
       if (!st.jdSample || st.jdSample.reader || now - st.jdSample.t > 6 * 3600_000) {
         st.jdSample = { t: now, url: card.job.url, via: r.via, chars: text.length, keySkills: r.skills.slice(0, 20), start: text.slice(0, 600) };
       }
-      record(id, jdCheck(card, { text, skills: r.skills }, { now, mine: skills, minScore }));
+      const v = jdCheck(card, { text, skills: r.skills }, { now, mine: skills, minScore });
+      // What the JD said, so the job isn't opened again while it's fresh.
+      st.memo[id] = v.keep
+        ? { t: now, keep: true, profile: v.profile, o: toOpening(v, now) }
+        : { t: now, keep: false, why: v.why };
+      record(id, v);
     } else {
       jdFails += 1;
       st.jdSample = { t: now, url: card.job.url, reader: { ...r, jd: undefined } };
@@ -451,9 +486,41 @@ async function findJobs(trigger) {
     return true;
   };
 
+  // Send what was kept so far (also anything a failed upload left behind), so a long run's jobs
+  // reach your site as it goes. False when the site refused it; a passing failure waits for later.
+  let refused = false;
+  let flushed = Date.now();
+  const flush = async () => {
+    flushed = Date.now();
+    if (!st.pending.length || refused) return !refused;
+    const summary = {
+      ranAt: new Date(started).toISOString(), seconds: Math.round((Date.now() - started) / 1000), trigger,
+      pages: run.pages, jds: run.jds, read: run.read, kept: run.kept, day: st.day, scope: settings.scope, browser: browserName(),
+      keptToday: st.daily.kept, minScore, version: ext.runtime.getManifest().version,
+    };
+    while (st.pending.length) {
+      const batch = st.pending.slice(0, FINDER_LIMITS.uploadMax);
+      const u = await upload(settings.token, batch, summary);
+      if (!u.ok) {
+        run.note = `upload failed: ${u.short}`;
+        if (u.transient) return true;
+        refused = true;
+        outcome = outcome || { short: u.short, msg: `your site refused the upload (${u.short})` };
+        return false;
+      }
+      st.pending = st.pending.slice(batch.length);
+      run.uploaded += batch.length;
+      st.daily.uploaded = (st.daily.uploaded || 0) + batch.length;
+    }
+    if (/^upload failed/.test(run.note)) run.note = '';
+    await saveState(st);
+    return true;
+  };
+
   // Job pages waiting to be read, best card first. False when the run has to stop.
   const readQueue = async () => {
-    st.queue = st.queue.filter((c) => c && c.day === st.day && c.job).sort((a, b) => b.cardRank - a.cardRank);
+    // (A new day empties the queue; a run going past 4am keeps the cards it found after it.)
+    st.queue = st.queue.filter((c) => c && c.job).sort((a, b) => b.cardRank - a.cardRank);
     while (st.queue.length) {
       if (!jdOff && !jdBudget()) return true; // the rest wait for the next run
       const ok = await openJd(st.queue.shift());
@@ -479,38 +546,53 @@ async function findJobs(trigger) {
       st.siteOkDay = st.day;
     }
 
-    const firstToday = !(st.daily.runs > 0);
+    // The sweep: every page of every search, a page of each in turn, so wherever a run stops every
+    // search got its share. A run carries on where the last one stopped; once every search has run
+    // out of pages the sweep is complete, and the next run starts a new one (for what's new since).
+    const key = searches.map((s) => s.k).join('|');
+    if (!st.sweep || st.sweep.key !== key || st.sweep.done) {
+      st.sweep = { key, size: searches.length, n: ((st.sweep && st.sweep.n) || 0) + 1, started: Date.now(), pages: 0, next: {}, over: {}, sig: {} };
+    }
+    const sw = st.sweep;
     let unreadable = 0;
     // Job pages an earlier run didn't get to come first.
     if (await readQueue()) {
-      outer: for (const s of searches) {
-        if ((kept[s.profile] || 0) >= RULES.dailyTarget) continue; // this list has its 100 for today
-        const maxPages = firstToday ? s.pages : Math.min(s.pages, 2);
-        for (let page = 1; page <= maxPages; page++) {
-          if (!budget() || (!jdOff && !jdBudget())) { run.note = run.note || 'page cap reached'; break outer; }
+      outer: for (;;) {
+        const open = searches.filter((s) => !sw.over[s.k]);
+        if (!open.length) { sw.done = true; sw.finished = Date.now(); break; } // every search read to the end
+        for (const s of open) {
+          if (!budget() || (!jdOff && !jdBudget())) { run.note = run.note || 'stopped at its time or page cap; the next run carries on'; break outer; }
+          if (run.pages > 0) await pause();
+          const page = sw.next[s.k] || 1;
           const url = searchUrl(s.k, page);
           const r = await loadSearch(await tab(), url, prevHref);
           if (r && r.href) prevHref = r.href;
           run.pages += 1;
+          sw.pages += 1;
           st.daily.pages = (st.daily.pages || 0) + 1;
           if (r.gone) { st.tab = null; run.note = 'the finder tab was closed'; break outer; }
           if (r.offsite || r.loginWall) { outcome = LOGIN; break outer; }
           const jobs = Array.isArray(r.jobs) ? r.jobs : [];
           if (!jobs.length && (r.captcha || [403, 406, 429].includes(r.status))) { outcome = CHECK(r); break outer; }
           if (!jobs.length) {
-            if (r.empty || (r.via === 'api' && r.status === 200)) break; // no (more) results for this search
+            if (r.empty || (r.via === 'api' && r.status === 200)) { sw.over[s.k] = true; continue; } // no (more) results
             unreadable += 1;
             st.sample = { t: Date.now(), url, reader: { ...r, jobs: undefined } };
             if (unreadable >= 3) {
               outcome = { short: 'could not read Naukri results', msg: "Naukri's search page didn't show results the finder can read (3 pages in a row). It may have changed; see the finder settings' last-page details" };
               break outer;
             }
+            sw.next[s.k] = page + 1;
             continue;
           }
           unreadable = 0;
           if (!st.sample || st.sample.reader || Date.now() - st.sample.t > 6 * 3600_000) {
             st.sample = { t: Date.now(), url, via: r.via, total: r.total, first: jobs[0] };
           }
+          // Past its last page a search may show that page again: the same listings mean the end.
+          const sig = `${normalizeJob(jobs[0] || {}).id}|${normalizeJob(jobs[jobs.length - 1] || {}).id}`;
+          if (page > 1 && sw.sig[s.k] === sig) { sw.over[s.k] = true; await saveState(st); continue; }
+          sw.sig[s.k] = sig;
 
           // The cards: what looks right waits for its job page to be read.
           let fresh = 0;
@@ -524,43 +606,38 @@ async function findJobs(trigger) {
             const c = cardCheck(raw, { now, mine: skills, minScore });
             for (const u of (c.chips && c.chips.unknown) || []) st.unknown[u] = (st.unknown[u] || 0) + 1;
             if (!c.keep) { record(id, c); continue; }
+            const m = st.memo[id];
+            if (m) {
+              // Its JD was read in the last few days: the same verdict, no page opened.
+              if (!m.keep) { record(id, { keep: false, why: m.why }); continue; }
+              if ((kept[m.profile] || 0) < FINDER_LIMITS.perListDay) {
+                kept[m.profile] = (kept[m.profile] || 0) + 1;
+                st.pending.push({ ...m.o, postedAt: st.day, seenSince: now });
+                run.kept += 1;
+              }
+              st.seen[id] = { k: 1, p: m.profile, memo: true };
+              continue;
+            }
             st.seen[id] = { k: 2 }; // its job page is next
             st.queue.push(c);
           }
           run.fresh += fresh;
+          // This search is read to the end when its results run out: Naukri's own total reached, or a
+          // short page when it gives none (or the safety cap on one search).
+          const total = Number(r.total) || 0;
+          if ((total ? page * 20 >= total : jobs.length < 20) || page >= FINDER_LIMITS.pagesPerSearch) sw.over[s.k] = true;
+          else sw.next[s.k] = page + 1;
           await saveState(st); // progress survives a stopped worker
           if (!(await readQueue())) break outer;
-          // Next page only while this one was full and still turning up new listings.
-          if (jobs.length < 20 || fresh < 3) break;
-          await pause();
+          if (Date.now() - flushed > FLUSH_MS && !(await flush())) break outer;
         }
-        await pause();
       }
     }
   } finally {
     await closeTab(st);
   }
 
-  // Send what was kept (also anything a failed upload left behind).
-  if (st.pending.length) {
-    const summary = {
-      ranAt: new Date(started).toISOString(), seconds: Math.round((Date.now() - started) / 1000), trigger,
-      pages: run.pages, jds: run.jds, read: run.read, kept: run.kept, day: st.day, scope: settings.scope, browser: browserName(),
-      keptToday: st.daily.kept, minScore, version: ext.runtime.getManifest().version,
-    };
-    while (st.pending.length) {
-      const batch = st.pending.slice(0, FINDER_LIMITS.uploadMax);
-      const u = await upload(settings.token, batch, summary);
-      if (!u.ok) {
-        run.note = `upload failed: ${u.short}`;
-        if (!u.transient) outcome = outcome || { short: u.short, msg: `your site refused the upload (${u.short})` };
-        break;
-      }
-      st.pending = st.pending.slice(batch.length);
-      run.uploaded += batch.length;
-      st.daily.uploaded = (st.daily.uploaded || 0) + batch.length;
-    }
-  }
+  await flush(); // what's left
 
   st.daily.runs = (st.daily.runs || 0) + 1;
   if (outcome) { run.outcome = 'paused'; run.note = outcome.short; }
@@ -646,6 +723,13 @@ async function jobsStatus() {
   const st = rollDay(await loadState(), Date.now());
   const access = await hasAccess();
   const top = (o, n) => Object.entries(o || {}).sort((a, b) => b[1] - a[1]).slice(0, n);
+  const sw = st.sweep;
+  // How far the sweep through every search's pages has got.
+  const sweep = sw ? {
+    n: sw.n, started: sw.started, finished: sw.finished || null, done: !!sw.done, pages: sw.pages,
+    searches: sw.size || Object.keys(sw.next || {}).length, over: Object.keys(sw.over || {}).length,
+    at: Object.fromEntries(Object.entries(sw.next || {}).filter(([k]) => !(sw.over || {})[k])),
+  } : null;
   return {
     settings: {
       enabled: settings.enabled, hasToken: !!settings.token, extraSkills: settings.extraSkills, scope: settings.scope,
@@ -653,10 +737,10 @@ async function jobsStatus() {
     },
     access, running: running || !!(st.lock && st.lock.until > Date.now()),
     day: st.day, daily: st.daily, plan: st.plan || null, halted: st.halted || null,
-    lastRun: st.lastRun || null, runs: st.runs, pending: st.pending.length, queued: st.queue.length,
+    lastRun: st.lastRun || null, runs: st.runs, pending: st.pending.length, queued: st.queue.length, sweep,
     reasons: top(st.reasons, 14), unknown: top(st.unknown, 15), sample: st.sample || null, jdSample: st.jdSample || null,
     searches: searchesFor(settings.scope).map((s) => s.k), allSearches: SEARCHES.map((s) => ({ k: s.k, profile: s.profile })),
-    rules: RULES, profiles: PROFILES,
+    rules: RULES, limits: FINDER_LIMITS, profiles: PROFILES,
     skillCount: mySkills(extraList(settings)).size, resumeSkills: JOB_PROFILE.skills.length, skillsGenerated: JOB_PROFILE.generated,
   };
 }
@@ -741,12 +825,15 @@ export const jobsHandlers = {
     return siteCheck(s.token);
   },
   async jobsRescan() {
-    // Forget today's verdicts (the site keeps what it already has): the next run re-reads everything.
+    // Forget today's verdicts (the site keeps what it already has): the next run re-reads everything,
+    // from every search's first page.
     const st = await loadState();
+    st.sweep = null;
     st.seen = {};
     st.reasons = {};
     st.unknown = {};
     st.queue = [];
+    st.memo = {}; // and the JDs it read: new skills or a new bar can change their verdicts
     st.daily = { ...st.daily, read: 0, kept: { backend: 0, ai: 0 } };
     await saveState(st);
     return jobsStatus();

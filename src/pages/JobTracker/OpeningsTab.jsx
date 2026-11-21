@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
 import { HiOutlineExternalLink, HiCheck, HiX, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { GLASS, GLASS_TRACK, SEGMENT_ON, SEGMENT_OFF } from "../../components/glass";
-import { normalizeUrl, todayKey } from "./shared";
+import { normalizeUrl } from "./shared";
 
 // Owner-only feed from the job radar (scripts/radar/run.mjs). The radar runs on
 // the owner's PC five times a day and POSTs to /api/radar, which keeps the openings
@@ -79,10 +79,19 @@ const PAY_CLS = {
   unknown: "bg-surface-hover text-fg-subtle  ",
 };
 
-// The Naukri job finder (extensions/naukri-refresher) uploads today's Naukri jobs with a rank
-// and the list they're on, one list per Naukri account. Every job it keeps is shown, best first;
-// each list aims for DAILY_TARGET a day.
-const DAILY_TARGET = 100;
+// The Naukri job finder (extensions/naukri-refresher) uploads Naukri jobs with their JD match, a
+// rank and the list they're on, one list per Naukri account. Each list shows its top SHOW_TOP
+// posted in the last WINDOW_HOURS hours that you haven't taken yet, highest JD match first.
+const WINDOW_HOURS = 48;
+const SHOW_TOP = 200;
+const HOUR_MS = 3600000;
+// When a finder opening was posted: Naukri's own time, else when the finder first stored it.
+const postedMs = (o) => o.postedTime || o.firstSeen || o.openedAt || 0;
+// Highest JD match first. A JD that names only a few technologies says little about the fit, so
+// those come after the ones that name enough, and one naming none comes last; the rank (title,
+// experience, pay, company rating) breaks ties.
+const matchTier = (o) => (o.coverage == null ? 2 : o.fewSkills ? 1 : 0);
+const byMatch = (a, b) => matchTier(a) - matchTier(b) || (b.coverage || 0) - (a.coverage || 0) || (b.rank || 0) - (a.rank || 0);
 const PROFILES = [
   { id: "backend", label: "Backend", hint: "Backend-first roles: apply from your Backend Naukri account" },
   { id: "ai", label: "AI", hint: "AI-first roles (GenAI work is a large share of the JD): apply from your AI Naukri account" },
@@ -130,12 +139,14 @@ function writeMode(m) {
   }
 }
 
-// "just now" / "3 h ago" from epoch ms.
+// "just now" / "3 h ago" / "2 days ago" from epoch ms.
 function hoursAgo(t) {
   if (!t) return "";
   const m = Math.floor((Date.now() - t) / 60000);
   if (m < 60) return m < 2 ? "just now" : `${m} min ago`;
-  return `${Math.floor(m / 60)} h ago`;
+  if (m < 24 * 60) return `${Math.floor(m / 60)} h ago`;
+  const d = Math.floor(m / (24 * 60));
+  return d === 1 ? "1 day ago" : `${d} days ago`;
 }
 const SOURCE_LABEL = {
   board: "Company board",
@@ -353,12 +364,13 @@ function FinderCard({ o, n, onSkip, onApplied }) {
   const years = yearsText(o);
   const profile = PROFILES.find((p) => p.id === o.profile) || PROFILES[0];
   // How many of the technologies its JD asks for are yours (or its card's chips, when the page couldn't be read).
-  const skills =
-    o.coverage != null
+  const skills = o.fewSkills
+    ? o.skillsTotal
+      ? `JD names just ${o.skillsTotal} · ${o.skillsHave} yours`
+      : "JD names no skills"
+    : o.coverage != null
       ? `${o.jd === false ? "card" : "JD"} ${o.skillsHave}/${o.skillsTotal} skills · ${o.coverage}%`
-      : o.fewSkills
-        ? "JD names few skills"
-        : "skills ?";
+      : "skills ?";
   return (
     <div className={`${CARD} rounded-lg p-3.5 h-full flex flex-col gap-2`}>
       <div className="flex items-center gap-1.5 min-w-0">
@@ -401,9 +413,11 @@ function FinderCard({ o, n, onSkip, onApplied }) {
         <Tag
           cls={o.coverage >= 80 ? "bg-success-subtle text-success-fg  " : "bg-surface-hover text-fg  "}
           title={
-            o.jd === false
-              ? "Its job page couldn't be read: how many of the skills on its card are yours"
-              : "How many of the technologies its JD asks for are on your resumes (nice-to-haves and company text left out)"
+            o.fewSkills
+              ? "Its JD names only a few technologies, so the match says little: listed after the jobs whose JD names enough"
+              : o.jd === false
+                ? "Its job page couldn't be read: how many of the skills on its card are yours"
+                : "How many of the technologies its JD asks for are on your resumes (nice-to-haves and company text left out)"
           }
         >
           {skills}
@@ -553,22 +567,29 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
 
-  // Today's Naukri jobs from the job finder, per profile, best first. Ones already in the
-  // pipeline (applied or To Apply) count toward the day's 50; skipped ones are gone.
-  const today = todayKey();
+  // The job finder's Naukri jobs from the last 48 hours, per list, highest JD match first. Ones
+  // you've taken (applied, in the pipeline) or skipped are left out; the top SHOW_TOP of the rest show.
+  const hour = Math.floor(Date.now() / HOUR_MS); // recomputed as the window moves on
   const finder = useMemo(() => {
+    const since = Date.now() - WINDOW_HOURS * HOUR_MS;
     const out = {};
     for (const p of PROFILES) {
       const all = openings
-        .filter((o) => o.finder === "naukri" && o.postedAt === today && (o.profile || "backend") === p.id && !hidden[o.id] && !dismissedUrls.has(urlOf(o)))
-        .sort((a, b) => (b.rank || 0) - (a.rank || 0));
-      const done = all.filter((o) => queuedUrls.has(urlOf(o))).length;
+        .filter(
+          (o) =>
+            o.finder === "naukri" &&
+            postedMs(o) >= since &&
+            (o.profile || "backend") === p.id &&
+            !hidden[o.id] &&
+            !dismissedUrls.has(urlOf(o))
+        )
+        .sort(byMatch);
       const left = all.filter((o) => !queuedUrls.has(urlOf(o)));
-      out[p.id] = { found: all.length, done, list: left };
+      out[p.id] = { found: all.length, done: all.length - left.length, list: left.slice(0, SHOW_TOP), more: Math.max(0, left.length - SHOW_TOP) };
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, hidden, queuedUrls, dismissedUrls, today]);
+  }, [openings, hidden, queuedUrls, dismissedUrls, hour]);
   const finderFound = finder.backend.found + finder.ai.found;
   const mode = modePref || (finderFound ? "naukri" : "all");
   const setMode = (m) => {
@@ -675,8 +696,12 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
 
   const modeSwitch = (
     <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1 mb-3`}>
-      <Chip on={mode === "naukri"} onClick={() => setMode("naukri")} title={`Today's Naukri jobs from the job finder, best first; each list aims for ${DAILY_TARGET} a day`}>
-        ⭐ Naukri today ({finder.backend.list.length + finder.ai.list.length})
+      <Chip
+        on={mode === "naukri"}
+        onClick={() => setMode("naukri")}
+        title={`The job finder's Naukri jobs from the last ${WINDOW_HOURS} hours that you haven't taken: the top ${SHOW_TOP} per list, highest JD match first`}
+      >
+        ⭐ Naukri, last {WINDOW_HOURS} hours ({finder.backend.list.length + finder.ai.list.length})
       </Chip>
       <Chip on={mode === "all"} onClick={() => setMode("all")} title="Every opening the radar keeps (15 days)">
         📡 All openings ({shown.length})
@@ -708,7 +733,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
       <div>
         {modeSwitch}
         <div className="mb-3">
-          <h2 className="text-lg font-semibold text-brand-fg">⭐ Naukri today</h2>
+          <h2 className="text-lg font-semibold text-brand-fg">⭐ Naukri, last {WINDOW_HOURS} hours</h2>
           <div className="text-xs text-fg-subtle">
             {loading ? "Refreshing…" : error ? `Refresh failed (${error})` : loadedAt ? `Loaded ${minutesAgo(loadedAt)}` : ""}
             {!loading && (
@@ -720,8 +745,9 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
           </div>
           <div className="text-xs text-fg-subtle">
             Two lists, one per Naukri account: Backend (backend-first roles) and AI (AI-first roles, where GenAI work is a large share of
-            the JD). A job is on one list only. Posted today · asks for under 2.5 yrs · 15L+ or pay not shown · the finder read its JD and
-            enough of the technologies it asks for are yours. Each list aims for {DAILY_TARGET} a day.
+            the JD). A job is on one list only. Posted in the last {WINDOW_HOURS} hours · not applied or taken yet · asks for under 2.5
+            yrs · 15L+ or pay not shown · the finder read its JD and enough of the technologies it asks for are yours. The finder reads
+            every page of every search. Each list shows its top {SHOW_TOP}, highest JD match first.
           </div>
           {extLine && (
             <div className={`text-xs ${finderExt.connected ? "text-fg-subtle" : "text-warning-fg"}`}>{extLine}</div>
@@ -732,7 +758,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
           <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
             {PROFILES.map((p) => (
               <Chip key={p.id} on={profileTab === p.id} onClick={() => setProfileTab(p.id)} title={p.hint}>
-                {p.label} · {finder[p.id].done} applied · {finder[p.id].list.length} to go
+                {p.label} · {finder[p.id].done} taken · {finder[p.id].list.length} to go
               </Chip>
             ))}
           </div>
@@ -753,8 +779,8 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
         {cur.list.length === 0 ? (
           <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
             {cur.found
-              ? "All of today's jobs on this list are decided. More arrive with the job finder's next run."
-              : "No jobs on this list yet today. The job finder (in the Naukri Refresher extension) runs every 2 hours, 09:00–19:00 IST."}
+              ? "Every job on this list from the last 48 hours is taken or skipped. More arrive with the job finder's next run."
+              : "No jobs on this list from the last 48 hours yet. The job finder (in the Naukri Refresher extension) runs every 2 hours, 09:00–19:00 IST, up to an hour each, and sends what it keeps as it goes."}
           </div>
         ) : (
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -767,10 +793,15 @@ export default function OpeningsTab({ finderExt, queuedUrls, dismissedUrls, hidd
                   animate={{ opacity: 1, scale: 1, transition: { duration: 0.2 } }}
                   exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.15 } }}
                 >
-                  <FinderCard o={o} n={cur.done + i + 1} onSkip={() => skip(o)} onApplied={() => markApplied(o)} />
+                  <FinderCard o={o} n={i + 1} onSkip={() => skip(o)} onApplied={() => markApplied(o)} />
                 </motion.div>
               ))}
             </AnimatePresence>
+          </div>
+        )}
+        {cur.more > 0 && (
+          <div className="mt-3 text-xs text-fg-subtle text-center">
+            {cur.more} more on this list beyond the top {SHOW_TOP}; they move up as you take or skip these.
           </div>
         )}
       </div>

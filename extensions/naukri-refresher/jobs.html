@@ -46,7 +46,7 @@
 <body>
   <main>
     <h1>Job finder</h1>
-    <p class="muted">Every 2 hours from 09:00 to 19:00 IST it reads Naukri's own search results for today, in a muted background tab, and never applies to anything. For every card that looks right, it opens the job's page and reads the JD. It keeps the job only if enough of the technologies the JD asks for are yours. The jobs it keeps go to your site's <b>Openings</b> tab, as <b>Naukri today</b>. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles) and <b>AI</b> (AI-first roles, where GenAI work is a large share of the JD). A job is on one list only. Each list aims for 100 a day.</p>
+    <p class="muted">Every 2 hours from 09:00 to 19:00 IST it reads Naukri's own search results, every page of every search, in a muted background tab, and never applies to anything. A run goes on for up to an hour and the next one carries on where it stopped. For every card from the last 48 hours that looks right, it opens the job's page and reads the JD. It keeps the job only if enough of the technologies the JD asks for are yours. The jobs it keeps go to your site's <b>Openings</b> tab, under <b>⭐ Naukri, last 48 hours</b>. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles) and <b>AI</b> (AI-first roles, where GenAI work is a large share of the JD). A job is on one list only. Your site shows the top 200 per list that you haven't applied to or taken yet, highest JD match first.</p>
 
     <div id="halted" class="card bad" hidden>
       <b>Paused:</b> <span id="haltedMsg"></span>
@@ -96,9 +96,10 @@
       <div class="stat"><span class="muted small">Sent to the site</span><b id="sSent">0</b></div>
     </div>
     <p class="small muted" id="nextLine" style="margin-top:8px"></p>
+    <p class="small muted" id="sweepLine"></p>
     <div class="row">
       <button id="now" type="button">Find jobs now</button>
-      <button id="rescan" type="button" class="secondary" title="Forget today's verdicts so the next run reads every listing again (after you add skills, say)">Re-scan today</button>
+      <button id="rescan" type="button" class="secondary" title="Forget today's verdicts and start the sweep again from every search's first page (after you add skills, say)">Re-scan today</button>
     </div>
 
     <h2>Why listings were left out today</h2>

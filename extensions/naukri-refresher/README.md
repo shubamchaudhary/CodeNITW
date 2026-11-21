@@ -67,22 +67,24 @@ Automating your profile may be against Naukri's terms. The schedule is deliberat
 
 ## Job finder
 
-Every 2 hours from 09:00 to 19:00 IST (±7 min), it opens Naukri's own job search pages in a muted background tab, one after another, and reads the results each page loads for itself.
+Every 2 hours from 09:00 to 19:00 IST (±7 min), it opens Naukri's own job search pages (posted in the last 3 days, 2 years of experience) in a muted background tab, one after another, and reads the results each page loads for itself.
+- **Every listing, not a sample:** it reads every page of every search, one page of each search in turn, so wherever a run stops each search had its share. A run goes on for up to an hour and the next one carries on where it stopped. Once every search has been read to the end, the next run starts a new sweep for what's new. The settings page shows how far the sweep has got.
 - **The JD:** for every card that looks right, it opens that job's page and reads the JD the same way.
 - **Read-only:** it never clicks anything and never applies.
 
-The jobs whose JD matches you go to your site's **Openings → ⭐ Naukri today**, as two lists, one per Naukri account:
+The jobs whose JD matches you go to your site's **Openings → ⭐ Naukri, last 48 hours**, as two lists, one per Naukri account:
 
 - **Backend:** backend-first roles.
 - **AI:** AI-first roles: an AI title such as GenAI/LLM/AI Engineer, or a JD where GenAI/ML work is at least 40% of its technology.
 
-A job is on one list only, so you never apply to it from both accounts. Which list a job goes on depends on the job alone, never on which search found it. Every kept job is shown, best first, and each list aims for 100 a day. Open one, apply on Naukri from the account it names, and press **Applied**: it goes into your pipeline as applied today.
+A job is on one list only, so you never apply to it from both accounts. Which list a job goes on depends on the job alone, never on which search found it. Each list shows its top 200 posted in the last 48 hours that you haven't taken yet, highest JD match first. A JD that names only a few technologies says little, so those come after the ones that name enough; ties go by rank. "Taken" means applied, in your pipeline, skipped or dismissed. Open one, apply on Naukri from the account it names, and press **Applied**: it goes into your pipeline as applied today and leaves the list.
 
 **Step 1, the card.** A detail the card leaves out never drops a job; only a detail it states can.
 
 | Check | Passes when |
 |---|---|
-| Posted | today (the day runs 4am to 4am IST, like your tracker) |
+| Posted | in the last 48 hours, as Naukri labels it ("Just now", "Few hours ago", "1 day ago"). "2 days ago" and older are out. No label: Naukri's own posting time decides; neither: passes |
+| Applied | not one you've already applied to on Naukri: the card's own data, and then the job's page (Naukri's data, or its apply button saying "Applied") |
 | Title | not a stack or level you don't do: Android, iOS/mobile, .NET, PHP, frontend-only, QA/testing, DevOps/SRE, data, SAP/Salesforce-type platforms, embedded, C/C++ systems work, support, lead/architect/manager, intern. A plain "Software Engineer/Developer" passes. A title naming only a language you don't have (Go, Scala…) is out |
 | Experience | asks for under 2.5 years, and isn't a 0–1 year fresher role. Not stated: passes |
 | Pay | reaches 15 LPA when the listing gives a salary (one the employer hid still counts when Naukri's data has it). Not given: passes |
@@ -104,7 +106,7 @@ Why 60%: on 643 real engineering JDs from public job boards, strong backend fits
 - Wherever a job is found, it still lands on the list it fits.
 - With one browser, keep **Backend + AI**.
 
-On your site, the Naukri today view opens on the list this browser searches for. It warns you when you look at the other account's list.
+On your site, the ⭐ Naukri view opens on the list this browser searches for. It warns you when you look at the other account's list.
 
 **Set it up (once per browser):**
 1. Deploy the site changes (`api/radar.mjs`, the Job tracker and the Openings tab). Until then the finder can't connect or upload.
@@ -113,16 +115,17 @@ On your site, the Naukri today view opens on the list this browser searches for.
    - That token can only send job finder openings.
    - It's derived from `RADAR_INGEST_TOKEN`, so a new ingest token disconnects every finder until you open the site again.
    - Pasting `RADAR_INGEST_TOKEN` in Settings → *Paste a token instead* still works.
-4. Pick **Searches for**, press **Find jobs now** and watch the first run (several minutes now that it reads JDs), then check **Openings → ⭐ Naukri today**. Switch it on in the popup when it looks right.
+4. Pick **Searches for**, press **Find jobs now** and watch the first run, then check **Openings → ⭐ Naukri, last 48 hours**. A run can take up to an hour, since it reads every page of every search and each good-looking job's JD. What it keeps reaches your site every few minutes. Switch it on in the popup when it looks right.
 5. Once it works, add `RADAR_NAUKRI=off` to `.radar\.env` so the radar's JobSpy stops searching Naukri from a script. JobSpy runs got "recaptcha required" from Naukri, and the browser does this better.
 
 **Safety.**
 - **Pace:** one run at a time, 4–9 s between pages.
-- **Page caps:** at most 80 pages a run and 400 a day per browser (search pages and job pages together), and 250 job pages a day.
-- **Paging:** a search stops paging as soon as a page turns up little that's new, and a list's searches stop for the day once it has 100 jobs. Job pages a run doesn't get to are read first next time.
+- **Caps:** a run stops after an hour or 500 pages. A browser reads at most 2,000 pages a day (search pages and job pages together), 1,000 of them job pages. One search is read up to 100 pages deep (2,000 results).
+- **The sweep:** a search is read to the end, until Naukri's own total is reached, a page comes back empty, or the same page comes back again. Where a run stops, the next one carries on, and job pages a run didn't get to are read first.
+- **No re-reading:** a job whose JD was read in the last 3 days isn't opened again; its verdict is reused. "Re-scan today" (after you change skills or the bar) forgets those verdicts. So does an update that changes the rules.
 - **Pausing:** it pauses at once, with a notification, when Naukri shows an "are you human?" check (on a search page or a job page), a login page, an error, or search pages it can't read. It never retries into a block. Finish any check yourself in that browser, then press **Resume**.
 - **Settings page:** it lists why jobs were left out, chips it didn't recognize, recent runs, and the last search page and job page it read, for fixing the finder if Naukri changes its pages.
-- **Terms:** reading Naukri automatically may be against its terms. The pace is a person's, but the risk isn't zero, and reading JDs means more pages than reading results alone.
+- **Terms:** reading Naukri automatically may be against its terms. The pace is a person's, but reading every listing is far more pages than a person reads (up to an hour a run, every 2 hours), so Naukri is more likely to show a check. The finder then pauses until you finish it and press Resume.
 
 ## Tests
 

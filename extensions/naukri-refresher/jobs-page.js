@@ -59,6 +59,10 @@ function render(s) {
   if (s.queued) next += ` ${s.queued} job pages wait to be read.`;
   if (s.pending) next += ` ${s.pending} kept jobs wait to be sent.`;
   $('nextLine').textContent = next;
+  const w = s.sweep;
+  $('sweepLine').textContent = !w ? 'The first run starts the sweep through every page of every search.'
+    : w.done ? `Sweep ${w.n} read every page of all ${w.searches} searches (${w.pages} pages, ${fmtWhen(w.started, now)} to ${fmtWhen(w.finished, now)} IST). The next run starts a new one.`
+      : `Sweep ${w.n}, started ${fmtWhen(w.started, now)} IST: ${w.over} of ${w.searches} searches read to the end, ${w.pages} pages so far. The next run carries on.`;
   $('now').disabled = s.running || !s.settings.hasToken || !!s.halted;
   $('token').placeholder = s.settings.hasToken ? 'Saved (paste a new one to replace it)' : 'Paste the token';
   if (!extraLoaded) { $('extra').value = s.settings.extraSkills || ''; extraLoaded = true; }
@@ -85,18 +89,20 @@ function render(s) {
   }
 
   const R = s.rules;
+  const L = s.limits;
   const rules = $('rules');
   rules.replaceChildren();
   const of = (p) => s.allSearches.filter((x) => x.profile === p).map((x) => x.k).join(' · ');
   for (const t of [
-    'First the card. It must be posted today (the day runs 4am to 4am IST, like your tracker).',
+    `Every listing, not a sample: the runs read every page of every search (up to ${L.pagesPerSearch} pages each), one page of each search in turn. A run goes on for up to ${L.runMinutes} minutes and the next one carries on where it stopped; once every search is read to the end, the next run starts a new sweep for what's new. At most ${L.pagesPerDay} pages and ${L.jdPerDay} job pages a day.`,
+    `First the card. It must be posted in the last ${R.maxAgeH} hours, as Naukri labels it ("Just now", "Few hours ago", "1 day ago"); "2 days ago" and older are out. A card that doesn't say passes. A job you already applied to on Naukri is out, when its card or its page says so.`,
     'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, or lead/architect/manager. A plain "Software Engineer/Developer" passes.',
     `Experience: asks for less than ${R.maxMinYears} years, and isn't a 0–1 year fresher role. A card that doesn't say passes.`,
     `Pay: reaches ${R.minPayL} LPA when the listing gives a salary. One it doesn't give passes.`,
     `Skill chips: when they name 3 or more known technologies and under ${Math.round(R.cardFloor * 100)}% are yours, the job is another stack and its page isn't opened. Chips that aren't technologies are ignored.`,
     `Then the JD. The finder opens the job's page, finds every technology the JD asks for with the skills dictionary (over a thousand skills), and compares them with yours. The job is kept when at least ${Math.round(s.settings.minScore * 100)}% are yours. "Nice to have" lines, company blurbs and perks don't count. A JD naming fewer than ${R.minJdSkills} technologies is held to the same bar and ranked a little lower; one naming none is kept.`,
     `The list: AI when the title is an AI one, or when GenAI/ML work is ${Math.round(R.aiShare * 100)}%+ of the JD's technology. Otherwise Backend. A job is on one list only.`,
-    `Each list is ranked 0–100 (JD match, title, experience, pay, company rating, how fresh) and aims for ${R.dailyTarget} jobs a day. Its searches stop for the day once it has them.`,
+    `Your site shows the top ${R.showTop} of each list posted in the last ${R.showHours} hours, highest JD match first (ties by rank: title, experience, pay, company rating, how fresh), leaving out what you applied to, skipped or have in the pipeline. A job whose JD was read in the last 3 days isn't opened again.`,
     `Backend searches: ${of('backend')}.`,
     `AI searches: ${of('ai')}.`,
   ]) rules.append(el('li', t));
