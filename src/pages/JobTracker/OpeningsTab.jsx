@@ -667,7 +667,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   // Which list: picked on this visit, else the one this browser's job finder searches for (its
   // Naukri account), else the one picked last time on this device.
   const [profileChoice, setProfileChoice] = useState(null);
-  const [applyTab, setApplyTab] = useState("naukri"); // ⭐ Naukri: "naukri" (Apply on Naukri) | "company" (Apply on company site)
+  const [applyTab, setApplyTab] = useState(null); // ⭐ Naukri: "naukri" | "company" once you pick one; until then whichever list has jobs
   const [siteShown, setSiteShown] = useState(SITE_BATCH);
   const [savedProfile] = useState(readProfile);
   const extScope = finderExt?.present && (finderExt.scope === "backend" || finderExt.scope === "ai") ? finderExt.scope : null;
@@ -934,8 +934,10 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   if (mode === "naukri") {
     const fs = radar.finderSummary;
     const lists = finder[profileTab] || finder.backend;
-    const cur = lists[applyTab] || lists.naukri;
-    const onSite = applyTab === "company";
+    // Opens on "Apply on Naukri", or on the company-site list when that one is empty and this isn't.
+    const tabKey = applyTab || (lists.naukri.list.length === 0 && lists.company.list.length > 0 ? "company" : "naukri");
+    const cur = lists[tabKey];
+    const onSite = tabKey === "company";
     const visible = onSite ? cur.list.slice(0, siteShown) : cur.list;
     // When each browser's finder last sent: one per list it searches for (two browsers, two accounts).
     const runs = radar.finderRuns || {};

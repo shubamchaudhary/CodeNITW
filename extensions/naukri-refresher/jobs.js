@@ -31,6 +31,7 @@ import {
   trackerDay, nextFinderRun, cardCheck, jdCheck, cardOnly, mySkills, toOpening, normalizeJob, htmlToText, lowPayList, byParser, parsePay,
 } from './jobs-lib.js';
 import { RATE, rateText, keyHint } from './rate-lib.js';
+import { auditLoad, auditNote, auditDoc, auditSave, auditClear, auditEntries, auditDocOf } from './audit.js';
 import { loadResumes, hasGroqAccess, checkKeys, loadQueue, pruneQueue, saveQueue, startRater, loadPayCache, savePayCache } from './rate.js';
 import { JOB_PROFILE } from './job-profile.js';
 
@@ -174,6 +175,21 @@ function noteRater(st, problem) {
   notify('nr-rate', 'AI rating paused', `${problem.msg}. Jobs are still found and sent, without a rating.`);
 }
 
+/** What the report keeps of a verdict: the card, how far it got, the decision and its reason. */
+function auditOf(v, jd, k, why) {
+  const job = (v && v.job) || {};
+  const sk = v && v.skills;
+  const chips = v && v.chips;
+  return {
+    title: job.title, company: job.company, loc: job.location, exp: job.expText, sal: job.salaryText, posted: job.footer, url: job.url,
+    stage: jd ? 'jd' : 'card', k: k ? 1 : 0, w: k ? '' : why,
+    ...(sk ? { have: sk.have.length, total: sk.counted.length, score: sk.score != null ? Math.round(sk.score * 100) : null } : {}),
+    ...(!sk && chips ? { score: chips.score != null ? Math.round(chips.score * 100) : null, total: chips.counted ? chips.counted.length : null } : {}),
+    ...(k ? { list: v.profile, rank: v.rank } : {}),
+    ...(jd && jd.apply ? { apply: jd.apply } : {}),
+  };
+}
+
 /** The salary a job shows, for the rating's prompt and its pay match (nothing when it shows none). */
 function salaryOf(job) {
   const p = parsePay(job || {});
@@ -183,6 +199,8 @@ function salaryOf(job) {
 
 /** A rating came back: keep it, put it on the job, and send the job to your site again. */
 const onRatedFor = (st, rating, run) => (item, ai, dbg = null) => {
+  auditNote(item.id, { ai: ai.s, rel: ai.rel, aiWhy: ai.why, pay: ai.pay && ai.pay.from ? ai.pay : null });
+  if (dbg) auditDoc(item.id, { dbg });
   st.rated[item.id] = { t: Date.now(), h: rating.hash ? rating.hash[item.profile] : null, ai };
   run.rated = (run.rated || 0) + 1;
   const m = st.memo[item.id];
@@ -358,7 +376,9 @@ function readJobPage() {
       const scan = (v, depth, key) => {
         if (!v || depth > 4) return;
         if (typeof v === 'string') {
-          if (/apply|redirect|career|external|company.?url|url.?company|website/i.test(key)) {
+          // Only fields that are about APPLYING (a redirect or external apply link). Not "website" or
+          // "career": every job carries its company's homepage under such a field.
+          if (/apply.?(?:redirect|url|link)|redirect.?(?:url|link)|external.?(?:apply|url|link)/i.test(key)) {
             applyKeys.push(key);
             if (!applyUrl) applyUrl = offNaukri(v);
           }
@@ -376,7 +396,11 @@ function readJobPage() {
       if (a) applyUrl = offNaukri(a.getAttribute('href'));
     }
     const companyFlag = !!detail && Object.entries(detail).some(([k, v]) => v === true && /^(?:is)?(?:external|companysite|redirect)(?:apply|job|url)?$/i.test(k));
-    out.apply = applyUrl || companyFlag || /company\s*site/i.test(btnText) ? 'company' : /^\W*apply(?:\s+now)?\W*$/i.test(btnText) ? 'naukri' : null;
+    // The button decides: "Apply on company site" or plain "Apply". Only a page with no readable
+    // button falls back on the job's data (a redirect link, or an external-apply flag).
+    const byButton = /company\s*site/i.test(btnText) ? 'company' : /^\W*apply(?:\s+now)?\W*$/i.test(btnText) ? 'naukri' : null;
+    out.apply = byButton || (applyUrl || companyFlag ? 'company' : null);
+    if (out.apply !== 'company') applyUrl = null; // a Naukri-apply job has no company-site link to keep
     out.applyUrl = applyUrl;
     out.applyInfo = { button: btnText.slice(0, 40), keys: [...new Set(applyKeys)].slice(0, 12), link: applyUrl ? new URL(applyUrl).hostname : null };
     if (!out.jd) {
@@ -573,6 +597,7 @@ async function sendPending(st, token, summary, onSent) {
       const m = st.memo[o.openingId];
       if (m && m.keep) m.sent = t;
       st.onSite[o.openingId] = { t, company: o.company };
+      auditNote(o.openingId, { sent: 1 });
     }
     onSent(batch.length);
   }
@@ -686,6 +711,7 @@ async function findJobs(trigger) {
 
   // The AI rating: each job sent waits in `rq` with its JD text, and the rater (started once the
   // site check passes) works through them while the sweep goes on.
+  await auditLoad();
   const rating = await ratingSetup(settings, dev, st);
   const rq = pruneQueue(await loadQueue(), { now: Date.now(), rated: st.rated, hash: rating.hash });
   liveQueue = rq;
@@ -714,16 +740,18 @@ async function findJobs(trigger) {
   // A decision on one job, recorded. `jd` ({ text, skills }) is what its page said, for the rating.
   const decide = (id, v, jd = null) => {
     if (!v.keep) {
+      auditNote(id, auditOf(v, jd, false, v.why));
       st.seen[id] = { t: Date.now(), k: 0, w: v.why };
       st.reasons[v.why] = (st.reasons[v.why] || 0) + 1;
       unlist(st, id, v.why); // on your site from before (older rules)? It comes off.
       unqueue(id);
       return;
     }
-    if ((kept[v.profile] || 0) >= FINDER_LIMITS.perListDay) { st.seen[id] = { t: Date.now(), k: 0, w: 'daily cap' }; return; }
+    if ((kept[v.profile] || 0) >= FINDER_LIMITS.perListDay) { auditNote(id, auditOf(v, jd, false, 'daily cap')); st.seen[id] = { t: Date.now(), k: 0, w: 'daily cap' }; return; }
     const m = st.memo[id];
     const o = m && m.keep && m.o ? m.o : toOpening(v, Date.now());
     if (!inPool(o)) {
+      auditNote(id, auditOf(v, jd, false, POOL_WHY));
       if (m) m.pool = false;
       st.seen[id] = { t: Date.now(), k: 0, w: POOL_WHY };
       st.reasons[POOL_WHY] = (st.reasons[POOL_WHY] || 0) + 1;
@@ -732,6 +760,8 @@ async function findJobs(trigger) {
       return;
     }
     if (m) m.pool = true;
+    auditNote(id, auditOf(v, jd, true, ''));
+    if (jd && jd.text) auditDoc(id, { jd: String(jd.text).slice(0, 4000) });
     kept[v.profile] = (kept[v.profile] || 0) + 1;
     st.seen[id] = { t: Date.now(), k: 1, r: v.rank, p: v.profile, s: v.skills.score };
     const c = st.rated[id];
@@ -801,6 +831,7 @@ async function findJobs(trigger) {
   let flushed = Date.now();
   const flush = async () => {
     flushed = Date.now();
+    await auditSave();
     if ((!st.pending.length && !st.unsend.length) || refused) return !refused;
     const summary = {
       ranAt: new Date(started).toISOString(), seconds: Math.round((Date.now() - started) / 1000), trigger,
@@ -866,6 +897,7 @@ async function findJobs(trigger) {
     const resetAt = await siteResetAt(settings.token);
     if (resetAt > (st.resetSeen || 0)) {
       freshStart(st, resetAt);
+      await auditClear();
       rq.length = 0;
       run.note = 'started over: reading every listing of the last 48 hours again';
       await saveState(st);
@@ -993,6 +1025,7 @@ async function findJobs(trigger) {
     if (rater.problem && rater.problem.kind === 'retired' && !outcome && rq.length) outcome = { short: 'every Groq key is out', msg: rater.problem.msg, until: rater.problem.until };
   }
   await flush(); // what's left
+  await auditSave(true);
   await persistQueue(st, rq, rating);
 
   st.daily.runs = (st.daily.runs || 0) + 1;
@@ -1064,6 +1097,7 @@ async function rateOnly() {
   }
   st.lock = { until: Date.now() + RATE.drainMs + 5 * MIN };
   await saveState(st);
+  await auditLoad();
   const rq = pruneQueue(await loadQueue(), { now: t0, rated: st.rated, hash: rating.hash });
   liveQueue = rq;
   const run = { rated: 0 };
@@ -1075,6 +1109,7 @@ async function rateOnly() {
   const saver = setInterval(() => { saveState(st).catch(() => {}); }, 5000);
   try { await rater.drain(RATE.drainMs); } finally { clearInterval(saver); }
   await savePayCache(payCache);
+  await auditSave(true);
   noteRater(st, rater.problem);
   let note = rater.problem ? rater.problem.msg : '';
   // The ratings go to your site (when it's known to take the finder's uploads), else with the next run.
@@ -1305,6 +1340,15 @@ export const jobsHandlers = {
     await sleep(300);
     return { result: { kind: 'started' }, status: await jobsStatus() };
   },
+  // The report page: every listing judged (3 days) and, for one kept job, its JD and its rating's prompt and answer.
+  async jobsAudit() {
+    const list = await auditEntries();
+    const st = await loadState();
+    return { entries: list, day: st.day, sweep: st.sweep || null, daily: st.daily || {} };
+  },
+  async jobsAuditDoc(msg) {
+    return { doc: await auditDocOf(String(msg && msg.id)) };
+  },
   // Wakes the finder as its alarm would (a timed pause is over); returns at once.
   async jobsTickNow() {
     jobsTick().catch(() => {});
@@ -1373,6 +1417,7 @@ export const jobsHandlers = {
     if (!r.ok) return { ...no(r.short), status: await jobsStatus() };
     const st = rollDay(await loadState(), Date.now());
     freshStart(st, r.resetAt, { ratings: true });
+    await auditClear(); // the report starts fresh with it
     await saveState(st);
     await saveQueue([]);
     runGuarded('start over'); // takes a while: the settings page follows it through jobsStatus
