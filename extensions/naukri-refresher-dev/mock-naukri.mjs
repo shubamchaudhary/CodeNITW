@@ -377,6 +377,8 @@ export async function startMock({ key, cert }) {
           jobId: l.jobId, title: l.title, description: jdFor(l), keySkills: { other: [], preferred: [] }, applyCount: 140,
           ...(EXPECT.applied.data.includes(l.jobId) ? { applyStatus: 'APPLIED' } : {}),
           ...(EXPECT.applied.button.includes(l.jobId) ? { mockApplied: true } : {}), // only the page shows it
+          // Every real job carries its company's homepage and career page: they say nothing about how you apply.
+          companyDetail: { websiteUrl: 'https://www.example-corp.com', careerPageUrl: 'https://careers.example-corp.com' },
           ...(EXPECT.companySite.includes(l.jobId) ? { applyRedirectUrl: `https://careers.example.org/jobs/${l.jobId}?src=naukri` } : {}),
         },
       });

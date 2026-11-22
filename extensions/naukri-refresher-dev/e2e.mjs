@@ -778,6 +778,22 @@ async function suite(d, mock) {
     assert.equal((await d.naukriTabs()).filter((u) => /-jobs|job-listings/.test(u)).length, 0, 'its background tab is closed again');
   });
 
+  await step('the report: every listing judged is recorded with its decision and reason; the funnel adds up; a kept job has its JD; the numbers match what reached the site', async () => {
+    const r = await d.msg({ type: 'jobsAudit' });
+    const list = r.entries;
+    const keptIds = list.filter((x) => x.k).map((x) => x.id).sort();
+    assert.deepEqual(keptIds, [...EXPECT.keep].sort(), 'every job kept is in the report');
+    for (const id of EXPECT.drop) assert.ok(list.some((x) => x.id === id && !x.k && x.w), `${id}: left out, with its reason`);
+    assert.ok(list.every((x) => x.title && x.company && (x.k || x.w)), 'each entry says what it is and why');
+    const out = list.filter((x) => !x.k);
+    assert.ok(out.some((x) => x.stage === 'card') && out.some((x) => x.stage === 'jd'), 'left out on the card, and after the JD');
+    assert.ok(list.filter((x) => x.k).every((x) => x.sent === 1), 'every kept job reached your site');
+    assert.ok(list.filter((x) => x.k && x.list === 'ai').length === EXPECT.ai.length, 'the lists add up');
+    const one = list.find((x) => x.k && x.stage === 'jd');
+    const { doc } = await d.msg({ type: 'jobsAuditDoc', id: one.id });
+    assert.ok(doc && doc.jd && doc.jd.length > 50, 'the JD it read is kept');
+  });
+
   await step("the finder's settings page shows the sweep and the rules", async () => {
     const page = await d.evalExt(`(async () => {
       const f = document.createElement('iframe');
@@ -974,6 +990,11 @@ async function suite(d, mock) {
       assert.ok(o.dbg.p.startsWith('THE CANDIDATE') && !o.dbg.p.includes('building LLM agents and RAG in Python') && /\[your (Backend|AI) resume/.test(o.dbg.p), 'the resume itself is left out');
       assert.match(o.dbg.o, /"relevance":80/);
     }
+    // The report keeps each rating with its prompt and the model's answer.
+    const au = (await d.msg({ type: 'jobsAudit' })).entries.filter((x) => x.k && x.ai != null);
+    assert.ok(au.length >= waiting, `the report has the ratings (${au.length} of ${waiting})`);
+    const { doc: rdoc } = await d.msg({ type: 'jobsAuditDoc', id: au[0].id });
+    assert.ok(rdoc.dbg && /^THE CANDIDATE/.test(rdoc.dbg.p) && /"relevance"/.test(rdoc.dbg.o), "its prompt and the model's answer are in the report");
     assert.ok(Object.values(rated).some((a) => a.pay.from === 'web' && a.pay.hi === 30), JSON.stringify(Object.values(rated).map((a) => a.pay)));
     const k8s = rated[EXPECT.idOf(12)]; // its JD asks for Kubernetes; the fake model claimed it with a quote that isn't on the resume
     assert.ok(k8s.uv >= 1 && k8s.miss.includes('Kubernetes'), JSON.stringify(k8s));
