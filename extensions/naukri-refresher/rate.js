@@ -407,7 +407,16 @@ export function startRater(queue, ctx) {
       return;
     }
     k.last = r.msg;
-    if (keyTrouble(slot, r)) return;
+    // A rejected key is out as ever, but the web lookup is optional: a 429 on it (a web search costs
+    // far more tokens than a rating) only switches lookups off for this run and rests the key a
+    // little. It never counts toward retiring the key, so it can't pause the sweep.
+    if (r.kind === 'key') { keyTrouble(slot, r); return; }
+    if (r.kind === 'rate') {
+      slot.until = Math.max(slot.until, Date.now() + Math.min(r.day ? 60_000 : r.wait || 5_000, 60_000));
+      payOff = `web lookups hit Groq's limit (${r.msg})`;
+      counts.pay.off = { t: Date.now(), msg: payOff };
+      return;
+    }
     if (r.kind === 'model') { problem = r; return; }
     if (r.kind === 'transient') { slot.until = Math.max(slot.until, Date.now() + 5_000); return; }
     // The tool refused, or it's too large for a key's minute: this run rates without web lookups.

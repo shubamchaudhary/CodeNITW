@@ -1125,6 +1125,27 @@ async function suite(d, mock) {
     await setStore({ jobsDev: null });
   });
 
+  await step("the finder's tab closed mid-run (by you, or discarded by the browser): it opens a new one and the run goes on", async () => {
+    await setStore({ jobsDev: { pause: [150, 250], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'] } });
+    await d.msg({ type: 'jobsRescan' }); // every JD read again, so the run takes a few seconds
+    const postsBefore = mock.state.radarPosts.length;
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    let closed = 0;
+    for (let i = 0; i < 40 && closed < 2; i++) {
+      await sleep(500);
+      if ((await d.msg({ type: 'jobsDevCloseTab' })).closed) { closed += 1; await sleep(1500); }
+    }
+    assert.ok(closed >= 1, 'the finder tab was open mid-run, and was closed');
+    const s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    assert.doesNotMatch(String(s.lastRun.note), /internal error|No tab/, JSON.stringify(s.lastRun));
+    assert.match(String(s.lastRun.note), /opened a new one/, JSON.stringify(s.lastRun));
+    const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
+    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort(), 'every job that fits still reached your site');
+    await setStore({ jobsDev: null });
+  });
+
   if (process.env.NR_SHOT && d.screenshot) {
     await sleep(1600);
     await d.screenshot(process.env.NR_SHOT);
