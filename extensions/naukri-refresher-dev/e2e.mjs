@@ -1069,7 +1069,7 @@ async function suite(d, mock) {
     assert.ok(posts.some((p) => (p.remove || []).some((r) => r.openingId === EXPECT.idOf(12) && r.company === 'Company 12')), JSON.stringify(posts.map((p) => p.remove)));
     assert.ok(!posts.some((p) => p.openings.some((o) => o.openingId === EXPECT.idOf(12))));
     const late = mock.state.groqCalls.filter((c) => c.t >= t0 && !c.body.tools);
-    assert.ok(late.every((c) => /Company: Company 54\b/.test(c.body.messages[0].content)), 'only the job still waiting is rated; ratings from the last 3 days are kept');
+    assert.ok(late.every((c) => /Company: Company (54|57)\b/.test(c.body.messages[0].content)), 'only the jobs still waiting (54, and 57 from the pause step) are rated; ratings from the last 3 days are kept');
     await d.msg({ type: 'jobsSave', patch: { lowPay: null, groqKeys: [] } });
     await setStore({ jobsDev: null });
   });
@@ -1122,6 +1122,27 @@ async function suite(d, mock) {
     assert.ok(mock.jobPages().length > pagesBefore, 'its JDs read again');
     const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
     assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort());
+    await setStore({ jobsDev: null });
+  });
+
+  await step("the finder's tab closed mid-run (by you, or discarded by the browser): it opens a new one and the run goes on", async () => {
+    await setStore({ jobsDev: { pause: [150, 250], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'] } });
+    await d.msg({ type: 'jobsRescan' }); // every JD read again, so the run takes a few seconds
+    const postsBefore = mock.state.radarPosts.length;
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    let closed = 0;
+    for (let i = 0; i < 40 && closed < 2; i++) {
+      await sleep(500);
+      if ((await d.msg({ type: 'jobsDevCloseTab' })).closed) { closed += 1; await sleep(1500); }
+    }
+    assert.ok(closed >= 1, 'the finder tab was open mid-run, and was closed');
+    const s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    assert.doesNotMatch(String(s.lastRun.note), /internal error|No tab/, JSON.stringify(s.lastRun));
+    assert.match(String(s.lastRun.note), /opened a new one/, JSON.stringify(s.lastRun));
+    const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
+    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort(), 'every job that fits still reached your site');
     await setStore({ jobsDev: null });
   });
 

@@ -506,19 +506,19 @@ test('pay lookups: a fresh one is reused, an old one (30+ days) is redone, none 
   assert.equal(rated.length, 1);
   assert.equal(rated[0].pay.from, null);
 
-  // A 429 on a lookup: the key rests, the lookup is tried again, the job waits for it.
-  let first = true;
-  calls = fakeGroq((key, n, body) => {
-    if (body.tools && first) { first = false; return { status: 429, json: { error: { message: 'Rate limit reached on requests per minute (RPM). Please try again in 0.05s.' } } }; }
-    return body.tools ? PAY : null;
-  });
+  // A 429 on a lookup (a web search costs far more tokens than a rating): lookups are off for the run,
+  // the jobs are rated without them, and the key is never retired for it.
+  calls = fakeGroq((key, n, body) => (body.tools ? { status: 429, json: { error: { message: 'Rate limit reached on tokens per minute (TPM). Please try again in 0.05s.' } } } : null));
   const done = [];
-  r = startRater([item('r1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: {}, payPerDay: 10, onRated: (it, ai) => done.push(ai), limitBaseMs: 50, limitStopMs: 5000 });
+  const c3 = counts();
+  r = startRater([item('r1'), item('r2'), item('r3')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: c3, payCache: {}, payPerDay: 10, onRated: (it, ai) => done.push(ai), limitBaseMs: 50, limitStopMs: 100 });
   await r.drain(20_000);
-  assert.equal(r.problem, null);
-  assert.equal(calls.filter((x) => x.body.tools).length, 2);
-  assert.equal(done[0].pay.from, 'web');
-  assert.ok(calls.findIndex((x) => !x.body.tools) > calls.findIndex((x, i) => x.body.tools && i > 0), 'rated after its pay is known');
+  assert.equal(r.problem, null, JSON.stringify(r.problem));
+  assert.equal(calls.filter((x) => x.body.tools).length, 1, 'one try, then no more lookups this run');
+  assert.equal(done.length, 3, 'every job is still rated');
+  assert.equal(done[0].pay.from, null);
+  assert.match(c3.pay.off.msg, /web lookups hit Groq's limit/);
+  assert.ok(!r.pool.slots[0].day.retiredUntil, 'a lookup never retires a key');
 
   // The radar's own pay figure: no web lookups at all.
   calls = fakeGroq(() => null);

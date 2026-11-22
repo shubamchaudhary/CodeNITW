@@ -416,7 +416,7 @@ async function readIn(tabId, func) {
 /** Navigate the finder's tab to a page; `ready(r, waited)` says when what it read is enough. */
 async function loadPage(tabId, url, prevHref, func, ready) {
   const want = new URL(url);
-  await ext.tabs.update(tabId, { url });
+  try { await ext.tabs.update(tabId, { url }); } catch { return { gone: true }; } // the tab was closed
   const t0 = Date.now();
   let last = null;
   while (Date.now() - t0 < FINDER_LIMITS.pageWaitMs + 30_000) {
@@ -663,9 +663,25 @@ async function findJobs(trigger) {
   const budget = () => run.pages < FINDER_LIMITS.pagesPerRun && (st.daily.pages || 0) < FINDER_LIMITS.pagesPerDay
     && Date.now() - started < FINDER_LIMITS.runMinutes * MIN;
   const jdBudget = () => budget() && (st.daily.jds || 0) < FINDER_LIMITS.jdPerDay;
+  // The finder's tab: opened when there's none, and again when the one it had is gone (closed by you,
+  // or discarded by the browser), so a closed tab never ends a run.
   const tab = async () => {
-    if (!st.tab) { st.tab = await openTab('about:blank'); await saveState(st); }
+    if (st.tab) {
+      try { await ext.tabs.get(st.tab.tabId); } catch { st.tab = null; }
+    }
+    if (!st.tab) { st.tab = await openTab('about:blank'); prevHref = null; await saveState(st); }
     return st.tab.tabId;
+  };
+  let reopened = 0;
+  // Loads a page, opening a new tab and trying again if the tab goes missing (3 times a run at most).
+  const loadIn = async (load, url) => {
+    for (;;) {
+      const r = await load(await tab(), url, prevHref);
+      if (!(r && r.gone) || reopened >= 3) return r;
+      reopened += 1;
+      st.tab = null;
+      run.note = `the finder tab was closed: opened a new one (${reopened})`;
+    }
   };
 
   // The AI rating: each job sent waits in `rq` with its JD text, and the rater (started once the
@@ -740,9 +756,8 @@ async function findJobs(trigger) {
   const openJd = async (card) => {
     const id = card.job.id;
     if (jdOff) { decide(id, cardOnly(card, { now: Date.now(), minScore })); return true; }
-    const tabId = await tab();
     await pause();
-    const r = await loadJob(tabId, card.job.url, prevHref);
+    const r = await loadIn(loadJob, card.job.url);
     if (r && r.href) prevHref = r.href;
     run.pages += 1;
     run.jds += 1;
@@ -889,7 +904,7 @@ async function findJobs(trigger) {
           if (run.pages > 0) await pause();
           const page = sw.next[s.k] || 1;
           const url = searchUrl(s.k, page);
-          const r = await loadSearch(await tab(), url, prevHref);
+          const r = await loadIn(loadSearch, url);
           if (r && r.href) prevHref = r.href;
           run.pages += 1;
           sw.pages += 1;
@@ -1294,6 +1309,14 @@ export const jobsHandlers = {
     jobsTick().catch(() => {});
     await sleep(300);
     return jobsStatus();
+  },
+  // Test only (needs the jobsDev switch): closes the finder's tab, as you might mid-run.
+  async jobsDevCloseTab() {
+    const dev = (await ext.storage.local.get('jobsDev')).jobsDev;
+    const st = await loadState();
+    if (!dev || !st.tab) return { closed: false };
+    try { await ext.tabs.remove(st.tab.tabId); } catch { return { closed: false }; }
+    return { closed: true };
   },
   async jobsResume() {
     const st = await loadState();
