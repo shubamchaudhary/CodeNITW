@@ -1184,6 +1184,7 @@ export async function jobsOnStartup() {
   const st = await loadState();
   st.tab = null; // tab ids from the last browser session mean nothing now
   st.lock = null;
+  st.resting = null;
   await saveState(st);
 }
 
@@ -1309,6 +1310,20 @@ export const jobsHandlers = {
     jobsTick().catch(() => {});
     await sleep(300);
     return jobsStatus();
+  },
+  /**
+   * "Unlock": a run that died (the worker was stopped, the extension reloaded) leaves its lock for up
+   * to 90 minutes, and the page says "Running now…" with every button off. This clears the lock and
+   * closes the finder's tab. Refused while this worker really is in a run.
+   */
+  async jobsUnlock() {
+    if (running) return { result: { kind: 'busy' }, status: await jobsStatus() };
+    const st = await loadState();
+    await closeTab(st);
+    st.lock = null;
+    st.resting = null;
+    await saveState(st);
+    return { result: { kind: 'unlocked' }, status: await jobsStatus() };
   },
   // Test only (needs the jobsDev switch): closes the finder's tab, as you might mid-run.
   async jobsDevCloseTab() {

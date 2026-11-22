@@ -122,6 +122,8 @@ function render(s) {
     : w.done ? `Sweep ${w.n} read every page of all ${w.searches} searches (${w.pages} pages, ${fmtWhen(w.started, now)} to ${fmtWhen(w.finished, now)} IST). The next run starts a new one.`
       : `Sweep ${w.n}, started ${fmtWhen(w.started, now)} IST: ${w.over} of ${w.searches} searches read to the end, ${w.pages} pages so far. The next run carries on.`;
   $('now').disabled = s.running || !s.settings.hasToken || !!s.halted;
+  // A run that died keeps the page on "Running now…" for up to 90 minutes: Unlock clears it.
+  $('unlock').hidden = !s.running;
   $('startOver').disabled = s.running || !s.settings.hasToken || !!s.halted;
   $('token').placeholder = s.settings.hasToken ? 'Saved (paste a new one to replace it)' : 'Paste the token';
   if (!extraLoaded) { $('extra').value = s.settings.extraSkills || ''; extraLoaded = true; }
@@ -264,6 +266,11 @@ $('resetLowPay').addEventListener('click', async () => {
   $('lowPayOut').textContent = `Back to the default list: ${s.lowPay.names.length} companies.`;
 });
 $('now').addEventListener('click', async () => { $('now').disabled = true; await send('jobsNow'); refresh(); });
+$('unlock').addEventListener('click', async () => {
+  const r = await send('jobsUnlock');
+  if (r.result && r.result.kind === 'busy') window.alert('A run is going in this browser right now: wait for it to end.');
+  refresh();
+});
 $('rescan').addEventListener('click', async () => { await send('jobsRescan'); refresh(); });
 $('startOver').addEventListener('click', async () => {
   const ok = window.confirm('Start fresh?\n\nYour site deletes every job the finder put there, on both lists (the radar\'s own openings stay).'

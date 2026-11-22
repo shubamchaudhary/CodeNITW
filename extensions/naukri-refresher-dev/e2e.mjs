@@ -1146,6 +1146,27 @@ async function suite(d, mock) {
     await setStore({ jobsDev: null });
   });
 
+  await step('a run that died leaves "Running now…": Unlock clears it, and a reload (the extension restarting) does too', async () => {
+    const KEY = 'jobs';
+    const stateOf = async () => (await getStore(KEY))[KEY];
+    const st = await stateOf();
+    await setStore({ [KEY]: { ...st, lock: { until: Date.now() + 60 * 60_000 }, resting: { until: Date.now() + 600_000, part: 2 } } });
+    let s = await jobs();
+    assert.equal(s.running, true, 'a stale lock looks like a run');
+    const r = await d.msg({ type: 'jobsUnlock' });
+    assert.equal(r.result.kind, 'unlocked', JSON.stringify(r.result));
+    s = await jobs();
+    assert.equal(s.running, false, 'Unlock clears it');
+    assert.ok(!(await stateOf()).lock && !(await stateOf()).resting);
+    // And the finder works again at once.
+    await setStore({ jobsDev: { pause: [60, 120], searches: ['java spring boot developer'] } });
+    const t0 = Date.now();
+    await d.msg({ type: 'jobsNow' });
+    s = await waitRun(t0);
+    assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
+    await setStore({ jobsDev: null });
+  });
+
   if (process.env.NR_SHOT && d.screenshot) {
     await sleep(1600);
     await d.screenshot(process.env.NR_SHOT);

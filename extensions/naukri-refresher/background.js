@@ -612,6 +612,8 @@ ext.notifications.onClicked.addListener((id) => {
 
 ext.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install') await addLog('info', 'Installed. Log in to naukri.com in this browser, then press "Refresh now" once: the hourly schedule starts after that first save is verified.');
+  // A reload or update stops the worker, and with it any run it had: forget that run's lock and tab.
+  await jobsOnStartup();
   await ensureWatchdog();
   await tick();
 });
