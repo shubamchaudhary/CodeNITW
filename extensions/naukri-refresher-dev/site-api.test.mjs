@@ -95,7 +95,7 @@ test("a finder upload: known openings updated, new ones created, old ones pruned
     stored('radar-co:333', NOW - 5 * DAY), // the radar's, kept 15 days
     stored('ancient:444', NOW - 16 * DAY),
   ];
-  const ai = { s: 87, m: [5, 6], have: ['Java'], part: [], miss: ['Go'], role: 'backend', lvl: 'mid', yrs: 2, uv: 0, inv: 0, thin: false, v: 1, t: NOW };
+  const ai = { s: 87, m: [5, 6], have: ['Java'], part: [], miss: ['Go'], role: 'backend', lvl: 'mid', yrs: 2, uv: 0, inv: 0, thin: false, rel: null, fit: null, rej: false, why: '', pay: { lo: null, hi: null, from: null, ok: 'unknown' }, v: 1, t: NOW };
   const plan = planFinderUpload({
     current,
     incoming: upload([opening('Acme', '111', { title: 'New title', ai }), opening('Fresh Co', '555')]),
@@ -165,4 +165,32 @@ test('how you apply is stored: on Naukri, or on the company site with its link (
   assert.deepEqual([by.A.apply, by.A.applyUrl], ['company', 'https://careers.a.example/jobs/1']);
   assert.deepEqual([by.B.apply, by.B.applyUrl], ['naukri', undefined]);
   assert.deepEqual([by.C.apply, by.C.applyUrl], [undefined, undefined]);
+});
+
+test("the rating's relevance, reason and pay are stored; its prompt and answer stay out of the snapshot", () => {
+  const ai = { s: 82, m: [4, 5], have: ['Java'], rel: 90, fit: 72, rej: false, why: 'A Java backend role.', pay: { lo: 20, hi: 32, from: 'web', ok: 'ok' }, v: 2, t: NOW };
+  const dbg = { p: 'THE CANDIDATE: …', o: '{"relevance":90}', m: 'openai/gpt-oss-20b', pay: 'Pay lookup …', t: NOW };
+  const plan = planFinderUpload({ current: [], incoming: upload([opening('A', '1', { ai, dbg })]), now: NOW });
+  const w = plan.writes.find((x) => x.op === 'create');
+  assert.deepEqual([w.data.ai.rel, w.data.ai.fit, w.data.ai.rej, w.data.ai.why, w.data.ai.pay], [90, 72, false, 'A Java backend role.', ai.pay]);
+  assert.deepEqual(w.data.dbg, dbg, 'the document keeps it (GET ?debug=<id> reads it)');
+  const snap = snapshotFrom(snapshotParts(plan.openings, 1, NOW));
+  assert.equal(snap[0].dbg, undefined, 'never in the snapshot every page load reads');
+  assert.equal(snap[0].ai.rel, 90);
+  const old = planFinderUpload({ current: [], incoming: upload([opening('B', '2', { ai: { s: 55 }, dbg: { o: 'no prompt' } })]), now: NOW });
+  const b = old.writes.find((x) => x.op === 'create').data;
+  assert.deepEqual([b.ai.rel, b.ai.rej, b.ai.pay.ok, b.dbg], [null, false, 'unknown', undefined]);
+});
+
+test("one opening's prompt and answer: only with the read token (or the owner's login), and only a plain id", async () => {
+  const { GET } = await import('../../api/radar.mjs');
+  process.env.RADAR_READ_TOKEN = 'read-test-token';
+  const get = async (q, token) => {
+    const res = await GET(new Request(`https://interviewplanprep.vercel.app/api/radar${q}`, { headers: token ? { authorization: `Bearer ${token}` } : {} }));
+    return { status: res.status, body: await res.json() };
+  };
+  assert.equal((await get('?debug=acme:1:2')).status, 404, 'no token: nothing, not even that it exists');
+  assert.equal((await get('?debug=acme:1:2', FINDER)).status, 404, "the finder's token can't read");
+  assert.deepEqual(await get('?debug=a/b', 'read-test-token'), { status: 400, body: { error: 'bad-id' } });
+  assert.equal((await get(`?debug=${'x'.repeat(401)}`, 'read-test-token')).status, 400);
 });

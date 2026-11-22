@@ -938,15 +938,19 @@ async function suite(d, mock) {
     assert.deepEqual(check.keys.map((k) => k.msg), ['rejected', 'works', 'works']);
     const t1 = Date.now();
     assert.equal((await d.msg({ type: 'jobsRateNow' })).result.kind, 'started');
-    s = await waitRate(t1);
+    // One good key at 70% of Groq's 30 requests a minute (21), a pay lookup per new company plus a rating per job: about 2 minutes.
+    s = await waitRate(t1, 300_000);
     assert.equal(s.rating.last.rated, waiting, JSON.stringify(s.rating));
     assert.equal(s.rating.queued, 0);
     assert.equal(s.rating.today.rated.backend + s.rating.today.rated.ai, waiting);
     // What Groq got: the rules, the right resume, strict JSON on gpt-oss-20b; never Naukri's pages.
-    const calls = mock.state.groqCalls;
+    const calls = mock.state.groqCalls.filter((c) => !c.body.tools); // the ratings (the rest: pay lookups)
     assert.ok(calls.length >= rateable.length);
-    assert.equal(calls.filter((c) => c.key === GROQ_KEYS.bad).length, 1, 'a rejected key is left out after its first answer');
-    assert.ok(calls.filter((c) => c.key === GROQ_KEYS.busy).length <= 3, 'a key at its limit rests');
+    const lookups = mock.state.groqCalls.filter((c) => c.body.tools);
+    assert.ok(lookups.length >= 1 && lookups.every((c) => c.body.tools[0].type === 'browser_search'), 'company pay looked up on the web');
+    assert.equal(new Set(mock.state.payLookups).size, mock.state.payLookups.filter((x) => x).length, 'once per company');
+    assert.equal(mock.state.groqCalls.filter((c) => c.key === GROQ_KEYS.bad).length, 1, 'a rejected key is left out after its first answer');
+    assert.ok(mock.state.groqCalls.filter((c) => c.key === GROQ_KEYS.busy).length <= 3, 'a key at its limit rests');
     for (const c of calls) {
       assert.equal(c.body.model, 'openai/gpt-oss-20b');
       assert.equal(c.body.response_format.json_schema.strict, true);
@@ -955,13 +959,22 @@ async function suite(d, mock) {
     }
     const aiCall = calls.find((c) => /Title: Generative AI Engineer/.test(c.body.messages[0].content));
     assert.ok(aiCall && aiCall.body.messages[0].content.includes('building LLM agents and RAG in Python'), 'an AI-list job is rated against the GenAI resume');
+    assert.ok(aiCall.body.messages[0].content.startsWith('THE CANDIDATE') && /GenAI applications/.test(aiCall.body.messages[0].content), "the AI list's own strict prompt");
+    assert.ok(calls.some((c) => /Java \(Spring Boot\) is the main language/.test(c.body.messages[0].content)), "the Backend list's own strict prompt");
     // What your site got: the jobs again, each with its rating.
     const post = mock.state.radarPosts.at(-1);
     assert.equal(post.summary.trigger, 'rate');
     const rated = Object.fromEntries(post.openings.filter((o) => o.ai).map((o) => [o.openingId, o.ai]));
     assert.equal(Object.keys(rated).length, waiting, 'every rated job goes to your site again, with its rating');
     for (const id of rateable) assert.ok(rated[id], `${id} rated`);
-    for (const a of Object.values(rated)) assert.ok(a.s >= 1 && a.s <= 100 && a.inv >= 1, JSON.stringify(a));
+    for (const a of Object.values(rated)) assert.ok(a.s >= 1 && a.s <= 100 && a.inv >= 1 && a.rel === 80 && a.v === 2, JSON.stringify(a));
+    const withDbg = post.openings.filter((o) => o.ai && o.dbg);
+    assert.ok(withDbg.length >= 1, 'the prompt and the answer go to your site with the rating');
+    for (const o of withDbg) {
+      assert.ok(o.dbg.p.startsWith('THE CANDIDATE') && !o.dbg.p.includes('building LLM agents and RAG in Python') && /\[your (Backend|AI) resume/.test(o.dbg.p), 'the resume itself is left out');
+      assert.match(o.dbg.o, /"relevance":80/);
+    }
+    assert.ok(Object.values(rated).some((a) => a.pay.from === 'web' && a.pay.hi === 30), JSON.stringify(Object.values(rated).map((a) => a.pay)));
     const k8s = rated[EXPECT.idOf(12)]; // its JD asks for Kubernetes; the fake model claimed it with a quote that isn't on the resume
     assert.ok(k8s.uv >= 1 && k8s.miss.includes('Kubernetes'), JSON.stringify(k8s));
     assert.ok(!k8s.miss.includes('Rust systems programming'), 'an invented requirement is left out');
@@ -989,6 +1002,60 @@ async function suite(d, mock) {
     assert.equal(again.rating.on, true, JSON.stringify(again.rating));
   });
 
+  await step('a key Groq answers 429 for minutes is retired for an hour; with every key retired the run pauses by itself, then carries on when the hour is over; Resume brings keys back at once', async () => {
+    // The rule is 5 minutes of 429 and an hour; the test knobs make it 0.4 s and 6 s.
+    await setStore({ jobsDev: { ...DEV, rate: { limitBaseMs: 50, limitStopMs: 400, retireMs: 6000 } } });
+    mock.state.groqMode = 'limit';
+    mock.state.srpExtra = [listing(56, { title: 'Java Backend Developer', tagsAndSkills: 'Java,Spring Boot,Redis' })];
+    try {
+      let t0 = Date.now();
+      await d.msg({ type: 'jobsNow' });
+      let s = await waitRun(t0);
+      const seen = JSON.stringify({ run: s.lastRun, halted: s.halted, rating: s.rating });
+      assert.equal(s.lastRun.outcome, 'paused', seen);
+      assert.ok(s.halted && s.halted.short === 'every Groq key is out' && s.halted.until > Date.now() && s.halted.until <= Date.now() + 6500, seen);
+      assert.match(s.halted.msg, /pauses until/);
+      const hint = s.rating.keys[0];
+      assert.ok(s.rating.today.keys[hint].retiredUntil > Date.now(), 'the key is retired, and it is remembered');
+      // (A job from the step before is already waiting for its rating, so the run pauses at its first page.)
+      assert.ok(!mock.state.radarPosts.flatMap((p) => p.openings).some((o) => o.openingId === EXPECT.idOf(56) && o.ai), 'nothing rated while every key is out');
+      // Still paused while the hour lasts: waking it up does nothing.
+      const callsBefore = mock.state.groqCalls.length;
+      s = (await d.msg({ type: 'jobsTickNow' }));
+      assert.ok(s.halted, 'still paused');
+      await sleep(500);
+      assert.equal(mock.state.groqCalls.length, callsBefore, 'a retired key is not called');
+      // The hour is over: it wakes up, clears the pause and carries on; the job is rated.
+      mock.state.groqMode = 'ok';
+      while (Date.now() < s.halted.until + 300) await sleep(200);
+      await d.msg({ type: 'jobsTickNow' });
+      const ratedPosts = () => mock.state.radarPosts.flatMap((p) => p.openings).filter((o) => o.openingId === EXPECT.idOf(56) && o.ai);
+      const waitEnd = Date.now() + 90_000;
+      while (Date.now() < waitEnd && (!ratedPosts().length || (s = await jobs()).running)) await sleep(400);
+      s = await jobs();
+      assert.equal(s.halted, null, JSON.stringify({ run: s.lastRun, halted: s.halted }));
+      assert.ok(ratedPosts().length, 'rated once the key was back: the sweep carried on where it stopped');
+      assert.equal(s.rating.today.keys[hint].retiredUntil || 0, 0);
+
+      // Retired again; Resume brings the key back at once.
+      mock.state.groqMode = 'limit';
+      mock.state.srpExtra = [listing(57, { title: 'Java Backend Developer', tagsAndSkills: 'Java,Spring Boot,Redis' })];
+      t0 = Date.now();
+      await d.msg({ type: 'jobsNow' });
+      s = await waitRun(t0);
+      assert.ok(s.halted && s.halted.until, JSON.stringify({ run: s.lastRun, halted: s.halted }));
+      mock.state.groqMode = 'ok';
+      s = await d.msg({ type: 'jobsResume' });
+      assert.equal(s.halted, null);
+      assert.equal(s.rating.today.keys[hint].retiredUntil || 0, 0, 'Resume forgets the retirement');
+    } finally {
+      mock.state.groqMode = 'ok';
+      mock.state.srpExtra = [];
+      await d.msg({ type: 'jobsResume' }); // whatever happened above, the next steps start unpaused
+      await setStore({ jobsDev: DEV }); // as the step before left it
+    }
+  });
+
   await step("a company you add to the low-pay list comes off your site at the next run", async () => {
     const names = (await jobs()).lowPay.names;
     await d.msg({ type: 'jobsSave', patch: { lowPay: [...names, 'Company 12'] } });
@@ -1001,7 +1068,7 @@ async function suite(d, mock) {
     const posts = mock.state.radarPosts.slice(before);
     assert.ok(posts.some((p) => (p.remove || []).some((r) => r.openingId === EXPECT.idOf(12) && r.company === 'Company 12')), JSON.stringify(posts.map((p) => p.remove)));
     assert.ok(!posts.some((p) => p.openings.some((o) => o.openingId === EXPECT.idOf(12))));
-    const late = mock.state.groqCalls.filter((c) => c.t >= t0);
+    const late = mock.state.groqCalls.filter((c) => c.t >= t0 && !c.body.tools);
     assert.ok(late.every((c) => /Company: Company 54\b/.test(c.body.messages[0].content)), 'only the job still waiting is rated; ratings from the last 3 days are kept');
     await d.msg({ type: 'jobsSave', patch: { lowPay: null, groqKeys: [] } });
     await setStore({ jobsDev: null });
@@ -1027,6 +1094,7 @@ async function suite(d, mock) {
     const pagesBefore = mock.jobPages().length;
     const postsBefore = mock.state.radarPosts.length;
     const t0 = Date.now();
+    assert.ok(((await jobs()).rating.ratedKept || 0) > 0, 'there are ratings to forget');
     const r = await d.msg({ type: 'jobsStartOver' });
     assert.equal(r.result.kind, 'started', JSON.stringify(r.result));
     assert.equal(mock.state.radarResets, 1, 'your site was asked to delete the finder\'s jobs');
@@ -1034,6 +1102,7 @@ async function suite(d, mock) {
     assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
     assert.equal(s.lastRun.trigger, 'start over');
     assert.ok(s.startedOver >= t0);
+    assert.equal(s.rating.ratedKept || 0, 0, 'Start fresh forgets the ratings too');
     const opened = mock.jobPages().slice(pagesBefore).map((p) => p.path);
     for (const id of EXPECT.keep.filter((x) => !EXPECT.cardOnly.includes(x))) assert.ok(opened.some((p) => p.endsWith(id)), `${id}: its JD read again`);
     const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);

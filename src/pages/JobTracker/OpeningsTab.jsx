@@ -104,11 +104,21 @@ const byMatch = (a, b) => matchTier(a) - matchTier(b) || (b.coverage || 0) - (a.
 // Rated jobs first, highest rating first (ties by JD match); the ones not rated yet after them.
 const aiScore = (o) => (o.ai && o.ai.s >= 1 ? o.ai.s : 0);
 const byRating = (a, b) => aiScore(b) - aiScore(a) || byMatch(a, b);
+// Your site shows AI ratings from 60 up (extensions/naukri-refresher/rate-lib.js RATE.minShow); the
+// rest wait behind "Show N rated under 60". Jobs not rated yet still show, after the rated ones.
+const MIN_SHOW = 60;
+const lowRated = (o) => aiScore(o) > 0 && aiScore(o) < MIN_SHOW;
 // What the AI rating rests on, for its tooltip.
 const LEVEL_TEXT = { junior: "junior", mid: "mid-level", senior: "senior", lead: "lead" };
+const PAY_FROM = { posted: "the salary it shows", web: "a web lookup of the company's pay at about 2 years", model: "what the LLM knows of the company", guess: "the LLM's guess (not counted)" };
 function aiHint(ai) {
   const lines = [
-    `AI rating ${ai.s}/100: an LLM read the JD against your resume; the rating is worked out from what it found, with fixed weights.`,
+    ai.rel != null
+      ? `AI rating ${ai.s}/100: 55% the LLM's relevance against your list's strict rules (${ai.rel}), 45% the requirements your resume provably meets (${ai.fit}).`
+      : `AI rating ${ai.s}/100: an LLM read the JD against your resume; the rating is worked out from what it found, with fixed weights.`,
+    ai.rej ? "On your never-wanted list: 15 at most." : null,
+    ai.why ? `The LLM: ${ai.why}` : null,
+    ai.pay?.from ? `Pay at about 2 years: ${ai.pay.lo}–${ai.pay.hi} LPA, from ${PAY_FROM[ai.pay.from] || ai.pay.from}${ai.pay.ok === "low" ? " (under 20: the rating is held at 35)" : ""}.` : null,
     `Must-haves your resume shows: ${ai.m[0]} of ${ai.m[1]}.`,
     ai.have?.length ? `✓ ${ai.have.join(", ")}` : null,
     ai.part?.length ? `½ ${ai.part.join(", ")}` : null,
@@ -294,6 +304,92 @@ const Tag = ({ cls, title, children }) => (
 );
 
 // One opening. Everything needed to decide sits above its three buttons.
+const PAY_MATCH_CLS = { ok: "bg-success-subtle text-success-fg", close: "bg-surface-hover text-fg", low: "bg-danger-subtle text-danger-fg", unknown: "bg-surface-hover text-fg-subtle" };
+const prettyJson = (t) => {
+  try {
+    return JSON.stringify(JSON.parse(t), null, 2);
+  } catch (_) {
+    return t;
+  }
+};
+
+// The AI rating's one-line reason, its pay match, and the prompt it was sent with the LLM's raw
+// answer (read from the API on demand: GET /api/radar?debug=<id>), for checking a rating.
+function AiExtra({ o }) {
+  const [open, setOpen] = useState(false);
+  const [dbg, setDbg] = useState(null); // { loading } | { error } | { dbg }
+  const ai = o.ai;
+  if (!ai) return null;
+  const p = ai.pay;
+  const toggle = async () => {
+    setOpen((v) => !v);
+    if (open || (dbg && !dbg.error)) return;
+    setDbg({ loading: true });
+    try {
+      const user = getAuth().currentUser;
+      const token = user && (await user.getIdToken());
+      const res = await fetch(`/api/radar?debug=${encodeURIComponent(o.id)}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data) throw new Error(data?.error || `HTTP ${res.status}`);
+      setDbg({ dbg: data.dbg });
+    } catch (e) {
+      setDbg({ error: e.message });
+    }
+  };
+  const d = dbg?.dbg;
+  return (
+    <div className="flex flex-col gap-1">
+      {ai.why && (
+        <p className={`text-[11px] leading-snug ${ai.rej ? "text-danger-fg" : "text-fg-muted"}`} title="The LLM's reason for its relevance">
+          {ai.rej ? "✗ " : ""}
+          {ai.why}
+        </p>
+      )}
+      <div className="flex flex-wrap items-center gap-1">
+        {ai.rel != null && (
+          <Tag cls="bg-surface-hover text-fg" title="The LLM's relevance (1–100) against your list's strict prompt · the requirements score worked out in code">
+            relevance {ai.rel} · fit {ai.fit}
+          </Tag>
+        )}
+        {p?.from && (
+          <Tag cls={PAY_MATCH_CLS[p.ok] || PAY_MATCH_CLS.unknown} title={`The company's pay at about 2 years, from ${PAY_FROM[p.from] || p.from}`}>
+            {p.lo === p.hi ? `≈${p.hi}` : `${p.lo}–${p.hi}`} LPA{p.from === "guess" ? "?" : ""}
+          </Tag>
+        )}
+        <button onClick={toggle} className="text-[10px] font-semibold text-accent-fg hover:underline">
+          {open ? "Hide prompt and answer" : "Prompt and answer"}
+        </button>
+      </div>
+      {open && (
+        <div className="rounded border border-line bg-canvas p-2 text-[10px] max-h-96 overflow-auto">
+          {dbg?.loading ? (
+            "Loading…"
+          ) : dbg?.error ? (
+            `Couldn't load it (${dbg.error}).`
+          ) : !d ? (
+            "Not kept for this rating: it was rated before prompts were kept. Start over in the job finder rates everything again."
+          ) : (
+            <>
+              <div className="font-semibold text-fg-muted">
+                Prompt sent to {d.m} {d.t ? `on ${new Date(d.t).toLocaleString()}` : ""}
+              </div>
+              <pre className="whitespace-pre-wrap break-words text-fg-subtle font-mono">{d.p}</pre>
+              <div className="mt-2 font-semibold text-fg-muted">The LLM&apos;s answer</div>
+              <pre className="whitespace-pre-wrap break-words text-fg-subtle font-mono">{prettyJson(d.o)}</pre>
+              {d.pay && (
+                <>
+                  <div className="mt-2 font-semibold text-fg-muted">Pay lookup</div>
+                  <pre className="whitespace-pre-wrap break-words text-fg-subtle font-mono">{d.pay}</pre>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function OpeningCard({ o, isNew, onSkip, onApply }) {
   const years = yearsText(o);
   return (
@@ -305,6 +401,11 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
         >
           {o.matchScore}% match
         </span>
+        {o.ai && (
+          <span className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${scoreCls(o.ai.s)}`} title={aiHint(o.ai)}>
+            AI {o.ai.s}
+          </span>
+        )}
         {isNew && <Tag cls="bg-success-subtle text-success-fg ">NEW</Tag>}
         <span className="text-xs font-semibold text-fg-muted truncate">{o.company}</span>
         <span className="ml-auto shrink-0 text-[10px] text-fg-subtle">{ago(o.openedAt)}</span>
@@ -357,6 +458,8 @@ function OpeningCard({ o, isNew, onSkip, onApply }) {
           ))}
         </div>
       )}
+
+      <AiExtra o={o} />
 
       {o.snippet && <p className="text-[11px] leading-relaxed text-fg-subtle line-clamp-2">{plainText(o.snippet)}</p>}
 
@@ -502,6 +605,8 @@ function FinderCard({ o, n, onSkip, onApplied }) {
         )
       )}
 
+      <AiExtra o={o} />
+
       {o.snippet && <p className="text-[11px] leading-relaxed text-fg-subtle line-clamp-2">{plainText(o.snippet)}</p>}
 
       <div className="mt-auto pt-1 grid grid-cols-3 gap-1.5">
@@ -554,6 +659,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   const [source, setSource] = useState("all");
   const [newOnly, setNewOnly] = useState(false);
   const [listedOnly, setListedOnly] = useState(true);
+  const [showLow, setShowLow] = useState(false); // AI ratings under MIN_SHOW: hidden unless asked for
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [sort, setSort] = useState("score"); // "score" | "recent"
@@ -595,7 +701,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   }, [reloads, cached]);
 
   // A filter change starts again from the first page.
-  useEffect(() => setPage(0), [exp, pay, source, newOnly, listedOnly, query, sort]);
+  useEffect(() => setPage(0), [exp, pay, source, newOnly, listedOnly, query, sort, showLow]);
 
   const openings = radar?.openings || [];
   const isNew = (o) => Date.now() - (o.firstSeen || 0) < NEW_HOURS * 3600000;
@@ -636,11 +742,15 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
         (!newOnly || isNew(o)) &&
         (!q || `${o.company} ${o.title} ${o.location}`.toLowerCase().includes(q))
     );
-    // Array sort is stable, so equal scores keep the newest-first order.
-    if (sort === "score") list.sort(byScore);
-    return list;
+    // Array sort is stable, so equal scores keep the newest-first order. Highest score: the AI
+    // rating first (rated ones before the rest), then the skills match.
+    if (sort === "score") list.sort((a, b) => aiScore(b) - aiScore(a) || byScore(a, b));
+    const low = list.filter(lowRated).length;
+    const out = showLow ? list : list.filter((o) => !lowRated(o));
+    out.low = low;
+    return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openings, naukri, hidden, queuedUrls, takenRoles, dismissedUrls, listedOnly, exp, pay, source, newOnly, query, sort]);
+  }, [openings, naukri, hidden, queuedUrls, takenRoles, dismissedUrls, listedOnly, exp, pay, source, newOnly, query, sort, showLow]);
 
   const sources = useMemo(() => [...new Set(openings.flatMap((o) => o.sources || [o.source]))], [openings]);
   const hiddenCount = openings.filter((o) => hidden[o.id]).length;
@@ -670,9 +780,11 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
       const live = groups.filter((g) => !g.skipped);
       const part = (company) => {
         const mine = live.filter((g) => (g.best.apply === "company") === company);
-        const left = mine.filter((g) => !g.taken).map((g) => g.best);
+        const open = mine.filter((g) => !g.taken).map((g) => g.best);
+        const low = open.filter(lowRated).length;
+        const left = showLow ? open : open.filter((o) => !lowRated(o));
         const top = company ? left : left.slice(0, SHOW_TOP);
-        return { found: mine.length, done: mine.length - left.length, rated: left.filter((o) => aiScore(o) > 0).length, list: top, more: left.length - top.length };
+        return { found: mine.length, done: mine.length - open.length, rated: left.filter((o) => aiScore(o) > 0).length, low, list: top, more: left.length - top.length };
       };
       const naukriPart = part(false);
       const sitePart = part(true);
@@ -680,7 +792,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [naukri, hidden, queuedUrls, takenRoles, dismissedUrls]);
+  }, [naukri, hidden, queuedUrls, takenRoles, dismissedUrls, showLow]);
   const finderFound = finder.backend.found + finder.ai.found;
   const mode = modePref || (finderFound ? "naukri" : "all");
   const setMode = (m) => {
@@ -893,6 +1005,15 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           <span className="text-xs text-fg-subtle">
             {cur.done} taken · {cur.rated} rated
           </span>
+          {(cur.low > 0 || showLow) && (
+            <button
+              onClick={() => setShowLow((v) => !v)}
+              title={`Jobs the AI rated under ${MIN_SHOW}: off your list unless you ask for them`}
+              className="text-xs font-semibold text-accent-fg hover:underline"
+            >
+              {showLow ? `Hide the ones rated under ${MIN_SHOW}` : `Show ${cur.low} rated under ${MIN_SHOW}`}
+            </button>
+          )}
           {hiddenCount > 0 && (
             <button onClick={onUnhideAll} className="text-xs font-semibold text-accent-fg hover:underline">
               Bring back {hiddenCount} skipped
@@ -1042,13 +1163,20 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           <Chip on={sort === "recent"} onClick={() => setSort("recent")} title="Newest opening first">
             Most recent
           </Chip>
-          <Chip on={sort === "score"} onClick={() => setSort("score")} title="Highest skills match first">
+          <Chip on={sort === "score"} onClick={() => setSort("score")} title="Highest AI rating first, then the highest skills match">
             Highest score
           </Chip>
         </div>
         <div className={`${GLASS_TRACK} rounded-lg p-1 inline-flex gap-1`}>
           <Chip on={newOnly} onClick={() => setNewOnly((v) => !v)}>
             New only
+          </Chip>
+          <Chip
+            on={!showLow}
+            onClick={() => setShowLow((v) => !v)}
+            title={`Hide openings the AI rated under ${MIN_SHOW}${shown.low ? ` (${shown.low} now)` : ""}; off shows them too. Ones not rated yet always show.`}
+          >
+            AI {MIN_SHOW}+{!showLow && shown.low ? ` · ${shown.low} hidden` : ""}
           </Chip>
           <Chip
             on={listedOnly}

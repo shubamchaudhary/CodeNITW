@@ -156,7 +156,7 @@ function render(s) {
   const of = (p) => s.allSearches.filter((x) => x.profile === p).map((x) => x.k).join(' · ');
   for (const t of [
     `Every listing, not a sample: once a day, around 17:00 IST, a run reads every page of every search (up to ${L.pagesPerSearch} pages each), one page of each search in turn. It works in stretches of up to ${L.runMinutes} minutes with ${L.restMin}-minute rests (up to ${L.stretches} stretches) until every search is read to the end; where it stops, the next run carries on. At most ${L.pagesPerDay} pages and ${L.jdPerDay} job pages a day.`,
-    'No job twice: a listing it judged in the last 3 days (kept or not) is skipped by its id, so no JD is opened twice and nothing is sent or rated twice. "Start over" deletes the finder\'s jobs from your site and forgets all of that, for a fresh run end to end.',
+    'No job twice: a listing it judged in the last 3 days (kept or not) is skipped by its id, so no JD is opened twice and nothing is sent or rated twice. "Start fresh" deletes the finder\'s jobs from your site and forgets all of that, for a fresh run end to end.',
     `First the card. It must be posted in the last ${R.maxAgeH} hours, as Naukri labels it ("Just now", "Few hours ago", "1 day ago"); "2 days ago" and older are out. A card that doesn't say passes. A job you already applied to on Naukri is out, when its card or its page says so.`,
     `Company: one on your low-pay list (${s.lowPay.names.length} companies, such as ${s.lowPay.names.slice(0, 4).join(', ')}) is out before its JD is opened.`,
     'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, MERN/MEAN, Node-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, lead/architect/manager, or not a software job at all. A plain "Software Engineer/Developer" passes and its JD decides.',
@@ -266,9 +266,9 @@ $('resetLowPay').addEventListener('click', async () => {
 $('now').addEventListener('click', async () => { $('now').disabled = true; await send('jobsNow'); refresh(); });
 $('rescan').addEventListener('click', async () => { await send('jobsRescan'); refresh(); });
 $('startOver').addEventListener('click', async () => {
-  const ok = window.confirm('Start over?\n\nYour site deletes every job the finder put there, on both lists (the radar\'s own openings stay).'
-    + ' This browser forgets everything it read and reads every listing of the last 48 hours again, now, until it is done.'
-    + ' Your other browser starts over at its next run. Ratings from the last 3 days are kept.');
+  const ok = window.confirm('Start fresh?\n\nYour site deletes every job the finder put there, on both lists (the radar\'s own openings stay).'
+    + ' This browser forgets everything it read, and every rating, and reads and rates every listing of the last 48 hours again, now, until it is done.'
+    + ' Your other browser starts fresh at its next run. (The Groq calls this takes count toward the day\'s cap.)');
   if (!ok) return;
   const o = $('startOut');
   o.hidden = false;
@@ -278,8 +278,8 @@ $('startOver').addEventListener('click', async () => {
   const res = r.result || {};
   o.className = `out ${res.kind === 'started' ? 'ok' : 'err'}`;
   o.textContent = res.kind === 'started'
-    ? `Started over: your site deleted ${res.deleted} jobs. Reading every listing of the last 48 hours again; this page follows it. On your site, press Refresh in Openings.`
-    : res.kind === 'busy' ? 'A run is on: try again when it ends.' : `Not started over: ${res.short}.`;
+    ? `Started fresh: your site deleted ${res.deleted} jobs. Reading every listing of the last 48 hours again; this page follows it. On your site, press Refresh in Openings.`
+    : res.kind === 'busy' ? 'A run is on: try again when it ends.' : `Not started fresh: ${res.short}.`;
   refresh();
 });
 $('resume').addEventListener('click', async () => { await send('jobsResume'); refresh(); });

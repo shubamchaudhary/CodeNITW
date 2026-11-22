@@ -77,6 +77,15 @@ Every job, from any source, goes through the same checks:
    levels.fyi figures are company-wide for software engineers in India, cached 30 days.
 4. **Skills match**: a 0–100 score against your resume's skills (see above).
    An opening with 0 (no skill in common) is dropped.
+5. **AI rating** (`rate.mjs`, with `GROQ_API_KEYS=key1,key2,…` in `.radar\.env`): the Naukri job
+   finder's rating, for the radar's openings. Each one's list comes from its stack (Java backend →
+   Backend, Python and GenAI → AI); one in another stack (MERN/Node, .NET, PHP…) is dropped. The rest
+   are read once by an LLM on Groq against that list's strict prompt and resume (rules:
+   `extensions/naukri-refresher/README.md`, step 3), with the radar's own pay check above standing in
+   for the web pay lookup ("unlikely" holds the rating at 35). At most `RADAR_RATE_PER_DAY` calls a
+   day (default 400), 20 minutes a run; what's left waits for the next run. The Openings tab sorts by
+   the rating and hides ratings under 60 (the **AI 60+** chip); each card's **Prompt and answer**
+   shows what the model was sent and said. Without keys the radar works as before.
 
 An opening a run drops is also sent to the API to delete, so one stored under
 earlier rules goes the next time a run sees it. Openings are always listed
@@ -156,6 +165,7 @@ node scripts\radar\run.mjs                        # full run + upload
 node scripts\radar\run.mjs --dry-run              # no upload
 node scripts\radar\run.mjs --only=riley,careerops # some sources only (board, riley, jobspy, careerops)
 node scripts\radar\run.mjs --days=3               # dataset window (default 7)
+node scripts\radar\run.mjs --rerate               # rate every opening again (a fresh start for the AI rating)
 ```
 
 A run takes about 5–10 minutes. Logs: `.radar\logs\YYYY-MM-DD.log`. What the

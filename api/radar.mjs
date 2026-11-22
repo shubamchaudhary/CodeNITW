@@ -106,7 +106,7 @@ const byNewest = (a, b) => (b.openedAt || 0) - (a.openedAt || 0) || (a.id < b.id
 
 // The snapshot's documents: the first holds how many parts there are; every part carries the same rev.
 export function snapshotParts(openings, rev, now) {
-  const data = gzipSync(Buffer.from(JSON.stringify(openings))).toString("base64");
+  const data = gzipSync(Buffer.from(JSON.stringify(openings.map(listed)))).toString("base64");
   const n = Math.max(1, Math.ceil(data.length / PART_MAX));
   if (n > MAX_PARTS) return [{ tooBig: true, at: now, rev }]; // far more than is ever kept: readers page instead
   return Array.from({ length: n }, (_, i) => ({
@@ -224,6 +224,9 @@ function fields(o) {
     fewSkills: o.fewSkills === true ? true : undefined,
     // Its AI rating (the finder's second pass: an LLM read the JD against the resume).
     ai: aiOf(o.ai),
+    // What the rating's LLM call was sent and answered (the card's "Prompt and answer"). Big, so it
+    // stays out of the snapshot and the paged list: GET ?debug=<id> reads it for one opening.
+    dbg: dbgOf(o.dbg),
     // How you apply: on Naukri, or on the company's own site (and that site's link).
     apply: o.apply === "naukri" || o.apply === "company" ? o.apply : undefined,
     applyUrl: typeof o.applyUrl === "string" && /^https?:\/\//.test(o.applyUrl) ? str(o.applyUrl, 600) : undefined,
@@ -251,10 +254,28 @@ function aiOf(a) {
     uv: num(a.uv) ?? 0,
     inv: num(a.inv) ?? 0,
     thin: a.thin === true,
+    // Since version 2: the model's own relevance (1–100) against the list's strict prompt, the
+    // checked requirements score, a hard reject, its one-line reason and the pay match.
+    rel: num(a.rel) ?? null,
+    fit: num(a.fit) ?? null,
+    rej: a.rej === true,
+    why: str(a.why, 240) || "",
+    pay: a.pay && typeof a.pay === "object"
+      ? { lo: num(a.pay.lo) ?? null, hi: num(a.pay.hi) ?? null, from: str(a.pay.from, 8) || null, ok: str(a.pay.ok, 8) || "unknown" }
+      : { lo: null, hi: null, from: null, ok: "unknown" },
     v: num(a.v) ?? 1,
     t: num(a.t) ?? 0,
   };
 }
+
+// The rating's prompt and the model's raw answer. Every field is always there (see aiOf).
+function dbgOf(d) {
+  if (!d || typeof d !== "object" || typeof d.p !== "string") return undefined;
+  return { p: d.p.slice(0, 12000), o: str(d.o, 4000) || "", m: str(d.m, 60) || "", pay: str(d.pay, 1500) || "", t: num(d.t) ?? 0 };
+}
+
+// An opening as lists show it: without its prompt and answer.
+const listed = ({ dbg, ...o }) => o;
 
 // The posting date if a source gave one, else when the radar first saw it.
 function openedAtOf(o, now) {
@@ -604,6 +625,15 @@ export async function GET(request) {
   const params = new URL(request.url).searchParams;
   const activeCut = Date.now() - ACTIVE_DAYS * DAY;
 
+  // One opening's rating prompt and the model's answer.
+  const debugId = params.get("debug");
+  if (debugId) {
+    if (debugId.length > 400 || debugId.includes("/")) return json({ error: "bad-id" }, 400);
+    const d = await db().collection(OPENINGS).doc(debugId).get();
+    if (!d.exists) return json({ error: "not-found" }, 404);
+    return json({ id: d.id, dbg: d.get("dbg") || null, ai: d.get("ai") || null });
+  }
+
   if (params.get("all") === "1") {
     const [all, latest] = await Promise.all([readSnapshot(), db().collection("appCache").doc("radar").get()]);
     if (all) {
@@ -640,7 +670,7 @@ export async function GET(request) {
     db().collection("appCache").doc("radar").get(),
   ]);
   const openings = snap.docs.map((d) => {
-    const o = d.data();
+    const o = listed(d.data());
     return { id: d.id, ...o, active: o.lastSeen >= activeCut };
   });
   return json({

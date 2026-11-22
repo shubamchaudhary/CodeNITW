@@ -17,6 +17,7 @@ const BRIDGE_FILE = new URL('../../src/pages/JobTracker/finderBridge.js', import
 const H = 3_600_000;
 
 // The AI rating's fake Groq: one key it accepts, one it rejects, one that's at its limit.
+// Its token counts are kept small (the pacing is checked in rate.test.mjs), so one good key rates every job in the test's time.
 export const GROQ_KEYS = { good: `gsk_${'G1'.repeat(26)}`, bad: `gsk_${'B2'.repeat(26)}`, busy: `gsk_${'Z3'.repeat(26)}` };
 // The resumes the tests rate against (jobsDev.resume): no Kubernetes on them.
 export const TEST_RESUME = {
@@ -46,7 +47,11 @@ function groqAnswer(content) {
   requirements.push({ req: 'Rust systems programming', must: true, met: 'no', evidence: '' }); // not in the JD
   const title = (job.match(/^Title: (.*)$/m) || [])[1] || '';
   const years = Number((job.match(/^Experience asked: (\d+)/m) || [])[1]);
-  return { requirements, min_years: Number.isFinite(years) ? years : null, role: /\b(ai|llm|genai|generative)\b/i.test(title) ? 'genai' : 'backend', level: 'mid' };
+  return {
+    relevance: 80, reject: false, why: `A ${title} role.`,
+    requirements, min_years: Number.isFinite(years) ? years : null, role: /\b(ai|llm|genai|generative)\b/i.test(title) ? 'genai' : 'backend', level: 'mid',
+    pay_low: null, pay_high: null, pay_known: false,
+  };
 }
 
 // ---------------------------------------------------------------- the job search fixtures
@@ -251,9 +256,10 @@ export async function startMock({ key, cert }) {
     radarChecks: 0,
     radarPairs: 0, // finder tokens handed to the owner's page
     bridgeResults: [], // what each Job tracker page made of the handover
-    groqMode: 'ok', // ok | reject (every key 401)
+    groqMode: 'ok', // ok | reject (every key 401) | limit (every known key 429)
     groqCalls: [], // each rating request: { key, body }
     groqModelChecks: 0,
+    payLookups: [], // the companies the pay lookup asked about
   }, over);
   reset();
 
@@ -276,14 +282,26 @@ export async function startMock({ key, cert }) {
     try { j = JSON.parse(body); } catch { return reply(400, { error: { message: 'bad json' } }); }
     state.groqCalls.push({ key, body: j, t: Date.now() });
     if (rejected) return reply(401, { error: { message: 'Invalid API Key', type: 'invalid_request_error', code: 'invalid_api_key' } });
+    if (state.groqMode === 'limit') {
+      return reply(429, { error: { message: 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_mock` on tokens per minute (TPM). Please try again in 0.05s.', type: 'tokens', code: 'rate_limit_exceeded' } }, { 'retry-after': '0.05' });
+    }
     if (key === GROQ_KEYS.busy) {
       return reply(429, { error: { message: 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_mock` on tokens per minute (TPM). Please try again in 2m0s.', type: 'tokens', code: 'rate_limit_exceeded' } }, { 'retry-after': '120' });
     }
     const content = String(j.messages && j.messages[0] && j.messages[0].content);
+    // The company pay lookup (browser_search): plain text with a JSON object in it.
+    if (Array.isArray(j.tools) && j.tools.some((t) => t && t.type === 'browser_search')) {
+      state.payLookups.push((content.match(/what "([^"]+)" pays/) || [])[1] || '');
+      return reply(200, {
+        id: `chatcmpl-${state.groqCalls.length}`, object: 'chat.completion', model: j.model,
+        choices: [{ index: 0, message: { role: 'assistant', content: 'From AmbitionBox: {"low": 18, "high": 30, "source": "AmbitionBox", "note": "SDE 1 to 2"}' }, finish_reason: 'stop' }],
+        usage: { prompt_tokens: 120, completion_tokens: 40, total_tokens: 160 },
+      }, { 'x-ratelimit-remaining-tokens': '7000', 'x-ratelimit-reset-tokens': '8.5s', 'x-ratelimit-remaining-requests': '990', 'x-ratelimit-reset-requests': '1m26s' });
+    }
     return reply(200, {
       id: `chatcmpl-${state.groqCalls.length}`, object: 'chat.completion', model: j.model,
       choices: [{ index: 0, message: { role: 'assistant', content: JSON.stringify(groqAnswer(content)) }, finish_reason: 'stop' }],
-      usage: { prompt_tokens: Math.round(content.length / 4), completion_tokens: 300, total_tokens: Math.round(content.length / 4) + 300, prompt_tokens_details: { cached_tokens: 900 } },
+      usage: { prompt_tokens: Math.round(content.length / 4), completion_tokens: 60, total_tokens: Math.round(content.length / 4) + 60, prompt_tokens_details: { cached_tokens: Math.max(0, Math.round(content.length / 4) - 100) } },
     }, { 'x-ratelimit-remaining-tokens': '7000', 'x-ratelimit-reset-tokens': '8.5s', 'x-ratelimit-remaining-requests': '990', 'x-ratelimit-reset-requests': '1m26s' });
   };
 

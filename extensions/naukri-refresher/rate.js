@@ -13,7 +13,7 @@
 // resumes come from resume.local.json next to this file (made from your PDFs by
 // naukri-refresher-dev/make-job-profile.mjs, without your name and contact lines; git never sees it).
 
-import { RATE, buildInput, requestBody, outputText, usageOf, scoreRating, rateHash, keyHint, parseWait, scrub } from './rate-lib.js';
+import { RATE, buildInput, requestBody, payRequestBody, firstJson, payFromAnswer, dbgOf, normText, outputText, usageOf, scoreRating, rateHash, keyHint, parseWait, scrub } from './rate-lib.js';
 import { byParser } from './jobs-lib.js';
 
 const ext = globalThis.browser ?? globalThis.chrome;
@@ -35,6 +35,10 @@ export async function loadResumes(dev = {}) {
   if (!r || typeof r.sde !== 'string' || typeof r.genai !== 'string' || r.sde.length < 200 || r.genai.length < 200) return null;
   return { sde: r.sde, genai: r.genai, generated: r.generated || null, from: r.from || 'file', hash: { backend: rateHash(r.sde), ai: rateHash(r.genai) } };
 }
+/** A company's key in the pay cache: lowercase, legal suffixes and "India" aside. */
+export const payKey = (company) => normText(company)
+  .replace(/ (?:private|pvt|limited|ltd|llp|inc|corp|corporation|india|technologies|technology|tech|solutions|services|software|systems|labs)(?= )/g, '')
+  .trim();
 export const resumeFor = (resumes, profile) => (profile === 'ai' ? resumes.genai : resumes.sde);
 
 export async function hasGroqAccess() {
@@ -47,13 +51,13 @@ export async function hasGroqAccess() {
  * (Groq doesn't serve the model), answer (not the JSON asked for), big (too large for the key's
  * per-minute budget), transient (network, timeout, 5xx) or bad (any other refusal).
  */
-export async function callGroq({ key, model, input, timeoutMs = RATE.timeoutMs }) {
+export async function callGroq({ key, model, input, profile = 'backend', body = null, json = true, timeoutMs = RATE.timeoutMs }) {
   let res;
   try {
     res = await fetch(`${RATE.api}/chat/completions`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
-      body: JSON.stringify(requestBody({ model, input })),
+      body: JSON.stringify(body || requestBody({ model, input, profile })),
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch (e) {
@@ -85,10 +89,12 @@ export async function callGroq({ key, model, input, timeoutMs = RATE.timeoutMs }
   if (res.status >= 500) return { ok: false, kind: 'transient', msg: `Groq answered ${res.status}` };
   if (!res.ok) return { ok: false, kind: 'bad', msg: `Groq refused the request (${res.status}${tail})` };
   const usage = usageOf(j);
+  const raw = outputText(j);
+  if (!json) return { ok: true, raw, usage, limits };
   let answer = null;
-  try { answer = JSON.parse(outputText(j)); } catch { answer = null; }
-  if (!answer || typeof answer !== 'object') return { ok: false, kind: 'answer', msg: "the model's answer wasn't the JSON asked for", usage, limits };
-  return { ok: true, answer, usage, limits };
+  try { answer = JSON.parse(raw); } catch { answer = null; }
+  if (!answer || typeof answer !== 'object') return { ok: false, kind: 'answer', msg: "the model's answer wasn't the JSON asked for", usage, limits, raw };
+  return { ok: true, answer, raw, usage, limits };
 }
 
 /**
@@ -108,8 +114,13 @@ export function keyPool(keys, start = Math.floor(Math.random() * Math.max(1, key
     const hint = keyHint(key);
     const day = ledger[hint] || (ledger[hint] = { calls: 0, ok: 0, last: '' });
     day.req = day.req || 0;
+    const retired = (day.retiredUntil || 0) > Date.now();
+    if (!retired) day.retiredUntil = 0; // its hour is over
     day.tok = day.tok || 0;
-    return { key, hint, day, recent: [], until: 0, dead: null, deadKind: null, busy: 0, proven: false, strikes: 0, limitedSince: 0 };
+    return {
+      key, hint, day, recent: [], until: 0, busy: 0, proven: false, strikes: 0, limitedSince: 0,
+      dead: retired ? 'retired for an hour (Groq kept answering 429)' : null, deadKind: retired ? 'retired' : null,
+    };
   });
   let est = RATE.callTokensGuess; // tokens a call counts against the limits, learned as it goes
   let turn = start % Math.max(1, slots.length);
@@ -124,6 +135,7 @@ export function keyPool(keys, start = Math.floor(Math.random() * Math.max(1, key
     take(now = Date.now()) {
       for (let i = 0; i < slots.length; i++) {
         const s = slots[(turn + i) % slots.length];
+        if (s.deadKind === 'retired' && (s.day.retiredUntil || 0) <= now) { s.dead = null; s.deadKind = null; s.limitedSince = 0; s.strikes = 0; s.day.retiredUntil = 0; }
         if (s.dead || s.until > now || (!s.proven && s.busy > 0)) continue;
         if (s.day.req >= cap.rpd || s.day.tok + est > cap.tpd) {
           s.dead = "used 70% of Groq's daily quota";
@@ -139,6 +151,11 @@ export function keyPool(keys, start = Math.floor(Math.random() * Math.max(1, key
         return s;
       }
       return null;
+    },
+    /** When the first retired key is back (null: none is retired). */
+    retiredUntil() {
+      const t = slots.filter((s) => s.deadKind === 'retired').map((s) => s.day.retiredUntil || 0);
+      return t.length ? Math.min(...t) : null;
     },
     /** How long until a key is free again (Infinity: none left). */
     wait(now = Date.now()) {
@@ -215,6 +232,17 @@ export function pruneQueue(items, { now, rated = {}, hash = null, maxAgeH = 48 }
     .slice(0, RATE.queueMax);
 }
 
+const PK = 'jobsPay';
+/** Each company's pay at about 2 years, as the web lookups found it (kept RATE.payKeepDays). */
+export async function loadPayCache(now = Date.now()) {
+  const c = (await ext.storage.local.get(PK))[PK];
+  const cut = now - RATE.payKeepDays * 86_400_000;
+  return Object.fromEntries(Object.entries(c && typeof c === 'object' ? c : {}).filter(([, v]) => v && (v.t || 0) > cut));
+}
+export async function savePayCache(cache) {
+  await ext.storage.local.set({ [PK]: cache });
+}
+
 export async function saveQueue(items) {
   await ext.storage.local.set({ [QK]: { t: Date.now(), items } });
 }
@@ -225,13 +253,16 @@ export async function saveQueue(items) {
  * Rates `queue` (shared with a finder run, which adds jobs as it keeps them), best-ranked first, a
  * few at a time over the keys, until it's empty, a list reaches its daily cap, or every key is at
  * its limit.
- *   ctx: { keys, model, resumes, callsPerDay, counts (the day's tally, mutated), onRated(item, ai) }
+ *   ctx: { keys, model, resumes, callsPerDay, counts (the day's tally, mutated), onRated(item, ai, dbg),
+ *          payCache (company → its pay at about 2 years, mutated: with payPerDay > 0 a company not in
+ *          it is looked up on the web first), payFor(item) (the radar's own pay figure instead) }
  * → { stop(): Promise, drain(ms): Promise, problem: why it gave up, if it did }
  */
 export function startRater(queue, ctx) {
   const { model, resumes, callsPerDay, counts, onRated } = ctx;
   const limitBaseMs = ctx.limitBaseMs ?? RATE.limitBaseMs;
   const limitStopMs = ctx.limitStopMs ?? RATE.limitStopMs;
+  const retireMs = ctx.retireMs ?? RATE.retireMs;
   counts.keys = counts.keys || {};
   const pool = ctx.pool || keyPool(ctx.keys, undefined, counts.keys);
   const inflight = new Set();
@@ -242,13 +273,27 @@ export function startRater(queue, ctx) {
   let failsInRow = 0;
   const capped = () => counts.calls + going >= callsPerDay;
   const perKey = (slot) => slot.day;
+  // The company pay lookup: before a job's rating, its company's pay on the web, once per company.
+  const payCache = ctx.payCache || null;
+  const payPerDay = ctx.payFor ? 0 : ctx.payPerDay ?? RATE.payPerDay;
+  counts.pay = counts.pay || { calls: 0, found: 0 };
+  const payBusy = new Set();
+  let payOff = null; // why web lookups stopped this run (the tool refused, say): jobs are rated without them
+  const payKeepMs = RATE.payKeepDays * 86_400_000;
+  const payWanted = (item) => {
+    if (!payCache || payOff || !payPerDay || counts.pay.calls >= payPerDay) return false;
+    const k = payKey(item.job && item.job.company);
+    if (!k) return false;
+    const c = payCache[k];
+    return !(c && Date.now() - (c.t || 0) < payKeepMs);
+  };
 
   const pick = () => {
     if (capped()) return null; // the day's calls are used: the rest wait for tomorrow
     let best = -1;
     for (let i = 0; i < queue.length; i++) {
       const it = queue[i];
-      if (inflight.has(it.id)) continue;
+      if (inflight.has(it.id) || (payBusy.size && payBusy.has(payKey(it.job && it.job.company)))) continue;
       if (best < 0 || byParser(it.p || {}, queue[best].p || {}) < 0) best = i;
     }
     return best < 0 ? null : queue[best];
@@ -262,7 +307,7 @@ export function startRater(queue, ctx) {
     const resume = resumeFor(resumes, item.profile);
     const input = buildInput({ resume, job: item.job, text: item.text, skills: item.skills || [] });
     slot.busy += 1;
-    const r = await callGroq({ key: slot.key, model, input }).finally(() => { slot.busy -= 1; });
+    const r = await callGroq({ key: slot.key, model, input, profile: item.profile }).finally(() => { slot.busy -= 1; });
     if (r.ok || r.kind === 'answer') {
       slot.proven = true;
       slot.strikes = 0;
@@ -280,14 +325,17 @@ export function startRater(queue, ctx) {
     }
     if (r.ok) {
       const jd = `${item.job.title}\n${(item.skills || []).join(', ')}\n${item.text}`;
-      const ai = scoreRating(r.answer, { resume, jd, profile: item.profile });
+      const pc = ctx.payFor ? null : payCache && payCache[payKey(item.job.company)];
+      const web = ctx.payFor ? ctx.payFor(item) : pc && pc.hi ? pc : null;
+      const ai = scoreRating(r.answer, { resume, jd, profile: item.profile, posted: item.job.pay || null, web });
       if (ai) {
         failsInRow = 0;
         k.ok += 1;
         k.last = 'ok';
         drop(item);
         counts.rated[item.profile] = (counts.rated[item.profile] || 0) + 1;
-        onRated(item, { ...ai, t: Date.now() });
+        const payNote = pc ? `Pay lookup for ${item.job.company} (${new Date(pc.t).toISOString().slice(0, 10)}): ${pc.raw || 'nothing found'}` : null;
+        onRated(item, { ...ai, t: Date.now() }, dbgOf({ profile: item.profile, input, resume, raw: r.raw, model, pay: payNote }));
         return;
       }
       r.ok = false;
@@ -296,22 +344,7 @@ export function startRater(queue, ctx) {
     }
     k.last = r.msg;
     counts.last = { t: Date.now(), kind: r.kind, msg: r.msg };
-    // A key's own trouble: that key rests or goes, and the job is tried again on another one.
-    if (r.kind === 'key') { slot.dead = r.msg; slot.deadKind = 'rejected'; return; }
-    if (r.kind === 'rate') {
-      // At its limit: rest it, a little longer each time (or as long as Groq says). At its daily
-      // limit, or still limited a minute after the first 429: not used again this run.
-      const now = Date.now();
-      if (!slot.limitedSince) slot.limitedSince = now;
-      if (r.day || now - slot.limitedSince >= limitStopMs) {
-        slot.dead = r.day ? "at Groq's daily limit" : 'still at its limit after a minute';
-        slot.deadKind = 'limit';
-        return;
-      }
-      slot.strikes += 1;
-      slot.until = Math.max(slot.until, now + Math.max(r.wait || 0, limitBaseMs * 2 ** (slot.strikes - 1)));
-      return;
-    }
+    if (keyTrouble(slot, r)) return;
     if (r.kind === 'model') { problem = r; return; }
     counts.fails += 1;
     if (r.kind === 'transient') slot.until = Math.max(slot.until, Date.now() + 5_000);
@@ -319,6 +352,67 @@ export function startRater(queue, ctx) {
     if (item.tries >= 2 || r.kind === 'big') drop(item); // twice wrong: given up on, it stays unrated
     failsInRow += 1;
     if (failsInRow >= 4) problem = { kind: 'transient', msg: `${r.msg} (4 in a row; the next run tries again)` };
+  }
+
+  /** A key's own trouble: that key rests or goes (true), and the job is tried again on another one. */
+  function keyTrouble(slot, r) {
+    if (r.kind === 'key') { slot.dead = r.msg; slot.deadKind = 'rejected'; return true; }
+    if (r.kind !== 'rate') return false;
+    // At its limit: rest it, a little longer each time (or as long as Groq says). At its daily
+    // limit, or still limited a minute after the first 429: not used again this run.
+    const now = Date.now();
+    if (!slot.limitedSince) slot.limitedSince = now;
+    if (r.day) {
+      slot.dead = "at Groq's daily limit";
+      slot.deadKind = 'limit';
+      return true;
+    }
+    if (now - slot.limitedSince >= limitStopMs) {
+      // 429 for 5 minutes running: this key is retired for an hour, in this run and the next ones.
+      slot.day.retiredUntil = now + retireMs;
+      slot.dead = 'retired for an hour (Groq kept answering 429)';
+      slot.deadKind = 'retired';
+      return true;
+    }
+    slot.strikes += 1;
+    slot.until = Math.max(slot.until, now + Math.max(r.wait || 0, limitBaseMs * 2 ** (slot.strikes - 1)));
+    return true;
+  }
+
+  /** The company's pay at about 2 years, from the web (Groq's browser_search), into payCache. */
+  async function payOne(item, slot) {
+    const company = item.job.company;
+    const pk = payKey(company);
+    payBusy.add(pk);
+    slot.busy += 1;
+    const r = await callGroq({ key: slot.key, model, body: payRequestBody({ model, company }), json: false })
+      .finally(() => { slot.busy -= 1; payBusy.delete(pk); });
+    if (r.ok) { slot.proven = true; slot.strikes = 0; slot.limitedSince = 0; }
+    const k = perKey(slot);
+    k.calls += 1;
+    counts.calls += 1;
+    counts.pay.calls += 1;
+    pool.used(slot, r.usage);
+    pool.note(slot, r.limits);
+    if (r.usage) {
+      counts.tokens.input += r.usage.input;
+      counts.tokens.cached += r.usage.cached;
+      counts.tokens.output += r.usage.output;
+    }
+    if (r.ok) {
+      const p = payFromAnswer(firstJson(r.raw));
+      if (p) counts.pay.found += 1;
+      payCache[pk] = { ...(p || { lo: null, hi: null }), t: Date.now(), raw: String(r.raw || '').slice(0, 1200) };
+      k.last = 'ok';
+      return;
+    }
+    k.last = r.msg;
+    if (keyTrouble(slot, r)) return;
+    if (r.kind === 'model') { problem = r; return; }
+    if (r.kind === 'transient') { slot.until = Math.max(slot.until, Date.now() + 5_000); return; }
+    // The tool refused, or it's too large for a key's minute: this run rates without web lookups.
+    payOff = r.msg;
+    counts.pay.off = { t: Date.now(), msg: r.msg };
   }
 
   async function loop() {
@@ -333,6 +427,12 @@ export function startRater(queue, ctx) {
       if (!slot) {
         const w = pool.wait();
         if (w === Infinity) {
+          const back = pool.retiredUntil();
+          if (back) {
+            // Every key is out and at least one is only resting: the run pauses until the first is back.
+            problem = { kind: 'retired', until: back, msg: `every Groq key is out (retired for an hour after 5 minutes of 429s, or at its daily budget); the run pauses until ${new Date(back).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` };
+            return;
+          }
           problem = pool.slots.every((s) => s.deadKind === 'rejected')
             ? { kind: 'key', msg: 'Groq rejected every key' }
             : pool.slots.some((s) => s.deadKind === 'budget')
@@ -347,7 +447,8 @@ export function startRater(queue, ctx) {
       inflight.add(item.id);
       going += 1;
       try {
-        await rateOne(item, slot);
+        if (payWanted(item)) await payOne(item, slot);
+        else await rateOne(item, slot);
       } catch (e) {
         problem = { kind: 'transient', msg: `rating error: ${scrub(e && e.message)}` };
       } finally {

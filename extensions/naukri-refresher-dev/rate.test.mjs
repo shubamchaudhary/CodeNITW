@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  RATE, RATE_SCHEMA, RATE_INSTRUCTIONS, WEIGHTS, scoreRating, cleanResume, rateText, buildInput, requestBody, outputText, usageOf, parseWait,
+  RATE, RATE_SCHEMA, RATE_INSTRUCTIONS, PROFILE_RULES, instructionsFor, payMatch, payFromAnswer, firstJson, dbgOf, payRequestBody, WEIGHTS, scoreRating, cleanResume, rateText, buildInput, requestBody, outputText, usageOf, parseWait,
   normText, inJob, inResume, rateHash, keyHint, scrub,
 } from '../naukri-refresher/rate-lib.js';
 import { callGroq, keyPool, pruneQueue, startRater } from '../naukri-refresher/rate.js';
@@ -45,7 +45,7 @@ const answer = (over = {}) => ({
 });
 const rate = (a, profile = 'backend') => scoreRating(a, { resume: RESUME, jd: JD, profile });
 
-test('the rating is worked out from what the model found, with fixed weights; the model gives no number', () => {
+test('the rubric part: worked out from what the model found, with fixed weights (an answer without a relevance is the rubric alone)', () => {
   assert.equal(WEIGHTS.must + WEIGHTS.nice + WEIGHTS.years + WEIGHTS.role + WEIGHTS.level, 100);
   const r = rate(answer());
   // must-haves 5 of 6 met → 50 × 5/6; nice-to-haves 0 of 1; years, role, level full
@@ -55,8 +55,8 @@ test('the rating is worked out from what the model found, with fixed weights; th
   assert.deepEqual(r.have, ['Java', 'Spring Boot', 'microservices', 'Kafka or RabbitMQ', 'PostgreSQL']);
   assert.equal(r.uv, 0);
   assert.equal(r.thin, false);
-  assert.ok(!/score|rating/i.test(JSON.stringify(RATE_SCHEMA)), 'the answer has no score field');
-  assert.match(RATE_INSTRUCTIONS, /never give an overall score/);
+  assert.equal(r.rel, null);
+  assert.equal(r.fit, r.s);
 });
 
 test("a claim without proof doesn't count: the quote must be in the resume, word for word", () => {
@@ -153,7 +153,9 @@ test('the request: Groq chat completions, strict JSON schema on gpt-oss, short r
   assert.equal(b.response_format.json_schema.strict, true);
   assert.equal(b.reasoning_effort, 'low');
   assert.equal(b.messages.length, 1);
-  assert.ok(b.messages[0].content.startsWith(RATE_INSTRUCTIONS));
+  assert.ok(b.messages[0].content.startsWith(PROFILE_RULES.backend), "the list's own rules first");
+  assert.ok(b.messages[0].content.includes(RATE_INSTRUCTIONS));
+  assert.ok(requestBody({ model: RATE.model, input: 'x', profile: 'ai' }).messages[0].content.startsWith(PROFILE_RULES.ai));
   const llama = requestBody({ model: 'llama-3.3-70b-versatile', input: 'x' });
   assert.deepEqual(llama.response_format, { type: 'json_object' });
   assert.equal(llama.reasoning_effort, undefined);
@@ -294,13 +296,49 @@ test("the day's call cap: no more Groq calls than the settings allow; the best j
   assert.equal(RATE.callsPerDay, 750, '750 a browser: 1,500 a day with two');
 });
 
-test('a key at its limit rests longer each time, and is left alone once it is still limited a minute after its first 429', async () => {
+test('a key at its limit rests longer each time; 429 for 5 minutes running retires it for an hour, and with every key retired the run pauses until the first is back', async () => {
   const calls = fakeGroq(() => ({ status: 429, json: { error: { message: 'Rate limit reached on tokens per minute (TPM). Please try again in 0.01s.' } } }));
   const rater = startRater([item('x')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), onRated: () => {}, limitBaseMs: 100, limitStopMs: 1000 });
   await rater.drain(10_000);
-  assert.equal(rater.problem && rater.problem.kind, 'quota');
-  assert.equal(rater.pool.slots[0].dead, 'still at its limit after a minute');
+  assert.equal(rater.problem && rater.problem.kind, 'retired');
+  const slot = rater.pool.slots[0];
+  assert.equal(slot.deadKind, 'retired');
+  assert.ok(slot.day.retiredUntil > Date.now() + 59 * 60_000 && slot.day.retiredUntil <= Date.now() + 60 * 60_000, 'for an hour');
+  assert.equal(rater.problem.until, slot.day.retiredUntil, 'the run pauses until the key is back');
+  assert.match(rater.problem.msg, /pauses until/);
   assert.ok(calls.length >= 3 && calls.length <= 6, `backed off: ${calls.length} tries`);
+
+  // Later (another run, same day's tally): still retired, not called at all; an hour later it's back.
+  const ledger = { [slot.hint]: slot.day };
+  const c2 = fakeGroq(() => null);
+  const again = startRater([item('y')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: { ...counts(), keys: ledger }, onRated: () => {} });
+  await again.drain(5_000);
+  assert.equal(c2.length, 0, 'a retired key is left alone in the next run');
+  assert.equal(again.problem.kind, 'retired');
+  slot.day.retiredUntil = Date.now() - 1; // the hour is over
+  const rated = [];
+  const back = startRater([item('z')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: { ...counts(), keys: ledger }, onRated: (it) => rated.push(it.id) });
+  await back.drain(5_000);
+  assert.deepEqual(rated, ['z']);
+  assert.equal(back.problem, null);
+  assert.equal(ledger[slot.hint].retiredUntil, 0);
+});
+
+test('one key retired, another fine: the run carries on with the other; a 429 under 5 minutes never retires', async () => {
+  fakeGroq((key) => (key === KEY('a') ? { status: 429, json: { error: { message: 'tokens per minute (TPM). Please try again in 0.01s.' } } } : null));
+  const rated = [];
+  const r = startRater([item('p'), item('q'), item('r')], { keys: [KEY('a'), KEY('b')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), onRated: (it) => rated.push(it.id), limitBaseMs: 50, limitStopMs: 300 });
+  await r.drain(20_000);
+  assert.deepEqual(rated.sort(), ['p', 'q', 'r']);
+  assert.equal(r.problem, null);
+  // Short 429 spells (under the retire time) only rest the key.
+  fakeGroq((key, n) => (n === 1 ? { status: 429, json: { error: { message: 'tokens per minute (TPM). Please try again in 0.01s.' } } } : null));
+  const ok = [];
+  const r2 = startRater([item('s')], { keys: [KEY('c')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), onRated: (it) => ok.push(it.id), limitBaseMs: 50 });
+  await r2.drain(20_000);
+  assert.deepEqual(ok, ['s']);
+  assert.equal(r2.pool.slots[0].deadKind, null);
+  assert.ok(!r2.pool.slots[0].day.retiredUntil);
 });
 
 test('every key rejected, or at its daily limit: the worker stops and says why', async () => {
@@ -346,4 +384,158 @@ test('the queue between runs: the last 48 hours, not rated yet, best first, no r
   });
   assert.deepEqual(out.map((i) => i.id), ['b', 'a']);
   assert.deepEqual(pruneQueue([item('done')], { now, rated: { done: { h: 'old-resume' } }, hash }).map((i) => i.id), ['done'], 'a changed resume: rated again');
+});
+
+test("the list's strict rules: the model's relevance is 55% of the rating, a never-wanted job 15 at most", () => {
+  const fit = rate(answer()).s;
+  const r = rate(answer({ relevance: 90, reject: false, why: 'A Java backend role.' }));
+  assert.equal(r.rel, 90);
+  assert.equal(r.fit, fit);
+  assert.equal(r.s, Math.round(0.55 * 90 + 0.45 * fit));
+  assert.equal(r.why, 'A Java backend role.');
+  const gardener = rate(answer({ relevance: 70, reject: true, why: 'Not a software job.' }));
+  assert.equal(gardener.rej, true);
+  assert.ok(gardener.s <= RATE.rejectCap);
+  const vague = rate(answer({ relevance: 10, reject: false }));
+  assert.ok(vague.s < RATE.minShow, 'a low relevance keeps it off your site, however well the skills match');
+  for (const p of ['backend', 'ai']) {
+    assert.match(PROFILE_RULES[p], /NEVER WANTED/);
+    assert.match(PROFILE_RULES[p], /gardener|operator|biomedical/i);
+    assert.match(PROFILE_RULES[p], /NICE CXone|IVR/);
+    assert.ok(instructionsFor(p).endsWith(RATE_INSTRUCTIONS));
+  }
+  assert.match(PROFILE_RULES.ai, /Python developer role with no LLM, RAG or agent work[^.]*: 35 at most/);
+  assert.match(PROFILE_RULES.backend, /Node.js or MERN/);
+});
+
+test('pay: the salary shown, else the web lookup, else what the model knows; a top under 20 LPA caps it at 35', () => {
+  assert.deepEqual(payMatch({}), { lo: null, hi: null, from: null, ok: 'unknown' });
+  assert.equal(payMatch({ posted: { lo: 18, hi: 30 }, web: { lo: 8, hi: 12 } }).from, 'posted');
+  assert.equal(payMatch({ web: { lo: 22, hi: 28 } }).ok, 'ok');
+  assert.equal(payMatch({ web: { lo: 18, hi: 22 } }).ok, 'close');
+  assert.equal(payMatch({ model: { lo: 5, hi: 9 } }).ok, 'low');
+  const high = answer({ relevance: 95, reject: false });
+  assert.ok(rate(high).s > 80);
+  const cheap = scoreRating(high, { resume: RESUME, jd: JD, profile: 'backend', web: { lo: 6, hi: 10 } });
+  assert.equal(cheap.pay.from, 'web');
+  assert.equal(cheap.s, RATE.lowPayCap);
+  const known = rate(answer({ relevance: 95, reject: false, pay_low: 7, pay_high: 11, pay_known: true }));
+  assert.equal(known.pay.from, 'model');
+  assert.equal(known.s, RATE.lowPayCap);
+  const guess = rate(answer({ relevance: 95, reject: false, pay_low: 7, pay_high: 11, pay_known: false }));
+  assert.equal(guess.pay.from, 'guess', 'a guess is shown');
+  assert.ok(guess.s > 80, '…but never held against the job');
+  assert.deepEqual(payFromAnswer(firstJson('Found it. {"low": 14, "high": 22, "source": "AmbitionBox", "note": "SDE 1"} ok')), { lo: 14, hi: 22, src: 'AmbitionBox', note: 'SDE 1' });
+  assert.equal(payFromAnswer(firstJson('{"low": null, "high": null, "source": "none", "note": ""}')), null);
+  const b = payRequestBody({ model: RATE.model, company: 'Acme' });
+  assert.deepEqual(b.tools, [{ type: 'browser_search' }]);
+  assert.equal(b.response_format, undefined, "plain text: the tool and a JSON schema don't mix");
+});
+
+test("each rating keeps the prompt it was sent (your resume left out) and the model's raw answer", () => {
+  const input = buildInput({ resume: RESUME, job: { title: 'Java Dev', company: 'Acme', exp: '2-5 Yrs', location: 'Pune', salary: '20-30 Lacs PA' }, text: JD });
+  assert.match(input, /Salary shown: 20-30 Lacs PA/);
+  const d = dbgOf({ profile: 'backend', input, resume: RESUME, raw: '{"relevance": 90}', model: RATE.model, pay: 'Pay lookup: …' });
+  assert.ok(d.p.startsWith(PROFILE_RULES.backend));
+  assert.ok(!d.p.includes(RESUME), 'the resume itself is left out');
+  assert.match(d.p, /\[your Backend resume, \d+ characters/);
+  assert.match(d.p, /Title: Java Dev/);
+  assert.equal(d.o, '{"relevance": 90}');
+  assert.equal(d.pay, 'Pay lookup: …');
+});
+
+test("a company's pay is looked up on the web once (browser_search), before its jobs are rated; a refused tool doesn't stop the rating", async () => {
+  const calls = fakeGroq((key, n, body) => (body.tools
+    ? { json: { choices: [{ message: { content: 'From AmbitionBox: {"low": 7, "high": 11, "source": "AmbitionBox", "note": "SDE 1, 2 yrs"}' } }], usage: { prompt_tokens: 600, completion_tokens: 100 } } }
+    : { json: { choices: [{ message: { content: JSON.stringify(answer({ relevance: 92, reject: false, why: 'Java backend.' })) } }], usage: { prompt_tokens: 1000, completion_tokens: 200 } } }));
+  const payCache = {};
+  const got = [];
+  const queue = [item('a1'), item('a2'), item('b1')];
+  queue[1].job = { ...queue[1].job, company: 'Co a1 Pvt Ltd' }; // the same company as a1
+  const c = counts();
+  const rater = startRater(queue, {
+    keys: [KEY('a'), KEY('b')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: c, payCache, payPerDay: 10,
+    onRated: (it, ai, dbg) => got.push({ id: it.id, ai, dbg }),
+  });
+  await rater.drain(20_000);
+  assert.equal(rater.problem, null, JSON.stringify(rater.problem));
+  assert.deepEqual(Object.keys(payCache).sort(), ['co a1', 'co b1']);
+  assert.equal(calls.filter((x) => x.body.tools).length, 2, 'one lookup per company');
+  assert.equal(c.pay.calls, 2);
+  assert.equal(got.length, 3);
+  for (const g of got) {
+    assert.equal(g.ai.pay.from, 'web');
+    assert.equal(g.ai.s, RATE.lowPayCap, 'its pay tops out at 11 LPA');
+    assert.match(g.dbg.p, /^THE CANDIDATE/);
+    assert.match(g.dbg.o, /"relevance":92/);
+    assert.match(g.dbg.pay, /AmbitionBox/);
+  }
+
+  fakeGroq((key, n, body) => (body.tools ? { status: 400, json: { error: { message: 'tool browser_search is not supported' } } } : null));
+  const got2 = [];
+  const c2 = counts();
+  const r2 = startRater([item('x1'), item('x2')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: c2, payCache: {}, payPerDay: 10, onRated: (it) => got2.push(it.id) });
+  await r2.drain(20_000);
+  assert.deepEqual(got2.sort(), ['x1', 'x2']);
+  assert.equal(c2.pay.calls, 1, 'after a refusal, no more lookups this run');
+  assert.match(c2.pay.off.msg, /not supported/);
+});
+
+test('pay lookups: a fresh one is reused, an old one (30+ days) is redone, none past the day cap, and a 429 rests the key and tries again', async () => {
+  const PAY = { json: { choices: [{ message: { content: '{"low": 26, "high": 40, "source": "levels.fyi", "note": ""}' } }], usage: { prompt_tokens: 100, completion_tokens: 20 } } };
+  // A fresh entry is reused; an entry 31 days old is looked up again.
+  let calls = fakeGroq((key, n, body) => (body.tools ? PAY : null));
+  const old = Date.now() - 31 * 86_400_000;
+  const cache = { 'co f1': { lo: 30, hi: 45, t: Date.now(), raw: 'fresh' }, 'co o1': { lo: 5, hi: 6, t: old, raw: 'old' } };
+  const got = {};
+  let r = startRater([item('f1'), item('o1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: cache, payPerDay: 10, onRated: (it, ai) => { got[it.id] = ai; } });
+  await r.drain(20_000);
+  assert.equal(calls.filter((c) => c.body.tools).length, 1, 'only the old one is looked up');
+  assert.match(calls.find((c) => c.body.tools).body.messages[0].content, /"Co o1"/);
+  assert.deepEqual([got.f1.pay.hi, got.o1.pay.hi], [45, 40]);
+  assert.ok(cache['co o1'].t > old);
+
+  // The day's lookups are used: jobs are still rated, from what's known.
+  calls = fakeGroq(() => null);
+  const c = counts();
+  c.pay = { calls: 10, found: 10 };
+  const rated = [];
+  r = startRater([item('n1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: c, payCache: {}, payPerDay: 10, onRated: (it, ai) => rated.push(ai) });
+  await r.drain(20_000);
+  assert.equal(calls.filter((x) => x.body.tools).length, 0);
+  assert.equal(rated.length, 1);
+  assert.equal(rated[0].pay.from, null);
+
+  // A 429 on a lookup: the key rests, the lookup is tried again, the job waits for it.
+  let first = true;
+  calls = fakeGroq((key, n, body) => {
+    if (body.tools && first) { first = false; return { status: 429, json: { error: { message: 'Rate limit reached on requests per minute (RPM). Please try again in 0.05s.' } } }; }
+    return body.tools ? PAY : null;
+  });
+  const done = [];
+  r = startRater([item('r1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: {}, payPerDay: 10, onRated: (it, ai) => done.push(ai), limitBaseMs: 50, limitStopMs: 5000 });
+  await r.drain(20_000);
+  assert.equal(r.problem, null);
+  assert.equal(calls.filter((x) => x.body.tools).length, 2);
+  assert.equal(done[0].pay.from, 'web');
+  assert.ok(calls.findIndex((x) => !x.body.tools) > calls.findIndex((x, i) => x.body.tools && i > 0), 'rated after its pay is known');
+
+  // The radar's own pay figure: no web lookups at all.
+  calls = fakeGroq(() => null);
+  const radar = [];
+  r = startRater([item('p1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: {}, payFor: () => ({ lo: 18, hi: 18 }), onRated: (it, ai) => radar.push(ai) });
+  await r.drain(20_000);
+  assert.equal(calls.filter((x) => x.body.tools).length, 0);
+  assert.equal(radar[0].pay.from, 'web');
+  assert.equal(radar[0].pay.ok, 'low');
+});
+
+test('an AI-list job gets the AI prompt and the GenAI resume; a backend job the Backend prompt', async () => {
+  const calls = fakeGroq(() => null);
+  const r = startRater([item('b', 'backend'), item('g', 'ai')], { keys: [KEY('a'), KEY('b')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), onRated: () => {} });
+  await r.drain(20_000);
+  const ai = calls.find((c) => c.body.messages[0].content.includes('Company: Co g'));
+  const be = calls.find((c) => c.body.messages[0].content.includes('Company: Co b'));
+  assert.ok(ai.body.messages[0].content.startsWith(PROFILE_RULES.ai) && ai.body.messages[0].content.includes('GenAI first'));
+  assert.ok(be.body.messages[0].content.startsWith(PROFILE_RULES.backend) && !be.body.messages[0].content.includes('GenAI first'));
 });

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Naukri Refresher",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Keeps your Naukri profile fresh (one trailing dot on the headline, about once an hour) and reads every Naukri listing of the last 48 hours to find the best matches for your Backend and AI profiles, each one rated against your resume by an LLM on Groq.",
   "minimum_chrome_version": "121",
   "permissions": ["alarms", "storage", "unlimitedStorage", "scripting", "notifications", "power"],
