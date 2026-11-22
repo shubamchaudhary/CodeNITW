@@ -18,7 +18,7 @@
 // and a hard "reject" for a role on the never list. The rating is 55% that relevance and 45% the
 // checked requirements score above; a reject is 15 at most. Pay counts too (payMatch): the salary
 // the job shows, else the company's pay at about 2 years looked up on the web (rate.js), else the
-// model's own estimate; a top under 20 LPA caps the rating at 35. Your site shows 60 and up
+// model's own estimate; a top under 15 LPA caps the rating at 35. Your site keeps 70 and up
 // (RATE.minShow). Every rating keeps the prompt it was sent and the model's raw answer (dbgOf),
 // for the card's "Prompt and answer".
 
@@ -64,11 +64,11 @@ export const RATE = Object.freeze({
   payKeepDays: 30,
   payMaxTokens: 1200,
   wantPayL: 25, // your minimum CTC
-  lowPayL: 20, // a known top under this caps the rating (lowPayCap)
+  lowPayL: 15, // a known top under this caps the rating (lowPayCap): your floor
   lowPayCap: 35,
   rejectCap: 15,
   relevanceShare: 0.55, // the rating: 55% the model's relevance, 45% the checked requirements score
-  minShow: 60, // your site shows ratings from this up ("show the rest" shows the others)
+  minShow: 70, // your site keeps ratings from this up ("show the rest" shows the others)
   maxRawChars: 4000, // of the model's raw answer, kept for the card
 });
 
@@ -153,10 +153,12 @@ Answer with one JSON object with exactly these keys: "relevance", "reject", "why
 /** The prompt's rules for one list: who you are and what you want, then the rubric. */
 export const instructionsFor = (profile) => `${PROFILE_RULES[profile === 'ai' ? 'ai' : 'backend']}\n\n${RATE_INSTRUCTIONS}`;
 
-// The company pay lookup (rate.js, with Groq's browser_search tool): one per company, kept 30 days.
-export const payPrompt = (company) => `Search the web for what "${clean(company).slice(0, 120)}" pays software engineers in India with about 2 years of experience (SDE 1 or SDE 2, Software Engineer): the fixed yearly CTC in lakhs (LPA). Use levels.fyi, AmbitionBox, Glassdoor India or 6figr. If you can't find this company, say so; never guess from other companies.
+// The company pay lookup (rate.js, with Groq's browser_search tool). It runs only for a company the
+// pay database (pay-lib.js, Firestore) doesn't have, and what it finds is saved there only when it has
+// enough evidence (confidentPay).
+export const payPrompt = (company) => `Search the web for what "${clean(company).slice(0, 120)}" pays software engineers in India with about 2 years of experience (SDE 1 or SDE 2, Software Engineer): the fixed yearly CTC in lakhs (LPA). Use levels.fyi, AmbitionBox, Glassdoor India, 6figr or Payscale, and use at least two of them if you can. If you can't find this exact company (not a company with a similar name), say so; never guess from other companies.
 
-Answer only with one JSON object, no other text: {"low": number or null, "high": number or null, "source": "the site(s) you used, or none", "note": "at most 20 words"}`;
+Answer only with one JSON object, no other text: {"low": number or null, "high": number or null, "sources": ["site names you actually used"], "reports": the number of salary reports behind the figure, or null, "same_company": true only if the pages are about this exact company in India, "note": "at most 20 words"}`;
 
 /** The pay lookup's request: the browser_search tool on, a short answer. */
 export function payRequestBody({ model, company }) {
@@ -185,7 +187,10 @@ const lakhs = (v) => {
   return v !== null && v !== undefined && v !== '' && Number.isFinite(n) && n > 0 && n < 500 ? Math.round(n * 10) / 10 : null;
 };
 
-/** A pay lookup's answer → { lo, hi, src, note } (null when it found nothing usable). */
+/**
+ * A pay lookup's answer → { lo, hi, n, sources, same, src: 'web', note } (null when it found no figure).
+ * Whether that is enough to save is pay-lib.js confidentPay's call, not the model's.
+ */
 export function payFromAnswer(a) {
   if (!a || typeof a !== 'object') return null;
   let lo = lakhs(a.low);
@@ -194,7 +199,14 @@ export function payFromAnswer(a) {
   if (lo == null) lo = hi;
   if (hi == null) hi = lo;
   if (lo > hi) [lo, hi] = [hi, lo];
-  return { lo, hi, src: clean(a.source).slice(0, 80), note: clean(a.note).slice(0, 140) };
+  const n = Number(a.reports);
+  return {
+    lo, hi, src: 'web',
+    n: Number.isFinite(n) && n >= 0 ? Math.round(n) : null,
+    sources: (Array.isArray(a.sources) ? a.sources : String(a.source ?? '').split(/[,;]/)).map((x) => clean(x).slice(0, 60)).filter(Boolean).slice(0, 6),
+    same: a.same_company === true,
+    note: clean(a.note).slice(0, 140),
+  };
 }
 
 /**

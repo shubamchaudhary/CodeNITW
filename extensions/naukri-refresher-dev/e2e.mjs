@@ -962,6 +962,15 @@ async function suite(d, mock) {
     // What Groq got: the rules, the right resume, strict JSON on gpt-oss-20b; never Naukri's pages.
     const calls = mock.state.groqCalls.filter((c) => !c.body.tools); // the ratings (the rest: pay lookups)
     assert.ok(calls.length >= rateable.length);
+    // The pay database comes first: every company looked up on the web was asked for in the database
+    // before, and what the web found with evidence was saved there.
+    for (const [i, w] of mock.state.payLog.entries()) {
+      if (w.op !== 'web') continue;
+      const key = w.company.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      assert.ok(mock.state.payLog.slice(0, i).some((x) => x.op === 'get' && x.key === key), `${w.company}: the database was asked before the web`);
+    }
+    assert.ok(mock.state.payDb.size >= 1, 'a pay figure with evidence was saved in the database');
+    for (const rec of mock.state.payDb.values()) assert.ok(rec.sources.length >= 2 && rec.lo === 18 && rec.hi === 30, JSON.stringify(rec));
     const lookups = mock.state.groqCalls.filter((c) => c.body.tools);
     assert.ok(lookups.length >= 1 && lookups.every((c) => c.body.tools[0].type === 'browser_search'), 'company pay looked up on the web');
     assert.equal(new Set(mock.state.payLookups).size, mock.state.payLookups.filter((x) => x).length, 'once per company');

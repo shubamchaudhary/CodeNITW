@@ -175,6 +175,29 @@ function noteRater(st, problem) {
   notify('nr-rate', 'AI rating paused', `${problem.msg}. Jobs are still found and sent, without a rating.`);
 }
 
+/**
+ * The shared company pay database on your site (Firestore, through the finder's token): get(key) →
+ * its record or null; put(entries) saves the ones with enough evidence. Throws when the site doesn't
+ * answer, which the rater counts (three in a row: it goes on without the database for the run).
+ */
+function sitePayDb(token) {
+  if (!token) return null;
+  const call = async (body) => {
+    const res = await fetch(RADAR_API_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+      body: JSON.stringify({ finder: 'naukri', ...body }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (!res.ok) throw new Error(`pay database: HTTP ${res.status}`);
+    return res.json();
+  };
+  return {
+    async get(key) { const r = await call({ pay: 'get', keys: [key] }); return (r.found && r.found[key]) || null; },
+    put(entries) { return call({ pay: 'put', entries }); },
+  };
+}
+
 /** What the report keeps of a verdict: the card, how far it got, the decision and its reason. */
 function auditOf(v, jd, k, why) {
   const job = (v && v.job) || {};
@@ -800,10 +823,10 @@ async function findJobs(trigger) {
     if (r.applied) {
       const v = { keep: false, why: 'you applied on Naukri' };
       st.memo[id] = { t: now, ...v };
-      decide(id, v);
+      decide(id, { ...v, job: card.job }, { applied: true }); // (the report records what it was)
       return true;
     }
-    if (r.closed) { decide(id, { keep: false, why: 'job closed' }); return true; }
+    if (r.closed) { decide(id, { keep: false, why: 'job closed', job: card.job }, { closed: true }); return true; }
     if (r.jd) {
       jdFails = 0;
       const text = htmlToText(r.jd);
@@ -908,7 +931,7 @@ async function findJobs(trigger) {
       payCache = await loadPayCache();
       rater = startRater(rq, {
         keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, callsPerDay: settings.rateCalls,
-        counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run), payCache, ...raterKnobs(dev),
+        counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run), payCache, payDb: sitePayDb(settings.token), ...raterKnobs(dev),
       });
     }
 
@@ -981,7 +1004,7 @@ async function findJobs(trigger) {
             if (m) {
               // Its JD was read in the last few days: the same verdict, no page opened. Your site
               // already has it; it's sent again only if it never got there or has a newer rating.
-              if (!m.keep) { decide(id, { keep: false, why: m.why }); continue; }
+              if (!m.keep) { decide(id, { keep: false, why: m.why, job: c.job }); continue; }
               st.seen[id] = { t: Date.now(), k: 1, p: m.profile, memo: true };
               if (m.pool === false || (kept[m.profile] || 0) >= FINDER_LIMITS.perListDay) continue;
               kept[m.profile] = (kept[m.profile] || 0) + 1;
@@ -1104,7 +1127,7 @@ async function rateOnly() {
   const payCache = await loadPayCache();
   const rater = startRater(rq, {
     keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, callsPerDay: settings.rateCalls,
-    counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run), payCache, ...raterKnobs(dev),
+    counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run), payCache, payDb: sitePayDb(settings.token), ...raterKnobs(dev),
   });
   const saver = setInterval(() => { saveState(st).catch(() => {}); }, 5000);
   try { await rater.drain(RATE.drainMs); } finally { clearInterval(saver); }

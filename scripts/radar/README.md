@@ -60,9 +60,12 @@ Every job, from any source, goes through the same checks:
    (`YOUR_YEARS` in `experience.mjs`). "0–2", "1–3", "2–5" and "1+" stay; "3+"
    and "3–5" ask for more, "0–1" for less, and are dropped. A posting that
    doesn't say is kept, unless its title is senior.
-3. **Pay** against your 25 LPA minimum CTC. Only one thing drops a role: the
-   employer's own posted salary topping out under 22L. Everything else is kept
-   with a label, so no role that could pay 25L+ is lost to an average:
+3. **Pay**, with a floor of 15 LPA (`FLOOR_LPA` in `pay.mjs`) and 25 LPA as what you aim for. Two things
+   drop a role: the employer's own posted salary topping out under 15L, or (no posted salary) the
+   company's India software-engineer median under 15L. Everything else is kept with a label, so no
+   role that could pay 25L+ is lost to an average. A company's figures come from the **company pay
+   database** first (Firestore `companyPay`, see below), then levels.fyi; what levels.fyi gives, with at
+   least 10 reports behind it, is saved there:
 
    | Label | Meaning |
    |---|---|
@@ -75,17 +78,30 @@ Every job, from any source, goes through the same checks:
    | pay ? | no data |
 
    levels.fyi figures are company-wide for software engineers in India, cached 30 days.
-4. **Skills match**: a 0–100 score against your resume's skills (see above).
-   An opening with 0 (no skill in common) is dropped.
+4. **Skills match** (the JD match bar): a 0–100 score, the share of the technologies its description asks
+   for that are yours (see above). Under 60 is dropped when it has a description to judge by (the same
+   bar as the Naukri job finder; `RADAR_MIN_MATCH` in `.radar.env` changes it). One with no
+   technology in common is dropped whatever the description.
 5. **AI rating** (`rate.mjs`, with `GROQ_API_KEYS=key1,key2,…` in `.radar\.env`): the Naukri job
    finder's rating, for the radar's openings. Each one's list comes from its stack (Java backend →
    Backend, Python and GenAI → AI); one in another stack (MERN/Node, .NET, PHP…) is dropped. The rest
    are read once by an LLM on Groq against that list's strict prompt and resume (rules:
    `extensions/naukri-refresher/README.md`, step 3), with the radar's own pay check above standing in
-   for the web pay lookup ("unlikely" holds the rating at 35). At most `RADAR_RATE_PER_DAY` calls a
+   for the web pay lookup. At most `RADAR_RATE_PER_DAY` calls a
    day (default 400), 20 minutes a run; what's left waits for the next run. The Openings tab sorts by
-   the rating and hides ratings under 60 (the **AI 60+** chip); each card's **Prompt and answer**
-   shows what the model was sent and said. Without keys the radar works as before.
+   the rating. **An opening the LLM rates under 70 is not kept** (`RADAR_MIN_RATING`; it stays on the PC
+   with its rating so it isn't rated again, and is deleted from the site); one not rated yet is kept.
+   Each card's **Prompt and answer** shows what the model was sent and said. Without keys the radar
+   works as before (no rating, so nothing is dropped for it).
+
+   **The company pay database.** What a company pays a software engineer with about 2 years in India is
+   kept in Firestore (`companyPay`, one document per company, through `/api/radar`), shared by the radar
+   and the Naukri job finder, so no company is worked out twice. The order is always: the database;
+   then the internet (levels.fyi for the radar; a Groq web search for the finder); and a figure is saved
+   only with enough evidence: sane numbers, and levels.fyi's own with 10+ reports, or two reputable
+   sources agreeing (levels.fyi, AmbitionBox, Glassdoor, 6figr, Payscale), or one with 30+ reports
+   (`extensions/naukri-refresher/pay-lib.js`, checked again by the API). A figure that isn't sure is
+   neither used nor saved. A saved figure is trusted 90 days and never overwritten within 30.
 
 An opening a run drops is also sent to the API to delete, so one stored under
 earlier rules goes the next time a run sees it. Openings are always listed

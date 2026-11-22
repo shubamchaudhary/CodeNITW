@@ -13,6 +13,7 @@
 // resumes come from resume.local.json next to this file (made from your PDFs by
 // naukri-refresher-dev/make-job-profile.mjs, without your name and contact lines; git never sees it).
 
+import { payKey, confidentPay } from './pay-lib.js';
 import { RATE, buildInput, requestBody, payRequestBody, firstJson, payFromAnswer, dbgOf, normText, outputText, usageOf, scoreRating, rateHash, keyHint, parseWait, scrub } from './rate-lib.js';
 import { byParser } from './jobs-lib.js';
 
@@ -35,10 +36,7 @@ export async function loadResumes(dev = {}) {
   if (!r || typeof r.sde !== 'string' || typeof r.genai !== 'string' || r.sde.length < 200 || r.genai.length < 200) return null;
   return { sde: r.sde, genai: r.genai, generated: r.generated || null, from: r.from || 'file', hash: { backend: rateHash(r.sde), ai: rateHash(r.genai) } };
 }
-/** A company's key in the pay cache: lowercase, legal suffixes and "India" aside. */
-export const payKey = (company) => normText(company)
-  .replace(/ (?:private|pvt|limited|ltd|llp|inc|corp|corporation|india|technologies|technology|tech|solutions|services|software|systems|labs)(?= )/g, '')
-  .trim();
+export { payKey }; // a company's key in the pay cache and the pay database (pay-lib.js)
 export const resumeFor = (resumes, profile) => (profile === 'ai' ? resumes.genai : resumes.sde);
 
 export async function hasGroqAccess() {
@@ -254,8 +252,10 @@ export async function saveQueue(items) {
  * few at a time over the keys, until it's empty, a list reaches its daily cap, or every key is at
  * its limit.
  *   ctx: { keys, model, resumes, callsPerDay, counts (the day's tally, mutated), onRated(item, ai, dbg),
- *          payCache (company → its pay at about 2 years, mutated: with payPerDay > 0 a company not in
- *          it is looked up on the web first), payFor(item) (the radar's own pay figure instead) }
+ *          payCache (company → its pay at about 2 years, mutated), payDb { get(key) → record|null,
+ *          put(entries) } (the shared pay database: a company not in payCache is looked up there
+ *          first, then on the web when payPerDay > 0, and a web figure with enough evidence is saved
+ *          there), payFor(item) (the radar's own pay figure instead) }
  * → { stop(): Promise, drain(ms): Promise, problem: why it gave up, if it did }
  */
 export function startRater(queue, ctx) {
@@ -280,13 +280,37 @@ export function startRater(queue, ctx) {
   const payBusy = new Set();
   let payOff = null; // why web lookups stopped this run (the tool refused, say): jobs are rated without them
   const payKeepMs = RATE.payKeepDays * 86_400_000;
+  const payMissMs = 7 * 86_400_000; // a company with no usable figure is looked up again after a week
+  const payFreshIn = (k) => {
+    const c = payCache && payCache[k];
+    return !!c && Date.now() - (c.t || 0) < (c.hi ? payKeepMs : payMissMs);
+  };
+  const payDb = ctx.payDb || null;
+  counts.pay.db = counts.pay.db || { hits: 0, misses: 0, saved: 0, notSure: 0, errors: 0 };
+  const dbChecked = new Set();
+  let dbOff = false; // the database didn't answer 3 times: this run goes to the web without it
+  let rateHits = 0; // web lookups refused with 429 in a row
   const payWanted = (item) => {
     if (!payCache || payOff || !payPerDay || counts.pay.calls >= payPerDay) return false;
     const k = payKey(item.job && item.job.company);
-    if (!k) return false;
-    const c = payCache[k];
-    return !(c && Date.now() - (c.t || 0) < payKeepMs);
+    return !!k && !payFreshIn(k);
   };
+  // Step one of a company's pay: the pay database. A hit goes into payCache and the web isn't asked.
+  async function payFromDb(item) {
+    const k = payKey(item.job && item.job.company);
+    if (!payDb || dbOff || !payCache || !k || payFreshIn(k) || dbChecked.has(k)) return;
+    dbChecked.add(k);
+    try {
+      const rec = await payDb.get(k);
+      if (rec && Number.isFinite(Number(rec.lo)) && Number.isFinite(Number(rec.hi))) {
+        counts.pay.db.hits += 1;
+        payCache[k] = { lo: Number(rec.lo), hi: Number(rec.hi), n: rec.n ?? null, sources: rec.sources || [], src: 'db', t: Date.now(), raw: `from the pay database: ${rec.lo}-${rec.hi} LPA (${(rec.sources || []).join(' + ') || rec.src}, saved ${rec.at ? new Date(rec.at).toISOString().slice(0, 10) : '?'})` };
+      } else counts.pay.db.misses += 1;
+    } catch {
+      counts.pay.db.errors += 1;
+      if (counts.pay.db.errors >= 3) dbOff = true;
+    }
+  }
 
   const pick = () => {
     if (capped()) return null; // the day's calls are used: the rest wait for tomorrow
@@ -383,10 +407,9 @@ export function startRater(queue, ctx) {
   async function payOne(item, slot) {
     const company = item.job.company;
     const pk = payKey(company);
-    payBusy.add(pk);
     slot.busy += 1;
     const r = await callGroq({ key: slot.key, model, body: payRequestBody({ model, company }), json: false })
-      .finally(() => { slot.busy -= 1; payBusy.delete(pk); });
+      .finally(() => { slot.busy -= 1; });
     if (r.ok) { slot.proven = true; slot.strikes = 0; slot.limitedSince = 0; }
     const k = perKey(slot);
     k.calls += 1;
@@ -400,9 +423,25 @@ export function startRater(queue, ctx) {
       counts.tokens.output += r.usage.output;
     }
     if (r.ok) {
+      rateHits = 0;
       const p = payFromAnswer(firstJson(r.raw));
-      if (p) counts.pay.found += 1;
-      payCache[pk] = { ...(p || { lo: null, hi: null }), t: Date.now(), raw: String(r.raw || '').slice(0, 1200) };
+      const raw = String(r.raw || '').slice(0, 1200);
+      const sure = p ? confidentPay(p) : { ok: false, why: 'nothing found' };
+      if (p && sure.ok) {
+        // Enough evidence: used now, and saved so no one looks this company up again.
+        counts.pay.found += 1;
+        payCache[pk] = { ...p, t: Date.now(), raw: `${raw} [sure: ${sure.why}]` };
+        if (payDb && !dbOff) {
+          try {
+            const out = await payDb.put([{ company, ...p }]);
+            counts.pay.db.saved += (out && out.saved) || 0;
+          } catch { counts.pay.db.errors += 1; }
+        }
+      } else {
+        // Not sure (or nothing): no figure is used or saved; the company is asked about again in a week.
+        counts.pay.db.notSure += 1;
+        payCache[pk] = { lo: null, hi: null, t: Date.now(), raw: `${raw} [not saved: ${sure.why}]`, weak: sure.why };
+      }
       k.last = 'ok';
       return;
     }
@@ -412,9 +451,14 @@ export function startRater(queue, ctx) {
     // little. It never counts toward retiring the key, so it can't pause the sweep.
     if (r.kind === 'key') { keyTrouble(slot, r); return; }
     if (r.kind === 'rate') {
+      // This key rests; the company is tried again on another key. Three refusals in a row (every
+      // key is feeling it): no more web lookups this run, the jobs are rated without them.
       slot.until = Math.max(slot.until, Date.now() + Math.min(r.day ? 60_000 : r.wait || 5_000, 60_000));
-      payOff = `web lookups hit Groq's limit (${r.msg})`;
-      counts.pay.off = { t: Date.now(), msg: payOff };
+      rateHits += 1;
+      if (rateHits >= 3) {
+        payOff = `web lookups hit Groq's limit (${r.msg})`;
+        counts.pay.off = { t: Date.now(), msg: payOff };
+      }
       return;
     }
     if (r.kind === 'model') { problem = r; return; }
@@ -455,12 +499,19 @@ export function startRater(queue, ctx) {
       }
       inflight.add(item.id);
       going += 1;
+      // A company whose pay isn't known yet is looked up by one loop at a time: the others take other
+      // jobs until it's known (held from the moment the job is picked, before anything is awaited).
+      const ck = payKey(item.job && item.job.company);
+      const hold = !!payCache && !!ck && !payFreshIn(ck);
+      if (hold) payBusy.add(ck);
       try {
+        await payFromDb(item);
         if (payWanted(item)) await payOne(item, slot);
         else await rateOne(item, slot);
       } catch (e) {
         problem = { kind: 'transient', msg: `rating error: ${scrub(e && e.message)}` };
       } finally {
+        if (hold) payBusy.delete(ck);
         inflight.delete(item.id);
         going -= 1;
       }

@@ -42,7 +42,8 @@ import { experienceRange, experienceTag } from "./experience.mjs";
 import { makePayChecker } from "./pay.mjs";
 import { loadResumeTexts, resumePdfs, resumesProfile } from "./resume.mjs";
 import { openingIdOf } from "./ids.mjs";
-import { rateOpenings } from "./rate.mjs";
+import { rateOpenings, underBar, MIN_RATING } from "./rate.mjs";
+import { makePayDb } from "./paydb.mjs";
 // The same low-pay employers the Naukri job finder leaves out (IT services and consulting firms).
 import { lowPayMatch } from "../../extensions/naukri-refresher/low-pay.js";
 
@@ -231,7 +232,7 @@ async function main() {
   saveJSON("atsCache.json", atsCache);
 
   // ── Relevance + de-duplication ──────────────────────────────────────────────
-  const dropped = { notRelevant: 0, lowPayCompany: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0, wrongStack: 0 };
+  const dropped = { notRelevant: 0, lowPayCompany: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0, wrongStack: 0, weakMatch: 0, lowRating: 0 };
   const byFp = new Map();
   for (const raw of batches.flat()) {
     if (!keep(raw.title, raw.location)) {
@@ -261,6 +262,8 @@ async function main() {
   // ── Experience, skills match, pay ──────────────────────────────────────────
   // An opening dropped here is also sent to the API to delete, in case an
   // earlier run (or earlier rules) stored it.
+  const MIN_MATCH = Number(env.RADAR_MIN_MATCH) >= 0 && env.RADAR_MIN_MATCH !== undefined && env.RADAR_MIN_MATCH !== "" ? Number(env.RADAR_MIN_MATCH) : 60;
+  const minRating = Number(env.RADAR_MIN_RATING) >= 0 && env.RADAR_MIN_RATING !== undefined && env.RADAR_MIN_RATING !== "" ? Number(env.RADAR_MIN_RATING) : MIN_RATING;
   const seenNow = new Set();
   const candidates = [];
   const remove = [];
@@ -299,12 +302,21 @@ async function main() {
       drop("noSkillMatch", key, j);
       continue;
     }
+    // The JD match bar (the same share as the Naukri job finder's 60%): of the technologies its
+    // description asks for, how many are yours. Only when there is a description to judge by.
+    if ((j.desc || old?.snippet) && scored.score < MIN_MATCH) {
+      drop("weakMatch", key, j);
+      continue;
+    }
     candidates.push({ j, key, old, range, exp, scored });
   }
   // levels.fyi lookups are capped per run, so the roles that fit get them first.
   candidates.sort((a, b) => (a.exp === "fits" ? 0 : 1) - (b.exp === "fits" ? 0 : 1));
 
-  const checkPay = makePayChecker({ cache: payCache });
+  // The shared company pay database (Firestore, through the API): looked in before levels.fyi.
+  const payDb = makePayDb({ apiUrl: env.RADAR_API_URL || DEFAULT_API_URL, token: env.RADAR_INGEST_TOKEN, log });
+  if (payDb && flag("dry-run")) payDb.put = async () => ({ saved: 0 }); // a dry run writes nothing, the database included
+  const checkPay = makePayChecker({ cache: payCache, db: payDb });
   const toRate = []; // for the AI rating (rate.mjs): every opening kept, rated once
   for (const { j, key, old, range, exp, scored } of candidates) {
     const pay = await checkPay(j);
@@ -354,8 +366,16 @@ async function main() {
 
   // Everything this run found goes up; the API keeps the record and the history.
   // The rating's working copies stay on the PC; its prompt and answer go up this once.
+  // Rated under the bar: not kept. It stays in the PC's store (with its rating, so it isn't rated
+  // again) and is sent to the API to delete, in case an earlier run stored it.
+  for (const o of Object.values(store)) {
+    if (o.lastSeen === now && underBar(o, minRating)) {
+      dropped.lowRating += 1;
+      remove.push({ company: o.company, openingId: openingIdOf(o.url) });
+    }
+  }
   const found = Object.values(store)
-    .filter((o) => o.lastSeen === now)
+    .filter((o) => o.lastSeen === now && !underBar(o, minRating))
     .map(({ jdText, aiHash, aiProfile, stackOut, ...o }) => {
       const d = rating.dbg.get(o.key);
       return { ...o, openingId: openingIdOf(o.url), seenSince: o.firstSeen, ...(d ? { dbg: d } : {}) };
@@ -368,6 +388,7 @@ async function main() {
     found: found.length,
     newToThisPc: found.filter((o) => o.firstSeen === now).length,
     linkedin: flag("linkedin"),
+    payDb: payDb ? payDb.stats : null,
     rating: { rated: rating.rated, calls: rating.calls, left: rating.left ?? 0, why: rating.why || "" },
     resume: resume ? { headline: resume.headline, skills: resume.skills.length, searchTerms: resume.searchTerms } : null,
   };

@@ -42,6 +42,7 @@ export async function auditLoad(now = Date.now()) {
 /** What the finder decided about a listing. Fields add up: a later note (its rating, its upload) joins the first. */
 export function auditNote(id, fields, now = Date.now()) {
   if (!entries || !id) return;
+  if (!entries[id] && !fields.title) return; // a late note (its rating, its upload) joins an entry the finder made
   entries[id] = { ...(entries[id] || { id }), ...fields, t: now };
   dirty = true;
 }

@@ -26,9 +26,14 @@ import { stackWeights, stackVerdict } from "../../extensions/naukri-refresher/jo
 
 const DRAIN_MS = 20 * 60_000; // how long a radar run may spend rating
 const DEFAULT_PER_DAY = 400;
+export const MIN_RATING = 70; // an opening the LLM rated under this isn't kept (RADAR_MIN_RATING in .radar/.env)
+
+/** Whether an opening's AI rating is under the bar (one not rated yet is never "under"). */
+export const underBar = (entry, min = MIN_RATING) => !!(entry && entry.ai && entry.ai.s < min);
 
 // pay.mjs's verdict → a top figure in LPA for the rating's pay match (rate-lib.js payMatch: under
-// 20 caps the rating). "unlikely": even the company's top 10% earn under 25L.
+// 15 caps the rating, though the radar's own pay check already drops those). "unlikely": even the
+// company's top 10% earn under 25L, but over the 15L floor.
 const PAY_TOP = { meets: 25, likely: 30, maybe: 25, close: 22, low: 22, unlikely: 18 };
 export function payFigure(pay) {
   const hi = pay && PAY_TOP[pay.verdict];

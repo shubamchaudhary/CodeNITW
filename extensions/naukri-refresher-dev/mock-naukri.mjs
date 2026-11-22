@@ -260,6 +260,8 @@ export async function startMock({ key, cert }) {
     groqCalls: [], // each rating request: { key, body }
     groqModelChecks: 0,
     payLookups: [], // the companies the pay lookup asked about
+    payDb: new Map(), // the site's company pay database (Firestore companyPay)
+    payLog: [], // what happened to it, in order: { op: 'get' | 'put' | 'web', key | company }
   }, over);
   reset();
 
@@ -292,9 +294,10 @@ export async function startMock({ key, cert }) {
     // The company pay lookup (browser_search): plain text with a JSON object in it.
     if (Array.isArray(j.tools) && j.tools.some((t) => t && t.type === 'browser_search')) {
       state.payLookups.push((content.match(/what "([^"]+)" pays/) || [])[1] || '');
+      state.payLog.push({ op: 'web', company: state.payLookups[state.payLookups.length - 1] });
       return reply(200, {
         id: `chatcmpl-${state.groqCalls.length}`, object: 'chat.completion', model: j.model,
-        choices: [{ index: 0, message: { role: 'assistant', content: 'From AmbitionBox: {"low": 18, "high": 30, "source": "AmbitionBox", "note": "SDE 1 to 2"}' }, finish_reason: 'stop' }],
+        choices: [{ index: 0, message: { role: 'assistant', content: 'From AmbitionBox and Glassdoor: {"low": 18, "high": 30, "sources": ["AmbitionBox", "Glassdoor"], "reports": 60, "same_company": true, "note": "SDE 1 to 2"}' }, finish_reason: 'stop' }],
         usage: { prompt_tokens: 120, completion_tokens: 40, total_tokens: 160 },
       }, { 'x-ratelimit-remaining-tokens': '7000', 'x-ratelimit-reset-tokens': '8.5s', 'x-ratelimit-remaining-requests': '990', 'x-ratelimit-reset-requests': '1m26s' });
     }
@@ -330,6 +333,26 @@ export async function startMock({ key, cert }) {
       return reply(200, { ok: true, finder: true, token: FINDER_TOKEN });
     }
     if (!ingest && !(finder && finderKey)) return reply(401, { error: 'unauthorized' });
+    // The company pay database (as api/radar.mjs payAction): get by key, put what has evidence.
+    if (j.pay === 'get') {
+      const found = {};
+      for (const k of j.keys || []) {
+        state.payLog.push({ op: 'get', key: k });
+        if (state.payDb.has(k)) found[k] = state.payDb.get(k);
+      }
+      return reply(200, { found });
+    }
+    if (j.pay === 'put') {
+      let saved = 0;
+      for (const e of j.entries || []) {
+        const key = String(e.company || '').toLowerCase().replace(/\b(?:private|pvt|limited|ltd|india|technologies|technology|tech|solutions|services|software|systems|labs)\b/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        if (!key || !(e.sources || []).length || e.same === false) continue;
+        state.payLog.push({ op: 'put', key });
+        state.payDb.set(key, { key, company: e.company, lo: e.lo, hi: e.hi, n: e.n, sources: e.sources, src: 'web', at: Date.now() });
+        saved += 1;
+      }
+      return reply(200, { saved, kept: 0, rejected: [] });
+    }
     if (j.check === true) {
       state.radarChecks += 1;
       return state.radarMode === 'old' ? reply(400, { error: 'no-openings' }) : reply(200, { ok: true, finder: true });
