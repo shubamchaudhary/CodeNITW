@@ -104,9 +104,9 @@ const byMatch = (a, b) => matchTier(a) - matchTier(b) || (b.coverage || 0) - (a.
 // Rated jobs first, highest rating first (ties by JD match); the ones not rated yet after them.
 const aiScore = (o) => (o.ai && o.ai.s >= 1 ? o.ai.s : 0);
 const byRating = (a, b) => aiScore(b) - aiScore(a) || byMatch(a, b);
-// Your site shows AI ratings from 60 up (extensions/naukri-refresher/rate-lib.js RATE.minShow); the
-// rest wait behind "Show N rated under 60". Jobs not rated yet still show, after the rated ones.
-const MIN_SHOW = 60;
+// Your site keeps AI ratings from 70 up (extensions/naukri-refresher/rate-lib.js RATE.minShow); the
+// rest wait behind "Show N rated under 70". Jobs not rated yet still show, after the rated ones.
+const MIN_SHOW = 70;
 const lowRated = (o) => aiScore(o) > 0 && aiScore(o) < MIN_SHOW;
 // What the AI rating rests on, for its tooltip.
 const LEVEL_TEXT = { junior: "junior", mid: "mid-level", senior: "senior", lead: "lead" };

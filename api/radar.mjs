@@ -3,6 +3,7 @@ import { gunzipSync, gzipSync } from "zlib";
 import { FieldPath, FieldValue } from "firebase-admin/firestore";
 import { adminConfigured, db, verifiedUser } from "./_lib/admin.mjs";
 import { OWNER_EMAIL } from "./_lib/visits.mjs";
+import { payKey, confidentPay, payRecord, payFresh } from "../extensions/naukri-refresher/pay-lib.js";
 
 // The job radar's openings — Firestore is their permanent record.
 // (The radar itself, scripts/radar/run.mjs, runs on the owner's PC — never in
@@ -31,6 +32,13 @@ import { OWNER_EMAIL } from "./_lib/visits.mjs";
 //         only send finder openings. { finder: "naukri", pair: true } with the
 //         owner's Firebase ID token answers { ok, finder: true, token } — the site's
 //         Job tracker page hands that token to the extension, so nothing is pasted.
+//
+//         Company pay (the same tokens): { pay: "get", keys: ["acme", …] } answers { found: { key: record } }
+//         from the Firestore collection companyPay (what a company pays a software engineer with about
+//         2 years in India, in LPA); { pay: "put", entries: [{ company, lo, hi, med, n, sources, src,
+//         same }] } saves each one that has enough evidence (pay-lib.js confidentPay, checked here again)
+//         and says why for the rest. The finder and the radar look here first, then on the internet,
+//         and save only what they are sure of.
 //
 //   DELETE Authorization: Bearer <RADAR_INGEST_TOKEN>
 //         Deletes openings that opened more than KEEP_DAYS days ago, and run
@@ -443,6 +451,56 @@ export async function DELETE(request) {
   return json({ deleted, olderThanDays: days });
 }
 
+// ── Company pay: Firestore collection companyPay, one document per company ──────
+const PAY = "companyPay";
+const MAX_PAY_KEYS = 100;
+
+// { pay: "get", keys } → { found }; { pay: "put", entries } → { saved, kept, rejected }
+export async function payAction(body, now = Date.now(), store = db()) {
+  const col = store.collection(PAY);
+  if (body.pay === "get") {
+    const keys = [...new Set((Array.isArray(body.keys) ? body.keys : []).map((k) => payKey(String(k))).filter(Boolean))].slice(0, MAX_PAY_KEYS);
+    const found = {};
+    if (keys.length) {
+      for (const d of await store.getAll(...keys.map((k) => col.doc(k)))) {
+        if (d.exists && payFresh(d.data(), now)) found[d.id] = d.data();
+      }
+    }
+    return { found };
+  }
+  const entries = (Array.isArray(body.entries) ? body.entries : []).slice(0, 50);
+  const rejected = [];
+  const todo = [];
+  for (const e of entries) {
+    const company = str(e?.company, 120);
+    const key = payKey(company);
+    const c = confidentPay(e);
+    if (!key || !c.ok) {
+      rejected.push({ company: company || "", why: key ? c.why : "no company name" });
+      continue;
+    }
+    todo.push({ key, rec: payRecord(e, company, now) });
+  }
+  let saved = 0;
+  let kept = 0;
+  if (todo.length) {
+    // A figure saved in the last 30 days stays: nothing is overwritten by the next lookup's noise.
+    const have = await store.getAll(...todo.map((t) => col.doc(t.key)));
+    const batch = store.batch();
+    todo.forEach((t, i) => {
+      const old = have[i];
+      if (old.exists && payFresh(old.data(), now) && now - (old.data().at || 0) < 30 * DAY) {
+        kept += 1;
+        return;
+      }
+      batch.set(col.doc(t.key), t.rec);
+      saved += 1;
+    });
+    if (saved) await batch.commit();
+  }
+  return { saved, kept, rejected };
+}
+
 // ── POST: store a run ─────────────────────────────────────────────────────────
 export async function POST(request) {
   const secret = process.env.RADAR_INGEST_TOKEN;
@@ -486,6 +544,8 @@ export async function POST(request) {
     await writeSnapshot(now);
     return json({ ok: true, finder: true, deleted: mine.size, resetAt: now });
   }
+  // The company pay database: read and write, by the finder's token or the radar's.
+  if (body?.pay === "get" || body?.pay === "put") return json(await payAction(body));
   if (!Array.isArray(body?.openings)) return json({ error: "no-openings" }, 400);
 
   const now = Date.now();

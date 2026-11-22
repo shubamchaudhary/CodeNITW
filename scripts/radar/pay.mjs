@@ -1,8 +1,10 @@
 // Pay check for the radar: could an opening pay MIN_LPA (your minimum CTC) or more?
 //
-// Only one thing drops an opening: the employer's own posted salary topping
-// out clearly under the bar (below DROP_UNDER_LPA). Everything else is kept and
-// labelled, so a role that pays enough is never lost to an average:
+// Two things drop an opening (the floor, FLOOR_LPA = 15L): the employer's own
+// posted salary topping out under it, or no posted salary and the company's India
+// software-engineer median on levels.fyi under it (a company that doesn't pay).
+// Everything else is kept and labelled, so a role that pays enough is never lost
+// to an average:
 //   meets    — posted salary reaches 25L
 //   close    — posted salary tops out just under it (22–25L: worth asking), or
 //              the figure was read out of the description text, not stated
@@ -16,7 +18,8 @@
 // companies are looked up per run.
 
 export const MIN_LPA = 25;
-const DROP_UNDER_LPA = 22;
+export const FLOOR_LPA = 15; // under this a role is dropped (your floor; MIN_LPA is what you aim for)
+const DROP_UNDER_LPA = FLOOR_LPA;
 
 const LOOKUPS_PER_RUN = 80; // levels.fyi page requests, 1.5 s apart
 const HIT_TTL = 30 * 86400000;
@@ -78,7 +81,13 @@ async function levelsIndia(slug) {
   return { slug, p10: L(tc.p10), p25: L(tc.p25), p50: L(tc.p50), p75: L(tc.p75), p90: L(tc.p90), n: p.percentiles.count };
 }
 
-export function makePayChecker({ cache }) {
+/** The saved record in the shape this file works with (lo is the low end, hi the top, med the middle). */
+const fromRecord = (r) => ({ slug: r.key, p25: r.lo, p50: r.med ?? Math.round(((r.lo + r.hi) / 2) * 10) / 10, p90: r.hi, n: r.n ?? 0, fromDb: true, sources: r.sources || [] });
+
+// `db` (paydb.mjs, optional): the shared pay database. The order for a company is: this run's cache,
+// the database, then levels.fyi; what levels.fyi gives is saved to the database when it rests on
+// at least 10 reports (confidentPay).
+export function makePayChecker({ cache, db = null }) {
   let lookups = 0;
 
   async function companyPay(names) {
@@ -86,6 +95,17 @@ export function makePayChecker({ cache }) {
     const hit = cache[key];
     const complete = !hit?.data || hit.data.p90 !== undefined; // older entries lack p90
     if (hit && complete && Date.now() - hit.at < (hit.data ? HIT_TTL : MISS_TTL)) return hit.data;
+    // The database before the internet.
+    if (db) {
+      try {
+        const rec = await db.get(names.find(Boolean));
+        if (rec) {
+          const data = fromRecord(rec);
+          cache[key] = { at: Date.now(), data };
+          return data;
+        }
+      } catch (_) { /* no database answer: on to the internet */ }
+    }
     if (lookups >= LOOKUPS_PER_RUN) return undefined; // not looked up this run
     let data = null;
     for (const slug of candidates(names).slice(0, 4)) {
@@ -99,10 +119,14 @@ export function makePayChecker({ cache }) {
       if (data) break;
     }
     cache[key] = { at: Date.now(), data };
+    // Found with enough evidence: saved, so nobody looks this company up again.
+    if (data && db && data.n >= 10) {
+      try { await db.put({ company: names.find(Boolean), lo: data.p25, hi: data.p90, med: data.p50, n: data.n, src: "levels" }); } catch (_) { /* carry on */ }
+    }
     return data;
   }
 
-  // → { verdict, text } — see the top of this file. Only "below" is dropped.
+  // → { verdict, text } — see the top of this file. Only "below" (under the floor) is dropped.
   return async function checkPay(job) {
     const posted = job.pay;
     if (posted && !posted.estimate && (posted.maxL || posted.minL)) {
@@ -117,7 +141,10 @@ export function makePayChecker({ cache }) {
     const co = await companyPay([job.company, job.companySlug]);
     if (co) {
       const top = co.p90 !== undefined ? ` · top 10% ₹${co.p90}L+` : "";
-      const text = `levels.fyi India: p25 ₹${co.p25}L · median ₹${co.p50}L${top} (${co.n} reports)`;
+      const text = co.fromDb
+        ? `pay database${co.sources?.length ? ` (${co.sources.join(" + ")})` : ""}: ₹${co.p25}–${co.p90}L, median ₹${co.p50}L`
+        : `levels.fyi India: p25 ₹${co.p25}L · median ₹${co.p50}L${top} (${co.n} reports)`;
+      if (co.p50 < FLOOR_LPA) return { verdict: "below", text }; // the company's median is under the floor
       if (co.p25 >= MIN_LPA) return { verdict: "likely", text };
       if (co.p50 >= MIN_LPA) return { verdict: "maybe", text };
       if (co.p90 === undefined || co.p90 >= MIN_LPA) return { verdict: "low", text };

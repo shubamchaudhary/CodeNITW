@@ -425,7 +425,9 @@ test('pay: the salary shown, else the web lookup, else what the model knows; a t
   const guess = rate(answer({ relevance: 95, reject: false, pay_low: 7, pay_high: 11, pay_known: false }));
   assert.equal(guess.pay.from, 'guess', 'a guess is shown');
   assert.ok(guess.s > 80, '…but never held against the job');
-  assert.deepEqual(payFromAnswer(firstJson('Found it. {"low": 14, "high": 22, "source": "AmbitionBox", "note": "SDE 1"} ok')), { lo: 14, hi: 22, src: 'AmbitionBox', note: 'SDE 1' });
+  assert.deepEqual(payFromAnswer(firstJson('Found it. {"low": 14, "high": 22, "sources": ["AmbitionBox", "Glassdoor"], "reports": 40, "same_company": true, "note": "SDE 1"} ok')),
+    { lo: 14, hi: 22, src: 'web', n: 40, sources: ['AmbitionBox', 'Glassdoor'], same: true, note: 'SDE 1' });
+  assert.equal(payFromAnswer(firstJson('{"low": 14, "high": 22, "source": "AmbitionBox"}')).same, false, 'the model must say it is the same company');
   assert.equal(payFromAnswer(firstJson('{"low": null, "high": null, "source": "none", "note": ""}')), null);
   const b = payRequestBody({ model: RATE.model, company: 'Acme' });
   assert.deepEqual(b.tools, [{ type: 'browser_search' }]);
@@ -446,7 +448,7 @@ test("each rating keeps the prompt it was sent (your resume left out) and the mo
 
 test("a company's pay is looked up on the web once (browser_search), before its jobs are rated; a refused tool doesn't stop the rating", async () => {
   const calls = fakeGroq((key, n, body) => (body.tools
-    ? { json: { choices: [{ message: { content: 'From AmbitionBox: {"low": 7, "high": 11, "source": "AmbitionBox", "note": "SDE 1, 2 yrs"}' } }], usage: { prompt_tokens: 600, completion_tokens: 100 } } }
+    ? { json: { choices: [{ message: { content: 'From AmbitionBox and Glassdoor: {"low": 7, "high": 11, "sources": ["AmbitionBox", "Glassdoor"], "reports": 80, "same_company": true, "note": "SDE 1, 2 yrs"}' } }], usage: { prompt_tokens: 600, completion_tokens: 100 } } }
     : { json: { choices: [{ message: { content: JSON.stringify(answer({ relevance: 92, reject: false, why: 'Java backend.' })) } }], usage: { prompt_tokens: 1000, completion_tokens: 200 } } }));
   const payCache = {};
   const got = [];
@@ -459,8 +461,8 @@ test("a company's pay is looked up on the web once (browser_search), before its 
   });
   await rater.drain(20_000);
   assert.equal(rater.problem, null, JSON.stringify(rater.problem));
-  assert.deepEqual(Object.keys(payCache).sort(), ['co a1', 'co b1']);
-  assert.equal(calls.filter((x) => x.body.tools).length, 2, 'one lookup per company');
+  assert.deepEqual(Object.keys(payCache).sort(), ['co-a1', 'co-b1']);
+  assert.equal(calls.filter((x) => x.body.tools).length, 2, 'one lookup per company: ' + JSON.stringify(calls.filter((x) => x.body.tools).map((x) => x.body.messages[0].content.match(/what "([^"]+)"/)[1])));
   assert.equal(c.pay.calls, 2);
   assert.equal(got.length, 3);
   for (const g of got) {
@@ -482,18 +484,18 @@ test("a company's pay is looked up on the web once (browser_search), before its 
 });
 
 test('pay lookups: a fresh one is reused, an old one (30+ days) is redone, none past the day cap, and a 429 rests the key and tries again', async () => {
-  const PAY = { json: { choices: [{ message: { content: '{"low": 26, "high": 40, "source": "levels.fyi", "note": ""}' } }], usage: { prompt_tokens: 100, completion_tokens: 20 } } };
+  const PAY = { json: { choices: [{ message: { content: '{"low": 26, "high": 40, "sources": ["levels.fyi", "AmbitionBox"], "reports": 60, "same_company": true, "note": ""}' } }], usage: { prompt_tokens: 100, completion_tokens: 20 } } };
   // A fresh entry is reused; an entry 31 days old is looked up again.
   let calls = fakeGroq((key, n, body) => (body.tools ? PAY : null));
   const old = Date.now() - 31 * 86_400_000;
-  const cache = { 'co f1': { lo: 30, hi: 45, t: Date.now(), raw: 'fresh' }, 'co o1': { lo: 5, hi: 6, t: old, raw: 'old' } };
+  const cache = { 'co-f1': { lo: 30, hi: 45, t: Date.now(), raw: 'fresh' }, 'co-o1': { lo: 5, hi: 6, t: old, raw: 'old' } };
   const got = {};
   let r = startRater([item('f1'), item('o1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: cache, payPerDay: 10, onRated: (it, ai) => { got[it.id] = ai; } });
   await r.drain(20_000);
   assert.equal(calls.filter((c) => c.body.tools).length, 1, 'only the old one is looked up');
   assert.match(calls.find((c) => c.body.tools).body.messages[0].content, /"Co o1"/);
   assert.deepEqual([got.f1.pay.hi, got.o1.pay.hi], [45, 40]);
-  assert.ok(cache['co o1'].t > old);
+  assert.ok(cache['co-o1'].t > old);
 
   // The day's lookups are used: jobs are still rated, from what's known.
   calls = fakeGroq(() => null);
@@ -514,7 +516,7 @@ test('pay lookups: a fresh one is reused, an old one (30+ days) is redone, none 
   r = startRater([item('r1'), item('r2'), item('r3')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: c3, payCache: {}, payPerDay: 10, onRated: (it, ai) => done.push(ai), limitBaseMs: 50, limitStopMs: 100 });
   await r.drain(20_000);
   assert.equal(r.problem, null, JSON.stringify(r.problem));
-  assert.equal(calls.filter((x) => x.body.tools).length, 1, 'one try, then no more lookups this run');
+  assert.equal(calls.filter((x) => x.body.tools).length, 3, 'three refusals in a row, then no more lookups this run');
   assert.equal(done.length, 3, 'every job is still rated');
   assert.equal(done[0].pay.from, null);
   assert.match(c3.pay.off.msg, /web lookups hit Groq's limit/);
@@ -523,7 +525,7 @@ test('pay lookups: a fresh one is reused, an old one (30+ days) is redone, none 
   // The radar's own pay figure: no web lookups at all.
   calls = fakeGroq(() => null);
   const radar = [];
-  r = startRater([item('p1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: {}, payFor: () => ({ lo: 18, hi: 18 }), onRated: (it, ai) => radar.push(ai) });
+  r = startRater([item('p1')], { keys: [KEY('a')], model: RATE.model, resumes: RESUMES, callsPerDay: 100, counts: counts(), payCache: {}, payFor: () => ({ lo: 12, hi: 12 }), onRated: (it, ai) => radar.push(ai) });
   await r.drain(20_000);
   assert.equal(calls.filter((x) => x.body.tools).length, 0);
   assert.equal(radar[0].pay.from, 'web');

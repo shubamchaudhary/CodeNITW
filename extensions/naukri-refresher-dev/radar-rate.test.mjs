@@ -60,7 +60,7 @@ test("the radar's openings get the finder's rating; a wrong stack is marked; the
   assert.equal(java.entry.ai.rel, 91);
   assert.ok(java.entry.ai.s >= RATE.minShow);
   assert.equal(java.entry.ai.pay.from, 'web');
-  assert.equal(cheap.entry.ai.s, RATE.lowPayCap, "levels.fyi: even its top 10% earn under 25L");
+  assert.ok(cheap.entry.ai.s > RATE.lowPayCap, 'levels.fyi: even its top 10% earn under 25L, but over the 15L floor: not held back (under the floor the radar drops it before rating)');
   assert.equal(java.entry.jdText, undefined, 'the working copy goes once rated');
   assert.match(r.dbg.get('k1').p, /^THE CANDIDATE/);
   assert.ok(existsSync(join(dir, 'rate-state.json')));
