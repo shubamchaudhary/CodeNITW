@@ -2,7 +2,7 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { toast } from "react-toastify";
-import { isOwner } from "./OwnerRoute";
+import { isOwner, canSeeAiStack } from "./OwnerRoute";
 import { requestSignIn } from "../Data/authGate";
 import Brand, { SITE_NAME } from "./Brand";
 import { WEB_BASICS_PATHS, PYTHON_BASICS_PATHS } from "../Data/WebBasics";
@@ -137,7 +137,11 @@ export default function Header() {
     return null;
   }
 
-  const items = [...NAV_ITEMS.filter((i) => !i.ownerOnly || isOwner(user)), ...(isOwner(user) ? OWNER_NAV_ITEMS : [])];
+  // Owner-only items for the owner; a guest the owner let into the AI Stack sees just that one.
+  const items = [
+    ...NAV_ITEMS.filter((i) => !i.ownerOnly || isOwner(user)),
+    ...(isOwner(user) ? OWNER_NAV_ITEMS : canSeeAiStack(user) ? OWNER_NAV_ITEMS.filter((i) => i.path === "/ai-stack") : []),
+  ];
 
   return (
     <header>

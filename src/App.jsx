@@ -95,7 +95,7 @@ function App() {
           <Route path="/core-stack" element={<StackHome stackKey="corestack" />} />
           {/* Owner-only, exactly like the job tracker: a non-owner hitting this
               URL lands on Core Stack, the same place any unknown URL goes. */}
-          <Route path="/ai-stack" element={<OwnerRoute />}>
+          <Route path="/ai-stack" element={<OwnerRoute aiStack />}>
             <Route path="/ai-stack" element={<StackHome stackKey="aistack" />} />
           </Route>
           {/* One full page per topic's notes. The page itself turns away a
