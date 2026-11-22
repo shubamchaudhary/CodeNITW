@@ -663,16 +663,16 @@ async function findJobs(trigger) {
   const budget = () => run.pages < FINDER_LIMITS.pagesPerRun && (st.daily.pages || 0) < FINDER_LIMITS.pagesPerDay
     && Date.now() - started < FINDER_LIMITS.runMinutes * MIN;
   const jdBudget = () => budget() && (st.daily.jds || 0) < FINDER_LIMITS.jdPerDay;
+  let reopened = 0;
   // The finder's tab: opened when there's none, and again when the one it had is gone (closed by you,
   // or discarded by the browser), so a closed tab never ends a run.
   const tab = async () => {
     if (st.tab) {
-      try { await ext.tabs.get(st.tab.tabId); } catch { st.tab = null; }
+      try { await ext.tabs.get(st.tab.tabId); } catch { st.tab = null; reopened += 1; run.note = `the finder tab was closed: opened a new one (${reopened})`; }
     }
     if (!st.tab) { st.tab = await openTab('about:blank'); prevHref = null; await saveState(st); }
     return st.tab.tabId;
   };
-  let reopened = 0;
   // Loads a page, opening a new tab and trying again if the tab goes missing (3 times a run at most).
   const loadIn = async (load, url) => {
     for (;;) {

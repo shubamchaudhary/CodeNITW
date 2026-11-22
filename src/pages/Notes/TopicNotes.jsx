@@ -4,7 +4,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import "@uiw/react-markdown-preview/markdown.css";
-import { isOwner } from "../../components/OwnerRoute";
+import { isOwner, canSeeAiStack } from "../../components/OwnerRoute";
 import useIsDark from "../../hooks/useIsDark";
 import useTourSandbox from "../../hooks/useTourSandbox";
 import { getSyncStatus, subscribeSyncStatus } from "../../Data/cloudSync";
@@ -109,7 +109,8 @@ export default function TopicNotes() {
   const [loaded, setLoaded] = useState(false);
   // A topic that ships with a document (AI Stack) reads that document, the same
   // for every viewer, instead of the viewer's own note.
-  const owner = isOwner(user);
+  // (Someone the owner let into the AI Stack sees it the way the owner does, and only it.)
+  const owner = isOwner(user) || (config?.key === "aistack" && canSeeAiStack(user));
   const builtIn = hasBuiltInDoc(source, topicId, owner);
   const [doc, setDoc] = useState(null);
   useEffect(() => {
@@ -526,7 +527,7 @@ export default function TopicNotes() {
 
   if (!authReady) return <PageSkeleton />;
   if (!config) return <Navigate to="/core-stack" replace />;
-  if (config.ownerOnly && !isOwner(user)) return <Navigate to="/core-stack" replace />;
+  if (config.ownerOnly && !(config.key === "aistack" ? canSeeAiStack(user) : isOwner(user))) return <Navigate to="/core-stack" replace />;
   if (!topic) return <Navigate to={config.home} replace />;
 
   const accent = config.accent;

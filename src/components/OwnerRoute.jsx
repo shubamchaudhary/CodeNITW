@@ -6,13 +6,10 @@ import PageSkeleton from "./PageSkeleton";
 // The single account allowed to see owner-only pages (job tracker etc.).
 // Everyone else is bounced to the app home exactly like an unknown URL, so
 // the page is indistinguishable from one that doesn't exist.
-export const OWNER_EMAIL = "beshubam@gmail.com";
+export { OWNER_EMAIL, isOwner, canSeeAiStack } from "./access";
+import { isOwner, canSeeAiStack } from "./access";
 
-export function isOwner(user) {
-  return !!user && (user.email || "").toLowerCase() === OWNER_EMAIL;
-}
-
-export default function OwnerRoute() {
+export default function OwnerRoute({ aiStack = false }) {
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
 
@@ -28,5 +25,5 @@ export default function OwnerRoute() {
   if (checking) return <PageSkeleton />;
   // Same destination as the catch-all "*" route — a non-owner hitting this URL
   // sees exactly what they'd see for any nonexistent page.
-  return isOwner(user) ? <Outlet /> : <Navigate to="/core-stack" replace />;
+  return (aiStack ? canSeeAiStack(user) : isOwner(user)) ? <Outlet /> : <Navigate to="/core-stack" replace />;
 }
