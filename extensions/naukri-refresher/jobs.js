@@ -28,10 +28,10 @@
 import { NAUKRI_ORIGIN, NAUKRI_MATCH, MIN, HOUR, DAY } from './lib.js';
 import {
   RADAR_API_URL, RADAR_API_MATCH, SEARCHES, FINDER_LIMITS, RULES, RULES_VERSION, PROFILES, SCOPES, LOW_PAY_COMPANIES, searchUrl, searchesFor,
-  trackerDay, nextFinderRun, cardCheck, jdCheck, cardOnly, mySkills, toOpening, normalizeJob, htmlToText, lowPayList, byParser,
+  trackerDay, nextFinderRun, cardCheck, jdCheck, cardOnly, mySkills, toOpening, normalizeJob, htmlToText, lowPayList, byParser, parsePay,
 } from './jobs-lib.js';
 import { RATE, rateText, keyHint } from './rate-lib.js';
-import { loadResumes, hasGroqAccess, checkKeys, loadQueue, pruneQueue, saveQueue, startRater } from './rate.js';
+import { loadResumes, hasGroqAccess, checkKeys, loadQueue, pruneQueue, saveQueue, startRater, loadPayCache, savePayCache } from './rate.js';
 import { JOB_PROFILE } from './job-profile.js';
 
 const ext = globalThis.browser ?? globalThis.chrome;
@@ -174,18 +174,28 @@ function noteRater(st, problem) {
   notify('nr-rate', 'AI rating paused', `${problem.msg}. Jobs are still found and sent, without a rating.`);
 }
 
+/** The salary a job shows, for the rating's prompt and its pay match (nothing when it shows none). */
+function salaryOf(job) {
+  const p = parsePay(job || {});
+  if (p.kind !== 'shown') return {};
+  return { salary: job.salaryText || `${p.minL}-${p.maxL} Lacs PA`, pay: { lo: p.minL, hi: p.maxL } };
+}
+
 /** A rating came back: keep it, put it on the job, and send the job to your site again. */
-const onRatedFor = (st, rating, run) => (item, ai) => {
+const onRatedFor = (st, rating, run) => (item, ai, dbg = null) => {
   st.rated[item.id] = { t: Date.now(), h: rating.hash ? rating.hash[item.profile] : null, ai };
   run.rated = (run.rated || 0) + 1;
   const m = st.memo[item.id];
   if (m && (!m.keep || m.pool === false)) return; // turned down since it was queued: not sent again
   const o = m ? m.o : null;
   if (o) o.ai = ai;
+  // The prompt and the model's answer go to your site with this upload only (the card's "Prompt and
+  // answer"); they're never kept here.
+  const extra = dbg ? { ai, dbg } : { ai };
   const i = st.pending.findIndex((p) => p && p.openingId === item.id);
-  if (i >= 0) st.pending[i] = { ...st.pending[i], ai };
+  if (i >= 0) st.pending[i] = { ...st.pending[i], ...extra };
   // Its verdict forgotten since (a re-scan, new rules) but it's on your site: the copy it waited with goes.
-  else if (o || (item.o && st.onSite[item.id])) st.pending.push({ ...(o || item.o), ai });
+  else if (o || (item.o && st.onSite[item.id])) st.pending.push({ ...(o || item.o), ...extra });
 };
 
 /** The jobs still waiting for a rating, saved for the next run. */
@@ -497,8 +507,9 @@ async function siteReset(token) {
  * of the last 48 hours again, opens every good-looking JD, and sends what fits. Ratings from the
  * last 3 days stay (same job, same resume, same rating), and so do the day's run log and caps.
  */
-function freshStart(st, resetAt) {
+function freshStart(st, resetAt, { ratings = false } = {}) {
   Object.assign(st, { seen: {}, memo: {}, queue: [], sweep: null, onSite: {}, unsend: [], pending: [], reasons: {}, unknown: {}, rateQueued: 0 });
+  if (ratings) st.rated = {}; // "Start fresh": rated again too (company pay lookups are kept)
   st.resetSeen = resetAt;
   st.startedOver = Date.now();
   const kept = st.daily.kept || (st.daily.kept = {});
@@ -577,12 +588,22 @@ function unlist(st, id, why) {
   st.pending = st.pending.filter((o) => o.openingId !== id);
 }
 
-async function halt(st, short, msg) {
-  st.halted = { short, msg, t: Date.now() };
+async function halt(st, short, msg, until = null) {
+  st.halted = { short, msg, t: Date.now(), ...(until ? { until } : {}) };
   st.plan = null;
   await saveState(st);
-  await ext.alarms.clear('jobs');
+  // Paused until a time (every Groq key retired): it wakes up by itself then. Otherwise you press Resume.
+  if (until) await ext.alarms.create('jobs', { when: until + 5000 });
+  else await ext.alarms.clear('jobs');
   notify('nr-jobs', 'Job finder paused', `${msg}.`);
+}
+
+/** Test knobs (jobsDev.rate): shorter waits for the 429 rule, so a test needn't sit through 5 minutes and an hour. */
+const raterKnobs = (dev) => (dev && dev.rate && typeof dev.rate === 'object' ? { limitBaseMs: dev.rate.limitBaseMs, limitStopMs: dev.rate.limitStopMs, retireMs: dev.rate.retireMs } : {});
+
+/** Every key's retirement forgotten (you pressed Resume): they're tried again at once. */
+function unretireKeys(st) {
+  for (const k of Object.values((st.daily && st.daily.rate && st.daily.rate.keys) || {})) k.retiredUntil = 0;
 }
 
 async function closeTab(st) {
@@ -653,6 +674,7 @@ async function findJobs(trigger) {
   const rq = pruneQueue(await loadQueue(), { now: Date.now(), rated: st.rated, hash: rating.hash });
   liveQueue = rq;
   let rater = null;
+  let payCache = null;
   const ratingOk = (c, profile) => !!c && (!rating.hash || c.h === rating.hash[profile]);
   // A job turned down now needs no rating.
   const unqueue = (id) => {
@@ -706,7 +728,7 @@ async function findJobs(trigger) {
         id, profile: v.profile, post: o.postedTime, t: Date.now(),
         p: { coverage: o.coverage, fewSkills: o.fewSkills, rank: o.rank },
         text: rateText(jd.text), skills: (jd.skills || []).slice(0, 20),
-        job: { title: o.title, company: o.company, exp: v.job.expText, location: o.location },
+        job: { title: o.title, company: o.company, exp: v.job.expText, location: o.location, ...salaryOf(v.job) },
         o, // the job as sent, for when its verdict is forgotten before its rating comes back
       });
     }
@@ -787,14 +809,23 @@ async function findJobs(trigger) {
   };
 
   // Job pages waiting to be read, best card first. False when the run has to stop.
+  // Every Groq key retired (429 for 5 minutes running): the run pauses until the first is back, and
+  // carries on by itself then. What's found so far is sent (unrated) and keeps waiting for a rating.
+  const keysOut = () => {
+    const p = rater && rater.problem;
+    if (!p || p.kind !== 'retired') return false;
+    outcome = outcome || { short: 'every Groq key is out', msg: p.msg, until: p.until };
+    return true;
+  };
   const readQueue = async () => {
     // (A new day empties the queue; a run going past 4am keeps the cards it found after it.)
     st.queue = st.queue.filter((c) => c && c.job).sort((a, b) => b.cardRank - a.cardRank);
+    if (keysOut()) return false;
     while (st.queue.length) {
       if (!jdOff && !jdBudget()) return true; // the rest wait for the next run
       const ok = await openJd(st.queue.shift());
       await saveState(st);
-      if (!ok) return false;
+      if (!ok || keysOut()) return false;
     }
     return true;
   };
@@ -827,9 +858,10 @@ async function findJobs(trigger) {
 
     // The rating runs alongside the sweep (it only talks to api.groq.com, never to Naukri).
     if (rating.on) {
+      payCache = await loadPayCache();
       rater = startRater(rq, {
         keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, callsPerDay: settings.rateCalls,
-        counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run),
+        counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run), payCache, ...raterKnobs(dev),
       });
     }
 
@@ -941,6 +973,9 @@ async function findJobs(trigger) {
     await rater.drain(Math.max(0, Math.min(RATE.drainMs, left)));
     noteRater(st, rater.problem);
     if (rater.problem && !run.note) run.note = `AI rating stopped: ${rater.problem.msg}`;
+    if (payCache) await savePayCache(payCache);
+    // Every key retired with jobs still waiting: paused until the first is back (it rates them then).
+    if (rater.problem && rater.problem.kind === 'retired' && !outcome && rq.length) outcome = { short: 'every Groq key is out', msg: rater.problem.msg, until: rater.problem.until };
   }
   await flush(); // what's left
   await persistQueue(st, rq, rating);
@@ -950,7 +985,7 @@ async function findJobs(trigger) {
   noteRun(st, run);
   st.lock = null;
   if (outcome) {
-    await halt(st, outcome.short, outcome.msg);
+    await halt(st, outcome.short, outcome.msg, outcome.until);
     return { kind: 'halted', ...outcome };
   }
   await saveState(st);
@@ -1017,12 +1052,14 @@ async function rateOnly() {
   const rq = pruneQueue(await loadQueue(), { now: t0, rated: st.rated, hash: rating.hash });
   liveQueue = rq;
   const run = { rated: 0 };
+  const payCache = await loadPayCache();
   const rater = startRater(rq, {
     keys: settings.groqKeys, model: settings.rateModel, resumes: rating.resumes, callsPerDay: settings.rateCalls,
-    counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run),
+    counts: rateCounts(st.daily), onRated: onRatedFor(st, rating, run), payCache, ...raterKnobs(dev),
   });
   const saver = setInterval(() => { saveState(st).catch(() => {}); }, 5000);
   try { await rater.drain(RATE.drainMs); } finally { clearInterval(saver); }
+  await savePayCache(payCache);
   noteRater(st, rater.problem);
   let note = rater.problem ? rater.problem.msg : '';
   // The ratings go to your site (when it's known to take the finder's uploads), else with the next run.
@@ -1078,11 +1115,33 @@ export async function jobsTick() {
   const now = Date.now();
   // A worker stopped mid-run can leave the finder's tab open: close it once the run's lock is gone.
   if (st.tab && !running && !(st.lock && st.lock.until > now)) { await closeTab(st); await saveState(st); }
+  // Paused until every Groq key's hour is over: still paused, or back, and the sweep carries on.
+  let carryOn = false;
+  // (A run you started yourself resumes too, whatever the schedule switch says.)
+  if (st.halted && st.halted.until && settings.token) {
+    if (now < st.halted.until) {
+      const a = await ext.alarms.get('jobs');
+      if (!a || Math.abs(a.scheduledTime - (st.halted.until + 5000)) > 1000) await ext.alarms.create('jobs', { when: st.halted.until + 5000 });
+      return;
+    }
+    st.halted = null;
+    st.plan = null;
+    await saveState(st);
+    carryOn = true;
+  }
+  if (carryOn && !running && !(st.lock && st.lock.until > now)) {
+    // The sweep isn't over: it carries on (and rates as it goes); otherwise only the waiting jobs are rated.
+    if (st.sweep && !st.sweep.done) await runGuarded('keys are back');
+    else await rateGuarded();
+    st = await loadState();
+    if (st.halted) return; // out again: paused again, with its own wake-up
+  }
   if (!settings.enabled || st.halted || !settings.token) {
     if (st.plan) { st.plan = null; await saveState(st); }
     await ext.alarms.clear('jobs');
     return;
   }
+
   if (!st.plan) {
     st.plan = nextFinderRun(now, st.lastSlot);
     await saveState(st);
@@ -1230,9 +1289,16 @@ export const jobsHandlers = {
     await sleep(300);
     return { result: { kind: 'started' }, status: await jobsStatus() };
   },
+  // Wakes the finder as its alarm would (a timed pause is over); returns at once.
+  async jobsTickNow() {
+    jobsTick().catch(() => {});
+    await sleep(300);
+    return jobsStatus();
+  },
   async jobsResume() {
     const st = await loadState();
     st.halted = null;
+    unretireKeys(st);
     st.siteOkDay = null;
     st.plan = null;
     await saveState(st);
@@ -1268,7 +1334,7 @@ export const jobsHandlers = {
     const r = await siteReset(settings.token);
     if (!r.ok) return { ...no(r.short), status: await jobsStatus() };
     const st = rollDay(await loadState(), Date.now());
-    freshStart(st, r.resetAt);
+    freshStart(st, r.resetAt, { ratings: true });
     await saveState(st);
     await saveQueue([]);
     runGuarded('start over'); // takes a while: the settings page follows it through jobsStatus

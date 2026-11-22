@@ -42,6 +42,7 @@ import { experienceRange, experienceTag } from "./experience.mjs";
 import { makePayChecker } from "./pay.mjs";
 import { loadResumeTexts, resumePdfs, resumesProfile } from "./resume.mjs";
 import { openingIdOf } from "./ids.mjs";
+import { rateOpenings } from "./rate.mjs";
 // The same low-pay employers the Naukri job finder leaves out (IT services and consulting firms).
 import { lowPayMatch } from "../../extensions/naukri-refresher/low-pay.js";
 
@@ -230,7 +231,7 @@ async function main() {
   saveJSON("atsCache.json", atsCache);
 
   // ── Relevance + de-duplication ──────────────────────────────────────────────
-  const dropped = { notRelevant: 0, lowPayCompany: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0 };
+  const dropped = { notRelevant: 0, lowPayCompany: 0, experience: 0, noSkillMatch: 0, payBelow: 0, duplicate: 0, wrongStack: 0 };
   const byFp = new Map();
   for (const raw of batches.flat()) {
     if (!keep(raw.title, raw.location)) {
@@ -304,6 +305,7 @@ async function main() {
   candidates.sort((a, b) => (a.exp === "fits" ? 0 : 1) - (b.exp === "fits" ? 0 : 1));
 
   const checkPay = makePayChecker({ cache: payCache });
+  const toRate = []; // for the AI rating (rate.mjs): every opening kept, rated once
   for (const { j, key, old, range, exp, scored } of candidates) {
     const pay = await checkPay(j);
     if (pay.verdict === "below") {
@@ -330,9 +332,19 @@ async function main() {
       matched: (scored.matched || []).slice(0, 10),
       missing: scored.missing || [],
       snippet: j.desc ? clip(j.desc) : old?.snippet || "",
+      // The AI rating, kept from earlier runs (rate.mjs redoes it when the rules or the resume change).
+      ...(old?.ai ? { ai: old.ai, aiProfile: old.aiProfile, aiHash: old.aiHash } : {}),
+      ...(old?.jdText && !j.desc ? { jdText: old.jdText } : {}),
     };
+    toRate.push({ key, j, entry: store[key] });
   }
   saveJSON("payCache.json", payCache);
+
+  // ── AI rating (Groq, the same rules as the Naukri job finder) ──────────────
+  // The openings not rated yet are read by the LLM against the resume for their list; one whose
+  // stack isn't yours (MERN, .NET, PHP…, as the finder's stack rules see it) goes, like any drop.
+  const rating = await rateOpenings(toRate, { env, stateDir: STATE, resumeTexts, log, rerate: flag("rerate") });
+  for (const { key, j, entry } of toRate) if (entry.stackOut) drop("wrongStack", key, j);
 
   // ── Cache upkeep and upload ─────────────────────────────────────────────────
   const unseenCut = Date.now() - KEEP_UNSEEN_DAYS * 86400000;
@@ -341,9 +353,13 @@ async function main() {
   saveJSON("score-version.json", { version: SCORE_VERSION });
 
   // Everything this run found goes up; the API keeps the record and the history.
+  // The rating's working copies stay on the PC; its prompt and answer go up this once.
   const found = Object.values(store)
     .filter((o) => o.lastSeen === now)
-    .map((o) => ({ ...o, openingId: openingIdOf(o.url), seenSince: o.firstSeen }));
+    .map(({ jdText, aiHash, aiProfile, stackOut, ...o }) => {
+      const d = rating.dbg.get(o.key);
+      return { ...o, openingId: openingIdOf(o.url), seenSince: o.firstSeen, ...(d ? { dbg: d } : {}) };
+    });
   const summary = {
     ranAt: now,
     seconds: Math.round((Date.now() - started) / 1000),
@@ -352,6 +368,7 @@ async function main() {
     found: found.length,
     newToThisPc: found.filter((o) => o.firstSeen === now).length,
     linkedin: flag("linkedin"),
+    rating: { rated: rating.rated, calls: rating.calls, left: rating.left ?? 0, why: rating.why || "" },
     resume: resume ? { headline: resume.headline, skills: resume.skills.length, searchTerms: resume.searchTerms } : null,
   };
   const payload = { summary, openings: found, remove };
