@@ -1069,7 +1069,7 @@ async function suite(d, mock) {
     assert.ok(posts.some((p) => (p.remove || []).some((r) => r.openingId === EXPECT.idOf(12) && r.company === 'Company 12')), JSON.stringify(posts.map((p) => p.remove)));
     assert.ok(!posts.some((p) => p.openings.some((o) => o.openingId === EXPECT.idOf(12))));
     const late = mock.state.groqCalls.filter((c) => c.t >= t0 && !c.body.tools);
-    assert.ok(late.every((c) => /Company: Company 54\b/.test(c.body.messages[0].content)), 'only the job still waiting is rated; ratings from the last 3 days are kept');
+    assert.ok(late.every((c) => /Company: Company (54|57)\b/.test(c.body.messages[0].content)), 'only the jobs still waiting (54, and 57 from the pause step) are rated; ratings from the last 3 days are kept');
     await d.msg({ type: 'jobsSave', patch: { lowPay: null, groqKeys: [] } });
     await setStore({ jobsDev: null });
   });
