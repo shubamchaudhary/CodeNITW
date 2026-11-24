@@ -1,6 +1,6 @@
-# Spring Part 5: Controller Annotations, ResponseEntity and HTTP Status Codes
+# Spring Part 5: Controller Annotations, `ResponseEntity` and HTTP Status Codes
 
-The questions, from most to least asked: **401 vs 403**, **@PathVariable vs @RequestParam**, **@Controller vs @RestController**, **the status after create, update and delete**, **ResponseEntity**, **400 vs 422**, **500 vs 503**, **@RequestBody**, and, rarely, **3xx and 1xx**.
+The questions, from most to least asked: **401 vs 403**, **`@PathVariable` vs `@RequestParam`**, **`@Controller` vs `@RestController`**, **the status after create, update and delete**, **`ResponseEntity`**, **400 vs 422**, **500 vs 503**, **`@RequestBody`**, and, rarely, **3xx and 1xx**.
 
 ## 1. HTTP status codes
 
@@ -61,7 +61,7 @@ Say it like this: "401 means the request isn't authenticated: no token, or an in
 
 - **100 Continue**: before uploading a large body, the client sends just the headers with `Expect: 100-continue`. The server checks auth, size and type, and replies 100. The client then sends the body on the **same** request.
 
-## 2. @Controller, @RestController, @ResponseBody
+## 2. `@Controller`, `@RestController`, `@ResponseBody`
 
 - **@Controller**: the class handles HTTP requests. It's a `@Component`, so it becomes a bean.
 - **@ResponseBody**: the method's return value is written into the HTTP response body (objects become JSON through Jackson).
@@ -97,9 +97,9 @@ Spring rejects a request before your code runs if it doesn't match:
 - Client's `Accept` header doesn't match `produces` -> **406** Not Acceptable.
 - No matching path -> **404**.
 
-## 4. @PathVariable vs @RequestParam
+## 4. `@PathVariable` vs `@RequestParam`
 
-**@RequestParam** reads query parameters. URL: `/api/fetchUser?firstName=Alex&lastName=Lee&age=32`
+`@RequestParam` reads query parameters. URL: `/api/fetchUser?firstName=Alex&lastName=Lee&age=32`
 
 ```java
 @GetMapping("/fetchUser")
@@ -121,7 +121,7 @@ protected void initBinder(WebDataBinder binder) {
 }
 ```
 
-**@PathVariable** reads values from the URL path. URL: `/api/fetchUser/Alex`
+`@PathVariable` reads values from the URL path. URL: `/api/fetchUser/Alex`
 
 ```java
 @GetMapping("/fetchUser/{firstName}")
