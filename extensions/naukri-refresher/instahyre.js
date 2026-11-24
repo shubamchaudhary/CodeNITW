@@ -1,9 +1,9 @@
-// Instahyre auto-apply: two buttons (Java backend, GenAI). Each opens your saved Instahyre search (its
-// filters are in the link: skills and years) in a visible tab and goes through the list one job at a
+// Instahyre auto-apply: two buttons (Java backend, GenAI). Each verifies the saved search, restoring
+// its filters through the visible controls after a redirect, then goes through the list one job at a
 // time: open it, read it, apply, pause a few seconds, next; until the list is finished or a stop
 // condition (cap, a login or check, Instahyre asking for something more, you pressing Stop).
 //
-// What it won't apply to (skip rules, on by default): IT-services and consulting firms (the same
+// What it won't apply to with skip rules enabled: IT-services and consulting firms (the same
 // list as the job finder), titles that aren't software engineering work (QA, support, frontend-only,
 // lead or senior roles…), and jobs asking for 3 or more years (from the experience badge or the job
 // description). A skipped job is left alone: it is never marked "Not interested".
@@ -13,8 +13,9 @@
 // It runs from the background worker, one small step at a time, so a stopped worker just ends it.
 
 import { trackerDay, lowPayList, LOW_PAY_COMPANIES } from './jobs-lib.js';
-import { judge, yearsAsked, INSTA_ORIGIN, INSTA_DEFAULTS, cleanCfg } from './instahyre-rules.js';
-import { pageObserve, pageOpen, pageApply, pageClose, pageMore } from './instahyre-page.js';
+import { judge, yearsAsked, INSTA_ORIGIN, INSTA_DEFAULTS, cleanCfg, savedSearch } from './instahyre-rules.js';
+import { pageObserve, pageClose, pageMore } from './instahyre-page.js';
+import { pageSearch } from './instahyre-search.js';
 import { loadSettings as loadFinderSettings, keepAlive } from './jobs.js';
 
 export { judge, yearsAsked, INSTA_ORIGIN, INSTA_DEFAULTS, cleanCfg };
@@ -45,7 +46,7 @@ async function exec(tabId, func, ...args) {
     const r = await ext.scripting.executeScript({ target: { tabId }, func, args });
     return (r && r[0] && r[0].result) || null;
   } catch (e) {
-    if (/no tab|tab.*(?:closed|id)|cannot access|frame.*(?:removed|detached)/i.test(String(e && e.message))) throw Object.assign(new Error('gone'), { gone: true });
+    if (/no tab with id|invalid tab id|tab (?:was |has been )?closed/i.test(String(e && e.message))) throw Object.assign(new Error('gone'), { gone: true });
     return null; // a page still loading: the caller looks again
   }
 }
@@ -68,6 +69,22 @@ const note = (st, e) => {
 
 // ---------------------------------------------------------------- the run
 
+async function prepareSearch(tabId, plan) {
+  let submitted = false;
+  let why = 'Waiting for the Instahyre search controls.';
+  let lastChange = Date.now();
+  const deadline = lastChange + 120_000;
+  while (!stopFlag && Date.now() < deadline && Date.now() - lastChange < 15_000) {
+    const r = await exec(tabId, pageSearch, plan, submitted ? 'check' : 'restore');
+    if (r?.ready) return;
+    if (r?.stopped) throw new Error(r.why);
+    if (r?.why && r.why !== why) { why = r.why; lastChange = Date.now(); }
+    if (r?.submitted) submitted = true;
+    await sleep(350);
+  }
+  if (!stopFlag) throw new Error(why + ' The filtered search could not be verified. Check the Instahyre tab.');
+}
+
 async function runInsta(kind) {
   const cfg = await loadCfg();
   const finder = await loadFinderSettings();
@@ -81,34 +98,50 @@ async function runInsta(kind) {
   const end = (why) => { st.note = why; };
   try {
     const url = kind === 'ai' ? cfg.urlAi : cfg.urlJava;
+    const plan = savedSearch(url);
     const tab = await ext.tabs.create({ url, active: true });
     st.tabId = tab.id;
     await saveState(st);
+    await prepareSearch(st.tabId, plan);
     const left = new Set(); // cards left alone this run
     let passApplied = 0;
     let passes = 0;
     let stuck = 0;
-    let moreAt = -1;
+    let moreAt = '';
+    let listRedirects = 0;
     while (!stopFlag) {
-      const o = await until(st.tabId, (x) => x.cards.length || x.login || x.limit || x.captcha || x.modal || x.empty, 45_000);
-      if (o && o.empty && !o.cards.length && !o.modal) {
-        // Instahyre shows nothing: the list is used up, or it didn't understand the link.
-        end(st.applied + st.skipped > 0
-          ? `Done: the list is finished (${st.applied} applied, ${st.skipped} skipped).`
-          : 'Instahyre shows "No matching opportunities" for this link. On Instahyre set the search you want (skills and experience), copy the link from the address bar and paste it in the Details page, then start again.');
-        break;
-      }
+      const o = await until(st.tabId, (x) => x.cards.length || x.login || x.limit || x.captcha || x.modal || x.empty || new URL(x.url).searchParams.has('matching'), 45_000);
       if (!o) { end(stopFlag ? 'Stopped.' : 'The list did not show up (Instahyre may have changed, or the link is wrong): check the tab.'); break; }
       if (o.login) { end('Instahyre wants you to log in: log in in that tab, then start again.'); break; }
       if (o.captcha) { end('Instahyre asked for a check: do it in that tab, then start again.'); break; }
       if (o.limit) { end('Instahyre says the apply limit is reached.'); break; }
+      const check = await exec(st.tabId, pageSearch, plan);
+      if (check?.recommended && !o.modal && listRedirects < 2) {
+        // The SPA can redirect after initially rendering a valid search.
+        listRedirects += 1;
+        await prepareSearch(st.tabId, plan);
+        continue;
+      }
+      if (!check?.ready) { end(check?.why || 'Lost the filtered search. Check the Instahyre tab.'); break; }
+      if (o.empty && !o.cards.length && !o.modal) {
+        end(`Done: no more jobs in the verified search for ${plan.skills.join(', ')} (${st.applied} applied, ${st.skipped} skipped).`);
+        break;
+      }
       if (o.modal) { await exec(st.tabId, pageClose); await sleep(900); if (++stuck > 4) { end('A job stays open and will not close: check the tab.'); break; } continue; }
       stuck = 0;
       const next = o.cards.findIndex((c) => !left.has(c.key));
       if (next < 0) {
         // "Load more", unless pressing it last time showed nothing new.
-        if (o.more && o.cards.length !== moreAt && passes < 60) { moreAt = o.cards.length; passes += 1; await exec(st.tabId, pageMore); await sleep(2500); continue; }
-        if (passApplied > 0 && passes < 60) { passes += 1; passApplied = 0; moreAt = -1; await ext.tabs.update(st.tabId, { url }); await sleep(2500); continue; } // applied ones leave the list: look again
+        const pageKey = JSON.stringify(o.cards.map((c) => c.key));
+        if (o.more && pageKey !== moreAt && passes < 60) { moreAt = pageKey; passes += 1; await exec(st.tabId, pageMore); await sleep(2500); continue; }
+        if (passApplied > 0 && passes < 60) {
+          passes += 1; passApplied = 0; moreAt = '';
+          await exec(st.tabId, pageSearch, plan, 'retire');
+          await ext.tabs.update(st.tabId, { url });
+          await prepareSearch(st.tabId, plan);
+          continue;
+        }
+        if (o.more) { end('Stopped because pagination did not advance or reached the page limit.'); break; }
         end(`Done: the list is finished (${st.applied} applied, ${st.skipped} skipped).`);
         break;
       }
@@ -117,8 +150,12 @@ async function runInsta(kind) {
 
       const card = o.cards[next];
       st.seen += 1;
-      await exec(st.tabId, pageOpen, next);
-      const m = await until(st.tabId, (x) => !!x.modal, 9000);
+      if (stopFlag) break;
+      const opened = await exec(st.tabId, pageSearch, plan, 'open', card.key);
+      if (!opened?.ready) { end(opened?.why || 'Lost the selected job before opening it.'); break; }
+      const m = await until(st.tabId, (x) => !!x.modal || x.login || x.captcha || x.limit, 9000);
+      if (stopFlag) break;
+      if (m?.login || m?.captcha || m?.limit) { end('Instahyre requested login, a check, or an application limit. Check the tab.'); break; }
       if (!m) {
         left.add(card.key);
         st.skipped += 1;
@@ -129,13 +166,14 @@ async function runInsta(kind) {
       stuck = 0;
       const j = judge({ company: card.company, title: card.title, text: m.modal.text }, { lowPay, skipRules: cfg.skipRules });
       const base = { title: card.title, company: card.company, yrs: yearsAsked(m.modal.text) };
-      if (!j.apply || cfg.dry) {
+      if (m.modal.applied || !j.apply || cfg.dry) {
         await exec(st.tabId, pageClose); // not applying: close the job again
         left.add(card.key);
         st.skipped += 1;
-        note(st, { ...base, action: j.apply ? 'dry' : 'skipped', why: j.apply ? 'would apply (dry run)' : j.why });
+        note(st, { ...base, action: !m.modal.applied && j.apply ? 'dry' : 'skipped', why: m.modal.applied ? 'already applied' : j.apply ? 'would apply (dry run)' : j.why });
       } else {
-        await exec(st.tabId, pageApply);
+        const pressed = await exec(st.tabId, pageSearch, plan, 'apply', card.key);
+        if (!pressed?.ready) { end(pressed?.why || 'Lost the verified job before Apply.'); break; }
         // (Not cut short by Stop: an Apply already pressed is seen through.)
         const after = await until(st.tabId, (x) => !x.modal || x.modal.applied || x.limit || x.captcha, 9000, 500, true);
         if (after && after.limit && after.modal && after.modal.hasApply) {
@@ -149,6 +187,10 @@ async function runInsta(kind) {
           // Still open with its Apply button: a question or something more. Leave it for you.
           note(st, { ...base, action: 'stopped', why: 'Instahyre wanted more than a click' });
           end(`Instahyre wanted more than a click for "${card.title}": finish that one by hand in the tab, then start again.`);
+          break;
+        }
+        if (after.login || !(await exec(st.tabId, pageSearch, plan))?.ready) {
+          end(`The page changed after Apply for "${card.title}". Check its application status in Instahyre.`);
           break;
         }
         st.applied += 1;

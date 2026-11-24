@@ -2,7 +2,7 @@
 // Run: node --test extensions/naukri-refresher-dev/
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { yearsAsked, judge, cleanCfg, INSTA_DEFAULTS } from '../naukri-refresher/instahyre-rules.js';
+import { yearsAsked, judge, cleanCfg, INSTA_DEFAULTS, savedSearch } from '../naukri-refresher/instahyre-rules.js';
 import { lowPayList, LOW_PAY_COMPANIES } from '../naukri-refresher/jobs-lib.js';
 
 const lowPay = lowPayList(LOW_PAY_COMPANIES);
@@ -32,9 +32,9 @@ test('judge: IT services, non-software titles and 3+ years are skipped; a fittin
 
 test("the settings: the owner's own links and apply-to-everything by default; first-version settings move over, a pasted link stays", () => {
   const D = INSTA_DEFAULTS;
-  assert.equal(D.urlJava, 'https://www.instahyre.com/candidate/opportunities/?company_size=0&job_type=0&search=true&skills=Java,Python,FastAPI,C%2B%2B,JavaScript,Node.js,SQL,Spring+Boot,Spring+Data,JPA,Hibernate,React.js,Microservices,API+Testing,OAuth&years=2', 'exactly the first link you gave');
+  assert.equal(D.urlJava, 'https://www.instahyre.com/candidate/opportunities/?company_size=0&job_type=0&search=true&skills=Java,Spring+Boot');
   assert.equal(D.urlAi, 'https://www.instahyre.com/candidate/opportunities/?company_size=0&job_type=0&search=true&skills=PostgreSQL,Snowflake,Redis,Kafka,Amazon+S3,Azure,Firebase,Docker,LangGraph,LangChain,LLMs,Agentic+AI&years=2', 'exactly the second link you gave');
-  assert.deepEqual(cleanCfg({}), { v: 2, urlJava: D.urlJava, urlAi: D.urlAi, maxRun: 100, maxDay: 200, skipRules: false, dry: false, pauseMin: 2500, pauseMax: 6500 });
+  assert.deepEqual(cleanCfg({}), { v: 3, urlJava: D.urlJava, urlAi: D.urlAi, maxRun: 100, maxDay: 200, skipRules: false, dry: false, pauseMin: 2500, pauseMax: 6500 });
   const base = 'https://www.instahyre.com/candidate/opportunities/?company_size=0&job_type=0&search=true';
   // The first version's saved settings (no version number): its old links and its cautious limits are replaced.
   const old = cleanCfg({ urlJava: `${base}&skills=Java&years=2`, urlAi: `${base}&skills=LLMs,rag,LangGraph&years=2`, skipRules: true, maxRun: 40, maxDay: 100 });
@@ -43,4 +43,17 @@ test("the settings: the owner's own links and apply-to-everything by default; fi
   const mine = cleanCfg({ v: 2, urlJava: `${base}&skills=Go&years=3`, skipRules: true, maxRun: 12, maxDay: 30 });
   assert.deepEqual([mine.urlJava.endsWith('skills=Go&years=3'), mine.skipRules, mine.maxRun, mine.maxDay], [true, true, 12, 30]);
   assert.equal(cleanCfg({ urlJava: 'https://evil.example/candidate/x' }).urlJava, D.urlJava, 'only Instahyre candidate links');
+  const previous = base + '&skills=Java,Python,FastAPI,C%2B%2B,JavaScript,Node.js,SQL,Spring+Boot,Spring+Data,JPA,Hibernate,React.js,Microservices,API+Testing,OAuth&years=2';
+  assert.equal(cleanCfg({ v: 2, urlJava: previous }).urlJava, D.urlJava);
+  assert.equal(cleanCfg({ v: 3, urlJava: previous }).urlJava, previous, 'an explicitly re-saved link is preserved');
+});
+
+test('saved search preserves all filter values, decodes skills, and rejects recommendation links', () => {
+  const base = 'https://www.instahyre.com/candidate/opportunities/?';
+  assert.deepEqual(savedSearch(base + 'search=true&skills=C%2B%2B,Spring+Boot&skills=Java&years=2&location=Pune'), {
+    skills: ['C++', 'Spring Boot', 'Java'], filters: [['years', '2'], ['location', 'Pune']],
+  });
+  for (const query of ['matching=true', 'search=true&matching=true&skills=Java', 'search=true&skills=']) {
+    assert.throws(() => savedSearch(base + query));
+  }
 });

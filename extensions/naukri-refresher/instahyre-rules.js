@@ -63,16 +63,12 @@ export const INSTA_ORIGIN = 'https://www.instahyre.com';
 const SEARCH = `${INSTA_ORIGIN}/candidate/opportunities/?company_size=0&job_type=0&search=true`;
 // Several skills are written skills=a,b,c with "+" for a space and %2B for a plus (the links Instahyre made for the owner's searches).
 export const INSTA_DEFAULTS = Object.freeze({
-  // The search links (your filters are in them). To change them, set the filters on Instahyre, copy the
-  // link from the address bar and paste it in the settings. The owner's two searches, exactly as they gave
-  // them: the first for the Java backend button (languages, frameworks), the second for the GenAI button
-  // (data, cloud and GenAI skills), both with 2 years.
-  urlJava: `${SEARCH}&skills=Java,Python,FastAPI,C%2B%2B,JavaScript,Node.js,SQL,Spring+Boot,Spring+Data,JPA,Hibernate,React.js,Microservices,API+Testing,OAuth&years=2`,
+  urlJava: `${SEARCH}&skills=Java,Spring+Boot`,
   urlAi: `${SEARCH}&skills=PostgreSQL,Snowflake,Redis,Kafka,Amazon+S3,Azure,Firebase,Docker,LangGraph,LangChain,LLMs,Agentic+AI&years=2`,
   maxRun: 100, // applies in one run
   maxDay: 200, // applies in a day (4am to 4am IST, as the job tracker's day)
   skipRules: false, // applies to everything the search shows; the box on the page turns the skip rules on
-  v: 2,
+  v: 3,
   dry: false,
   pauseMin: 2500,
   pauseMax: 6500,
@@ -86,18 +82,33 @@ const int = (v, lo, hi, d) => (Number.isFinite(Number(v)) && Number(v) >= lo && 
 // Links earlier versions defaulted to (settings saved with one of them move to the new default), and
 // settings saved before version 2 (the safer first defaults) take the new ones too.
 const OLD_URLS = new Set([
+  `${SEARCH}&skills=Java,Python,FastAPI,C%2B%2B,JavaScript,Node.js,SQL,Spring+Boot,Spring+Data,JPA,Hibernate,React.js,Microservices,API+Testing,OAuth&years=2`,
   `${SEARCH}&skills=Java&years=2`,
   `${SEARCH}&skills=LLMs,rag,LangGraph&years=2`,
   `${SEARCH}&skills=LLMs&skills=rag&skills=LangGraph&years=2`,
   `${SEARCH}&skills=java,Spring+Boot,PostgreSQL,Python,LangGraph,LangChain,Azure+Blob+Storage,JavaScript,React.js,LLMs,Java&years=2`,
   `${SEARCH}&skills=Python,LangGraph,LangChain,LLMs&years=2`,
 ]);
+// URLSearchParams decodes Spring+Boot and C%2B%2B correctly. Keep other filters so recovery
+// can never silently broaden a search with a location, company size or other constraint.
+export function savedSearch(link) {
+  const u = new URL(link);
+  if (u.origin !== INSTA_ORIGIN || !/^\/candidate\/opportunities\/?$/.test(u.pathname) ||
+      u.searchParams.get('search') !== 'true' || u.searchParams.has('matching')) {
+    throw new Error('Save the link from the Instahyre Search Results tab after pressing Search.');
+  }
+  const skills = [...new Set(u.searchParams.getAll('skills').flatMap((v) => v.split(',')).map((v) => v.trim()).filter(Boolean))];
+  if (!skills.length) throw new Error('The saved search needs at least one skill.');
+  const filters = [...u.searchParams].filter(([k]) => !['search', 'skills', 'page'].includes(k));
+  return { skills, filters };
+}
+
 export function cleanCfg(c = {}) {
   const D = INSTA_DEFAULTS;
   const fresh = (Number(c.v) || 1) < 2; // saved by the first version: its defaults weren't chosen by you
-  const link = (u, d) => { const x = okUrl(u); return !x || OLD_URLS.has(x) ? d : x; };
+  const link = (u, d) => { const x = okUrl(u); return !x || ((Number(c.v) || 1) < 3 && OLD_URLS.has(x)) ? d : x; };
   return {
-    v: 2,
+    v: 3,
     urlJava: link(c.urlJava, D.urlJava),
     urlAi: link(c.urlAi, D.urlAi),
     maxRun: fresh ? D.maxRun : int(c.maxRun, 1, 300, D.maxRun),
