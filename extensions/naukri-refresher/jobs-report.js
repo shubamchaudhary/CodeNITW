@@ -109,20 +109,20 @@ async function detailRow(e, cols) {
     a.rel = 'noreferrer';
     td.append(a);
   }
-  if (e.k) {
+  if (e.k || e.stage === 'jd') {
     const hold = el('div', 'Loading its JD and prompt…', 'muted small');
     td.append(hold);
     const { doc } = await send('jobsAuditDoc', { id: e.id });
     hold.remove();
     if (!doc) td.append(el('div', 'No JD or prompt kept for this one.', 'muted small'));
     if (doc && doc.jd) td.append(el('div', 'The JD the finder read', 'small muted'), el('pre', doc.jd));
-    if (doc && doc.dbg) {
-      td.append(el('div', `Prompt sent to ${doc.dbg.m || 'the model'} (your resume replaced by a note)`, 'small muted'), el('pre', doc.dbg.p));
+    if (e.k && doc && doc.dbg) {
+      td.append(el('div', `Prompt sent to ${doc.dbg.m || 'the model'} ${doc.dbg.exact ? '(includes the profile summary sent)' : '(résumé replaced by a note)'}`, 'small muted'), el('pre', doc.dbg.p));
       let out = doc.dbg.o;
       try { out = JSON.stringify(JSON.parse(out), null, 2); } catch { /* as it came */ }
       td.append(el('div', "The LLM's raw answer", 'small muted'), el('pre', out));
       if (doc.dbg.pay) td.append(el('div', 'Company pay lookup', 'small muted'), el('pre', doc.dbg.pay));
-    } else if (doc) td.append(el('div', e.ai != null ? 'Rated before prompts were kept.' : 'Not rated yet: no prompt sent.', 'muted small'));
+    } else if (doc && e.k) td.append(el('div', e.ai != null ? 'Rated before prompts were kept.' : 'Not rated yet: no prompt sent.', 'muted small'));
   }
   return tr;
 }
@@ -186,7 +186,7 @@ $('q').addEventListener('input', () => { filter.q = $('q').value; shown = PAGE; 
 $('dlJson').addEventListener('click', async () => {
   const list = inRange();
   const out = [];
-  for (const e of list) out.push(e.k ? { ...e, ...(await send('jobsAuditDoc', { id: e.id })) } : e);
+  for (const e of list) out.push(e.k || e.stage === 'jd' ? { ...e, ...(await send('jobsAuditDoc', { id: e.id })) } : e);
   download(`job-finder-report-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ funnel: funnel(list), listings: out }, null, 2), 'application/json');
 });
 $('dlCsv').addEventListener('click', () => {

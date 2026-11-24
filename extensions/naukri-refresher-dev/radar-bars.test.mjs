@@ -1,4 +1,4 @@
-// The radar's bars for openings from the other sources: pay floor 15 LPA (posted salary, or the
+// The radar's bars for openings from the other sources: pay floor 18 LPA (posted salary, or the
 // company's median on levels.fyi), and the AI rating bar of 70. (Years: scripts/radar/experience.mjs.)
 // Run: node --test extensions/naukri-refresher-dev/
 import test from 'node:test';
@@ -9,11 +9,11 @@ import { experienceRange } from '../../scripts/radar/experience.mjs';
 
 const co = (p50, p90 = p50 * 1.6) => ({ at: Date.now(), data: { slug: 'x', p10: p50 * 0.6, p25: p50 * 0.8, p50, p75: p50 * 1.3, p90, n: 40 } });
 
-test('pay: a posted salary under 15L, or a company whose median is under 15L, is dropped; the rest is kept and labelled', async () => {
-  assert.equal(FLOOR_LPA, 15);
-  const check = makePayChecker({ cache: { acme: co(12), zeta: co(18, 22), omega: co(40) } });
+test('pay: a posted salary under 18L, or a company whose median is under 18L, is dropped; the rest is kept and labelled', async () => {
+  assert.equal(FLOOR_LPA, 18);
+  const check = makePayChecker({ cache: { acme: co(12, 16), zeta: co(18, 22), omega: co(40) } });
   assert.equal((await check({ company: 'Acme', pay: { minL: 8, maxL: 12 } })).verdict, 'below', 'posted 12L');
-  assert.equal((await check({ company: 'Zeta', pay: { minL: 14, maxL: 16 } })).verdict, 'close', 'posted 16L: kept (it was dropped under 22L before)');
+  assert.equal((await check({ company: 'Zeta', pay: { minL: 14, maxL: 16 } })).verdict, 'below', 'posted 16L is below the negotiable floor');
   assert.equal((await check({ company: 'Acme' })).verdict, 'below', 'no posted salary: the company median is 12L');
   assert.equal((await check({ company: 'Zeta' })).verdict, 'unlikely', 'median 18L: kept, labelled');
   assert.equal((await check({ company: 'Omega' })).verdict, 'likely');

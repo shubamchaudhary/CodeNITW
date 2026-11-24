@@ -60,9 +60,9 @@ Every job, from any source, goes through the same checks:
    (`YOUR_YEARS` in `experience.mjs`). "0–2", "1–3", "2–5" and "1+" stay; "3+"
    and "3–5" ask for more, "0–1" for less, and are dropped. A posting that
    doesn't say is kept, unless its title is senior.
-3. **Pay**, with a floor of 15 LPA (`FLOOR_LPA` in `pay.mjs`) and 25 LPA as what you aim for. Two things
-   drop a role: the employer's own posted salary topping out under 15L, or (no posted salary) the
-   company's India software-engineer median under 15L. Everything else is kept with a label, so no
+3. **Pay**, with a floor of 18 LPA (`FLOOR_LPA` in `pay.mjs`) and 25 LPA as what you aim for. Two things
+   drop a role: the employer's own posted salary topping out under 18L, or (no posted salary) the
+   company's India software-engineer top estimate under 18L. Everything else is kept with a label, so no
    role that could pay 25L+ is lost to an average. A company's figures come from the **company pay
    database** first (Firestore `companyPay`, see below), then levels.fyi; what levels.fyi gives, with at
    least 10 reports behind it, is saved there:

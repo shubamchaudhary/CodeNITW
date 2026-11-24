@@ -168,8 +168,8 @@ test('the card: worth opening its JD unless what it says rules the job out; a mi
   assert.equal(why({ title: 'Android Developer' }), 'Android role');
   assert.equal(why({ placeholders: [{ type: 'experience', label: '3-6 Yrs' }] }), 'asks 3+ years');
   assert.equal(why({ placeholders: [{ type: 'experience', label: '0-1 Yrs' }] }), 'fresher role');
-  assert.equal(why({ placeholders: [{ type: 'salary', label: '6-10 Lacs PA' }] }), 'pays under 15L');
-  assert.equal(why({ salaryDetail: { hideSalary: true, minimumSalary: 400000, maximumSalary: 800000 } }), 'pays under 15L', 'a hidden but known low salary');
+  assert.equal(why({ placeholders: [{ type: 'salary', label: '6-10 Lacs PA' }] }), 'pays under 18L');
+  assert.equal(why({ salaryDetail: { hideSalary: true, minimumSalary: 400000, maximumSalary: 800000 } }), 'pays under 18L', 'a hidden but known low salary');
   assert.equal(why({ title: 'Software Developer', tagsAndSkills: 'C#,.NET,ASP.NET,SQL Server,Entity Framework' }), "card's skills are another stack");
   assert.equal(why({ footerPlaceholderLabel: '3 Days Ago', createdDate: NOW - 80 * H }), 'posted over 48 hours ago');
   assert.equal(why({ footerPlaceholderLabel: '2 Days Ago', createdDate: NOW - 50 * H }), 'posted over 48 hours ago');
@@ -181,7 +181,7 @@ test('the card: worth opening its JD unless what it says rules the job out; a mi
   assert.equal(card({ applyCount: 250, isApplied: false }).keep, true, "other people's applications don't count");
   assert.equal(card({ footerPlaceholderLabel: '', createdDate: null }).keep, true, "doesn't say when: kept");
   assert.equal(why({ companyName: '' }), 'incomplete listing');
-  assert.equal(card({ placeholders: [{ type: 'salary', label: '15-18 Lacs PA' }] }).keep, true, '15L reaches the bar');
+  assert.equal(card({ placeholders: [{ type: 'salary', label: '15-18 Lacs PA' }] }).keep, true, 'the upper end reaches 18L');
 });
 
 test('the JD: kept when enough of the technologies it asks for are yours; its share decides the list', () => {
@@ -222,7 +222,7 @@ test('a JD naming few technologies is held to the same bar, and ranked a little 
   assert.equal(few.few, true);
   assert.equal(jdCheck(card({ title: 'Software Engineer', tagsAndSkills: '' }), { text: 'Rust and Go services.' }, { now: NOW }).keep, false);
   assert.equal(jdCheck(card({ title: 'Software Engineer', tagsAndSkills: '' }), { text: 'Java and Go services.' }, { now: NOW }).keep, false, '1 of 2 is under 60%');
-  assert.equal(jdCheck(card({ title: 'Software Engineer', tagsAndSkills: '' }), { text: 'Build great products.' }, { now: NOW }).keep, true, 'names none: nothing to judge');
+  assert.equal(jdCheck(card({ title: 'Software Engineer', tagsAndSkills: '' }), { text: 'Build great products.' }, { now: NOW }).keep, false, 'a bare engineering title cannot establish a target stack');
 });
 
 test("a job page that can't be read: judged on its card's chips, only when they say enough", () => {
@@ -257,7 +257,7 @@ test("the opening sent to the site: the radar's fields plus the finder's own", (
   assert.ok(o.aiShare >= 0.4 && o.rank > 0 && o.matched.every((m) => m.type === 'have'));
   const few = toOpening(jdCheck(card({ title: 'Software Engineer', tagsAndSkills: '' }), { text: 'Strong Java skills.' }, { now: NOW }), NOW);
   assert.equal(few.fewSkills, true);
-  assert.deepEqual(payLabel({ kind: 'shown', minL: 15, maxL: 18 }), { verdict: 'fifteen', text: '₹15–18L posted' });
+  assert.deepEqual(payLabel({ kind: 'shown', minL: 15, maxL: 18 }), { verdict: 'negotiable', text: '₹15–18L posted' });
 });
 
 test('your skills: both resumes, plus extras typed in the settings', () => {
@@ -295,7 +295,7 @@ test('the main stack decides: Java is Backend, Python with GenAI (or FastAPI) is
   const genai = jd('Software Engineer', '• Python, FastAPI, LangChain, LangGraph, RAG, vector databases\n• PostgreSQL, Docker');
   assert.deepEqual([genai.keep, genai.profile], [true, 'ai']);
   const fastapi = jd('Backend Developer', '• Python, FastAPI, PostgreSQL, Docker, Kafka, Redis');
-  assert.deepEqual([fastapi.keep, fastapi.profile], [true, 'ai'], 'Python and FastAPI: the AI list');
+  assert.equal(fastapi.keep, false, 'FastAPI alone is not GenAI application work');
   const django = jd('Python Developer', '• Python, Django, Flask, Celery, PostgreSQL, REST APIs');
   assert.deepEqual([django.keep, django.why], [false, 'Python role without GenAI']);
   const javaAi = jd('Backend Engineer', '• Java, Spring Boot, Kafka, PostgreSQL\n• Integrate LLM APIs (OpenAI) into services');
@@ -321,9 +321,31 @@ test('rules are the agreed ones', () => {
   assert.equal(RULES.showHours, 48);
   assert.equal(RULES.poolTop, 1000, 'every job it keeps goes to your site and is rated (up to 1,000 a list)');
   assert.equal(RULES.showTop, 100, 'your site shows the top 100 per list, highest rating first');
-  assert.equal(RULES.minPayL, 15);
+  assert.equal(RULES.minPayL, 18);
   assert.equal(RULES.maxMinYears, 2.5);
   assert.equal(RULES.minScore, 0.6);
   assert.equal(RULES.dailyTarget, undefined, 'no daily target: every listing is read');
   assert.equal(FINDER_LIMITS.runMinutes, 60, 'a run may take up to an hour');
+});
+
+test('primary work decides the list when React, Java or AI tools appear together', () => {
+  const check = (title, text) => jdCheck(card({ title, tagsAndSkills: '' }), { text }, { now: NOW });
+  const backend = check('Full Stack Developer', 'Backend-first role building Java Spring Boot services. Occasional React, Angular, CSS and TypeScript.');
+  assert.deepEqual([backend.keep, backend.profile], [true, 'backend']);
+  assert.equal(check('Java Spring Boot Developer', 'This posting contains only a company overview.').keep, true, 'a target title gets a chance to be reviewed');
+  const ui = check('Full Stack Developer', 'Primary responsibility is owning the React UI. Consume Java Spring Boot APIs.');
+  assert.equal(ui.keep, false);
+  assert.equal(check('AI Engineer', 'Manage administrative processes and coordinate travel.').keep, false);
+  const aid = check('SDE-Backend', 'Build Java Spring Boot services. Use AI-assisted coding tools (LLM APIs) in your daily workflow.');
+  assert.deepEqual([aid.keep, aid.profile], [true, 'backend']);
+  const core = check('AI Engineer', 'Develop RAG pipelines using LangGraph and Python. Maintain Kubernetes, Terraform, Helm, Argo CD, GCP and Istio.');
+  assert.deepEqual([core.keep, core.profile], [true, 'ai']);
+  assert.equal(card({title: 'Java Spring Boot Developer', tagsAndSkills: 'React, TypeScript, HTML, CSS'}).keep, true, 'read the JD when a target title conflicts with chips');
+});
+
+test('pay boundaries for negotiable, target and preferred listings', () => {
+  for (const [hi, verdict] of [[17.99, 'below'], [18, 'negotiable'], [19.9, 'negotiable'], [20, 'target'], [24.9, 'target'], [25, 'meets']]) {
+    assert.equal(payLabel({kind: 'shown', minL: 16, maxL: hi}).verdict, verdict);
+    assert.equal(card({salaryDetail: {minimumSalary: 1600000, maximumSalary: hi * 100000}}).keep, hi >= 18);
+  }
 });

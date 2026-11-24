@@ -17,6 +17,7 @@ import {
   pruneHistory, changedTimestamp, shortReason,
 } from './lib.js';
 import { jobsTick, jobsHandlers, jobsOnStartup, BRIDGE_TYPES } from './jobs.js';
+import { instaHandlers } from './instahyre.js';
 import { SITE_ORIGIN } from './jobs-lib.js';
 
 const ext = globalThis.browser ?? globalThis.chrome;
@@ -572,6 +573,7 @@ const handlers = {
     return { result: r, status: await status() };
   },
   ...jobsHandlers, // the job finder (jobs.js)
+  ...instaHandlers, // Instahyre auto-apply (instahyre.js)
 };
 
 // The job finder rides on the same 1-minute watchdog, plus its own precise alarm.

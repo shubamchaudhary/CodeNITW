@@ -80,7 +80,7 @@ function browserName() {
   if (/Firefox\//.test(ua)) return 'Firefox';
   return 'Chrome';
 }
-async function loadSettings() { return cleanSettings((await ext.storage.local.get(S))[S]); }
+export async function loadSettings() { return cleanSettings((await ext.storage.local.get(S))[S]); }
 async function loadState() {
   const st = (await ext.storage.local.get(K))[K] || {};
   st.seen = st.seen && typeof st.seen === 'object' ? st.seen : {};
@@ -132,7 +132,7 @@ function rollDay(st, now) {
   const day = trackerDay(now);
   if (st.rulesVersion !== RULES_VERSION) {
     st = {
-      ...st, rulesVersion: RULES_VERSION, seen: {}, queue: [], unknown: {}, reasons: {}, memo: {}, sweep: null, onSite: rememberOnSite(st),
+      ...st, rulesVersion: RULES_VERSION, pending: [], rated: {}, seen: {}, queue: [], unknown: {}, reasons: {}, memo: {}, sweep: null, onSite: rememberOnSite(st),
       daily: { ...(st.daily || {}), read: 0, kept: { backend: 0, ai: 0 } },
     };
   }
@@ -221,9 +221,9 @@ function salaryOf(job) {
 }
 
 /** A rating came back: keep it, put it on the job, and send the job to your site again. */
-const onRatedFor = (st, rating, run) => (item, ai, dbg = null) => {
+const onRatedFor = (st, rating, run) => (item, ai, dbg = null, localTrace = null) => {
   auditNote(item.id, { ai: ai.s, rel: ai.rel, aiWhy: ai.why, pay: ai.pay && ai.pay.from ? ai.pay : null });
-  if (dbg) auditDoc(item.id, { dbg });
+  if (dbg) auditDoc(item.id, { dbg: localTrace ? { ...dbg, ...localTrace, exact: true } : dbg });
   st.rated[item.id] = { t: Date.now(), h: rating.hash ? rating.hash[item.profile] : null, ai };
   run.rated = (run.rated || 0) + 1;
   const m = st.memo[item.id];
@@ -507,7 +507,7 @@ const loadJob = (tabId, url, prevHref) => loadPage(tabId, url, prevHref, readJob
 
 let running = false;
 
-function keepAlive() {
+export function keepAlive() {
   const id = setInterval(() => { ext.runtime.getPlatformInfo().catch(() => {}); }, 20_000);
   return () => clearInterval(id);
 }
@@ -762,6 +762,7 @@ async function findJobs(trigger) {
 
   // A decision on one job, recorded. `jd` ({ text, skills }) is what its page said, for the rating.
   const decide = (id, v, jd = null) => {
+    if (jd?.text) auditDoc(id, { dbg: null, jd: String(jd.text).slice(0, 16000), skills: jd.skills || [] });
     if (!v.keep) {
       auditNote(id, auditOf(v, jd, false, v.why));
       st.seen[id] = { t: Date.now(), k: 0, w: v.why };
@@ -784,7 +785,6 @@ async function findJobs(trigger) {
     }
     if (m) m.pool = true;
     auditNote(id, auditOf(v, jd, true, ''));
-    if (jd && jd.text) auditDoc(id, { jd: String(jd.text).slice(0, 4000) });
     kept[v.profile] = (kept[v.profile] || 0) + 1;
     st.seen[id] = { t: Date.now(), k: 1, r: v.rank, p: v.profile, s: v.skills.score };
     const c = st.rated[id];

@@ -280,5 +280,31 @@ $('jobsScope').addEventListener('change', async (e) => {
 $('jobsConnect').addEventListener('click', () => ext.tabs.create({ url: SITE_JOBS_URL, active: true }));
 $('jobsSettings').addEventListener('click', () => ext.tabs.create({ url: ext.runtime.getURL('jobs.html') }));
 
+// Instahyre apply (instahyre.js): the two quick buttons; the page (insta.html) has the settings and the log.
+const INSTA_MATCH = 'https://www.instahyre.com/*';
+async function instaStart(kind) {
+  const ok = await ext.permissions.contains({ origins: [INSTA_MATCH] }).catch(() => false) || await ext.permissions.request({ origins: [INSTA_MATCH] }).catch(() => false);
+  if (!ok) return;
+  await send('instaStart', { kind }).catch(() => {});
+  instaView();
+}
+async function instaView() {
+  const s = await send('instaStatus').catch(() => null);
+  if (!s) return;
+  const st = s.state;
+  $('instaJava').disabled = st.running;
+  $('instaAi').disabled = st.running;
+  $('instaStop').hidden = !st.running;
+  $('instaLine').textContent = st.running
+    ? `Running (${st.kind === 'ai' ? 'GenAI' : 'Java'}${st.dry ? ', dry run' : ''}): ${st.applied} applied, ${st.skipped} skipped.`
+    : st.note || 'Applies to every job in your saved Instahyre search, one by one.';
+}
+$('instaJava').addEventListener('click', () => instaStart('java'));
+$('instaAi').addEventListener('click', () => instaStart('ai'));
+$('instaStop').addEventListener('click', async () => { await send('instaStop').catch(() => {}); instaView(); });
+$('instaPage').addEventListener('click', () => ext.tabs.create({ url: ext.runtime.getURL('insta.html') }));
+instaView();
+setInterval(instaView, 2000);
+
 refreshView();
 setInterval(() => { if (!busyAction) refreshView(); }, 1500);
