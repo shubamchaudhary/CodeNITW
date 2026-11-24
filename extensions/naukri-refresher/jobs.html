@@ -109,7 +109,7 @@
     <h2>AI rating (Groq)</h2>
     <div class="card">
       <p id="rateLine" class="small">Checking…</p>
-      <p class="small muted">Each job sent to your site is read by an LLM on Groq against your resume (the SDE one for the Backend list, the GenAI one for the AI list). The model only lists the JD's requirements and, for each, whether your resume shows it, quoting the resume. The rating is worked out here with fixed weights, and a requirement counts as met only when its quote is really in your resume, word for word. Paste as many keys as you have (up to 10), comma-separated: it uses every one, each in turn, and a key at its limit rests while the others work. The keys stay in this browser and go only to api.groq.com; your name and contact lines are never sent.</p>
+      <p class="small muted">Groq reads the job and a short summary of the relevant profile’s skills and work examples. The extension checks the model’s requirements and evidence before calculating the rating. The local report shows the exact prompt and response for each new rating. Paste as many keys as you have (up to 10), comma-separated: it uses every one, each in turn, and a key at its limit rests while the others work. The keys stay in this browser and go only to api.groq.com; your name and contact lines are never sent.</p>
       <div class="row">
         <input id="groqKeys" type="password" autocomplete="off" placeholder="Your Groq keys, comma-separated: key1,key2,key3 (up to 10)" aria-label="Groq API keys">
         <button id="saveKeys" type="button">Save keys</button>

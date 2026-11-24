@@ -1,6 +1,6 @@
 // Pay check for the radar: could an opening pay MIN_LPA (your minimum CTC) or more?
 //
-// Two things drop an opening (the floor, FLOOR_LPA = 15L): the employer's own
+// Two things drop an opening (the floor, FLOOR_LPA = 18L): the employer's own
 // posted salary topping out under it, or no posted salary and the company's India
 // software-engineer median on levels.fyi under it (a company that doesn't pay).
 // Everything else is kept and labelled, so a role that pays enough is never lost
@@ -18,8 +18,7 @@
 // companies are looked up per run.
 
 export const MIN_LPA = 25;
-export const FLOOR_LPA = 15; // under this a role is dropped (your floor; MIN_LPA is what you aim for)
-const DROP_UNDER_LPA = FLOOR_LPA;
+export const FLOOR_LPA = 18; // under this a role is dropped (your floor; MIN_LPA is what you aim for)
 
 const LOOKUPS_PER_RUN = 80; // levels.fyi page requests, 1.5 s apart
 const HIT_TTL = 30 * 86400000;
@@ -133,9 +132,12 @@ export function makePayChecker({ cache, db = null }) {
       const hi = posted.maxL || posted.minL;
       const lo = posted.minL || posted.maxL;
       const text = `₹${lo}${hi !== lo ? `–${hi}` : ""}L ${posted.fromText ? "in the description" : "posted"}`;
-      if (hi >= MIN_LPA) return { verdict: "meets", text };
+      const postedRange = { lo, hi };
+      if (hi >= MIN_LPA) return { verdict: "meets", text, postedRange };
+      if (hi >= 20) return { verdict: "target", text, postedRange };
+      if (hi >= FLOOR_LPA) return { verdict: "negotiable", text, postedRange };
       // A figure parsed out of free text can be a bonus or a typo, so it never drops a role.
-      if (hi >= DROP_UNDER_LPA || posted.fromText) return { verdict: "close", text };
+      if (posted.fromText) return { verdict: "close", text };
       return { verdict: "below", text };
     }
     const co = await companyPay([job.company, job.companySlug]);
@@ -144,11 +146,12 @@ export function makePayChecker({ cache, db = null }) {
       const text = co.fromDb
         ? `pay database${co.sources?.length ? ` (${co.sources.join(" + ")})` : ""}: ₹${co.p25}–${co.p90}L, median ₹${co.p50}L`
         : `levels.fyi India: p25 ₹${co.p25}L · median ₹${co.p50}L${top} (${co.n} reports)`;
-      if (co.p50 < FLOOR_LPA) return { verdict: "below", text }; // the company's median is under the floor
-      if (co.p25 >= MIN_LPA) return { verdict: "likely", text };
-      if (co.p50 >= MIN_LPA) return { verdict: "maybe", text };
-      if (co.p90 === undefined || co.p90 >= MIN_LPA) return { verdict: "low", text };
-      return { verdict: "unlikely", text };
+      const companyRange = { lo: co.p25, hi: co.p90 ?? co.p50 };
+      if (co.p90 != null && co.p90 < FLOOR_LPA) return { verdict: "below", text, companyRange };
+      if (co.p25 >= MIN_LPA) return { verdict: "likely", text, companyRange };
+      if (co.p50 >= MIN_LPA) return { verdict: "maybe", text, companyRange };
+      if (co.p90 === undefined || co.p90 >= MIN_LPA) return { verdict: "low", text, companyRange };
+      return { verdict: "unlikely", text, companyRange };
     }
     if (posted && (posted.maxL || posted.minL)) {
       const hi = posted.maxL || posted.minL;

@@ -31,13 +31,9 @@ export const MIN_RATING = 70; // an opening the LLM rated under this isn't kept 
 /** Whether an opening's AI rating is under the bar (one not rated yet is never "under"). */
 export const underBar = (entry, min = MIN_RATING) => !!(entry && entry.ai && entry.ai.s < min);
 
-// pay.mjs's verdict → a top figure in LPA for the rating's pay match (rate-lib.js payMatch: under
-// 15 caps the rating, though the radar's own pay check already drops those). "unlikely": even the
-// company's top 10% earn under 25L, but over the 15L floor.
-const PAY_TOP = { meets: 25, likely: 30, maybe: 25, close: 22, low: 22, unlikely: 18 };
+// Keep measured pay ranges. Legacy verdicts lack the numbers behind their labels.
 export function payFigure(pay) {
-  const hi = pay && PAY_TOP[pay.verdict];
-  return hi ? { lo: hi, hi } : null;
+  return pay?.companyRange ?? null;
 }
 
 /** The job's list (Backend or AI resume), or why its stack isn't yours (MERN, .NET…), from its text. */
@@ -81,7 +77,7 @@ export async function rateOpenings(jobs, { env, stateDir, resumeTexts, log, rera
     queue.push({
       id: key, profile: st.profile, post: Date.now(), t: Date.now(),
       p: { coverage: entry.matchScore, rank: entry.matchScore },
-      text, skills: [], job: { title: j.title, company: j.company, exp: entry.minYoe != null ? `${entry.minYoe}${entry.maxYoe != null ? `-${entry.maxYoe}` : "+"} Yrs` : "", location: j.location },
+      text, skills: [], job: { pay: entry.pay?.postedRange, salary: entry.pay?.postedRange ? entry.pay.text : undefined, title: j.title, company: j.company, exp: entry.minYoe != null ? `${entry.minYoe}${entry.maxYoe != null ? `-${entry.maxYoe}` : "+"} Yrs` : "", location: j.location },
       entry,
     });
   }

@@ -89,7 +89,7 @@ async function chromium(name, tmp) {
   const common = [
     '--headless', `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
     '--mute-audio', '--disable-sync', '--disable-background-networking', '--disable-component-update',
-    '--host-resolver-rules=MAP www.naukri.com 127.0.0.1,MAP interviewplanprep.vercel.app 127.0.0.1,MAP api.groq.com 127.0.0.1', '--ignore-certificate-errors',
+    '--host-resolver-rules=MAP www.naukri.com 127.0.0.1,MAP interviewplanprep.vercel.app 127.0.0.1,MAP api.groq.com 127.0.0.1,MAP www.instahyre.com 127.0.0.1', '--ignore-certificate-errors',
   ];
   let cdp;
   let proc;
@@ -174,7 +174,7 @@ async function firefox(tmp) {
   const profile = join(tmp, 'firefox-profile');
   mkdirSync(profile, { recursive: true });
   const prefs = {
-    'network.dns.localDomains': 'www.naukri.com,interviewplanprep.vercel.app,api.groq.com',
+    'network.dns.localDomains': 'www.naukri.com,interviewplanprep.vercel.app,api.groq.com,www.instahyre.com',
     'network.trr.mode': 5,
     'extensions.webextensions.uuids': JSON.stringify({ [FX_ID]: FX_UUID }),
     'extensions.originControls.grantByDefault': true,
@@ -983,7 +983,7 @@ async function suite(d, mock) {
       assert.ok(!JSON.stringify(c.body).includes('gsk_'), 'no key in the request body');
     }
     const aiCall = calls.find((c) => /Title: Generative AI Engineer/.test(c.body.messages[0].content));
-    assert.ok(aiCall && aiCall.body.messages[0].content.includes('building LLM agents and RAG in Python'), 'an AI-list job is rated against the GenAI resume');
+    assert.ok(aiCall && aiCall.body.messages[0].content.includes('Documented skills: Python') && !aiCall.body.messages[0].content.includes('building LLM agents and RAG in Python'), 'an AI-list job is rated against the GenAI resume');
     assert.ok(aiCall.body.messages[0].content.startsWith('THE CANDIDATE') && /GenAI applications/.test(aiCall.body.messages[0].content), "the AI list's own strict prompt");
     assert.ok(calls.some((c) => /Java \(Spring Boot\) is the main language/.test(c.body.messages[0].content)), "the Backend list's own strict prompt");
     // What your site got: the jobs again, each with its rating.
@@ -992,7 +992,7 @@ async function suite(d, mock) {
     const rated = Object.fromEntries(post.openings.filter((o) => o.ai).map((o) => [o.openingId, o.ai]));
     assert.equal(Object.keys(rated).length, waiting, 'every rated job goes to your site again, with its rating');
     for (const id of rateable) assert.ok(rated[id], `${id} rated`);
-    for (const a of Object.values(rated)) assert.ok(a.s >= 1 && a.s <= 100 && a.inv >= 1 && a.rel === 80 && a.v === 2, JSON.stringify(a));
+    for (const a of Object.values(rated)) assert.ok(a.s >= 1 && a.s <= 100 && a.inv >= 1 && a.rel === 80 && a.v === 3, JSON.stringify(a));
     const withDbg = post.openings.filter((o) => o.ai && o.dbg);
     assert.ok(withDbg.length >= 1, 'the prompt and the answer go to your site with the rating');
     for (const o of withDbg) {
@@ -1197,6 +1197,138 @@ async function suite(d, mock) {
     await setStore({ jobsDev: null });
   });
 
+  // ---- Instahyre apply, on the fake www.instahyre.com (mock-instahyre.mjs)
+  const instaStatus = () => d.msg({ type: 'instaStatus' });
+  const instaRun = async (kind = 'java', over = {}, mockOver = {}) => {
+    mock.instaReset(mockOver);
+    await d.msg({ type: 'instaSave', patch: { dry: false, skipRules: true, maxRun: 40, maxDay: 500, pauseMin: 100, pauseMax: 200, ...over } });
+    await d.msg({ type: 'instaClearLog' });
+    const r = await d.msg({ type: 'instaStart', kind });
+    assert.equal(r.result.kind, 'started', JSON.stringify(r.result));
+    return r;
+  };
+  const instaWait = async (ms = 120_000) => {
+    const end = Date.now() + ms;
+    let s;
+    while (Date.now() < end) {
+      s = await instaStatus();
+      if (!s.state.running) return s;
+      await sleep(500);
+    }
+    throw new Error(`the Instahyre run didn't finish: ${JSON.stringify(s && s.state)}`);
+  };
+  const ids = () => mock.insta.applies.map((a) => a.id).sort();
+
+  await step('Instahyre dry run: opens and reads every job (past "Load more"), says what it would do, presses no Apply', async () => {
+    await instaRun('java', { dry: true });
+    const s = await instaWait();
+ // TEMP
+    assert.equal(mock.insta.applies.length, 0, 'no Apply pressed');
+    assert.deepEqual(mock.insta.notInterested, [], 'never "Not interested"');
+    const log = s.state.log;
+    assert.equal(log.filter((x) => x.action === 'dry').length, 7, JSON.stringify(log.map((x) => [x.title, x.action, x.why])));
+    const skipped = log.filter((x) => x.action === 'skipped');
+    assert.deepEqual(skipped.map((x) => x.company).sort(), ['Accenture', 'Acme Labs', 'Neander']);
+    assert.match(skipped.find((x) => x.company === 'Accenture').why, /low-pay|IT services/);
+    assert.equal(skipped.find((x) => x.company === 'Neander').why, 'asks 4+ years');
+    assert.match(s.state.note, /Done: the list is finished/, s.state.note);
+    assert.equal(s.state.dry, true);
+  });
+
+  await step('Instahyre apply: applies to every fitting job one by one (both Klimb.io cards), skips IT services, QA and 4+ years, until the list is finished', async () => {
+    await instaRun('java');
+    const s = await instaWait();
+    assert.deepEqual(ids(), ['j1', 'j10', 'j2', 'j3', 'j4', 'j8', 'j9'], JSON.stringify(s.state));
+    assert.deepEqual(mock.insta.notInterested, [], 'a skipped job is never marked "Not interested"');
+    assert.equal(s.state.applied, 7);
+    assert.equal(s.state.skipped, 3);
+    assert.equal(s.state.note, 'Done: the list is finished (7 applied, 3 skipped).');
+    assert.equal(s.state.dayApplied, 7, "counted toward today's cap");
+  });
+
+  await step('Instahyre apply: stops at your cap for a run', async () => {
+    await instaRun('java', { maxRun: 2 });
+    const s = await instaWait();
+    assert.equal(mock.insta.applies.length, 2);
+    assert.match(s.state.note, /cap of 2 applications for one run/);
+  });
+
+  await step('Instahyre apply: the GenAI button opens its own link', async () => {
+    await instaRun('ai', { maxRun: 1 });
+    const s = await instaWait();
+    assert.equal(s.state.kind, 'ai');
+    assert.equal(mock.insta.applies.length, 1);
+  });
+
+  await step("Instahyre apply: the links are the owner's own two searches; settings saved by the first version move to them, and it applies to everything by default", async () => {
+    const d0 = (await instaStatus()).defaults;
+    assert.ok(d0.urlJava.endsWith('skills=Java,Python,FastAPI,C%2B%2B,JavaScript,Node.js,SQL,Spring+Boot,Spring+Data,JPA,Hibernate,React.js,Microservices,API+Testing,OAuth&years=2'), d0.urlJava);
+    assert.ok(d0.urlAi.endsWith('skills=PostgreSQL,Snowflake,Redis,Kafka,Amazon+S3,Azure,Firebase,Docker,LangGraph,LangChain,LLMs,Agentic+AI&years=2'), d0.urlAi);
+    assert.equal(d0.skipRules, false, 'it applies to everything the search shows unless you turn the skip rules on');
+    // What the first version saved (its guessed GenAI link, the safer limits): taken to the new ones.
+    await setStore({ instaCfg: { urlJava: 'https://www.instahyre.com/candidate/opportunities/?company_size=0&job_type=0&search=true&skills=Java&years=2', urlAi: 'https://www.instahyre.com/candidate/opportunities/?company_size=0&job_type=0&search=true&skills=LLMs,rag,LangGraph&years=2', skipRules: true, maxRun: 40, maxDay: 100 } });
+    const c = (await instaStatus()).cfg;
+    assert.deepEqual([c.urlJava, c.urlAi, c.skipRules, c.maxRun, c.maxDay], [d0.urlJava, d0.urlAi, false, 100, 200]);
+    // A link you pasted yourself is kept.
+    const mine = 'https://www.instahyre.com/candidate/opportunities/?search=true&skills=Go&years=2';
+    const s2 = await d.msg({ type: 'instaSave', patch: { urlAi: mine, skipRules: true, maxRun: 7 } });
+    assert.deepEqual([s2.cfg.urlAi, s2.cfg.skipRules, s2.cfg.maxRun], [mine, true, 7]);
+    await d.msg({ type: 'instaSave', patch: { urlAi: d0.urlAi, skipRules: false, maxRun: 100 } });
+  });
+
+  await step('Instahyre apply: a link Instahyre does not understand ends the run at once and says what to do', async () => {
+    const link = 'https://www.instahyre.com/candidate/opportunities/?search=true&skills=A&skills=B&years=2';
+    const t0 = Date.now();
+    await instaRun('java', { urlJava: link }, { format: 'comma' });
+    const s = await instaWait(60_000);
+    assert.ok(Date.now() - t0 < 30_000, 'not 45 seconds of sitting idle');
+    assert.equal(mock.insta.applies.length, 0);
+    assert.ok(s.state.note.includes('No matching opportunities') && s.state.note.includes('paste it in the Details page'), s.state.note);
+    await d.msg({ type: 'instaSave', patch: { urlJava: (await instaStatus()).defaults.urlJava } });
+  });
+
+  await step('Instahyre apply: Instahyre saying the apply limit is reached stops the run', async () => {
+    await instaRun('java', {}, { mode: 'limit', limitAfter: 2 });
+    const s = await instaWait();
+    assert.equal(mock.insta.applies.length, 2);
+    assert.match(s.state.note, /apply limit is reached/);
+  });
+
+  await step('Instahyre apply: a job that wants more than a click (a question) stops the run and says which', async () => {
+    await instaRun('java', {}, { mode: 'more', needsMore: 'j9' });
+    const s = await instaWait();
+    assert.ok(!ids().includes('j9'), 'it did not pretend to apply');
+    assert.match(s.state.note, /wanted more than a click for "Java Backend Developer"/);
+    assert.ok(s.state.log.some((x) => x.action === 'stopped'));
+  });
+
+  await step('Instahyre apply: a login page stops it and says so', async () => {
+    await instaRun('java', {}, { mode: 'login' });
+    const s = await instaWait();
+    assert.equal(mock.insta.applies.length, 0);
+    assert.match(s.state.note, /log in/);
+  });
+
+  await step('Instahyre apply: Stop ends a run in progress', async () => {
+    await instaRun('java', { pauseMin: 2500, pauseMax: 3000 });
+    await sleep(4000);
+    const r = await d.msg({ type: 'instaStop' });
+    assert.equal(r.result.kind, 'stopping');
+    const s = await instaWait();
+    assert.ok(mock.insta.applies.length >= 1 && mock.insta.applies.length < 7, `stopped part way (${mock.insta.applies.length})`);
+    assert.match(s.state.note, /Stopped/);
+  });
+
+  await step('Instahyre apply: with the skip rules off it applies to everything the search shows; a daily cap holds', async () => {
+    await instaRun('java', { skipRules: false });
+    let s = await instaWait();
+    assert.equal(mock.insta.applies.length, 10, 'all ten, Accenture and the QA job too');
+    await instaRun('java', { maxDay: 3 }, {});
+    s = await instaWait();
+    assert.match(s.state.note, /cap of 3 applications for today/, s.state.note);
+    await d.msg({ type: 'instaSave', patch: { skipRules: true, maxDay: 100 } });
+  });
+
   if (process.env.NR_SHOT && d.screenshot) {
     await sleep(1600);
     await d.screenshot(process.env.NR_SHOT);
@@ -1211,7 +1343,7 @@ async function suite(d, mock) {
 const which = process.argv.slice(2).length ? process.argv.slice(2) : ['chrome', 'edge', 'firefox'];
 const tmp = mkdtempSync(join(tmpdir(), 'naukri-refresher-e2e-'));
 const cert = spawnSync(OPENSSL, ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(tmp, 'key.pem'), '-out', join(tmp, 'cert.pem'),
-  '-days', '2', '-subj', '/CN=www.naukri.com', '-addext', 'subjectAltName=DNS:www.naukri.com,DNS:interviewplanprep.vercel.app,DNS:api.groq.com'], { encoding: 'utf8' });
+  '-days', '2', '-subj', '/CN=www.naukri.com', '-addext', 'subjectAltName=DNS:www.naukri.com,DNS:interviewplanprep.vercel.app,DNS:api.groq.com,DNS:www.instahyre.com'], { encoding: 'utf8' });
 if (cert.status !== 0) throw new Error(`openssl failed: ${cert.error || cert.stderr}`);
 const mock = await startMock({ key: readFileSync(join(tmp, 'key.pem')), cert: readFileSync(join(tmp, 'cert.pem')) });
 

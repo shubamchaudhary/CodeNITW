@@ -14,8 +14,8 @@
 // naukri-refresher-dev/make-job-profile.mjs, without your name and contact lines; git never sees it).
 
 import { payKey, confidentPay } from './pay-lib.js';
-import { RATE, buildInput, requestBody, payRequestBody, firstJson, payFromAnswer, dbgOf, normText, outputText, usageOf, scoreRating, rateHash, keyHint, parseWait, scrub } from './rate-lib.js';
-import { byParser } from './jobs-lib.js';
+import { RATE, profileSummary, buildInput, requestBody, payRequestBody, firstJson, payFromAnswer, dbgOf, normText, outputText, usageOf, scoreRating, rateHash, keyHint, parseWait, scrub } from './rate-lib.js';
+import { byParser, RULES_VERSION } from './jobs-lib.js';
 
 const ext = globalThis.browser ?? globalThis.chrome;
 export const GROQ_MATCH = 'https://api.groq.com/*';
@@ -37,7 +37,6 @@ export async function loadResumes(dev = {}) {
   return { sde: r.sde, genai: r.genai, generated: r.generated || null, from: r.from || 'file', hash: { backend: rateHash(r.sde), ai: rateHash(r.genai) } };
 }
 export { payKey }; // a company's key in the pay cache and the pay database (pay-lib.js)
-export const resumeFor = (resumes, profile) => (profile === 'ai' ? resumes.genai : resumes.sde);
 
 export async function hasGroqAccess() {
   return ext.permissions.contains({ origins: [GROQ_MATCH] }).catch(() => false);
@@ -212,7 +211,7 @@ export async function checkKeys(keys, model) {
 /** Jobs waiting for a rating (with their JD text), as the last run left them. */
 export async function loadQueue() {
   const q = (await ext.storage.local.get(QK))[QK];
-  return Array.isArray(q && q.items) ? q.items.filter((i) => i && i.id && i.text) : [];
+  return q?.rulesVersion === RULES_VERSION && Array.isArray(q.items) ? q.items.filter((i) => i && i.id && i.text) : [];
 }
 
 /** Keep what's still worth rating: in the last 48 hours, not rated yet, best first, a few hundred at most. */
@@ -242,7 +241,7 @@ export async function savePayCache(cache) {
 }
 
 export async function saveQueue(items) {
-  await ext.storage.local.set({ [QK]: { t: Date.now(), items } });
+  await ext.storage.local.set({ [QK]: { rulesVersion: RULES_VERSION, t: Date.now(), items } });
 }
 
 // ---------------------------------------------------------------- the worker
@@ -260,6 +259,7 @@ export async function saveQueue(items) {
  */
 export function startRater(queue, ctx) {
   const { model, resumes, callsPerDay, counts, onRated } = ctx;
+  const summaries = { backend: profileSummary(resumes.sde, 'backend'), ai: profileSummary(resumes.genai, 'ai') };
   const limitBaseMs = ctx.limitBaseMs ?? RATE.limitBaseMs;
   const limitStopMs = ctx.limitStopMs ?? RATE.limitStopMs;
   const retireMs = ctx.retireMs ?? RATE.retireMs;
@@ -328,7 +328,7 @@ export function startRater(queue, ctx) {
   };
 
   async function rateOne(item, slot) {
-    const resume = resumeFor(resumes, item.profile);
+    const resume = summaries[item.profile === 'ai' ? 'ai' : 'backend'];
     const input = buildInput({ resume, job: item.job, text: item.text, skills: item.skills || [] });
     slot.busy += 1;
     const r = await callGroq({ key: slot.key, model, input, profile: item.profile }).finally(() => { slot.busy -= 1; });
@@ -351,7 +351,7 @@ export function startRater(queue, ctx) {
       const jd = `${item.job.title}\n${(item.skills || []).join(', ')}\n${item.text}`;
       const pc = ctx.payFor ? null : payCache && payCache[payKey(item.job.company)];
       const web = ctx.payFor ? ctx.payFor(item) : pc && pc.hi ? pc : null;
-      const ai = scoreRating(r.answer, { resume, jd, profile: item.profile, posted: item.job.pay || null, web });
+      const ai = scoreRating(r.answer, { resume, jd, duties: item.text, experience: item.job.exp, profile: item.profile, posted: item.job.pay || null, web });
       if (ai) {
         failsInRow = 0;
         k.ok += 1;
@@ -359,7 +359,9 @@ export function startRater(queue, ctx) {
         drop(item);
         counts.rated[item.profile] = (counts.rated[item.profile] || 0) + 1;
         const payNote = pc ? `Pay lookup for ${item.job.company} (${new Date(pc.t).toISOString().slice(0, 10)}): ${pc.raw || 'nothing found'}` : null;
-        onRated(item, { ...ai, t: Date.now() }, dbgOf({ profile: item.profile, input, resume, raw: r.raw, model, pay: payNote }));
+        const dbg = dbgOf({ profile: item.profile, input, resume, raw: r.raw, model, pay: payNote });
+        const localTrace = { p: requestBody({ model, input, profile: item.profile }).messages[0].content, o: r.raw };
+        onRated(item, { ...ai, t: Date.now() }, dbg, localTrace);
         return;
       }
       r.ok = false;

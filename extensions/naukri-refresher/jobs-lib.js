@@ -6,7 +6,7 @@
 //      "Few hours ago", "1 day ago"; "2 days ago" is out); not one you've applied to on Naukri; not
 //      from a company on the low-pay list (IT services and consulting firms, editable in the
 //      settings); a title that isn't a stack or level you don't do; asks for under 2.5 years and
-//      pays 15 LPA+ when it says; and its skill chips don't clearly belong to another stack. A
+//      pays 18 LPA+ when it says; and its skill chips don't clearly belong to another stack. A
 //      detail the card leaves out never drops a job, and chips that aren't technologies are ignored.
 //   2. The JD (the job's own page, opened for every card that passes). Every technology it asks for
 //      is found with the skills dictionary (skills-dict.js) and compared with your skills (both
@@ -29,14 +29,14 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
 // Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
-export const RULES_VERSION = 6;
+export const RULES_VERSION = 8;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
   poolTop: 1000, // the parser's best this many per list (last 48 hours, by JD match) go to your site and are rated
   showHours: 48, // your site lists the top `showTop` per list posted in the last 48 hours, not yet taken,
   showTop: 100, // "Apply" on Naukri: the top 100 per list (Naukri takes 50 applies a day per account); company-site jobs all show
-  minPayL: 15, // LPA the top of a salary the job shows must reach
+  minPayL: 18, // LPA the top of a salary the job shows must reach
   maxMinYears: 2.5, // the years it asks for must start below this ("less than 2.5 years")
   minMaxYears: 2, // ...and reach this, so "0–1 yrs" fresher roles are out
   minScore: 0.6, // the bar: share of the JD's technologies that are yours (the settings can change it)
@@ -90,7 +90,7 @@ export const SEARCHES = Object.freeze([
   { k: 'python developer', profile: 'backend' },
   { k: 'python backend developer', profile: 'backend' },
   { k: 'python fastapi developer', profile: 'backend' },
-  { k: 'node js developer', profile: 'backend' },
+  { k: 'spring boot microservices', profile: 'backend' },
   { k: 'full stack developer', profile: 'backend' },
   { k: 'software engineer', profile: 'backend' },
   { k: 'software developer', profile: 'backend' },
@@ -104,6 +104,8 @@ export const SEARCHES = Object.freeze([
   { k: 'ai ml engineer', profile: 'ai' },
   { k: 'agentic ai', profile: 'ai' },
   { k: 'langchain', profile: 'ai' },
+  { k: 'langgraph', profile: 'ai' },
+  { k: 'retrieval augmented generation', profile: 'ai' },
   { k: 'rag developer', profile: 'ai' },
   { k: 'machine learning engineer', profile: 'ai' },
   { k: 'nlp engineer', profile: 'ai' },
@@ -271,7 +273,7 @@ export function parseLakhs(label) {
   else if (/lac|lakh|lpa|\bl\b/.test(t)) toL = (n) => n;
   else if (Math.max(...nums) >= 10_000) toL = (n) => n / 1e5; // plain rupees a year
   else return null;
-  const vals = nums.slice(0, 2).map((n) => Math.round(toL(n) * 10) / 10);
+  const vals = nums.slice(0, 2).map((n) => toL(n));
   if (/month|\/m\b|per mon/.test(t)) return null; // a stipend or monthly figure: not a CTC
   return { minL: Math.min(...vals), maxL: Math.max(...vals) };
 }
@@ -282,7 +284,7 @@ export function parsePay(job) {
   const toL = (v) => {
     const n = Number(v);
     if (!(n > 0)) return null;
-    return n < 1000 ? n : Math.round(n / 1e4) / 10; // already in lakhs, or rupees a year
+    return n < 1000 ? n : n / 1e5; // already in lakhs, or rupees a year
   };
   const min = toL(sd.minimumSalary);
   const max = toL(sd.maximumSalary);
@@ -356,17 +358,17 @@ export function stackWeights(found, titleSkills = new Set()) {
 
 /**
  * A JD's stacks → its list, or why it's out. Java ahead of Python and GenAI: Backend. Python and
- * GenAI ahead: AI, when there's GenAI work or FastAPI in it (a plain Django or Flask job is
+ * GenAI ahead: AI, when there's GenAI work (a plain Django or Flask job is
  * neither). JavaScript or another language ahead of both: out. No stack named at all: null (the
  * caller decides as before). → { profile } | { out: why } | null
  */
-export function stackVerdict(sw, { titleAi = false, fastApi = false } = {}) {
+export function stackVerdict(sw, { titleAi = false } = {}) {
   const pyai = sw.python + sw.genai + 0.5 * sw.ml;
   const core = Math.max(sw.java, pyai);
   if (!(sw.java + pyai + sw.js + sw.other > 0)) return null;
   if (sw.js > core || sw.other > core) return { out: sw.js >= sw.other ? 'frontend or MERN stack' : `${sw.otherTop || 'another'} stack` };
-  if (sw.java >= pyai && sw.java > 0 && !(titleAi && pyai >= sw.java)) return { profile: 'backend' };
-  if (sw.genai > 0 || fastApi || titleAi) return { profile: 'ai' };
+  if (sw.java > 0 && (!sw.genai || (sw.java >= pyai && !titleAi))) return { profile: 'backend' };
+  if (sw.genai > 0) return { profile: 'ai' };
   return { out: 'Python role without GenAI' };
 }
 
@@ -374,6 +376,7 @@ export function stackVerdict(sw, { titleAi = false, fastApi = false } = {}) {
 
 // A title naming one of these is a stack or a level you don't apply for.
 const TITLE_OUT = [
+  [/\b(?:mech[ae]nical|preform|solar design|custom layout|as\s*\/?\s*400|rpg(?:le)?|gis developer|cpu|silicon validation|design verification|trainer)\b/i, 'outside target discipline'],
   [/\bm(?:ern|ean|evn)\b/i, 'MERN/MEAN stack'],
   [/\bandroid\b/i, 'Android'],
   [/\bios\b|\bswift(?:ui)?\b|objective[- ]?c\b|\bxcode\b/i, 'iOS'],
@@ -415,7 +418,8 @@ export function titleCheck(title, mine = MY_SKILLS) {
   const t = ` ${title} `;
   for (const [rx, why] of TITLE_OUT) {
     if (!rx.test(t)) continue;
-    if (why === 'frontend' && /full[\s-]?stack/i.test(t)) continue; // full stack is fine
+    if (why === 'frontend' && (/full[\s-]?stack/i.test(t) || (/\b(?:java|spring)\b/i.test(t) && !/\b(?:front[\s-]?end|ui|ux)\b/i.test(t))) && !/\bfront[\s-]?end[\s-]+(?:first|focused|heavy)\b/i.test(t)) continue;
+    if ((why === 'data' || why === 'research/vision') && /\b(?:gen[\s-]?ai|generative ai|agentic|llms?|rag)\b/i.test(t)) continue; // read the actual duties
     return { ok: false, why: `${why} role` };
   }
   if (CONSULTANT.test(t) && !DEV_WORD.test(t)) return { ok: false, why: 'consulting role' };
@@ -488,7 +492,12 @@ export function jdSections(text) {
     const head = line.replace(/[:\s]+$/, '');
     // A heading line: short, and either ends with ":" or has no ":" at all ("Nice to have: Go" is content).
     const heading = line.length <= 70 && !/[.;!?]\s/.test(line) && (/:\s*$/.test(line) || (!line.includes(':') && line.split(' ').length <= 6));
-    if (heading && REQ_HEAD.test(head)) { mode = OPTIONAL_CUE.test(head) ? 'opt' : 'req'; continue; }
+    if (heading && REQ_HEAD.test(head)) {
+      mode = OPTIONAL_CUE.test(head) ? 'opt' : 'req';
+      // Short duties such as "Experience with Spring Boot" can look like headings.
+      if (!head.includes(':') && findSkills(head).size) (mode === 'opt' ? opt : req).push(line);
+      continue;
+    }
     if (heading && OPTIONAL_CUE.test(head)) { mode = 'opt'; continue; }
     if (heading && ABOUT_HEAD.test(head)) { mode = 'about'; continue; }
     if (mode === 'about') continue;
@@ -542,13 +551,14 @@ export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScor
   if (years && years.min >= RULES.maxMinYears) return { keep: false, why: `asks ${years.min}+ years`, job };
   if (years && years.max != null && years.max < RULES.minMaxYears) return { keep: false, why: 'fresher role', job };
   const pay = parsePay(job);
-  if (pay.kind !== 'unknown' && pay.maxL < RULES.minPayL) return { keep: false, why: 'pays under 15L', job };
+  if (pay.kind !== 'unknown' && pay.maxL < RULES.minPayL) return { keep: false, why: 'pays under 18L', job };
   const chips = chipCheck(job.tags, mine);
-  if (chips.counted.length >= 3 && chips.score < RULES.cardFloor) return { keep: false, why: "card's skills are another stack", job, chips };
+  const targetTitle = /\b(?:java|spring[\s-]?boot|gen[\s-]?ai|generative ai|llms?|agentic|rag)\b/i.test(job.title);
+  if (!targetTitle && chips.counted.length >= 3 && chips.score < RULES.cardFloor) return { keep: false, why: "card's skills are another stack", job, chips };
   // Chips that are all JavaScript (MERN, MEAN, React and Node) or all another language's stack,
   // with nothing of Java, Python or GenAI among them: its JD isn't opened.
   const cs = chips.stacks;
-  if (cs.n.java + cs.n.python + cs.n.genai === 0) {
+  if (!targetTitle && cs.n.java + cs.n.python + cs.n.genai === 0) {
     if (cs.n.js >= 2 && cs.n.js >= cs.n.other) return { keep: false, why: 'frontend or MERN stack', job, chips };
     if (cs.n.other >= 2) return { keep: false, why: `${cs.otherTop} stack`, job, chips };
   }
@@ -561,18 +571,45 @@ export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScor
 
 // ---------------------------------------------------------------- step 2: the JD
 
+const SPRING = /\bspring(?:[\s-]*(?:boot|mvc|framework|data|cloud|security))?\b/i;
+const APP_AI = /\b(?:gen[\s-]?ai|generative (?:ai|artificial intelligence)|llms?|large language models?|rag|retrieval[\s-]+augmented|agentic|lang(?:chain|graph)|llamaindex|tool[\s-]calling|azure openai|openai api|ai agents?|vector (?:search|databases?)|embeddings)\b/i;
+const CODING_AID = /\b(?:coding assistants?|ai[\s-]assisted (?:coding|development)|copilot|cursor ide)\b/i;
+const FRONT_FIRST = /\b(?:front[\s-]?end[\s-]+(?:first|focus(?:ed)?|heavy)|(?:primarily|predominantly|mostly)\s+(?:on\s+)?(?:the\s+)?(?:front[\s-]?end|ui development)|(?:primary (?:focus|responsibility|requirement)|main (?:focus|responsibility))\s*(?::|is|will be)?\s*(?:to\s+)?(?:build(?:ing)?|own(?:ing)?|develop(?:ing)?)?\s*(?:the\s+)?(?:react (?:ui|front[\s-]?end)|front[\s-]?end|user interfaces?)|mern[\s-]+stack)\b/i;
+const BACKEND_FIRST = /\b(?:back[\s-]?end[\s-]+(?:first|focused|heavy)|(?:primarily|predominantly|mostly)\s+(?:on\s+)?(?:the\s+)?back[\s-]?end)\b/i;
+
+export function roleEvidence(text) {
+  const duties = String(text || '').split(/[\n;]+|(?<=[.!?])\s+/)
+    .filter((line) => !CODING_AID.test(line) || /\b(?:build|develop|implement)(?:s|ing)?\s+(?:an?\s+|our\s+)?(?:coding assistant|copilot)\b/i.test(line))
+    .join('\n');
+  return { duties, spring: SPRING.test(duties), genai: APP_AI.test(duties), frontFirst: FRONT_FIRST.test(duties) };
+}
+
 /**
  * The card's verdict and the JD read off the job's page ({ text, skills: Naukri's key skills }) →
  * { keep, why?, profile, jd: true, skills: { counted, have, missing, score }, aiShare, rank, few? }
  */
 export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_SKILLS, minScore = RULES.minScore } = {}) {
   const { req } = jdSections(text);
-  const found = findSkills(`${card.job.title}\n${req}`);
+  const core = roleEvidence(req);
+  const found = findSkills(core.duties);
   for (const [l, k] of chipSkills(skills).found) found.set(l, Math.max(found.get(l) || 0, k)); // the page's "Key Skills"
   const titleSkills = new Set(findSkills(card.job.title).keys());
   const w = weigh(found, mine, titleSkills);
   // Its main stack decides its list (Java: Backend; Python and GenAI: AI) or rules it out.
-  const sv = stackVerdict(stackWeights(found, titleSkills), { titleAi: card.titleAi, fastApi: found.has('FastAPI') });
+  const stacks = stackWeights(found, titleSkills);
+  if (!core.genai) stacks.genai = 0;
+  // An explicitly interchangeable list of server-side languages is one qualification, not
+  // several other stacks outweighing Java. Treat this as a candidate; the rater checks Spring Boot.
+  const acceptsJava = /\b(?:one (?:or more )?of|one or more|any (?:one )?of)\b[^\n.!?]{0,140}\bjava\b/i.test(core.duties.replace(/e\.g\./gi, 'such as'));
+  const explicitBackend = BACKEND_FIRST.test(core.duties) && core.spring;
+  const javaOption = acceptsJava && stacks.java && !core.genai && /\bback[\s-]?end\b/i.test(card.job.title);
+  // An explicit target title with an uninformative description merits inspection. The rating
+  // still requires evidence in the actual duties before this can appear among matches.
+  const namedTarget = /\b(?:java|spring[\s-]?boot)\b/i.test(card.job.title) ? 'backend'
+    : /\b(?:gen[\s-]?ai|generative ai|llms?|agentic|rag)\b/i.test(card.job.title) ? 'ai' : null;
+  const sv = (javaOption || explicitBackend)
+    ? { profile: 'backend' }
+    : stackVerdict(stacks, { titleAi: card.titleAi }) || (namedTarget && { profile: namedTarget });
   const profile = sv && sv.profile ? sv.profile : card.titleAi || w.aiShare >= RULES.aiShare ? 'ai' : 'backend';
   const v = {
     job: card.job, day: card.day, ageH: card.ageH, years: card.years, pay: card.pay, fit: card.fit, profile, jd: true,
@@ -582,7 +619,13 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
     fit: card.fit, score, have: w.have.length, years: card.years, pay: card.pay,
     rating: card.job.rating, reviews: card.job.reviews, createdAt: card.job.createdAt,
   }, now, minScore);
-  if (w.score != null && w.score < minScore) return { keep: false, why: `JD match under ${Math.round(minScore * 100)}%`, ...v };
+  if (core.frontFirst) return { keep: false, why: 'frontend-first duties', ...v };
+  if (!sv || (sv.profile === 'ai' && !core.genai && namedTarget !== 'ai')) return { keep: false, why: 'no target stack in job duties', ...v };
+  // Secondary tools can dilute a strong primary stack. Send those cases to the rater while
+  // respecting a deliberately stricter user setting.
+  const strongCore = (sv.profile === 'backend' && (acceptsJava || core.spring)) ||
+    (sv.profile === 'ai' && core.genai && (stacks.n.genai >= 2 || (card.titleAi && stacks.n.python > 0)));
+  if (w.score != null && w.score < minScore && !(strongCore && minScore <= RULES.minScore)) return { keep: false, why: `JD match under ${Math.round(minScore * 100)}%`, ...v };
   if (sv && sv.out) return { keep: false, why: sv.out, ...v };
   // A JD naming few technologies (or none) says little: kept on the same bar, ranked a little lower.
   if (w.counted.length < RULES.minJdSkills) return { keep: true, few: true, ...v, rank: Math.max(0, rank(w.score) - 5) };
@@ -592,13 +635,13 @@ export function jdCheck(card, { text = '', skills = [] } = {}, { now, mine = MY_
 /** A job whose page couldn't be read: judged on its chips alone, and only when they say enough. */
 export function cardOnly(card, { now, minScore = RULES.minScore } = {}) {
   const c = card.chips;
-  const sv = c.stacks ? stackVerdict(c.stacks, { titleAi: card.titleAi, fastApi: c.counted.includes('FastAPI') }) : null;
+  const sv = c.stacks ? stackVerdict(c.stacks, { titleAi: card.titleAi }) : null;
   const v = {
     job: card.job, day: card.day, ageH: card.ageH, years: card.years, pay: card.pay, fit: card.fit, jd: false,
     profile: sv && sv.profile ? sv.profile : card.titleAi || c.aiShare >= RULES.aiShare ? 'ai' : 'backend', aiShare: c.aiShare,
     skills: { counted: c.counted, have: c.have, missing: c.missing, score: c.score },
   };
-  if (!(c.counted.length >= 3 && c.score >= minScore)) return { keep: false, why: "job page unreadable, card doesn't say enough", ...v };
+  if (!sv || !(c.counted.length >= 3 && c.score >= minScore)) return { keep: false, why: "job page unreadable, card doesn't say enough", ...v };
   if (sv && sv.out) return { keep: false, why: sv.out, ...v };
   return {
     keep: true, ...v,
@@ -618,7 +661,7 @@ export const byParser = (a, b) => parserTier(a) - parserTier(b) || (b.coverage |
 export function payLabel(pay) {
   const range = (p) => `₹${p.minL}${p.maxL !== p.minL ? `–${p.maxL}` : ''}L`;
   if (pay.kind === 'shown') {
-    return { verdict: pay.maxL >= 25 ? 'meets' : pay.maxL >= 22 ? 'close' : 'fifteen', text: `${range(pay)} posted` };
+    return { verdict: pay.maxL >= 25 ? 'meets' : pay.maxL >= 20 ? 'target' : pay.maxL >= RULES.minPayL ? 'negotiable' : 'below', text: `${range(pay)} posted` };
   }
   if (pay.kind === 'hidden') return { verdict: 'hidden', text: `${range(pay)}, hidden on the listing` };
   return { verdict: 'unknown', text: 'Not disclosed on the listing' };

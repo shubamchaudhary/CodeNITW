@@ -3,6 +3,7 @@
 // tests. Browsers are pointed at it with --host-resolver-rules (Chromium) or
 // network.dns.localDomains (Firefox).
 import https from 'node:https';
+import { instahyreApi, INSTA_JOBS } from './mock-instahyre.mjs';
 import { readFileSync } from 'node:fs';
 
 const API = '/cloudgateway-mynaukri/resman-aggregator-services';
@@ -34,7 +35,7 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** What the fake model answers: the JD's known skills, met when the resume names them, plus two planted mistakes. */
 function groqAnswer(content) {
-  const resume = (content.split('\nJOB:\n')[0] || '').split('RESUME (the candidate):\n')[1] || '';
+  const resume = (content.split('\nJOB:\n')[0] || '').split('RESUME SUMMARY (documented evidence only):\n')[1] || '';
   const job = content.split('\nJOB:\n')[1] || '';
   const requirements = [];
   for (const k of RATE_SKILLS) {
@@ -236,6 +237,9 @@ const JOB_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Job</t
 
 export async function startMock({ key, cert }) {
   const state = {};
+  // The fake www.instahyre.com (mock-instahyre.mjs).
+  const insta = { mode: 'ok', jobs: INSTA_JOBS(), applies: [], notInterested: [], needsMore: 'j9', limitAfter: 2, format: 'any' };
+  const instaReset = (over = {}) => Object.assign(insta, { mode: 'ok', jobs: INSTA_JOBS(), applies: [], notInterested: [], needsMore: 'j9', limitAfter: 2, format: 'any' }, over);
   const reset = (over = {}) => Object.assign(state, {
     mode: 'ok', // ok | 500 | 429 | 401 | drop | shape | ignore | wipe
     headline: 'Backend Software Engineer (Java) | 2+ YOE',
@@ -378,6 +382,7 @@ export async function startMock({ key, cert }) {
     const host = String(req.headers.host || '').split(':')[0];
     if (host === 'interviewplanprep.vercel.app') return radarApi(req, res, url, body);
     if (host === 'api.groq.com') return groqApi(req, res, url, body);
+    if (host === 'www.instahyre.com') return instahyreApi(req, res, url, body, insta);
     state.requests.push({ method: req.method, path: url.pathname, search: url.search, headers: req.headers, body, t: Date.now() });
     const send = (code, payload, headers = {}) => {
       const html = typeof payload === 'string';
@@ -460,6 +465,8 @@ export async function startMock({ key, cert }) {
   if (!servers.length) throw new Error('mock Naukri could not listen on port 443');
   return {
     state,
+    insta,
+    instaReset,
     reset,
     apiCalls: (method) => state.requests.filter((r) => r.path.startsWith(API) && (!method || r.method === method)),
     searchPages: () => state.requests.filter((r) => /-jobs(?:-\d+)?$/.test(r.path)),

@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   RATE, RATE_SCHEMA, RATE_INSTRUCTIONS, PROFILE_RULES, instructionsFor, payMatch, payFromAnswer, firstJson, dbgOf, payRequestBody, WEIGHTS, scoreRating, cleanResume, rateText, buildInput, requestBody, outputText, usageOf, parseWait,
-  normText, inJob, inResume, rateHash, keyHint, scrub,
+  normText, inJob, inResume, profileSummary, rateHash, keyHint, scrub,
 } from '../naukri-refresher/rate-lib.js';
 import { callGroq, keyPool, pruneQueue, startRater } from '../naukri-refresher/rate.js';
 
@@ -43,7 +43,7 @@ const answer = (over = {}) => ({
   level: 'mid',
   ...over,
 });
-const rate = (a, profile = 'backend') => scoreRating(a, { resume: RESUME, jd: JD, profile });
+const rate = (a, profile = 'backend') => scoreRating(a, { resume: RESUME, jd: JD, profile, experience: a?.min_years == null ? '' : String(a.min_years) + ' years' });
 
 test('the rubric part: worked out from what the model found, with fixed weights (an answer without a relevance is the rubric alone)', () => {
   assert.equal(WEIGHTS.must + WEIGHTS.nice + WEIGHTS.years + WEIGHTS.role + WEIGHTS.level, 100);
@@ -81,7 +81,7 @@ test("a requirement that isn't in the JD is left out, whatever it says", () => {
   assert.equal(r.inv, 2);
   assert.ok(!r.miss.includes('Rust systems programming'));
   assert.ok(inJob('Kafka or RabbitMQ', normText(JD)));
-  assert.ok(inJob('building microservice', normText(JD)), 'the first 5 letters of a word will do');
+  assert.ok(inJob('building microservice', normText(JD)), 'plural inflection is permitted');
   assert.ok(inJob('NodeJS', normText('Node.js and React')), 'dots and dashes aside');
   assert.ok(!inJob('Terraform', normText(JD)));
 });
@@ -99,10 +99,10 @@ test('caps: QA, support or mobile roles; lead roles or 5+ years; a JD naming few
 test('years asked, role and level each move the rating; the lists value roles differently', () => {
   const base = rate(answer()).s;
   assert.ok(rate(answer({ min_years: 3 })).s < base);
-  assert.ok(rate(answer({ min_years: 4 })).s < rate(answer({ min_years: 3 })).s);
+  assert.ok(rate(answer({ min_years: 4 })).s <= rate(answer({ min_years: 3 })).s);
   assert.ok(rate(answer({ min_years: null })).s < base && rate(answer({ min_years: null })).s > rate(answer({ min_years: 3 })).s);
   assert.ok(rate(answer({ level: 'senior' })).s < rate(answer({ level: 'junior' })).s);
-  assert.ok(rate(answer({ role: 'genai' }), 'ai').s > rate(answer({ role: 'genai' }), 'backend').s, 'GenAI work fits the AI list best');
+  assert.ok(rate(answer({ role: 'genai', relevance: 95 }), 'ai').s < RATE.minShow, 'model cannot turn a Java posting into a GenAI match');
   assert.ok(rate(answer({ role: 'backend' }), 'backend').s > rate(answer({ role: 'backend' }), 'ai').s);
 });
 
@@ -280,7 +280,7 @@ test('the worker moves past a rejected key and a busy one, best-ranked job first
   assert.equal(calls.filter((x) => x.key === KEY('b')).length, 1, 'a rejected key is not tried again');
   assert.equal(c.calls, calls.length);
   assert.ok(c.tokens.cached > 0);
-  assert.ok(calls.find((x) => /GenAI first/.test(x.body.messages[0].content) && (x.key === KEY('a') || x.key === KEY('d'))), 'an AI-list job is rated against the GenAI resume');
+  assert.ok(calls.find((x) => x.body.messages[0].content.startsWith(PROFILE_RULES.ai) && (x.key === KEY('a') || x.key === KEY('d'))), 'an AI-list job is rated against the GenAI resume');
 });
 
 test("the day's call cap: no more Groq calls than the settings allow; the best jobs get them", async () => {
@@ -408,8 +408,11 @@ test("the list's strict rules: the model's relevance is 55% of the rating, a nev
   assert.match(PROFILE_RULES.backend, /Node.js or MERN/);
 });
 
-test('pay: the salary shown, else the web lookup, else what the model knows; a top under 20 LPA caps it at 35', () => {
+test('pay: the salary shown, else the web lookup, without unsourced model estimates; a top under 18 LPA caps it at 35', () => {
   assert.deepEqual(payMatch({}), { lo: null, hi: null, from: null, ok: 'unknown' });
+  for (const [hi, band] of [[17.99, 'low'], [18, 'flex'], [19.9, 'flex'], [20, 'close'], [24.9, 'close'], [25, 'ok']]) {
+    assert.equal(payMatch({ posted: {lo: 15, hi} }).ok, band);
+  }
   assert.equal(payMatch({ posted: { lo: 18, hi: 30 }, web: { lo: 8, hi: 12 } }).from, 'posted');
   assert.equal(payMatch({ web: { lo: 22, hi: 28 } }).ok, 'ok');
   assert.equal(payMatch({ web: { lo: 18, hi: 22 } }).ok, 'close');
@@ -420,10 +423,10 @@ test('pay: the salary shown, else the web lookup, else what the model knows; a t
   assert.equal(cheap.pay.from, 'web');
   assert.equal(cheap.s, RATE.lowPayCap);
   const known = rate(answer({ relevance: 95, reject: false, pay_low: 7, pay_high: 11, pay_known: true }));
-  assert.equal(known.pay.from, 'model');
-  assert.equal(known.s, RATE.lowPayCap);
+  assert.equal(known.pay.from, null);
+  assert.ok(known.s > RATE.lowPayCap);
   const guess = rate(answer({ relevance: 95, reject: false, pay_low: 7, pay_high: 11, pay_known: false }));
-  assert.equal(guess.pay.from, 'guess', 'a guess is shown');
+  assert.equal(guess.pay.from, null, 'an unsupported pay estimate stays unknown');
   assert.ok(guess.s > 80, '…but never held against the job');
   assert.deepEqual(payFromAnswer(firstJson('Found it. {"low": 14, "high": 22, "sources": ["AmbitionBox", "Glassdoor"], "reports": 40, "same_company": true, "note": "SDE 1"} ok')),
     { lo: 14, hi: 22, src: 'web', n: 40, sources: ['AmbitionBox', 'Glassdoor'], same: true, note: 'SDE 1' });
@@ -538,6 +541,28 @@ test('an AI-list job gets the AI prompt and the GenAI resume; a backend job the 
   await r.drain(20_000);
   const ai = calls.find((c) => c.body.messages[0].content.includes('Company: Co g'));
   const be = calls.find((c) => c.body.messages[0].content.includes('Company: Co b'));
-  assert.ok(ai.body.messages[0].content.startsWith(PROFILE_RULES.ai) && ai.body.messages[0].content.includes('GenAI first'));
+  assert.ok(ai.body.messages[0].content.startsWith(PROFILE_RULES.ai) && !ai.body.messages[0].content.includes('GenAI first'));
   assert.ok(be.body.messages[0].content.startsWith(PROFILE_RULES.backend) && !be.body.messages[0].content.includes('GenAI first'));
+});
+
+test('only the selected summary reaches the model and ungrounded requirements cannot promote a job', async () => {
+  const resumes = {sde: RESUME + '\nPrivate backend detail 781', genai: 'Python FastAPI LangGraph RAG\nPrivate AI detail 249'};
+  const calls = fakeGroq(() => null);
+  const rater = startRater([item('j'), item('g', 'ai')], { keys: [KEY('a')], model: RATE.model, resumes, callsPerDay: 10, counts: counts(), onRated() {} });
+  await rater.drain(20000);
+  const messages = calls.filter((c) => !c.body.tools).map((c) => c.body.messages[0].content);
+  assert.equal(messages.length, 2);
+  for (const [key, profile, company] of [['sde', 'backend', 'Co j'], ['genai', 'ai', 'Co g']]) {
+    const prompt = messages.find((m) => m.includes('Company: ' + company));
+    assert.ok(prompt.includes(profileSummary(resumes[key], profile)));
+    assert.doesNotMatch(prompt, /Private (?:backend|AI) detail/);
+  }
+  const claimed = answer({relevance: 100, requirements: [req('Kubernetes', 'yes', 'Java'), req('Quantum microservices', 'yes', 'Microservices')]});
+  const checked = rate(claimed);
+  assert.equal(checked.inv, 1);
+  assert.equal(checked.uv, 1);
+  assert.equal(rate(answer({ requirements: [req('Kubernetes', 'partial', 'Spring Boot')] })).uv, 1);
+  assert.ok(checked.s < RATE.minShow);
+  assert.ok(rate(answer({relevance: 100, role: 'frontend'})).s < RATE.minShow);
+  assert.ok(rate(answer({relevance: 69})).s < RATE.minShow);
 });

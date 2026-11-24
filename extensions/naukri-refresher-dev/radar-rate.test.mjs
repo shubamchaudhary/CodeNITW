@@ -47,7 +47,7 @@ test("the radar's openings get the finder's rating; a wrong stack is marked; the
     return new Response(JSON.stringify({ choices: [{ message: { content: ANSWER } }], usage: { prompt_tokens: 900, completion_tokens: 150 } }), { status: 200, headers: { 'content-type': 'application/json' } });
   };
   const dir = mkdtempSync(join(tmpdir(), 'radar-rate-'));
-  const java = { key: 'k1', j: { title: 'Backend Engineer', company: 'Orbit', desc: JAVA_JD }, entry: { matchScore: 80, pay: { verdict: 'likely' } } };
+  const java = { key: 'k1', j: { title: 'Backend Engineer', company: 'Orbit', desc: JAVA_JD }, entry: { matchScore: 80, pay: { verdict: 'likely', companyRange: { lo: 25, hi: 35 } } } };
   const mern = { key: 'k2', j: { title: 'MERN Stack Developer', company: 'Zeta', desc: MERN_JD }, entry: { matchScore: 40 } };
   const cheap = { key: 'k3', j: { title: 'Java Developer', company: 'Low Co', desc: JAVA_JD }, entry: { matchScore: 80, pay: { verdict: 'unlikely' } } };
   const env = { GROQ_API_KEYS: `gsk_${'a'.repeat(52)},gsk_${'b'.repeat(52)}` };
@@ -60,7 +60,7 @@ test("the radar's openings get the finder's rating; a wrong stack is marked; the
   assert.equal(java.entry.ai.rel, 91);
   assert.ok(java.entry.ai.s >= RATE.minShow);
   assert.equal(java.entry.ai.pay.from, 'web');
-  assert.ok(cheap.entry.ai.s > RATE.lowPayCap, 'levels.fyi: even its top 10% earn under 25L, but over the 15L floor: not held back (under the floor the radar drops it before rating)');
+  assert.ok(cheap.entry.ai.s > RATE.lowPayCap, 'levels.fyi: even its top 10% earn under 25L, but within the negotiable band: not held back (under the floor the radar drops it before rating)');
   assert.equal(java.entry.jdText, undefined, 'the working copy goes once rated');
   assert.match(r.dbg.get('k1').p, /^THE CANDIDATE/);
   assert.ok(existsSync(join(dir, 'rate-state.json')));
@@ -71,7 +71,7 @@ test("the radar's openings get the finder's rating; a wrong stack is marked; the
 });
 
 test('pay figures from the radar and the stack of a job', () => {
-  assert.deepEqual(payFigure({ verdict: 'unlikely' }), { lo: 18, hi: 18 });
+  assert.equal(payFigure({ verdict: 'unlikely' }), null, 'a legacy verdict cannot establish a salary');
   assert.equal(payFigure({ verdict: 'unknown' }), null);
   assert.equal(stackOfJob('Java Developer', JAVA_JD).profile, 'backend');
 });

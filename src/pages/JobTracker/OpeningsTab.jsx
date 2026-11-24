@@ -53,7 +53,9 @@ function yearsText(o) {
 // Pay against the 25 LPA minimum (scripts/radar/pay.mjs). Nothing that could
 // reach it is dropped by the radar, so every label is shown by default.
 const PAY_LABEL = {
-  meets: "25L+ posted",
+  meets: "Preferred · 25L+",
+  target: "Meets target · 20L+",
+  negotiable: "Negotiable · 18L+",
   close: "pay close",
   fifteen: "15L+ posted",
   hidden: "pay hidden",
@@ -64,7 +66,9 @@ const PAY_LABEL = {
   unknown: "pay ?",
 };
 const PAY_HINT = {
-  meets: "The posted salary reaches 25L",
+  meets: "The salary reaches the preferred 25 LPA",
+  target: "The salary reaches 20 LPA",
+  negotiable: "The salary reaches the negotiable floor of 18 LPA",
   close: "Posted salary tops out at 22–25L, or a figure from the description text",
   fifteen: "The posted salary reaches 15L but not 22L (Naukri job finder)",
   hidden: "The employer hid the salary on the listing; Naukri's own data has this range (Naukri job finder)",
@@ -77,6 +81,8 @@ const PAY_HINT = {
 const PAY_CLS = {
   meets: "bg-success-subtle text-success-fg  ",
   close: "bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300",
+  target: "bg-success-subtle text-success-fg",
+  negotiable: "bg-surface-hover text-fg",
   fifteen: "bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300",
   hidden: "bg-surface-hover text-fg  ",
   likely: "bg-success-subtle text-success-fg  ",
@@ -103,10 +109,12 @@ const matchTier = (o) => (o.coverage == null ? 2 : o.fewSkills ? 1 : 0);
 const byMatch = (a, b) => matchTier(a) - matchTier(b) || (b.coverage || 0) - (a.coverage || 0) || (b.rank || 0) - (a.rank || 0);
 // Rated jobs first, highest rating first (ties by JD match); the ones not rated yet after them.
 const aiScore = (o) => (o.ai && o.ai.s >= 1 ? o.ai.s : 0);
-const byRating = (a, b) => aiScore(b) - aiScore(a) || byMatch(a, b);
+const preferredPay = (o) => o.pay?.verdict === "meets" || o.ai?.pay?.ok === "ok";
+const byRating = (a, b) => aiScore(b) - aiScore(a) || Number(preferredPay(b)) - Number(preferredPay(a)) || byMatch(a, b);
 // Your site keeps AI ratings from 70 up (extensions/naukri-refresher/rate-lib.js RATE.minShow); the
 // rest wait behind "Show N rated under 70". Jobs not rated yet still show, after the rated ones.
 const MIN_SHOW = 70;
+const finderMatch = (o) => o.ai?.v >= 3 && !o.ai.rej && aiScore(o) >= MIN_SHOW;
 const lowRated = (o) => aiScore(o) > 0 && aiScore(o) < MIN_SHOW;
 // What the AI rating rests on, for its tooltip.
 const LEVEL_TEXT = { junior: "junior", mid: "mid-level", senior: "senior", lead: "lead" };
@@ -117,8 +125,8 @@ function aiHint(ai) {
       ? `AI rating ${ai.s}/100: 55% the LLM's relevance against your list's strict rules (${ai.rel}), 45% the requirements your resume provably meets (${ai.fit}).`
       : `AI rating ${ai.s}/100: an LLM read the JD against your resume; the rating is worked out from what it found, with fixed weights.`,
     ai.rej ? "On your never-wanted list: 15 at most." : null,
-    ai.why ? `The LLM: ${ai.why}` : null,
-    ai.pay?.from ? `Pay at about 2 years: ${ai.pay.lo}–${ai.pay.hi} LPA, from ${PAY_FROM[ai.pay.from] || ai.pay.from}${ai.pay.ok === "low" ? " (under 20: the rating is held at 35)" : ""}.` : null,
+    ai.why ? `Rating explanation: ${ai.why}` : null,
+    ai.pay?.from ? `Pay at about 2 years: ${ai.pay.lo}–${ai.pay.hi} LPA, from ${PAY_FROM[ai.pay.from] || ai.pay.from}${ai.pay.ok === "low" ? " (under 18: the rating is held at 35)" : ""}.` : null,
     `Must-haves your resume shows: ${ai.m[0]} of ${ai.m[1]}.`,
     ai.have?.length ? `✓ ${ai.have.join(", ")}` : null,
     ai.part?.length ? `½ ${ai.part.join(", ")}` : null,
@@ -340,7 +348,7 @@ function AiExtra({ o }) {
   return (
     <div className="flex flex-col gap-1">
       {ai.why && (
-        <p className={`text-[11px] leading-snug ${ai.rej ? "text-danger-fg" : "text-fg-muted"}`} title="The LLM's reason for its relevance">
+        <p className={`text-[11px] leading-snug ${ai.rej ? "text-danger-fg" : "text-fg-muted"}`} title="The reason for the final rating">
           {ai.rej ? "✗ " : ""}
           {ai.why}
         </p>
@@ -353,7 +361,7 @@ function AiExtra({ o }) {
         )}
         {p?.from && (
           <Tag cls={PAY_MATCH_CLS[p.ok] || PAY_MATCH_CLS.unknown} title={`The company's pay at about 2 years, from ${PAY_FROM[p.from] || p.from}`}>
-            {p.lo === p.hi ? `≈${p.hi}` : `${p.lo}–${p.hi}`} LPA{p.from === "guess" ? "?" : ""}
+            {p.lo === p.hi ? `≈${p.hi}` : `${p.lo}–${p.hi}`} LPA{p.from === "guess" ? "?" : ""}{p.from === "web" ? " est." : ""}{({ok: " · Preferred", close: " · Meets target", flex: " · Negotiable"})[p.ok]}
           </Tag>
         )}
         <button onClick={toggle} className="text-[10px] font-semibold text-accent-fg hover:underline">
@@ -550,6 +558,7 @@ function FinderCard({ o, n, onSkip, onApplied }) {
         </Tag>
         <Tag cls={PAY_CLS[o.pay?.verdict] || PAY_CLS.unknown} title={[PAY_HINT[o.pay?.verdict], o.pay?.text].filter(Boolean).join("\n")}>
           {o.pay?.verdict === "unknown" ? "pay not shown" : o.pay?.text || PAY_LABEL.unknown}
+          {["meets", "target", "negotiable"].includes(o.pay?.verdict) && " · " + ({meets: "Preferred", target: "Meets target", negotiable: "Negotiable"})[o.pay.verdict]}
         </Tag>
         <Tag
           cls={o.coverage >= 80 ? "bg-success-subtle text-success-fg  " : "bg-surface-hover text-fg  "}
@@ -659,6 +668,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   const [source, setSource] = useState("all");
   const [newOnly, setNewOnly] = useState(false);
   const [listedOnly, setListedOnly] = useState(true);
+  const [reviewFinder, setReviewFinder] = useState(false);
   const [showLow, setShowLow] = useState(false); // AI ratings under MIN_SHOW: hidden unless asked for
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
@@ -764,7 +774,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
       // best-rated copy. Skip or take any copy and the job is skipped or taken.
       const groups = [];
       const groupOf = new Map();
-      for (const o of naukri.list.filter((x) => (x.profile || "backend") === p.id).sort(byRating)) {
+      for (const o of naukri.list.filter((x) => (x.profile || "backend") === p.id).sort((a, b) => Number(finderMatch(b)) - Number(finderMatch(a)) || byRating(a, b))) {
         const keys = jobKeys(o);
         let g = keys.map((k) => groupOf.get(k)).find(Boolean);
         if (!g) {
@@ -781,10 +791,11 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
       const part = (company) => {
         const mine = live.filter((g) => (g.best.apply === "company") === company);
         const open = mine.filter((g) => !g.taken).map((g) => g.best);
-        const low = open.filter(lowRated).length;
-        const left = showLow ? open : open.filter((o) => !lowRated(o));
+        const matches = open.filter(finderMatch);
+        const review = open.length - matches.length;
+        const left = reviewFinder ? open.filter((o) => !finderMatch(o)) : matches;
         const top = company ? left : left.slice(0, SHOW_TOP);
-        return { found: mine.length, done: mine.length - open.length, rated: left.filter((o) => aiScore(o) > 0).length, low, list: top, more: left.length - top.length };
+        return { found: mine.length, done: mine.length - open.length, rated: left.filter((o) => aiScore(o) > 0).length, review, list: top, more: left.length - top.length };
       };
       const naukriPart = part(false);
       const sitePart = part(true);
@@ -792,7 +803,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [naukri, hidden, queuedUrls, takenRoles, dismissedUrls, showLow]);
+  }, [naukri, hidden, queuedUrls, takenRoles, dismissedUrls, reviewFinder]);
   const finderFound = finder.backend.found + finder.ai.found;
   const mode = modePref || (finderFound ? "naukri" : "all");
   const setMode = (m) => {
@@ -972,12 +983,12 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           </div>
           <div className="text-xs text-fg-subtle">
             Two lists, one per Naukri account: Backend (Java/Spring Boot roles) and AI (Python and GenAI roles: LLMs, RAG, agents,
-            LangChain, LangGraph, FastAPI). A job is on one list only; frontend, MERN and other-stack roles are left out, and so are IT
+            LangChain, LangGraph, FastAPI). A job is on one list only; frontend-first, MERN and other-stack roles are left out, and so are IT
             services firms that pay far under your bar. Posted in the last {WINDOW_HOURS} hours · not applied or taken yet · asks for
-            under 2.5 yrs · 15L+ or pay not shown · the finder read its JD and enough of the technologies it asks for are yours. The
-            finder reads every page of every search, and every job it keeps is rated 1–100 by an LLM against your resume. Each list
+            under 2.5 yrs · 18L+ or pay not shown (20L target, 25L preferred) · the finder read its JD and enough of the technologies it asks for are yours. The
+            finder reads every page of every search, and jobs with readable descriptions can receive a 1–100 rating against the selected profile summary. Each list
             shows two lists: Apply on Naukri (its top {SHOW_TOP}: Naukri takes 50 applies a day per account) and Apply on company site (all
-            of them), highest AI rating first; jobs not rated yet come after them, by JD match.
+            of them). Matches need a current rating of 70 or higher. Other candidates are available for review.
           </div>
           {extLine && (
             <div className={`text-xs ${finderExt.connected ? "text-fg-subtle" : "text-warning-fg"}`}>{extLine}</div>
@@ -1007,13 +1018,9 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           <span className="text-xs text-fg-subtle">
             {cur.done} taken · {cur.rated} rated
           </span>
-          {(cur.low > 0 || showLow) && (
-            <button
-              onClick={() => setShowLow((v) => !v)}
-              title={`Jobs the AI rated under ${MIN_SHOW}: off your list unless you ask for them`}
-              className="text-xs font-semibold text-accent-fg hover:underline"
-            >
-              {showLow ? `Hide the ones rated under ${MIN_SHOW}` : `Show ${cur.low} rated under ${MIN_SHOW}`}
+          {(cur.review > 0 || reviewFinder) && (
+            <button onClick={() => setReviewFinder((v) => !v)} className="text-xs font-semibold text-accent-fg hover:underline">
+              {reviewFinder ? "Back to matches" : "Review other candidates (" + cur.review + ")"}
             </button>
           )}
           {hiddenCount > 0 && (
@@ -1021,7 +1028,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
               Bring back {hiddenCount} skipped
             </button>
           )}
-          {cur.list.length > 0 && (
+          {!reviewFinder && cur.list.length > 0 && (
             <button
               onClick={() => addToApply(cur.list.slice(0, TOP_N), `${profileLabel(profileTab)} jobs`)}
               title={`Put the ${Math.min(TOP_N, cur.list.length)} highest-rated jobs on this list (#1–#${Math.min(TOP_N, cur.list.length)}) in To Apply.${onSite ? " Apply on each company's site." : ` Apply to them from your ${profileLabel(profileTab)} Naukri account.`}`}
@@ -1042,7 +1049,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
         {cur.list.length === 0 ? (
           <div className={`${GLASS} rounded-lg p-8 text-center text-sm text-fg-subtle `}>
             {cur.found
-              ? "Every job on this list from the last 48 hours is taken or skipped. More arrive with the job finder's next run."
+              ? (reviewFinder ? "No other candidates to review on this list." : "No available jobs on this list meet the current match criteria yet.")
               : lists.found
                 ? onSite
                   ? "No company-site jobs on this list right now: they're all applied on Naukri."
