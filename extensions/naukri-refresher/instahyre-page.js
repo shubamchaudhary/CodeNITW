@@ -43,7 +43,6 @@ export function pageObserve() {
     return best || v.parentElement;
   };
   document.querySelectorAll('[data-nr-view]').forEach((e) => e.removeAttribute('data-nr-view'));
-  views.forEach((v, i) => v.setAttribute('data-nr-view', String(i)));
   const seen = {};
   const cards = views.map((v) => {
     const card = cardOf(v);
@@ -59,16 +58,23 @@ export function pageObserve() {
     const title = cut > 0 ? head.slice(cut + 3) : head;
     const base = `${company}|${title}|${text.slice(0, 160)}`;
     seen[base] = (seen[base] || 0) + 1;
-    return { key: `${base}#${seen[base]}`, title, company };
+    const key = `${base}#${seen[base]}`;
+    v.setAttribute('data-nr-view', key);
+    return { key, title, company };
   });
 
   // The open job: its "Apply" (or "Applied") button, which a list card never has.
   const inCard = (e) => views.some((v) => cardOf(v) && cardOf(v).contains(e));
   const applyBtn = byText(/^apply$/i).map(clickable).find((e) => !inCard(e));
   const appliedBtn = byText(/^applied$/i).map(clickable).find((e) => !inCard(e));
+  document.querySelectorAll('[data-nr-apply]').forEach((e) => e.removeAttribute('data-nr-apply'));
+  const key = document.documentElement.getAttribute('data-nr-open-job');
+  if (applyBtn && key) applyBtn.setAttribute('data-nr-apply', key);
   let modal = null;
   const anchor = applyBtn || appliedBtn;
+  document.querySelectorAll('[data-nr-modal-anchor]').forEach((e) => e.removeAttribute('data-nr-modal-anchor'));
   if (anchor) {
+    anchor.setAttribute('data-nr-modal-anchor', '');
     let root = anchor;
     for (let i = 0; i < 14 && root.parentElement; i++) {
       root = root.parentElement;
@@ -91,31 +97,16 @@ export function pageObserve() {
   };
 }
 
-/** Opens one card's job: its "View job" button, tagged by the last pageObserve (cards[i] is button i). → { ok } */
-export function pageOpen(index) {
-  const v = document.querySelector(`[data-nr-view="${Number(index)}"]`);
-  if (!v || !v.isConnected) return { ok: false };
-  v.scrollIntoView({ block: 'center' });
-  v.click();
-  return { ok: true };
-}
-
-/** Presses "Apply" in the open job. → { ok } */
-export function pageApply() {
-  const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
-  const cands = [...document.querySelectorAll('button, a, [role="button"], input[type="button"], input[type="submit"], div, span')]
-    .filter((e) => /^apply$/i.test(clean(e.tagName === 'INPUT' ? e.value : e.textContent)) && e.getBoundingClientRect().width > 3 && ![...e.children].some((c) => /^apply$/i.test(clean(c.textContent))));
-  const b = cands.map((e) => e.closest('button, a, [role="button"]') || e)[0];
-  if (!b) return { ok: false };
-  b.click();
-  return { ok: true };
-}
-
 /** Closes the open job (its close button, else Escape). → { ok } */
 export function pageClose() {
   const shown = (e) => e && e.getBoundingClientRect && e.getBoundingClientRect().width > 3;
-  const x = [...document.querySelectorAll('button, a, [role="button"], span, i, div')]
-    .filter((e) => shown(e) && (/close/i.test(e.getAttribute('aria-label') || '') || /^(?:×|✕|✖|x|close)$/i.test((e.textContent || '').trim()) || /(?:^|[\s_-])close(?:$|[\s_-])/i.test(String(e.className && e.className.baseVal !== undefined ? e.className.baseVal : e.className || ''))))[0];
+  let root = document.querySelector('[data-nr-modal-anchor]')?.parentElement;
+  let x;
+  while (!x && root && root !== document.body && !root.querySelector('[data-nr-view]')) {
+    x = [...root.querySelectorAll('button, a, [role="button"], span, i, div')]
+      .find((e) => shown(e) && (/close/i.test(e.getAttribute('aria-label') || '') || /^(?:×|✕|✖|x|close)$/i.test((e.textContent || '').trim()) || e.classList.contains('close')));
+    root = root.parentElement;
+  }
   if (x) x.click();
   else {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));

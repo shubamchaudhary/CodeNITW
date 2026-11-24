@@ -238,8 +238,9 @@ const JOB_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Job</t
 export async function startMock({ key, cert }) {
   const state = {};
   // The fake www.instahyre.com (mock-instahyre.mjs).
-  const insta = { mode: 'ok', jobs: INSTA_JOBS(), applies: [], notInterested: [], needsMore: 'j9', limitAfter: 2, format: 'any' };
-  const instaReset = (over = {}) => Object.assign(insta, { mode: 'ok', jobs: INSTA_JOBS(), applies: [], notInterested: [], needsMore: 'j9', limitAfter: 2, format: 'any' }, over);
+  const insta = {};
+  const instaReset = (over = {}) => Object.assign(insta, { mode: 'ok', jobs: INSTA_JOBS(), applies: [], attempts: [], searches: [], notInterested: [], needsMore: 'j9', limitAfter: 2, format: 'any' }, over);
+  instaReset();
   const reset = (over = {}) => Object.assign(state, {
     mode: 'ok', // ok | 500 | 429 | 401 | drop | shape | ignore | wipe
     headline: 'Backend Software Engineer (Java) | 2+ YOE',

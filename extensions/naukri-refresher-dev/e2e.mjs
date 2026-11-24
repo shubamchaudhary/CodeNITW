@@ -263,6 +263,7 @@ async function firefox(tmp) {
 async function suite(d, mock) {
   const results = [];
   const step = async (name, fn) => {
+    if (process.env.NR_INSTAHYRE_ONLY === '1' && !name.startsWith('Instahyre')) return;
     const t0 = Date.now();
     try {
       await fn();
@@ -1262,7 +1263,7 @@ async function suite(d, mock) {
 
   await step("Instahyre apply: the links are the owner's own two searches; settings saved by the first version move to them, and it applies to everything by default", async () => {
     const d0 = (await instaStatus()).defaults;
-    assert.ok(d0.urlJava.endsWith('skills=Java,Python,FastAPI,C%2B%2B,JavaScript,Node.js,SQL,Spring+Boot,Spring+Data,JPA,Hibernate,React.js,Microservices,API+Testing,OAuth&years=2'), d0.urlJava);
+    assert.ok(d0.urlJava.endsWith('skills=Java,Spring+Boot'), d0.urlJava);
     assert.ok(d0.urlAi.endsWith('skills=PostgreSQL,Snowflake,Redis,Kafka,Amazon+S3,Azure,Firebase,Docker,LangGraph,LangChain,LLMs,Agentic+AI&years=2'), d0.urlAi);
     assert.equal(d0.skipRules, false, 'it applies to everything the search shows unless you turn the skip rules on');
     // What the first version saved (its guessed GenAI link, the safer limits): taken to the new ones.
@@ -1276,15 +1277,44 @@ async function suite(d, mock) {
     await d.msg({ type: 'instaSave', patch: { urlAi: d0.urlAi, skipRules: false, maxRun: 100 } });
   });
 
-  await step('Instahyre apply: a link Instahyre does not understand ends the run at once and says what to do', async () => {
-    const link = 'https://www.instahyre.com/candidate/opportunities/?search=true&skills=A&skills=B&years=2';
-    const t0 = Date.now();
-    await instaRun('java', { urlJava: link }, { format: 'comma' });
-    const s = await instaWait(60_000);
-    assert.ok(Date.now() - t0 < 30_000, 'not 45 seconds of sitting idle');
-    assert.equal(mock.insta.applies.length, 0);
-    assert.ok(s.state.note.includes('No matching opportunities') && s.state.note.includes('paste it in the Details page'), s.state.note);
-    await d.msg({ type: 'instaSave', patch: { urlJava: (await instaStatus()).defaults.urlJava } });
+  await step('Instahyre redirects to populated recommendations: rebuilds Java + Spring Boot, searches again on reload, applies once per filtered job', async () => {
+    await instaRun('java', {}, { format: 'redirect', mode: 'slowResults' });
+    const s = await instaWait();
+    assert.deepEqual(ids(), ['j1', 'j10', 'j2', 'j3', 'j4', 'j8', 'j9'], s.state.note);
+    assert.deepEqual(mock.insta.attempts.slice().sort(), ids());
+    assert.deepEqual(mock.insta.searches, Array(2).fill({ skills: ['Java', 'Spring Boot'], years: null }));
+  });
+
+  await step('Instahyre GenAI restores exact saved skills and experience after a redirect; an empty filtered search ends cleanly', async () => {
+    await instaRun('ai', { urlAi: 'https://www.instahyre.com/candidate/opportunities/?search=true&skills=C%2B%2B&skills=LangGraph&years=2' }, { jobs: [], format: 'redirect' });
+    const s = await instaWait();
+    assert.deepEqual(mock.insta.searches, [{ skills: ['C++', 'LangGraph'], years: '2' }]);
+    assert.deepEqual(mock.insta.attempts, []);
+    assert.match(s.state.note, /no more jobs in the verified search/);
+    await d.msg({ type: 'instaSave', patch: { urlAi: s.defaults.urlAi } });
+  });
+
+  await step('Instahyre recovers when the list switches to recommendations after the search first appears', async () => {
+    await instaRun('java', { maxRun: 1 }, { mode: 'lateRedirect' });
+    const s = await instaWait();
+    assert.deepEqual(mock.insta.attempts, ['j1'], s.state.note);
+    assert.deepEqual(mock.insta.searches, [{ skills: ['Java', 'Spring Boot'], years: null }]);
+  });
+
+  await step('Instahyre stops before applying if a filter is dropped, the skill has no exact suggestion, Search Results stays inactive, or the modal changes lists', async () => {
+    const link = (await instaStatus()).defaults.urlJava;
+    for (const [urlJava, sim, expected] of [
+      [link + '&location=Bangalore', { format: 'redirect' }, /additional filters/],
+      [link + ',Unavailable', { format: 'redirect' }, /exact skill "Unavailable"/],
+      [link, { format: 'redirect', mode: 'stale' }, /filtered Search Results list/],
+      [link, { mode: 'drift' }, /Search Results list/],
+    ]) {
+      await instaRun('java', { urlJava }, sim);
+      const s = await instaWait();
+      assert.deepEqual(mock.insta.attempts, []);
+      assert.match(s.state.note, expected);
+    }
+    await d.msg({ type: 'instaSave', patch: { urlJava: link } });
   });
 
   await step('Instahyre apply: Instahyre saying the apply limit is reached stops the run', async () => {
@@ -1306,7 +1336,7 @@ async function suite(d, mock) {
     await instaRun('java', {}, { mode: 'login' });
     const s = await instaWait();
     assert.equal(mock.insta.applies.length, 0);
-    assert.match(s.state.note, /log in/);
+    assert.match(s.state.note, /log in/i);
   });
 
   await step('Instahyre apply: Stop ends a run in progress', async () => {

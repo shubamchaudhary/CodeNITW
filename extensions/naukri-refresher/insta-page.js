@@ -1,4 +1,5 @@
 // The Instahyre apply page: two start buttons, the skip rules, limits, links, and what it did.
+import { savedSearch } from './instahyre-rules.js';
 const ext = globalThis.browser ?? globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 const send = (type, extra = {}) => ext.runtime.sendMessage({ type, ...extra });
@@ -75,11 +76,18 @@ $('saveLimits').addEventListener('click', async () => {
   $('limitsOut').textContent = 'Saved.';
 });
 $('saveUrls').addEventListener('click', async () => {
-  const s = await send('instaSave', { patch: { urlJava: $('urlJava').value.trim(), urlAi: $('urlAi').value.trim() } });
-  const bad = [$('urlJava').value.trim() !== s.cfg.urlJava && 'Java', $('urlAi').value.trim() !== s.cfg.urlAi && 'GenAI'].filter(Boolean);
+  const patch = { urlJava: $('urlJava').value.trim(), urlAi: $('urlAi').value.trim() };
+  for (const [id, link] of Object.entries(patch)) {
+    try { savedSearch(link); } catch {
+      $('urlsOut').textContent = `For ${id === 'urlJava' ? 'Java backend' : 'GenAI'}, paste the Search Results link with the selected skills.`;
+      $(id).focus();
+      return;
+    }
+  }
+  const s = await send('instaSave', { patch });
   $('urlJava').value = s.cfg.urlJava;
   $('urlAi').value = s.cfg.urlAi;
-  $('urlsOut').textContent = bad.length ? `${bad.join(' and ')}: not an Instahyre candidate link, the default was kept.` : 'Saved.';
+  $('urlsOut').textContent = 'Saved.';
 });
 $('resetUrls').addEventListener('click', async () => {
   const d = (await send('instaStatus')).defaults;

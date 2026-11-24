@@ -39,6 +39,10 @@ const PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Instahyre<
 <div id="nav"><b>GO PREMIUM</b><span>ACTIVITY</span><span>OPPORTUNITIES</span><span>INBOX</span></div>
 <div id="banner" hidden></div>
 <h2 id="count" style="text-align:center"></h2>
+<button id="reveal" hidden>Search jobs</button>
+<div id="searchBox"><div class="search-bar"><span id="chips"></span><input id="skill" aria-controls="choices"><button id="search">Search</button></div><ul id="choices"></ul></div>
+<section><h4>Experience level</h4><input type="range" min="0" max="25" id="years" value="25"></section>
+<button id="recommended">Recommended jobs</button><button id="results">Search Results</button>
 <div id="list"></div>
 <button id="more" hidden>Load more</button>
 <div id="modal" hidden></div>
@@ -46,10 +50,49 @@ const PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Instahyre<
 let jobs = [], shown = 5, mode = 'ok';
 const $ = (id) => document.getElementById(id);
 const post = (p, b) => fetch(p, { method: 'POST', body: JSON.stringify(b) }).then((r) => r.json());
+const query = new URLSearchParams(location.search);
+let selected = query.has('matching') ? ['Python'] : query.getAll('skills').flatMap(v => v.split(','));
+let searching = query.get('search') === 'true';
+const trap = { id: 'recommended', company: 'Wrong list', title: 'Java Developer', jd: 'Recommended job', badge: '1-2 Years' };
+function renderFilters() {
+  $('chips').replaceChildren();
+  selected.forEach(s => {
+    const chip = document.createElement('span'); chip.className = 'tag-item'; chip.textContent = s;
+    const x = document.createElement('button'); x.className = 'remove-button'; x.textContent = '×';
+    x.onclick = () => { selected = selected.filter(v => v !== s); renderFilters(); };
+    chip.append(x); $('chips').append(chip);
+  });
+  $('recommended').className = searching ? '' : 'active'; $('results').className = searching ? 'active' : '';
+}
+$('years').value = query.get('years') || '25';
+$('skill').oninput = () => {
+  const text = $('skill').value;
+  $('choices').replaceChildren();
+  setTimeout(() => {
+    if ($('skill').value !== text) return;
+    for (const s of [text + 'Script', text]) {
+      if (s === 'Unavailable') continue;
+      const li = document.createElement('li'); li.setAttribute('role', 'option'); li.textContent = s;
+      li.onclick = () => { selected.push(s); $('skill').value = ''; $('choices').replaceChildren(); renderFilters(); };
+      $('choices').append(li);
+    }
+  }, 60);
+};
+$('search').onclick = async () => {
+  const params = new URLSearchParams({ search: 'true', company_size: '0', job_type: '0', skills: selected.join(',') });
+  if ($('years').value !== '25') params.set('years', $('years').value);
+  await post('/__insta/search', { skills: selected, years: params.get('years') });
+  if (mode !== 'stale') searching = true;
+  history.replaceState(null, '', '?' + params);
+  renderFilters();
+  if (mode === 'slowResults') setTimeout(render, 1100);
+  else render();
+};
 function render() {
   const list = $('list'); list.replaceChildren();
-  $('count').textContent = 'Showing 1 - ' + Math.min(shown, jobs.length) + ' out of ' + jobs.length + ' jobs';
-  jobs.slice(0, shown).forEach((j) => {
+  const current = searching ? jobs : [trap];
+  $('count').textContent = current.length ? 'Showing 1 - ' + Math.min(shown, current.length) + ' out of ' + current.length + ' jobs' : 'No matching opportunities found';
+  current.slice(0, shown).forEach((j) => {
     const c = document.createElement('div'); c.className = 'card';
     c.innerHTML = '<div style="width:60px;height:40px;background:#eee"></div><div style="flex:1"><h3></h3><div class="tags"><span>Bangalore</span><span>Founded in 2018</span></div><p></p><div class="tags"><span>Java</span><span>Spring Boot</span></div></div><div><button class="v">View job »</button><span class="ni">✕ Not interested</span></div>';
     c.querySelector('h3').textContent = j.company + ' - ' + j.title;
@@ -58,9 +101,10 @@ function render() {
     c.querySelector('.ni').onclick = () => post('/__insta/notinterested', { id: j.id });
     list.append(c);
   });
-  $('more').hidden = jobs.length <= shown;
+  $('more').hidden = current.length <= shown;
 }
 function open(j) {
+  if (mode === 'drift') { searching = false; history.replaceState(null, '', '?matching=true'); renderFilters(); }
   const m = $('modal'); m.hidden = false; m.replaceChildren();
   m.innerHTML = '<span class="x" aria-label="Close">×</span><div style="display:flex;gap:20px"><div style="width:220px">Your InstaMatch score LOW<br>Company at a Glance</div><div style="flex:1"><h2></h2><div class="co"></div><span class="badge" style="background:#def;padding:2px 8px"></span><h4>Job Description</h4><p class="jd"></p><div class="extra"></div></div></div><div><button class="ni2">Not interested</button><button class="apply">Apply</button></div>';
   m.querySelector('h2').textContent = j.title; m.querySelector('.co').textContent = j.company; m.querySelector('.badge').textContent = j.badge;
@@ -75,10 +119,20 @@ function open(j) {
   };
 }
 $('more').onclick = () => { shown += 5; render(); };
-fetch('/__insta/state').then((r) => r.json()).then((s) => { jobs = s.jobs; mode = s.mode; render(); });
+$('reveal').onclick = () => { $('reveal').hidden = true; $('searchBox').hidden = false; };
+fetch('/__insta/state').then((r) => r.json()).then((s) => {
+  jobs = s.jobs; mode = s.mode; renderFilters(); render();
+  if (mode === 'lateRedirect') {
+    const redirect = new MutationObserver(() => {
+      redirect.disconnect();
+      history.replaceState(null, '', '?matching=true'); searching = false; selected = ['Python'];
+      $('searchBox').hidden = true; $('reveal').hidden = false;
+      renderFilters(); render();
+    });
+    redirect.observe($('list'), { attributes: true, subtree: true, attributeFilter: ['data-nr-view'] });
+  }
+});
 </script></body></html>`;
-
-const EMPTY = '<!doctype html><title>Opportunities - Instahyre</title><h2>No matching opportunities found :(</h2><p>Hey, no matching opportunities found at the moment. Will notify you via email when new opportunities are available.</p>';
 
 const LOGIN = '<!doctype html><title>Instahyre login</title><h1>Log in to Instahyre</h1><p>Sign in to continue</p>';
 
@@ -89,8 +143,10 @@ export function instahyreApi(req, res, url, body, st) {
     res.end(typeof payload === 'string' ? payload : JSON.stringify(payload));
   };
   if (url.pathname === '/__insta/state') return send(200, { jobs: st.jobs, mode: st.mode }, 'application/json');
+  if (url.pathname === '/__insta/search') { st.searches.push(JSON.parse(body)); return send(200, {}, 'application/json'); }
   if (url.pathname === '/__insta/apply' && req.method === 'POST') {
     const id = JSON.parse(body || '{}').id;
+    st.attempts.push(id);
     if (st.mode === 'more' && id === st.needsMore) return send(200, { more: true }, 'application/json');
     if (st.mode === 'limit' && st.applies.length >= st.limitAfter) return send(200, { limit: true }, 'application/json');
     const j = st.jobs.find((x) => x.id === id);
@@ -102,12 +158,12 @@ export function instahyreApi(req, res, url, body, st) {
     return send(200, { ok: true }, 'application/json');
   }
   if (url.pathname === '/login') return send(200, LOGIN);
-  // A search link it doesn't understand lands on "?matching=true" with nothing in it, as the real site did for a guessed link.
+  // A copied search may land on Recommended jobs, including a real-looking card with Apply.
   if (url.pathname.startsWith('/candidate/opportunities')) {
-    if (url.searchParams.get('matching') === 'true') return send(200, EMPTY);
+    if (url.searchParams.get('matching') === 'true') return send(200, PAGE);
     const sk = url.searchParams.getAll('skills');
     const comma = sk.some((x) => x.includes(','));
-    if ((st.format === 'comma' && sk.length > 1) || (st.format === 'repeat' && comma)) return send(302, '', 'text/html', { location: '/candidate/opportunities/?matching=true' });
+    if (st.format === 'redirect' || (st.format === 'comma' && sk.length > 1) || (st.format === 'repeat' && comma)) return send(302, '', 'text/html', { location: '/candidate/opportunities/?matching=true' });
   }
   if (st.mode === 'login') return send(302, '', 'text/html', { location: '/login' });
   return send(200, PAGE);
