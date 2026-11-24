@@ -1,6 +1,6 @@
 # Spring Part 2: Beans, Lifecycle and Dependency Injection
 
-The questions, from most to least asked: **the bean lifecycle**, **constructor vs field vs setter injection**, **circular dependencies**, **two beans of one type**, **eager vs lazy**, **@Component vs @Bean**, **singleton vs prototype timing**, and **IoC vs DI vs DIP**.
+The questions, from most to least asked: **the bean lifecycle**, **constructor vs field vs setter injection**, **circular dependencies**, **two beans of one type**, **eager vs lazy**, **`@Component` vs `@Bean`**, **singleton vs prototype timing**, and **IoC vs DI vs DIP**.
 
 ## 1. Bean, IoC container, IoC and DI
 
@@ -164,7 +164,7 @@ To truly delay it, put `@Lazy` at the injection point (`@Lazy @Autowired Order o
 - Prototype: a new one per request or injection, no @PreDestroy.
 - Trap: a prototype injected into a singleton is created only once, so the singleton keeps the same instance.
 
-## 7. Two ways to create a bean: @Component and @Bean
+## 7. Two ways to create a bean: `@Component` and `@Bean`
 
 **@Component** on your own class. Spring finds it by scanning and calls its constructor:
 

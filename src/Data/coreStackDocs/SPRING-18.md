@@ -112,7 +112,7 @@ public class NoSQLConnection { ... }
 - `@Profile({"dev", "qa"})`: created if dev **or** qa is active.
 - Two apps, one shared codebase: put `@Profile("app1")` on the bean. App 1 sets `spring.profiles.active=app1`, app 2 sets `app2`. Only app 1 gets the bean.
 
-`@Profile` vs `@ConditionalOnProperty`:
+**@Profile vs @ConditionalOnProperty:**
 - `@Profile` groups beans by **environment** (dev, qa, prod).
 - `@ConditionalOnProperty` turns **one feature** on or off from one property.
 - Both are decided once, at startup.

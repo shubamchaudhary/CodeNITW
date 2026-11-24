@@ -3,7 +3,7 @@
 // topic per chapter. Only titles and one-line summaries live here — the
 // chapters themselves are written (pasted) into each topic's notes, which are
 // stored in the owner's own progress document and never ship with the site,
-// except where a built-in document replaces them (Data/projectsDocs: IPP-01/02, LL-01, IOA-01/02, BY-00..06, BRIK-01/02, KFK-ALL).
+// except where a built-in document replaces them (Data/projectsDocs: IPP-01/02, LL-01, IOA-01/02, BY-00..06, BRIK-01/02, TGX-01, KFK-ALL).
 // `parts` lists which "# Part N" chapters of the InterviewPlanPrep study guide
 // a topic holds, so the whole guide can be imported as one file and split.
 
@@ -13,6 +13,7 @@ export const PROJECT_SECTIONS = [
   { key: "invops", label: "Inventory Ops Agent" },
   { key: "byjob", label: "Blue Yonder work" },
   { key: "brikby", label: "Company prep: Brikby" },
+  { key: "theragenx", label: "TheragenX assignment" },
   { key: "kafka", label: "Kafka" },
 ];
 
@@ -153,6 +154,16 @@ export const PROJECT_TOPICS = [
     sectionLabel: "Company prep: Brikby",
     title: "Your designs vs Brikby's",
     summary: "DeepLogLens and InterviewPlanPrep next to Brikby: the decisions made the same way, the different ones and how to defend them, where your version is stronger and where theirs is, and the pitch for why they need you.",
+  },
+  // The TheragenX take-home (repo TheragenX-Assisment): Folio, a case-intake
+  // pipeline and review desk, with a tour of every important code file, for the
+  // follow-up session (walk through the code, then a new report and a catalog change).
+  {
+    id: "TGX-01",
+    section: "theragenx",
+    sectionLabel: "TheragenX assignment",
+    title: "Folio (the TheragenX assignment), end to end",
+    summary: "The case-intake take-home with a code tour: the catalog as the contract, numbered passages and code-point offsets, recorded model exchanges and offline replay, validation, the confidence gate and the scoped repair, the Spring review API with optimistic concurrency, the React desk, the stretch items, the honest results, and the two live tasks.",
   },
   // Checked against 232 real interview write-ups (scripts/data/kafkaInterviewEvidence.md):
   // event-driven basics were asked in 20, so the playlist's intro (#1) joins as
