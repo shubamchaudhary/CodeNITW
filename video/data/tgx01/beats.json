@@ -275,15 +275,15 @@
    "after": 0
   },
   {
-   "key": "5756648c",
-   "say": "A Spring Boot API serves those files, and the React desk shows each value next to its highlighted quote.",
+   "key": "5177d81b",
+   "say": "A Spring Boot API serves those files, with a set of deterministic checks, and the React desk shows each value next to its numbered, highlighted sentence, with an arrow to every field that sentence feeds.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "37e86271",
-   "say": "And the reviewer's accept, reject or edit goes back over a PATCH, into a file keyed by the document's revision. The model's value is never overwritten.",
+   "key": "0d2a4494",
+   "say": "And the reviewer's accept, reject or edit goes back over a PATCH, and a named sign off locks the case. Both land in files keyed by the document's revision. The model's value is never overwritten.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -310,8 +310,8 @@
    "after": 0
   },
   {
-   "key": "f275ec12",
-   "say": "And review. N P M start serves the committed outputs to the desk on port eighty eighty. The reviewer works at once, with no key and no model running.",
+   "key": "eff5c2ea",
+   "say": "And review. N P M start serves the committed outputs to the desk on port eighty eighty. The reviewer works at once, with no key and no model running. N P M run live is the same desk with the dot env file loaded, so the assistant can ask Groq new questions.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -576,8 +576,8 @@
    "after": 0
   },
   {
-   "key": "b13153cc",
-   "say": "And on the web side, Spring's ReviewApi and AssistantApi read the same files. The React desk talks only to them.",
+   "key": "b7f8d663",
+   "say": "And on the web side, Spring's ReviewApi, with its Checks, and AssistantApi read the same files. The React desk talks only to them.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -1409,8 +1409,8 @@
    "after": 0.6
   },
   {
-   "key": "ab8c4931",
-   "say": "That exchange is in the fixture for D01. One attempt, status two hundred.",
+   "key": "4e987a05",
+   "say": "That exchange is in the fixture for D01. Two rate limited attempts, four two nines, then a two hundred.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -1430,8 +1430,8 @@
    "after": 0.6
   },
   {
-   "key": "201d73ab",
-   "say": "And the desk slices the text by code point, and highlights two oh one to three forty seven when the reviewer selects Age. If you can walk this board on a whiteboard, you can explain the whole system.",
+   "key": "daf0b586",
+   "say": "And the desk slices the text by code point, highlights two oh one to three forty seven, marks it passage eight, and draws an arrow from that sentence to the three fields it feeds: initials, age and sex. If you can walk this board on a whiteboard, you can explain the whole system.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -1864,8 +1864,8 @@
    "after": 0
   },
   {
-   "key": "ecd4ca7d",
-   "say": "Topic eleven. The REST API. Six routes, and optimistic concurrency without a database.",
+   "key": "68ae9a90",
+   "say": "Topic eleven. The REST API. Seven routes, a set of plain language checks, a sign off, and optimistic concurrency without a database.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -1878,36 +1878,36 @@
    "after": 0
   },
   {
-   "key": "a2af1fed",
-   "say": "Get the catalog, always through CatalogCheck. A broken catalog is a five hundred with the field's name, so the desk can show why.",
+   "key": "338f2eaa",
+   "say": "Get the catalog, always through CatalogCheck. A broken catalog is a five hundred with the field's name, so the desk can show why. And get the duplicate candidates.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "045f24c7",
-   "say": "Get the documents. For each: the id, a title from the subject line or the first non blank line, the case count, the flags, and how many decisions are saved.",
+   "key": "24309c64",
+   "say": "Get the documents. For each: the id, a title from the subject line, the case count, the flags, how many decisions are saved, and how many cases are signed.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "659722a9",
-   "say": "Get one document. The text, its format, a revision, the extraction, and the saved decisions. And an original route serves the raw bytes, the text or the PDF.",
+   "key": "3f74a814",
+   "say": "Get one document. The text, a revision, the extraction and the saved decisions. Plus three things computed on every request and never stored: the passage boundaries, the checks for each case, and the sign offs. And an original route serves the raw bytes, the text or the PDF.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "1dbd72aa",
+   "say": "The first write. A PATCH on one field of one case, with an action: accepted, rejected or edited. It returns the whole decision map.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3fe86e5b",
-   "say": "Get the duplicate candidates.",
-   "rate": "-3%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "805b03cc",
-   "say": "And the one write. A PATCH on one field of one case, with an action: accepted, rejected or edited. It returns the whole decision map.",
+   "key": "ae1f4546",
+   "say": "And the second write, which is new. A POST that signs one case, with the reviewer's name. It only works once every field of that case is decided.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -1927,6 +1927,13 @@
    "after": 0
   },
   {
+   "key": "e4a559f2",
+   "say": "New: if this case has been signed, four oh nine again. Its decisions are locked.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
    "key": "d2ecdf50",
    "say": "An edit goes through the same Rules dot violation as the model. An invalid value is a four hundred, and no decision is saved.",
    "rate": "-3%",
@@ -1934,8 +1941,8 @@
    "after": 0
   },
   {
-   "key": "3be478ba",
-   "say": "Second check: the previous decision the client saw must equal what's stored for that field. If another tab decided it in between, four oh nine: another reviewer changed this field. That's optimistic concurrency, without a database.",
+   "key": "04ab2f77",
+   "say": "Then the previous decision the client saw must equal what's stored for that field. If another tab decided it in between, four oh nine: another reviewer changed this field. That's optimistic concurrency, without a database.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -2011,6 +2018,104 @@
    "after": 0
   },
   {
+   "key": "18710c00",
+   "say": "Checks dot java. It runs for every case on every document request, from the catalog, the case, the text, the flags and the duplicate index.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "db163ba7",
+   "say": "Check one. Does every catalog section have at least one extracted value? That stands in for the four minimum case elements: patient, drug, event, report. And look: no field id anywhere. Add a section to the catalog, and the check grows with it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "abc4f868",
+   "say": "Check two runs the same Rules dot violation on every value. Check three re-slices the source by code points, and compares it with the stored quote, word for word. The same test the verifier makes.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "4f0934b3",
+   "say": "Check four warns when the duplicate index pairs this report with another. Check five warns when injected instructions were masked. And a sixth, only for scans, warns that the text was read from a page image.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "675aadc8",
+   "say": "And every check is written as an outcome a reviewer understands. Not provenance passed, but every value is backed by a quote from the report. Not a test name, a sentence.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "650333b6",
+   "say": "Here's what the checks say on the committed outputs.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "37401106",
+   "say": "Almost everything is all clear. D01, for example: all five pass, and eighteen quotes matched word for word.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c72c9983",
+   "say": "Four reports have something to look at. S01 and S02 may be the same case. D07 had instructions to software, which were ignored. And S03 was read from a scanned page.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6a22efdf",
+   "say": "And the honest part. D05 passes all five, yet its age is wrong. Fifty four is an integer, in range, cited, and quoted exactly. The checks prove form and evidence, not truth. Which is exactly why a human signs.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "75ca8c72",
+   "say": "The sign off. Also synchronized, also a POST on one case.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83ffca04",
+   "say": "Same revision check as the PATCH. And the reviewer's name must be one to eighty characters.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "83cf8a0a",
+   "say": "A case can be signed only once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d9c112b9",
+   "say": "And only when every field of the case has a decision. Otherwise four oh nine, with how many are still open. The desk hides the button until then, but the server is what enforces it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c3f147d4",
+   "say": "Then it records who, when, and how many checks passed, in a sign off file next to the decisions, under the same revision. A new source, extraction or catalog is a new revision, so an old sign off no longer applies.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
    "key": "64bd7ae2",
    "say": "The follow up you should expect. How would this work with ten reviewers and three servers?",
    "rate": "-3%",
@@ -2018,15 +2123,15 @@
    "after": 0
   },
   {
-   "key": "4b78619c",
-   "say": "Move decisions into Postgres. One row per revision, case and field, with a version column, the reviewer's identity, and an append only history. The same check becomes an update where version equals the one you read.",
+   "key": "9d1c6b65",
+   "say": "Move decisions and sign offs into Postgres. One row per revision, case and field, with a version column, the reviewer taken from the login, and an append only history. The same check becomes an update where version equals the one you read.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "154a7806",
-   "say": "Today it's synchronized in one process, with a file per revision. At scale, a conditional update works across replicas, and you know who changed what.",
+   "key": "1c6fdafd",
+   "say": "Today it's synchronized in one process, with a file per revision, and the signer is a typed name, because there are no accounts. At scale, a conditional update works across replicas, and you know who changed what.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2039,64 +2144,64 @@
    "after": 0
   },
   {
-   "key": "8f2e3287",
-   "say": "Check 11. A reviewer opens D01, then the catalog is edited, then they click Accept. What happens? A, Saved against the old catalog. B, 409: source or catalog changed; reload. C, 400: invalid value. Or D, Saved, and the catalog change is reverted.",
+   "key": "021b3964",
+   "say": "Check 11. Every field of D03's case is decided and it's signed. A reviewer then tries to change one decision. What happens? A, Saved, and the sign-off is removed. B, 409: this case is signed, so its decisions are locked. C, 400: invalid value. Or D, Saved as a second version.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
   },
   {
-   "key": "2abb1343",
-   "say": "B. Four oh nine: source or catalog changed, reload the document. The page's revision included the old catalog. After a reload, they see the new revision, with a fresh, empty decision map.",
+   "key": "3c7b3cb8",
+   "say": "B. Four oh nine: this case is signed, so its decisions are locked. The PATCH checks for a sign off before it looks at the decision. Only a new revision, a changed source, extraction or catalog, starts fresh, with no sign off.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "97b3e83e",
-   "say": "Topic twelve. The React desk. The document on the left, the patient's fields on the right.",
+   "key": "a0396a79",
+   "say": "Topic twelve. The React desk. A review flow along the top, the report on the left, the fields on the right, and arrows between them.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "2035d676",
-   "say": "The desk is one screen, and six components.",
+   "key": "d3852f99",
+   "say": "The desk is one screen, and it fits the browser window. Only the panes scroll.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "e6466602",
-   "say": "App holds the state. It loads, selects, saves, handles the keyboard, and draws every loading, empty and error state.",
+   "key": "bdee08f6",
+   "say": "App holds the state. It loads, selects, saves, signs, handles the keyboard, and draws every loading, empty and error state.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "536aaf4d",
-   "say": "Source draws the report, split wherever any evidence starts or ends.",
+   "key": "66d4469a",
+   "say": "ReviewFlow is the slim strip on top: draft, check, review and sign.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ec99e536",
-   "say": "Fields draws the rows, grouped by catalog section, with the status, and the accept, reject and edit buttons.",
+   "key": "5ba5c148",
+   "say": "Source draws the report, split wherever any evidence starts or ends, with passage numbers and decision colours. And Connector draws the arrows, from the selected sentence to every field that cites it.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "652e02fb",
-   "say": "FieldEditor picks the control from the field's type.",
+   "key": "0775836b",
+   "say": "Fields draws the rows, grouped by catalog section, each with its passage pill, and FieldEditor picks the control from the field's type.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "f48e6838",
-   "say": "And AskPanel and Comparison are the two stretch views: the assistant, and the duplicate pair side by side.",
+   "key": "cc5f0c6d",
+   "say": "And AskPanel and Comparison are the two stretch views: the streamed assistant, and the duplicate pair side by side.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2116,8 +2221,8 @@
    "after": 0
   },
   {
-   "key": "05d39991",
-   "say": "Then it selects the first field that has evidence, so a highlight is visible the moment the report opens.",
+   "key": "cb769cd8",
+   "say": "Then it selects the first field that has evidence, so a highlight, and its arrows, are visible the moment the report opens.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2135,6 +2240,34 @@
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
+  },
+  {
+   "key": "35d2948d",
+   "say": "ReviewFlow. It counts failures and warnings from the server's checks, and how many of the case's fields are decided.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "672a4019",
+   "say": "Step one, draft, is always done. Hover it, and it names the model and the catalog version that produced it.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c99c152b",
+   "say": "Step two, check. All clear, or how many to look at, or how many need attention. Click, and the plain language list opens.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "cf0778c5",
+   "say": "Step three. Twelve of sixteen decided, until every field is decided. Then a name box, remembered in local storage, and sign case. Once signed: a lock, and who signed, and when. And note, ready only decides whether to show the form. The server is what refuses an early sign off.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
    "key": "e114ca21",
@@ -2165,11 +2298,116 @@
    "after": 0
   },
   {
-   "key": "14549dae",
-   "say": "A piece with ids becomes a mark that acts like a button. Click it, and its field is selected. That's the stretch item: click a quote, select its field. And only the source pane scrolls, so the field row stays under your pointer.",
+   "key": "fc6649b6",
+   "say": "A piece with ids becomes a mark that acts like a button. Click it, and its field is selected. That's the stretch item: click a quote, select its field. And the mark carries the ids of every field citing it, which is what the arrows read.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
+  },
+  {
+   "key": "ee42e999",
+   "say": "Numbered evidence. The API now sends each passage's boundaries, and passage of maps a span to its number. The same numbers the model saw, and the assistant cites. So twenty two means one sentence, everywhere on screen.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "10b11aea",
+   "say": "The source shows that number as a small superscript where the passage ends. And each field row shows the same number on a pill. So you can see which sentence feeds which field without clicking anything.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "1937feb0",
+   "say": "Then colour. A sentence can feed several fields, so it stays yellow, to judge, until every one of them is decided.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "ad488487",
+   "say": "Then it shows the strongest decision. A rejection beats an edit, which beats an acceptance. So a red sentence always means: look again.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "9c837f0a",
+   "say": "Four colours, one rule.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "bf68c6da",
+   "say": "Yellow: still to judge. Every sentence and every row starts there.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6f458266",
+   "say": "Green when accepted. Violet when edited, because blue already marks the passages the assistant cites.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "6c0472e2",
+   "say": "And red when rejected, which outweighs everything else. Confidence is still written in words on every row, so colour is never the only signal.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "b48fdaa7",
+   "say": "Connector dot t s x. It finds the active mark in the source, and draws nothing when the panes are stacked on a narrow screen.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "445b12a4",
+   "say": "Then, for every field id that mark carries, it finds that field's row, measures it, and skips it if it's scrolled out of view. In D01, passage eight gives the initials, the age and the sex: three arrows. In D02, passage fourteen feeds five fields: drug, dose, unit, route and start date.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "19e0d5ec",
+   "say": "Each arrow is a cubic curve, in its own field's colour, taken from the row's decision.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "eee4d5aa",
+   "say": "The selected field's arrow is drawn last, solid, on top. The others are dashed.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "e264bfb8",
+   "say": "And it redraws on scroll in either pane, throttled to animation frames, on resize, and once more a hundred and twenty milliseconds after a selection, because the source scrolls its evidence into view after rendering. It's decoration, hidden from screen readers. The pills say the same thing in text.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "f7b3f423",
+   "say": "The attack. Why do five fields point at one whole sentence? Why not highlight just the exact words for each one?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "13a8aa70",
+   "say": "It was considered, and deliberately not done. The model cites passage numbers, and Java resolves them to whole sentences. That's the grounding guarantee. Asking the model for exact word positions would put positions back in the model's hands, the one thing the design avoids. So the sentence stays the evidence, and the arrows show every field that depends on it.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
   },
   {
    "key": "edf18990",
@@ -2193,29 +2431,29 @@
    "after": 0
   },
   {
-   "key": "0489f489",
-   "say": "And save sends the PATCH with the action, the value, the page's revision, and the previous decision. Exactly the two things the server checks.",
+   "key": "214e489b",
+   "say": "And save refuses at once on a signed case. Otherwise it sends the PATCH with the action, the value, the page's revision, and the previous decision. Exactly the things the server checks.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "776a1502",
-   "say": "Every row shows the label, the value using option labels, not codes, and the status: a confidence, or unknown, or conflict. In words, never colour alone.",
+   "key": "558e6147",
+   "say": "Every row shows the label, the value using option labels, not codes, its passage pill, and the status: a confidence, or unknown, or conflict. In words, never colour alone.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "e12d9e34",
-   "say": "After a decision, an edit looks different, with a reviewer edit badge, the model's value stays visible underneath, and progress counts up per report.",
+   "key": "ad8b65c9",
+   "say": "After a decision, an edit looks different, with a reviewer edit badge, the model's value stays visible underneath, and progress counts up until the case can be signed.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "3736ebbc",
-   "say": "And every state is designed. Loading. No reports. Couldn't load, with try again. And a report with no cases looks intentional: no case to review, and the flag that explains why.",
+   "key": "4fd15e2f",
+   "say": "And every state is designed. Loading. No reports. Couldn't load, with try again. A report with no cases: no case to review, and the flag that explains why. And a signed case says its decisions are locked.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2235,8 +2473,8 @@
    "after": 0
   },
   {
-   "key": "22fb15fb",
-   "say": "Nowhere. Fields renders from the catalog. The only names the U I knows are the seven types and three statuses. And there's a test, submits a typed number for an added catalog field, that adds a field the code has never seen, and saves it.",
+   "key": "881a3273",
+   "say": "Nowhere. Fields renders from the catalog, and so do the checks on the server. The only names the U I knows are the seven types, the statuses, and the three decisions. And there's a test, submits a typed number for an added catalog field, that adds a field the code has never seen, and saves it.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
@@ -2251,6 +2489,20 @@
   {
    "key": "087cff04",
    "say": "B. JavaScript strings index UTF sixteen code units, but Java's offsets are code points. One emoji would shift every later highlight by one. Array from splits by code point, so both sides agree, and a test checks exactly that.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "50060349",
+   "say": "Check 13. In D02, passage 14 feeds five fields. You accept four and edit the dose. What colour is the sentence? A, Green: most were accepted. B, Violet: all are decided, and an edit outweighs an acceptance. C, Yellow: an edit needs a second look. Or D, Red.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "64209132",
+   "say": "B. Violet. All five are decided, so the sentence shows the strongest decision, and an edit beats an acceptance. The arrows keep their own colours: four green, and the dose violet. If one field were still open, the sentence would stay yellow.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2389,50 +2641,162 @@
    "after": 0.6
   },
   {
-   "key": "ca590481",
-   "say": "The last stretch piece, added later: ask the report.",
+   "key": "b5612a6f",
+   "say": "The last stretch piece, added later, and rebuilt since: ask the report. A short conversation about the open report, in a third column. Here's one question, end to end.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "de1c66aa",
-   "say": "A reviewer asks about the selected field, or the whole report, in up to five hundred characters.",
+   "key": "8ec995f5",
+   "say": "The panel posts the question to the stream route, with the selected field, and up to three earlier turns of the conversation.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "ba10b38f",
-   "say": "The model sees the same masked numbered passages as extraction, plus the extraction itself as data, and must answer in at most a hundred and twenty words, citing passage numbers.",
+   "key": "805497af",
+   "say": "AssistantApi validates first. One to five hundred characters, at most three earlier turns. Bad requests are ordinary HTTP errors. Then it opens a server sent event stream, and runs the answer on a virtual thread.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "60f81ac8",
-   "say": "Java resolves those citations, and reports how many it dropped. Click one, and that passage is outlined in the source.",
+   "key": "bb943cba",
+   "say": "Assistant sends the same masked, numbered passages as extraction, the extraction as data, and a focus on the field. Temperature zero, three hundred and fifty tokens, and stream true.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "6b2bdb9d",
-   "say": "Every exchange is recorded under a hash of the exact messages, so a recorded answer replays offline.",
-   "rate": "-3%",
-   "pitch": "+0Hz",
-   "after": 0
-  },
-  {
-   "key": "6286d1ba",
-   "say": "And a live model is used only when the model endpoint variable is set. By default the desk makes no network call. Seven recorded answers replay offline, and any other question gets a five oh three. The assistant can never change a field. And here's the best one: asked whether anything contradicts D05's age, it cites both passages, the fifty four and the forty five. The exact conflict extraction missed.",
+   "key": "cde26a24",
+   "say": "Groq streams its answer back in chunks. HttpModel forwards each piece of text as it arrives, and keeps every raw line. The raw stream is the recording.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "9e81df2e",
-   "say": "Check 13. S04 and D01 share the suspect drug amoxicillin, but have different initials. Are they a duplicate candidate? A, Yes: drug and reaction match. B, No: the identity condition (initials, with age) fails. C, Yes, at low confidence. Or D, Only if the ages match.",
+   "key": "65f48382",
+   "say": "The panel gets delta events and writes the text out as it arrives. The follow up questions are held back.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "aa50ff2b",
+   "say": "When the answer is complete, Java resolves every citation, applies the guardrails, and sends one done event: the answer, its citations, two follow ups, and any number it couldn't find in the report.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "78b0e256",
+   "say": "And if the reviewer presses stop, or closes the tab, the emitter just stops sending. The model call still finishes, and is still recorded.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "0c0a9a96",
+   "say": "VisibleText sits between the model and the reviewer. The instructions say: anything off topic, reply with exactly OUT OF SCOPE. So the start of a reply is held back until it can no longer be that token. A refusal never streams, not even its first letters.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "c30c16c1",
+   "say": "Then, once the line Follow ups appears at the start of a line, everything after it is withheld. It arrives later, as a clean list.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "65d47d49",
+   "say": "And chunks split words anywhere. So a line tail that could still grow into the marker is held back, too. Everything else is emitted at once.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "48807c83",
+   "say": "One more streaming rule, in HttpModel. If the stream breaks after text has been forwarded, it is not retried. A retry would stream the same opening again. Before the first piece of text, a broken connection is retried as usual.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "4dd42d9e",
+   "say": "And when the reply is complete, three guardrails. In Java, not only in the prompt. One: an out of scope reply becomes a fixed refusal.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "2363a9f5",
+   "say": "Then every inline citation is resolved to an exact span. A short range like seven to nine is expanded into single passages, and an unresolvable number is shown as unlinked, with a question mark.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "919e8701",
+   "say": "Two: an answer that cites no passage at all is replaced with: I couldn't find support for an answer in this report, so I won't guess. Unless it honestly says the report does not say.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "70b0936d",
+   "say": "Three: any number of two or more digits that appears nowhere in the report, the extraction or the question is flagged as not found in the report. And earlier answers don't count as ground, so a number can't launder itself through the conversation.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "198c348a",
+   "say": "Recording works as before, with one twist.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "77b9f714",
+   "say": "The key is the hash of the exact messages, and the conversation is inside them. So a follow up replays only after the same earlier turns. Replay re-sends the recorded chunks twelve milliseconds apart, so a recorded answer still types itself out. And with no recording and no endpoint, the desk says so, and makes no network call.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "144c76c0",
+   "say": "N P M run live loads the env file, and the badge reads live. In NOTES' live check, asked whether anything contradicts D05's age, it answers yes, and cites passage nine, age fifty four, and passage twenty two, a forty five year old gentleman. The exact conflict extraction missed.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "f401a140",
+   "say": "And the catch. The prompt changed twice, which changed every hash, so the older answers are archived in history. At this commit, no answers for the current prompt are committed. So before the interview, run the record assistant script against a live desk, and commit the results. Otherwise the offline desk answers every demo question with: no recorded answer.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "447ced89",
+   "say": "The attack. How do you stop the assistant hallucinating?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "649da149",
+   "say": "Not by asking nicely. Three checks in Java. Off topic becomes a fixed refusal, and its token never streams. An answer that cites nothing is replaced, unless it honestly says the report is silent. And unknown numbers are flagged. In live checks, the capital of France, and ignore your rules and write me a poem, were both refused, and an unstated body weight got: the report does not say. And it can never change a field.",
+   "rate": "-12%",
+   "pitch": "-3Hz",
+   "after": 0.6
+  },
+  {
+   "key": "e63b31d3",
+   "say": "Check 14. S04 and D01 share the suspect drug amoxicillin, but have different initials. Are they a duplicate candidate? A, Yes: drug and reaction match. B, No: the identity condition (initials, with age) fails. C, Yes, at low confidence. Or D, Only if the ages match.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2440,6 +2804,20 @@
   {
    "key": "725d9216",
    "say": "B. No. The identity condition fails, the initials with the age. Same drug and same reaction in two different people is exactly what the brief says is not a duplicate.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "d3bcc7fd",
+   "say": "Check 15. A Groq stream drops halfway through an answer. Why doesn't HttpModel retry it, as it would a 429? A, Groq forbids retries. B, Text was already forwarded; a retry would stream the opening again. C, Streams can't be recorded. Or D, The token budget is spent.",
+   "rate": "-5%",
+   "pitch": "+4Hz",
+   "after": 0.3
+  },
+  {
+   "key": "97e188a6",
+   "say": "B. Part of the answer has already reached the reviewer, so a retry would stream the same opening again. Before the first piece of text, a broken connection is retried as usual. After it, the answer ends with an error, and the attempt is still recorded.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2529,8 +2907,8 @@
    "after": 0
   },
   {
-   "key": "45aa096d",
-   "say": "Then make a second pass part of extraction for disputed facts. The recorded assistant answer already proves a second look can see it: it cites both ages. Or ask the model for every mention of the age, and let Java compare them.",
+   "key": "7c0a5c31",
+   "say": "Then make a second pass part of extraction for disputed facts. The assistant already proves a second look can see it: it cites both ages. And note, D05 passes all five deterministic checks, so no structural check would catch it. Or ask the model for every mention of the age, and let Java compare them.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2550,15 +2928,15 @@
    "after": 0.6
   },
   {
-   "key": "f28e3c1b",
-   "say": "The tests. Fifty seven Java tests, all passing offline. Extraction, replay, and a corpus test that rebuilds every committed output. The provider test runs a loopback server to prove attempts are recorded, the key is redacted, and a rerun resumes. The API test covers the routes, both four oh nines, and bad edits. And the catalog test alone is thirty two parameterized cases.",
+   "key": "72f13f5d",
+   "say": "The tests. Sixty two Java tests, all passing offline on JDK twenty one. Extraction, replay, and a corpus test that rebuilds every committed output. The provider test proves attempts are recorded, the key is redacted, and a rerun resumes. The API test covers the four oh nines, bad edits, and a sign off that needs every field decided and then locks the case. Then the checks test, and the assistant test with its stream and guardrails. And the catalog test alone is thirty two parameterized cases.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "22c63457",
-   "say": "Twenty React tests. Every state, a PATCH updating progress, a field the code has never seen getting its typed control, code point highlights, and the assistant.",
+   "key": "e45d7de8",
+   "say": "Twenty eight React tests. Every state, a field the code has never seen getting its typed control, the flow strip and the sign off, passage numbers and decision colours, and the streamed answer, with its refusals and the event parser. The repo's notes still say twenty seven. Vitest counted twenty eight.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2585,15 +2963,15 @@
    "after": 0
   },
   {
-   "key": "7f2abdfb",
-   "say": "Be straight. The brief invited AI tools. Codex wrote the first implementation and tests. A later Claude Code session added the catalog check, the not evaluated rows, the assistant, scan transcription, the array reply format, and CI, and ran the Groq experiments. The language models only extract. What you own is the understanding. You can trace any field from bytes to pixels, explain every lost point, and change the code live. And you point at the evidence: the recorded requests, offline replay, the verifier, and the raw scorer output.",
+   "key": "f1720af1",
+   "say": "Be straight. The brief invited AI tools. Codex wrote the first implementation and tests. A later Claude Code session added the catalog check, the not evaluated rows, the assistant, scan transcription, the array reply format, and CI, and ran the Groq experiments. The language models only extract. What you own is the understanding. You can trace any field from bytes to pixels, explain every lost point, and change the code live. And you point at the evidence: the recorded requests, offline replay, the verifier, and the raw scorer output. One gap: the notes don't yet say who built the newest work, the streaming assistant, the checks, the sign off and the arrows. So say it yourself.",
    "rate": "-12%",
    "pitch": "-3Hz",
    "after": 0.6
   },
   {
-   "key": "8b7832f4",
-   "say": "Check 14. Every extracted public field is grounded, 63 of 63, yet the score is 61 of 64. Why? A, The checker is wrong. B, Grounding proves the quote exists, not that it supports that value for that patient. C, Some offsets were off by one. Or D, Unknown fields count as wrong.",
+   "key": "85b02ec6",
+   "say": "Check 16. Every extracted public field is grounded, 63 of 63, yet the score is 61 of 64. Why? A, The checker is wrong. B, Grounding proves the quote exists, not that it supports that value for that patient. C, Some offsets were off by one. Or D, Unknown fields count as wrong.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3
@@ -2620,8 +2998,8 @@
    "after": 0
   },
   {
-   "key": "f5b349b0",
-   "say": "The first ten: open the desk, select D01's age, and follow it. The catalog, passage eight, the fixture, the span from two oh one to three forty seven, and the highlight. The board from topic seven.",
+   "key": "4f01dc60",
+   "say": "The first ten: open the desk with N P M run live, select D01's age, and show passage eight, its superscript, its three arrows, and the check strip. Then follow it back: the catalog, the fixture, and the span from two oh one to three forty seven. The board from topic seven.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2648,8 +3026,8 @@
    "after": 0
   },
   {
-   "key": "2b0ab240",
-   "say": "And the last five minutes: run one focused test, and show the commands that reproduce everything.",
+   "key": "1298f953",
+   "say": "And the last five minutes: decide every field of one case and sign it, run one focused test, and show the commands that reproduce everything.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2837,22 +3215,22 @@
    "after": 0
   },
   {
-   "key": "5a0abccf",
-   "say": "The two four oh nines?",
+   "key": "7e64aa11",
+   "say": "The four oh nines?",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "b98eec10",
-   "say": "A stale revision, and a stale previous decision.",
+   "key": "ef94ed5f",
+   "say": "A stale revision, a stale previous decision, and a signed case.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
   },
   {
-   "key": "b29ece0d",
-   "say": "And the duplicate rule?",
+   "key": "58783b84",
+   "say": "The duplicate rule?",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2860,6 +3238,34 @@
   {
    "key": "f7174e4a",
    "say": "Identity plus age, a drug in another section, and a reaction in a third.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "5ec0d3bd",
+   "say": "What do the checks prove?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "107ca2bc",
+   "say": "Form and evidence, not truth. D05 passes all five.",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "b65a963e",
+   "say": "And the assistant's guardrails?",
+   "rate": "-3%",
+   "pitch": "+0Hz",
+   "after": 0
+  },
+  {
+   "key": "c49b1ec8",
+   "say": "Off topic becomes a refusal, no citation means I won't guess, and unknown numbers are flagged.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2893,8 +3299,8 @@
    "after": 0
   },
   {
-   "key": "46f5633d",
-   "say": "A Spring API serves a React desk, where a reviewer sees each value next to its highlighted quote, and accepts, rejects or edits it, with optimistic concurrency on every decision.",
+   "key": "6f0f4f29",
+   "say": "A Spring API serves a React desk, where a reviewer follows each value to its numbered sentence, reads deterministic checks, accepts, rejects or edits every field with optimistic concurrency, and signs the case, which locks it.",
    "rate": "-3%",
    "pitch": "+0Hz",
    "after": 0
@@ -2907,8 +3313,8 @@
    "after": 0.6
   },
   {
-   "key": "b20b1cab",
-   "say": "Check 15. During Task 1, Groq answers 429 and the run stops with \"Quota wait is 90 seconds\". What do you do? A, Delete the fixture and start over. B, Rerun the same command later; meanwhile do the catalog drill on replay. C, Edit the fixture to add a 200 by hand. Or D, Switch to a fresh fixtures folder at once.",
+   "key": "eff477fd",
+   "say": "Check 17. During Task 1, Groq answers 429 and the run stops with \"Quota wait is 90 seconds\". What do you do? A, Delete the fixture and start over. B, Rerun the same command later; meanwhile do the catalog drill on replay. C, Edit the fixture to add a 200 by hand. Or D, Switch to a fresh fixtures folder at once.",
    "rate": "-5%",
    "pitch": "+4Hz",
    "after": 0.3

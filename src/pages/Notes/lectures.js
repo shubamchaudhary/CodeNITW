@@ -8,7 +8,7 @@ const LECTURES = {
   // AI Stack chapters were rewritten as articles on 2026-11-18; no lectures.
   aistack: {},
   corestack: { "JAVA-01": 9, "JAVA-04": 18, "JAVA-05": 10, "JAVA-06": 15 },
-  projects: { "IPP-01": 52, "LL-01": 145, "IOA-01": 107, "BRIK-01": 22, "BRIK-02": 21, "KFK-ALL": 102 },
+  projects: { "IPP-01": 52, "LL-01": 145, "IOA-01": 107, "BRIK-01": 22, "BRIK-02": 21, "KFK-ALL": 102, "TGX-01": 97 },
   // The question banks (owner-only pages): one lecture per tech.
   webbasics: { "PY-01": 118, "FA-01": 58, "JS-01": 66, "RE-01": 51, "ND-01": 55 },
 };
