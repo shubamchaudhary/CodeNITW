@@ -42,7 +42,7 @@ import {
   setDayTime,
   migrateCardTime,
 } from "../../Data/planStore";
-import { CORE_STACK_TOPICS, DSA_PROBLEMS, getCoreStackTopic, getAIStackTopic, getDsaProblem } from "../../Data/catalog";
+import { CORE_STACK_SOURCE_TOPICS, CORE_STACK_TOPICS, DSA_PROBLEMS, getCoreStackTopic, getAIStackTopic, getDsaProblem } from "../../Data/catalog";
 const LegacyInterviewDetail = lazy(() => import("./LegacyInterviewDetail"));
 import { getProjectTopic } from "../../Data/Projects";
 import { demoPlan } from "../../Data/planDemo";
@@ -989,8 +989,10 @@ function CardPicker({ dayItems, onClose, onAdd, showAI, showPriority }) {
 
   const coreStackResults = useMemo(() => {
     if (tab !== "corestack") return [];
-    return CORE_STACK_TOPICS.filter(
+    const topics = showPriority ? CORE_STACK_TOPICS : CORE_STACK_SOURCE_TOPICS;
+    return topics.filter(
       (t) => !q || t.title.toLowerCase().includes(q) || (showPriority && t.priority.toLowerCase() === q)
+        || t.lessons?.some(id => getCoreStackTopic(id).title.toLowerCase().includes(q))
     );
   }, [tab, q, showPriority]);
 
