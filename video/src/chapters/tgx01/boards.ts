@@ -18,9 +18,9 @@ export const SYSTEM: Board = {
     { id: "cat", x: 40, y: 300, w: 300, t: "Field catalog", s: "16 fields · 7 types" },
     { id: "fix", x: 800, y: 300, w: 300, t: "fixtures/", s: "request + every attempt" },
     { id: "ext", x: 1160, y: 300, w: 300, t: "Extraction", s: "validate · cite · calibrate" },
-    { id: "rev", x: 40, y: 540, w: 300, t: "review-state/", s: "one file per revision" },
-    { id: "desk", x: 420, y: 540, w: 300, t: "React desk", s: "the reviewer" },
-    { id: "api", x: 800, y: 540, w: 300, t: "Review API", s: "Spring Boot REST" },
+    { id: "rev", x: 40, y: 540, w: 300, t: "review-state/", s: "decisions + sign-offs" },
+    { id: "desk", x: 420, y: 540, w: 300, t: "React desk", s: "draft · check · sign" },
+    { id: "api", x: 800, y: 540, w: 300, t: "Review API", s: "REST · Checks" },
     { id: "out", x: 1160, y: 540, w: 300, t: "out/*.json", s: "+ duplicates.json" },
   ],
   edges: [
@@ -33,7 +33,7 @@ export const SYSTEM: Board = {
     { id: "x-o", from: "ext", to: "out", fs: "b", ts: "t", fo: 60, tof: 60 },
     { id: "o-a", from: "out", to: "api" },
     { id: "a-d", from: "api", to: "desk", fs: "l", ts: "r", fo: -18, tof: -18, l: "GET", lx: 760, ly: 552 },
-    { id: "d-a", from: "desk", to: "api", fs: "r", ts: "l", fo: 18, tof: 18, l: "PATCH", lx: 760, ly: 628 },
+    { id: "d-a", from: "desk", to: "api", fs: "r", ts: "l", fo: 18, tof: 18, l: "PATCH · sign", lx: 760, ly: 628 },
     { id: "a-r", from: "api", to: "rev", fs: "b", ts: "b", via: [[950, 700], [190, 700]], l: "decisions", lx: 570, ly: 690 },
   ],
 };
@@ -45,8 +45,8 @@ export const SYSTEM_STEPS: Step[] = [
   { t: "Recorded", b: "The request and every attempt, failures included, are written to a fixture before anything is parsed.", m: "live reads its own recording", nodes: ["llm", "fix"], edges: ["m-f"] },
   { t: "Decide", b: "Java checks each proposal against today's catalog, resolves each citation to exact offsets and lowers unsupported confidence.", m: "replay enters here: no key, no network", nodes: ["fix", "ext", "cat"], edges: ["f-x", "c-x"] },
   { t: "Output", b: "One JSON per report, every catalog field in every case, plus the duplicate index.", m: "committed, and byte-identical on replay", nodes: ["ext", "out"], edges: ["x-o"] },
-  { t: "Review", b: "Spring serves the outputs; the desk shows each value next to its highlighted quote.", m: "the reviewer works at once", nodes: ["out", "api", "desk"], edges: ["o-a", "a-d"] },
-  { t: "Decisions", b: "Accept, reject or edit goes back over PATCH and lands in a file keyed by the document's revision.", m: "the model's value is never overwritten", nodes: ["desk", "api", "rev"], edges: ["d-a", "a-r"] },
+  { t: "Review", b: "Spring serves the outputs with deterministic checks; the desk numbers each quote and arrows it to every field it feeds.", m: "the reviewer works at once", nodes: ["out", "api", "desk"], edges: ["o-a", "a-d"] },
+  { t: "Decisions", b: "Accept, reject or edit goes back over PATCH; a named sign-off locks the case. Both are keyed by the document's revision.", m: "the model's value is never overwritten", nodes: ["desk", "api", "rev"], edges: ["d-a", "a-r"] },
 ];
 
 // The code map: which class does what, in the order a report meets them.
@@ -64,8 +64,8 @@ export const CODEMAP: Board = {
     { id: "json", x: 420, y: 400, w: 300, t: "Json", s: "strict read · atomic LF write" },
     { id: "extraction", x: 800, y: 400, w: 300, t: "Extraction", s: "Rules · Confidence" },
     { id: "dup", x: 1160, y: 400, w: 300, t: "Duplicates", s: "pairs → duplicates.json" },
-    { id: "ui", x: 40, y: 580, w: 300, t: "React desk", s: "App · Source · Fields" },
-    { id: "api", x: 420, y: 580, w: 300, t: "ReviewApi", s: "+ AssistantApi · Spring" },
+    { id: "ui", x: 40, y: 580, w: 300, t: "React desk", s: "Flow · Source · Fields · arrows" },
+    { id: "api", x: 420, y: 580, w: 300, t: "ReviewApi", s: "+ Checks · AssistantApi" },
     { id: "files", x: 800, y: 580, w: 300, t: "Files", s: "out · fixtures · review-state" },
   ],
   edges: [
@@ -92,7 +92,7 @@ export const CODEMAP_STEPS: Step[] = [
   { t: "Repair", b: "A patient whose fields came back as bare values gets one focused follow-up, with its own recording.", m: "D04's infant", nodes: ["model", "repair"], edges: ["m-r"] },
   { t: "Decide", b: "Extraction walks the catalog; Rules checks types, Confidence gates high. CatalogCheck rejects a broken catalog first.", m: "every failure becomes unknown, with a reason", nodes: ["repair", "extraction", "catcheck"], edges: ["r-x"] },
   { t: "Write", b: "Json writes each output atomically with LF endings; Duplicates indexes candidate pairs.", m: "replay leaves a clean checkout", nodes: ["extraction", "json", "dup", "files"], edges: ["x-j", "x-d", "x-f"] },
-  { t: "Serve", b: "Spring's ReviewApi and AssistantApi read the files; the React desk talks only to them.", m: "one process, one port", nodes: ["ui", "api", "files"], edges: ["u-a", "a-f"] },
+  { t: "Serve", b: "Spring's ReviewApi (with Checks) and AssistantApi read the files; the React desk talks only to them.", m: "one process, one port", nodes: ["ui", "api", "files"], edges: ["u-a", "a-f"] },
 ];
 
 // One real field, D01's age, from bytes to pixels.
@@ -103,10 +103,10 @@ export const FIELD: Board = {
     { id: "passages", x: 420, y: 40, w: 300, t: "Evidence.index", s: "passage 8: the age sentence" },
     { id: "request", x: 800, y: 40, w: 300, t: "Prompt.request", s: "catalog + passages" },
     { id: "reply", x: 1160, y: 40, w: 300, t: "Model reply", s: "54 · high · quotes [8]", tone: "teal" },
-    { id: "desk", x: 40, y: 320, w: 300, t: "Source.tsx", s: "Array.from · highlight" },
+    { id: "desk", x: 40, y: 320, w: 300, t: "Source.tsx", s: "passage 8 · 3 arrows" },
     { id: "out", x: 420, y: 320, w: 300, t: "out/D01.json", s: "extracted · high · [201, 347)" },
     { id: "ext", x: 800, y: 320, w: 300, t: "Extraction", s: "integer · 0–120 · gate" },
-    { id: "fixture", x: 1160, y: 320, w: 300, t: "fixtures/D01.json", s: "one attempt · 200" },
+    { id: "fixture", x: 1160, y: 320, w: 300, t: "fixtures/D01.json", s: "429 · 429 · 200" },
   ],
   edges: [
     { id: "b-p", from: "bytes", to: "passages" },
@@ -125,8 +125,8 @@ export const FIELD_STEPS: Step[] = [
   { t: "Passages", b: "The report is split at sentence and line boundaries. The age sentence is passage 8.", m: "offsets in code points", nodes: ["bytes", "passages"], edges: ["b-p"] },
   { t: "Request", b: "System message: the policy. User message: the catalog's fields and the numbered passages, as data.", m: "temperature 0 · JSON mode", nodes: ["passages", "request"], edges: ["p-r"] },
   { t: "Proposal", b: "The model answers: value 54, confidence high, quotes [8]. A passage number, not a position.", m: "what the model actually said", nodes: ["request", "reply"], edges: ["r-m"] },
-  { t: "Recorded", b: "The whole exchange is in fixtures/D01.json: one attempt, HTTP 200.", m: "replay reads exactly this", nodes: ["reply", "fixture"], edges: ["m-f"] },
+  { t: "Recorded", b: "The whole exchange is in fixtures/D01.json: two rate-limited attempts, then HTTP 200.", m: "replay reads exactly this", nodes: ["reply", "fixture"], edges: ["m-f"] },
   { t: "Checked", b: "An integer, inside 0 to 120, and the number 54 is literally in passage 8, so it stays high.", m: "Rules + Confidence", nodes: ["fixture", "ext"], edges: ["f-x"] },
   { t: "Written", b: "Status extracted, confidence high, and the span: start 201, end 347, with the quote.", m: "start inclusive, end exclusive", nodes: ["ext", "out"], edges: ["x-o"] },
-  { t: "Shown", b: "The desk slices the text by code point and highlights 201 to 347 when Age is selected.", m: "Java and React count the same way", nodes: ["out", "desk"], edges: ["o-d"] },
+  { t: "Shown", b: "The desk slices by code point, highlights 201 to 347, marks it passage 8 and draws arrows to initials, age and sex.", m: "Java and React count the same way", nodes: ["out", "desk"], edges: ["o-d"] },
 ];

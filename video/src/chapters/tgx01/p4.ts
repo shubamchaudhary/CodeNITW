@@ -3,8 +3,8 @@ import { B, sec } from "../ll01/h.ts";
 import { check } from "./k.ts";
 
 // Part 4: the scoped repair for a malformed patient (topic 9), replay and the
-// live catalog change (topic 10), the Spring review API with its two 409s
-// (topic 11), and the React desk (topic 12).
+// live catalog change (topic 10), the Spring review API with its 409s, checks
+// and sign-off (topic 11), and the React desk with its flow and arrows (topic 12).
 export const p4: Scene[] = [
   // ------------------------------------------------------------ 9
   sec("9", "Repair: one scoped retry for a malformed patient", "Topic nine. The repair. One focused retry, for one patient, and a merge that refuses to guess."),
@@ -190,25 +190,25 @@ export const fieldFor = (patient: Patient, spec: FieldSpec): Field =>
   }),
 
   // ------------------------------------------------------------ 11
-  sec("11", "Code tour IV: the REST API", "Topic eleven. The REST API. Six routes, and optimistic concurrency without a database."),
+  sec("11", "Code tour IV: the REST API", "Topic eleven. The REST API. Seven routes, a set of plain language checks, a sign off, and optimistic concurrency without a database."),
   {
     kind: "bullets",
     title: "ReviewApi.java: the routes",
     firstItemStep: 1,
     items: [
-      { icon: "📐", text: "GET /api/catalog", sub: "after CatalogCheck · a 500 with the field's name if broken" },
-      { icon: "📚", text: "GET /api/documents", sub: "id, title, caseCount, flags, reviewed" },
-      { icon: "📄", text: "GET /api/documents/{id}", sub: "text, format, revision, extraction, reviews · /original serves the bytes" },
-      { icon: "👯", text: "GET /api/duplicates", sub: "out/duplicates.json" },
+      { icon: "📐", text: "GET /api/catalog · /api/duplicates", sub: "after CatalogCheck (a 500 naming the field) · out/duplicates.json" },
+      { icon: "📚", text: "GET /api/documents", sub: "id, title, caseCount, flags, reviewed, signed" },
+      { icon: "📄", text: "GET /api/documents/{id}", sub: "text, revision, extraction, reviews + passages, checks, signoffs" },
       { icon: "✏️", text: "PATCH …/cases/{caseIndex}/fields/{fieldId}", sub: "accepted · rejected · edited, returns the decision map" },
+      { icon: "🖊", text: "POST …/cases/{caseIndex}/sign", sub: "a named sign-off, once every field is decided" },
     ],
     beats: B(
       "ReviewApi dot java. A plain Spring rest controller, with paths injected from properties, so a drill can start a second desk on other folders.",
-      "Get the catalog, always through CatalogCheck. A broken catalog is a five hundred with the field's name, so the desk can show why.",
-      "Get the documents. For each: the id, a title from the subject line or the first non blank line, the case count, the flags, and how many decisions are saved.",
-      "Get one document. The text, its format, a revision, the extraction, and the saved decisions. And an original route serves the raw bytes, the text or the PDF.",
-      "Get the duplicate candidates.",
-      { say: "And the one write. A PATCH on one field of one case, with an action: accepted, rejected or edited. It returns the whole decision map.", tone: "key" },
+      "Get the catalog, always through CatalogCheck. A broken catalog is a five hundred with the field's name, so the desk can show why. And get the duplicate candidates.",
+      "Get the documents. For each: the id, a title from the subject line, the case count, the flags, how many decisions are saved, and how many cases are signed.",
+      { say: "Get one document. The text, a revision, the extraction and the saved decisions. Plus three things computed on every request and never stored: the passage boundaries, the checks for each case, and the sign offs. And an original route serves the raw bytes, the text or the PDF.", tone: "key" },
+      "The first write. A PATCH on one field of one case, with an action: accepted, rejected or edited. It returns the whole decision map.",
+      { say: "And the second write, which is new. A POST that signs one case, with the reviewer's name. It only works once every field of that case is decided.", tone: "key" },
     ),
   },
   {
@@ -221,6 +221,8 @@ synchronized JsonNode review(@PathVariable String id, @PathVariable int caseInde
   var detail = detail(id, source(id));
   if (!detail.get("revision").asText().equals(body.path("revision").asText()))
     throw new ResponseStatusException(HttpStatus.CONFLICT, "Source or catalog changed; reload the document.");
+  if (detail.path("signoffs").has(String.valueOf(caseIndex)))
+    throw new ResponseStatusException(HttpStatus.CONFLICT, "This case is signed, so its decisions are locked.");
   ...                                           // 404 unknown case or field · 400 unknown action
   if (action.equals("edited"))
     Rules.violation(spec, value).ifPresent(error -> {
@@ -235,12 +237,13 @@ synchronized JsonNode review(@PathVariable String id, @PathVariable int caseInde
   return state;
 }
 // revision = SHA-256 of (text + "\\n" + extraction + "\\n" + catalog)`,
-    highlight: [[2, 3], [4, 6], [8, 10], [11, 15], [16, 18], [20, 20]],
+    highlight: [[2, 3], [4, 6], [7, 8], [10, 12], [13, 17], [18, 20], [22, 22]],
     beats: B(
       "The PATCH. It's synchronized, so read, check and write are one step inside this process.",
       "First check: the revision the page was built on must still be the current one. Otherwise, four oh nine: source or catalog changed, reload.",
+      "New: if this case has been signed, four oh nine again. Its decisions are locked.",
       "An edit goes through the same Rules dot violation as the model. An invalid value is a four hundred, and no decision is saved.",
-      { say: "Second check: the previous decision the client saw must equal what's stored for that field. If another tab decided it in between, four oh nine: another reviewer changed this field. That's optimistic concurrency, without a database.", tone: "key" },
+      { say: "Then the previous decision the client saw must equal what's stored for that field. If another tab decided it in between, four oh nine: another reviewer changed this field. That's optimistic concurrency, without a database.", tone: "key" },
       "Then the map is written atomically to a file named after the revision, keyed by case index slash field id. And the model's extraction is never touched.",
       { say: "And the revision is the hash of the text, the extraction and the catalog. Change any one, and decisions start fresh. No decision silently applies to something it wasn't made on.", tone: "key" },
     ),
@@ -274,48 +277,128 @@ synchronized JsonNode review(@PathVariable String id, @PathVariable int caseInde
     ),
   },
   {
+    kind: "code",
+    title: "Checks.java: the Check step, read from the catalog",
+    lang: "java",
+    code: `static ArrayNode forCase(String documentId, JsonNode catalog, JsonNode patient,
+                         String text, JsonNode flags, JsonNode duplicates) {
+  for (var section : catalog.path("sections")) {            // 1. every section has a value
+    boolean any = false;
+    for (var spec : catalog.path("fields"))
+      if (spec.path("section").asText().equals(section.path("id").asText())
+          && fields.path(spec.path("id").asText()).path("status").asText().equals("extracted"))
+        any = true;
+    (any ? present : empty).add(section.path("label").asText());
+  }
+  // "Patient, Suspect drug, Adverse event and Report details are all present"
+  // 2. Rules.violation on every extracted value   → "All values are in the expected form"
+  // 3. exact(text, span): the code-point slice equals the quote
+  //                                               → "Every value is backed by a quote from the report"
+  // 4. duplicates.json names this report?         → warn "May be the same case as report S02"
+  // 5. flag embedded_instruction_ignored?         → warn, else "No hidden instructions in the report"
+  // 6. flag machine_transcribed?                  → warn "This text was read from a scanned page"
+}
+// each check: { id, status: pass | warn | fail, label, detail }`,
+    highlight: [[1, 2], [3, 11], [12, 14], [15, 17], [19, 19]],
+    beats: B(
+      "Checks dot java. It runs for every case on every document request, from the catalog, the case, the text, the flags and the duplicate index.",
+      { say: "Check one. Does every catalog section have at least one extracted value? That stands in for the four minimum case elements: patient, drug, event, report. And look: no field id anywhere. Add a section to the catalog, and the check grows with it.", tone: "key" },
+      "Check two runs the same Rules dot violation on every value. Check three re-slices the source by code points, and compares it with the stored quote, word for word. The same test the verifier makes.",
+      "Check four warns when the duplicate index pairs this report with another. Check five warns when injected instructions were masked. And a sixth, only for scans, warns that the text was read from a page image.",
+      { say: "And every check is written as an outcome a reviewer understands. Not provenance passed, but every value is backed by a quote from the report. Not a test name, a sentence.", tone: "key" },
+    ),
+  },
+  {
+    kind: "compare",
+    title: "The checks on the committed outputs",
+    cols: [
+      { title: "All clear", icon: "✅", tone: "green", items: ["D01–D05, D08 and S04", "D01: '18 quotes matched word for word'", "five passes, no warnings"] },
+      { title: "To look at", icon: "⚠️", tone: "blue", items: ["S01, S02: 'May be the same case as report …'", "D07: 'instructions to software … ignored'", "S03: 'read from a scanned page'"] },
+      { title: "What they don't prove", icon: "⚖️", tone: "red", items: ["D05 passes all five", "54 is in range, cited, quoted exactly", "form and evidence, not truth"] },
+    ],
+    footer: "D06 has no case, so no checks · the label is the outcome, the detail one short fact",
+    beats: B(
+      "Here's what the checks say on the committed outputs.",
+      "Almost everything is all clear. D01, for example: all five pass, and eighteen quotes matched word for word.",
+      "Four reports have something to look at. S01 and S02 may be the same case. D07 had instructions to software, which were ignored. And S03 was read from a scanned page.",
+      { say: "And the honest part. D05 passes all five, yet its age is wrong. Fifty four is an integer, in range, cited, and quoted exactly. The checks prove form and evidence, not truth. Which is exactly why a human signs.", tone: "key" },
+    ),
+  },
+  {
+    kind: "code",
+    title: "ReviewApi.sign(): a named sign-off that locks the case",
+    lang: "java",
+    code: `@PostMapping("/documents/{id}/cases/{caseIndex}/sign")
+synchronized JsonNode sign(@PathVariable String id, @PathVariable int caseIndex,
+                           @RequestBody JsonNode body) throws IOException {
+  var detail = detail(id, source(id));
+  if (!detail.get("revision").asText().equals(body.path("revision").asText()))
+    throw new ResponseStatusException(HttpStatus.CONFLICT, "Source or catalog changed; reload the document.");
+  ...                                       // 404 unknown case · 400 unless a 1-80 character name
+  if (signoffs.has(key))
+    throw new ResponseStatusException(HttpStatus.CONFLICT, "This case is already signed.");
+  int open = 0;
+  for (var field : c.path("fields").properties())
+    if (!decisions.has(caseIndex + "/" + field.getKey())) open++;
+  if (open > 0) throw new ResponseStatusException(HttpStatus.CONFLICT,
+      "Decide every field before signing: " + open + " fields are still open.");
+  signoffs.putObject(key).put("reviewer", reviewer).put("signedAt", now)
+      .put("checksPassed", passed).put("checksTotal", checks.size());
+  Json.write(reviews.resolve(detail.get("revision").asText() + ".signoff.json"), signoffs);
+  return signoffs;
+}`,
+    highlight: [[1, 3], [4, 7], [8, 9], [10, 14], [15, 18]],
+    beats: B(
+      "The sign off. Also synchronized, also a POST on one case.",
+      "Same revision check as the PATCH. And the reviewer's name must be one to eighty characters.",
+      "A case can be signed only once.",
+      { say: "And only when every field of the case has a decision. Otherwise four oh nine, with how many are still open. The desk hides the button until then, but the server is what enforces it.", tone: "key" },
+      { say: "Then it records who, when, and how many checks passed, in a sign off file next to the decisions, under the same revision. A new source, extraction or catalog is a new revision, so an old sign off no longer applies.", tone: "key" },
+    ),
+  },
+  {
     kind: "decision",
     question: "How would this work with ten reviewers and three servers?",
-    answer: "Move decisions to Postgres: one row per revision, case and field, with a version column, reviewer identity and append-only history. The same check becomes UPDATE … WHERE version = ?.",
-    left: { title: "Today", items: ["synchronized, one process", "a JSON file per revision", "previous-decision check", "no reviewer identity"] },
-    right: { title: "At scale", items: ["a row per (revision, case, field)", "version column, conditional update", "who changed what, append-only", "works across replicas"] },
+    answer: "Move decisions and sign-offs to Postgres: one row per revision, case and field, with a version column, the reviewer from the login, and append-only history. The same check becomes UPDATE … WHERE version = ?.",
+    left: { title: "Today", items: ["synchronized, one process", "a JSON file per revision", "previous-decision check", "a typed name, no accounts"] },
+    right: { title: "At scale", items: ["a row per (revision, case, field)", "version column, conditional update", "reviewer from the login, append-only", "works across replicas"] },
     footer: "then test simultaneous edits, and a retried PATCH whose first attempt actually succeeded",
     beats: B(
       "The follow up you should expect. How would this work with ten reviewers and three servers?",
-      { say: "Move decisions into Postgres. One row per revision, case and field, with a version column, the reviewer's identity, and an append only history. The same check becomes an update where version equals the one you read.", tone: "key" },
-      "Today it's synchronized in one process, with a file per revision. At scale, a conditional update works across replicas, and you know who changed what.",
+      { say: "Move decisions and sign offs into Postgres. One row per revision, case and field, with a version column, the reviewer taken from the login, and an append only history. The same check becomes an update where version equals the one you read.", tone: "key" },
+      "Today it's synchronized in one process, with a file per revision, and the signer is a typed name, because there are no accounts. At scale, a conditional update works across replicas, and you know who changed what.",
       "And then test it. Simultaneous edits, and the nasty one: a retried PATCH whose first attempt actually succeeded. It gets a four oh nine, and the client should reload and compare.",
     ),
   },
   check({
     topic: "the API",
-    q: "A reviewer opens D01, then the catalog is edited, then they click Accept. What happens?",
-    options: ["Saved against the old catalog", "409: source or catalog changed; reload", "400: invalid value", "Saved, and the catalog change is reverted"],
+    q: "Every field of D03's case is decided and it's signed. A reviewer then tries to change one decision. What happens?",
+    options: ["Saved, and the sign-off is removed", "409: this case is signed, so its decisions are locked", "400: invalid value", "Saved as a second version"],
     answer: 1,
-    a: "409 \"Source or catalog changed; reload the document.\" Their page's revision hashed the old catalog. After a reload they get the new revision, with an empty decision map.",
-    aSay: "B. Four oh nine: source or catalog changed, reload the document. The page's revision included the old catalog. After a reload, they see the new revision, with a fresh, empty decision map.",
+    a: "409 \"This case is signed, so its decisions are locked.\" The PATCH checks the sign-off map for that case before anything else about the decision. A new revision (source, extraction or catalog) starts fresh.",
+    aSay: "B. Four oh nine: this case is signed, so its decisions are locked. The PATCH checks for a sign off before it looks at the decision. Only a new revision, a changed source, extraction or catalog, starts fresh, with no sign off.",
   }),
 
   // ------------------------------------------------------------ 12
-  sec("12", "Code tour V: the React desk", "Topic twelve. The React desk. The document on the left, the patient's fields on the right."),
+  sec("12", "Code tour V: the React desk", "Topic twelve. The React desk. A review flow along the top, the report on the left, the fields on the right, and arrows between them."),
   {
     kind: "bullets",
-    title: "ui/: six components, one screen",
+    title: "ui/: one screen, fitted to the window",
     firstItemStep: 1,
     items: [
-      { icon: "🧭", text: "App.tsx", sub: "loads, selects, saves, the keyboard, every state" },
-      { icon: "📄", text: "Source.tsx", sub: "the report, split at evidence boundaries, by code point" },
-      { icon: "🗂", text: "Fields.tsx", sub: "rows by catalog section · status · accept / reject / edit" },
-      { icon: "🎛", text: "FieldEditor.tsx", sub: "the control chosen by the field's type" },
-      { icon: "💬", text: "AskPanel.tsx · Comparison.tsx", sub: "the assistant · the duplicate pair side by side" },
+      { icon: "🧭", text: "App.tsx", sub: "loads, selects, saves, signs, the keyboard, every state" },
+      { icon: "🪜", text: "ReviewFlow.tsx", sub: "Draft → Check → Review and sign, in one slim row" },
+      { icon: "📄", text: "Source.tsx · Connector.tsx", sub: "the report, numbered and coloured · arrows to every field" },
+      { icon: "🗂", text: "Fields.tsx · FieldEditor.tsx", sub: "rows by section, passage pills, the control by type" },
+      { icon: "💬", text: "AskPanel.tsx · Comparison.tsx", sub: "the streamed assistant · the duplicate pair" },
     ],
     beats: B(
-      "The desk is one screen, and six components.",
-      "App holds the state. It loads, selects, saves, handles the keyboard, and draws every loading, empty and error state.",
-      "Source draws the report, split wherever any evidence starts or ends.",
-      "Fields draws the rows, grouped by catalog section, with the status, and the accept, reject and edit buttons.",
-      "FieldEditor picks the control from the field's type.",
-      "And AskPanel and Comparison are the two stretch views: the assistant, and the duplicate pair side by side.",
+      "The desk is one screen, and it fits the browser window. Only the panes scroll.",
+      "App holds the state. It loads, selects, saves, signs, handles the keyboard, and draws every loading, empty and error state.",
+      "ReviewFlow is the slim strip on top: draft, check, review and sign.",
+      "Source draws the report, split wherever any evidence starts or ends, with passage numbers and decision colours. And Connector draws the arrows, from the selected sentence to every field that cites it.",
+      "Fields draws the rows, grouped by catalog section, each with its passage pill, and FieldEditor picks the control from the field's type.",
+      "And AskPanel and Comparison are the two stretch views: the streamed assistant, and the duplicate pair side by side.",
     ),
   },
   {
@@ -345,9 +428,39 @@ export const needsAttention = (f: Field) =>
     beats: B(
       "App dot t s x. Opening a report fetches its detail with an abort controller.",
       "And data is applied only if this request wasn't aborted.",
-      "Then it selects the first field that has evidence, so a highlight is visible the moment the report opens.",
+      "Then it selects the first field that has evidence, so a highlight, and its arrows, are visible the moment the report opens.",
       { say: "Moving to another report aborts the previous request. So a slow response can never overwrite the report you've moved to. That's a race, and the cleanup function closes it.", tone: "key" },
       "And the needs attention filter. Anything not extracted, or below high confidence. So unknowns, conflicts, and everything the gate lowered. A reviewer finds the risky fields without reading every row.",
+    ),
+  },
+  {
+    kind: "code",
+    title: "ReviewFlow.tsx: Draft, Check, Review and sign",
+    lang: "ts",
+    code: `const failed = checks.filter((c) => c.status === "fail").length;
+const warned = checks.filter((c) => c.status === "warn").length;
+const reviewable = catalog.fields.filter((s) => patient.fields[s.id]);
+const decided = reviewable.filter((s) => reviews[patient.case_index + "/" + s.id]).length;
+const ready = decided === reviewable.length && reviewable.length > 0;
+const checkSummary = failed ? \`\${failed} need\${failed === 1 ? "s" : ""} attention\`
+  : warned ? \`\${warned} to look at\` : "All clear";
+
+<li data-state="done" title={provenance}><b>Draft</b></li>           // "Extracted by groq/qwen/…"
+<li data-state={failed ? "fail" : warned ? "warn" : "pass"}>
+  <b>Check</b> <button onClick={() => setOpen((v) => !v)}>{checkSummary}</button>
+</li>
+<li data-state={signoff ? "done" : ready ? "ready" : "active"}>
+  <b>Review and sign</b>
+  {signoff ? <>Signed by {signoff.reviewer}, {time}</>                // a lock icon
+   : ready ? <form onSubmit={…}><input placeholder="Your name" /> Sign case</form>
+   : <>{decided}/{reviewable.length} decided</>}
+</li>`,
+    highlight: [[1, 7], [9, 9], [10, 12], [13, 18]],
+    beats: B(
+      "ReviewFlow. It counts failures and warnings from the server's checks, and how many of the case's fields are decided.",
+      "Step one, draft, is always done. Hover it, and it names the model and the catalog version that produced it.",
+      "Step two, check. All clear, or how many to look at, or how many need attention. Click, and the plain language list opens.",
+      { say: "Step three. Twelve of sixteen decided, until every field is decided. Then a name box, remembered in local storage, and sign case. Once signed: a lock, and who signed, and when. And note, ready only decides whether to show the form. The server is what refuses an early sign off.", tone: "key" },
     ),
   },
   {
@@ -367,9 +480,9 @@ export const needsAttention = (f: Field) =>
     text: chars.slice(start, edges[i + 1]).join(""),
     ids: spans.filter((s) => s.start <= start && s.end >= edges[i + 1]).map((s) => s.id),
   }));
-}, [text, fields, cited]);
+}, [text, fields, cited, passages]);
 
-// a piece with ids renders as <mark role="button" tabIndex={0}>
+// a piece with ids renders as <mark role="button" tabIndex={0} data-fields={p.ids.join(" ")}>
 //   onClick → onSelect(active ? selected : p.ids[0])     · Enter and Space work too`,
     highlight: [[2, 2], [3, 4], [6, 8], [9, 12], [16, 17]],
     beats: B(
@@ -377,7 +490,96 @@ export const needsAttention = (f: Field) =>
       "Collect every evidence span, of every field, tagged with its field id.",
       "Every start and end becomes a cut. Sort them, remove duplicates.",
       "Each piece between two cuts knows which fields cite it. So overlapping evidence just works: several fields often cite the same sentence.",
-      "A piece with ids becomes a mark that acts like a button. Click it, and its field is selected. That's the stretch item: click a quote, select its field. And only the source pane scrolls, so the field row stays under your pointer.",
+      "A piece with ids becomes a mark that acts like a button. Click it, and its field is selected. That's the stretch item: click a quote, select its field. And the mark carries the ids of every field citing it, which is what the arrows read.",
+    ),
+  },
+  {
+    kind: "code",
+    title: "Numbered evidence, and colour once every field is decided",
+    lang: "ts",
+    code: `// ui/types.ts: the same passage IDs the prompt and the assistant use
+export function passageOf(passages: [number, number][] | undefined, span: { start: number }) {
+  const i = (passages ?? []).findIndex(([start, end]) => start <= span.start && span.start < end);
+  return i < 0 ? undefined : i + 1;
+}
+
+// Source.tsx: a superscript where each cited passage ends; Fields.tsx: a pill on the row
+<sup className="src-num" data-decision={decisionOf(ids)}>{n}</sup>
+
+// a passage is "to judge" until every field citing it is decided
+const decisionOf = (ids: string[]) => {
+  const actions = ids.map((id) => decisions[id]);
+  if (!ids.length || actions.some((a) => !a)) return undefined;
+  if (actions.includes("rejected")) return "rejected";
+  return actions.includes("edited") ? "edited" : "accepted";
+};`,
+    highlight: [[1, 5], [7, 8], [10, 13], [14, 16]],
+    beats: B(
+      { say: "Numbered evidence. The API now sends each passage's boundaries, and passage of maps a span to its number. The same numbers the model saw, and the assistant cites. So twenty two means one sentence, everywhere on screen.", tone: "key" },
+      "The source shows that number as a small superscript where the passage ends. And each field row shows the same number on a pill. So you can see which sentence feeds which field without clicking anything.",
+      "Then colour. A sentence can feed several fields, so it stays yellow, to judge, until every one of them is decided.",
+      { say: "Then it shows the strongest decision. A rejection beats an edit, which beats an acceptance. So a red sentence always means: look again.", tone: "key" },
+    ),
+  },
+  {
+    kind: "compare",
+    title: "Four colours: what's left, and what was decided",
+    cols: [
+      { title: "To judge", icon: "🟡", tone: "blue", items: ["every sentence and row starts here", "a sentence stays here while any", "field citing it is still open"] },
+      { title: "Accepted · edited", icon: "✔", tone: "green", items: ["green: accepted", "violet: edited", "blue already means 'the assistant cited this'"] },
+      { title: "Rejected", icon: "✗", tone: "red", items: ["red: rejected", "outweighs an edit and an acceptance", "confidence stays in words: colour is never alone"] },
+    ],
+    footer: "the footer legend lists all four · each row and each arrow takes its own field's colour",
+    beats: B(
+      "Four colours, one rule.",
+      "Yellow: still to judge. Every sentence and every row starts there.",
+      "Green when accepted. Violet when edited, because blue already marks the passages the assistant cites.",
+      { say: "And red when rejected, which outweighs everything else. Confidence is still written in words on every row, so colour is never the only signal.", tone: "key" },
+    ),
+  },
+  {
+    kind: "code",
+    title: "Connector.tsx: one sentence, an arrow to every field it feeds",
+    lang: "ts",
+    code: `const mark = box.querySelector('.paper-text mark[data-active="true"][data-focus="true"]')
+          ?? box.querySelector('.paper-text mark[data-active="true"]');
+if (l.left < p.right) return null;                          // stacked panes: no arrows
+for (const id of (mark.dataset.fields ?? "").split(" ").filter(Boolean)) {
+  const field = document.getElementById("field-" + id);
+  const row = field?.querySelector(".field-row");
+  const r = row.getBoundingClientRect();
+  const y2 = r.top + Math.min(r.height, 34) / 2;
+  if (y2 < l.top || y2 > l.bottom) continue;                // row scrolled out of view
+  arrows.push({
+    id, primary: id === selected,
+    state: field.getAttribute("data-decision") ?? "pending", // its own field's colour
+    d: \`M \${x} \${y} C \${x + bend} \${y}, \${x2 - bend} \${y2r}, \${x2} \${y2r}\`,
+  });
+}
+arrows.sort((a, b) => Number(a.primary) - Number(b.primary)); // the selected arrow on top
+
+box.addEventListener("scroll", draw, true);                 // either pane, once per frame
+window.addEventListener("resize", draw);
+new ResizeObserver(draw).observe(box);
+const settle = window.setTimeout(() => setFan(measure()), 120);`,
+    highlight: [[1, 3], [4, 9], [10, 14], [16, 16], [18, 21]],
+    beats: B(
+      "Connector dot t s x. It finds the active mark in the source, and draws nothing when the panes are stacked on a narrow screen.",
+      { say: "Then, for every field id that mark carries, it finds that field's row, measures it, and skips it if it's scrolled out of view. In D01, passage eight gives the initials, the age and the sex: three arrows. In D02, passage fourteen feeds five fields: drug, dose, unit, route and start date.", tone: "key" },
+      "Each arrow is a cubic curve, in its own field's colour, taken from the row's decision.",
+      "The selected field's arrow is drawn last, solid, on top. The others are dashed.",
+      "And it redraws on scroll in either pane, throttled to animation frames, on resize, and once more a hundred and twenty milliseconds after a selection, because the source scrolls its evidence into view after rendering. It's decoration, hidden from screen readers. The pills say the same thing in text.",
+    ),
+  },
+  {
+    kind: "big",
+    tone: "interview",
+    lead: "The attack",
+    text: "\"Why not highlight just the exact words for each field?\"",
+    after: "positions stay Java's job · the fan of arrows shows every dependent field",
+    beats: B(
+      "The attack. Why do five fields point at one whole sentence? Why not highlight just the exact words for each one?",
+      { say: "It was considered, and deliberately not done. The model cites passage numbers, and Java resolves them to whole sentences. That's the grounding guarantee. Asking the model for exact word positions would put positions back in the model's hands, the one thing the design avoids. So the sentence stays the evidence, and the arrows show every field that depends on it.", tone: "key" },
     ),
   },
   {
@@ -398,28 +600,28 @@ export const needsAttention = (f: Field) =>
   if (e.key === "r" && selected) void save("rejected");
   if (e.key === "?") setDialog("keys");
 };
-// save(): PATCH with { action, value, revision: data.revision, previous: data.reviews[key] ?? null }`,
+// save(): refuses on a signed case, else PATCH { action, value, revision, previous }`,
     highlight: [[2, 5], [6, 10], [11, 13], [15, 15]],
     beats: B(
       "The keyboard. Ignored while you type in an input, while a dialog is open, or while a save is in flight.",
       "J and K move through the visible fields, wrapping around. So with the filter on, J jumps from one risky field to the next.",
       "A accepts, R rejects, and question mark opens the list of shortcuts.",
-      "And save sends the PATCH with the action, the value, the page's revision, and the previous decision. Exactly the two things the server checks.",
+      "And save refuses at once on a signed case. Otherwise it sends the PATCH with the action, the value, the page's revision, and the previous decision. Exactly the things the server checks.",
     ),
   },
   {
     kind: "compare",
     title: "What the reviewer sees",
     cols: [
-      { title: "Every row", icon: "🗂", tone: "blue", items: ["label · value as option labels", "high / medium / low, or unknown / conflict", "in text, never colour alone"] },
-      { title: "After a decision", icon: "✏️", tone: "amber", items: ["edits look different: 'Reviewer edit'", "the model's value stays visible", "progress: 0 / 32 reviewed"] },
-      { title: "Every state", icon: "🧩", tone: "green", items: ["loading · no reports · couldn't load + retry", "a case-free report: 'No case to review' + why", "a narrow screen works too"] },
+      { title: "Every row", icon: "🗂", tone: "blue", items: ["label · value as option labels · passage pill", "high / medium / low, or unknown / conflict", "in text, never colour alone"] },
+      { title: "After a decision", icon: "✏️", tone: "amber", items: ["edits look different: 'Reviewer edit'", "the model's value stays visible", "progress: 16 / 16 reviewed, then sign"] },
+      { title: "Every state", icon: "🧩", tone: "green", items: ["loading · no reports · couldn't load + retry", "a case-free report: 'No case to review' + why", "a signed case: 'decisions are locked'"] },
     ],
     footer: "FieldEditor: select · multi-select · date · number with min/max · text with pattern · one per line",
     beats: B(
-      "Every row shows the label, the value using option labels, not codes, and the status: a confidence, or unknown, or conflict. In words, never colour alone.",
-      "After a decision, an edit looks different, with a reviewer edit badge, the model's value stays visible underneath, and progress counts up per report.",
-      "And every state is designed. Loading. No reports. Couldn't load, with try again. And a report with no cases looks intentional: no case to review, and the flag that explains why.",
+      "Every row shows the label, the value using option labels, not codes, its passage pill, and the status: a confidence, or unknown, or conflict. In words, never colour alone.",
+      "After a decision, an edit looks different, with a reviewer edit badge, the model's value stays visible underneath, and progress counts up until the case can be signed.",
+      "And every state is designed. Loading. No reports. Couldn't load, with try again. A report with no cases: no case to review, and the flag that explains why. And a signed case says its decisions are locked.",
       { say: "And the editor picks the control from the type. A select, a multi select, a date picker, a number input with the catalog's min and max, a text input with its pattern, or a box with one value per line. All from the catalog.", tone: "key" },
     ),
   },
@@ -431,7 +633,7 @@ export const needsAttention = (f: Field) =>
     after: "nowhere: a test adds a field the code has never seen, and saves a typed value",
     beats: B(
       "The attack. Show me where the field id is in the U I source.",
-      { say: "Nowhere. Fields renders from the catalog. The only names the U I knows are the seven types and three statuses. And there's a test, submits a typed number for an added catalog field, that adds a field the code has never seen, and saves it.", tone: "key" },
+      { say: "Nowhere. Fields renders from the catalog, and so do the checks on the server. The only names the U I knows are the seven types, the statuses, and the three decisions. And there's a test, submits a typed number for an added catalog field, that adds a field the code has never seen, and saves it.", tone: "key" },
     ),
   },
   check({
@@ -441,5 +643,13 @@ export const needsAttention = (f: Field) =>
     answer: 1,
     a: "JavaScript strings index UTF-16 code units; Java's offsets are code points. A character outside the BMP would shift every later highlight by one. Array.from splits by code point.",
     aSay: "B. JavaScript strings index UTF sixteen code units, but Java's offsets are code points. One emoji would shift every later highlight by one. Array from splits by code point, so both sides agree, and a test checks exactly that.",
+  }),
+  check({
+    topic: "decision colours",
+    q: "In D02, passage 14 feeds five fields. You accept four and edit the dose. What colour is the sentence?",
+    options: ["Green: most were accepted", "Violet: all are decided, and an edit outweighs an acceptance", "Yellow: an edit needs a second look", "Red"],
+    answer: 1,
+    a: "Violet. All five fields are decided, so the sentence shows the strongest decision: edited beats accepted. The arrows keep their own fields' colours: four green, the dose violet. With one field still open, the sentence would stay yellow.",
+    aSay: "B. Violet. All five are decided, so the sentence shows the strongest decision, and an edit beats an acceptance. The arrows keep their own colours: four green, and the dose violet. If one field were still open, the sentence would stay yellow.",
   }),
 ];

@@ -142,8 +142,8 @@ export const p1: Scene[] = [
       { say: "Before anything is parsed, the request and every attempt, failures included, are written to a fixture file. Even a live run reads its answer back from that recording.", tone: "key" },
       "Then Java decides. It checks each proposed value against today's catalog, resolves each citation to exact positions, and lowers confidence that the wording doesn't support. Replay enters right here, at the recording. No key, no network.",
       "Out comes one JSON file per report, with every catalog field in every case, plus a duplicate index.",
-      "A Spring Boot API serves those files, and the React desk shows each value next to its highlighted quote.",
-      "And the reviewer's accept, reject or edit goes back over a PATCH, into a file keyed by the document's revision. The model's value is never overwritten.",
+      "A Spring Boot API serves those files, with a set of deterministic checks, and the React desk shows each value next to its numbered, highlighted sentence, with an arrow to every field that sentence feeds.",
+      "And the reviewer's accept, reject or edit goes back over a PATCH, and a named sign off locks the case. Both land in files keyed by the document's revision. The model's value is never overwritten.",
     ),
     "Folio: one pipeline, three ways in",
   ),
@@ -154,13 +154,13 @@ export const p1: Scene[] = [
     items: [
       { icon: "📡", text: "Live", sub: "java -jar target/case-intake.jar --mode=live · calls the model, records, processes" },
       { icon: "📼", text: "Replay", sub: "--mode=replay or ./replay.sh · starts at the recording, no key" },
-      { icon: "🖥", text: "Review", sub: "npm start · serves out/ on 127.0.0.1:8080" },
+      { icon: "🖥", text: "Review", sub: "npm start · serves out/ on 127.0.0.1:8080 · npm run live adds .env" },
     ],
     beats: B(
       "So there are three ways in.",
       "Live. Run the jar with mode live. It calls the model, records the exchange, and then processes it.",
       "Replay. Mode replay, or the replay shell script. It starts at the recording and reruns all of the Java. No key, no network.",
-      { say: "And review. N P M start serves the committed outputs to the desk on port eighty eighty. The reviewer works at once, with no key and no model running.", tone: "key" },
+      { say: "And review. N P M start serves the committed outputs to the desk on port eighty eighty. The reviewer works at once, with no key and no model running. N P M run live is the same desk with the dot env file loaded, so the assistant can ask Groq new questions.", tone: "key" },
     ),
   },
   {

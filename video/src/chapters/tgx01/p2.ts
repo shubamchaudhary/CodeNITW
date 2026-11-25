@@ -20,7 +20,7 @@ export const p2: Scene[] = [
       "CaseRepair makes one focused follow up request for a patient whose fields came back malformed.",
       { say: "Extraction is where Java decides. It walks the catalog, Rules checks each type, and Confidence gates high confidence. CatalogCheck rejects a broken catalog before any of this runs.", tone: "key" },
       "Json writes each output atomically, and Duplicates builds the index of candidate pairs.",
-      "And on the web side, Spring's ReviewApi and AssistantApi read the same files. The React desk talks only to them.",
+      "And on the web side, Spring's ReviewApi, with its Checks, and AssistantApi read the same files. The React desk talks only to them.",
     ),
     "The code map: src/main/java/dev/caseintake",
   ),
@@ -30,10 +30,7 @@ export const p2: Scene[] = [
     lang: "java",
     code: `public static void main(String[] args) throws Exception {
   var options = new DefaultApplicationArguments(args);
-  if (!options.containsOption("mode")) {
-    SpringApplication.run(Intake.class, args);              // the review desk
-    return;
-  }
+  if (!options.containsOption("mode")) { SpringApplication.run(Intake.class, args); return; }  // the desk
   var mode = option(options, "mode", "");
   LanguageModel provider = switch (mode) {
     case "replay" -> new Recording();
@@ -51,7 +48,7 @@ export const p2: Scene[] = [
                Path.of(option(options, "out", "out")))
       .run(mode, provider, option(options, "only", ""));
 }`,
-    highlight: [[1, 2], [3, 6], [8, 9], [10, 15], [18, 22]],
+    highlight: [[1, 2], [3, 3], [5, 6], [7, 12], [15, 19]],
     beats: B(
       "Intake dot java. The whole main method fits on one screen.",
       "No mode option? Then it's the web app: Spring Boot starts, and that's the review desk.",

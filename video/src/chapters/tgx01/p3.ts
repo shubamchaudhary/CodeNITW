@@ -78,8 +78,7 @@ export const p3: Scene[] = [
     code: `for (int attempt = 0; attempt < 3; attempt++) {
   Thread.sleep(Math.max(0, nextRequest - System.currentTimeMillis()));   // MODEL_INTERVAL_MS
   nextRequest = System.currentTimeMillis() + spacing;
-  var entry = attempts.addObject();
-  Json.write(fixture, record);
+  var entry = attempts.addObject(); Json.write(fixture, record);   // written before sending
   HttpResponse<String> result;
   try { result = client.send(builder.build(), HttpResponse.BodyHandlers.ofString()); }
   catch (IOException failed) {
@@ -98,7 +97,7 @@ export const p3: Scene[] = [
   if (seconds > 60) throw new IOException("Quota wait is " + seconds + " seconds. Resume after ...");
   Thread.sleep(seconds * 1000);
 }`,
-    highlight: [[2, 3], [4, 5], [8, 11], [13, 16], [17, 19], [20, 22]],
+    highlight: [[2, 3], [4, 4], [7, 10], [12, 15], [16, 18], [19, 21]],
     beats: B(
       "The loop. At most three attempts. Before each one, it waits until the minimum interval since the last request start has passed. That's how it respects requests per minute.",
       "The attempt is written to the fixture before the request is sent. So even a crash mid call leaves a trace.",
@@ -289,10 +288,10 @@ export const p3: Scene[] = [
       "The report is split into passages. The sentence that gives the patient's age is passage eight.",
       "The request carries the policy in the system message, and the catalog plus the numbered passages as data.",
       { say: "The model answers: value fifty four, confidence high, quotes, eight. A passage number. Not a position.", tone: "key" },
-      "That exchange is in the fixture for D01. One attempt, status two hundred.",
+      "That exchange is in the fixture for D01. Two rate limited attempts, four two nines, then a two hundred.",
       "Extraction checks it. An integer, inside zero to a hundred and twenty, and the number fifty four literally appears in passage eight, so it keeps high confidence.",
       { say: "The output says extracted, high, and the span: start two hundred and one, end three hundred and forty seven, with the quote.", tone: "key" },
-      "And the desk slices the text by code point, and highlights two oh one to three forty seven when the reviewer selects Age. If you can walk this board on a whiteboard, you can explain the whole system.",
+      "And the desk slices the text by code point, highlights two oh one to three forty seven, marks it passage eight, and draws an arrow from that sentence to the three fields it feeds: initials, age and sex. If you can walk this board on a whiteboard, you can explain the whole system.",
     ),
     "One field, from bytes to pixels",
   ),
