@@ -19,7 +19,7 @@ const H = 3_600_000;
 
 // The AI rating's fake Groq: one key it accepts, one it rejects, one that's at its limit.
 // Its token counts are kept small (the pacing is checked in rate.test.mjs), so one good key rates every job in the test's time.
-export const GROQ_KEYS = { good: `gsk_${'G1'.repeat(26)}`, bad: `gsk_${'B2'.repeat(26)}`, busy: `gsk_${'Z3'.repeat(26)}` };
+export const GROQ_KEYS = { good: `gsk_${'G1'.repeat(26)}`, good2: `gsk_${'G2'.repeat(26)}`, good3: `gsk_${'G3'.repeat(26)}`, bad: `gsk_${'B2'.repeat(26)}`, busy: `gsk_${'Z3'.repeat(26)}` };
 // The resumes the tests rate against (jobsDev.resume): no Kubernetes on them.
 export const TEST_RESUME = {
   sde: 'Software Engineer | Backend\nSummary\nSoftware Engineer with 2+ years in Java, Spring Boot, Microservices, Hibernate and REST APIs.\n'
@@ -35,6 +35,12 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** What the fake model answers: the JD's known skills, met when the resume names them, plus two planted mistakes. */
 function groqAnswer(content) {
+  if (content.includes('\nBACKEND SUMMARY\n')) {
+    const jd = content.split('\nJOB DESCRIPTION\n')[1];
+    const duty = jd.match(/\b(?:LLM|RAG)\b/i)?.[0] || jd.match(/\bSpring Boot\b/i)?.[0] || '';
+    const profile = /LLM|RAG/i.test(duty) ? 'ai' : duty ? 'backend' : 'neither';
+    return { profile, score: duty ? 85 : 25, reason: duty ? 'The JD names ' + duty : 'No target stack in the duties.', duty, evidence: duty };
+  }
   const resume = (content.split('\nJOB:\n')[0] || '').split('RESUME SUMMARY (documented evidence only):\n')[1] || '';
   const job = content.split('\nJOB:\n')[1] || '';
   const requirements = [];
@@ -148,6 +154,7 @@ export const EXPECT = {
 // The JDs on the job pages. A listing without its own gets one listing its chips as requirements,
 // plus a company blurb whose technologies must not count.
 const JDS = {
+  [idOf(31)]: '<p>Build Spring Boot services.</p>',
   [idOf(9)]: '<p>Build and run backend services.</p><p><strong>Requirements</strong></p><ul><li>Java, Spring Boot</li><li>REST APIs, PostgreSQL</li><li>Docker</li></ul>',
   [idOf(61)]: '<p>Design, develop, test, and maintain software applications.</p><p><strong>Preferred candidate profile</strong></p><ul><li>Strong Java and Spring Boot, REST APIs, Microservices</li>'
     + '<li>PostgreSQL, Redis, Kafka</li><li>Docker, Kubernetes, CI/CD</li></ul><p>Good to have: Go, Terraform</p><p><strong>About Company</strong></p><p>We work with Salesforce and SAP clients.</p>',
@@ -277,7 +284,7 @@ export async function startMock({ key, cert }) {
       res.end(JSON.stringify(payload));
     };
     const key = String(req.headers.authorization || '').replace(/^Bearer /, '');
-    const known = key === GROQ_KEYS.good || key === GROQ_KEYS.busy;
+    const known = [GROQ_KEYS.good, GROQ_KEYS.good2, GROQ_KEYS.good3, GROQ_KEYS.busy].includes(key);
     const rejected = !known || state.groqMode === 'reject';
     if (req.method === 'GET' && url.pathname === '/openai/v1/models') {
       state.groqModelChecks += 1;
@@ -402,6 +409,7 @@ export async function startMock({ key, cert }) {
       const l = all.find((j) => j.jobId === jobApi[1]);
       if (!l || EXPECT.pageFails.includes(l.jobId)) return send(500, { message: 'server error' });
       return send(200, {
+        recommendedJob: { jobId: 'other', title: 'Different listing', description: 'A different job requiring a completely different stack. '.repeat(3) },
         jobDetails: {
           jobId: l.jobId, title: l.title, description: jdFor(l), keySkills: { other: [], preferred: [] }, applyCount: 140,
           ...(EXPECT.applied.data.includes(l.jobId) ? { applyStatus: 'APPLIED' } : {}),

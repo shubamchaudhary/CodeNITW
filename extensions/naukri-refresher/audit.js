@@ -19,10 +19,10 @@ let loading = null;
 
 const prune = (now) => {
   const cut = now - AUDIT_KEEP_MS;
-  for (const [id, e] of Object.entries(entries)) if ((e.t || 0) < cut) { delete entries[id]; delete docs[id]; }
+  for (const [id, e] of Object.entries(entries)) if (!e.pending && (e.t || 0) < cut) { delete entries[id]; delete docs[id]; }
   const ids = Object.keys(entries);
   if (ids.length > MAX_ENTRIES) {
-    ids.sort((a, b) => (entries[a].t || 0) - (entries[b].t || 0)).slice(0, ids.length - MAX_ENTRIES).forEach((id) => { delete entries[id]; delete docs[id]; });
+    ids.filter(id => !entries[id].pending).sort((a, b) => (entries[a].t || 0) - (entries[b].t || 0)).slice(0, ids.length - MAX_ENTRIES).forEach((id) => { delete entries[id]; delete docs[id]; });
   }
   for (const id of Object.keys(docs)) if (!entries[id]) delete docs[id];
 };
@@ -54,12 +54,20 @@ export function auditDoc(id, fields) {
   dirty = true;
 }
 
-export async function auditSave(force = false, now = Date.now()) {
-  if (!entries || !dirty || (!force && now - savedAt < SAVE_EVERY_MS)) return;
+export async function auditSave(force = false, now = Date.now(), checkpoint = null) {
+  if (!entries || !dirty || (!force && now - savedAt < SAVE_EVERY_MS)) {
+    if (checkpoint) await ext.storage.local.set(checkpoint);
+    return;
+  }
+  prune(now);
   dirty = false;
   savedAt = now;
-  prune(now);
-  await ext.storage.local.set({ [AK]: entries, [DK]: docs });
+  try {
+    await ext.storage.local.set({ ...checkpoint, [AK]: entries, [DK]: docs });
+  } catch (error) {
+    dirty = true;
+    throw error;
+  }
 }
 
 /** Everything forgotten ("Start fresh"). */
@@ -91,12 +99,13 @@ export async function auditDocOf(id) {
 export function funnel(list) {
   const by = (xs) => xs.reduce((m, e) => { const k = e.w || 'other'; m[k] = (m[k] || 0) + 1; return m; }, {});
   const sorted = (m) => Object.entries(m).sort((a, b) => b[1] - a[1]);
-  const out = list.filter((e) => !e.k);
+  const out = list.filter((e) => !e.k && !e.pending);
   const cardOut = out.filter((e) => e.stage !== 'jd');
   const jdOut = out.filter((e) => e.stage === 'jd');
   const kept = list.filter((e) => e.k);
   return {
     seen: list.length,
+    pending: list.filter(e => e.pending).length,
     cardOut: cardOut.length,
     cardReasons: sorted(by(cardOut)),
     jdOpened: list.filter((e) => e.stage === 'jd').length,
@@ -106,6 +115,6 @@ export function funnel(list) {
     keptBackend: kept.filter((e) => e.list === 'backend').length,
     keptAi: kept.filter((e) => e.list === 'ai').length,
     sent: kept.filter((e) => e.sent).length,
-    rated: kept.filter((e) => e.ai != null).length,
+    rated: list.filter((e) => e.ai != null).length,
   };
 }

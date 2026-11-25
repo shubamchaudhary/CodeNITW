@@ -1,22 +1,5 @@
-// Naukri job finder: the pure rules (no browser APIs), shared by the background worker, the
-// settings page and the Node tests.
-//
-// The finder reads every page of every search (see SEARCHES), and two steps decide each listing:
-//   1. The card (what Naukri's search results show). Posted in the last 48 hours ("Just now",
-//      "Few hours ago", "1 day ago"; "2 days ago" is out); not one you've applied to on Naukri; not
-//      from a company on the low-pay list (IT services and consulting firms, editable in the
-//      settings); a title that isn't a stack or level you don't do; asks for under 2.5 years and
-//      pays 18 LPA+ when it says; and its skill chips don't clearly belong to another stack. A
-//      detail the card leaves out never drops a job, and chips that aren't technologies are ignored.
-//   2. The JD (the job's own page, opened for every card that passes). Every technology it asks for
-//      is found with the skills dictionary (skills-dict.js) and compared with your skills (both
-//      resumes, job-profile.js). It's kept when the share you have reaches the bar (60% by
-//      default; "nice to have" lines and company blurbs don't count). How much of it is GenAI work
-//      decides its list: AI-first or backend-first. A job is on one list only.
-// The parser's top 400 per list (last 48 hours, by JD match) go to your site, and each one is then
-// rated by Grok against your resume (rate-lib.js). Your site shows the top 100 per list that you
-// haven't taken yet, highest rating first.
-
+// Naukri search, listing normalization and eligibility. The earlier deterministic matching helpers
+// are also used by offline evaluations and historical fixtures.
 import { findSkills, skillOf, withParents } from './skills-dict.js';
 import { JOB_PROFILE } from './job-profile.js';
 import { lowPayList, lowPayMatch } from './low-pay.js';
@@ -29,11 +12,10 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
 // Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
-export const RULES_VERSION = 8;
+export const RULES_VERSION = 9;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
-  poolTop: 1000, // the parser's best this many per list (last 48 hours, by JD match) go to your site and are rated
   showHours: 48, // your site lists the top `showTop` per list posted in the last 48 hours, not yet taken,
   showTop: 100, // "Apply" on Naukri: the top 100 per list (Naukri takes 50 applies a day per account); company-site jobs all show
   minPayL: 18, // LPA the top of a salary the job shows must reach
@@ -61,9 +43,7 @@ export const FINDER_LIMITS = Object.freeze({
   pauseMax: 9_000,
   pageWaitMs: 15_000, // how long a page may take to show its results
   uploadMax: 150, // openings per upload
-  perListDay: 1000, // kept per list per day, at most
   lockTtlMin: 90,
-  jdFailStop: 3, // job pages in a row it can't read before it stops opening them this run
 });
 
 // Two lists, one per Naukri account. Your skills are the same on both resumes; what the job is
@@ -253,7 +233,11 @@ export function postedAgeH(job, now) {
 
 /** "2-5 Yrs" → {min:2,max:5}; "5+ years" → {min:5,max:null}; "Fresher" → 0–0; else null. */
 export function parseYears(text) {
-  const t = String(text ?? '').toLowerCase();
+  const t = String(text ?? '').toLowerCase().replace(/\b(?:yrs?|years?)\s*(?=[–—-]|\bto\b)/g, '').replaceAll('—', '–');
+  const ceiling = t.match(/(?:up\s*to|at most|maximum(?: of)?|max\.?)\s*(\d+(?:\.\d+)?)\s*(?:yrs?|years?)/);
+  if (ceiling) return { min: 0, max: Number(ceiling[1]) };
+  const floor = t.match(/(?:at least|minimum(?: of)?|min\.?)\s*(\d+(?:\.\d+)?)\s*\+?\s*(?:yrs?|years?)/);
+  if (floor) return { min: Number(floor[1]), max: null };
   let m = t.match(/(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)\s*(?:\+\s*)?(?:yrs?|years?)/);
   if (m) return { min: Number(m[1]), max: Number(m[2]) };
   m = t.match(/(\d+(?:\.\d+)?)\s*(\+)?\s*(?:yrs?|years?)/);
@@ -567,6 +551,49 @@ export function cardCheck(raw, { now, mine = MY_SKILLS, minScore = RULES.minScor
     years, pay, rating: job.rating, reviews: job.reviews, createdAt: job.createdAt,
   }, now, minScore);
   return { keep: true, job, day, ageH, years, pay, fit: t.fit, titleAi: t.ai, chips, cardRank };
+}
+
+/** Admission to the Naukri LLM queue. Search keywords and job titles never decide the profile. */
+export function finderEligibility(raw, now) {
+  const job = normalizeJob(raw);
+  const fail = (why) => ({ keep: false, why, job });
+  if (!job.id || !job.url) return fail('missing listing ID or URL');
+  if (job.applied) return fail('you applied on Naukri');
+  const age = postedAgeH(job, now);
+  if (age == null) return fail('posting date unavailable');
+  const post = postedTimeOf(job, age, now);
+  if (now - post >= RULES.maxAgeH * HOUR) return fail('posted over 48 hours ago');
+  const years = parseYears(job.expText);
+  if (years && years.min >= RULES.maxMinYears) return fail(`asks ${years.min}+ years`);
+  if (years?.max != null && years.max < RULES.minMaxYears) return fail('experience range ends below 2 years');
+  return { keep: true, job, post, years, day: trackerDay(now) };
+}
+
+// A published salary floor alone cannot establish a ceiling. Keep the original wording for Groq.
+export function finderSalary(job) {
+  const p = parsePay(job);
+  const label = job.salaryText || '';
+  if (p.kind !== 'shown') return { display: payLabel(p) };
+  const openRange = /\b(?:starting (?:at|from)|onwards?|at least|and (?:above|up))\b|\d\s*\+/.test(label.toLowerCase()) ||
+    (job.salary?.minimumSalary > 0 && !Number(job.salary.maximumSalary) && !/\d.*[-–].*\d/.test(label));
+  if (openRange) {
+    const salary = /\d/.test(label) ? label : `From ${p.minL} LPA`;
+    return { salary, display: { verdict: 'floor', text: salary } };
+  }
+  return { salary: /\d/.test(label) ? label : `${p.minL}–${p.maxL} LPA`, pay: { lo: p.minL, hi: p.maxL }, display: payLabel(p) };
+}
+
+export function finderOpening(card, detail, now) {
+  const { job, years, post, day } = card;
+  return {
+    company: job.company, openingId: job.id, title: job.title, location: job.location, url: job.url,
+    source: 'naukri', sources: ['naukri'], ats: 'naukri', finder: 'naukri', jd: true,
+    postedAt: day, seenSince: now, postedTime: post, exp: years ? 'fits' : 'unknown',
+    ...(years && { minYoe: years.min, ...(years.max != null && { maxYoe: years.max }) }),
+    pay: finderSalary(job).display, snippet: job.snippet.slice(0, 250),
+    ...(detail.apply && { apply: detail.apply }), ...(detail.applyUrl && { applyUrl: detail.applyUrl }),
+    ...(job.rating != null && { rating: job.rating }), ...(job.reviews != null && { reviews: job.reviews }),
+  };
 }
 
 // ---------------------------------------------------------------- step 2: the JD

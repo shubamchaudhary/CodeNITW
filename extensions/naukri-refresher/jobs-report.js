@@ -20,13 +20,15 @@ const filter = { outcome: 'all', reason: '', list: '', sort: 't', q: '' };
 
 const inRange = () => {
   const cut = Date.now() - Number($('range').value) * 3_600_000;
-  return all.filter((e) => (e.t || 0) >= cut);
+  return all.filter((e) => e.pending || (e.t || 0) >= cut);
 };
-const outcomeOf = (e) => (e.k ? 'kept' : e.stage === 'jd' ? 'jd' : 'card');
+const outcomeOf = (e) => (e.pending ? 'pending' : e.k ? 'kept' : e.stage === 'jd' ? 'jd' : 'card');
 const when = (t) => new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 function matches(e) {
-  if (filter.outcome !== 'all' && outcomeOf(e) !== filter.outcome) return false;
+  if (filter.outcome === 'rated' && e.ai == null) return false;
+  if (filter.outcome === 'opened' && e.stage !== 'jd') return false;
+  if (!['rated', 'opened'].includes(filter.outcome) && filter.outcome !== 'all' && outcomeOf(e) !== filter.outcome) return false;
   if (filter.reason && (e.w || '') !== filter.reason) return false;
   if (filter.list && e.list !== filter.list) return false;
   const q = filter.q.trim().toLowerCase();
@@ -47,11 +49,12 @@ function renderFunnel(list) {
   const go = (patch) => { Object.assign(filter, { outcome: 'all', reason: '', list: '' }, patch); syncControls(); render(); };
   stat(f.seen, 'distinct listings seen', () => go({}));
   stat(f.cardOut, 'left out on the card alone', () => go({ outcome: 'card' }));
-  stat(f.jdOpened, 'job pages (JDs) opened', () => go({ outcome: 'jd' }));
+  stat(f.jdOpened, 'job pages (JDs) opened', () => go({ outcome: 'opened' }));
+  stat(f.pending, 'waiting for JD or Groq', () => go({ outcome: 'pending' }));
   stat(f.jdOut, 'left out after reading the JD', () => go({ outcome: 'jd' }));
   stat(f.kept, `kept (${f.keptBackend} Backend, ${f.keptAi} AI)`, () => go({ outcome: 'kept' }));
   stat(f.sent, 'reached your site', () => go({ outcome: 'kept' }));
-  stat(f.rated, 'rated by the LLM', () => go({ outcome: 'kept' }));
+  stat(f.rated, 'rated by the LLM', () => go({ outcome: 'rated' }));
   const reasons = (id, pairs, outcome) => {
     const r = $(id);
     r.replaceChildren();
@@ -84,7 +87,8 @@ function syncControls() {
 
 function decisionCell(e) {
   const td = el('td');
-  if (e.k) td.append(el('span', e.sent ? '✓ kept, on your site' : '✓ kept', 'ok'));
+  if (e.pending) td.append(el('span', e.w, 'muted small'));
+  else if (e.k) td.append(el('span', e.sent ? '✓ kept, on your site' : '✓ kept', 'ok'));
   else td.append(el('span', `✗ ${e.w || 'left out'}`, 'err'), el('div', e.stage === 'jd' ? 'after reading its JD' : 'on the card', 'muted small'));
   return td;
 }
@@ -96,7 +100,7 @@ async function detailRow(e, cols) {
   tr.append(td);
   const lines = [
     `Judged ${when(e.t)} · ${e.stage === 'jd' ? 'its job page was opened' : 'decided on the card, its job page was not opened'}`,
-    e.k ? 'Kept: ' + [e.list ? `${e.list === 'ai' ? 'AI' : 'Backend'} list` : '', e.rank != null ? `rank ${e.rank}` : '', e.apply === 'company' ? 'apply on the company site' : e.apply === 'naukri' ? 'apply on Naukri' : ''].filter(Boolean).join(' · ') : `Left out: ${e.w}`,
+    e.k ? 'Kept: ' + [e.list ? `${e.list === 'ai' ? 'AI' : 'Backend'} list` : '', e.rank != null ? `rank ${e.rank}` : '', e.apply === 'company' ? 'apply on the company site' : e.apply === 'naukri' ? 'apply on Naukri' : ''].filter(Boolean).join(' · ') : e.pending ? e.w : `Left out: ${e.w}`,
     e.total != null ? `Technologies its ${e.stage === 'jd' ? 'JD' : 'card'} asks for: ${e.have != null ? `${e.have} of ${e.total} are yours` : `${e.total} named`}${e.score != null ? ` (${e.score}% match)` : ''}` : null,
     e.ai != null ? `AI rating ${e.ai}${e.rel != null ? ` (the LLM's relevance ${e.rel})` : ''}${e.aiWhy ? ` — ${e.aiWhy}` : ''}` : e.k ? 'Not rated yet' : null,
     e.pay ? `Pay at about 2 years: ${e.pay.lo}–${e.pay.hi} LPA (${e.pay.from})` : null,
@@ -116,8 +120,8 @@ async function detailRow(e, cols) {
     hold.remove();
     if (!doc) td.append(el('div', 'No JD or prompt kept for this one.', 'muted small'));
     if (doc && doc.jd) td.append(el('div', 'The JD the finder read', 'small muted'), el('pre', doc.jd));
-    if (e.k && doc && doc.dbg) {
-      td.append(el('div', `Prompt sent to ${doc.dbg.m || 'the model'} ${doc.dbg.exact ? '(includes the profile summary sent)' : '(résumé replaced by a note)'}`, 'small muted'), el('pre', doc.dbg.p));
+    if (doc?.dbg) {
+      td.append(el('div', `Prompt sent to ${doc.dbg.m || 'the model'} ${doc.dbg.exact ? '(includes the summaries sent)' : '(résumé replaced by a note)'}`, 'small muted'), el('pre', doc.dbg.p));
       let out = doc.dbg.o;
       try { out = JSON.stringify(JSON.parse(out), null, 2); } catch { /* as it came */ }
       td.append(el('div', "The LLM's raw answer", 'small muted'), el('pre', out));
@@ -190,7 +194,7 @@ $('dlJson').addEventListener('click', async () => {
   download(`job-finder-report-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ funnel: funnel(list), listings: out }, null, 2), 'application/json');
 });
 $('dlCsv').addEventListener('click', () => {
-  const cols = ['t', 'title', 'company', 'posted', 'exp', 'sal', 'stage', 'k', 'w', 'list', 'have', 'total', 'score', 'rank', 'ai', 'rel', 'apply', 'sent', 'url'];
+  const cols = ['t', 'title', 'company', 'posted', 'exp', 'sal', 'stage', 'pending', 'k', 'w', 'list', 'have', 'total', 'score', 'rank', 'ai', 'rel', 'apply', 'sent', 'url'];
   const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
   const lines = [cols.join(','), ...inRange().map((e) => cols.map((c) => cell(c === 't' ? new Date(e.t).toISOString() : e[c])).join(','))];
   download(`job-finder-report-${new Date().toISOString().slice(0, 10)}.csv`, lines.join('\n'), 'text/csv');

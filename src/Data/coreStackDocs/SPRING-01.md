@@ -2,6 +2,10 @@
 
 `@Transactional` is the most-asked Spring topic. The questions, from most to least asked: **isolation levels and what each prevents**, **what @Transactional does and where it belongs**, **propagation (REQUIRED vs REQUIRES_NEW and the rest)**, **which exceptions roll back**, **rolling back across several services**, and **how it works underneath, including why self-invocation breaks it**. Each section explains the mechanism first, then gives the answer to say out loud.
 
+**Mental model.** If a checkout fails, start with the rows that must succeed together. Trace the call from the caller through the Spring proxy and put a box around each physical database transaction. Propagation tells you which writes share a box. Isolation tells you what a concurrent checkout can see or change while that box is open. At the end, identify who requests the commit and whether the transaction is still eligible to commit.
+
+One SDE-2 candidate reported questions on Spring transactions, isolation levels and locking in the same round. A way to practise that combination is to take one stock reservation and explain exactly what happens when a second buyer arrives. [M2P Fintech SDE-2 interview report](https://leetcode.com/discuss/post/5270525/M2P-Fintech-or-SDE-2-or-Chennai-or-Interview-Experience/)
+
 ## 1. Transactions and ACID
 
 A **transaction** is a group of database operations treated as one logical unit of work. Either all of them commit, or none of them take effect, and other transactions running at the same time cannot see the work half-done.
@@ -108,6 +112,23 @@ In JPA these appear as `@Lock(LockModeType.PESSIMISTIC_WRITE)` (`FOR UPDATE`), `
 
 Often the best answer avoids both: a **conditional atomic update** such as `UPDATE stock SET qty = qty - 1 WHERE sku = ? AND qty >= 1`, followed by a check of the updated-row count. It is correct at READ COMMITTED, because the row lock taken by the `UPDATE` serialises concurrent decrements and the condition is re-checked against the latest committed version.
 
+**Two buyers see one unit left. Can both check out?** At PostgreSQL READ COMMITTED, both buyers can read `qty = 1`, compute zero in Java and issue `SET qty = 0`. Each transaction can commit its own order. The stock count looks plausible even though two orders claimed the last unit. Now trace the conditional decrement above, using one stock row per SKU.
+
+```mermaid
+sequenceDiagram
+    participant A as Buyer A
+    participant DB as Stock row
+    participant B as Buyer B
+    A->>DB: Conditional decrement
+    DB-->>A: 1 row updated, lock held
+    B->>DB: Same conditional decrement
+    Note over DB,B: B waits for A
+    A->>DB: Commit stock and order
+    DB-->>B: Recheck qty >= 1, update 0 rows
+```
+
+What if A rolls back instead? B wakes up, finds one unit available and updates one row. The application must inspect that row count. Only the buyer who updated a row creates an order, in the same transaction as the decrement. The database enforces the stock check even when both requests arrive together. [PostgreSQL READ COMMITTED semantics](https://www.postgresql.org/docs/18/transaction-iso.html#XACT-READ-COMMITTED)
+
 ### Setting isolation in Spring
 
 ```java
@@ -201,6 +222,8 @@ Correction: "@Transactional only works on public methods." That was the rule unt
 - **timeout** is applied to the JDBC statements of the transaction (as a query timeout from the remaining time) and checked before each statement. It does not interrupt Java code running between statements. Database-side `statement_timeout` and `idle_in_transaction_session_timeout` are the real safety net.
 - **transactionManager** selects a bean by name when there are several data sources.
 
+**Can an inner method strengthen the caller's guarantees?** Suppose a READ COMMITTED checkout calls a second bean whose method declares REQUIRED and SERIALIZABLE. By default the inner query still runs at READ COMMITTED. Put the required isolation on the service that starts the atomic operation. The same reasoning applies when a read-only service calls a write repository. It keeps the outer transaction's settings. Whether a write is rejected depends on the driver and database, so use `readOnly` for read optimizations and database permissions for access control. [Spring propagation rules](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/tx-propagation.html) · [Spring Data JPA transaction settings](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html)
+
 ### Declarative vs programmatic transactions
 
 `@Transactional` makes the boundary the whole method. When the boundary must be narrower, or chosen at run time, use **`TransactionTemplate`**:
@@ -221,6 +244,8 @@ public void placeOrder(OrderRequest r) {
 ```
 
 `TransactionTemplate` involves no proxy, so it also works for calls within the same class. The raw `PlatformTransactionManager` API (`getTransaction`, `commit`, `rollback`) is the level underneath and is rarely used directly. Declarative is the default for business code; programmatic is for narrow boundaries, batch loops that commit in chunks, and keeping slow I/O out of the transaction.
+
+**What happens to the notification when the total is zero?** Trace the example above assuming `tx.execute` started the transaction. The callback marks it rollback-only and returns an `Order`. The template rolls back and can still return that Java object, so the next line can announce an order that was never committed. Throw an unchecked validation exception inside the callback and let it escape `placeOrder` to skip that line. If delivery must also survive a process crash after commit, use the outbox in section 6. [Spring programmatic rollback](https://docs.spring.io/spring-framework/reference/data-access/transaction/programmatic.html)
 
 ### Keep transactions short
 
@@ -484,6 +509,15 @@ flowchart LR
     P -->|"intercepted"| R["target.register()"]
     R -->|"this.save():<br/>bypasses the proxy"| S["target.save()<br/>no transaction"]
 ```
+
+**What if the caller already has a transaction?** Suppose a proxied checkout writes an order, calls a helper annotated REQUIRES_NEW to write an audit row, then throws an unchecked exception. Assume both use the same database and the audit row can stand alone.
+
+| How checkout calls the helper | Which rows survive? |
+|---|---|
+| `this.recordAttempt()` | Neither. The self-call bypasses the inner annotation. Both writes use checkout's active transaction. |
+| `auditService.recordAttempt()` through the injected proxy | The audit row survives. Its transaction commits before checkout resumes and rolls back the order. |
+
+To prove the difference, call checkout through its injected bean from an integration test with no surrounding test transaction. Catch the expected exception in the test, then query both tables in a fresh transaction. Checking both rows also catches the case where an independent audit write was accidentally folded into the checkout. [Spring proxy semantics](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html) · [Spring test transactions](https://docs.spring.io/spring-framework/reference/testing/testcontext-framework/tx.html)
 
 The same limitation applies to every proxy-based annotation: `@Async`, `@Cacheable`, `@Retryable`, `@PreAuthorize`.
 

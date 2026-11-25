@@ -13,9 +13,11 @@
 // resumes come from resume.local.json next to this file (made from your PDFs by
 // naukri-refresher-dev/make-job-profile.mjs, without your name and contact lines; git never sees it).
 
+import { auditSave } from './audit.js';
 import { payKey, confidentPay } from './pay-lib.js';
 import { RATE, profileSummary, buildInput, requestBody, payRequestBody, firstJson, payFromAnswer, dbgOf, normText, outputText, usageOf, scoreRating, rateHash, keyHint, parseWait, scrub } from './rate-lib.js';
 import { byParser, RULES_VERSION } from './jobs-lib.js';
+import { finderRequest, finderVerdict } from './finder-rating.js';
 
 const ext = globalThis.browser ?? globalThis.chrome;
 export const GROQ_MATCH = 'https://api.groq.com/*';
@@ -34,7 +36,7 @@ export async function loadResumes(dev = {}) {
     } catch { r = null; }
   }
   if (!r || typeof r.sde !== 'string' || typeof r.genai !== 'string' || r.sde.length < 200 || r.genai.length < 200) return null;
-  return { sde: r.sde, genai: r.genai, generated: r.generated || null, from: r.from || 'file', hash: { backend: rateHash(r.sde), ai: rateHash(r.genai) } };
+  return { sde: r.sde, genai: r.genai, generated: r.generated || null, from: r.from || 'file', hash: { backend: rateHash(r.sde), ai: rateHash(r.genai), finder: rateHash(JSON.stringify([RULES_VERSION, r.sde, r.genai])) } };
 }
 export { payKey }; // a company's key in the pay cache and the pay database (pay-lib.js)
 
@@ -82,7 +84,7 @@ export async function callGroq({ key, model, input, profile = 'backend', body = 
   if (res.status === 404 || /model_not_found|model_decommissioned|does not exist|decommissioned/i.test(`${code} ${said}`)) {
     return { ok: false, kind: 'model', msg: `Groq doesn't serve the model "${model}" (${res.status}${tail})` };
   }
-  if (res.status === 400 && /json_validate_failed|schema|json/i.test(`${code} ${said}`)) return { ok: false, kind: 'answer', msg: `the model's JSON didn't hold up (${said || code})` };
+  if (res.status === 400 && /json_validate_failed|schema|json/i.test(`${code} ${said}`)) return { ok: false, kind: 'answer', msg: `the model's JSON didn't hold up (${said || code})`, raw: typeof e.failed_generation === 'string' ? e.failed_generation : '' };
   if (res.status >= 500) return { ok: false, kind: 'transient', msg: `Groq answered ${res.status}` };
   if (!res.ok) return { ok: false, kind: 'bad', msg: `Groq refused the request (${res.status}${tail})` };
   const usage = usageOf(j);
@@ -211,22 +213,24 @@ export async function checkKeys(keys, model) {
 /** Jobs waiting for a rating (with their JD text), as the last run left them. */
 export async function loadQueue() {
   const q = (await ext.storage.local.get(QK))[QK];
-  return q?.rulesVersion === RULES_VERSION && Array.isArray(q.items) ? q.items.filter((i) => i && i.id && i.text) : [];
+  if (!Array.isArray(q?.items)) return [];
+  const items = q.items.filter((i) => i?.id && i.text && i.job && i.o);
+  if (q.rulesVersion === RULES_VERSION) return items;
+  return items.map((i) => ({ ...i, joint: true }));
 }
 
-/** Keep what's still worth rating: in the last 48 hours, not rated yet, best first, a few hundred at most. */
+/** Keep each eligible finder listing until it has a verdict for the current summaries. */
 export function pruneQueue(items, { now, rated = {}, hash = null, maxAgeH = 48 }) {
   const since = now - maxAgeH * 3_600_000;
   const seen = new Set();
   return items
     .filter((i) => {
-      if (!i || !i.id || seen.has(i.id) || (i.post || 0) < since) return false;
+      if (!i || !i.id || seen.has(i.id) || (!i.joint && (i.post || 0) < since)) return false;
       seen.add(i.id);
       const c = rated[i.id];
-      return !(c && hash && c.h === hash[i.profile]);
+      return !(c && hash && c.h === hash[i.joint ? 'finder' : i.profile]);
     })
-    .sort((a, b) => byParser(a.p || {}, b.p || {}))
-    .slice(0, RATE.queueMax);
+    .sort((a, b) => a.joint && b.joint ? a.t - b.t : byParser(a.p || {}, b.p || {}));
 }
 
 const PK = 'jobsPay';
@@ -240,8 +244,9 @@ export async function savePayCache(cache) {
   await ext.storage.local.set({ [PK]: cache });
 }
 
-export async function saveQueue(items) {
-  await ext.storage.local.set({ [QK]: { rulesVersion: RULES_VERSION, t: Date.now(), items } });
+export async function saveQueue(items, state) {
+  const now = Date.now();
+  await auditSave(true, now, { ...(state && { jobs: state }), [QK]: { rulesVersion: RULES_VERSION, t: now, items } });
 }
 
 // ---------------------------------------------------------------- the worker
@@ -266,6 +271,7 @@ export function startRater(queue, ctx) {
   counts.keys = counts.keys || {};
   const pool = ctx.pool || keyPool(ctx.keys, undefined, counts.keys);
   const inflight = new Set();
+  const deferred = new Set(); // malformed or failed requests wait for the next run
   let going = 0; // calls on their way: they count toward the day's cap
   let stopping = false;
   let deadline = Infinity;
@@ -317,7 +323,8 @@ export function startRater(queue, ctx) {
     let best = -1;
     for (let i = 0; i < queue.length; i++) {
       const it = queue[i];
-      if (inflight.has(it.id) || (payBusy.size && payBusy.has(payKey(it.job && it.job.company)))) continue;
+      if (inflight.has(it.id) || deferred.has(it.id) || (payBusy.size && payBusy.has(payKey(it.job && it.job.company)))) continue;
+      if (it.joint) return it;
       if (best < 0 || byParser(it.p || {}, queue[best].p || {}) < 0) best = i;
     }
     return best < 0 ? null : queue[best];
@@ -329,9 +336,14 @@ export function startRater(queue, ctx) {
 
   async function rateOne(item, slot) {
     const resume = summaries[item.profile === 'ai' ? 'ai' : 'backend'];
-    const input = buildInput({ resume, job: item.job, text: item.text, skills: item.skills || [] });
+    const input = item.joint ? null : buildInput({ resume, job: item.job, text: item.text, skills: item.skills || [] });
     slot.busy += 1;
-    const r = await callGroq({ key: slot.key, model, input, profile: item.profile }).finally(() => { slot.busy -= 1; });
+    const limit = item.promptChars;
+    const listing = item.joint && limit && item.text.length > limit
+      ? { ...item, text: item.text.slice(0, Math.ceil(limit * 0.65)) + '\n[…]\n' + item.text.slice(-Math.floor(limit * 0.35)) }
+      : item;
+    const body = item.joint ? finderRequest(model, summaries, listing) : null;
+    const r = await callGroq({ key: slot.key, model, input, profile: item.profile, body }).finally(() => { slot.busy -= 1; });
     if (r.ok || r.kind === 'answer') {
       slot.proven = true;
       slot.strikes = 0;
@@ -351,22 +363,30 @@ export function startRater(queue, ctx) {
       const jd = `${item.job.title}\n${(item.skills || []).join(', ')}\n${item.text}`;
       const pc = ctx.payFor ? null : payCache && payCache[payKey(item.job.company)];
       const web = ctx.payFor ? ctx.payFor(item) : pc && pc.hi ? pc : null;
-      const ai = scoreRating(r.answer, { resume, jd, duties: item.text, experience: item.job.exp, profile: item.profile, posted: item.job.pay || null, web });
+      const ai = item.joint ? finderVerdict(r.answer, listing, summaries) : scoreRating(r.answer, { resume, jd, duties: item.text, experience: item.job.exp, profile: item.profile, posted: item.job.pay || null, web });
       if (ai) {
         failsInRow = 0;
         k.ok += 1;
         k.last = 'ok';
-        drop(item);
-        counts.rated[item.profile] = (counts.rated[item.profile] || 0) + 1;
+        const profile = ai.profile || item.profile;
+        counts.rated[profile] = (counts.rated[profile] || 0) + 1;
+        if (item.joint) {
+          const p = body.messages[0].content;
+          const dbg = { p: finderRequest(model, { backend: '[Backend profile summary]', ai: '[AI profile summary]' }, listing).messages[0].content, o: r.raw, m: model, t: Date.now() };
+          onRated(item, { ...ai, t: Date.now() }, dbg, { p, o: r.raw });
+          drop(item);
+          return;
+        }
         const payNote = pc ? `Pay lookup for ${item.job.company} (${new Date(pc.t).toISOString().slice(0, 10)}): ${pc.raw || 'nothing found'}` : null;
         const dbg = dbgOf({ profile: item.profile, input, resume, raw: r.raw, model, pay: payNote });
         const localTrace = { p: requestBody({ model, input, profile: item.profile }).messages[0].content, o: r.raw };
         onRated(item, { ...ai, t: Date.now() }, dbg, localTrace);
+        drop(item);
         return;
       }
       r.ok = false;
       r.kind = 'answer';
-      r.msg = "the model's answer had no requirements list";
+      r.msg = item.joint ? 'the score, profile or quoted evidence could not be verified' : "the model's answer had no requirements list";
     }
     k.last = r.msg;
     counts.last = { t: Date.now(), kind: r.kind, msg: r.msg };
@@ -375,7 +395,13 @@ export function startRater(queue, ctx) {
     counts.fails += 1;
     if (r.kind === 'transient') slot.until = Math.max(slot.until, Date.now() + 5_000);
     item.tries = (item.tries || 0) + 1;
-    if (item.tries >= 2 || r.kind === 'big') drop(item); // twice wrong: given up on, it stays unrated
+    if (item.joint) {
+      if (r.kind === 'big') item.promptChars = Math.max(750, Math.floor(listing.text.length / 2));
+      item.lastError = r.msg;
+      ctx.onRatingError?.(item, body.messages[0].content, r.raw || '', r.msg);
+      deferred.add(item.id);
+    } else if (item.tries >= 2 || r.kind === 'big') drop(item);
+    if (item.joint && (r.kind === 'answer' || r.kind === 'big')) return;
     failsInRow += 1;
     if (failsInRow >= 4) problem = { kind: 'transient', msg: `${r.msg} (4 in a row; the next run tries again)` };
   }
@@ -495,7 +521,7 @@ export function startRater(queue, ctx) {
               : { kind: 'quota', msg: `every Groq key is at its limit for ${model}; the next run carries on` };
           return;
         }
-        if (w > RATE.maxWaitMs) { problem = { kind: 'quota', msg: `every Groq key is at its limit for ${model}; the next run carries on` }; return; }
+        if (w > RATE.maxWaitMs) { problem = { kind: 'quota', until: Date.now() + w, msg: `every Groq key is at its limit for ${model}; the next run carries on` }; return; }
         await sleep(Math.min(w + 250, Math.max(0, deadline - Date.now())));
         continue;
       }
@@ -504,11 +530,11 @@ export function startRater(queue, ctx) {
       // A company whose pay isn't known yet is looked up by one loop at a time: the others take other
       // jobs until it's known (held from the moment the job is picked, before anything is awaited).
       const ck = payKey(item.job && item.job.company);
-      const hold = !!payCache && !!ck && !payFreshIn(ck);
+      const hold = !item.joint && !!payCache && !!ck && !payFreshIn(ck);
       if (hold) payBusy.add(ck);
       try {
-        await payFromDb(item);
-        if (payWanted(item)) await payOne(item, slot);
+        if (!item.joint) await payFromDb(item);
+        if (!item.joint && payWanted(item)) await payOne(item, slot);
         else await rateOne(item, slot);
       } catch (e) {
         problem = { kind: 'transient', msg: `rating error: ${scrub(e && e.message)}` };
