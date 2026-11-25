@@ -244,8 +244,7 @@ export const TOPICS = [
   // ─── Concurrency ───────────────────────────────────────────────────────────
   // In the playlist's own order (Concept && Coding, JAVA from Basics to
   // Advanced, #30–#39), one video per card, so it can be followed start to end.
-  // The cards with no playlist video (coding drills, @Async,
-  // production debugging) come after it.
+  // Coding drills and production debugging follow the playlist.
   {
     id: "CONC-07",
     section: "concurrency",
@@ -429,25 +428,6 @@ export const TOPICS = [
     ],
   },
   {
-    id: "CONC-14",
-    section: "concurrency",
-    priority: "P0",
-    title: "Spring Boot @Async & @Scheduled",
-    why: "From the Spring Boot playlist, not the Java one. Directly backs the async/sync-fallback work on your resume; \"long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
-    resources: [
-      { csv: "CC-SB#16", note: "The ThreadPoolExecutor part repeats CONC-01 — skim it, and slow down for how @Async picks its executor." },
-      { csv: "CC-SB#17" },
-    ],
-    questions: [
-      "Why does @Async silently not work when called from within the same class?",
-      "What must @Async methods return? What happens if one returns void and throws?",
-      "How do you configure a custom executor for @Async? What breaks if you don't?",
-      "Does the security context / @Transactional context propagate into @Async? Why not?",
-      "A client triggers a 10-minute job over HTTP. @Async, a queue, or a scheduler? What does the client get back, and how does it learn the result?",
-      "An @Scheduled job runs on all three pods. How do you make it run once? (ShedLock / leader election / a K8s CronJob.)",
-    ],
-  },
-  {
     id: "CONC-06",
     section: "concurrency",
     priority: "P0",
@@ -476,19 +456,6 @@ export const TOPICS = [
   },
 
   // ─── Spring Boot & Data Access ─────────────────────────────────────────────
-  // Fourth pass (Oct 2026): one sitting per card — about one video, rarely
-  // over 90 minutes — following the Spring Boot playlist (Concept && Coding).
-  // Bulky cards were split and low-yield videos dropped; SPRING-01 is done and
-  // untouched. Ids are storage keys: split-off halves got new ids (18–23).
-  {
-    id: "SPRING-01",
-    section: "spring",
-    priority: "P0",
-    title: "@Transactional — propagation, isolation & proxy failure",
-    why: "The self-invocation question is reported by name in interview write-ups. Highest-yield Spring topic there is.",
-    resources: [{ csv: "CC-SB#13" }, { csv: "CC-SB#14" }, { csv: "CC-SB#15" }],
-    inherit: "P0-01",
-  },
   {
     id: "SPRING-17",
     section: "spring",
@@ -568,6 +535,34 @@ export const TOPICS = [
     ],
   },
   {
+    id: "SPRING-19",
+    section: "spring",
+    priority: "P2",
+    title: "Maven — build lifecycle, scopes & dependency conflicts",
+    why: "NEW — split from SPRING-03 and lowered to P2. One SDE-2 write-up (HERE) listed Maven by name; most never reach it. When it does come up, it is the dependency-conflict question.",
+    resources: [{ csv: "CC-SB#4" }],
+    questions: [
+      "mvn package — which lifecycle phases run, and what is the difference between a phase and a plugin goal?",
+      "Two libraries pull different versions of the same dependency. Which wins in Maven, and how do you force one? (Nearest wins; dependencyManagement / a BOM; mvn dependency:tree.)",
+      "Dependency scopes — compile, provided, runtime, test: where does each end up?",
+      "What does spring-boot-starter-parent give you that a plain pom does not? (Managed versions, plugin defaults.)",
+    ],
+  },
+  {
+    id: "SPRING-18",
+    section: "spring",
+    priority: "P0",
+    title: "Profiles & externalized config — @Profile, @ConfigurationProperties & feature flags",
+    why: "NEW — split from SPRING-03. \"How do you manage dev/stage/prod config?\" is a routine practical question, and feature flags — fixed at startup vs togglable at runtime — are where it goes deep.",
+    resources: [{ csv: "CC-SB#11" }, { csv: "CC-SB#44" }],
+    inherit: "P1-14",
+    questions: [
+      "How do you activate a profile per environment, and what loads when none is active?",
+      "How do you make a bad config fail at startup instead of at 3 a.m.? (@ConfigurationProperties + @Validated.)",
+      "Where do secrets belong — application.yml, env vars or a vault — and what does each one leak?",
+    ],
+  },
+  {
     id: "SPRING-03",
     section: "spring",
     priority: "P0",
@@ -600,31 +595,17 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SPRING-18",
+    id: "SPRING-11",
     section: "spring",
     priority: "P0",
-    title: "Profiles & externalized config — @Profile, @ConfigurationProperties & feature flags",
-    why: "NEW — split from SPRING-03. \"How do you manage dev/stage/prod config?\" is a routine practical question, and feature flags — fixed at startup vs togglable at runtime — are where it goes deep.",
-    resources: [{ csv: "CC-SB#11" }, { csv: "CC-SB#44" }],
-    inherit: "P1-14",
+    title: "Filters vs interceptors — and where tenant resolution goes",
+    why: "\"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, sometimes with a code example asked for. JWT validation (a filter) and tenant resolution both live here.",
+    resources: [{ csv: "CC-SB#18" }, { csv: "CC-SB#19" }],
+    inherit: "P2-28",
     questions: [
-      "How do you activate a profile per environment, and what loads when none is active?",
-      "How do you make a bad config fail at startup instead of at 3 a.m.? (@ConfigurationProperties + @Validated.)",
-      "Where do secrets belong — application.yml, env vars or a vault — and what does each one leak?",
-    ],
-  },
-  {
-    id: "SPRING-06",
-    section: "spring",
-    priority: "P2",
-    title: "AOP & the proxy mechanism",
-    why: "Lowered to P2: none of the ~45 2024–26 loops behind this map asked AOP on its own. It arrives as the reason @Transactional and @Async fail on self-invocation — which SPRING-01 already taught you. Do it for depth: \"JDK vs CGLIB proxies\" is still on SDE-2 question lists.",
-    resources: [
-      { csv: "CC-SB#12", note: "Long. Of the pointcut types, execution(...) and @annotation(...) are the two you will actually write — skim the rest." },
-    ],
-    inherit: "P0-02",
-    questions: [
-      "Write a custom @LogExecutionTime annotation and the @Around aspect behind it. Why won't it fire on a call from inside the same class?",
+      "One request passes a filter, an interceptor and an @Around aspect. In what order do they run, and what can each one see?",
+      "How do you register a filter in Spring Boot and control its order and URL pattern? (A @Component filter, or FilterRegistrationBean.)",
+      "preHandle, postHandle, afterCompletion — which of them still runs when the controller throws?",
     ],
   },
   {
@@ -657,20 +638,6 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SPRING-11",
-    section: "spring",
-    priority: "P0",
-    title: "Filters vs interceptors — and where tenant resolution goes",
-    why: "\"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, sometimes with a code example asked for. JWT validation (a filter) and tenant resolution both live here.",
-    resources: [{ csv: "CC-SB#18" }, { csv: "CC-SB#19" }],
-    inherit: "P2-28",
-    questions: [
-      "One request passes a filter, an interceptor and an @Around aspect. In what order do they run, and what can each one see?",
-      "How do you register a filter in Spring Boot and control its order and URL pattern? (A @Component filter, or FilterRegistrationBean.)",
-      "preHandle, postHandle, afterCompletion — which of them still runs when the controller throws?",
-    ],
-  },
-  {
     id: "SPRING-04",
     section: "spring",
     priority: "P0",
@@ -693,13 +660,54 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SPRING-15",
+    id: "SPRING-01",
     section: "spring",
     priority: "P0",
-    title: "Web attacks — CSRF, XSS, CORS, SQL injection",
-    why: "25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
-    resources: [{ csv: "CC-SB#33" }],
-    inherit: "P2-32",
+    title: "@Transactional — propagation, isolation & proxy failure",
+    why: "The self-invocation question is reported by name in interview write-ups. Highest-yield Spring topic there is.",
+    resources: [{ csv: "CC-SB#13" }, { csv: "CC-SB#14" }, { csv: "CC-SB#15" }],
+    inherit: "P0-01",
+  },
+  {
+    id: "SPRING-06",
+    section: "spring",
+    priority: "P2",
+    title: "AOP & the proxy mechanism",
+    why: "Lowered to P2: none of the ~45 2024–26 loops behind this map asked AOP on its own. It arrives as the reason @Transactional and @Async fail on self-invocation — which SPRING-01 already taught you. Do it for depth: \"JDK vs CGLIB proxies\" is still on SDE-2 question lists.",
+    resources: [
+      { csv: "CC-SB#12", note: "Long. Of the pointcut types, execution(...) and @annotation(...) are the two you will actually write — skim the rest." },
+    ],
+    inherit: "P0-02",
+    questions: [
+      "Write a custom @LogExecutionTime annotation and the @Around aspect behind it. Why won't it fire on a call from inside the same class?",
+    ],
+  },
+  {
+    id: "CONC-14",
+    section: "spring",
+    priority: "P0",
+    title: "Spring Boot @Async & @Scheduled",
+    why: "From the Spring Boot playlist, not the Java one. Directly backs the async/sync-fallback work on your resume; \"long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
+    resources: [
+      { csv: "CC-SB#16", note: "The ThreadPoolExecutor part repeats CONC-01 — skim it, and slow down for how @Async picks its executor." },
+      { csv: "CC-SB#17", note: "For a price and a shipping quote, submit both calls through the injected @Async bean before waiting. Use thenCombine to build the result when both succeed. Set timeouts on the HTTP clients too, since timing out the combined future can leave a worker blocked." },
+      {
+        doc: {
+          title: "Spring Framework — Task Execution and Scheduling",
+          site: "docs.spring.io",
+          url: "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+          note: "fixedRate targets the interval between starts. fixedDelay counts from the scheduled method’s return. If that method only submits async work, the next tick can arrive while the previous worker is still running. Each replica has its own trigger, so give a retried job a stable key and make its write idempotent.",
+        },
+      },
+    ],
+    questions: [
+      "Why does @Async silently not work when called from within the same class?",
+      "What must @Async methods return? What happens if one returns void and throws?",
+      "How do you configure a custom executor for @Async? What breaks if you don't?",
+      "Does the security context / @Transactional context propagate into @Async? Why not?",
+      "A client triggers a 10-minute job over HTTP. @Async, a queue, or a scheduler? What does the client get back, and how does it learn the result?",
+      "An @Scheduled job runs on all three pods. How do you make it run once? (ShedLock / leader election / a K8s CronJob.)",
+    ],
   },
   {
     id: "SPRING-09",
@@ -718,20 +726,6 @@ export const TOPICS = [
     ],
   },
   {
-    id: "SPRING-23",
-    section: "spring",
-    priority: "P0",
-    title: "JWT — structure, stateless auth, revocation & refresh",
-    why: "NEW — split from SPRING-09 and raised to P0. JWT is the security topic SDE-2 loops actually spend time on: a 2026 Java SDE-2 loop asked where the token is validated in the filter chain, what happens when validation fails, how to revoke one, where refresh lives and why localStorage is risky. Do SPRING-09 first.",
-    resources: [{ csv: "CC-SB#38" }],
-    inherit: "P1-19",
-    questions: [
-      "Where exactly is the JWT validated in the filter chain, and what does the client get if validation fails part-way?",
-      "Write the filter: which class do you extend, where do you register it, and what goes into the SecurityContext? (OncePerRequestFilter, added before UsernamePasswordAuthenticationFilter.)",
-      "Where should token refresh live — frontend, backend or gateway? How do you stop the refresh call itself from being intercepted in a loop?",
-    ],
-  },
-  {
     id: "SPRING-10",
     section: "spring",
     priority: "P0",
@@ -746,6 +740,20 @@ export const TOPICS = [
     ],
   },
   {
+    id: "SPRING-23",
+    section: "spring",
+    priority: "P0",
+    title: "JWT — structure, stateless auth, revocation & refresh",
+    why: "NEW — split from SPRING-09 and raised to P0. JWT is the security topic SDE-2 loops actually spend time on: a 2026 Java SDE-2 loop asked where the token is validated in the filter chain, what happens when validation fails, how to revoke one, where refresh lives and why localStorage is risky. Do SPRING-09 first.",
+    resources: [{ csv: "CC-SB#38" }],
+    inherit: "P1-19",
+    questions: [
+      "Where exactly is the JWT validated in the filter chain, and what does the client get if validation fails part-way?",
+      "Write the filter: which class do you extend, where do you register it, and what goes into the SecurityContext? (OncePerRequestFilter, added before UsernamePasswordAuthenticationFilter.)",
+      "Where should token refresh live — frontend, backend or gateway? How do you stop the refresh call itself from being intercepted in a loop?",
+    ],
+  },
+  {
     id: "SPRING-13",
     section: "spring",
     priority: "P1",
@@ -754,26 +762,21 @@ export const TOPICS = [
     inherit: "P2-30",
   },
   {
+    id: "SPRING-15",
+    section: "spring",
+    priority: "P0",
+    title: "Web attacks — CSRF, XSS, CORS, SQL injection",
+    why: "25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
+    resources: [{ csv: "CC-SB#33" }],
+    inherit: "P2-32",
+  },
+  {
     id: "SPRING-14",
     section: "spring",
     priority: "P1",
     title: "Actuator, health probes & metrics",
     resources: [{ csv: "CC-SB#43" }],
     inherit: "P2-31",
-  },
-  {
-    id: "SPRING-19",
-    section: "spring",
-    priority: "P2",
-    title: "Maven — build lifecycle, scopes & dependency conflicts",
-    why: "NEW — split from SPRING-03 and lowered to P2. One SDE-2 write-up (HERE) listed Maven by name; most never reach it. When it does come up, it is the dependency-conflict question.",
-    resources: [{ csv: "CC-SB#4" }],
-    questions: [
-      "mvn package — which lifecycle phases run, and what is the difference between a phase and a plugin goal?",
-      "Two libraries pull different versions of the same dependency. Which wins in Maven, and how do you force one? (Nearest wins; dependencyManagement / a BOM; mvn dependency:tree.)",
-      "Dependency scopes — compile, provided, runtime, test: where does each end up?",
-      "What does spring-boot-starter-parent give you that a plain pom does not? (Managed versions, plugin defaults.)",
-    ],
   },
 
   // ─── Databases & Caching ───────────────────────────────────────────────────

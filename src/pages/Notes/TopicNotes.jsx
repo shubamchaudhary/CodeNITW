@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PageSkeleton from "../../components/PageSkeleton";
-import { useParams, useNavigate, Navigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { toast } from "react-toastify";
 import "@uiw/react-markdown-preview/markdown.css";
@@ -529,7 +529,6 @@ export default function TopicNotes() {
   if (!config) return <Navigate to="/core-stack" replace />;
   if (config.ownerOnly && !(config.key === "aistack" ? canSeeAiStack(user) : isOwner(user))) return <Navigate to="/core-stack" replace />;
   if (!topic) return <Navigate to={config.home} replace />;
-  if (topic.lessons && shown.hideQuestions) return <Navigate to={`/notes/${source}/${topic.lessons[0]}`} replace />;
 
   const accent = config.accent;
   const isRead = view === "read";
@@ -629,23 +628,15 @@ export default function TopicNotes() {
 
   // Real interview questions for this topic, fixed under the note in both views.
   const asked =
-    hasAskedQuestions(source) && topic.asked && !topic.lessons && !shown.hideQuestions ? (
+    hasAskedQuestions(source) && topic.asked && !shown.hideQuestions ? (
       <AskedQuestions source={source} topicId={topic.id} colorMode={colorMode} standalone={!!topic.noteless} />
     ) : null;
-  const parts = topic.lessons ? shown.sections.find(s => s.key === topic.section).topics : [];
-  const nextPart = parts[parts.indexOf(topic) + 1];
-  const footer = nextPart ? (
-    <nav aria-label="Next Spring Boot part" className="mt-10 border-t border-line pt-4">
-      <Link className="text-accent-fg underline" to={`/notes/${source}/${nextPart.id}`}>Next · {nextPart.title}</Link>
-    </nav>
-  ) : asked;
 
   const lead = (
     <TopicLead
       stack={shown}
       owner={owner}
       topic={topic}
-      completed={completed}
       done={!!completed[topic.id]}
       doneDays={doneDays}
       planned={planned.has(topic.id)}
@@ -735,7 +726,7 @@ export default function TopicNotes() {
               flat
               lead={lead}
               starterQuestions={null}
-              footer={footer}
+              footer={asked}
               text={builtInText(doc, text)}
               onCommit={commit}
               assets={NO_ASSETS}
