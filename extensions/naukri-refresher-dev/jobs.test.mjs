@@ -319,7 +319,6 @@ test("the parser's order: JD match first, few-skills JDs after, then no-skills o
 test('rules are the agreed ones', () => {
   assert.equal(RULES.maxAgeH, 48, 'the last 48 hours ("2 days ago" is out)');
   assert.equal(RULES.showHours, 48);
-  assert.equal(RULES.poolTop, 1000, 'every job it keeps goes to your site and is rated (up to 1,000 a list)');
   assert.equal(RULES.showTop, 100, 'your site shows the top 100 per list, highest rating first');
   assert.equal(RULES.minPayL, 18);
   assert.equal(RULES.maxMinYears, 2.5);

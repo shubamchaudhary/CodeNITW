@@ -92,10 +92,7 @@ const PAY_CLS = {
   unknown: "bg-surface-hover text-fg-subtle  ",
 };
 
-// The Naukri job finder (extensions/naukri-refresher) uploads its top 400 Naukri jobs per list with
-// their JD match, a rank, the list they're on (one per Naukri account) and, once an LLM has read the
-// JD against your resume, an AI rating (`ai`). Each list shows its top SHOW_TOP posted in the last
-// WINDOW_HOURS hours that you haven't taken yet, highest AI rating first.
+// The finder uploads rated Backend and AI candidates. The tracker shows available recent jobs.
 const WINDOW_HOURS = 48;
 const SHOW_TOP = 100; // "Apply" on Naukri: the top 100 a list (Naukri takes 50 applies a day per account)
 const SITE_BATCH = 60; // "Apply on company site": every one, 60 cards at a time
@@ -111,15 +108,15 @@ const byMatch = (a, b) => matchTier(a) - matchTier(b) || (b.coverage || 0) - (a.
 const aiScore = (o) => (o.ai && o.ai.s >= 1 ? o.ai.s : 0);
 const preferredPay = (o) => o.pay?.verdict === "meets" || o.ai?.pay?.ok === "ok";
 const byRating = (a, b) => aiScore(b) - aiScore(a) || Number(preferredPay(b)) - Number(preferredPay(a)) || byMatch(a, b);
-// Your site keeps AI ratings from 70 up (extensions/naukri-refresher/rate-lib.js RATE.minShow); the
-// rest wait behind "Show N rated under 70". Jobs not rated yet still show, after the rated ones.
+// Older decisions and lower scores are available through Review other candidates.
 const MIN_SHOW = 70;
-const finderMatch = (o) => o.ai?.v >= 3 && !o.ai.rej && aiScore(o) >= MIN_SHOW;
+const finderMatch = (o) => o.ai?.v >= 4 && !o.ai.rej && aiScore(o) >= MIN_SHOW;
 const lowRated = (o) => aiScore(o) > 0 && aiScore(o) < MIN_SHOW;
 // What the AI rating rests on, for its tooltip.
 const LEVEL_TEXT = { junior: "junior", mid: "mid-level", senior: "senior", lead: "lead" };
 const PAY_FROM = { posted: "the salary it shows", web: "a web lookup of the company's pay at about 2 years", model: "what the LLM knows of the company", guess: "the LLM's guess (not counted)" };
 function aiHint(ai) {
+  if (ai.v >= 4) return `Groq rated this job ${ai.s}/100 against both profiles. ${ai.why || ""}`;
   const lines = [
     ai.rel != null
       ? `AI rating ${ai.s}/100: 55% the LLM's relevance against your list's strict rules (${ai.rel}), 45% the requirements your resume provably meets (${ai.fit}).`
@@ -354,7 +351,7 @@ function AiExtra({ o }) {
         </p>
       )}
       <div className="flex flex-wrap items-center gap-1">
-        {ai.rel != null && (
+        {ai.rel != null && ai.v < 4 && (
           <Tag cls="bg-surface-hover text-fg" title="The LLM's relevance (1–100) against your list's strict prompt · the requirements score worked out in code">
             relevance {ai.rel} · fit {ai.fit}
           </Tag>
@@ -560,7 +557,7 @@ function FinderCard({ o, n, onSkip, onApplied }) {
           {o.pay?.verdict === "unknown" ? "pay not shown" : o.pay?.text || PAY_LABEL.unknown}
           {["meets", "target", "negotiable"].includes(o.pay?.verdict) && " · " + ({meets: "Preferred", target: "Meets target", negotiable: "Negotiable"})[o.pay.verdict]}
         </Tag>
-        <Tag
+        {o.ai?.v >= 4 ? null : <Tag
           cls={o.coverage >= 80 ? "bg-success-subtle text-success-fg  " : "bg-surface-hover text-fg  "}
           title={
             o.fewSkills
@@ -571,7 +568,7 @@ function FinderCard({ o, n, onSkip, onApplied }) {
           }
         >
           {skills}
-        </Tag>
+        </Tag>}
       </div>
 
       {o.ai ? (
@@ -728,7 +725,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
   const hour = Math.floor(Date.now() / HOUR_MS); // recomputed as the window moves on
   const naukri = useMemo(() => {
     const since = Date.now() - WINDOW_HOURS * HOUR_MS;
-    const list = openings.filter((o) => o.finder === "naukri" && postedMs(o) >= since && !lowPayMatch(o.company));
+    const list = openings.filter((o) => o.finder === "naukri" && postedMs(o) >= since && (o.ai?.v >= 4 || !lowPayMatch(o.company)));
     return { list, ids: new Set(list.map((o) => o.id)), keys: new Set(list.flatMap(jobKeys)) };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openings, hour]);
@@ -982,13 +979,10 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
             {sentLine}
           </div>
           <div className="text-xs text-fg-subtle">
-            Two lists, one per Naukri account: Backend (Java/Spring Boot roles) and AI (Python and GenAI roles: LLMs, RAG, agents,
-            LangChain, LangGraph, FastAPI). A job is on one list only; frontend-first, MERN and other-stack roles are left out, and so are IT
-            services firms that pay far under your bar. Posted in the last {WINDOW_HOURS} hours · not applied or taken yet · asks for
-            under 2.5 yrs · 18L+ or pay not shown (20L target, 25L preferred) · the finder read its JD and enough of the technologies it asks for are yours. The
-            finder reads every page of every search, and jobs with readable descriptions can receive a 1–100 rating against the selected profile summary. Each list
-            shows two lists: Apply on Naukri (its top {SHOW_TOP}: Naukri takes 50 applies a day per account) and Apply on company site (all
-            of them). Matches need a current rating of 70 or higher. Other candidates are available for review.
+            The finder checks posting date and experience, then sends each eligible job description to Groq with both profile summaries.
+            Groq selects Java/Spring Boot, GenAI or neither. Matches score 70 or higher. Use Review other candidates for weaker profile fits.
+            The extension report includes unrelated jobs and listings still waiting for a job description or score.
+
           </div>
           {extLine && (
             <div className={`text-xs ${finderExt.connected ? "text-fg-subtle" : "text-warning-fg"}`}>{extLine}</div>

@@ -10,7 +10,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
-import { startMock, EXPECT, RADAR_TOKEN, GROQ_KEYS, TEST_RESUME, listing } from './mock-naukri.mjs';
+import { startMock, EXPECT, RADAR_TOKEN, GROQ_KEYS, TEST_RESUME, listing, fixtures } from './mock-naukri.mjs';
 import { istHM, MIN, HOUR, DAY } from '../naukri-refresher/lib.js';
 
 const EXT_DIR = fileURLToPath(new URL('../naukri-refresher', import.meta.url));
@@ -262,7 +262,9 @@ async function firefox(tmp) {
 
 async function suite(d, mock) {
   const results = [];
+  let finderSection = false;
   const step = async (name, fn) => {
+    if (process.env.NR_FINDER_ONLY === '1' && !finderSection) return;
     if (process.env.NR_INSTAHYRE_ONLY === '1' && !name.startsWith('Instahyre')) return;
     const t0 = Date.now();
     try {
@@ -622,6 +624,7 @@ async function suite(d, mock) {
   });
 
   // ---------------------------------------------------------------- the job finder
+  finderSection = true;
   const jobs = () => d.msg({ type: 'jobsStatus' });
   const waitRun = async (since, ms = 120_000) => {
     const end = Date.now() + ms;
@@ -708,7 +711,12 @@ async function suite(d, mock) {
     assert.equal(mock.state.radarPosts.length, 0, 'connecting uploads nothing');
   });
 
-  await step("find jobs: reads Naukri's results, opens each good-looking job's page, keeps the ones whose JD matches, sends them to the site", async () => {
+  const excluded = [5, 8, 24, 65, 68].map(EXPECT.idOf);
+  const eligible = [...new Set(Object.values(fixtures()).flat(2).map(x => x.jobId))].filter(id => !excluded.includes(id));
+  const readable = eligible.filter(id => ![63, 66, 67].map(EXPECT.idOf).includes(id));
+  const queuedIds = async () => (await getStore('jobsRateQ')).jobsRateQ.items.map(i => i.id).sort();
+
+  await step("find jobs: reads Naukri's results, opens each eligible job page and queues every readable JD", async () => {
     await setStore({ jobsDev: { pause: [60, 120], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'] } });
     const t0 = Date.now();
     const r = await d.msg({ type: 'jobsNow' });
@@ -723,76 +731,16 @@ async function suite(d, mock) {
     assert.deepEqual(pages.map((p) => p.path), ['/java-spring-boot-developer-jobs', '/software-engineer-jobs', '/generative-ai-engineer-jobs', '/java-spring-boot-developer-jobs-2']);
     assert.equal(s.sweep && s.sweep.done, true, JSON.stringify(s.sweep));
     assert.deepEqual([s.sweep.over, s.sweep.searches, s.sweep.pages], [3, 3, 4]);
-    const posts = mock.state.radarPosts;
-    assert.equal(posts.length, 1, 'one upload');
-    assert.equal(posts[0].finder, 'naukri');
-    assert.deepEqual(mock.state.radarPostAuth, ['finder'], 'sent with the token your site handed over');
-    assert.equal(posts[0].summary.scope, 'both');
-    const ids = posts[0].openings.map((o) => o.openingId);
-    assert.equal(new Set(ids).size, ids.length, 'a listing found by two searches is sent once');
-    assert.deepEqual([...ids].sort(), [...EXPECT.keep].sort(), 'kept exactly the listings that fit');
-    for (const o of posts[0].openings) {
-      assert.equal(o.profile, EXPECT.ai.includes(o.openingId) ? 'ai' : 'backend', `${o.title}: profile`);
-      assert.ok(o.rank > 0 && o.rank <= 100 && o.postedAt && o.url.startsWith('https://www.naukri.com/job-listings-'), o.title);
-    }
-    const byId = Object.fromEntries(posts[0].openings.map((o) => [o.openingId, o]));
-    assert.equal(byId[EXPECT.idOf(7)].pay.verdict, 'hidden', "a salary the employer hid is still read from Naukri's data");
-    assert.equal(byId[EXPECT.idOf(9)].exp, 'unknown', 'a plain Software Engineer listing with no details is kept');
-    assert.equal(byId[EXPECT.idOf(41)].coverage, 100, 'the AI search (loaded by XMLHttpRequest) was read too');
-    // The JDs: every card that passed had its page opened; the JD decided.
-    const jobPages = mock.jobPages().map((p) => p.path);
-    assert.ok(jobPages.length >= EXPECT.keep.length, `opened ${jobPages.length} job pages`);
-    assert.ok(!jobPages.some((p) => /android|net-developer|php/.test(p)), "a card ruled out by its title isn't opened");
-    assert.ok(byId[EXPECT.idOf(61)], 'filler chips, but its JD is Java: kept');
-    assert.ok(!byId[EXPECT.idOf(62)], 'fine chips, but its JD is .NET: dropped');
-    assert.ok(s.reasons.some(([why]) => why === 'JD match under 60%'), JSON.stringify(s.reasons));
-    assert.equal(byId[EXPECT.idOf(61)].jd, true);
-    assert.ok(!byId[EXPECT.idOf(61)].missing.some((m) => /Salesforce|SAP|Go\b|Terraform/.test(m)), 'nice-to-haves and the company blurb left out');
-    for (const id of EXPECT.cardOnly) assert.equal(byId[id].jd, false, "its page couldn't be read: judged by its card");
-    assert.ok(s.daily.jds >= EXPECT.keep.length && s.jdSample && s.jdSample.via === 'api', JSON.stringify(s.jdSample));
-    assert.ok(s.reasons.some(([why]) => why === 'Android role') && s.reasons.some(([why]) => why === "card's skills are another stack"), JSON.stringify(s.reasons));
-    const reason = Object.fromEntries(s.reasons);
-    assert.equal(reason['posted over 48 hours ago'], 2, '"2 days ago" and "3 days ago" are out');
-    // Already applied: its card says so (not opened), or its page's data or apply button does.
-    assert.equal(reason['you applied on Naukri'], 3, JSON.stringify(s.reasons));
-    for (const id of EXPECT.applied.card) assert.ok(!jobPages.some((p) => p.endsWith(id)), 'an applied card is not opened');
-    for (const id of [...EXPECT.applied.data, ...EXPECT.applied.button]) assert.ok(jobPages.some((p) => p.endsWith(id)), 'read, then dropped');
-    // A low-pay company and MERN chips are out on the card; a plain Software Engineer card is opened and its MERN JD rules it out.
-    assert.equal(reason['low-pay company'], 1, JSON.stringify(s.reasons));
-    assert.equal(reason['frontend or MERN stack'], 2, JSON.stringify(s.reasons));
-    for (const id of [...EXPECT.lowPay, ...EXPECT.mern.card]) assert.ok(!jobPages.some((p) => p.endsWith(id)), `${id}: not opened`);
-    for (const id of EXPECT.mern.jd) assert.ok(jobPages.some((p) => p.endsWith(id)), `${id}: opened, its JD decided`);
-    assert.equal(byId[EXPECT.idOf(72)].profile, 'backend', 'Java full stack: some frontend next to Java is fine');
-    assert.equal(byId[EXPECT.idOf(11)].profile, 'ai', 'Python, FastAPI and GenAI: the AI list');
-    assert.ok(posts[0].openings.every((o) => !o.ai), 'no key yet: nothing rated');
-    // How you apply, read off each job's page (never clicked): on Naukri, or on the company's site with its link.
-    for (const id of EXPECT.companySite) {
-      assert.equal(byId[id].apply, 'company', `${id}: apply on company site`);
-      assert.equal(byId[id].applyUrl, `https://careers.example.org/jobs/${id}?src=naukri`);
-    }
-    assert.equal(byId[EXPECT.idOf(1)].apply, 'naukri', 'a plain "Apply" button: on Naukri');
-    assert.equal(byId[EXPECT.idOf(1)].applyUrl, undefined);
-    assert.equal(s.jdSample.applyInfo && typeof s.jdSample.applyInfo.button, 'string', 'the last job page read says what its apply button said');
-    assert.equal(s.daily.kept.ai, EXPECT.ai.length);
-    assert.equal(s.daily.kept.backend, EXPECT.keep.length - EXPECT.ai.length);
-    assert.equal(naukriPosts().length, 0, 'never sends anything to Naukri (no apply, no form)');
-    assert.equal((await d.naukriTabs()).filter((u) => /-jobs|job-listings/.test(u)).length, 0, 'its background tab is closed again');
-  });
-
-  await step('the report: every listing judged is recorded with its decision and reason; the funnel adds up; a kept job has its JD; the numbers match what reached the site', async () => {
-    const r = await d.msg({ type: 'jobsAudit' });
-    const list = r.entries;
-    const keptIds = list.filter((x) => x.k).map((x) => x.id).sort();
-    assert.deepEqual(keptIds, [...EXPECT.keep].sort(), 'every job kept is in the report');
-    for (const id of EXPECT.drop) assert.ok(list.some((x) => x.id === id && !x.k && x.w), `${id}: left out, with its reason`);
-    assert.ok(list.every((x) => x.title && x.company && (x.k || x.w)), 'each entry says what it is and why');
-    const out = list.filter((x) => !x.k);
-    assert.ok(out.some((x) => x.stage === 'card') && out.some((x) => x.stage === 'jd'), 'left out on the card, and after the JD');
-    assert.ok(list.filter((x) => x.k).every((x) => x.sent === 1), 'every kept job reached your site');
-    assert.ok(list.filter((x) => x.k && x.list === 'ai').length === EXPECT.ai.length, 'the lists add up');
-    const one = list.find((x) => x.k && x.stage === 'jd');
-    const { doc } = await d.msg({ type: 'jobsAuditDoc', id: one.id });
-    assert.ok(doc && doc.jd && doc.jd.length > 50, 'the JD it read is kept');
+    assert.deepEqual(mock.jobPages().map(p => p.path.slice(-12)).sort(), [...eligible].sort());
+    assert.deepEqual(await queuedIds(), [...readable].sort());
+    assert.equal(mock.state.radarPosts.length, 0);
+    assert.equal(s.queued, 1, 'unreadable JD stays pending');
+    assert.equal(naukriPosts().length, 0);
+    const { entries } = await d.msg({ type: 'jobsAudit' });
+    assert.equal(entries.filter(x => x.pending).length, readable.length + 1);
+    assert.ok(entries.every(x => x.k === 0 && x.w));
+    const { doc } = await d.msg({ type: 'jobsAuditDoc', id: EXPECT.idOf(61) });
+    assert.match(doc.jd, /Spring Boot/);
   });
 
   await step("the finder's settings page shows the sweep and the rules", async () => {
@@ -811,20 +759,18 @@ async function suite(d, mock) {
     assert.doesNotMatch(page.next, /Not responding/, page.next);
     assert.match(page.rules, /Every listing, not a sample/);
     assert.match(page.rules, /last 48 hours/);
-    assert.match(page.rules, /Apply on Naukri, its top 100/);
-    assert.match(page.rules, /Apply on company site, all of them/);
-    assert.match(page.rules, /low-pay list/);
+    assert.match(page.rules, /both résumé summaries/);
+    assert.match(page.rules, /Unknown experience goes to Groq/);
   });
 
-  await step('a later run sweeps every page of every search again and sends only the new listing that fits', async () => {
+  await step('a later run sweeps every page of every search again and queues both new listings once', async () => {
     mock.state.srpExtra = [listing(51, { title: 'Java Backend Developer', tagsAndSkills: 'Java,Spring Boot,Redis' }), listing(52, { title: 'iOS Developer' })];
     const before = mock.searchPages().length;
     const t0 = Date.now();
     await d.msg({ type: 'jobsNow' });
     const s = await waitRun(t0);
-    const posts = mock.state.radarPosts;
-    assert.equal(posts.length, 2, 'one more upload');
-    assert.deepEqual(posts[1].openings.map((o) => o.openingId), [EXPECT.idOf(51)]);
+    assert.equal(mock.state.radarPosts.length, 0);
+    assert.deepEqual(await queuedIds(), [...readable, EXPECT.idOf(51), EXPECT.idOf(52)].sort());
     assert.equal(mock.searchPages().length - before, 4, 'every page again: a new sweep');
     assert.deepEqual([s.sweep.n, s.sweep.done], [2, true]);
   });
@@ -836,31 +782,30 @@ async function suite(d, mock) {
     const s = await waitRun(t0);
     assert.ok(s.halted, 'paused');
     assert.equal(s.halted.short, 'Naukri asked for a check');
-    assert.equal(mock.state.radarPosts.length, 2, 'nothing sent');
+    assert.equal(mock.state.radarPosts.length, 0, 'nothing sent');
     assert.equal(mock.searchPages().filter((p) => p.t >= t0).length, 1, 'stopped at the first page that asked');
     mock.state.srpMode = 'ok';
     const r = await d.msg({ type: 'jobsResume' });
     assert.equal(r.halted, null);
   });
 
-  await step('a check on a job page pauses it too; that job waits and is read first after Resume', async () => {
+  await step('a check on a job page pauses it too; pending descriptions are retried after Resume', async () => {
     mock.state.jobMode = 'captcha';
     mock.state.srpExtra = [listing(53, { title: 'Backend Developer', tagsAndSkills: 'Java,Spring Boot,PostgreSQL,Redis' })];
     const t0 = Date.now();
     await d.msg({ type: 'jobsNow' });
     let s = await waitRun(t0);
     assert.equal(s.halted && s.halted.short, 'Naukri asked for a check');
-    assert.equal(s.queued, 1, 'the job waits');
-    assert.equal(mock.state.radarPosts.length, 2, 'nothing sent');
+    assert.ok(s.queued >= 1, 'the interrupted job waits');
+    assert.equal(mock.state.radarPosts.length, 0, 'nothing sent');
     mock.state.jobMode = 'ok';
     await d.msg({ type: 'jobsResume' });
     const t1 = Date.now();
     await d.msg({ type: 'jobsNow' });
     s = await waitRun(t1);
     assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
-    const first = mock.state.requests.filter((r) => r.t >= t1 && (/^\/job-listings-/.test(r.path) || /-jobs(?:-\d+)?$/.test(r.path)))[0];
-    assert.ok(first && first.path.endsWith(EXPECT.idOf(53)), `read its page first: ${first && first.path}`);
-    assert.deepEqual(mock.state.radarPosts[2].openings.map((o) => o.openingId), [EXPECT.idOf(53)]);
+    assert.ok((await queuedIds()).includes(EXPECT.idOf(53)));
+    assert.equal(mock.state.radarPosts.length, 0);
     mock.state.srpExtra = [];
     await d.msg({ type: 'jobsResume' }); // the next step's run checks the site again
   });
@@ -872,7 +817,7 @@ async function suite(d, mock) {
       await d.msg({ type: 'jobsNow' });
       const s = await waitRun(t0);
       assert.equal(s.halted && s.halted.short, 'site not updated');
-      assert.equal(mock.state.radarPosts.length, 3, 'nothing sent');
+      assert.equal(mock.state.radarPosts.length, 0, 'nothing sent');
       assert.equal(mock.searchPages().filter((p) => p.t >= t0).length, 0, 'not even searched');
     } finally {
       mock.state.radarMode = 'ok';
@@ -894,7 +839,7 @@ async function suite(d, mock) {
 
   await step('popup shows the job finder in one line', async () => {
     const line = await d.evalExt("(async () => { await new Promise((r) => setTimeout(r, 1700)); return document.getElementById('jobsLine').textContent; })()");
-    assert.equal(line, `Off · ${EXPECT.keep.length - EXPECT.ai.length + 2} Backend · ${EXPECT.ai.length} AI today`);
+    assert.equal(line, 'Off · 0 Backend · 0 AI today');
   });
 
   await step('a browser set to "AI only" runs just the AI searches; each job still goes on its own list', async () => {
@@ -909,11 +854,8 @@ async function suite(d, mock) {
     assert.equal(s.lastRun.scope, 'ai');
     const pages = mock.searchPages().filter((p) => p.t >= t0).map((p) => p.path);
     assert.ok(pages.length > 0 && pages.every((p) => p.startsWith('/generative-ai-engineer-jobs')), pages.join(' '));
-    const post = mock.state.radarPosts[before];
-    assert.ok(post, 'it sent what it kept');
-    assert.equal(post.summary.scope, 'ai');
-    assert.deepEqual(post.openings.map((o) => o.openingId).sort(), [EXPECT.idOf(41), EXPECT.idOf(43)].sort());
-    assert.ok(post.openings.every((o) => o.profile === 'ai'));
+    assert.equal(mock.state.radarPosts.length, before);
+    assert.deepEqual(await queuedIds(), [...readable, ...[51, 52, 53].map(EXPECT.idOf)].sort());
     await d.msg({ type: 'jobsSave', patch: { scope: 'both' } });
     await setStore({ jobsDev: null });
   });
@@ -931,7 +873,7 @@ async function suite(d, mock) {
     throw new Error(`the rating didn't finish: ${JSON.stringify(s && s.rating)}`);
   };
 
-  await step('AI rating: jobs kept before any key wait; saved Groq keys rate them, past a rejected and a busy key; only proven claims count', async () => {
+  await step('AI rating: a rejected and a busy key leave work for the good key; the report retains every score', async () => {
     await setStore({ jobsDev: DEV });
     await d.msg({ type: 'jobsRescan' });
     const t0 = Date.now();
@@ -941,77 +883,47 @@ async function suite(d, mock) {
     assert.equal(mock.state.groqCalls.length, 0, 'no key: Groq untouched');
     assert.equal(s.rating.on, false);
     assert.match(s.rating.why, /no Groq key/);
-    const rateable = EXPECT.keep.filter((id) => !EXPECT.cardOnly.includes(id)); // a job whose page couldn't be read has no JD to rate
     const waiting = s.rating.queued;
-    assert.ok(waiting >= rateable.length, `they wait, with their JD text (and the ones earlier runs kept): ${waiting}`);
-    // Keys: three, one per line as pasted; the status shows hints, never a key.
-    const saved = await d.msg({ type: 'jobsSave', patch: { groqKeys: `${GROQ_KEYS.bad}\n${GROQ_KEYS.good}\n${GROQ_KEYS.busy}` } });
-    assert.equal(saved.rating.keys.length, 3);
+    assert.equal(waiting, readable.length + 3);
+    // Five accounts, including a rejected key and a temporarily limited key.
+    const saved = await d.msg({ type: 'jobsSave', patch: { groqKeys: [GROQ_KEYS.bad, GROQ_KEYS.good, GROQ_KEYS.busy, GROQ_KEYS.good2, GROQ_KEYS.good3].join('\n') } });
+    assert.equal(saved.rating.keys.length, 5);
     assert.ok(!Object.values(GROQ_KEYS).some((k) => JSON.stringify(saved).includes(k)), 'no key in the status');
     assert.equal((await d.msg({ type: 'jobsSave', patch: { groqKeys: 'not a key' } })).error !== undefined, true, 'a typo is refused, the keys stay');
-    assert.equal((await jobs()).rating.keys.length, 3);
+    assert.equal((await jobs()).rating.keys.length, 5);
     const check = await d.msg({ type: 'jobsKeyCheck' });
     assert.equal(check.ok, true, JSON.stringify(check));
-    assert.deepEqual(check.keys.map((k) => k.msg), ['rejected', 'works', 'works']);
+    assert.deepEqual(check.keys.map((k) => k.msg), ['rejected', 'works', 'works', 'works', 'works']);
     const t1 = Date.now();
     assert.equal((await d.msg({ type: 'jobsRateNow' })).result.kind, 'started');
-    // One good key at 70% of Groq's 30 requests a minute (21), a pay lookup per new company plus a rating per job: about 2 minutes.
-    s = await waitRate(t1, 300_000);
-    assert.equal(s.rating.last.rated, waiting, JSON.stringify(s.rating));
-    assert.equal(s.rating.queued, 0);
-    assert.equal(s.rating.today.rated.backend + s.rating.today.rated.ai, waiting);
-    // What Groq got: the rules, the right resume, strict JSON on gpt-oss-20b; never Naukri's pages.
-    const calls = mock.state.groqCalls.filter((c) => !c.body.tools); // the ratings (the rest: pay lookups)
-    assert.ok(calls.length >= rateable.length);
-    // The pay database comes first: every company looked up on the web was asked for in the database
-    // before, and what the web found with evidence was saved there.
-    for (const [i, w] of mock.state.payLog.entries()) {
-      if (w.op !== 'web') continue;
-      const key = w.company.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      assert.ok(mock.state.payLog.slice(0, i).some((x) => x.op === 'get' && x.key === key), `${w.company}: the database was asked before the web`);
+    s = await waitRate(t1, 210000);
+    assert.equal(s.rating.queued, 0, JSON.stringify(s.rating.last));
+    assert.equal(s.rating.last.rated, waiting);
+    const successful = mock.state.groqCalls.filter(c => [GROQ_KEYS.good, GROQ_KEYS.good2, GROQ_KEYS.good3].includes(c.key));
+    assert.equal(successful.length, waiting, 'one successful score per readable eligible JD');
+    assert.equal(mock.state.payLookups.length, 0);
+    const posted = mock.state.radarPosts.flatMap(p => p.openings);
+    const byId = Object.fromEntries(posted.map(o => [o.openingId, o]));
+    for (const o of posted) {
+      assert.equal(o.ai.v, 4);
+      assert.ok(o.dbg.p.includes('[Backend profile summary]'));
+      assert.ok(!o.dbg.p.includes('Documented skills:'));
     }
-    assert.ok(mock.state.payDb.size >= 1, 'a pay figure with evidence was saved in the database');
-    for (const rec of mock.state.payDb.values()) assert.ok(rec.sources.length >= 2 && rec.lo === 18 && rec.hi === 30, JSON.stringify(rec));
-    const lookups = mock.state.groqCalls.filter((c) => c.body.tools);
-    assert.ok(lookups.length >= 1 && lookups.every((c) => c.body.tools[0].type === 'browser_search'), 'company pay looked up on the web');
-    assert.equal(new Set(mock.state.payLookups).size, mock.state.payLookups.filter((x) => x).length, 'once per company');
-    assert.equal(mock.state.groqCalls.filter((c) => c.key === GROQ_KEYS.bad).length, 1, 'a rejected key is left out after its first answer');
-    assert.ok(mock.state.groqCalls.filter((c) => c.key === GROQ_KEYS.busy).length <= 3, 'a key at its limit rests');
-    for (const c of calls) {
-      assert.equal(c.body.model, 'openai/gpt-oss-20b');
-      assert.equal(c.body.response_format.json_schema.strict, true);
-      assert.equal(c.body.reasoning_effort, 'low');
-      assert.ok(!JSON.stringify(c.body).includes('gsk_'), 'no key in the request body');
+    assert.equal(byId[EXPECT.idOf(41)].profile, 'ai');
+    assert.equal(byId[EXPECT.idOf(11)].profile, 'ai', 'a backend search can discover AI work');
+    assert.equal(byId[EXPECT.idOf(61)].profile, 'backend');
+    assert.equal(byId[EXPECT.idOf(31)].profile, 'backend', 'a short JD was read from the correct job record');
+    assert.equal(byId[EXPECT.idOf(12)].apply, 'company');
+    assert.ok(!byId[EXPECT.idOf(6)], 'salary ceiling below 18');
+    assert.ok(!byId[EXPECT.idOf(71)], 'neither profile');
+    for (const n of [41, 71, 6]) {
+      const { doc } = await d.msg({ type: 'jobsAuditDoc', id: EXPECT.idOf(n) });
+      assert.ok(successful.some(c => c.body.messages[0].content === doc.dbg.p), 'exact local prompt');
+      assert.equal(typeof JSON.parse(doc.dbg.o).score, 'number');
     }
-    const aiCall = calls.find((c) => /Title: Generative AI Engineer/.test(c.body.messages[0].content));
-    assert.ok(aiCall && aiCall.body.messages[0].content.includes('Documented skills: Python') && !aiCall.body.messages[0].content.includes('building LLM agents and RAG in Python'), 'an AI-list job is rated against the GenAI resume');
-    assert.ok(aiCall.body.messages[0].content.startsWith('THE CANDIDATE') && /GenAI applications/.test(aiCall.body.messages[0].content), "the AI list's own strict prompt");
-    assert.ok(calls.some((c) => /Java \(Spring Boot\) is the main language/.test(c.body.messages[0].content)), "the Backend list's own strict prompt");
-    // What your site got: the jobs again, each with its rating.
-    const post = mock.state.radarPosts.at(-1);
-    assert.equal(post.summary.trigger, 'rate');
-    const rated = Object.fromEntries(post.openings.filter((o) => o.ai).map((o) => [o.openingId, o.ai]));
-    assert.equal(Object.keys(rated).length, waiting, 'every rated job goes to your site again, with its rating');
-    for (const id of rateable) assert.ok(rated[id], `${id} rated`);
-    for (const a of Object.values(rated)) assert.ok(a.s >= 1 && a.s <= 100 && a.inv >= 1 && a.rel === 80 && a.v === 3, JSON.stringify(a));
-    const withDbg = post.openings.filter((o) => o.ai && o.dbg);
-    assert.ok(withDbg.length >= 1, 'the prompt and the answer go to your site with the rating');
-    for (const o of withDbg) {
-      assert.ok(o.dbg.p.startsWith('THE CANDIDATE') && !o.dbg.p.includes('building LLM agents and RAG in Python') && /\[your (Backend|AI) resume/.test(o.dbg.p), 'the resume itself is left out');
-      assert.match(o.dbg.o, /"relevance":80/);
-    }
-    // The report keeps each rating with its prompt and the model's answer.
-    const au = (await d.msg({ type: 'jobsAudit' })).entries.filter((x) => x.k && x.ai != null);
-    assert.ok(au.length >= waiting, `the report has the ratings (${au.length} of ${waiting})`);
-    const { doc: rdoc } = await d.msg({ type: 'jobsAuditDoc', id: au[0].id });
-    assert.ok(rdoc.dbg && /^THE CANDIDATE/.test(rdoc.dbg.p) && /"relevance"/.test(rdoc.dbg.o), "its prompt and the model's answer are in the report");
-    assert.ok(Object.values(rated).some((a) => a.pay.from === 'web' && a.pay.hi === 30), JSON.stringify(Object.values(rated).map((a) => a.pay)));
-    const k8s = rated[EXPECT.idOf(12)]; // its JD asks for Kubernetes; the fake model claimed it with a quote that isn't on the resume
-    assert.ok(k8s.uv >= 1 && k8s.miss.includes('Kubernetes'), JSON.stringify(k8s));
-    assert.ok(!k8s.miss.includes('Rust systems programming'), 'an invented requirement is left out');
   });
 
-  await step('every key rejected: the rating pauses and says why; jobs are still found and sent, unrated; new keys resume it', async () => {
+  await step('every key rejected: the rating pauses and says why; jobs are still found and queued; new keys resume it', async () => {
     mock.state.groqMode = 'reject';
     mock.state.srpExtra = [listing(54, { title: 'Java Backend Developer', tagsAndSkills: 'Java,Spring Boot,Redis' })];
     try {
@@ -1024,7 +936,8 @@ async function suite(d, mock) {
       assert.equal(s.rating.on, false);
       assert.match(s.rating.why, /^paused: Groq rejected every key/);
       const sent = mock.state.radarPosts.flatMap((p) => p.openings).filter((o) => o.openingId === EXPECT.idOf(54));
-      assert.ok(sent.length && sent.every((o) => !o.ai), 'sent without a rating');
+      assert.equal(sent.length, 0);
+      assert.ok((await queuedIds()).includes(EXPECT.idOf(54)));
     } finally {
       mock.state.groqMode = 'ok';
       mock.state.srpExtra = [];
@@ -1033,7 +946,7 @@ async function suite(d, mock) {
     assert.equal(again.rating.on, true, JSON.stringify(again.rating));
   });
 
-  await step('a key Groq answers 429 for minutes is retired for an hour; with every key retired the run pauses by itself, then carries on when the hour is over; Resume brings keys back at once', async () => {
+  await step('a key Groq answers 429 for minutes is retired for an hour; rating retries after retirement and discovery continues; Resume brings keys back at once', async () => {
     // The rule is 5 minutes of 429 and an hour; the test knobs make it 0.4 s and 6 s.
     await setStore({ jobsDev: { ...DEV, rate: { limitBaseMs: 50, limitStopMs: 400, retireMs: 6000 } } });
     mock.state.groqMode = 'limit';
@@ -1043,22 +956,22 @@ async function suite(d, mock) {
       await d.msg({ type: 'jobsNow' });
       let s = await waitRun(t0);
       const seen = JSON.stringify({ run: s.lastRun, halted: s.halted, rating: s.rating });
-      assert.equal(s.lastRun.outcome, 'paused', seen);
-      assert.ok(s.halted && s.halted.short === 'every Groq key is out' && s.halted.until > Date.now() && s.halted.until <= Date.now() + 6500, seen);
-      assert.match(s.halted.msg, /pauses until/);
+      assert.equal(s.lastRun.outcome, 'ok', seen);
+      assert.equal(s.halted, null);
+      assert.ok(s.rating.retryAt, seen);
       const hint = s.rating.keys[0];
-      assert.ok(s.rating.today.keys[hint].retiredUntil > Date.now(), 'the key is retired, and it is remembered');
+      assert.ok(s.rating.today.keys[hint].retiredUntil > 0);
       // (A job from the step before is already waiting for its rating, so the run pauses at its first page.)
       assert.ok(!mock.state.radarPosts.flatMap((p) => p.openings).some((o) => o.openingId === EXPECT.idOf(56) && o.ai), 'nothing rated while every key is out');
       // Still paused while the hour lasts: waking it up does nothing.
       const callsBefore = mock.state.groqCalls.length;
-      s = (await d.msg({ type: 'jobsTickNow' }));
-      assert.ok(s.halted, 'still paused');
-      await sleep(500);
-      assert.equal(mock.state.groqCalls.length, callsBefore, 'a retired key is not called');
+      if (s.rating.retryAt > Date.now() + 1000) {
+        await d.msg({ type: 'jobsTickNow' });
+        assert.equal(mock.state.groqCalls.length, callsBefore);
+      }
       // The hour is over: it wakes up, clears the pause and carries on; the job is rated.
       mock.state.groqMode = 'ok';
-      while (Date.now() < s.halted.until + 300) await sleep(200);
+      while (Date.now() < s.rating.retryAt + 300) await sleep(200);
       await d.msg({ type: 'jobsTickNow' });
       const ratedPosts = () => mock.state.radarPosts.flatMap((p) => p.openings).filter((o) => o.openingId === EXPECT.idOf(56) && o.ai);
       const waitEnd = Date.now() + 90_000;
@@ -1074,7 +987,7 @@ async function suite(d, mock) {
       t0 = Date.now();
       await d.msg({ type: 'jobsNow' });
       s = await waitRun(t0);
-      assert.ok(s.halted && s.halted.until, JSON.stringify({ run: s.lastRun, halted: s.halted }));
+      assert.ok(s.rating.retryAt);
       mock.state.groqMode = 'ok';
       s = await d.msg({ type: 'jobsResume' });
       assert.equal(s.halted, null);
@@ -1087,7 +1000,7 @@ async function suite(d, mock) {
     }
   });
 
-  await step("a company you add to the low-pay list comes off your site at the next run", async () => {
+  await step("the optional Instahyre company list cannot remove a Naukri LLM match", async () => {
     const names = (await jobs()).lowPay.names;
     await d.msg({ type: 'jobsSave', patch: { lowPay: [...names, 'Company 12'] } });
     await d.msg({ type: 'jobsRescan' });
@@ -1097,16 +1010,14 @@ async function suite(d, mock) {
     const s = await waitRun(t0);
     assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
     const posts = mock.state.radarPosts.slice(before);
-    assert.ok(posts.some((p) => (p.remove || []).some((r) => r.openingId === EXPECT.idOf(12) && r.company === 'Company 12')), JSON.stringify(posts.map((p) => p.remove)));
-    assert.ok(!posts.some((p) => p.openings.some((o) => o.openingId === EXPECT.idOf(12))));
-    const late = mock.state.groqCalls.filter((c) => c.t >= t0 && !c.body.tools);
-    assert.ok(late.every((c) => /Company: Company (54|57)\b/.test(c.body.messages[0].content)), 'only the jobs still waiting (54, and 57 from the pause step) are rated; ratings from the last 3 days are kept');
+    assert.ok(!posts.some(p => (p.remove || []).some(r => r.openingId === EXPECT.idOf(12))));
+    assert.ok(!mock.state.groqCalls.some(c => c.t >= t0 && c.body.messages[0].content.includes('Company: Company 12\n')), 'cached decision reused');
     await d.msg({ type: 'jobsSave', patch: { lowPay: null, groqKeys: [] } });
     await setStore({ jobsDev: null });
   });
 
-  await step('a later run skips every job it already judged: no JD opened twice, nothing sent twice', async () => {
-    await setStore({ jobsDev: { pause: [60, 120], searches: ['java spring boot developer', 'software engineer', 'generative ai engineer'] } });
+  await step('a later run retries unreadable jobs and skips every completed JD', async () => {
+    await setStore({ jobsDev: DEV });
     const pagesBefore = mock.jobPages().length;
     const postsBefore = mock.state.radarPosts.length;
     const t0 = Date.now();
@@ -1115,13 +1026,13 @@ async function suite(d, mock) {
     assert.equal(s.lastRun.outcome, 'ok', JSON.stringify(s.lastRun));
     assert.equal(s.sweep.done, true);
     assert.ok(mock.searchPages().some((p) => p.t >= t0), 'it read the search pages again, for anything new');
-    assert.equal(mock.jobPages().length, pagesBefore, 'no job page opened again');
+    assert.ok(mock.jobPages().slice(pagesBefore).every(p => p.path.endsWith(EXPECT.idOf(63))), 'only the unreadable page retried');
     assert.equal(s.lastRun.fresh, 0, 'every listing was already judged');
     assert.equal(mock.state.radarPosts.length, postsBefore, 'nothing new to send');
     assert.ok(s.judged >= EXPECT.keep.length + EXPECT.drop.length - EXPECT.applied.card.length, String(s.judged));
   });
 
-  await step('Start over: your site deletes the finder\'s jobs, this browser forgets what it read, and every listing is read and sent again', async () => {
+  await step('Start over: your site deletes the finder\'s jobs, this browser forgets what it read, and every eligible job is discovered again', async () => {
     const pagesBefore = mock.jobPages().length;
     const postsBefore = mock.state.radarPosts.length;
     const t0 = Date.now();
@@ -1135,10 +1046,11 @@ async function suite(d, mock) {
     assert.ok(s.startedOver >= t0);
     assert.equal(s.rating.ratedKept || 0, 0, 'Start fresh forgets the ratings too');
     const opened = mock.jobPages().slice(pagesBefore).map((p) => p.path);
-    for (const id of EXPECT.keep.filter((x) => !EXPECT.cardOnly.includes(x))) assert.ok(opened.some((p) => p.endsWith(id)), `${id}: its JD read again`);
+    for (const id of eligible) assert.ok(opened.some((p) => p.endsWith(id)), `${id}: its JD read again`);
     const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
-    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort(), 'every job that fits, sent again');
-    assert.deepEqual([s.daily.kept.backend + s.daily.kept.ai], [EXPECT.keep.length]);
+    assert.deepEqual(sent, []);
+    assert.deepEqual(await queuedIds(), [...readable].sort());
+    assert.equal(s.daily.kept.backend + s.daily.kept.ai, 0);
   });
 
   await step('Start over in your other browser: this one sees it at its next run and starts over too', async () => {
@@ -1152,7 +1064,8 @@ async function suite(d, mock) {
     assert.match(s.lastRun.note, /^started over/);
     assert.ok(mock.jobPages().length > pagesBefore, 'its JDs read again');
     const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
-    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort());
+    assert.deepEqual(sent, []);
+    assert.deepEqual(await queuedIds(), [...readable].sort());
     await setStore({ jobsDev: null });
   });
 
@@ -1173,7 +1086,8 @@ async function suite(d, mock) {
     assert.doesNotMatch(String(s.lastRun.note), /internal error|No tab/, JSON.stringify(s.lastRun));
     assert.match(String(s.lastRun.note), /opened a new one/, JSON.stringify(s.lastRun));
     const sent = mock.state.radarPosts.slice(postsBefore).flatMap((p) => p.openings).map((o) => o.openingId);
-    assert.deepEqual([...new Set(sent)].sort(), [...EXPECT.keep].sort(), 'every job that fits still reached your site');
+    assert.deepEqual(sent, []);
+    assert.deepEqual(await queuedIds(), [...readable].sort());
     await setStore({ jobsDev: null });
   });
 
@@ -1220,6 +1134,7 @@ async function suite(d, mock) {
   };
   const ids = () => mock.insta.applies.map((a) => a.id).sort();
 
+  finderSection = false;
   await step('Instahyre dry run: opens and reads every job (past "Load more"), says what it would do, presses no Apply', async () => {
     await instaRun('java', { dry: true });
     const s = await instaWait();

@@ -22,5 +22,26 @@ test('the funnel: seen = left out on the card + left out after the JD + kept; re
   assert.equal(f.jdOpened, 6, 'every job page opened: the ones left out after it, and the kept');
   assert.deepEqual(f.jdReasons, [['JD match under 60%', 2], ['Node.js stack', 1]]);
   assert.deepEqual([f.kept, f.keptBackend, f.keptAi, f.sent, f.rated], [3, 2, 1, 2, 1]);
-  assert.deepEqual(funnel([]), { seen: 0, cardOut: 0, cardReasons: [], jdOpened: 0, jdOut: 0, jdReasons: [], kept: 0, keptBackend: 0, keptAi: 0, sent: 0, rated: 0 });
+  assert.deepEqual(funnel([]), { seen: 0, pending: 0, cardOut: 0, cardReasons: [], jdOpened: 0, jdOut: 0, jdReasons: [], kept: 0, keptBackend: 0, keptAi: 0, sent: 0, rated: 0 });
+});
+
+test('pending work outlives the audit window and the exact decision is saved with its checkpoint', async t => {
+  const writes = [];
+  const old = Date.now() - 5 * 86_400_000;
+  const previous = { jobsAudit: { a: { id: 'a', title: 'Developer', t: old, pending: true } }, jobsAuditDoc: {} };
+  const local = { get: async () => previous, set: async data => writes.push(structuredClone(data)) };
+  const chrome = globalThis.chrome;
+  globalThis.chrome = { storage: { local } };
+  t.after(() => { if (chrome === undefined) delete globalThis.chrome; else globalThis.chrome = chrome; });
+  const audit = await import('../naukri-refresher/audit.js?checkpoint-test');
+  await audit.auditLoad();
+  assert.equal((await audit.auditEntries())[0].id, 'a');
+  audit.auditNote('a', { ai: 22, pending: false, w: 'Outside both profiles' });
+  audit.auditDoc('a', { dbg: { p: 'exact prompt', o: 'exact answer' } });
+  await audit.auditSave(true, Date.now(), { jobsRateQ: { items: [] } });
+  assert.equal(writes.length, 1);
+  assert.deepEqual(writes[0].jobsRateQ.items, []);
+  assert.equal(writes[0].jobsAudit.a.ai, 22);
+  assert.equal(writes[0].jobsAuditDoc.a.dbg.o, 'exact answer');
+  assert.equal(funnel(Object.values(writes[0].jobsAudit)).rated, 1);
 });

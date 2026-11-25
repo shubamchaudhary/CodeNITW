@@ -46,7 +46,7 @@
 <body>
   <main>
     <h1>Job finder</h1>
-    <p class="muted">Every day around 17:00 IST it reads Naukri's own search results, every page of every search, in a muted background tab, and never applies to anything. It works in hour-long stretches with 10-minute rests until every listing of the last 48 hours is read. A job it judged in an earlier run (the last 3 days) is skipped: no JD is opened twice and nothing is sent or rated twice. For every card from the last 48 hours that looks right (and isn't from a company on your low-pay list), it opens the job's page and reads the JD. It keeps the job only if enough of the technologies the JD asks for are yours. The best 400 it keeps per list go to your site's <b>Openings</b> tab, under <b>⭐ Naukri, last 48 hours</b>, and each one is then rated 1–100 against your resume by an LLM on Groq. There are two lists, one per Naukri account: <b>Backend</b> (backend-first roles) and <b>AI</b> (AI-first roles, where GenAI work is a large share of the JD). A job is on one list only. Your site shows the top 100 per list that you haven't applied to or taken yet, highest rating first.</p>
+    <p class="muted">The finder reads Naukri search results from the last 48 hours for your experience range. Each eligible opening waits for its job description and a Groq rating against both profile summaries. Groq chooses Java/Spring Boot, GenAI or neither. Open the report to inspect decisions and pending jobs.</p>
 
     <div id="halted" class="card bad" hidden>
       <b>Paused:</b> <span id="haltedMsg"></span>
@@ -93,13 +93,13 @@
       <div class="stat"><span class="muted small">Listings read</span><b id="sRead">0</b></div>
       <div class="stat"><span class="muted small">Job pages (JDs) read</span><b id="sJds">0</b></div>
       <div class="stat"><span class="muted small">Pages read in all</span><b id="sPages">0</b></div>
-      <div class="stat"><span class="muted small">Sent to the site</span><b id="sSent">0</b></div>
+      <div class="stat"><span class="muted small">Upload entries today</span><b id="sSent">0</b></div>
     </div>
     <p class="small muted" id="nextLine" style="margin-top:8px"></p>
     <p class="small muted" id="sweepLine"></p>
     <div class="row">
       <button id="now" type="button">Find jobs now</button>
-      <button id="rescan" type="button" class="secondary" title="Forget what it judged and start the sweep again from every search's first page (after you add skills, say). Your site keeps its jobs.">Re-scan</button>
+      <button id="rescan" type="button" class="secondary" title="Forget what it judged and start the sweep again from every search's first page. Your site keeps its jobs.">Re-scan</button>
       <a class="btn" href="jobs-report.html" target="_blank" style="display:inline-block;padding:7px 14px;border:1px solid var(--line);border-radius:6px;color:var(--text);text-decoration:none;font:600 13px system-ui,sans-serif" title="Every listing it judged, why, the JDs it read and the prompts it sent">Open the report</a>
       <button id="unlock" type="button" class="secondary" hidden title="The page says a run is going, but none is (a run that died, or the extension was reloaded): clears it so the buttons work again">Unlock</button>
       <button id="startOver" type="button" class="secondary" title="Delete every job the finder put on your site (both lists), forget everything it read, and read every listing of the last 48 hours again, now">Start fresh…</button>
@@ -109,7 +109,7 @@
     <h2>AI rating (Groq)</h2>
     <div class="card">
       <p id="rateLine" class="small">Checking…</p>
-      <p class="small muted">Groq reads the job and a short summary of the relevant profile’s skills and work examples. The extension checks the model’s requirements and evidence before calculating the rating. The local report shows the exact prompt and response for each new rating. Paste as many keys as you have (up to 10), comma-separated: it uses every one, each in turn, and a key at its limit rests while the others work. The keys stay in this browser and go only to api.groq.com; your name and contact lines are never sent.</p>
+      <p class="small muted">Each listing gets one profile decision and score. Keys share the work and rest at their limits. The local report keeps the exact prompt and answer. Keys stay in this browser and go only to api.groq.com.</p>
       <div class="row">
         <input id="groqKeys" type="password" autocomplete="off" placeholder="Your Groq keys, comma-separated: key1,key2,key3 (up to 10)" aria-label="Groq API keys">
         <button id="saveKeys" type="button">Save keys</button>
@@ -127,21 +127,21 @@
         <button id="saveModel" type="button" class="secondary">Save model</button>
         <label for="rateCalls" class="small">At most</label>
         <select id="rateCalls" aria-label="Groq calls a day in this browser"></select>
-        <span class="small">Groq calls a day in this browser (750 in each of two browsers is 1,500 in all)</span>
+        <span class="small">Groq calls a day in this browser</span>
       </div>
       <p class="small muted" id="rateToday" style="margin-top:8px"></p>
       <p class="small muted" id="rateKeys"></p>
       <p class="small muted" id="rateQueue"></p>
       <p class="small" id="rateResumes"></p>
       <details style="margin-top:6px">
-        <summary class="small">How the rating is worked out</summary>
-        <ul class="small muted" id="rubric"></ul>
+        <summary class="small">Scoring prompt and both résumé summaries</summary>
+        <p class="small muted" style="white-space:pre-line" id="rubric"></p>
       </details>
     </div>
 
-    <h2>Companies left out</h2>
+    <h2>Instahyre company skip list</h2>
     <div class="card">
-      <p class="small muted">Listings from these companies are dropped on the card, before their JD is opened: IT services, consulting and outsourcing firms that pay far under your bar at 2 years. One company per line; a name matches whole words of the company's name ("HCL" isn't "HCLTech").</p>
+      <p class="small muted">Instahyre uses these names when its optional company skip rule is enabled. Naukri sends eligible listings from every company to Groq.</p>
       <textarea id="lowPay" aria-label="Companies left out" style="min-height:120px"></textarea>
       <div class="row" style="margin-top:8px">
         <button id="saveLowPay" type="button">Save the list</button>
@@ -152,28 +152,6 @@
 
     <h2>Why listings were left out today</h2>
     <div id="reasons" class="chips"><span class="muted small">Nothing yet.</span></div>
-
-    <h2>Skill chips it didn't recognize (ignored)</h2>
-    <p class="small muted">Chips on Naukri's cards that aren't in the skills dictionary, such as "Strategic" or "Resource". They don't count for or against a job.</p>
-    <div id="unknown" class="chips"><span class="muted small">None yet.</span></div>
-
-    <h2>The JD match bar</h2>
-    <div class="card">
-      <div class="row">
-        <label for="minScore" class="small">Keep a job when at least</label>
-        <select id="minScore" aria-label="JD match bar"></select>
-        <span class="small">of the technologies its JD asks for are yours.</span>
-      </div>
-      <p class="small muted" style="margin-top:8px">Every technology counts, backend and AI alike. "Nice to have" lines, company blurbs and perks don't. On 643 real engineering JDs, strong backend fits scored 60–80%, since nearly every JD also names something you don't list, like Go, GCP or MySQL. 60% is the default.</p>
-      <div class="row"><button id="saveBar" type="button" class="secondary">Save the bar</button><span id="barOut" class="small muted"></span></div>
-    </div>
-
-    <h2>Your skills</h2>
-    <div class="card">
-      <p class="small muted"><span id="nSkills">0</span> skills: everything the skills dictionary finds in your two resumes, plus <code>radar/skills.json</code> (read <span id="skillsDate"></span>; <code>naukri-refresher-dev/make-job-profile.mjs</code> rereads them after a resume changes). Add any others here, comma-separated.</p>
-      <textarea id="extra" aria-label="Extra skills" placeholder="e.g. Struts, JSP, Apache Camel"></textarea>
-      <div class="row" style="margin-top:8px"><button id="saveExtra" type="button">Save skills</button><span id="extraOut" class="small muted"></span></div>
-    </div>
 
     <h2>Recent runs</h2>
     <table>

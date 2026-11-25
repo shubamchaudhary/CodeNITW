@@ -2,6 +2,10 @@
 
 The questions, from most to least asked: **the bean lifecycle**, **constructor vs field vs setter injection**, **circular dependencies**, **two beans of one type**, **eager vs lazy**, **`@Component` vs `@Bean`**, **singleton vs prototype timing**, and **IoC vs DI vs DIP**.
 
+**Mental model.** Draw an arrow from each class to the collaborator its constructor needs. To create `User(Order order)`, Spring first needs a bean definition that can supply an `Order`, then a usable reference to pass into the constructor. That reference may be a transaction proxy, as in Part 1. A missing bean, two equally eligible beans and a constructor cycle all fail at different points in that same process.
+
+In one Java SDE-2 interview, the first round covered beans, cycles and lifecycle. The second returned to lifecycle and asked the candidate to compare constructor and setter injection. Practise explaining when a dependency first becomes available in each case. [Yes Madam SDE-2 interview report](https://leetcode.com/discuss/post/7649722/yes-madam-interview-experience-sde-2-jan-6bvb/)
+
 ## 1. Bean, IoC container, IoC and DI
 
 - A **bean** is a Java object that Spring creates and manages.
@@ -26,6 +30,8 @@ public class User {
 - **DIP**: the design rule DI helps you follow.
 
 Correction: "If a bean is not found, Spring creates one and injects it." If no bean is defined, startup fails (`NoSuchBeanDefinitionException`).
+
+**What does `ApplicationContext` add to `BeanFactory`?** A bean definition describes how to obtain an instance. The factory uses those definitions to create and wire beans. A Boot application's context also discovers registered post-processors, manages lifecycle callbacks and publishes application events. This is how a class found during scanning can ultimately reach its caller as a fully initialized, proxied object. [Spring container comparison](https://docs.spring.io/spring-framework/reference/core/beans/beanfactory.html)
 
 ## 2. Bean lifecycle
 
@@ -110,6 +116,8 @@ Correction: "Constructor injection fails at compile time if a dependency is miss
 
 Say it like this: "I use constructor injection for required dependencies: fields are final, the object is complete when created, a missing bean fails at startup, and tests just call new with mocks. Setter injection is for optional dependencies. I avoid field injection."
 
+**Is the setter above optional as written?** Plain `@Autowired` makes its argument required. If the application has a sensible default, initialize the field to that default and mark the setter `@Autowired(required = false)`. With no matching bean, Spring skips the setter and the default stays in place. A constructor parameter of type `Optional<Order>` can also express that absence explicitly. [Spring autowiring rules](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html)
+
 ## 4. Circular dependency
 
 ```mermaid
@@ -130,6 +138,16 @@ Fixes, best first:
 
 Say it like this: "Constructor cycles always fail. Field cycles fail by default since Boot 2.6. I'd first remove the cycle by extracting shared logic. If that's not possible right now, I put @Lazy on one injection point so Spring injects a proxy."
 
+**How would you remove the cycle in a checkout?** Suppose `OrderService` calls `InvoiceService` to issue the invoice, and `InvoiceService` calls back into `OrderService` for the total. Give the sequence to the checkout service and pass the total as data.
+
+```mermaid
+flowchart TD
+    C["CheckoutService.placeOrder()"] -->|"1. Create order and return its id and total"| O["OrderService"]
+    C -->|"2. Issue invoice using that id and total"| I["InvoiceService"]
+```
+
+Now either service can be constructed first. If both writes use the same database and must commit together, the checkout method is also the natural transaction boundary. [Spring dependency resolution](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html)
+
 ## 5. Two beans of the same type
 
 Spring matches by **type** first. With `OnlineOrder` and `OfflineOrder` both implementing `Order`, `@Autowired Order order;` finds two matches. Startup fails with `NoUniqueBeanDefinitionException` (inside `UnsatisfiedDependencyException`): "expected single matching bean but found 2".
@@ -149,6 +167,8 @@ Default bean name: the class name with a lowercase first letter (`OfflineOrder` 
 Correction: "If two beans match, Spring picks the first one." It fails, unless a qualifier, primary, or matching name decides.
 
 Correction: "@Primary and @Qualifier do the same thing." @Primary sets a default, @Qualifier picks exactly, and @Qualifier wins.
+
+**Can two beans share a qualifier?** Yes. A qualifier can describe a group. If two `Order` beans are both tagged `@Qualifier("online")`, then `@Qualifier("online") List<Order>` receives both. For a single `Order` parameter with that qualifier, one matching `@Primary` can resolve the choice. A primary bean outside the qualified group is ineligible. [Spring qualifier matching](https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-qualifiers.html)
 
 ## 6. When beans are created: eager vs lazy
 

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { getAuthState, onAuthStateChange } from "../../Data/authGate";
 import { loadJSON } from "../../Data/planStore";
-import { STACKS, resumeTopicId } from "./stacks";
+import { getAuth } from "firebase/auth";
+import { isOwner } from "../../components/OwnerRoute";
+import { STACKS, resumeTopicId, stackForViewer } from "./stacks";
 import PageSkeleton from "../../components/PageSkeleton";
 
 // A stack's home (/core-stack, /ai-stack) is its reading layout, opened where
@@ -12,7 +14,7 @@ export default function StackHome({ stackKey }) {
   const [ready, setReady] = useState(getAuthState() !== "unknown");
   useEffect(() => onAuthStateChange((s) => s !== "unknown" && setReady(true)), []);
   if (!ready) return <PageSkeleton />;
-  const stack = STACKS[stackKey];
+  const stack = stackForViewer(STACKS[stackKey], isOwner(getAuth().currentUser));
   const id = resumeTopicId(stack, loadJSON(stack.completedKey, {}));
   return <Navigate to={`/notes/${stackKey}/${id}`} replace />;
 }

@@ -1,6 +1,6 @@
 import { fmtWhen, istHM } from './lib.js';
 import { SITE_JOBS_URL } from './jobs-lib.js';
-import { WEIGHTS } from './rate-lib.js';
+import { FINDER_PROMPT } from './finder-rating.js';
 
 const GROQ_MATCH = 'https://api.groq.com/*';
 
@@ -14,8 +14,6 @@ const el = (tag, text, cls) => {
   return n;
 };
 
-let extraLoaded = false;
-let barLoaded = false;
 let rateLoaded = false;
 let lowPayLoaded = false;
 
@@ -37,29 +35,19 @@ function renderRating(s, now) {
   $('rateModel').placeholder = R.defaultModel;
   const t = R.today;
   $('rateToday').textContent = t && t.calls
-    ? `Today: ${t.rated.backend || 0} Backend and ${t.rated.ai || 0} AI jobs rated in ${t.calls} calls, ${(t.tokens.input + t.tokens.output).toLocaleString()} tokens (${t.tokens.cached.toLocaleString()} of them cached).${t.fails ? ` ${t.fails} failed.` : ''}${t.last ? ` Last problem: ${t.last.msg}.` : ''}`
+    ? `Today: ${t.rated.backend || 0} Backend and ${t.rated.ai || 0} AI and ${t.rated.neither || 0} unrelated jobs rated in ${t.calls} calls, ${(t.tokens.input + t.tokens.output).toLocaleString()} tokens (${t.tokens.cached.toLocaleString()} of them cached).${t.fails ? ` ${t.fails} failed.` : ''}${t.last ? ` Last problem: ${t.last.msg}.` : ''}`
     : 'Today: nothing rated yet.';
   const keys = Object.entries((t && t.keys) || {});
   $('rateKeys').textContent = keys.length ? `Per key today: ${keys.map(([h, k]) => `${h} ${k.calls} calls, ${k.ok} rated${k.last && k.last !== 'ok' ? ` (${k.last})` : ''}`).join(' · ')}` : '';
   const last = R.last ? ` Last "Rate now" ${fmtWhen(R.last.t, now)} IST: ${R.last.rated} rated${R.last.note ? `, ${R.last.note}` : ''}.` : '';
-  $('rateQueue').textContent = `${R.queued} job${R.queued === 1 ? '' : 's'} wait for a rating.${last} ${R.ratedKept} ratings from the last 3 days are kept, so a job seen again isn't rated twice.`;
+  $('rateQueue').textContent = `${R.queued} job${R.queued === 1 ? '' : 's'} wait for a rating.${R.retryAt ? ` Next rating attempt ${fmtWhen(R.retryAt, now)} IST.` : ''}${last} ${R.ratedKept} ratings from the last 3 days are kept, so a job seen again isn't rated twice.`;
   const res = $('rateResumes');
   res.className = R.resumes ? 'small muted' : 'small warn';
   res.textContent = R.resumes
-    ? `Resumes it sends: SDE (${R.resumes.sde.toLocaleString()} characters) and GenAI (${R.resumes.genai.toLocaleString()}), ${R.resumes.from === 'test' ? 'test copies' : `made ${R.resumes.generated || 'from your PDFs'}`}, without your name and contact lines.`
+    ? 'The summaries below are included with each job description.'
     : 'Your resumes aren\'t in the extension yet. Run: node extensions/naukri-refresher-dev/make-job-profile.mjs (it writes resume.local.json next to the extension, which git ignores), then reload the extension.';
   $('rateNow').disabled = s.running || !R.on;
-  if (!$('rubric').children.length) {
-    for (const t2 of [
-      `Must-have requirements your resume shows: ${WEIGHTS.must} points (partly shown counts half).`,
-      `Nice-to-haves your resume shows: ${WEIGHTS.nice}.`,
-      `Years asked: ${WEIGHTS.years} at up to 2 years, less at 3 or 4, none at 5+.`,
-      `Role: ${WEIGHTS.role} for backend (Backend list) or GenAI (AI list), less for full stack, ML or data, none for QA, support or mobile.`,
-      `Level: ${WEIGHTS.level} for mid-level, a little less for junior, little for senior, none for lead.`,
-      'Caps: QA, support or mobile roles 20 at most; lead roles or 5+ years asked 30 at most; a JD naming fewer than 3 requirements 75 at most.',
-      "Checks: a requirement the model names that isn't in the JD is dropped; a \"met\" whose quote isn't in your resume, word for word, counts as not met.",
-    ]) $('rubric').append(el('li', t2));
-  }
+  $('rubric').textContent = [FINDER_PROMPT, ...(R.resumes ? ['BACKEND SUMMARY', R.resumes.backend, 'AI SUMMARY', R.resumes.ai] : [])].join('\n\n');
 }
 
 function renderLowPay(s) {
@@ -99,16 +87,8 @@ function render(s) {
   $('sJds').textContent = (s.daily && s.daily.jds) || 0;
   $('sPages').textContent = (s.daily && s.daily.pages) || 0;
   $('sSent').textContent = (s.daily && s.daily.uploaded) || 0;
-  $('nSkills').textContent = s.skillCount;
-  $('skillsDate').textContent = s.skillsGenerated || '';
   if (document.activeElement !== $('scope')) $('scope').value = s.settings.scope;
   $('scopeSearches').textContent = `This browser searches: ${s.searches.join(' · ')}.`;
-  if (!barLoaded) {
-    const [lo, hi] = s.rules.minScoreRange;
-    for (let p = Math.round(lo * 100); p <= Math.round(hi * 100); p += 5) $('minScore').add(new Option(`${p}%`, String(p / 100)));
-    $('minScore').value = String(s.settings.minScore);
-    barLoaded = true;
-  }
   let next = s.settings.enabled ? (s.plan ? `Next run ${fmtWhen(s.plan.at, now)} IST.` : '') : 'The finder is off (switch it on in the popup); "Find jobs now" still works.';
   if (s.running) next = s.resting ? `Resting until ${fmtWhen(s.resting.until, now)} IST, then part ${s.resting.part} of this run.` : 'Running now…';
   if (s.queued) next += ` ${s.queued} job pages wait to be read.`;
@@ -121,17 +101,16 @@ function render(s) {
   $('sweepLine').textContent = !w ? 'The first run starts the sweep through every page of every search.'
     : w.done ? `Sweep ${w.n} read every page of all ${w.searches} searches (${w.pages} pages, ${fmtWhen(w.started, now)} to ${fmtWhen(w.finished, now)} IST). The next run starts a new one.`
       : `Sweep ${w.n}, started ${fmtWhen(w.started, now)} IST: ${w.over} of ${w.searches} searches read to the end, ${w.pages} pages so far. The next run carries on.`;
+  $('rescan').disabled = s.running;
   $('now').disabled = s.running || !s.settings.hasToken || !!s.halted;
   // A run that died keeps the page on "Running now…" for up to 90 minutes: Unlock clears it.
   $('unlock').hidden = !s.running;
   $('startOver').disabled = s.running || !s.settings.hasToken || !!s.halted;
   $('token').placeholder = s.settings.hasToken ? 'Saved (paste a new one to replace it)' : 'Paste the token';
-  if (!extraLoaded) { $('extra').value = s.settings.extraSkills || ''; extraLoaded = true; }
 
   renderRating(s, now);
   renderLowPay(s);
   chips($('reasons'), s.reasons, 'Nothing yet.');
-  chips($('unknown'), s.unknown, 'None yet.');
 
   const tb = $('runs');
   tb.replaceChildren();
@@ -159,17 +138,8 @@ function render(s) {
   for (const t of [
     `Every listing, not a sample: once a day, around 17:00 IST, a run reads every page of every search (up to ${L.pagesPerSearch} pages each), one page of each search in turn. It works in stretches of up to ${L.runMinutes} minutes with ${L.restMin}-minute rests (up to ${L.stretches} stretches) until every search is read to the end; where it stops, the next run carries on. At most ${L.pagesPerDay} pages and ${L.jdPerDay} job pages a day.`,
     'No job twice: a listing it judged in the last 3 days (kept or not) is skipped by its id, so no JD is opened twice and nothing is sent or rated twice. "Start fresh" deletes the finder\'s jobs from your site and forgets all of that, for a fresh run end to end.',
-    `First the card. It must be posted in the last ${R.maxAgeH} hours, as Naukri labels it ("Just now", "Few hours ago", "1 day ago"); "2 days ago" and older are out. A card that doesn't say passes. A job you already applied to on Naukri is out, when its card or its page says so.`,
-    `Company: one on your low-pay list (${s.lowPay.names.length} companies, such as ${s.lowPay.names.slice(0, 4).join(', ')}) is out before its JD is opened.`,
-    'Title: not Android, iOS, mobile, .NET, PHP, frontend-only, MERN/MEAN, Node-only, QA/testing, DevOps, data, SAP/Salesforce-type platforms, embedded, support, C/C++ systems work, lead/architect/manager, or not a software job at all. A plain "Software Engineer/Developer" passes and its JD decides.',
-    `Experience: asks for less than ${R.maxMinYears} years, and isn't a 0–1 year fresher role. A card that doesn't say passes.`,
-    `Pay: reaches ${R.minPayL} LPA when the listing gives a salary. One it doesn't give passes.`,
-    `Skill chips: when they name 3 or more known technologies and under ${Math.round(R.cardFloor * 100)}% are yours, the job is another stack and its page isn't opened. Chips that aren't technologies are ignored.`,
-    "The finder checks the duties and core stack. At the default skill threshold a strong Spring or GenAI core can qualify a job for rating even when secondary tools dilute its skill overlap. Missing core evidence keeps it out of matches.",
-    "Java/Spring Boot backend roles can include GenAI. The AI list requires GenAI application work. Frontend-first and MERN jobs are excluded.",
-    `Your site gets every job it keeps from the last ${R.maxAgeH} hours (up to ${R.poolTop} a list), highest JD match first (ties by rank: title, experience, pay, company rating, how fresh), with how you apply: on Naukri, or on the company's site (and its link, read off the job's page, never clicked).`,
-    `Then the AI rating (above, with your Groq keys): each job sent is rated 1–100 against your resume and sent again with its rating, up to ${s.rating.calls} Groq calls a day in this browser, best JD match first. A key Groq says is at its limit rests 5 s, then 10, 20, 40…, and isn't used again that run if it's still limited a minute later.`,
-    `Your site shows each list in two parts: Apply on Naukri, its top ${R.showTop} (Naukri takes 50 applies a day per account), and Apply on company site, all of them. Highest AI rating first; the default list requires a current rating of at least 70. Other candidates can be reviewed separately. What you applied to, skipped or have in the pipeline is left out, and a job is never shown twice.`,
+    `Eligibility uses the last ${R.maxAgeH} hours and an experience range reaching 2 years with a minimum below ${R.maxMinYears}. Unknown experience goes to Groq. Applied and closed jobs are skipped.`,
+    'Groq reads the job description against both résumé summaries. The default list shows verified scores of 70 or higher. Weaker candidates for either profile appear under Review other candidates. Unrelated jobs and pending decisions are in the report.',
     `Backend searches: ${of('backend')}.`,
     `AI searches: ${of('ai')}.`,
   ]) rules.append(el('li', t));
@@ -203,15 +173,6 @@ $('test').addEventListener('click', async () => {
   showToken(r.ok ? 'ok' : 'err', r.ok ? 'Your site accepts the token and knows the job finder.' : `${r.msg || r.short}.`);
 });
 $('scope').addEventListener('change', async (e) => { await send('jobsSave', { patch: { scope: e.target.value } }); refresh(); });
-$('saveBar').addEventListener('click', async () => {
-  await send('jobsSave', { patch: { minScore: Number($('minScore').value) } });
-  $('barOut').textContent = `Saved ${istHM(Date.now())}. Press "Re-scan today" to apply it to jobs already decided.`;
-  refresh();
-});
-$('saveExtra').addEventListener('click', async () => {
-  await send('jobsSave', { patch: { extraSkills: $('extra').value } });
-  $('extraOut').textContent = `Saved ${istHM(Date.now())}. Press "Re-scan today" to apply them to jobs already decided.`;
-});
 function showKeys(cls, text) {
   const o = $('keysOut');
   o.hidden = false;
@@ -258,7 +219,7 @@ $('rateCalls').addEventListener('change', async (e) => { await send('jobsSave', 
 $('saveLowPay').addEventListener('click', async () => {
   const names = $('lowPay').value.split(/\n|,/).map((x) => x.trim()).filter(Boolean);
   const s = await send('jobsSave', { patch: { lowPay: names } });
-  $('lowPayOut').textContent = `Saved ${s.lowPay.names.length} companies ${istHM(Date.now())}. Press "Re-scan today" to apply it to jobs already decided.`;
+  $('lowPayOut').textContent = `Saved ${s.lowPay.names.length} companies ${istHM(Date.now())}. Used for Instahyre’s optional skip rules.`;
 });
 $('resetLowPay').addEventListener('click', async () => {
   const s = await send('jobsSave', { patch: { lowPay: null } });

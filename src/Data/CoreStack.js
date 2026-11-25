@@ -9,6 +9,8 @@
 // this page is invented. Resources with kind "self" have no link on purpose:
 // they are your own systems, and only your codebase answers those questions.
 
+import { withSpringParts } from "./springCourse.mjs";
+
 export const CORE_STACK_SECTIONS = [
   {
     "key": "java",
@@ -28,7 +30,7 @@ export const CORE_STACK_SECTIONS = [
   }
 ];
 
-export const CORE_STACK_TOPICS = [
+export const CORE_STACK_SOURCE_TOPICS = [
   {
     "id": "JAVA-01",
     "section": "java",
@@ -1975,6 +1977,8 @@ export const CORE_STACK_TOPICS = [
   }
 ];
 
+export const CORE_STACK_TOPICS = withSpringParts(CORE_STACK_SOURCE_TOPICS);
+
 export const CORE_STACK_PRIORITIES = ["P0","P1","P2"];
 
 export const CORE_STACK_PRIORITY_CONFIG = {
@@ -1983,10 +1987,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 46;
+export const CORE_STACK_TOTAL = 34;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":31,"P1":10,"P2":5};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":24,"P1":7,"P2":3};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":13,"spring":18,"data":4};
+export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":12,"spring":7,"data":4};
 
 export const CORE_STACK_MINUTES = 3142;

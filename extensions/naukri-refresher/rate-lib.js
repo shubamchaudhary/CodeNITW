@@ -58,7 +58,6 @@ export const RATE = Object.freeze({
   limitStopMs: 5 * 60_000, // …and a key that has answered 429 for 5 minutes running, with no good answer between, is retired…
   retireMs: 60 * 60_000, // …for an hour (it's remembered across runs); with every key retired the run pauses until the first is back
   drainMs: 10 * 60_000, // after a run's sweep, how long it may go on rating what's left
-  queueMax: 500, // jobs kept waiting for a rating between runs
   // Pay: the company's pay at about 2 years, looked up on the web (Groq's browser_search on the
   // same model and keys), once per company, kept 30 days; at most this many lookups a day.
   payPerDay: 60,
