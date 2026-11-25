@@ -9,8 +9,6 @@
 // this page is invented. Resources with kind "self" have no link on purpose:
 // they are your own systems, and only your codebase answers those questions.
 
-import { withSpringParts } from "./springCourse.mjs";
-
 export const CORE_STACK_SECTIONS = [
   {
     "key": "java",
@@ -30,7 +28,7 @@ export const CORE_STACK_SECTIONS = [
   }
 ];
 
-export const CORE_STACK_SOURCE_TOPICS = [
+export const CORE_STACK_TOPICS = [
   {
     "id": "JAVA-01",
     "section": "java",
@@ -948,50 +946,6 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
-    "id": "CONC-14",
-    "section": "concurrency",
-    "sectionLabel": "Concurrency & Multithreading",
-    "priority": "P0",
-    "title": "Spring Boot @Async & @Scheduled",
-    "why": "From the Spring Boot playlist, not the Java one. Directly backs the async/sync-fallback work on your resume; \"long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
-    "resources": [
-      {
-        "id": "CONC-14-r1",
-        "kind": "video",
-        "title": "Spring boot @Async Annotation - Part1 | ThreadPoolExecutor",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 16,
-        "minutes": 46,
-        "note": "The ThreadPoolExecutor part repeats CONC-01 — skim it, and slow down for how @Async picks its executor."
-      },
-      {
-        "id": "CONC-14-r2",
-        "kind": "video",
-        "title": "Spring boot @Async Annotation - Part2 | Async Annotation Important Interview questions",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 17,
-        "minutes": 24,
-        "note": ""
-      }
-    ],
-    "minutes": 70,
-    "duration": "1h 10m",
-    "questions": [
-      "@Async or a message queue for long-running background work?",
-      "@Async — how does it work, and why does it sometimes run synchronously?",
-      "@Scheduled jobs — how do you stop a cron job running on every instance?",
-      "How do you configure the executor for @Async (ThreadPoolTaskExecutor)?"
-    ],
-    "asked": {
-      "posts": 10,
-      "items": 4
-    }
-  },
-  {
     "id": "CONC-06",
     "section": "concurrency",
     "sectionLabel": "Concurrency & Multithreading",
@@ -1033,63 +987,6 @@ export const CORE_STACK_SOURCE_TOPICS = [
     "asked": {
       "posts": 45,
       "items": 5
-    }
-  },
-  {
-    "id": "SPRING-01",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "@Transactional — propagation, isolation & proxy failure",
-    "why": "The self-invocation question is reported by name in interview write-ups. Highest-yield Spring topic there is.",
-    "resources": [
-      {
-        "id": "SPRING-01-r1",
-        "kind": "video",
-        "title": "Spring boot @Transactional Annotation - Part1",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 13,
-        "minutes": 25,
-        "note": ""
-      },
-      {
-        "id": "SPRING-01-r2",
-        "kind": "video",
-        "title": "Spring boot @Transactional Annotation - Part2 | Declarative, Programmatic Approach and Propagation",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 14,
-        "minutes": 38,
-        "note": ""
-      },
-      {
-        "id": "SPRING-01-r3",
-        "kind": "video",
-        "title": "Spring boot @Transactional Annotation - Part3 | Isolation Level and its different types",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 15,
-        "minutes": 39,
-        "note": ""
-      }
-    ],
-    "minutes": 102,
-    "duration": "1h 42m",
-    "questions": [
-      "What are the isolation levels, and what does each prevent?",
-      "What does @Transactional do, and where should you put it?",
-      "Transaction propagation — REQUIRED vs REQUIRES_NEW (and the others)?",
-      "Which exceptions roll back a @Transactional method by default?",
-      "An order touches payment, inventory and receipt services — how do you roll back across them?",
-      "How does @Transactional work under the hood — and why does it fail on self-invocation?"
-    ],
-    "asked": {
-      "posts": 42,
-      "items": 6
     }
   },
   {
@@ -1225,46 +1122,34 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
-    "id": "SPRING-03",
+    "id": "SPRING-19",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "Auto-configuration & starters — what @SpringBootApplication really does",
-    "why": "\"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and no video in the playlist teaches it head-on — so this card pairs the conditional-bean video with the reference page. Profiles and config moved to SPRING-18, Maven to SPRING-19, so this is one sitting.",
+    "priority": "P2",
+    "title": "Maven — build lifecycle, scopes & dependency conflicts",
+    "why": "NEW — split from SPRING-03 and lowered to P2. One SDE-2 write-up (HERE) listed Maven by name; most never reach it. When it does come up, it is the dependency-conflict question.",
     "resources": [
       {
-        "id": "SPRING-03-r1",
+        "id": "SPRING-19-r1",
         "kind": "video",
-        "title": "Spring boot @ConditionalOnProperty Annotation",
+        "title": "Introduction to Maven and its Lifecycle | Spring boot Maven project",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 10,
-        "minutes": 20,
-        "note": "Conditions are what auto-configuration is built from — and @ConditionalOnProperty is how your routing flags are wired."
-      },
-      {
-        "id": "SPRING-03-r2",
-        "kind": "doc",
-        "title": "Spring Boot reference — Creating Your Own Auto-configuration",
-        "source": "docs.spring.io",
-        "url": "https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html",
-        "minutes": 20,
-        "estimate": true,
-        "note": "Read the first three sections: auto-configured beans, locating candidates, condition annotations. Skip testing and the starter how-to."
+        "position": 4,
+        "minutes": 49,
+        "note": ""
       }
     ],
-    "minutes": 40,
-    "duration": "≈40m",
+    "minutes": 49,
+    "duration": "49m",
     "questions": [
-      "How does Spring Boot auto-configuration work?",
-      "What does @SpringBootApplication do?",
-      "What are Spring Boot starters?",
-      "How do you create a bean only under some condition (e.g. per environment)?"
+      "Maven lifecycle and pom.xml — what happens on mvn package?",
+      "How do you resolve dependency version conflicts in Maven or Gradle?"
     ],
     "asked": {
-      "posts": 10,
-      "items": 4
+      "posts": 6,
+      "items": 2
     }
   },
   {
@@ -1312,34 +1197,87 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
-    "id": "SPRING-06",
+    "id": "SPRING-03",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P2",
-    "title": "AOP & the proxy mechanism",
-    "why": "Lowered to P2: none of the ~45 2024–26 loops behind this map asked AOP on its own. It arrives as the reason @Transactional and @Async fail on self-invocation — which SPRING-01 already taught you. Do it for depth: \"JDK vs CGLIB proxies\" is still on SDE-2 question lists.",
+    "priority": "P0",
+    "title": "Auto-configuration & starters — what @SpringBootApplication really does",
+    "why": "\"How does auto-configuration work?\" is one of the most-asked Spring Boot questions at 2–5 years, and no video in the playlist teaches it head-on — so this card pairs the conditional-bean video with the reference page. Profiles and config moved to SPRING-18, Maven to SPRING-19, so this is one sitting.",
     "resources": [
       {
-        "id": "SPRING-06-r1",
+        "id": "SPRING-03-r1",
         "kind": "video",
-        "title": "Spring boot AOP (Aspect Oriented Programming)",
+        "title": "Spring boot @ConditionalOnProperty Annotation",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 12,
-        "minutes": 69,
-        "note": "Long. Of the pointcut types, execution(...) and @annotation(...) are the two you will actually write — skim the rest."
+        "position": 10,
+        "minutes": 20,
+        "note": "Conditions are what auto-configuration is built from — and @ConditionalOnProperty is how your routing flags are wired."
+      },
+      {
+        "id": "SPRING-03-r2",
+        "kind": "doc",
+        "title": "Spring Boot reference — Creating Your Own Auto-configuration",
+        "source": "docs.spring.io",
+        "url": "https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html",
+        "minutes": 20,
+        "estimate": true,
+        "note": "Read the first three sections: auto-configured beans, locating candidates, condition annotations. Skip testing and the starter how-to."
       }
     ],
-    "minutes": 69,
-    "duration": "1h 9m",
+    "minutes": 40,
+    "duration": "≈40m",
     "questions": [
-      "What is AOP, and how does Spring AOP work internally?",
-      "Write a custom annotation with an @Around aspect (e.g. log execution time)."
+      "How does Spring Boot auto-configuration work?",
+      "What does @SpringBootApplication do?",
+      "What are Spring Boot starters?",
+      "How do you create a bean only under some condition (e.g. per environment)?"
     ],
     "asked": {
-      "posts": 7,
-      "items": 2
+      "posts": 10,
+      "items": 4
+    }
+  },
+  {
+    "id": "SPRING-11",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "Filters vs interceptors — and where tenant resolution goes",
+    "why": "\"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, sometimes with a code example asked for. JWT validation (a filter) and tenant resolution both live here.",
+    "resources": [
+      {
+        "id": "SPRING-11-r1",
+        "kind": "video",
+        "title": "Spring boot: Custom Interceptors | How to Intercept Incoming HTTP Request and Custom Annotations",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 18,
+        "minutes": 30,
+        "note": ""
+      },
+      {
+        "id": "SPRING-11-r2",
+        "kind": "video",
+        "title": "Spring boot: Filters vs Interceptors | Filters and Interceptors Advantage and UseCases for both",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 19,
+        "minutes": 24,
+        "note": ""
+      }
+    ],
+    "minutes": 54,
+    "duration": "54m",
+    "questions": [
+      "Filter vs interceptor — where does each run, and which would you use?"
+    ],
+    "asked": {
+      "posts": 6,
+      "items": 1
     }
   },
   {
@@ -1419,47 +1357,6 @@ export const CORE_STACK_SOURCE_TOPICS = [
     "asked": {
       "posts": 20,
       "items": 3
-    }
-  },
-  {
-    "id": "SPRING-11",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "Filters vs interceptors — and where tenant resolution goes",
-    "why": "\"Filter vs interceptor — which runs first, and which can see the controller method?\" is a stock Spring question, sometimes with a code example asked for. JWT validation (a filter) and tenant resolution both live here.",
-    "resources": [
-      {
-        "id": "SPRING-11-r1",
-        "kind": "video",
-        "title": "Spring boot: Custom Interceptors | How to Intercept Incoming HTTP Request and Custom Annotations",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 18,
-        "minutes": 30,
-        "note": ""
-      },
-      {
-        "id": "SPRING-11-r2",
-        "kind": "video",
-        "title": "Spring boot: Filters vs Interceptors | Filters and Interceptors Advantage and UseCases for both",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 19,
-        "minutes": 24,
-        "note": ""
-      }
-    ],
-    "minutes": 54,
-    "duration": "54m",
-    "questions": [
-      "Filter vs interceptor — where does each run, and which would you use?"
-    ],
-    "asked": {
-      "posts": 6,
-      "items": 1
     }
   },
   {
@@ -1552,35 +1449,144 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
-    "id": "SPRING-15",
+    "id": "SPRING-01",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
     "priority": "P0",
-    "title": "Web attacks — CSRF, XSS, CORS, SQL injection",
-    "why": "25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
+    "title": "@Transactional — propagation, isolation & proxy failure",
+    "why": "The self-invocation question is reported by name in interview write-ups. Highest-yield Spring topic there is.",
     "resources": [
       {
-        "id": "SPRING-15-r1",
+        "id": "SPRING-01-r1",
         "kind": "video",
-        "title": "Understand Attacks: CSRF, XSS, CORS, SQL Injection with DEMO | Spring Security",
+        "title": "Spring boot @Transactional Annotation - Part1",
         "source": "Concept && Coding - by Shrayansh",
         "playlist": "Spring Boot from Basics to Advanced",
         "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 33,
+        "position": 13,
         "minutes": 25,
+        "note": ""
+      },
+      {
+        "id": "SPRING-01-r2",
+        "kind": "video",
+        "title": "Spring boot @Transactional Annotation - Part2 | Declarative, Programmatic Approach and Propagation",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 14,
+        "minutes": 38,
+        "note": ""
+      },
+      {
+        "id": "SPRING-01-r3",
+        "kind": "video",
+        "title": "Spring boot @Transactional Annotation - Part3 | Isolation Level and its different types",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 15,
+        "minutes": 39,
         "note": ""
       }
     ],
-    "minutes": 25,
-    "duration": "25m",
+    "minutes": 102,
+    "duration": "1h 42m",
     "questions": [
-      "What is SQL injection — and how do PreparedStatement and ORMs prevent it?",
-      "XSS — and why is storing a JWT in localStorage risky?",
-      "What is CSRF — and why can a stateless JWT API disable CSRF protection?",
-      "What is CORS, and who enforces it?"
+      "What are the isolation levels, and what does each prevent?",
+      "What does @Transactional do, and where should you put it?",
+      "Transaction propagation — REQUIRED vs REQUIRES_NEW (and the others)?",
+      "Which exceptions roll back a @Transactional method by default?",
+      "An order touches payment, inventory and receipt services — how do you roll back across them?",
+      "How does @Transactional work under the hood — and why does it fail on self-invocation?"
     ],
     "asked": {
-      "posts": 11,
+      "posts": 42,
+      "items": 6
+    }
+  },
+  {
+    "id": "SPRING-06",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P2",
+    "title": "AOP & the proxy mechanism",
+    "why": "Lowered to P2: none of the ~45 2024–26 loops behind this map asked AOP on its own. It arrives as the reason @Transactional and @Async fail on self-invocation — which SPRING-01 already taught you. Do it for depth: \"JDK vs CGLIB proxies\" is still on SDE-2 question lists.",
+    "resources": [
+      {
+        "id": "SPRING-06-r1",
+        "kind": "video",
+        "title": "Spring boot AOP (Aspect Oriented Programming)",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 12,
+        "minutes": 69,
+        "note": "Long. Of the pointcut types, execution(...) and @annotation(...) are the two you will actually write — skim the rest."
+      }
+    ],
+    "minutes": 69,
+    "duration": "1h 9m",
+    "questions": [
+      "What is AOP, and how does Spring AOP work internally?",
+      "Write a custom annotation with an @Around aspect (e.g. log execution time)."
+    ],
+    "asked": {
+      "posts": 7,
+      "items": 2
+    }
+  },
+  {
+    "id": "CONC-14",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "Spring Boot @Async & @Scheduled",
+    "why": "From the Spring Boot playlist, not the Java one. Directly backs the async/sync-fallback work on your resume; \"long-running background work — @Async and beyond\" was asked by name in a 2026 SDE-2 loop.",
+    "resources": [
+      {
+        "id": "CONC-14-r1",
+        "kind": "video",
+        "title": "Spring boot @Async Annotation - Part1 | ThreadPoolExecutor",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 16,
+        "minutes": 46,
+        "note": "The ThreadPoolExecutor part repeats CONC-01 — skim it, and slow down for how @Async picks its executor."
+      },
+      {
+        "id": "CONC-14-r2",
+        "kind": "video",
+        "title": "Spring boot @Async Annotation - Part2 | Async Annotation Important Interview questions",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 17,
+        "minutes": 24,
+        "note": "For a price and a shipping quote, submit both calls through the injected @Async bean before waiting. Use thenCombine to build the result when both succeed. Set timeouts on the HTTP clients too, since timing out the combined future can leave a worker blocked."
+      },
+      {
+        "id": "CONC-14-r3",
+        "kind": "doc",
+        "title": "Spring Framework — Task Execution and Scheduling",
+        "source": "docs.spring.io",
+        "url": "https://docs.spring.io/spring-framework/reference/integration/scheduling.html",
+        "minutes": 0,
+        "estimate": false,
+        "note": "fixedRate targets the interval between starts. fixedDelay counts from the scheduled method’s return. If that method only submits async work, the next tick can arrive while the previous worker is still running. Each replica has its own trigger, so give a retried job a stable key and make its write idempotent."
+      }
+    ],
+    "minutes": 70,
+    "duration": "≈1h 10m",
+    "questions": [
+      "@Async or a message queue for long-running background work?",
+      "@Async — how does it work, and why does it sometimes run synchronously?",
+      "@Scheduled jobs — how do you stop a cron job running on every instance?",
+      "How do you configure the executor for @Async (ThreadPoolTaskExecutor)?"
+    ],
+    "asked": {
+      "posts": 10,
       "items": 4
     }
   },
@@ -1641,39 +1647,6 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
-    "id": "SPRING-23",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P0",
-    "title": "JWT — structure, stateless auth, revocation & refresh",
-    "why": "NEW — split from SPRING-09 and raised to P0. JWT is the security topic SDE-2 loops actually spend time on: a 2026 Java SDE-2 loop asked where the token is validated in the filter chain, what happens when validation fails, how to revoke one, where refresh lives and why localStorage is risky. Do SPRING-09 first.",
-    "resources": [
-      {
-        "id": "SPRING-23-r1",
-        "kind": "video",
-        "title": "JWT Explained | JWT vs SessionID | JSON Web Token | Security Challenges with JWT & its Handling",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 38,
-        "minutes": 49,
-        "note": ""
-      }
-    ],
-    "minutes": 49,
-    "duration": "49m",
-    "questions": [
-      "How does JWT work — structure and verification?",
-      "Where is the JWT validated in the Spring Security filter chain — how do you write a JWT filter?",
-      "Access token vs refresh token — where should tokens live on the client?",
-      "How do you revoke or invalidate a JWT before it expires?"
-    ],
-    "asked": {
-      "posts": 32,
-      "items": 4
-    }
-  },
-  {
     "id": "SPRING-10",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
@@ -1716,6 +1689,39 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
+    "id": "SPRING-23",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "JWT — structure, stateless auth, revocation & refresh",
+    "why": "NEW — split from SPRING-09 and raised to P0. JWT is the security topic SDE-2 loops actually spend time on: a 2026 Java SDE-2 loop asked where the token is validated in the filter chain, what happens when validation fails, how to revoke one, where refresh lives and why localStorage is risky. Do SPRING-09 first.",
+    "resources": [
+      {
+        "id": "SPRING-23-r1",
+        "kind": "video",
+        "title": "JWT Explained | JWT vs SessionID | JSON Web Token | Security Challenges with JWT & its Handling",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 38,
+        "minutes": 49,
+        "note": ""
+      }
+    ],
+    "minutes": 49,
+    "duration": "49m",
+    "questions": [
+      "How does JWT work — structure and verification?",
+      "Where is the JWT validated in the Spring Security filter chain — how do you write a JWT filter?",
+      "Access token vs refresh token — where should tokens live on the client?",
+      "How do you revoke or invalidate a JWT before it expires?"
+    ],
+    "asked": {
+      "posts": 32,
+      "items": 4
+    }
+  },
+  {
     "id": "SPRING-13",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
@@ -1746,6 +1752,39 @@ export const CORE_STACK_SOURCE_TOPICS = [
     }
   },
   {
+    "id": "SPRING-15",
+    "section": "spring",
+    "sectionLabel": "Spring Boot & Data Access",
+    "priority": "P0",
+    "title": "Web attacks — CSRF, XSS, CORS, SQL injection",
+    "why": "25 minutes, and it answers the follow-ups every JWT answer draws: why localStorage is risky (XSS), why a stateless JWT API can disable CSRF, and who actually enforces CORS.",
+    "resources": [
+      {
+        "id": "SPRING-15-r1",
+        "kind": "video",
+        "title": "Understand Attacks: CSRF, XSS, CORS, SQL Injection with DEMO | Spring Security",
+        "source": "Concept && Coding - by Shrayansh",
+        "playlist": "Spring Boot from Basics to Advanced",
+        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
+        "position": 33,
+        "minutes": 25,
+        "note": ""
+      }
+    ],
+    "minutes": 25,
+    "duration": "25m",
+    "questions": [
+      "What is SQL injection — and how do PreparedStatement and ORMs prevent it?",
+      "XSS — and why is storing a JWT in localStorage risky?",
+      "What is CSRF — and why can a stateless JWT API disable CSRF protection?",
+      "What is CORS, and who enforces it?"
+    ],
+    "asked": {
+      "posts": 11,
+      "items": 4
+    }
+  },
+  {
     "id": "SPRING-14",
     "section": "spring",
     "sectionLabel": "Spring Boot & Data Access",
@@ -1773,37 +1812,6 @@ export const CORE_STACK_SOURCE_TOPICS = [
     ],
     "asked": {
       "posts": 34,
-      "items": 2
-    }
-  },
-  {
-    "id": "SPRING-19",
-    "section": "spring",
-    "sectionLabel": "Spring Boot & Data Access",
-    "priority": "P2",
-    "title": "Maven — build lifecycle, scopes & dependency conflicts",
-    "why": "NEW — split from SPRING-03 and lowered to P2. One SDE-2 write-up (HERE) listed Maven by name; most never reach it. When it does come up, it is the dependency-conflict question.",
-    "resources": [
-      {
-        "id": "SPRING-19-r1",
-        "kind": "video",
-        "title": "Introduction to Maven and its Lifecycle | Spring boot Maven project",
-        "source": "Concept && Coding - by Shrayansh",
-        "playlist": "Spring Boot from Basics to Advanced",
-        "playlistUrl": "https://www.youtube.com/playlist?list=PL6W8uoQQ2c60g6_fcjDCLHSx1LBeVYqyZ",
-        "position": 4,
-        "minutes": 49,
-        "note": ""
-      }
-    ],
-    "minutes": 49,
-    "duration": "49m",
-    "questions": [
-      "Maven lifecycle and pom.xml — what happens on mvn package?",
-      "How do you resolve dependency version conflicts in Maven or Gradle?"
-    ],
-    "asked": {
-      "posts": 6,
       "items": 2
     }
   },
@@ -1977,8 +1985,6 @@ export const CORE_STACK_SOURCE_TOPICS = [
   }
 ];
 
-export const CORE_STACK_TOPICS = withSpringParts(CORE_STACK_SOURCE_TOPICS);
-
 export const CORE_STACK_PRIORITIES = ["P0","P1","P2"];
 
 export const CORE_STACK_PRIORITY_CONFIG = {
@@ -1987,10 +1993,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 34;
+export const CORE_STACK_TOTAL = 46;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":24,"P1":7,"P2":3};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":31,"P1":10,"P2":5};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":12,"spring":7,"data":4};
+export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":12,"spring":19,"data":4};
 
 export const CORE_STACK_MINUTES = 3142;

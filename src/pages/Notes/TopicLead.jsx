@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { readingList } from "./stacks";
 import { hasLecture, lectureMinutes } from "./lectures";
@@ -14,11 +13,10 @@ import { Button, PriorityTag, Icon, buttonClass } from "../../components/ui";
 // why it matters, the two things you do with a topic (finish it, plan it), and
 // then what to watch before reading the notes. The questions that used to sit
 // on the topic card live in the notes themselves now.
-export default function TopicLead({ stack, owner, topic, completed, done, doneDays, planned, onToggleDone, onTogglePlanned, meta, tools }) {
+export default function TopicLead({ stack, owner, topic, done, doneDays, planned, onToggleDone, onTogglePlanned, meta, tools }) {
   const items = readingList(stack, topic);
   const tag = stack.tag(topic);
   const summary = stack.summary(topic);
-  const part = stack.key === "corestack" && stack.topics.find(t => t.lessons?.includes(topic.id));
 
   return (
     <header className="mb-10">
@@ -29,23 +27,7 @@ export default function TopicLead({ stack, owner, topic, completed, done, doneDa
       <h1 className="mt-1.5 text-[26px] leading-8 sm:text-[32px] sm:leading-10 font-semibold tracking-[-0.02em] text-fg">
         {topic.title}
       </h1>
-      {summary && !topic.lessons && <p className="mt-3 max-w-[46rem] text-[16px] leading-[26px] text-fg-muted">{summary}</p>}
-      {part && <Link className="mt-3 inline-block text-sm underline" to={`/notes/corestack/${part.id}`}>{part.title}</Link>}
-      {topic.lessons && (
-        <details className="mt-3 text-sm text-fg-muted">
-          <summary className="cursor-pointer">Original lessons and saved notes</summary>
-          <ul className="mt-2 space-y-2">
-            {topic.lessons.map(id => (
-              <li key={id}>
-                <Link className="inline-flex items-center gap-2 underline" to={`/notes/corestack/${id}`}>
-                  <DoneCircle done={!!completed[id]} className="w-4 h-4" />
-                  {stack.getTopic(id).title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
+      {summary && <p className="mt-3 max-w-[46rem] text-[16px] leading-[26px] text-fg-muted">{summary}</p>}
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <Button

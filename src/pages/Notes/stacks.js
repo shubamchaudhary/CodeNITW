@@ -4,7 +4,7 @@
 // list and labels are drawn. The notes page, its left topic list and its topic
 // header read all of it from here, so every stack shares one layout.
 
-import { CORE_STACK_SECTIONS, CORE_STACK_SOURCE_TOPICS, CORE_STACK_TOPICS } from "../../Data/CoreStack";
+import { CORE_STACK_SECTIONS, CORE_STACK_TOPICS } from "../../Data/CoreStack";
 import { AI_STACK_SECTIONS, AI_STACK_TOPICS } from "../../Data/AIStack";
 import { PROJECT_SECTIONS, PROJECT_TOPICS, getProjectTopic } from "../../Data/Projects";
 import {
@@ -30,15 +30,9 @@ const PRIORITY_TEXT = {
 // Core Stack's priorities, the "why" behind each one and its interview
 // questions are the owner's own research. Everyone else gets the topics, the
 // reading list and their notes, with no hint the rest exists.
-const coreSections = (topics) => CORE_STACK_SECTIONS.map(s => ({
-  ...s, topics: topics.filter(t => t.section === s.key),
-}));
-const personalCoreSections = coreSections(CORE_STACK_SOURCE_TOPICS);
-
 export function stackForViewer(stack, owner) {
   if (owner || stack.key !== "corestack") return stack;
-  return { ...stack, topics: CORE_STACK_SOURCE_TOPICS, sections: personalCoreSections,
-    filters: null, tag: () => null, summary: () => "", hideQuestions: true };
+  return { ...stack, filters: null, tag: () => null, summary: () => "", hideQuestions: true };
 }
 
 export const STACKS = {
@@ -52,7 +46,11 @@ export const STACKS = {
     timestampsKey: KEYS.CS_TIMESTAMPS,
     getTopic: getCoreStackTopic,
     topics: CORE_STACK_TOPICS,
-    sections: coreSections(CORE_STACK_TOPICS),
+    sections: CORE_STACK_SECTIONS.map((s) => ({
+      key: s.key,
+      label: s.label,
+      topics: CORE_STACK_TOPICS.filter((t) => t.section === s.key),
+    })),
     filters: ["P0", "P1", "P2"],
     matchFilter: (topic, f) => topic.priority === f,
     tag: (topic) => ({ label: topic.priority, cls: PRIORITY_TEXT[topic.priority] || "text-fg-subtle" }),
@@ -162,9 +160,7 @@ export function resumeTopicId(stack, completed = {}) {
   try {
     last = localStorage.getItem(LAST_KEY(stack.key));
   } catch (_) {}
-  if (last && stack.topics.some(t => t.id === last)) return last;
-  const part = last && stack.topics.find(t => t.lessons?.includes(last));
-  if (part) return part.id;
+  if (last && stack.getTopic(last)) return last;
   const next = stack.topics.find((t) => !completed[t.id]);
   return (next || stack.topics[0])?.id;
 }
