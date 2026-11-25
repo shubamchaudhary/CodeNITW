@@ -68,6 +68,18 @@ class Payment {
 - **DI**: the way IoC is done. Dependencies are passed in (constructor, setter, or field).
 - `@Component` = "Spring, manage this class as a bean". `@Autowired` = "Spring, fill this dependency".
 
+**The three types of DI:**
+
+```java
+public Payment(UserService users) { this.users = users; }        // 1. constructor
+@Autowired public void setUsers(UserService users) { ... }       // 2. setter
+@Autowired private UserService users;                            // 3. field
+```
+
+- **Constructor injection** (recommended): dependencies arrive as constructor parameters, so fields can be `final` and the object is never half-built. A missing bean fails at startup. With a single constructor, `@Autowired` is optional (since Spring 4.3). Use it for required dependencies.
+- **Setter injection**: Spring calls an `@Autowired` setter after construction. Use it for optional dependencies, or ones that may be replaced later. Fields can't be `final`.
+- **Field injection**: Spring sets the field directly through reflection. Shortest to write, but fields can't be `final`, an object created with `new` outside Spring has a null field, tests need reflection to set a mock, and a long list of dependencies stays hidden. Avoid it.
+
 Common mistake: field `@Autowired` of a concrete class (`@Autowired User sender;`) doesn't fix the problems above. The fix is to depend on an **interface** and use **constructor injection**. Then tests can pass a mock, fields can be `final`, and switching implementations needs no change.
 
 Say it like this: "IoC means Spring creates and wires my objects instead of my code calling new. DI is how it does it, by passing dependencies in, usually through the constructor. That makes classes loosely coupled and easy to test with mocks."

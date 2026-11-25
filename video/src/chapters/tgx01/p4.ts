@@ -16,9 +16,9 @@ export const p4: Scene[] = [
       { title: "Accept the follow-up whole", icon: "⚠️", tone: "amber", items: ["the second call cites passages", "but proposes the mother's regimen", "the infant inherits a dose"] },
       { title: "Scoped retry + careful merge", icon: "✅", tone: "green", items: ["ask again for this patient only", "repair only what was proposed", "disagreement → unknown"] },
     ],
-    footer: "the infant's diagnosis survived with its sentence; dose, route and start date stayed withheld",
+    footer: "local run: the infant's diagnosis survived with its sentence; dose, route and start date stayed withheld",
     beats: B(
-      "D04 again. The mother and her newborn. The model returned the infant's fields as bare values, like route colon oral, instead of objects with a confidence and quotes. Drop them, and you lose a real patient.",
+      "D04 again, and this story is from the first, local run. Groq needed no repair, but the code path is still live. The mother and her newborn. The local model returned the infant's fields as bare values, like route colon oral, instead of objects with a confidence and quotes. Drop them, and you lose a real patient.",
       "Ask again and accept everything? The follow up does cite passages. But it also proposed the mother's regimen for the infant. The infant would inherit a dose it never received.",
       { say: "So: one scoped retry for that patient, and a merge that repairs only what the first reading actually proposed. If the two readings disagree, the answer is unknown.", tone: "key" },
       "The result. The infant's diagnosis, neonatal adaptation syndrome, survived, linked to the sentence that names it. The dose, route and start date stayed withheld.",
@@ -52,7 +52,7 @@ export const p4: Scene[] = [
     highlight: [[4, 6], [7, 9], [10, 14], [16, 17], [18, 19]],
     beats: B(
       "CaseRepair dot java. When does it run? Only when a case has at least one field that is a bare value: not an object, and not null.",
-      { say: "Then one follow up, through the same predict, with a selector for that patient, and its own recording: repairs, slash D04, slash case one. Replay checks the recorded selector matches.", tone: "key" },
+      { say: "Then one follow up, through the same predict, with a selector for that patient, and its own recording under repairs, slash D04, slash case one. That file now sits in the local history folder. Replay checks the recorded selector matches.", tone: "key" },
       "The answer must be exactly one case, with the same label. Otherwise it logs that the repair didn't identify the patient, and the uncited values become unknown.",
       { say: "And the rule that saved the infant. Only bare values are repaired. A field that was missing or null in the first reading stays withheld, whatever the second reading says.", tone: "key" },
       "Each bare value is reconciled with the second reading's cited proposal.",
@@ -105,7 +105,7 @@ private static JsonNode reconcile(JsonNode original, ObjectNode grounded, Eviden
   },
   check({
     topic: "the repair",
-    q: "In D04's first reading the infant's dose was null. The repair proposes 50 mg, with a citation. What is in the output?",
+    q: "In the local run, D04's first reading gave the infant's dose as null. The repair proposes 50 mg, with a citation. What is in the output?",
     options: ["50 mg at low confidence", "50 mg at the repair's confidence", "Unknown: null is not a bare value, so it stays withheld", "A conflict between null and 50"],
     answer: 2,
     a: "Unknown (\"The recording withheld this value.\"). Only bare values are repaired; a null stays withheld. The infant received no direct dose.",
