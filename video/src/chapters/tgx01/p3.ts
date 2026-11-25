@@ -88,6 +88,7 @@ export const p3: Scene[] = [
     Thread.sleep(1000L << attempt); continue;
   }
   String body = key.isBlank() ? result.body() : result.body().replace(key, "[redacted]");
+  body = ACCOUNT.matcher(body).replaceAll("org_[redacted]");      // \\borg_[A-Za-z0-9]{16,}\\b
   entry.put("status", result.statusCode()); entry.set("body", Json.parse(body));
   Json.write(fixture, record);
   if (result.statusCode() == 200) return;
@@ -97,12 +98,12 @@ export const p3: Scene[] = [
   if (seconds > 60) throw new IOException("Quota wait is " + seconds + " seconds. Resume after ...");
   Thread.sleep(seconds * 1000);
 }`,
-    highlight: [[2, 3], [4, 5], [8, 11], [13, 15], [16, 18], [19, 21]],
+    highlight: [[2, 3], [4, 5], [8, 11], [13, 16], [17, 19], [20, 22]],
     beats: B(
       "The loop. At most three attempts. Before each one, it waits until the minimum interval since the last request start has passed. That's how it respects requests per minute.",
       "The attempt is written to the fixture before the request is sent. So even a crash mid call leaves a trace.",
       "A network failure or a timeout is recorded by its exception name, and it backs off one second, then two.",
-      "A response is recorded with its status and body, and if the key ever appears in the body, it's replaced with redacted.",
+      "A response is recorded with its status and body. If the key ever appears in the body, it's replaced with redacted. And so is the provider's account id, which Groq prints in its rate limit errors.",
       "A two hundred returns. A four hundred that isn't a four twenty nine fails at once, and points you at the recording.",
       { say: "A four twenty nine or a five hundred waits for Retry After, in seconds or as an HTTP date, or one then two seconds. And if the provider asks for more than sixty seconds, that's a daily quota. It stops with a clear message, and tomorrow's rerun resumes.", tone: "key" },
     ),
@@ -113,30 +114,31 @@ export const p3: Scene[] = [
     actors: [
       { id: "p", name: "Pipeline", icon: "⚙️" },
       { id: "h", name: "HttpModel", icon: "📡" },
-      { id: "f", name: "fixtures/D07.json", icon: "📼" },
-      { id: "m", name: "Model server", icon: "🧠", tone: "teal" },
+      { id: "f", name: "fixtures/D01.json", icon: "📼" },
+      { id: "m", name: "Groq", icon: "🧠", tone: "teal" },
     ],
     msgs: [
-      { from: "p", to: "h", label: "predict(D07)", step: 1 },
-      { from: "h", to: "f", label: "attempt 1 written", step: 2, tone: "amber" },
-      { from: "h", to: "m", label: "POST chat/completions", step: 3 },
-      { from: "m", to: "h", label: "timeout: the slot is busy with D08", step: 4, tone: "red", dash: true },
-      { from: "h", to: "f", label: "attempt 1: HttpTimeoutException", step: 5, tone: "amber" },
-      { from: "h", to: "m", label: "attempt 2 (the retry)", step: 6 },
+      { from: "p", to: "h", label: "predict(D01)", step: 1 },
+      { from: "h", to: "m", label: "attempt 1 (written first)", step: 2 },
+      { from: "m", to: "h", label: "429 · rate limit reached", step: 3, tone: "red", dash: true },
+      { from: "h", to: "f", label: "attempt 1: 429, account id redacted", step: 4, tone: "amber" },
+      { from: "h", to: "m", label: "attempt 2 → 429 again", step: 5, tone: "red" },
+      { from: "h", to: "m", label: "attempt 3", step: 6 },
       { from: "m", to: "h", label: "200 · JSON reply", step: 7, tone: "green", dash: true },
       { from: "h", to: "p", label: "new Recording().predict(...)", step: 8, tone: "green", dash: true },
     ],
-    note: { step: 9, text: "D07's real fixture: one timeout while D08 held the single local slot for 1,668.5 s, then a 200", tone: "amber" },
+    note: { step: 9, text: "D01's real fixture: 429, 429, 200 · 9 of the 29 committed attempts were rate-limited", tone: "amber" },
     beats: B(
-      "Here's a real one. D07's fixture. The pipeline asks for a prediction.",
-      "HttpModel writes the attempt to the fixture first.",
-      "And sends the request to the local model server.",
-      "But the server's single inference slot is busy with D08, the longest report. The request times out.",
-      "The failure is recorded, by name, as attempt one.",
-      "Attempt two.",
+      "Here's a real one. D01's committed fixture, read as a conversation.",
+      "The pipeline asks HttpModel for a prediction.",
+      "HttpModel writes the attempt to the fixture, then sends the request to Groq.",
+      "Four twenty nine. Rate limit reached.",
+      "The rejection is recorded as attempt one, with Groq's account id scrubbed out.",
+      "It waits, for Retry After or a short backoff, and tries again. Another four twenty nine, also recorded.",
+      "Attempt three, the last one allowed.",
       "A two hundred, with the JSON reply.",
       "And HttpModel returns by reading its own recording back, exactly as replay would.",
-      { say: "That's D07's real fixture. One timeout while D08 held the slot for over twenty seven minutes, then the success. Both attempts are in the file, for anyone to inspect.", tone: "key" },
+      { say: "That's D01's real fixture: four twenty nine, four twenty nine, two hundred. Groq's free tier has an undocumented limit of about a thousand output tokens a minute, so calls twenty seconds apart were throttled, and the corpus run spaced them sixty two seconds apart. Nine of the twenty nine committed attempts were rate limited, and every one is in the files.", tone: "key" },
     ),
   },
   {
@@ -166,7 +168,7 @@ export const p3: Scene[] = [
       { say: "Second identity: the numbered passages in the recorded request must equal today's index, passage by passage. Because a change to the splitting pattern could renumber passages even with identical bytes. Two identities, two different ways to break offsets.", tone: "key" },
       "Then the reply. The last attempt must be a two hundred, and a reply cut off at the token limit is an error, never half parsed. Fields given as an array are keyed by id, and a missing or repeated id fails visibly.",
       "The dotted abbreviation rule runs here, under the catalog that was in the recording. More on that in topic eight.",
-      "And the model's name is provider slash model. Llama dot c p p slash qwen two point five seven B instruct. That string goes into every output.",
+      "And the model's name is provider slash model. Groq slash qwen slash qwen three point eight, twenty seven B. That string goes into every output. Recording also has a content method for plain text replies, which the scan transcript uses.",
     ),
   },
   {
@@ -373,7 +375,7 @@ static boolean direct(JsonNode value, Collection<Evidence.Span> spans, String ty
     beats: B(
       "What it did to D01. The age: fifty four is literally in passage eight. It stays high.",
       "The sex: the model said female, but the passage describes a woman. The word female isn't there, so it's medium. Correct, but it needs a glance.",
-      "The initials: the source writes them with full stops. So the literal M K isn't there. Medium, and a note explains the full stops. That's the next rule.",
+      "The initials: the source writes them with full stops. So the literal M K isn't there. Medium. And the model had said high for all three. The local model even wrote the dots, M dot K dot, which brings us to the next rule.",
       { say: "The gate only ever lowers. It never raises a model's medium to high. And the model's original label is always there, in the fixture.", tone: "key" },
     ),
   },
@@ -414,11 +416,11 @@ static void apply(JsonNode reply, JsonNode originalFields, Evidence source) {
     kind: "trap",
     myth: "High confidence means the value is probably right.",
     truth: "It means the model said high and the cited words literally contain the value.",
-    why: "There's no measured probability behind it. Measured: 2 wrong at high, 1 at medium, 0 at low.",
+    why: "There's no measured probability behind it. Measured: 1 wrong at high, 0 at medium, 0 at low (local run: 2, 1, 0).",
     beats: B(
       "And the trap to avoid in the room. High confidence means the value is probably right.",
       { say: "No. In this code it means two things: the model said high, and the cited words literally contain the value. There's no measured probability behind it.", tone: "key" },
-      "A literal match can still be about the wrong patient or the wrong time. D05 is the example. On the public reports: two wrong at high, one at medium, none at low.",
+      "A literal match can still be about the wrong patient or the wrong time. D05 is the example. On the public reports, the committed run has one wrong at high, D05's age, and none at medium or low. The local run had two, one and none.",
     ),
   },
   check({

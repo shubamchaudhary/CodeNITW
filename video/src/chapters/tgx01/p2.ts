@@ -221,13 +221,13 @@ Optional<Span> resolve(JsonNode ref) {
     cols: [
       { title: "First run", icon: "⚠️", tone: "red", items: ["the model followed the paragraph", "reporter came out as a physician", "kept in fixtures/history/"] },
       { title: "The fix", icon: "🛡", tone: "amber", items: ["mask that paragraph in the model's view", "keep every passage ID and offset", "refuse citations into the mask"] },
-      { title: "Second run", icon: "✅", tone: "green", items: ["consumer reporter, hospital stay found", "but an unsupported life-threatening criterion", "a narrower failure, honestly reported"] },
+      { title: "After the fix", icon: "✅", tone: "green", items: ["local rerun: consumer, but an invented life-threatening", "Groq run: consumer, hospitalization only", "plus the flag embedded_instruction_ignored"] },
     ],
     footer: "the reviewer still sees the original text, and the flag embedded_instruction_ignored",
     beats: B(
-      "Now, D07. A paragraph in the report is addressed to automated systems. On the first run, the model followed it. The reporter came out as a physician, and seriousness was dropped. That untouched run is kept in the history folder.",
+      "Now, D07. A paragraph in the report is addressed to automated systems. On the first, local run, the model followed it. The reporter came out as a physician, and seriousness was dropped. That untouched run is kept in the history folder.",
       "The fix: that paragraph is masked, but only in the model's view. Every passage number and every offset stays the same, and a citation into the masked range is refused.",
-      "On the new run, the reporter is correctly a consumer, and the hospital admission is recognised. But the model also added a life threatening criterion the narrative doesn't establish. A narrower failure, and you say so.",
+      "After the fix, the local rerun got the consumer reporter and the hospital stay, but invented a life threatening criterion. The committed Groq run gives a consumer, hospitalization only. Better, and you still say the mask is narrow.",
       "And the reviewer still sees the original text, with a flag saying an embedded instruction was ignored.",
     ),
   },
@@ -284,9 +284,9 @@ messages.addObject().put("role", "user").put("content", input.toString());
     beats: B(
       "Prompt dot java. The user message is one JSON object. First, the catalog's fields, exactly as defined.",
       "Then the report, as a list of numbered passages, with masked passages already replaced.",
-      "Temperature zero, JSON mode, and a completion budget of thirty eight hundred tokens. On Groq's free tier you set it to fifteen hundred.",
+      "Temperature zero, JSON mode, and a completion budget: thirty eight hundred by default, and fifteen hundred in the committed Groq run, because Groq's free tier counts the whole budget against its per minute limits.",
       { say: "Two messages. The system message is the policy. The user message is the data. A report can't configure tools, paths or providers, because it's never in the instructions.", tone: "key" },
-      "And the answer shape. Flags, and cases, each with a label and an array of fields, each field with its catalog id, a typed value, a confidence, and the passage numbers that support it. A field carries its own id, so a list value can't escape its object. For a contradiction, the model returns status conflict, with a note and both quotes.",
+      { say: "And the answer shape. Flags, and cases, each with a label and an array of fields, each field with its catalog id, a typed value, a confidence, and the passage numbers. Why an array? The first Groq run asked for fields keyed by id, and the model wrote a list value bare and then closed the case, losing every field after it. D02 lost eight fields. With each field carrying its own id, a list can't escape its object. A format change, not a content change.", tone: "key" },
     ),
   },
   {
@@ -331,7 +331,7 @@ messages.addObject().put("role", "user").put("content", input.toString());
     after: "no: it proves the passage exists, not that it supports the value",
     beats: B(
       "The attack. Every extracted field cites a real passage. Isn't that a quality guarantee?",
-      { say: "No. It proves the quoted passage exists at those positions. It doesn't prove the passage supports the value. In D01 the reporter category was cited from the doctor's causality opinion, not the signature. In D08 the reaction list cites passages about dosing. Grounding is necessary. Semantic support is the reviewer's job.", tone: "key" },
+      { say: "No. It proves the quoted passage exists at those positions. It doesn't prove the passage supports the value. D05's wrong age is cited perfectly. And D08's reaction list adds the terminal pneumonia and septic shock to the working diagnosis, with real quotes. Grounding is necessary. Semantic support is the reviewer's job.", tone: "key" },
     ),
   },
   check({

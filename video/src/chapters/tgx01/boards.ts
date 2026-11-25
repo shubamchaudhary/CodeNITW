@@ -14,7 +14,7 @@ export const SYSTEM: Board = {
   nodes: [
     { id: "src", x: 40, y: 60, w: 300, t: "Report text", s: "exact UTF-8 bytes" },
     { id: "prompt", x: 420, y: 60, w: 300, t: "Prompt + Evidence", s: "numbered passages" },
-    { id: "llm", x: 800, y: 60, w: 300, t: "Local LLM", s: "Qwen2.5-7B · llama.cpp", tone: "teal" },
+    { id: "llm", x: 800, y: 60, w: 300, t: "LLM", s: "qwen3.8-27b on Groq", tone: "teal" },
     { id: "cat", x: 40, y: 300, w: 300, t: "Field catalog", s: "16 fields · 7 types" },
     { id: "fix", x: 800, y: 300, w: 300, t: "fixtures/", s: "request + every attempt" },
     { id: "ext", x: 1160, y: 300, w: 300, t: "Extraction", s: "validate · cite · calibrate" },

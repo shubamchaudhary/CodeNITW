@@ -113,12 +113,12 @@ export const p1: Scene[] = [
       { title: "D06 · zero cases", icon: "📦", tone: "green", items: ["capsules quarantined before anyone took them", "no patient, no event: an empty list is right"] },
       { title: "D07 · talks to the software", icon: "⚠️", tone: "red", items: ["a paragraph addressed to automated systems", "a prompt injection inside the data"] },
     ],
-    footer: "and D08, the longest report: about 28 minutes on the local model",
+    footer: "and D08, the longest: 28 minutes on the first, local model · about 3 seconds on Groq",
     beats: B(
       "A few reports are worth knowing by name, because each one tests a piece of the design. D04 has two patients, a mother and her newborn. The mother's dose must not end up on the infant.",
       "D06 is a perfectly readable report with zero cases. A pharmacy quarantined spotted capsules before anyone took them. No patient, no event. So an empty list is the correct answer.",
       "D07 contains a paragraph addressed to automated systems. A prompt injection, sitting inside the data.",
-      { say: "And D08, the longest report, took about twenty eight minutes on the local model. Keep in mind: one document is the input. One case is the unit that owns the patient's fields.", tone: "key" },
+      { say: "And D08, the longest report, took twenty eight minutes on the first, local model, and about three seconds on Groq. Keep in mind: one document is the input. One case is the unit that owns the patient's fields.", tone: "key" },
     ),
   },
   check({
@@ -138,7 +138,7 @@ export const p1: Scene[] = [
     B(
       "Here's the whole of Folio. Let's walk it in the order a report travels.",
       "Two inputs. The report's exact bytes, and the field catalog, the only place a field is defined.",
-      "Java splits the report into numbered passages and sends them, with the catalog's fields, to the model, in one request. The model is Qwen two point five, seven billion parameters, running locally on llama dot c p p.",
+      "Java splits the report into numbered passages and sends them, with the catalog's fields, to the model, in one request. The committed run used Qwen three point eight, twenty seven billion parameters, on Groq. The first submission used a seven billion model on a local CPU, and both runs are kept in the repository.",
       { say: "Before anything is parsed, the request and every attempt, failures included, are written to a fixture file. Even a live run reads its answer back from that recording.", tone: "key" },
       "Then Java decides. It checks each proposed value against today's catalog, resolves each citation to exact positions, and lowers confidence that the wording doesn't support. Replay enters right here, at the recording. No key, no network.",
       "Out comes one JSON file per report, with every catalog field in every case, plus a duplicate index.",
@@ -160,7 +160,7 @@ export const p1: Scene[] = [
       "So there are three ways in.",
       "Live. Run the jar with mode live. It calls the model, records the exchange, and then processes it.",
       "Replay. Mode replay, or the replay shell script. It starts at the recording and reruns all of the Java. No key, no network.",
-      { say: "And review. N P M start serves the committed outputs to the desk on port eighty eighty. The reviewer works at once, even though the longest live call took twenty eight minutes.", tone: "key" },
+      { say: "And review. N P M start serves the committed outputs to the desk on port eighty eighty. The reviewer works at once, with no key and no model running.", tone: "key" },
     ),
   },
   {
@@ -168,13 +168,13 @@ export const p1: Scene[] = [
     title: "The stack, and why",
     cols: [
       { title: "Backend", icon: "☕", tone: "amber", items: ["Java 21 · Spring Boot 3.5, web only", "Jackson for JSON", "the pipeline has no Spring imports"] },
-      { title: "Model", icon: "🧠", tone: "teal", items: ["Qwen2.5-7B-Instruct, Q4_K_M", "llama.cpp on CPU, 12,288-token context", "any OpenAI-style endpoint by config"] },
+      { title: "Model", icon: "🧠", tone: "teal", items: ["committed: Groq qwen3.8-27b · ~2 s a call", "first run: Qwen2.5-7B on llama.cpp, CPU", "switched by configuration only"] },
       { title: "Desk", icon: "🖥", tone: "green", items: ["React 19 · TypeScript 5.9 · Vite 7", "no component library · lucide icons", "Vitest + Testing Library"] },
     ],
     footer: "files, not a database: fixtures/, out/, review-state/ · one process, one port, no CORS",
     beats: B(
       "The stack. The brief fixed Java twenty one, Spring Boot three, and React nineteen with TypeScript. Spring is used only for the web layer. The pipeline itself is plain Java with Jackson, and it imports nothing from Spring. That matters for replay, as you'll see.",
-      "The model is Qwen two point five seven B instruct, four bit quantized, on llama dot c p p, on a CPU, with a twelve thousand token context. It's free and local. And any OpenAI style chat completions endpoint works by configuration. The README documents Groq.",
+      "The model. The committed outputs come from Qwen three point eight, twenty seven B, on Groq's free tier: about two seconds a call, and it can read the scanned PDF. The first submission ran Qwen two point five, seven B, four bit, on llama dot c p p on a CPU: free and local, but minutes per report. Switching between them was configuration only.",
       "The desk is React nineteen, TypeScript, and Vite. No component library, just lucide icons, and Vitest for tests.",
       { say: "And storage is files. Fixtures, outputs, review state. The start script builds the React app into dist, packages the jar, and Spring serves both from one port. So there's no CORS to configure.", tone: "key" },
     ),

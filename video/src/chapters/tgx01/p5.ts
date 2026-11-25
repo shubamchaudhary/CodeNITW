@@ -13,14 +13,14 @@ export const p5: Scene[] = [
     title: "Thirty stretch points, item by item",
     firstItemStep: 1,
     items: [
-      { icon: "📑", text: "Stretch reports (10)", sub: "S01, S02, S04 extracted · S03 image-only: unsupported_format, as allowed" },
+      { icon: "📑", text: "Stretch reports (10)", sub: "all four extracted · S03 transcribed from its page image first" },
       { icon: "👯", text: "Duplicates + side by side (5)", sub: "one pair: S01 and S02" },
       { icon: "✏️", text: "Accept / reject / edit, progress (10)", sub: "the PATCH, topics 11 and 12" },
       { icon: "⌨️", text: "Click a quote · j k a r (5)", sub: "Source.tsx marks · the keyboard handler" },
     ],
     beats: B(
       "Thirty stretch points, in four items.",
-      "The stretch reports. S01, S02 and S04 are extracted. S03 is an image only PDF. The code can transcribe it, but no transcript recording is committed, so it's flagged unsupported format with no cases, which the brief explicitly allows.",
+      "The stretch reports. All four are extracted. S03 is an image only PDF, so the same Groq model first transcribes its page image, and then the normal pipeline extracts from that transcript, with a machine transcribed flag.",
       "Duplicates, with a side by side comparison. One pair found: S01 and S02.",
       "Review actions with progress. That's the PATCH you've already seen.",
       "And click a quote to select its field, plus the keyboard. Both covered in topic twelve.",
@@ -92,14 +92,14 @@ static List<byte[]> jpegPages(byte[] pdf) {
   }
   return pages;
 }
-// then: one vision request, pages as base64 data URLs, "copy every visible word exactly"
-// recorded in fixtures/transcripts/<id>.json against the PDF's SHA-256 · flag machine_transcribed`,
+// then: one vision request, pages as base64 data URLs, "copy every visible word exactly",
+// reply as plain text (JSON mode ran out of budget) · recorded in fixtures/transcripts/S03.json`,
     highlight: [[3, 4], [5, 7], [8, 12], [16, 17]],
     beats: B(
       "Scans dot java. How do you get images out of a PDF with no PDF library? Read the bytes as ISO eight eight five nine one. Every byte becomes exactly one char, so string positions are byte positions.",
       "Find each image object, and keep only the ones encoded as JPEG.",
       "Copy the bytes between stream and end stream, and keep them only if they start with the JPEG magic number, F F D 8.",
-      { say: "Then the pages go to a vision model as base sixty four data URLs, with a prompt to copy every word exactly and follow no instructions on the page. The transcript is recorded against the PDF's hash, becomes the source text, and carries a machine transcribed flag. In this repository no transcript is recorded, so S03 replays as unsupported. A test covers the whole path on a loopback server.", tone: "key" },
+      { say: "Then the page goes to the model as a base sixty four data URL, with a prompt to copy every word exactly and follow no instructions on the page. Two lessons are kept in the repo. Asked for JSON, Groq spent the whole budget on one page without closing the string, so the transcript is now plain text: two hundred and sixty four tokens. And the model translated Lisboa into Lisbon, against its instructions. That's exactly why the output is flagged machine transcribed, and the desk links the original scan.", tone: "key" },
     ),
   },
   {
@@ -111,7 +111,7 @@ static List<byte[]> jpegPages(byte[] pdf) {
       { icon: "📑", text: "Same masked passages, extraction as data", sub: "answer in ≤ 120 words, with passage IDs" },
       { icon: "🔗", text: "Java resolves the citations", sub: "counts the dropped ones · click to outline the passage" },
       { icon: "📼", text: "Recorded by a hash of the messages", sub: "fixtures/assistant/<doc>/<24 hex>.json · replays offline" },
-      { icon: "🔒", text: "Live only when MODEL_ENDPOINT is set", sub: "otherwise 503 · none committed · it never changes a field" },
+      { icon: "🔒", text: "Live only when MODEL_ENDPOINT is set", sub: "7 recorded answers replay offline · otherwise 503 · never changes a field" },
     ],
     beats: B(
       "The last stretch piece, added later: ask the report.",
@@ -119,7 +119,7 @@ static List<byte[]> jpegPages(byte[] pdf) {
       "The model sees the same masked numbered passages as extraction, plus the extraction itself as data, and must answer in at most a hundred and twenty words, citing passage numbers.",
       "Java resolves those citations, and reports how many it dropped. Click one, and that passage is outlined in the source.",
       "Every exchange is recorded under a hash of the exact messages, so a recorded answer replays offline.",
-      { say: "And a live model is used only when the model endpoint variable is set. By default the desk makes no network call, and a new question gets a five oh three. No recordings are committed. And the assistant can never change a field. It's a second look, aimed at exactly the error the scorer exposed: does anything contradict this age?", tone: "key" },
+      { say: "And a live model is used only when the model endpoint variable is set. By default the desk makes no network call. Seven recorded answers replay offline, and any other question gets a five oh three. The assistant can never change a field. And here's the best one: asked whether anything contradicts D05's age, it cites both passages, the fifty four and the forty five. The exact conflict extraction missed.", tone: "key" },
     ),
   },
   check({
@@ -137,33 +137,33 @@ static List<byte[]> jpegPages(byte[] pdf) {
     kind: "numbers",
     title: "On the four public reports",
     items: [
-      { value: "54 / 64", label: "field score", sub: "84.4%, with confidence penalties", tone: "green" },
-      { value: "61 / 61", label: "extracted fields grounded", sub: "official checker", tone: "blue" },
-      { value: "2 · 1 · 0", label: "wrong at high · medium · low", sub: "two known values withheld", tone: "red" },
-      { value: "295", label: "exact Unicode spans", sub: "all 12 reports · tools/verify.py", tone: "amber" },
+      { value: "61 / 64", label: "field score (Groq)", sub: "95.3% · the local 7B run: 54 / 64", tone: "green" },
+      { value: "63 / 63", label: "extracted fields grounded", sub: "official checker", tone: "blue" },
+      { value: "1 · 0 · 0", label: "wrong at high · medium · low", sub: "local run: 2 · 1 · 0", tone: "red" },
+      { value: "245", label: "exact Unicode spans", sub: "all 12 reports, S03's transcript too", tone: "amber" },
     ],
-    footer: "12 reports, 11 cases, 176 fields: 164 extracted, 12 unknown · model: median 5 min a report, D08 28 min",
+    footer: "12 cases, 192 fields: 187 extracted, 5 unknown · 1.75 s a call (local: about 5 minutes)",
     beats: B(
-      "The numbers. Fifty four out of sixty four on the four public reports. Eighty four point four percent, with the confidence penalties applied.",
-      "Sixty one of sixty one extracted fields grounded, according to the official checker.",
-      "Two wrong at high confidence, one at medium, none at low. And two values withheld that the answers had.",
-      "Across all twelve reports, the independent verifier checked two hundred and ninety five spans, character for character.",
-      "Eleven cases, a hundred and seventy six fields, a hundred and sixty four extracted, twelve unknown. And on the local CPU, a median of about five minutes per report. D08 took twenty eight.",
+      "The numbers, for the committed run. Sixty one out of sixty four on the four public reports. Ninety five point three percent, with the confidence penalties applied. The local seven B run scored fifty four.",
+      "Sixty three of sixty three extracted fields grounded, according to the official checker.",
+      "One wrong at high confidence, none at medium or low. The local run had two, one and none.",
+      "Across all twelve reports, the independent verifier checked two hundred and forty five spans, character for character, including the spans into S03's transcript.",
+      { say: "Twelve cases, a hundred and ninety two fields, a hundred and eighty seven extracted, five unknown. At a median of under two seconds a call. And the caveat you say yourself: the four public answers informed the switch to Groq, so sixty one is not a clean held out score. The four hidden reports are the real test.", tone: "key" },
     ),
   },
   {
     kind: "compare",
-    title: "Where the ten points went",
+    title: "Where the points went",
     cols: [
-      { title: "Wrong terms", icon: "🩺", tone: "red", items: ["D01: a broad 'swelling' term · −2 high", "D02: jaundice, but not the diagnosed liver injury · −1", "the gate checks presence, not the right term"] },
-      { title: "A missed conflict", icon: "⚖️", tone: "red", items: ["D05: header says 54, narrative 45", "picked 54 at high · −2", "a span check can't see across the report"] },
-      { title: "Missed empties", icon: "∅", tone: "amber", items: ["D03: 'no regular medicine' → should be []", "D05: concomitants omitted", "unknown scores 0, not −"] },
+      { title: "Still lost: D05", icon: "⚖️", tone: "red", items: ["header says 54, narrative 45", "picked 54 at high · −2 instead of +1", "a span check can't see across the report"] },
+      { title: "Local run only: terms", icon: "🩺", tone: "amber", items: ["D01: a broad 'swelling' term · −2", "D02: jaundice, not the liver injury · −1", "fixed by the 27B model, same Java"] },
+      { title: "Local run only: empties", icon: "∅", tone: "amber", items: ["D03: 'no regular medicine' → []", "D05: concomitants omitted", "both fixed in the Groq run"] },
     ],
     footer: "say each one plainly: the decision, the consequence, and the limit",
     beats: B(
-      "And where the ten points went. Wrong terms. D01 listed a broad swelling term, at high: minus two. D02 listed jaundice, but missed the diagnosed liver injury: minus one. The gate checks that a term is present, not that it's the right clinical term. And a diagnosis beats its symptoms was in the prompt; a seven billion parameter model didn't follow it.",
-      { say: "A missed conflict. D05's header says fifty four, the narrative says forty five. The model picked fifty four, at high. Minus two. A check on one span can't see a contradiction across the report.", tone: "key" },
-      "And missed empty lists. D03 says there was no regular medicine. The right answer is an empty list. The model said nothing, so unknown, zero points. Same for D05's other medicines.",
+      { say: "Where the points went. One loss is left, and it's in both runs. D05's header says fifty four, the narrative says forty five. The model picked fifty four, at high. Minus two instead of plus one: that's the three points. A check on one quote at a time can't see a contradiction elsewhere in the report.", tone: "key" },
+      "The local run also lost points on terms. D01 listed a broad swelling term at high, and D02 listed jaundice but missed the diagnosed liver injury. The gate checks that a term is present, not that it's the right clinical term. The bigger model fixed both, with the same Java.",
+      "And missed empty lists. D03 says there was no regular medicine, so the right answer is an empty list. The local model left it unknown, and missed D05's other medicines too. Groq got both.",
       "In the room, say each one plainly. The decision, the consequence, and the limit.",
     ),
   },
@@ -180,7 +180,7 @@ static List<byte[]> jpegPages(byte[] pdf) {
     beats: B(
       "How you'd fix that class of error, if they ask.",
       "First, a fresh synthetic set: reports where the ages agree, where they conflict, and where two ages belong to different people.",
-      "Then try a second evidence check for disputed facts. Or ask the model for every mention of the age, and let Java compare them.",
+      "Then make a second pass part of extraction for disputed facts. The recorded assistant answer already proves a second look can see it: it cites both ages. Or ask the model for every mention of the age, and let Java compare them.",
       "Measure both directions. Missed conflicts, false conflicts, and the extra calls per report.",
       { say: "And never tune on the four public answers. That's evaluation leakage. Keep the baseline recordings, so the before and after are both replayable.", tone: "key" },
     ),
@@ -209,12 +209,12 @@ static List<byte[]> jpegPages(byte[] pdf) {
     after: "the brief invited AI tools · what you own is the understanding, and the evidence",
     beats: B(
       "The attack you must not dodge. Did you write this, or did an AI?",
-      { say: "Be straight. The brief invited AI tools. Codex wrote the first implementation and tests. A later Claude Code session added the catalog check, the not evaluated rows, the assistant, and CI. Qwen only extracts. What you own is the understanding. You can trace any field from bytes to pixels, explain every lost point, and change the code live. And you point at the evidence: the recorded requests, offline replay, the verifier, and the raw scorer output.", tone: "key" },
+      { say: "Be straight. The brief invited AI tools. Codex wrote the first implementation and tests. A later Claude Code session added the catalog check, the not evaluated rows, the assistant, scan transcription, the array reply format, and CI, and ran the Groq experiments. The language models only extract. What you own is the understanding. You can trace any field from bytes to pixels, explain every lost point, and change the code live. And you point at the evidence: the recorded requests, offline replay, the verifier, and the raw scorer output.", tone: "key" },
     ),
   },
   check({
     topic: "results",
-    q: "Every extracted public field is grounded, 61 of 61, yet the score is 54 of 64. Why?",
+    q: "Every extracted public field is grounded, 63 of 63, yet the score is 61 of 64. Why?",
     options: ["The checker is wrong", "Grounding proves the quote exists, not that it supports that value for that patient", "Some offsets were off by one", "Unknown fields count as wrong"],
     answer: 1,
     a: "Grounding proves the quoted text is where we say it is; it doesn't prove it supports the value, so a correctly cited wrong reading (D05's header age) still loses points.",
@@ -229,7 +229,7 @@ static List<byte[]> jpegPages(byte[] pdf) {
     firstItemStep: 1,
     items: [
       { icon: "0", text: "0–10 · one field, end to end", sub: "D01's age: catalog → passage 8 → fixture → [201, 347) → the desk" },
-      { icon: "1", text: "10–20 · the code", sub: "Prompt · Evidence · Extraction · Rules · a fixture · start the live run" },
+      { icon: "1", text: "10–20 · the code", sub: "Prompt · Evidence · Extraction · Rules · D01's fixture · the live run" },
       { icon: "2", text: "20–40 · the catalog change", sub: "edit, replay, two different unknown notes, the new control" },
       { icon: "3", text: "40–55 · the new report", sub: "its output, replay, verify the offsets, what needs a reviewer" },
       { icon: "4", text: "55–60 · one focused test", sub: "and the commands that reproduce everything" },
@@ -237,7 +237,7 @@ static List<byte[]> jpegPages(byte[] pdf) {
     beats: B(
       "Here's a plan for the sixty minutes.",
       "The first ten: open the desk, select D01's age, and follow it. The catalog, passage eight, the fixture, the span from two oh one to three forty seven, and the highlight. The board from topic seven.",
-      "Ten to twenty: the code. Prompt, Evidence, Extraction, Rules, one fixture. And start the live extraction of their new report early, because on a CPU it takes minutes.",
+      "Ten to twenty: the code. Prompt, Evidence, Extraction, Rules, and D01's fixture with its two four twenty nines. And run the live extraction of their new report. On Groq that's seconds.",
       "Twenty to forty: the catalog change. Edit, replay, show the two different unknown notes, and use the new control.",
       "Forty to fifty five: the new report's output. Replay it, verify the offsets, and say which values need a reviewer.",
       "And the last five minutes: run one focused test, and show the commands that reproduce everything.",
@@ -249,7 +249,7 @@ static List<byte[]> jpegPages(byte[] pdf) {
     lang: "bash",
     code: `New-Item -ItemType Directory -Force .local/live-docs | Out-Null
 # save their report as .local/live-docs/LIVE01.txt  (UTF-8, no BOM)
-npm run model        # own terminal: llama-server on 127.0.0.1:8931
+# load the Groq settings + key into the shell (.env.example), or: npm run model (local)
 java -jar target/case-intake.jar --mode=live   --docs=.local/live-docs \\
      --fixtures=.local/live-fixtures --out=.local/live-out
 java -jar target/case-intake.jar --mode=replay --docs=.local/live-docs \\
@@ -259,10 +259,10 @@ java -jar target/case-intake.jar --server.port=8081 \\
      --intake.docs=.local/live-docs --intake.out=.local/live-out`,
     highlight: [[1, 3], [4, 5], [6, 8], [9, 10]],
     beats: B(
-      "Task one, a new report. Save it in a scratch folder, as UTF eight without a byte order mark, and start the model server in its own terminal.",
+      "Task one, a new report. Save it in a scratch folder, as UTF eight without a byte order mark. Load the Groq settings and the key into the shell, from the env file. Or start the local model server instead.",
       "Run live, with scratch fixtures and a scratch output folder. The committed outputs are never touched.",
-      { say: "Then replay the same recording into another folder, and verify. That proves two things at once: the new recording reproduces, and every span is exact. In rehearsal: one case, sixteen extracted fields, seventeen spans verified, and identical live and replay output.", tone: "key" },
-      "And open it in a second desk on port eighty eighty one, and review it with them. With a hosted key instead, set the four model variables, and on Groq's free tier, a smaller token budget.",
+      { say: "Then replay the same recording into another folder, and verify. That proves two things at once: the new recording reproduces, and every span is exact. In the local rehearsal: one case, sixteen extracted fields, seventeen spans verified, and identical live and replay output.", tone: "key" },
+      "And open it in a second desk on port eighty eighty one, and review it with them. On Groq, remember the fifteen hundred token budget, and that a four twenty nine is normal and retried.",
     ),
   },
   {
@@ -327,27 +327,27 @@ java -jar target/case-intake.jar --server.port=8081 \\
     q: "The 60-second pitch",
     lines: [
       "Folio turns free-text medicine-safety reports into reviewable cases.",
-      "A local model proposes values for a configurable field catalog and cites numbered passages; Java validates every value, resolves each citation to exact code-point offsets, and lowers confidence the wording doesn't support.",
-      "Every model exchange is recorded, so the whole pipeline replays offline from a fresh clone with just a JDK.",
+      "A model proposes values for a configurable field catalog and cites numbered passages; Java validates every value, resolves each citation to exact code-point offsets, and lowers confidence the wording doesn't support.",
+      "Every exchange is recorded, so the pipeline replays offline from a fresh clone with just a JDK; moving from a local 7B to a hosted 27B model was configuration.",
       "A Spring API serves a React desk where a reviewer sees each value next to its quote and accepts, rejects or edits it, with optimistic concurrency.",
-      "54 of 64 on the public reports, every extracted field grounded, and I can show you exactly where the other ten points went.",
+      "61 of 64 on the public reports, every extracted field grounded, and I can show you exactly where the other three points went.",
     ],
     beats: B(
       { say: "And the sixty second pitch. Say it with me.", tone: "ask" },
       "Folio turns free text medicine safety reports into reviewable cases.",
-      "A local model proposes values for a configurable field catalog and cites numbered passages. Java validates every value, resolves each citation to exact code point offsets, and lowers any confidence the wording doesn't support.",
-      "Every model exchange is recorded, so the whole pipeline replays offline, from a fresh clone, with just a JDK.",
+      "A model proposes values for a configurable field catalog and cites numbered passages. Java validates every value, resolves each citation to exact code point offsets, and lowers any confidence the wording doesn't support.",
+      "Every model exchange is recorded, so the whole pipeline replays offline, from a fresh clone, with just a JDK. And moving from a local seven B model to a hosted twenty seven B one was a configuration change.",
       "A Spring API serves a React desk, where a reviewer sees each value next to its highlighted quote, and accepts, rejects or edits it, with optimistic concurrency on every decision.",
-      { say: "Fifty four of sixty four on the public reports, every extracted field grounded. And I can show you exactly where the other ten points went.", tone: "key" },
+      { say: "Sixty one of sixty four on the public reports, every extracted field grounded. And I can show you exactly where the other three points went.", tone: "key" },
     ),
   },
   check({
     topic: "the live session",
-    q: "Mid-session, the new report's live call is still running after five minutes. What do you do?",
-    options: ["Restart it with a shorter timeout", "Keep going with replay work (the catalog drill, evidence on the desk), then come back to it", "Switch to a hosted provider mid-run", "Edit the fixture by hand"],
+    q: "During Task 1, Groq answers 429 and the run stops with \"Quota wait is 90 seconds\". What do you do?",
+    options: ["Delete the fixture and start over", "Rerun the same command later; meanwhile do the catalog drill on replay", "Edit the fixture to add a 200 by hand", "Switch to a fresh fixtures folder at once"],
     answer: 1,
-    a: "Keep going with something that doesn't need it: the catalog drill on replay, or evidence navigation. The CPU takes minutes per report (median about 5, D08 about 28). Then replay, verify and review when it finishes.",
-    aSay: "B. Keep going with something that doesn't need it. The catalog drill runs on replay, and the desk works on the committed outputs. The CPU takes minutes per report, median about five. When it finishes, replay, verify and review. And never edit a fixture by hand.",
+    a: "Rerun the same command once the quota resets: the failed attempts stay in the fixture and new ones are appended. Meanwhile do the catalog drill, which runs on replay and needs no model.",
+    aSay: "B. The failed attempts are already recorded, and the same command resumes later, appending new attempts. Meanwhile, do the catalog drill. It runs on replay and needs no model. And never edit a fixture by hand.",
   }),
   {
     kind: "big",
