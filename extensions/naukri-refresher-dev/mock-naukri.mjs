@@ -37,9 +37,17 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 function groqAnswer(content) {
   if (content.includes('\nBACKEND SUMMARY\n')) {
     const jd = content.split('\nJOB DESCRIPTION\n')[1];
-    const duty = jd.match(/\b(?:LLM|RAG)\b/i)?.[0] || jd.match(/\bSpring Boot\b/i)?.[0] || '';
-    const profile = /LLM|RAG/i.test(duty) ? 'ai' : duty ? 'backend' : 'neither';
-    return { profile, score: duty ? 85 : 25, reason: duty ? 'The JD names ' + duty : 'No target stack in the duties.', duty, evidence: duty };
+    const lines = jd.split('\n').map(line => line.replace(/^\[\d+\] /, ''));
+    const primary = /\b(?:LLM|RAG)\b/i.test(jd) ? 'genai_app' : /\bSpring Boot\b/i.test(jd) ? 'java_backend' : 'other';
+    const duties = [], stack = [];
+    if (primary !== 'other') {
+      lines.forEach((line, i) => {
+        if (i && /\b(build|develop|design)\b/i.test(line)) duties.push(i);
+        const terms = RATE_SKILLS.flatMap(s => line.match(new RegExp('\\b' + esc(s) + '\\b', 'i'))?.[0] || []);
+        if (terms.length) stack.push({ line: i, terms });
+      });
+    }
+    return { primary, score: primary === 'other' ? 25 : 85, reason: 'Rated the primary work in the JD.', duties, stack };
   }
   const resume = (content.split('\nJOB:\n')[0] || '').split('RESUME SUMMARY (documented evidence only):\n')[1] || '';
   const job = content.split('\nJOB:\n')[1] || '';
@@ -166,7 +174,9 @@ const JDS = {
 function jdFor(l) {
   if (JDS[l.jobId]) return JDS[l.jobId];
   const tags = String(l.tagsAndSkills || '').split(',').map((t) => t.trim()).filter(Boolean);
-  return `<p>We are hiring a ${l.title} at ${l.companyName}.</p><p><strong>Requirements</strong></p><ul>${tags.map((t) => `<li>Hands-on experience with ${t}</li>`).join('')}</ul>`
+  const work = /\b(?:LLM|RAG)\b/i.test(tags.join(' ')) ? 'Build production LLM applications.' :
+    tags.includes('Spring Boot') ? 'Build backend services using Spring Boot.' : 'Develop software for our customers.';
+  return `<p>We are hiring a ${l.title} at ${l.companyName}.</p><p>${work}</p><p><strong>Requirements</strong></p><ul>${tags.map((t) => `<li>Hands-on experience with ${t}</li>`).join('')}</ul>`
     + '<p><strong>About us</strong></p><p>We work with Salesforce, SAP and ServiceNow customers.</p>';
 }
 

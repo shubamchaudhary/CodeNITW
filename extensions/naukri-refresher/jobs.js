@@ -106,8 +106,10 @@ const saveState = (st) => auditSave(true, Date.now(), { [K]: st });
 function rollDay(st, now) {
   const day = trackerDay(now);
   if (st.rulesVersion !== RULES_VERSION) {
+    const queue = st.rulesVersion === 9 ? st.queue.filter(c => c?.job?.id) : [];
     st = {
-      ...st, rulesVersion: RULES_VERSION, rateQueued: 0, rateRetryAt: null, pending: [], rated: {}, seen: {}, queue: [], unknown: {}, reasons: {}, memo: {}, sweep: null, onSite: rememberOnSite(st),
+      ...st, rulesVersion: RULES_VERSION, pending: [], rated: {},
+      seen: Object.fromEntries(queue.map(c => [c.job.id, { t: now, k: 2 }])), queue, unknown: {}, reasons: {}, memo: {}, sweep: null, onSite: rememberOnSite(st),
       daily: { ...(st.daily || {}), read: 0, kept: { backend: 0, ai: 0 } },
     };
   }
@@ -168,7 +170,7 @@ function auditOf(v, jd, why) {
   return {
     title: job.title, company: job.company, loc: job.location, exp: job.expText, sal: job.salaryText, posted: job.footer, url: job.url,
     stage: jd ? 'jd' : 'card', k: 0, w: why,
-    have: null, total: null, score: null, rank: null,
+    have: null, total: null, supporting: null, match: null, score: null, rank: null,
     ...(jd && jd.apply ? { apply: jd.apply } : {}),
   };
 }
@@ -180,6 +182,7 @@ const onRatedFor = (st, rating, run) => (item, ai, dbg, localTrace) => {
   const keep = profile !== 'neither' && !ai.rej;
   auditNote(id, { title: item.job.title, company: item.job.company, url: item.o.url, stage: 'jd',
     pending: false, k: Number(keep), list: keep ? profile : null, ai: ai.s, rel: ai.rel, aiWhy: ai.why,
+    match: ai.match, have: ai.m?.[0] ?? null, total: ai.m?.[1] ?? null, supporting: ai.supporting ?? null, score: ai.fit ?? null,
     w: keep ? '' : ai.why, rank: ai.s, pay: ai.pay.from ? ai.pay : null });
   auditDoc(id, { jd: item.text, dbg: { ...dbg, ...localTrace, exact: true } });
   const t = Date.now();
@@ -856,7 +859,7 @@ async function findJobs(trigger) {
     // Job pages an earlier run didn't get to come first.
     if (await readQueue()) {
       outer: for (;;) {
-        const open = searches.filter((s) => !sw.over[s.k]);
+        const open = searches.filter((s) => !sw.over[s.k]).sort((a, b) => (sw.next[a.k] || 1) - (sw.next[b.k] || 1));
         if (!open.length) { sw.done = true; sw.finished = Date.now(); break; } // every search read to the end
         for (const s of open) {
           if (!budget() || !jdBudget()) {

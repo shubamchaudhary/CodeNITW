@@ -12,7 +12,7 @@ export const RADAR_API_MATCH = `${SITE_ORIGIN}/*`;
 export const SITE_JOBS_URL = `${SITE_ORIGIN}/job-tracker?tab=openings`;
 
 // Bump when the rules change: the finder then forgets today's verdicts and reads everything again.
-export const RULES_VERSION = 9;
+export const RULES_VERSION = 10;
 
 export const RULES = Object.freeze({
   maxAgeH: 48, // the last 48 hours (Just now, Few hours ago, 1 day ago); "2 days ago" is out
@@ -61,7 +61,15 @@ export const SCOPES = Object.freeze(['both', 'backend', 'ai']);
 // several searches find is read once.
 export const SEARCHES = Object.freeze([
   { k: 'java spring boot developer', profile: 'backend' },
+  { k: 'generative ai engineer', profile: 'ai' },
   { k: 'java backend developer', profile: 'backend' },
+  { k: 'genai developer', profile: 'ai' },
+  { k: 'langgraph', profile: 'ai' },
+  { k: 'spring boot microservices', profile: 'backend' },
+  { k: 'rag developer', profile: 'ai' },
+  { k: 'llm engineer', profile: 'ai' },
+  { k: 'agentic ai', profile: 'ai' },
+  { k: 'langchain', profile: 'ai' },
   { k: 'java developer', profile: 'backend' },
   { k: 'java microservices', profile: 'backend' },
   { k: 'spring boot', profile: 'backend' },
@@ -70,23 +78,15 @@ export const SEARCHES = Object.freeze([
   { k: 'python developer', profile: 'backend' },
   { k: 'python backend developer', profile: 'backend' },
   { k: 'python fastapi developer', profile: 'backend' },
-  { k: 'spring boot microservices', profile: 'backend' },
   { k: 'full stack developer', profile: 'backend' },
   { k: 'software engineer', profile: 'backend' },
   { k: 'software developer', profile: 'backend' },
   { k: 'sde', profile: 'backend' },
   { k: 'api developer', profile: 'backend' },
-  { k: 'generative ai engineer', profile: 'ai' },
-  { k: 'genai developer', profile: 'ai' },
-  { k: 'llm engineer', profile: 'ai' },
   { k: 'ai engineer', profile: 'ai' },
   { k: 'ai developer', profile: 'ai' },
   { k: 'ai ml engineer', profile: 'ai' },
-  { k: 'agentic ai', profile: 'ai' },
-  { k: 'langchain', profile: 'ai' },
-  { k: 'langgraph', profile: 'ai' },
   { k: 'retrieval augmented generation', profile: 'ai' },
-  { k: 'rag developer', profile: 'ai' },
   { k: 'machine learning engineer', profile: 'ai' },
   { k: 'nlp engineer', profile: 'ai' },
   { k: 'prompt engineer', profile: 'ai' },

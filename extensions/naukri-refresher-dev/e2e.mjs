@@ -728,7 +728,7 @@ async function suite(d, mock) {
     assert.ok(pages.some((p) => p.path === '/java-spring-boot-developer-jobs-2'), 'went on to page 2: Naukri says there are more');
     assert.ok(!pages.some((p) => p.path === '/java-spring-boot-developer-jobs-3'), "stopped once Naukri's total was read");
     // Every page of every search, one page of each search in turn.
-    assert.deepEqual(pages.map((p) => p.path), ['/java-spring-boot-developer-jobs', '/software-engineer-jobs', '/generative-ai-engineer-jobs', '/java-spring-boot-developer-jobs-2']);
+    assert.deepEqual(pages.map((p) => p.path), ['/java-spring-boot-developer-jobs', '/generative-ai-engineer-jobs', '/software-engineer-jobs', '/java-spring-boot-developer-jobs-2']);
     assert.equal(s.sweep && s.sweep.done, true, JSON.stringify(s.sweep));
     assert.deepEqual([s.sweep.over, s.sweep.searches, s.sweep.pages], [3, 3, 4]);
     assert.deepEqual(mock.jobPages().map(p => p.path.slice(-12)).sort(), [...eligible].sort());
@@ -759,7 +759,7 @@ async function suite(d, mock) {
     assert.doesNotMatch(page.next, /Not responding/, page.next);
     assert.match(page.rules, /Every listing, not a sample/);
     assert.match(page.rules, /last 48 hours/);
-    assert.match(page.rules, /both résumé summaries/);
+    assert.match(page.rules, /at least 80% required stack coverage/);
     assert.match(page.rules, /Unknown experience goes to Groq/);
   });
 
@@ -905,11 +905,13 @@ async function suite(d, mock) {
     const posted = mock.state.radarPosts.flatMap(p => p.openings);
     const byId = Object.fromEntries(posted.map(o => [o.openingId, o]));
     for (const o of posted) {
-      assert.equal(o.ai.v, 4);
+      assert.equal(o.ai.v, 5);
       assert.ok(o.dbg.p.includes('[Backend profile summary]'));
       assert.ok(!o.dbg.p.includes('Documented skills:'));
     }
     assert.equal(byId[EXPECT.idOf(41)].profile, 'ai');
+    assert.equal(byId[EXPECT.idOf(41)].ai.fit, 100);
+    assert.equal(byId[EXPECT.idOf(41)].ai.match, true);
     assert.equal(byId[EXPECT.idOf(11)].profile, 'ai', 'a backend search can discover AI work');
     assert.equal(byId[EXPECT.idOf(61)].profile, 'backend');
     assert.equal(byId[EXPECT.idOf(31)].profile, 'backend', 'a short JD was read from the correct job record');

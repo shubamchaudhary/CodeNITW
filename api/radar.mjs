@@ -253,6 +253,8 @@ function aiOf(a) {
   return {
     s,
     m,
+    ...(a.v >= 5 && { match: a.match === true }),
+    ...(Array.isArray(a.supporting) && a.supporting.length === 2 && { supporting: a.supporting.map(n => num(n) ?? 0) }),
     have: list(a.have, 5),
     part: list(a.part, 3),
     miss: list(a.miss, 4),

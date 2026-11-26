@@ -88,6 +88,7 @@ function syncControls() {
 function decisionCell(e) {
   const td = el('td');
   if (e.pending) td.append(el('span', e.w, 'muted small'));
+  else if (e.k && e.match === false) td.append(el('span', 'Other candidate for review', 'muted'));
   else if (e.k) td.append(el('span', e.sent ? '✓ kept, on your site' : '✓ kept', 'ok'));
   else td.append(el('span', `✗ ${e.w || 'left out'}`, 'err'), el('div', e.stage === 'jd' ? 'after reading its JD' : 'on the card', 'muted small'));
   return td;
