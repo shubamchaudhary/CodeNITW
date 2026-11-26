@@ -216,7 +216,8 @@ export async function loadQueue() {
   if (!Array.isArray(q?.items)) return [];
   const items = q.items.filter((i) => i?.id && i.text && i.job && i.o);
   if (q.rulesVersion === RULES_VERSION) return items;
-  return items.map((i) => ({ ...i, joint: true }));
+  // Retry the original JD under the new prompt, including text clipped on a previous attempt.
+  return items.map(({ promptChars, lastError, tries, ...item }) => ({ ...item, joint: true }));
 }
 
 /** Keep each eligible finder listing until it has a verdict for the current summaries. */
@@ -363,7 +364,7 @@ export function startRater(queue, ctx) {
       const jd = `${item.job.title}\n${(item.skills || []).join(', ')}\n${item.text}`;
       const pc = ctx.payFor ? null : payCache && payCache[payKey(item.job.company)];
       const web = ctx.payFor ? ctx.payFor(item) : pc && pc.hi ? pc : null;
-      const ai = item.joint ? finderVerdict(r.answer, listing, summaries) : scoreRating(r.answer, { resume, jd, duties: item.text, experience: item.job.exp, profile: item.profile, posted: item.job.pay || null, web });
+      const ai = item.joint ? finderVerdict(r.answer, listing, summaries, resumes) : scoreRating(r.answer, { resume, jd, duties: item.text, experience: item.job.exp, profile: item.profile, posted: item.job.pay || null, web });
       if (ai) {
         failsInRow = 0;
         k.ok += 1;
@@ -386,7 +387,7 @@ export function startRater(queue, ctx) {
       }
       r.ok = false;
       r.kind = 'answer';
-      r.msg = item.joint ? 'the score, profile or quoted evidence could not be verified' : "the model's answer had no requirements list";
+      r.msg = item.joint ? 'the activity, score or required technology citations could not be verified' : "the model's answer had no requirements list";
     }
     k.last = r.msg;
     counts.last = { t: Date.now(), kind: r.kind, msg: r.msg };

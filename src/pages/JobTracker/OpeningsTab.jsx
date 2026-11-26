@@ -110,12 +110,13 @@ const preferredPay = (o) => o.pay?.verdict === "meets" || o.ai?.pay?.ok === "ok"
 const byRating = (a, b) => aiScore(b) - aiScore(a) || Number(preferredPay(b)) - Number(preferredPay(a)) || byMatch(a, b);
 // Older decisions and lower scores are available through Review other candidates.
 const MIN_SHOW = 70;
-const finderMatch = (o) => o.ai?.v >= 4 && !o.ai.rej && aiScore(o) >= MIN_SHOW;
+const finderMatch = ({ ai }) => ai?.v >= 5 && ai.match === true && !ai.rej;
 const lowRated = (o) => aiScore(o) > 0 && aiScore(o) < MIN_SHOW;
 // What the AI rating rests on, for its tooltip.
 const LEVEL_TEXT = { junior: "junior", mid: "mid-level", senior: "senior", lead: "lead" };
 const PAY_FROM = { posted: "the salary it shows", web: "a web lookup of the company's pay at about 2 years", model: "what the LLM knows of the company", guess: "the LLM's guess (not counted)" };
 function aiHint(ai) {
+  if (ai.v >= 5) return [ai.why, ai.supporting?.[1] && `Supporting stack ${ai.supporting[0]}/${ai.supporting[1]}`, ai.have?.length && "Covered: " + ai.have.join(", "), ai.miss?.length && "Missing: " + ai.miss.join(", ")].filter(Boolean).join("\n");
   if (ai.v >= 4) return `Groq rated this job ${ai.s}/100 against both profiles. ${ai.why || ""}`;
   const lines = [
     ai.rel != null
@@ -557,6 +558,9 @@ function FinderCard({ o, n, onSkip, onApplied }) {
           {o.pay?.verdict === "unknown" ? "pay not shown" : o.pay?.text || PAY_LABEL.unknown}
           {["meets", "target", "negotiable"].includes(o.pay?.verdict) && " · " + ({meets: "Preferred", target: "Meets target", negotiable: "Negotiable"})[o.pay.verdict]}
         </Tag>
+        {o.ai?.v >= 5 && o.ai.m?.[1] > 0 && <Tag cls={finderMatch(o) ? "bg-success-subtle text-success-fg" : "bg-surface-hover text-fg"} title={aiHint(o.ai)}>
+          Required stack {o.ai.m[0]}/{o.ai.m[1]} · {o.ai.fit}%
+        </Tag>}
         {o.ai?.v >= 4 ? null : <Tag
           cls={o.coverage >= 80 ? "bg-success-subtle text-success-fg  " : "bg-surface-hover text-fg  "}
           title={
@@ -980,7 +984,7 @@ export default function OpeningsTab({ finderExt, queuedUrls, takenRoles, dismiss
           </div>
           <div className="text-xs text-fg-subtle">
             The finder checks posting date and experience, then sends each eligible job description to Groq with both profile summaries.
-            Groq selects Java/Spring Boot, GenAI or neither. Matches score 70 or higher. Use Review other candidates for weaker profile fits.
+            Matches require primary Java backend or GenAI application work. Your résumé must cover at least 80% of the required stack, including at least 80% of the supporting technologies. Groq&apos;s score ranks those matches. Review other candidates shows weaker fits, disputed decisions and earlier ratings.
             The extension report includes unrelated jobs and listings still waiting for a job description or score.
 
           </div>

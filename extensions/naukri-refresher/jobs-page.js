@@ -139,7 +139,7 @@ function render(s) {
     `Every listing, not a sample: once a day, around 17:00 IST, a run reads every page of every search (up to ${L.pagesPerSearch} pages each), one page of each search in turn. It works in stretches of up to ${L.runMinutes} minutes with ${L.restMin}-minute rests (up to ${L.stretches} stretches) until every search is read to the end; where it stops, the next run carries on. At most ${L.pagesPerDay} pages and ${L.jdPerDay} job pages a day.`,
     'No job twice: a listing it judged in the last 3 days (kept or not) is skipped by its id, so no JD is opened twice and nothing is sent or rated twice. "Start fresh" deletes the finder\'s jobs from your site and forgets all of that, for a fresh run end to end.',
     `Eligibility uses the last ${R.maxAgeH} hours and an experience range reaching 2 years with a minimum below ${R.maxMinYears}. Unknown experience goes to Groq. Applied and closed jobs are skipped.`,
-    'Groq reads the job description against both résumé summaries. The default list shows verified scores of 70 or higher. Weaker candidates for either profile appear under Review other candidates. Unrelated jobs and pending decisions are in the report.',
+    'Groq identifies the primary work and required technologies. Matches need Java backend or GenAI application duties and at least 80% required stack coverage. Weaker candidates appear under Review other candidates. The report includes pending and rejected jobs.',
     `Backend searches: ${of('backend')}.`,
     `AI searches: ${of('ai')}.`,
   ]) rules.append(el('li', t));

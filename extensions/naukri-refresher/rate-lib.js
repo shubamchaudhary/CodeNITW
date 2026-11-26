@@ -319,13 +319,18 @@ export function profileSummary(source, profile) {
   const key = profile === 'ai' ? 'ai' : 'backend';
   const text = clean(source);
   const normalized = normText(text);
-  const skills = BRIEF_SKILLS[key].filter((skill) => inResume(skill, normalized));
+  const skills = new Set(BRIEF_SKILLS[key].filter((skill) => inResume(skill, normalized)));
+  // Include secondary technologies documented on this resume (e.g. REST APIs on the AI profile).
+  // They count toward a job's stack only after the primary work has been classified.
+  for (const label of findSkills(text).keys()) {
+    if (skillOf(label).count) skills.add(label);
+  }
   const experience = text.match(/\bsoftware engineer with \d+\+? years\b/i)?.[0];
   const scale = text.match(/\b1,000\+ tenant(?: environments|s)\b/i)?.[0];
   const examples = BRIEF_EXPERIENCE[key].map((pattern) => text.match(pattern)?.[0]).filter(Boolean);
   return [
     experience,
-    skills.length && 'Documented skills: ' + skills.join(', '),
+    skills.size && 'Documented skills: ' + [...skills].join(', '),
     scale && 'Production scale: ' + scale,
     ...examples.map((claim) => '• ' + claim),
   ].filter(Boolean).join('\n');
