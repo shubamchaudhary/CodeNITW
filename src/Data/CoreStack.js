@@ -24,7 +24,7 @@ export const CORE_STACK_SECTIONS = [
   },
   {
     "key": "data",
-    "label": "Databases & Caching"
+    "label": "SQL"
   }
 ];
 
@@ -1816,96 +1816,12 @@ export const CORE_STACK_TOPICS = [
     }
   },
   {
-    "id": "DATA-01",
-    "section": "data",
-    "sectionLabel": "Databases & Caching",
-    "priority": "P0",
-    "title": "SQL & indexing — B-Tree, composite indexes, EXPLAIN, join order",
-    "why": "A standing round of its own. Write-ups put SQL beside Core Java and Spring Boot; 2026 guides stress index-vs-scan reasoning and reading a plan. You claim PostgreSQL and a GIN/B-Tree/HNSW index design — this will be probed.",
-    "resources": [
-      {
-        "id": "DATA-01-r1",
-        "kind": "doc",
-        "title": "Use The Index, Luke! — SQL indexing and tuning for developers",
-        "source": "use-the-index-luke.com",
-        "url": "https://use-the-index-luke.com/sql/table-of-contents",
-        "minutes": 90,
-        "estimate": true,
-        "note": "Read: Anatomy of an Index, The Where Clause, Sorting & Grouping, Partial Results. Skip the rest."
-      }
-    ],
-    "minutes": 90,
-    "duration": "≈1h 30m",
-    "questions": [
-      "How does a B-Tree index actually answer a range query? Why is lookup logarithmic and not constant?",
-      "Composite index on (a, b, c): which of these use it — WHERE b = ?, WHERE a = ? AND c = ?, ORDER BY a, b?",
-      "What is a covering index, and how would you know from a plan that you got one?",
-      "Read this plan: Seq Scan on a 50M-row table with a filter. Give three reasons the index was not used.",
-      "Why can a query get SLOWER after you add an index? Name two mechanisms.",
-      "LIKE 'abc%' vs LIKE '%abc' — which can use a B-Tree and why?",
-      "What does an index cost you on write paths? How many indexes is too many?",
-      "GIN vs B-Tree — what is GIN for, and why did your log search need it?",
-      "Pagination with OFFSET 100000 — why is it slow, and what is keyset pagination?",
-      "How do you find the slow query in production in the first place? (pg_stat_statements, auto_explain.)",
-      "Your ORM generated the query. How do you see the real SQL and its plan?",
-      "When is a full table scan the RIGHT plan?"
-    ],
-    "asked": null
-  },
-  {
-    "id": "DATA-02",
-    "section": "data",
-    "sectionLabel": "Databases & Caching",
-    "priority": "P0",
-    "title": "Redis & caching patterns",
-    "why": "Redis and Caching are both listed on your resume, and your LLM agent stages writes in Redis — expect the consistency question. Cache-aside, invalidation, stampede and distributed locks are standard asks.",
-    "resources": [
-      {
-        "id": "DATA-02-r1",
-        "kind": "video",
-        "title": "Spring Boot | Spring Data Redis as Cache | @Cacheable | @CacheEvict | @CachePut",
-        "source": "Java Techie",
-        "url": "https://www.youtube.com/watch?v=vpe4aDu5ixI",
-        "minutes": 14,
-        "estimate": false,
-        "note": ""
-      },
-      {
-        "id": "DATA-02-r2",
-        "kind": "doc",
-        "title": "Redis — data types & key eviction",
-        "source": "redis.io",
-        "url": "https://redis.io/docs/latest/develop/data-types/",
-        "minutes": 20,
-        "estimate": true,
-        "note": "Enough to say which structure you'd pick and why; skip the command reference."
-      }
-    ],
-    "minutes": 34,
-    "duration": "≈34m",
-    "questions": [
-      "Cache-aside vs write-through vs write-behind — which do you run, and what does each lose on failure?",
-      "@Cacheable, @CachePut, @CacheEvict — what does each do, and what is the self-invocation trap? (Same proxy mechanism as @Transactional.)",
-      "Redis write succeeds, Postgres write fails. What is the state of the world, and how do you recover? ← your Base+Overlay design",
-      "Two nodes invalidate the same key at once. What guarantees do you actually have?",
-      "What is a cache stampede? Give two mitigations. (Distributed lock on recompute; probabilistic early expiry.)",
-      "Implement a distributed lock in Redis. Why SET key val NX PX, why a random token, and why is releasing it not a plain DEL?",
-      "Why is a Redis-based lock not safe under partition? (Say the honest thing — it is a lease, not a lock.)",
-      "Which Redis data structure for: a session, a leaderboard, a rate limiter, a job queue?",
-      "TTL strategy: how do you pick one, and what happens at the moment everything expires together?",
-      "Redis is single-threaded — why is that a feature, and what does it mean for a slow command?",
-      "How do you cap memory, and what does each eviction policy do? (allkeys-lru vs volatile-ttl vs noeviction.)",
-      "Your cache hit rate drops from 95% to 40% overnight. Walk your investigation."
-    ],
-    "asked": null
-  },
-  {
     "id": "DATA-04",
     "section": "data",
-    "sectionLabel": "Databases & Caching",
+    "sectionLabel": "SQL",
     "priority": "P1",
-    "title": "SQL query writing — joins, GROUP BY / HAVING, window functions",
-    "why": "NEW. DATA-01 is the theory; this is the live part. HERE's SDE-2 first round put SQL beside Core Java, Walmart SDE-2 prep guides list SQL and DBMS, and \"Nth-highest salary\" / \"top earner per department\" are the standing warm-ups. You write SQL for a living — make it fast under a timer.",
+    "title": "SQL queries for interviews",
+    "why": "Start with a SELECT and work up to joins, grouped counts, subqueries and window functions. Trace each answer through a small set of rows.",
     "resources": [
       {
         "id": "DATA-04-r1",
@@ -1931,55 +1847,19 @@ export const CORE_STACK_TOPICS = [
     "minutes": 195,
     "duration": "≈3h 15m",
     "questions": [
-      "Second-highest salary — once with a subquery, once with DENSE_RANK. What does each return with ties, or with no second value?",
-      "Nth-highest salary per department with a window function. ROW_NUMBER vs RANK vs DENSE_RANK — which, and why?",
-      "Employees who earn more than their manager. (Self-join.)",
-      "Departments with more than 5 employees and an average salary above X. WHERE vs HAVING — when does each filter run?",
-      "Find and delete duplicate rows, keeping the lowest id.",
-      "Customers who never placed an order — LEFT JOIN … IS NULL vs NOT EXISTS vs NOT IN. Which one breaks when there are NULLs?",
-      "Running total and 7-day moving average of daily sales.",
-      "INNER vs LEFT vs FULL OUTER vs CROSS JOIN — and what a join with a missing condition does to your row count.",
-      "UNION vs UNION ALL — which is cheaper, and why?",
-      "Normalise this table to 3NF — then tell me when you would deliberately denormalise.",
-      "When would you NOT put this data in Postgres? (SQL vs NoSQL — argue from the access pattern, not the brand.)"
-    ],
-    "asked": null
-  },
-  {
-    "id": "DATA-03",
-    "section": "data",
-    "sectionLabel": "Databases & Caching",
-    "priority": "P1",
-    "title": "Postgres transactions, MVCC, locking & connection pooling",
-    "why": "The JPA cards teach isolation levels; this is the database that implements them. Long transactions, lock waits and pool exhaustion are the incidents you will be asked to debug — pool exhaustion is a stock 2026 Spring Boot scenario question.",
-    "resources": [
-      {
-        "id": "DATA-03-r1",
-        "kind": "doc",
-        "title": "PostgreSQL — Chapter 13: Concurrency Control (MVCC & transaction isolation)",
-        "source": "postgresql.org",
-        "url": "https://www.postgresql.org/docs/current/mvcc.html",
-        "minutes": 45,
-        "estimate": true,
-        "note": "Sections 13.1–13.3 only."
-      }
-    ],
-    "minutes": 45,
-    "duration": "≈45m",
-    "questions": [
-      "ACID — what does each letter guarantee, and which of them does Postgres get from the write-ahead log?",
-      "What does MVCC actually do — how can a reader not block a writer?",
-      "PostgreSQL's default isolation level is Read Committed. What anomaly does that still allow?",
-      "Repeatable Read in Postgres vs the SQL standard — what does Postgres give you that the standard doesn't require?",
-      "SELECT FOR UPDATE — when do you need it, and what does it do to concurrent readers?",
-      "Two transactions update the same two rows in opposite order. What does Postgres do, and who wins?",
-      "What is a long-running transaction's real cost? (Bloat, vacuum starvation, held connections.)",
-      "What is autovacuum for, and what breaks when it can't keep up?",
-      "HikariCP: pool size 10, 200 concurrent requests. What happens, and what does the caller see?",
-      "How do you size a connection pool? Why is 'more connections' usually the wrong fix?",
-      "Your @Transactional method makes an HTTP call in the middle. What is wrong with that at 1,000 tenants?",
-      "Optimistic vs pessimistic locking in JPA — which did you use, and what does @Version cost you?",
-      "Deadlock in production: how do you find the two statements involved?"
+      "Which two employees earn the most? What breaks a tie?",
+      "How do you list employees with their department names?",
+      "How do you count employees in every department, including empty ones?",
+      "Which departments have at least two employees earning 900 or more?",
+      "Which departments have no employees?",
+      "Who earns more than their manager?",
+      "Which salaries appear more than once?",
+      "What is the second-highest distinct salary?",
+      "How many employees in each department earn at least 900?",
+      "How do you combine two lists of employee IDs and keep each ID once?",
+      "Who earns one of the top two distinct salaries in each department?",
+      "Who is the latest hire in each department if two people joined on the same day?",
+      "What are the running total and the change from the previous day in daily sales?"
     ],
     "asked": null
   }
@@ -1993,10 +1873,10 @@ export const CORE_STACK_PRIORITY_CONFIG = {
   P2: { label: "P2", blurb: "Depth. Skip under time pressure", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-300 border-sky-500/30" },
 };
 
-export const CORE_STACK_TOTAL = 46;
+export const CORE_STACK_TOTAL = 43;
 
-export const CORE_STACK_PRIORITY_COUNTS = {"P0":31,"P1":10,"P2":5};
+export const CORE_STACK_PRIORITY_COUNTS = {"P0":29,"P1":9,"P2":5};
 
-export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":12,"spring":19,"data":4};
+export const CORE_STACK_SECTION_COUNTS = {"java":11,"concurrency":12,"spring":19,"data":1};
 
-export const CORE_STACK_MINUTES = 3142;
+export const CORE_STACK_MINUTES = 2973;

@@ -545,3 +545,20 @@ Every common cause comes from the mechanism above:
 Say it like this: "Spring wraps the bean in a proxy. A call through the proxy goes to TransactionInterceptor, whose invokeWithinTransaction begins or joins a transaction per the propagation, calls my method, and commits or rolls back by the rollback rules. The transaction is bound to the thread through TransactionSynchronizationManager. A call from inside the same class goes to this, not to the proxy, so no transaction starts; I fix it by moving the method to another bean or using TransactionTemplate."
 
 **Before the next part:** without looking, draw the proxy call path from caller to commit and mark where self-invocation bypasses it, then draw the UnexpectedRollbackException sequence and explain in two sentences why the commit fails and which propagation would avoid it.
+
+### Which checkout rows survive a rollback?
+
+Order 42 has one pen (line 101) and status OPEN. Inside a proxied `@Transactional` checkout method, load the order, mark it paid, and add a notebook. The order's `addLine` helper sets both sides of the relationship, and its collection cascades persist.
+
+```java
+Order order = orders.findById(42L).orElseThrow();
+order.setStatus(Status.PAID);
+order.addLine(new OrderLine("Notebook"));
+```
+
+| What a fresh transaction reads | After a successful commit | After an unchecked exception escapes before commit |
+|--------------------------------|---------------------------|-----------------------------------------------------|
+| `orders.status` for id 42 | PAID | OPEN |
+| Items in `order_line` with `order_id = 42` | Pen, Notebook | Pen |
+
+Both the status update and the new line belong to the same transaction. To trace the foreign keys for this order and compare all four mapping annotations, open section 7 of [JPA and Spring Data JPA](/notes/corestack/SPRING-04).
