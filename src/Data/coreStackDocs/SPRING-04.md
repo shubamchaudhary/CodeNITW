@@ -718,3 +718,89 @@ LIMIT 20;
 Say it like this: "I paginate with a Pageable. Page runs an extra COUNT for totals, so I return Slice when I only need 'is there more'. A deep OFFSET is slow because the database reads and throws away every skipped row, and pages shift when rows are inserted. For large tables or infinite scroll I use keyset pagination: the client sends the last seen sort key plus id, and the query continues with an indexed WHERE clause, so every page costs the same. The trade-off is no jumping to an arbitrary page."
 
 **Before the next part:** without looking, draw the lost-update timeline and explain how @Version and SELECT FOR UPDATE each stop it; explain why setting only the inverse side saves a NULL foreign key; draw the N+1 pattern and name four fixes and the paging trap; and write the keyset-pagination WHERE clause.
+
+## 7. Read a JPA mapping from the rows
+
+### One-to-one — can two customers claim address 7?
+
+Here each customer has a saved address, and each address belongs to at most one customer. This field lives on `Customer`.
+
+```java
+@OneToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "address_id", unique = true)
+private Address address;
+```
+
+**customer**
+
+| id | name | address_id |
+|---:|------|-----------:|
+| 1 | Asha | 7 |
+| 2 | Ravi | 8 |
+
+**address**
+
+| id | street |
+|---:|--------|
+| 7 | Park Road |
+| 8 | Lake Road |
+
+Follow Asha's `address_id` to `address.id = 7` to find Park Road. If Ravi tries to claim 7 too, the unique constraint rejects the update. Adding `@OneToOne(mappedBy = "address")` on `Address.customer` lets you navigate back to Asha using the same rows.
+
+### Many-to-one and one-to-many — which lines belong to order 42?
+
+```java
+// Fields on OrderLine and Order, respectively
+@ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "order_id") private Order order;
+@OneToMany(mappedBy = "order") private List<OrderLine> lines;
+```
+
+**orders**
+
+| id | status |
+|---:|--------|
+| 42 | PAID |
+| 43 | OPEN |
+
+**order_line**
+
+| id | order_id | item |
+|---:|---------:|------|
+| 101 | 42 | Pen |
+| 102 | 42 | Notebook |
+| 103 | 43 | Eraser |
+
+Start at line 101 and follow its one `order_id` to order 42 (**many-to-one**). Start at order 42 and collect every line whose `order_id` is 42 to get the pen and notebook (**one-to-many**). Both directions use the same column. In `mappedBy = "order"`, `order` names the Java field that writes it.
+
+### Many-to-many — who takes SQL, and what does Asha study?
+
+Using the `Student.courses` mapping from section 4, suppose Asha already takes Java and Ravi already takes SQL. With Asha managed in a transaction, add SQL to her courses.
+
+```java
+Course sql = entityManager.getReference(Course.class, 20L);
+asha.getCourses().add(sql);
+```
+
+**student**
+
+| id | name |
+|---:|------|
+| 1 | Asha |
+| 2 | Ravi |
+
+**course**
+
+| id | title |
+|---:|-------|
+| 10 | Java |
+| 20 | SQL |
+
+**student_course after commit**
+
+| student_id | course_id |
+|-----------:|----------:|
+| 1 | 10 |
+| 2 | 20 |
+| 1 | 20 |
+
+The new row is `(1, 20)`. Read down `student_id = 1` to find Asha's two courses. Read down `course_id = 20` to find SQL's two students. Each row records one enrollment.
