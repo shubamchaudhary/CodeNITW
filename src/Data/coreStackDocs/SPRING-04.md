@@ -44,6 +44,37 @@ Boot 3.2 adds `JdbcClient`, a fluent version of the same idea. `JdbcTemplate` an
 - **Hibernate** is the most used **implementation** of JPA. It turns entity operations into SQL and adds extras of its own (`@BatchSize`, `@DynamicUpdate`, the second-level cache). Hibernate's `Session` is its version of `EntityManager`, and `SessionFactory` of `EntityManagerFactory`.
 - **Spring Data JPA** sits on top. You declare an interface such as `OrderRepository extends JpaRepository<Order, Long>`, and at startup Spring generates its implementation (`SimpleJpaRepository`), which calls `EntityManager` underneath.
 
+**How does a repository know which table to read?** Follow the two declarations. The entity maps a Java class to a table. The repository names the entity it works with.
+
+```java
+@Entity
+@Table(name = "students")
+public class Student {
+    @Id @GeneratedValue Long id;
+    String name;
+}
+```
+
+```java
+public interface StudentRepository extends JpaRepository<Student, Long> {}
+```
+
+Read `JpaRepository<Student, Long>` as “work with **Student** objects and look them up by a **Long** ID.” Hibernate gets the table name `students` from `@Table` and the primary key from `@Id`. The empty interface inherits `findById`, `save`, and `deleteById`.
+
+Suppose the `students` table contains this row.
+
+| id | name |
+|---:|------|
+| 7 | Asha |
+
+In a service where Spring has injected `StudentRepository repo`, one line reads that row as an object.
+
+```java
+Student student = repo.findById(7L).orElseThrow();
+```
+
+When a database read is needed, the SQL is equivalent to `SELECT id, name FROM students WHERE id = 7`. The service gets a `Student` with ID 7 and name Asha. If the row is missing, `findById` returns an empty `Optional` and `orElseThrow()` raises an exception.
+
 ### What Spring Boot builds at startup
 
 ```mermaid
@@ -58,6 +89,8 @@ flowchart TD
 - The **EntityManagerFactory** is built once from the entity classes and `application.properties` (no `persistence.xml` in Boot).
 - An **EntityManager** does `persist`, `merge`, `find`, `remove` and queries. It is not thread-safe, so the one you inject is a **shared proxy**: on every call it forwards to the real EntityManager bound to the current transaction.
 - The **dialect** tells Hibernate which SQL flavour to generate. Boot 3 detects it from the connection.
+
+Trace Asha’s lookup through the diagram. The injected `repo` is a Spring proxy. For the inherited `findById(7L)` method it delegates to `SimpleJpaRepository`, which asks the `EntityManager` to find `Student.class` with key `7L`. If Asha is already managed in this persistence context, the lookup returns that same Java object.
 
 ### EntityManager vs CrudRepository vs JpaRepository
 
@@ -169,6 +202,15 @@ sequenceDiagram
 - **`@Transactional(readOnly = true)`** tells Hibernate the transaction only reads: it skips snapshots and dirty checking, so a change to a loaded entity is **not saved**. It saves memory on big reads and can route to a read replica.
 - Writes need a transaction. `persist` without one fails with `TransactionRequiredException`.
 
+**Rename student 7.** Inside a writable `@Transactional` service method in the same package as `Student`:
+
+```java
+Student student = repo.findById(7L).orElseThrow();
+student.name = "Asha Rao";
+```
+
+The lookup gives Hibernate a managed object. At flush it detects the name change. After a successful commit, row 7 reads `Asha Rao` even though the service only called the repository to **read**.
+
 ### persist vs merge vs save vs saveAndFlush
 
 ```mermaid
@@ -190,6 +232,16 @@ flowchart TD
 - **`saveAndFlush(entity)`**: `save` plus an immediate flush. Use it when you need the SQL to run **now**: to catch a unique-constraint violation at that line, or to read a value the database generates. It is still not committed.
 - **`getReferenceById(id)`**: returns a proxy without a SELECT. Use it to set a foreign key ("this order belongs to customer 42") without loading the customer.
 - Hibernate's own `Session.save()`, `update()` and `saveOrUpdate()` are deprecated since Hibernate 6; use `persist` and `merge`.
+
+**Create a student.** This time the service starts with a new object whose generated ID is still `null`.
+
+```java
+Student ravi = new Student();
+ravi.name = "Ravi";
+repo.save(ravi);
+```
+
+For this entity, `save` sees the null ID and calls `persist`. After commit, Ravi has his own row in `students` with a generated key.
 
 **IDENTITY vs SEQUENCE ids.** With `GenerationType.IDENTITY` the database generates the id on INSERT, so Hibernate must run the INSERT immediately at `persist()` to learn it, which **disables JDBC insert batching**. With a `SEQUENCE` and `hibernate.jdbc.batch_size` set, Hibernate fetches ids in blocks and sends many INSERTs in one batch. Use a sequence for bulk inserts.
 
@@ -592,6 +644,14 @@ Say it like this: "N+1 is one query for the parents plus one per parent when a l
 ## 6. Queries, bulk updates and pagination
 
 ### Derived queries
+
+**Find students by name.** Add this declaration inside the same `StudentRepository` interface:
+
+```java
+List<Student> findByName(String name);
+```
+
+With the original sample row, `repo.findByName("Asha")` returns a list containing student 7. Spring reads `Name` as the `Student.name` field and binds the argument in a query equivalent to `SELECT id, name FROM students WHERE name = ?`. A list makes sense here because several students can share a name.
 
 Spring reads the **method name** and builds the query at startup:
 
