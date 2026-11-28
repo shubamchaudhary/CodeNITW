@@ -430,6 +430,32 @@ public void removeLine(OrderLine l) { lines.remove(l); l.setOrder(null); }
 private Order order;
 ```
 
+**Read `mappedBy = "order"` as “each line tells me which order it belongs to.”** The word `order` comes from the Java field `private Order order` on `OrderLine`. Its `@JoinColumn` tells Hibernate where that reference is stored.
+
+```text
+Order.lines ──mappedBy──► OrderLine.order ──@JoinColumn──► order_line.order_id
+  Java list                 Java field                       database column
+```
+
+**orders**
+
+| id (PK) | status |
+|---:|---|
+| 42 | PAID |
+| 43 | OPEN |
+
+**order_line**
+
+| id (PK) | item | order_id (FK) | Points to |
+|---:|---|---:|---|
+| 101 | Pen | 42 | → `orders.id = 42` |
+| 102 | Notebook | 42 | → `orders.id = 42` |
+| 103 | Eraser | 43 | → `orders.id = 43` |
+
+The **primary key (PK)** identifies the row itself. The **foreign key (FK)** points to its parent. On the pen row, **101** answers “which line?” and **42** answers “whose line?” When you read `order42.getLines()`, follow those arrows backward: both the pen and the notebook point to order 42.
+
+Now picture adding the pen. In `order42.addLine(pen)`, `lines.add(pen)` updates the Java list, and `pen.setOrder(this)` gives Hibernate the **42** to write into the pen’s `order_id`. If a new line has no order set, inserting it with a null FK succeeds only if the column allows nulls.
+
 Which side owns? The one whose table should hold the FK. For one-to-many that is **always the `@ManyToOne` child**; `@ManyToOne` does not even have a `mappedBy` attribute.
 
 ### One-to-many: why it should be bidirectional (or just many-to-one)
